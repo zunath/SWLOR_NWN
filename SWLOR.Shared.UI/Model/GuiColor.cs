@@ -1,7 +1,7 @@
 ﻿using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Nui;
 
-namespace SWLOR.Shared.Core.Models
+namespace SWLOR.Shared.UI.Model
 {
     public class GuiColor
     {

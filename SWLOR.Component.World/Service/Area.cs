@@ -1,17 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using SWLOR.Component.World.Contracts;
+using SWLOR.Component.World.Entity;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Core.Data;
-using SWLOR.Shared.Core.Data.Entity;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Service;
+using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Area;
+using SWLOR.Shared.Events.Events.Module;
+using SWLOR.Shared.UI.Service;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Component.World.Service
 {
     public class Area : IAreaService
     {

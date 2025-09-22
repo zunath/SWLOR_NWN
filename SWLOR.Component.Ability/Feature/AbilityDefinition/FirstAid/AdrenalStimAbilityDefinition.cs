@@ -1,11 +1,11 @@
-using System.Collections.Generic;
+using SWLOR.Component.Ability.Contracts;
+using SWLOR.Component.Ability.Enums;
+using SWLOR.Component.Ability.Model;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Models;
 
-namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
+namespace SWLOR.Component.Ability.Feature.AbilityDefinition.FirstAid
 {
     public class AdrenalStimAbilityDefinition : FirstAidBaseAbilityDefinition
     {

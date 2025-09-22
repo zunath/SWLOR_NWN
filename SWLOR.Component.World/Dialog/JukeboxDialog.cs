@@ -1,9 +1,9 @@
-using SWLOR.Game.Server.Service;
+using SWLOR.Component.World.Service;
 using SWLOR.Shared.Dialog.Contracts;
 using SWLOR.Shared.Dialog.Model;
 using SWLOR.Shared.Dialog.Service;
 
-namespace SWLOR.Game.Server.Feature.DialogDefinition
+namespace SWLOR.Component.World.Dialog
 {
     public class JukeboxDialog: DialogBase
     {

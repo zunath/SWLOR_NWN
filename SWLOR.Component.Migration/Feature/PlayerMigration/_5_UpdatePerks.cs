@@ -1,11 +1,9 @@
-using SWLOR.Game.Server.Service.MigrationService;
+using SWLOR.Component.Migration.Contracts;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
-using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Enums;
 
-namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
+namespace SWLOR.Component.Migration.Feature.PlayerMigration
 {
     public class _5_UpdatePerks: IPlayerMigration
     {

@@ -1,15 +1,13 @@
-using System;
 using System.Text.RegularExpressions;
-using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
-using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
+using SWLOR.Component.Player.Enums;
+using SWLOR.Component.Player.UI.Payload;
+using SWLOR.Component.Player.UI.RefreshEvent;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Data.Entity;
-using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Enums;
 using SWLOR.Shared.UI.Service;
 
-namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
+namespace SWLOR.Component.Player.UI.ViewModel
 {
     public class DistributeRPXPViewModel: GuiViewModelBase<DistributeRPXPViewModel, RPXPPayload>,
         IGuiRefreshable<RPXPRefreshEvent>
@@ -102,7 +100,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     }
 
                     var playerId = GetObjectUUID(Player);
-                    var dbPlayer = _db.Get<Player>(playerId);
+                    var dbPlayer = _db.Get<Entity.Player>(playerId);
 
                     // Some skills are restricted by character type.
                     // Players shouldn't be able to see this pop-up but in case they get to it,
@@ -155,7 +153,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public void Refresh(RPXPRefreshEvent payload)
         {
             var playerId = GetObjectUUID(Player);
-            var dbPlayer = _db.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Entity.Player>(playerId);
 
             _availableRPXP = dbPlayer.UnallocatedXP;
             _maxDistributableXP = _skillService.GetMaxDistributableXP(Player, _skillType);

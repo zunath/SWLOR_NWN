@@ -1,4 +1,4 @@
-namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
+namespace SWLOR.Component.Player.Feature.AppearanceDefinition.ItemAppearance
 {
     public class ShurikenAppearanceDefinition : WeaponAppearanceBaseDefinition
     {

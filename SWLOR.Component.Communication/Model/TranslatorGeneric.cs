@@ -1,4 +1,6 @@
-namespace SWLOR.Game.Server.Service.LanguageService
+using SWLOR.Component.Communication.Contracts;
+
+namespace SWLOR.Component.Communication.Model
 {
     public class TranslatorGeneric : ITranslator
     {

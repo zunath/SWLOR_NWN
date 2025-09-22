@@ -1,4 +1,4 @@
-namespace SWLOR.Shared.Core.Contracts
+namespace SWLOR.Component.Communication.Contracts
 {
     public interface IMessagingService
     {

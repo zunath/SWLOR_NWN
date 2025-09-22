@@ -1,6 +1,6 @@
-using System.Collections.Generic;
+using SWLOR.Component.Communication.Model;
 
-namespace SWLOR.Game.Server.Service.ChatCommandService
+namespace SWLOR.Component.Communication.Contracts
 {
     public interface IChatCommandListDefinition
     {

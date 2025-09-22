@@ -1,11 +1,10 @@
-using System.Collections.Generic;
-using SWLOR.Shared.Caching.Contracts;
+using SWLOR.Component.World.Contracts;
+using SWLOR.Component.World.Enums;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
-using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Enums;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Component.World.Service
 {
     public class PlanetService : IPlanetService
     {

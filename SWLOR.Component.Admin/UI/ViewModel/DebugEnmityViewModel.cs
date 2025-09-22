@@ -1,15 +1,11 @@
-
-using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
-using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Models;
+using SWLOR.Component.Admin.UI.RefreshEvent;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
 
-namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
+namespace SWLOR.Component.Admin.UI.ViewModel
 {
     public class DebugEnmityViewModel: GuiViewModelBase<DebugEnmityViewModel, GuiPayloadBase>,
         IGuiRefreshable<EnmityChangedRefreshEvent>

@@ -1,12 +1,10 @@
-using System;
-using System.Collections.Generic;
-using SWLOR.Shared.Caching.Contracts;
-using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Enums;
+using SWLOR.Component.Quest.Contracts;
+using SWLOR.Component.Quest.Enums;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Component.Quest.Service
 {
     public class NPCGroup : INPCGroupService
     {

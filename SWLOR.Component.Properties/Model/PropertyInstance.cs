@@ -1,6 +1,6 @@
-using SWLOR.Shared.Core.Enums;
+using SWLOR.Component.Properties.Enums;
 
-namespace SWLOR.Shared.Core.Models
+namespace SWLOR.Component.Properties.Model
 {
     public class PropertyInstance
     {

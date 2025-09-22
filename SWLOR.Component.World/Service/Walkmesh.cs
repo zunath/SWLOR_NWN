@@ -1,17 +1,16 @@
-using System;
-using System.Collections.Generic;
+using SWLOR.Component.World.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Area;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Caching.Entity;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 using Vector3 = System.Numerics.Vector3;
-using SWLOR.Shared.Core.Data.Entity;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Component.World.Service
 {
     public class Walkmesh : IWalkmeshService
     {

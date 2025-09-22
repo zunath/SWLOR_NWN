@@ -1,13 +1,11 @@
-using System;
-using System.Collections.Generic;
+using SWLOR.Component.StatusEffect.Contracts;
+using SWLOR.Component.StatusEffect.Enums;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
+using SWLOR.Shared.UI.Service;
 
-namespace SWLOR.Game.Server.Feature
+namespace SWLOR.Component.StatusEffect.Feature
 {
     public static class BuffTimer
     {

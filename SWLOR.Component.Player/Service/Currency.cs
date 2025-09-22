@@ -1,17 +1,11 @@
-using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using SWLOR.Component.Player.Contracts;
+using SWLOR.Component.Player.UI.RefreshEvent;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Data.Entity;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.UI.Contracts;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Component.Player.Service
 {
     public class CurrencyService : ICurrencyService
     {
@@ -62,7 +56,7 @@ namespace SWLOR.Game.Server.Service
         public int GetCurrency(uint player, CurrencyType type)
         {
             var playerId = GetObjectUUID(player);
-            var dbPlayer = _db.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Entity.Player>(playerId);
 
             if (dbPlayer == null)
                 return 0;
@@ -84,7 +78,7 @@ namespace SWLOR.Game.Server.Service
             amount = Math.Abs(amount);
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = _db.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Entity.Player>(playerId);
 
             if (dbPlayer == null)
                 return;
@@ -109,7 +103,7 @@ namespace SWLOR.Game.Server.Service
             amount = Math.Abs(amount);
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = _db.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Entity.Player>(playerId);
 
             if (dbPlayer == null)
                 return;

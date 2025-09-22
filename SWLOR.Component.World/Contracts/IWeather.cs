@@ -1,4 +1,4 @@
-namespace SWLOR.Shared.Core.Contracts
+namespace SWLOR.Component.World.Contracts
 {
     public interface IWeather
     {

@@ -1,11 +1,10 @@
-using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
-using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Enums;
+using SWLOR.Component.World.UI.ViewModel;
 using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Enums;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
 
-namespace SWLOR.Game.Server.Feature.GuiDefinition
+namespace SWLOR.Component.World.UI.View
 {
     public class AreaNotesDefinition : IGuiWindowDefinition
     {

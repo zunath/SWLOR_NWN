@@ -1,13 +1,10 @@
-using SWLOR.Game.Server.Feature.StatusEffectDefinition.StatusEffectData;
+using SWLOR.Component.Combat.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Player;
-using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Enums;
 
-namespace SWLOR.Game.Server.Feature
+namespace SWLOR.Component.Combat.Feature
 {
     public class NaturalRegeneration
     {

@@ -1,19 +1,16 @@
-using System;
-using System.Collections.Generic;
-
-using SWLOR.Game.Server.Feature.StatusEffectDefinition.StatusEffectData;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Component.StatusEffect.Contracts;
+using SWLOR.Component.StatusEffect.Enums;
+using SWLOR.Component.StatusEffect.Feature.StatusEffectDefinition.StatusEffectData;
+using SWLOR.Component.StatusEffect.Model;
+using SWLOR.Component.StatusEffect.Service;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Models;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
-using SWLOR.Shared.Events.Events.Player;
-using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Events.Module;
+using SWLOR.Shared.Events.Events.NWNX;
+using SWLOR.Shared.Events.Events.Player;
 
-namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
+namespace SWLOR.Component.StatusEffect.Feature.StatusEffectDefinition
 {
     public class RestStatusEffectDefinition: IStatusEffectListDefinition
     {

@@ -1,4 +1,4 @@
-namespace SWLOR.Shared.Core.Enums
+namespace SWLOR.Component.Combat.Enums
 {
 // This array is used to signal the preferred attack type of an ability to the native code that manages attack roll overrides.
 // Set the local variable ATTACK_TYPE_OVERRIDE on the attacking creature to one of the valid values below.  This is a one-shot:

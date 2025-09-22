@@ -1,7 +1,6 @@
-using SWLOR.Shared.Core.Enums;
 using SWLOR.NWN.API.NWScript.Enum;
 
-namespace SWLOR.Shared.Core.Models
+namespace SWLOR.Component.Ability.Model
 {
     public class ActiveConcentrationAbility
     {

@@ -1,4 +1,4 @@
-namespace SWLOR.Shared.Caching.Contracts
+namespace SWLOR.Shared.Abstractions.Contracts
 {
     /// <summary>
     /// Builder interface for configuring interface-based type discovery and caching

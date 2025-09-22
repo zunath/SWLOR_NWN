@@ -1,4 +1,5 @@
 using SWLOR.Component.Quest.Contracts;
+using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Core.Contracts;
 
 namespace SWLOR.Component.Quest.Model

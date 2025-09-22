@@ -1,14 +1,10 @@
-using System;
-using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Quest.Contracts;
+using SWLOR.Component.Quest.Enums;
 using SWLOR.Component.Quest.Service;
-using SWLOR.Game.Server.Service;
-using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Models;
+using SWLOR.Shared.Caching.Contracts;
 
-namespace SWLOR.Game.Server.Feature.QuestDefinition
+namespace SWLOR.Component.Quest.Feature.QuestDefinition
 {
     public class HuntersGuildQuestDefinition : IQuestListDefinition
     {

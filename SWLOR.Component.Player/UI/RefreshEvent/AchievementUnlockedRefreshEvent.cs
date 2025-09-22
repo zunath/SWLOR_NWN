@@ -1,7 +1,7 @@
-using SWLOR.Shared.Core.Enums;
+using SWLOR.Component.Player.Enums;
 using SWLOR.Shared.UI.Contracts;
 
-namespace SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent
+namespace SWLOR.Component.Player.UI.RefreshEvent
 {
     public class AchievementUnlockedRefreshEvent : IGuiRefreshEvent
     {

@@ -1,6 +1,6 @@
-using System.Collections.Generic;
+using SWLOR.Component.World.Model;
 
-namespace SWLOR.Game.Server.Service.SpawnService
+namespace SWLOR.Component.World.Contracts
 {
     public interface ISpawnListDefinition
     {

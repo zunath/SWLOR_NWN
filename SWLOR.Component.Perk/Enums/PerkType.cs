@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Shared.Core.Enums
+﻿namespace SWLOR.Component.Perk.Enums
 {
     // Note: These IDs are tied to 2DAs. Don't reassign ID numbers unless you also update the 2DA files.
     // 2DA files: iprp_resperk.2da

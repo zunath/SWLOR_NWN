@@ -1,9 +1,6 @@
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Models;
+using SWLOR.Component.Crafting.Contracts;
 
-namespace SWLOR.Game.Server.Service.CraftService
+namespace SWLOR.Component.Crafting.Model
 {
     public class RecipePerkRequirement: IRecipeRequirement
     {

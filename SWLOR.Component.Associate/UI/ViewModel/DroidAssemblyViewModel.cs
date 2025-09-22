@@ -1,20 +1,16 @@
-using System;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.DroidService;
+using SWLOR.Component.Associate.Model;
+using SWLOR.Component.Associate.Service;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
-using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Bioware;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Models;
+using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
 
-namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
+namespace SWLOR.Component.Associate.UI.ViewModel
 {
     public class DroidAssemblyViewModel : GuiViewModelBase<DroidAssemblyViewModel, GuiPayloadBase>
     {

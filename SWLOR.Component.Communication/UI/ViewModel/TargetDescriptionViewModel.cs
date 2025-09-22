@@ -1,11 +1,9 @@
-using System;
-using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
-using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Enums;
+using SWLOR.Component.Communication.UI.Payload;
 using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Enums;
 using SWLOR.Shared.UI.Service;
 
-namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
+namespace SWLOR.Component.Communication.UI.ViewModel
 {
     public class TargetDescriptionViewModel : GuiViewModelBase<TargetDescriptionViewModel, TargetDescriptionPayload>
     {

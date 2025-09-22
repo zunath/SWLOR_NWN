@@ -1,15 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using SWLOR.Component.Player.Contracts;
+using SWLOR.Component.Player.Entity;
+using SWLOR.Component.Player.Enums;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Data.Entity;
-using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Component.Player.Service
 {
     public class FactionService : IFactionService
     {
@@ -72,7 +69,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(player) || adjustBy == 0) return;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = _db.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Entity.Player>(playerId);
             var factionDetail = _factions[faction];
             var cantGoHigher = false;
             var cantGoLower = false;
@@ -136,7 +133,7 @@ namespace SWLOR.Game.Server.Service
 
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = _db.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Entity.Player>(playerId);
             var factionDetail = GetFactionDetail(faction);
 
             if (!dbPlayer.Factions.ContainsKey(faction))

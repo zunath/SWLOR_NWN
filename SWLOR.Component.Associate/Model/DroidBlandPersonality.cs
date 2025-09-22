@@ -1,7 +1,7 @@
-using System.Collections.Generic;
+using SWLOR.Component.Associate.Contracts;
 using SWLOR.Shared.Core.Contracts;
 
-namespace SWLOR.Game.Server.Service.DroidService
+namespace SWLOR.Component.Associate.Model
 {
     public class DroidBlandPersonality: IDroidPersonality
     {

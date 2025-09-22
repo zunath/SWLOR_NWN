@@ -1,8 +1,7 @@
-
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 
-namespace SWLOR.Game.Server.Feature
+namespace SWLOR.Component.World.Feature
 {
     public class GameWorldEntry
     {

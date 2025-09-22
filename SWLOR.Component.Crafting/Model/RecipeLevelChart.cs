@@ -1,7 +1,4 @@
-using System.Collections.Generic;
-using SWLOR.Shared.Core.Models;
-
-namespace SWLOR.Game.Server.Service.CraftService
+namespace SWLOR.Component.Crafting.Model
 {
     public class RecipeLevelChart
     {

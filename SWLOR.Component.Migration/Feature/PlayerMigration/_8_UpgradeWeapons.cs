@@ -1,13 +1,10 @@
-using System.Collections.Generic;
+using SWLOR.Component.Migration.Model;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Bioware;
-using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Data.Entity;
-using SWLOR.Shared.Core.Enums;
 
-namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
+namespace SWLOR.Component.Migration.Feature.PlayerMigration
 {
     public class _8_UpgradeWeapons : PlayerMigrationBase
     {

@@ -1,13 +1,11 @@
-using System.Collections.Generic;
 using SWLOR.Component.Quest.Contracts;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.SnippetService;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Dialog.Contracts;
+using SWLOR.Shared.Dialog.Model;
+using SWLOR.Shared.Dialog.Service;
 
-namespace SWLOR.Game.Server.Feature.SnippetDefinition
+namespace SWLOR.Component.Quest.Feature.SnippetDefinition
 {
     public class QuestSnippetDefinition: ISnippetListDefinition
     {

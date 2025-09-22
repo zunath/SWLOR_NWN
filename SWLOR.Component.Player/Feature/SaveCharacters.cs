@@ -1,10 +1,9 @@
-
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Events.Player;
 using SWLOR.Shared.Events.Events.NWNX;
+using SWLOR.Shared.Events.Events.Player;
 
-namespace SWLOR.Game.Server.Feature
+namespace SWLOR.Component.Player.Feature
 {
     public static class SaveCharacters
     {

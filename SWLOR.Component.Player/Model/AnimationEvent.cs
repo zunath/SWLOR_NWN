@@ -1,4 +1,4 @@
-namespace SWLOR.Shared.Core.Models
+namespace SWLOR.Component.Player.Model
 {
     /// <summary>
     /// Subset of supported NWN events for animating

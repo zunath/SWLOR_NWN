@@ -1,24 +1,20 @@
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Text;
+using SWLOR.Component.Communication.Constants;
+using SWLOR.Component.Communication.Contracts;
+using SWLOR.Component.Communication.Enums;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Events.Module;
-using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Constants;
+using SWLOR.Shared.Events.Events.NWNX;
+using SWLOR.Shared.UI.Service;
 using ChatChannel = SWLOR.NWN.API.NWNX.Enum.ChatChannel;
 using Player = SWLOR.Shared.Core.Data.Entity.Player;
-using SkillType = SWLOR.Shared.Core.Enums.SkillType;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Component.Communication.Service
 {
     public class Communication : ICommunication
     {

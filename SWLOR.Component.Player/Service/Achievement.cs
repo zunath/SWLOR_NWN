@@ -1,18 +1,15 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using SWLOR.Component.Player.Entity;
+using SWLOR.Component.Player.Enums;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Data.Entity;
-using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
-using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Component.Player.Service
 {
     public class Achievement
     {
@@ -66,7 +63,7 @@ namespace SWLOR.Game.Server.Service
             if (account.Achievements.ContainsKey(achievementType)) return;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = _db.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Entity.Player>(playerId);
             var now = DateTime.UtcNow;
             account.Achievements[achievementType] = now;
             _db.Set(account);

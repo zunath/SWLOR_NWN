@@ -1,6 +1,6 @@
-using SWLOR.Shared.Core.Enums;
+using SWLOR.Component.Communication.Enums;
 
-namespace SWLOR.Shared.Core.Contracts
+namespace SWLOR.Component.Communication.Contracts
 {
     public interface ICommunication
     {

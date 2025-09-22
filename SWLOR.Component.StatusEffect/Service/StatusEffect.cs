@@ -1,19 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
-using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
-using SWLOR.Game.Server.Service.StatusEffectService;
-using SWLOR.Shared.Core.Enums;
+using SWLOR.Component.StatusEffect.Contracts;
+using SWLOR.Component.StatusEffect.Enums;
+using SWLOR.Component.StatusEffect.Model;
+using SWLOR.Component.StatusEffect.UI.RefreshEvent;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.UI.Contracts;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Component.StatusEffect.Service
 {
 
     public class StatusEffect : IStatusEffectService
@@ -36,7 +31,7 @@ namespace SWLOR.Game.Server.Service
             public object EffectData { get; set; }
         }
 
-        private readonly Dictionary<StatusEffectType, SWLOR.Shared.Core.Models.StatusEffectDetail> _statusEffects = new();
+        private readonly Dictionary<StatusEffectType, StatusEffectDetail> _statusEffects = new();
         private readonly Dictionary<uint, Dictionary<StatusEffectType, StatusEffectGroup>> _creaturesWithStatusEffects = new();
         private readonly Dictionary<uint, Dictionary<StatusEffectType, StatusEffectGroup>> _loggedOutPlayersWithEffects = new();
 
@@ -536,7 +531,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="type">The type to search for.</param>
         /// <returns>A status effect detail</returns>
-        public SWLOR.Shared.Core.Models.StatusEffectDetail GetDetail(StatusEffectType type)
+        public StatusEffectDetail GetDetail(StatusEffectType type)
         {
             return _statusEffects[type];
         }

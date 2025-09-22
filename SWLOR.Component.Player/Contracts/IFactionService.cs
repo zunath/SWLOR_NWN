@@ -1,6 +1,6 @@
-using SWLOR.Shared.Core.Enums;
+using SWLOR.Component.Player.Enums;
 
-namespace SWLOR.Shared.Core.Contracts
+namespace SWLOR.Component.Player.Contracts
 {
     public interface IFactionService
     {

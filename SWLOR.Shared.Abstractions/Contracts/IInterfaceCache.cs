@@ -1,4 +1,4 @@
-namespace SWLOR.Shared.Caching.Contracts
+namespace SWLOR.Shared.Abstractions.Contracts
 {
     /// <summary>
     /// Interface for a configured interface-based cache

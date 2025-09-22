@@ -1,12 +1,10 @@
-using System;
 using System.Text.RegularExpressions;
-using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
-using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Enums;
+using SWLOR.Component.Market.UI.Payload;
 using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Enums;
 using SWLOR.Shared.UI.Service;
 
-namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
+namespace SWLOR.Component.Market.UI.ViewModel
 {
     public class PriceSelectionViewModel: GuiViewModelBase<PriceSelectionViewModel, PriceSelectionPayload>
     {

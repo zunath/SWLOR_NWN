@@ -1,18 +1,15 @@
-using System;
-using System.Collections.Generic;
-using SWLOR.Game.Server.Feature.StatusEffectDefinition.StatusEffectData;
-using SWLOR.Game.Server.Service.ItemService;
+using SWLOR.Component.Inventory.Contracts;
+using SWLOR.Component.Inventory.Enums;
+using SWLOR.Component.Inventory.Model;
+using SWLOR.Component.Inventory.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Data.Entity;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Models;
 
-namespace SWLOR.Game.Server.Feature.ItemDefinition
+namespace SWLOR.Component.Inventory.Feature.ItemDefinition
 {
     public class ConsumableItemDefinition: IItemListDefinition
     {

@@ -1,6 +1,6 @@
 ﻿using SWLOR.Shared.Abstractions;
 
-namespace SWLOR.Shared.Core.Data.Entity
+namespace SWLOR.Component.Properties.Entity
 {
     public class WorldPropertyCategory: EntityBase
     {

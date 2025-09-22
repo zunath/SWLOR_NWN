@@ -1,22 +1,19 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using NWN.Native.API;
+using SWLOR.Component.Combat.Contracts;
+using SWLOR.Component.Combat.Enums;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Data.Entity;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Core.Log.LogGroup;
-using SWLOR.Shared.Core.Service;
+using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Module;
+using SWLOR.Shared.UI.Service;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
 using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
 using SavingThrow = SWLOR.NWN.API.NWScript.Enum.SavingThrow;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Component.Combat.Service
 {
     
 

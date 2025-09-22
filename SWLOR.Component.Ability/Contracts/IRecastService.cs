@@ -1,6 +1,6 @@
-using SWLOR.Shared.Core.Enums;
+using SWLOR.Component.Ability.Enums;
 
-namespace SWLOR.Shared.Core.Contracts
+namespace SWLOR.Component.Ability.Contracts
 {
     public interface IRecastService
     {

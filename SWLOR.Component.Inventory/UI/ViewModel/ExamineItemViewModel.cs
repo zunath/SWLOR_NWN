@@ -1,9 +1,8 @@
-using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
-using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Component.Inventory.UI.Payload;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Service;
 
-namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
+namespace SWLOR.Component.Inventory.UI.ViewModel
 {
     public class ExamineItemViewModel: GuiViewModelBase<ExamineItemViewModel, ExamineItemPayload>
     {

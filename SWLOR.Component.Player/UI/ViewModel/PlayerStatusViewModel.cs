@@ -1,17 +1,13 @@
-using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
-using SWLOR.Game.Server.Service;
+using SWLOR.Component.Player.Enums;
+using SWLOR.Component.Player.UI.RefreshEvent;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Data.Entity;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Models;
 using SWLOR.Shared.UI.Component;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
 
-namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
+namespace SWLOR.Component.Player.UI.ViewModel
 {
     internal class PlayerStatusViewModel: GuiViewModelBase<PlayerStatusViewModel, GuiPayloadBase>,
         IGuiRefreshable<PlayerStatusRefreshEvent>
@@ -205,7 +201,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void UpdateFP()
         {
             var playerId = GetObjectUUID(Player);
-            var dbPlayer = _db.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Entity.Player>(playerId);
             var currentFP = dbPlayer.FP;
             var maxFP = _statService.GetMaxFP(Player, dbPlayer);
             var isStandard = dbPlayer.CharacterType == CharacterType.Standard;
@@ -216,7 +212,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void UpdateSTM()
         {
             var playerId = GetObjectUUID(Player);
-            var dbPlayer = _db.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Entity.Player>(playerId);
             var currentSTM = dbPlayer.Stamina;
             var maxSTM = _statService.GetMaxStamina(Player, dbPlayer);
 

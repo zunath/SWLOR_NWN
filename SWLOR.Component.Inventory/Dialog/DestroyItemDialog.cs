@@ -1,9 +1,9 @@
-using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Dialog.Contracts;
 using SWLOR.Shared.Dialog.Model;
 using SWLOR.Shared.Dialog.Service;
+using SWLOR.Shared.UI.Service;
 
-namespace SWLOR.Game.Server.Feature.DialogDefinition
+namespace SWLOR.Component.Inventory.Dialog
 {
     public class DestroyItemDialog: DialogBase
     {

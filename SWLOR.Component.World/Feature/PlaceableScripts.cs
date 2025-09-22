@@ -1,15 +1,11 @@
-using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
-using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Service;
-using SWLOR.Shared.Dialog.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.UI.Service;
 
-namespace SWLOR.Game.Server.Feature
+namespace SWLOR.Component.World.Feature
 {
     public class PlaceableScripts
     {
@@ -124,7 +120,7 @@ namespace SWLOR.Game.Server.Feature
 
             if (!string.IsNullOrWhiteSpace(conversation))
             {
-                Dialog.StartConversation(user, target, conversation);
+                Shared.Dialog.Service.Dialog.StartConversation(user, target, conversation);
             }
             else
             {

@@ -1,4 +1,4 @@
-namespace SWLOR.Shared.Core.Contracts
+namespace SWLOR.Shared.Caching.Contracts
 {
     public interface IItemCacheService
     {

@@ -1,6 +1,6 @@
-using SWLOR.Shared.Core.Enums;
+using SWLOR.Component.Crafting.Enums;
 
-namespace SWLOR.Game.Server.Service.CraftService
+namespace SWLOR.Component.Crafting.Model
 {
     internal class BlueprintBonus
     {

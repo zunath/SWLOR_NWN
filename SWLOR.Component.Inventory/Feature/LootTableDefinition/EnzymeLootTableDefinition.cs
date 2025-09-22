@@ -1,12 +1,11 @@
-using System.Collections.Generic;
-using SWLOR.Game.Server.Service.BeastMasteryService;
-using SWLOR.Game.Server.Service.LootService;
+using SWLOR.Component.Inventory.Contracts;
+using SWLOR.Component.Inventory.Model;
+using SWLOR.Component.Inventory.Service;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Models;
 
-namespace SWLOR.Game.Server.Feature.LootTableDefinition
+namespace SWLOR.Component.Inventory.Feature.LootTableDefinition
 {
     public class EnzymeLootTableDefinition: ILootTableDefinition
     {

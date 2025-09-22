@@ -1,14 +1,13 @@
+using SWLOR.Component.Space.Contracts;
+using SWLOR.Component.Space.Entity;
+using SWLOR.Component.Space.Enums;
+using SWLOR.Component.Space.Model;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
-using System.Collections.Generic;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Data.Entity;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Models;
 using SWLOR.Shared.Events.Constants;
 
-namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
+namespace SWLOR.Component.Space.Feature.ShipModuleDefinition
 {
     public class RepairFieldGeneratorModuleDefinition : IShipModuleListDefinition
     {

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
+using SWLOR.Component.Properties.Entity;
+using SWLOR.Component.Properties.Enums;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
-using SWLOR.Shared.Core.Data.Entity;
-using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
 
 namespace SWLOR.CLI

@@ -1,22 +1,16 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Component.Perk.Contracts;
+using SWLOR.Component.Perk.Delegates;
+using SWLOR.Component.Perk.Enums;
+using SWLOR.Component.Perk.Model;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Caching.Contracts;
-using SWLOR.Shared.Core.Data.Entity;
-using SWLOR.Shared.Core.Delegates;
-using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Log.LogGroup;
-using SWLOR.Shared.Core.Models;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Module;
 using Player = SWLOR.Shared.Core.Data.Entity.Player;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Component.Perk.Service
 {
     public class Perk : IPerkService
     {

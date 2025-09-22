@@ -1,7 +1,6 @@
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Core.Enums;
 
-namespace SWLOR.Shared.Core.Models
+namespace SWLOR.Component.Space.Model
 {
     public class ShipDetail
     {

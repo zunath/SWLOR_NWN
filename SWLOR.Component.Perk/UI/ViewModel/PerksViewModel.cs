@@ -1,26 +1,20 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Component.Perk.Contracts;
+using SWLOR.Component.Perk.Enums;
+using SWLOR.Component.Perk.Model;
+using SWLOR.Component.Perk.UI.RefreshEvent;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.UI.Contracts;
-using SWLOR.Shared.Core.Data.Entity;
-using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Log.LogGroup;
-using SWLOR.Shared.Core.Models;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.UI.Component;
+using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
 
-namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
+namespace SWLOR.Component.Perk.UI.ViewModel
 {
     public class PerksViewModel : GuiViewModelBase<PerksViewModel, GuiPayloadBase>,
         IGuiRefreshable<SkillXPRefreshEvent>,

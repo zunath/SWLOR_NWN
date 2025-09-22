@@ -1,4 +1,4 @@
-namespace SWLOR.Shared.Core.Enums
+namespace SWLOR.Component.World.Enums
 {
     // Note - these MUST be assigned with power-of-2 values to allow them to be
     // used as bitwise flags in starcharts.

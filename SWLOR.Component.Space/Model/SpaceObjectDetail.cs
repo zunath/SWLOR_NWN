@@ -1,6 +1,4 @@
-using System.Collections.Generic;
-
-namespace SWLOR.Game.Server.Service.SpaceService
+namespace SWLOR.Component.Space.Model
 {
     public class SpaceObjectDetail
     {

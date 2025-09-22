@@ -1,16 +1,13 @@
-using SWLOR.Game.Server.Service.MigrationService;
-using System.Collections.Generic;
-using System.Linq;
+using SWLOR.Component.Migration.Contracts;
+using SWLOR.Component.Migration.Enums;
+using SWLOR.Component.Migration.Model;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Bioware;
-using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data;
-using SWLOR.Shared.Core.Data.Entity;
-using SWLOR.Shared.Core.Enums;
 
-namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
+namespace SWLOR.Component.Migration.Feature.ServerMigration
 {
     public class _7_UpdateStoredWeapons: ServerMigrationBase, IServerMigration
     {

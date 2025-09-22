@@ -1,7 +1,7 @@
+using SWLOR.Component.StatusEffect.Enums;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Core.Enums;
 
-namespace SWLOR.Shared.Core.Models
+namespace SWLOR.Component.StatusEffect.Model
 {
     public delegate void StatusEffectAppliedDelegate(uint source, uint target, float length, object effectData);
     public delegate void StatusEffectTickDelegate(uint source, uint target, object effectData);

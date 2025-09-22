@@ -1,4 +1,4 @@
-﻿using SWLOR.Shared.Core.Enums;
+﻿using SWLOR.Component.Inventory.Enums;
 using SWLOR.Shared.UI.Contracts;
 
 namespace SWLOR.Component.Inventory.UI.RefreshEvent

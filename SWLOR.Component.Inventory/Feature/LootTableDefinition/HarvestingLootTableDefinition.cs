@@ -1,8 +1,8 @@
-using System.Collections.Generic;
-using SWLOR.Game.Server.Service.LootService;
-using SWLOR.Shared.Core.Models;
+using SWLOR.Component.Inventory.Contracts;
+using SWLOR.Component.Inventory.Model;
+using SWLOR.Component.Inventory.Service;
 
-namespace SWLOR.Game.Server.Feature.LootTableDefinition
+namespace SWLOR.Component.Inventory.Feature.LootTableDefinition
 {
     public class HarvestingLootTableDefinition : ILootTableDefinition
     {

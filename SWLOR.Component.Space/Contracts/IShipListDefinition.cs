@@ -1,7 +1,6 @@
-using System.Collections.Generic;
-using SWLOR.Shared.Core.Models;
+using SWLOR.Component.Space.Model;
 
-namespace SWLOR.Game.Server.Service.SpaceService
+namespace SWLOR.Component.Space.Contracts
 {
     public interface IShipListDefinition
     {

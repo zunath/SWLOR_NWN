@@ -1,4 +1,4 @@
-namespace SWLOR.Game.Server.Feature.AppearanceDefinition.RacialAppearance
+namespace SWLOR.Component.Player.Feature.AppearanceDefinition.RacialAppearance
 {
     public class RodianRacialAppearanceDefinition: RacialAppearanceBaseDefinition
     {

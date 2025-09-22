@@ -1,9 +1,9 @@
-﻿using SWLOR.NWN.API.NWNX.Enum;
+﻿using SWLOR.Component.Player.Enums;
+using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions;
-using SWLOR.Shared.Core.Enums;
 
-namespace SWLOR.Shared.Core.Data.Entity
+namespace SWLOR.Component.Player.Entity
 {
     public class Player: EntityBase
     {

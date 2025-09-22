@@ -1,4 +1,4 @@
-namespace SWLOR.Game.Server.Service.PropertyService
+namespace SWLOR.Component.Properties.Contracts
 {
     public interface IPositionedProperty
     {

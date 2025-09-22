@@ -1,10 +1,9 @@
-
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Contracts;
+using SWLOR.Component.Player.Contracts;
+using SWLOR.Component.Player.Enums;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Component.Player.Service
 {
     public class Activity : IActivityService
     {

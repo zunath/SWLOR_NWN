@@ -1,9 +1,9 @@
-using System.Collections.Generic;
+using SWLOR.Component.Space.Enums;
+using SWLOR.Component.Space.Model;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Log.LogGroup;
 
-namespace SWLOR.Game.Server.Service.SpaceService
+namespace SWLOR.Component.Space.Service
 {
     public class SpaceObjectBuilder
     {

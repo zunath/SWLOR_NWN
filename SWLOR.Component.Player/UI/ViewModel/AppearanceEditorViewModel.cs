@@ -1,29 +1,23 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
-using SWLOR.Game.Server.Feature.AppearanceDefinition.RacialAppearance;
-using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
+using SWLOR.Component.Player.Feature.AppearanceDefinition.ItemAppearance;
+using SWLOR.Component.Player.Feature.AppearanceDefinition.RacialAppearance;
+using SWLOR.Component.Player.UI.Payload;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Data.Entity;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Models;
 using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Events.Module;
-using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Constants;
-using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.UI.Component;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Enums;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Model.RefreshEvent;
 using SWLOR.Shared.UI.Service;
 
-namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
+namespace SWLOR.Component.Player.UI.ViewModel
 {
     public partial class AppearanceEditorViewModel :
         GuiViewModelBase<AppearanceEditorViewModel, AppearanceEditorPayload>,
@@ -1132,7 +1126,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
 
             var playerId = GetObjectUUID(_target);
-            var dbPlayer = _db.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Entity.Player>(playerId);
             if (dbPlayer == null)
                 return;
 
@@ -1309,7 +1303,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsSettingsSelected = true;
 
             var playerId = GetObjectUUID(_target);
-            var dbPlayer = _db.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Entity.Player>(playerId);
 
             ShowHelmet = dbPlayer.Settings.ShowHelmet;
             ShowCloak = dbPlayer.Settings.ShowCloak;
@@ -1789,7 +1783,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
 
             var playerId = GetObjectUUID(_target);
-            var dbPlayer = _db.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Entity.Player>(playerId);
 
             SetObjectVisualTransform(_target, ObjectVisualTransform.Scale, dbPlayer.AppearanceScale);
         };
@@ -1797,7 +1791,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnClickSaveSettings() => () =>
         {
             var playerId = GetObjectUUID(_target);
-            var dbPlayer = _db.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Entity.Player>(playerId);
 
             dbPlayer.Settings.ShowCloak = ShowCloak;
             dbPlayer.Settings.ShowHelmet = ShowHelmet;

@@ -1,14 +1,11 @@
-using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
-using SWLOR.Game.Server.Service;
+using SWLOR.Component.Space.UI.RefreshEvent;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Models;
 using SWLOR.Shared.UI.Component;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
 
-namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
+namespace SWLOR.Component.Space.UI.ViewModel
 {
     internal class TargetStatusViewModel : GuiViewModelBase<TargetStatusViewModel, GuiPayloadBase>,
         IGuiRefreshable<TargetStatusRefreshEvent>
@@ -149,7 +146,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void UpdateData()
         {
-            var (target, targetStatus) = Space.GetCurrentTarget(Player);
+            var (target, targetStatus) = Service.Space.GetCurrentTarget(Player);
 
             if (!GetIsObjectValid(target) || targetStatus == null)
                 return;
@@ -178,7 +175,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public void Refresh(TargetStatusRefreshEvent payload)
         {
-            if (!Space.IsPlayerInSpaceMode(Player))
+            if (!Service.Space.IsPlayerInSpaceMode(Player))
                 return;
 
             UpdateWidget();

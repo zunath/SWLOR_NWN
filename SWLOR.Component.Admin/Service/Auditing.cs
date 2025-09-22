@@ -3,10 +3,10 @@ using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Events.Module;
+using SWLOR.Shared.Events.Events.NWNX;
 
-namespace SWLOR.Game.Server.Feature
+namespace SWLOR.Component.Admin.Service
 {
     public class Auditing
     {

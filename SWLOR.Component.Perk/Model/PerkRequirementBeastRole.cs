@@ -1,10 +1,7 @@
-using SWLOR.Game.Server.Service.BeastMasteryService;
+using SWLOR.Component.Perk.Contracts;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Data.Entity;
-using SWLOR.Shared.Core.Enums;
 
-namespace SWLOR.Game.Server.Service.PerkService
+namespace SWLOR.Component.Perk.Model
 {
     public class PerkRequirementBeastRole: IPerkRequirement
     {

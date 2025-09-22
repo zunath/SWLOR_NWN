@@ -1,11 +1,9 @@
-using System.Collections.Generic;
-using SWLOR.Game.Server.Feature.DialogDefinition;
-using SWLOR.Game.Server.Service.ItemService;
-using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Models;
-using Dialog = SWLOR.Shared.Dialog.Service.Dialog;
+using SWLOR.Component.Inventory.Contracts;
+using SWLOR.Component.Inventory.Dialog;
+using SWLOR.Component.Inventory.Model;
+using SWLOR.Component.Inventory.Service;
 
-namespace SWLOR.Game.Server.Feature.ItemDefinition
+namespace SWLOR.Component.Inventory.Feature.ItemDefinition
 {
     public class DestroyItemDefinition: IItemListDefinition
     {
@@ -17,7 +15,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 .ApplyAction((user, item, target, location, itemPropertyIndex) =>
                 {
                     SetLocalObject(user, "DESTROY_ITEM", item);
-                    Dialog.StartConversation(user, user, nameof(DestroyItemDialog));
+                    Shared.Dialog.Service.Dialog.StartConversation(user, user, nameof(DestroyItemDialog));
                 });
 
             return _builder.Build();

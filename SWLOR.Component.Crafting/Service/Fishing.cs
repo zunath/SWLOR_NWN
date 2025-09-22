@@ -1,24 +1,19 @@
-
-using System.Collections.Generic;
-using System;
-using System.Linq;
 using System.Numerics;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Game.Server.Service.FishingService;
+using SWLOR.Component.Crafting.Contracts;
+using SWLOR.Component.Crafting.Enums;
+using SWLOR.Component.Crafting.Model;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Core.Bioware;
-using SWLOR.Shared.Core.Data.Entity;
-using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Models;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Module;
+using SWLOR.Shared.UI.Service;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Component.Crafting.Service
 {
     public class Fishing : IFishingService
     {

@@ -1,4 +1,4 @@
-namespace SWLOR.Game.Server.Service.PerkService
+namespace SWLOR.Component.Perk.Model
 {
     public enum PerkTrigger
     {

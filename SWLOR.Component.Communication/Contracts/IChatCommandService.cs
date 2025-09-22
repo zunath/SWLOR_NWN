@@ -1,7 +1,7 @@
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Core.Models;
+using SWLOR.Shared.UI.Model;
 
-namespace SWLOR.Shared.Core.Contracts
+namespace SWLOR.Component.Communication.Contracts
 {
 
     public interface IChatCommandService

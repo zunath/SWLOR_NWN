@@ -1,10 +1,9 @@
-using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Enums;
 
-namespace SWLOR.Game.Server.Feature
+namespace SWLOR.Component.World.Feature
 {
     public class HoloNetTerminal
     {

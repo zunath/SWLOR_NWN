@@ -1,8 +1,7 @@
-using SWLOR.Shared.Core.Models;
 using SWLOR.Shared.UI.Component;
 using SWLOR.Shared.UI.Model;
 
-namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
+namespace SWLOR.Component.Player.Feature.AppearanceDefinition.ItemAppearance
 {
     internal interface IArmorAppearanceDefinition
     {

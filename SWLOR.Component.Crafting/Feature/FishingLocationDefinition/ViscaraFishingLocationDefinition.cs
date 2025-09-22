@@ -1,10 +1,8 @@
-using System.Collections.Generic;
-using SWLOR.Game.Server.Service.FishingService;
-using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Models;
+using SWLOR.Component.Crafting.Contracts;
+using SWLOR.Component.Crafting.Enums;
+using SWLOR.Component.Crafting.Model;
 
-namespace SWLOR.Game.Server.Feature.FishingLocationDefinition
+namespace SWLOR.Component.Crafting.Feature.FishingLocationDefinition
 {
     public class ViscaraFishingLocationDefinition: IFishingLocationDefinition
     {

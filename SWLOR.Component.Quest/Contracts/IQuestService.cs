@@ -1,6 +1,6 @@
 using System;
+using SWLOR.Component.Quest.Enums;
 using SWLOR.Component.Quest.Service;
-using SWLOR.Shared.Core.Enums;
 
 namespace SWLOR.Component.Quest.Contracts
 {

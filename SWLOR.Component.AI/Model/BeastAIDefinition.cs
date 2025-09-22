@@ -1,9 +1,6 @@
-using SWLOR.Game.Server.Feature.AbilityDefinition.Beasts;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Enums;
 
-namespace SWLOR.Game.Server.Feature.AIDefinition
+namespace SWLOR.Component.AI.Model
 {
     public class BeastAIDefinition: AIBase
     {

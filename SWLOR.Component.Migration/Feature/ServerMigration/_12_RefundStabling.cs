@@ -1,8 +1,8 @@
-using System.Collections.Generic;
-using SWLOR.Game.Server.Service.MigrationService;
-using SWLOR.Shared.Core.Enums;
+using SWLOR.Component.Migration.Contracts;
+using SWLOR.Component.Migration.Enums;
+using SWLOR.Component.Migration.Model;
 
-namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
+namespace SWLOR.Component.Migration.Feature.ServerMigration
 {
     public class _12_RefundStabling : ServerMigrationBase, IServerMigration
     {

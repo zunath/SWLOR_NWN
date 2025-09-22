@@ -1,11 +1,9 @@
-using System;
-using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Enums;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
 
-namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
+namespace SWLOR.Component.Player.UI.ViewModel
 {
     public class ChangeDescriptionViewModel: GuiViewModelBase<ChangeDescriptionViewModel, GuiPayloadBase>
     {

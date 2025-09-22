@@ -1,6 +1,6 @@
-using SWLOR.Shared.Core.Enums;
+using SWLOR.Component.Crafting.Enums;
 
-namespace SWLOR.Shared.Core.Contracts
+namespace SWLOR.Component.Crafting.Contracts
 {
     public interface IFishingService
     {

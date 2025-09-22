@@ -1,13 +1,11 @@
-using System.Collections.Generic;
-using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Component.Ability.Contracts;
+using SWLOR.Component.Ability.Enums;
+using SWLOR.Component.Ability.Model;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
-using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Models;
 
-namespace SWLOR.Game.Server.Feature.AbilityDefinition.General
+namespace SWLOR.Component.Ability.Feature.AbilityDefinition.General
 {
     public class DashAbilityDefinition: IAbilityListDefinition
     {

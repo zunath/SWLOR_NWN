@@ -1,18 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using SWLOR.Game.Server.Service.LanguageService;
-using SWLOR.Shared.Core.Enums;
+using SWLOR.Component.Communication.Contracts;
+using SWLOR.Component.Communication.Model;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 using SkillType = SWLOR.Shared.Core.Enums.SkillType;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Component.Communication.Service
 {
     public class Language : ILanguageService
     {
@@ -277,15 +273,15 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        private IEnumerable<SWLOR.Shared.Core.Models.LanguageCommand> _languages;
+        private IEnumerable<LanguageCommand> _languages;
 
-        public IEnumerable<SWLOR.Shared.Core.Models.LanguageCommand> Languages
+        public IEnumerable<LanguageCommand> Languages
         {
             get
             {
                 if (_languages == null)
                 {
-                    var languages = new List<SWLOR.Shared.Core.Models.LanguageCommand>
+                    var languages = new List<LanguageCommand>
                     {
                         new("Basic", SkillType.Basic, new [] { "basic" }),
                         new("Bothese", SkillType.Bothese, new[] {"bothese"}),

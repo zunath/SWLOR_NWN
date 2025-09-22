@@ -1,18 +1,15 @@
-using System.Collections.Generic;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.ItemService;
+using SWLOR.Component.Inventory.Contracts;
+using SWLOR.Component.Inventory.Model;
+using SWLOR.Component.Inventory.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Data.Entity;
-using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Log.LogGroup;
-using SWLOR.Shared.Core.Models;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 
-namespace SWLOR.Game.Server.Feature.ItemDefinition
+namespace SWLOR.Component.Inventory.Feature.ItemDefinition
 {
     public class HarvesterItemDefinition: IItemListDefinition
     {

@@ -1,12 +1,11 @@
-using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
+using SWLOR.Component.Crafting.UI.ViewModel;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Enums;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
 
-namespace SWLOR.Game.Server.Feature.GuiDefinition
+namespace SWLOR.Component.Crafting.UI.View
 {
     public class RefineryDefinition : IGuiWindowDefinition
     {

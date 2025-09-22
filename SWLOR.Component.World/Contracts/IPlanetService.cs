@@ -1,6 +1,6 @@
-using SWLOR.Shared.Core.Enums;
+using SWLOR.Component.World.Enums;
 
-namespace SWLOR.Shared.Core.Contracts
+namespace SWLOR.Component.World.Contracts
 {
     public interface IPlanetService
     {

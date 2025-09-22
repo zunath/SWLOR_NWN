@@ -1,6 +1,6 @@
-using SWLOR.Shared.Core.Enums;
+using SWLOR.Component.Space.Enums;
 
-namespace SWLOR.Shared.Core.Delegates
+namespace SWLOR.Component.Space.Delegates
 {
     public delegate void ShipModuleEquippedDelegate(ShipStatus shipStatus, int moduleBonus);
     public delegate void ShipModuleUnequippedDelegate(ShipStatus shipStatus, int moduleBonus);

@@ -1,8 +1,7 @@
-using System.Collections.Generic;
-using SWLOR.Shared.Core.Enums;
+using SWLOR.Component.Skill.Enums;
 using SWLOR.Shared.UI.Contracts;
 
-namespace SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent
+namespace SWLOR.Component.Skill.UI.RefreshEvent
 {
     public class SkillXPRefreshEvent : IGuiRefreshEvent
     {

@@ -1,8 +1,8 @@
-using SWLOR.Shared.Core.Data.Entity;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Models;
+using SWLOR.Component.Associate.Entity;
+using SWLOR.Component.Associate.Enums;
+using SWLOR.Component.Associate.Model;
 
-namespace SWLOR.Shared.Core.Contracts
+namespace SWLOR.Component.Associate.Contracts
 {
     public interface IBeastMasteryService
     {

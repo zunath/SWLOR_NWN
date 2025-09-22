@@ -1,14 +1,14 @@
-using SWLOR.Game.Server.Service;
+using SWLOR.Component.Player.Entity;
+using SWLOR.Component.Player.Enums;
+using SWLOR.Component.Player.Service;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Data.Entity;
-using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
-using SWLOR.Shared.Events.Events.Creature;
 using SWLOR.Shared.Events.Events.Area;
+using SWLOR.Shared.Events.Events.Creature;
 using SWLOR.Shared.Events.Events.Module;
 
-namespace SWLOR.Game.Server.Feature
+namespace SWLOR.Component.Player.Feature
 {
     public class AchievementProgression
     {

@@ -1,19 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using SWLOR.Component.Quest.Contracts;
+using SWLOR.Component.Quest.Enums;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Data.Entity;
-using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Extension;
-using SWLOR.Shared.Core.Models;
-using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Module;
+using SWLOR.Shared.UI.Service;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Component.Quest.Service
 {
     public class GuildService : IGuildService
     {

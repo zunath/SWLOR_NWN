@@ -1,7 +1,7 @@
-﻿using SWLOR.Shared.Abstractions;
-using SWLOR.Shared.Core.Enums;
+﻿using SWLOR.Component.Player.Enums;
+using SWLOR.Shared.Abstractions;
 
-namespace SWLOR.Shared.Core.Data.Entity
+namespace SWLOR.Component.Player.Entity
 {
     public class Account: EntityBase
     {

@@ -1,10 +1,9 @@
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 
-namespace SWLOR.Game.Server.Feature
+namespace SWLOR.Component.Player.Feature
 {
     public class ArmorDisplay
     {
@@ -28,7 +27,7 @@ namespace SWLOR.Game.Server.Feature
             var itemType = GetBaseItemType(item);
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = _db.Get<Player>(playerId) ?? new Player(playerId);
+            var dbPlayer = _db.Get<Entity.Player>(playerId) ?? new Entity.Player(playerId);
             if (itemType == BaseItem.Helmet)
             {
                 SetHiddenWhenEquipped(item, !dbPlayer.Settings.ShowHelmet);

@@ -1,13 +1,12 @@
-using System.Collections.Generic;
-using SWLOR.Game.Server.Service.ItemService;
+using SWLOR.Component.Inventory.Contracts;
+using SWLOR.Component.Inventory.Enums;
+using SWLOR.Component.Inventory.Model;
+using SWLOR.Component.Inventory.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Log.LogGroup;
-using SWLOR.Shared.Core.Models;
 
-namespace SWLOR.Game.Server.Feature.ItemDefinition
+namespace SWLOR.Component.Inventory.Feature.ItemDefinition
 {
     public class KeyItemDefinition: IItemListDefinition
     {

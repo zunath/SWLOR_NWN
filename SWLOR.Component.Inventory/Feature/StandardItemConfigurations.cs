@@ -1,5 +1,3 @@
-using System.Linq;
-
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
@@ -7,7 +5,7 @@ using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 
-namespace SWLOR.Game.Server.Feature
+namespace SWLOR.Component.Inventory.Feature
 {
     public static class StandardItemConfigurations
     {

@@ -1,15 +1,11 @@
-using System.Collections.Generic;
-using SWLOR.Game.Server.Feature.DialogDefinition;
-using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
-using SWLOR.Game.Server.Service.ItemService;
-using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Models;
-using SWLOR.Shared.Dialog.Service;
+using SWLOR.Component.Inventory.Contracts;
+using SWLOR.Component.Inventory.Dialog;
+using SWLOR.Component.Inventory.Enums;
+using SWLOR.Component.Inventory.Model;
+using SWLOR.Component.Inventory.Service;
 using SWLOR.Shared.UI.Contracts;
 
-namespace SWLOR.Game.Server.Feature.ItemDefinition
+namespace SWLOR.Component.Inventory.Feature.ItemDefinition
 {
     public class TomeItemDefinition: IItemListDefinition
     {
@@ -40,7 +36,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     SetLocalObject(user, "XP_TOME_OBJECT", item);
                     AssignCommand(user, () => ClearAllActions());
 
-                    Dialog.StartConversation(user, user, nameof(XPTomeDialog));
+                    Shared.Dialog.Service.Dialog.StartConversation(user, user, nameof(XPTomeDialog));
                 });
         }
 

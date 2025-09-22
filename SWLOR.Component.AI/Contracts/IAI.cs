@@ -1,7 +1,7 @@
 
-using SWLOR.Shared.Core.Enums;
+using SWLOR.Component.AI.Enums;
 
-namespace SWLOR.Shared.Core.Contracts
+namespace SWLOR.Component.AI.Contracts
 {
     public interface IAI
     {

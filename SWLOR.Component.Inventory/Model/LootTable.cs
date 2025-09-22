@@ -1,6 +1,6 @@
 using SWLOR.Shared.Core.Contracts;
 
-namespace SWLOR.Shared.Core.Models
+namespace SWLOR.Component.Inventory.Model
 {
     public class LootTable : List<LootTableItem>
     {

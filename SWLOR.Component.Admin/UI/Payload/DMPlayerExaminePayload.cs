@@ -1,6 +1,6 @@
 using SWLOR.Shared.UI.Model;
 
-namespace SWLOR.Game.Server.Feature.GuiDefinition.Payload
+namespace SWLOR.Component.Admin.UI.Payload
 {
     public class DMPlayerExaminePayload: GuiPayloadBase
     {

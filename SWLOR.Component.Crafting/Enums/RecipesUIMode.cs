@@ -1,4 +1,4 @@
-namespace SWLOR.Game.Server.Service.CraftService
+namespace SWLOR.Component.Crafting.Enums
 {
     public enum RecipesUIMode
     {

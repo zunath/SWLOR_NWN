@@ -1,4 +1,6 @@
-namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
+using SWLOR.Component.Migration.Model;
+
+namespace SWLOR.Component.Migration.Feature.PlayerMigration
 {
     public class _6_RecalculateStats: PlayerMigrationBase
     {

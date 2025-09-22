@@ -1,12 +1,9 @@
-using SWLOR.Game.Server.Service.MigrationService;
+using SWLOR.Component.Migration.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Data.Entity;
-using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Log.LogGroup;
-using SWLOR.Shared.Core.Contracts;
 
-namespace SWLOR.Game.Server.Feature.MigrationDefinition
+namespace SWLOR.Component.Migration.Model
 {
     public abstract class PlayerMigrationBase: IPlayerMigration
     {

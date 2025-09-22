@@ -1,14 +1,10 @@
-using System;
-using System.Collections.Generic;
+using SWLOR.Component.Communication.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Models;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
 
-namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
+namespace SWLOR.Component.Communication.UI.ViewModel
 {
     public class EmotesViewModel: GuiViewModelBase<EmotesViewModel, GuiPayloadBase>
     {

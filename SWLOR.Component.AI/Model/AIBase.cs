@@ -1,12 +1,7 @@
-using SWLOR.Game.Server.Service.AIService;
-using System.Collections.Generic;
-using System.Linq;
-using System;
+using SWLOR.Component.AI.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Enums;
 
-namespace SWLOR.Game.Server.Feature.AIDefinition
+namespace SWLOR.Component.AI.Model
 {
     public abstract class AIBase : IAIDefinition
     {

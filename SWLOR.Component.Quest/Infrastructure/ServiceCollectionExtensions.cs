@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Quest.Contracts;
+using SWLOR.Component.Quest.Feature.QuestDefinition;
 using SWLOR.Component.Quest.Service;
-using SWLOR.Game.Server.Feature.QuestDefinition;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Core.Contracts;

@@ -1,14 +1,9 @@
-using System;
-using System.Collections.Generic;
 using SWLOR.Component.Quest.Contracts;
+using SWLOR.Component.Quest.Enums;
 using SWLOR.Component.Quest.Service;
-using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWNX.Enum;
-using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Models;
 
-namespace SWLOR.Game.Server.Feature.QuestDefinition
+namespace SWLOR.Component.Quest.Feature.QuestDefinition
 {
     public class HutlarQuestDefinition: IQuestListDefinition
     {

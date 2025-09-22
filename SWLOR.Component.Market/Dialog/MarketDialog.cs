@@ -1,15 +1,16 @@
-using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
-using SWLOR.Game.Server.Service;
+using SWLOR.Component.Market.Enums;
+using SWLOR.Component.Market.Service;
+using SWLOR.Component.Market.UI.Payload;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Log.LogGroup;
-using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Dialog.Contracts;
 using SWLOR.Shared.Dialog.Model;
 using SWLOR.Shared.Dialog.Service;
 using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Enums;
+using SWLOR.Shared.UI.Service;
 
-namespace SWLOR.Game.Server.Feature.DialogDefinition
+namespace SWLOR.Component.Market.Dialog
 {
     public class MarketDialog: DialogBase
     {

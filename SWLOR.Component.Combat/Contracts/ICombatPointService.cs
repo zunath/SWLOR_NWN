@@ -1,6 +1,4 @@
-using SWLOR.Shared.Core.Enums;
-
-namespace SWLOR.Shared.Core.Contracts
+namespace SWLOR.Component.Combat.Contracts
 {
     public interface ICombatPointService
     {

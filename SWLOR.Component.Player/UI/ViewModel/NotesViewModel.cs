@@ -1,15 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using SWLOR.Component.Player.Entity;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
-using SWLOR.Shared.Core.Data.Entity;
-using SWLOR.Shared.Core.Models;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
 
-namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
+namespace SWLOR.Component.Player.UI.ViewModel
 {
     public class NotesViewModel: GuiViewModelBase<NotesViewModel, GuiPayloadBase>
     {

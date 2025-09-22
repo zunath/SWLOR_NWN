@@ -1,24 +1,20 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
 using System.Text;
-using SWLOR.Shared.Core.Enums;
+using SWLOR.Component.Inventory.Contracts;
+using SWLOR.Component.Inventory.Enums;
+using SWLOR.Component.Inventory.Model;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Caching.Contracts;
-using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
-using SWLOR.Shared.Core.Models;
 using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Events.Module;
+using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.UI.Model;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Component.Inventory.Service
 {
     public class Item : IItemService
     {
@@ -29,10 +25,10 @@ namespace SWLOR.Game.Server.Service
         private readonly IRecastService _recastService;
         
         // Cached data
-        private IInterfaceCache<string, SWLOR.Shared.Core.Models.ItemDetail> _itemCache;
+        private IInterfaceCache<string, ItemDetail> _itemCache;
         
         // Pre-computed cache for fast retrieval
-        private readonly Dictionary<string, SWLOR.Shared.Core.Models.ItemDetail> _allItems = new();
+        private readonly Dictionary<string, ItemDetail> _allItems = new();
         
         // Additional caches for complex data
         private readonly Dictionary<int, int[]> _2daCache = new();
@@ -60,7 +56,7 @@ namespace SWLOR.Game.Server.Service
         }
         public void Load2DACache()
         {
-            _itemCache = _cacheService.BuildInterfaceCache<IItemListDefinition, string, SWLOR.Shared.Core.Models.ItemDetail>()
+            _itemCache = _cacheService.BuildInterfaceCache<IItemListDefinition, string, ItemDetail>()
                 .WithDataExtractor(instance => instance.BuildItems())
                 .Build();
 

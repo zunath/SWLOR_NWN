@@ -1,7 +1,7 @@
-using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Enums;
+using SWLOR.Component.Crafting.Contracts;
+using SWLOR.Component.Crafting.Enums;
 
-namespace SWLOR.Shared.Core.Models
+namespace SWLOR.Component.Crafting.Model
 {
     public class RecipeDetail
     {

@@ -1,8 +1,7 @@
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Core.Enums;
 
-namespace SWLOR.Shared.Core.Models
+namespace SWLOR.Component.Inventory.Model
 {
     public delegate void ApplyItemEffectsDelegate(uint user, uint item, uint target, Location targetLocation, int itemPropertyIndex);
 

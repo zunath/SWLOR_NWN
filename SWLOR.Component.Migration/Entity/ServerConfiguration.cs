@@ -1,6 +1,6 @@
 ﻿using SWLOR.Shared.Abstractions;
 
-namespace SWLOR.Shared.Core.Data.Entity
+namespace SWLOR.Component.Migration.Entity
 {
     public class ServerConfiguration: EntityBase
     {

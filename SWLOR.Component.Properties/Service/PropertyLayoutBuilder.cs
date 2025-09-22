@@ -1,9 +1,7 @@
-using System;
-using System.Collections.Generic;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Models;
+using SWLOR.Component.Properties.Enums;
+using SWLOR.Component.Properties.Model;
 
-namespace SWLOR.Game.Server.Service.PropertyService
+namespace SWLOR.Component.Properties.Service
 {
     public class PropertyLayoutBuilder
     {

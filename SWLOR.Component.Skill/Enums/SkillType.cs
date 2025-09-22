@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Shared.Core.Enums
+﻿namespace SWLOR.Component.Skill.Enums
 {
     // Note: Corresponds to iprp_skill.2da
     // New additions or changes to this file should also be made to the 2DA.

@@ -1,10 +1,9 @@
-
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.NWNX;
 
-namespace SWLOR.Game.Server.Feature
+namespace SWLOR.Component.Inventory.Feature
 {
     public static class StackDecrementPrevention
     {

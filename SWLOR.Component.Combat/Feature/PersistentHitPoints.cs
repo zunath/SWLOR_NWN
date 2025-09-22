@@ -1,11 +1,9 @@
-using System;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 
-namespace SWLOR.Game.Server.Feature
+namespace SWLOR.Component.Combat.Feature
 {
     public class PersistentHitPoints
     {

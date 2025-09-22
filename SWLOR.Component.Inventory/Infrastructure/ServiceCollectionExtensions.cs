@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using SWLOR.Component.Inventory.Contracts;
 using SWLOR.Component.Inventory.Service;
 using SWLOR.Shared.Core.Contracts;
 

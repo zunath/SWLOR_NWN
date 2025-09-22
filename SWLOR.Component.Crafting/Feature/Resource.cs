@@ -1,9 +1,8 @@
-
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 
-namespace SWLOR.Game.Server.Feature
+namespace SWLOR.Component.Crafting.Feature
 {
     public static class Resource
     {

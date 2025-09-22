@@ -1,9 +1,8 @@
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Creature;
 
-namespace SWLOR.Game.Server.Feature.TrapDefinition
+namespace SWLOR.Component.Combat.Feature.TrapDefinition
 {
     public class SpawnLarvaeOnSlugDeath
     {

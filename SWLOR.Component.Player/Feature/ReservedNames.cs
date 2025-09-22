@@ -1,10 +1,7 @@
-using System.Collections.Generic;
-using SWLOR.Game.Server.Service;
-using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 
-namespace SWLOR.Game.Server.Feature
+namespace SWLOR.Component.Player.Feature
 {
     public static class ReservedNames
     {

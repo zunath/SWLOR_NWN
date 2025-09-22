@@ -1,13 +1,11 @@
-using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.UI.Contracts;
 
-namespace SWLOR.Game.Server.Feature
+namespace SWLOR.Component.Admin.Feature
 {
     public class DMActions
     {

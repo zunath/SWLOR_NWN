@@ -1,8 +1,7 @@
-using System.Collections.Generic;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.UI.Component;
 
-namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
+namespace SWLOR.Component.Player.UI.ViewModel
 {
     public partial class AppearanceEditorViewModel
     {

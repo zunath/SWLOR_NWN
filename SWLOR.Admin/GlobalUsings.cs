@@ -1,1 +1,1 @@
-﻿global using SWLOR.Game.Server.Service;
+﻿

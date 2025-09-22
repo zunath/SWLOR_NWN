@@ -1,20 +1,16 @@
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
+using SWLOR.Component.Combat.Contracts;
+using SWLOR.Component.Combat.Enums;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Data.Entity;
-using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
-using SWLOR.Shared.Events.Events.Creature;
 using SWLOR.Shared.Events.Events.Area;
+using SWLOR.Shared.Events.Events.Creature;
 using SWLOR.Shared.Events.Events.Module;
-using SWLOR.Shared.Core.Contracts;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Component.Combat.Service
 {
     public class CombatPoint : ICombatPointService
     {

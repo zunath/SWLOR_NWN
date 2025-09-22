@@ -1,7 +1,7 @@
+using SWLOR.Component.Ability.Model;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Core.Models;
 
-namespace SWLOR.Shared.Core.Contracts
+namespace SWLOR.Component.Ability.Contracts
 {
     public interface IAbilityListDefinition
     {

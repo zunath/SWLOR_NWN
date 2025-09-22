@@ -1,12 +1,11 @@
-using System.Collections.Generic;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Component.StatusEffect.Contracts;
+using SWLOR.Component.StatusEffect.Enums;
+using SWLOR.Component.StatusEffect.Model;
+using SWLOR.Component.StatusEffect.Service;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Models;
 
-namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
+namespace SWLOR.Component.StatusEffect.Feature.StatusEffectDefinition
 {
     public class AuraStatusEffectDefinition: IStatusEffectListDefinition
     {

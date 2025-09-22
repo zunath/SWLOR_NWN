@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using SWLOR.Component.Associate.Enums;
+using SWLOR.Component.Associate.Model;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Models;
 
-namespace SWLOR.Game.Server.Service.BeastMasteryService
+namespace SWLOR.Component.Associate.Service
 {
     public class BeastBuilder
     {

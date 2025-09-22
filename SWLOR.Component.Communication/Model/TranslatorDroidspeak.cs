@@ -1,6 +1,6 @@
-using System.Linq;
+using SWLOR.Component.Communication.Contracts;
 
-namespace SWLOR.Game.Server.Service.LanguageService
+namespace SWLOR.Component.Communication.Model
 {
     public class TranslatorDroidspeak : ITranslator
     {

@@ -1,4 +1,4 @@
-namespace SWLOR.Game.Server.Service.MigrationService
+namespace SWLOR.Component.Migration.Enums
 {
     public enum MigrationExecutionType
     {

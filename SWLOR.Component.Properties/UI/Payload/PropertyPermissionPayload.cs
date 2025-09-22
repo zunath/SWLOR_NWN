@@ -1,7 +1,7 @@
-using SWLOR.Shared.Core.Enums;
+using SWLOR.Component.Properties.Enums;
 using SWLOR.Shared.UI.Model;
 
-namespace SWLOR.Game.Server.Feature.GuiDefinition.Payload
+namespace SWLOR.Component.Properties.UI.Payload
 {
     public class PropertyPermissionPayload: GuiPayloadBase
     {

@@ -1,8 +1,8 @@
-using SWLOR.Shared.Core.Delegates;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Models;
+using SWLOR.Component.Perk.Delegates;
+using SWLOR.Component.Perk.Enums;
+using SWLOR.Component.Perk.Model;
 
-namespace SWLOR.Shared.Core.Contracts
+namespace SWLOR.Component.Perk.Contracts
 {
     public interface IPerkService
     {

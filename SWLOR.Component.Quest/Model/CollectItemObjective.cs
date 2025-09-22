@@ -1,8 +1,9 @@
 using SWLOR.Component.Quest.Contracts;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Service;
+using SWLOR.Shared.UI.Service;
 using Player = SWLOR.Shared.Core.Data.Entity.Player;
 
 namespace SWLOR.Component.Quest.Model

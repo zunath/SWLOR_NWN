@@ -1,9 +1,8 @@
-using System.Collections.Generic;
-using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Data.Entity;
-using SWLOR.Shared.Core.Enums;
+using SWLOR.Component.Associate.Contracts;
+using SWLOR.Component.Associate.Entity;
+using SWLOR.Component.Associate.Enums;
 
-namespace SWLOR.Game.Server.Service.BeastMasteryService
+namespace SWLOR.Component.Associate.Model
 {
     public class MutationRequirementEnzyme: IMutationRequirement
     {

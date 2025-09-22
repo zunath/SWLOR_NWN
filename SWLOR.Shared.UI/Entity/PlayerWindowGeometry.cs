@@ -1,6 +1,6 @@
 ﻿using SWLOR.Shared.Abstractions;
-using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.UI.Component;
+using SWLOR.Shared.UI.Enums;
 
 namespace SWLOR.Shared.UI.Entity
 {

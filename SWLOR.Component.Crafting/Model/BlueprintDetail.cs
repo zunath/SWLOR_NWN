@@ -1,7 +1,7 @@
+using SWLOR.Component.Crafting.Enums;
 using SWLOR.NWN.API.Engine;
-using SWLOR.Shared.Core.Enums;
 
-namespace SWLOR.Shared.Core.Models
+namespace SWLOR.Component.Crafting.Model
 {
     public class BlueprintDetail
     {

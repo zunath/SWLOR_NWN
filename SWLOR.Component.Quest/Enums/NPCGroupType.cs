@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace SWLOR.Shared.Core.Enums
+namespace SWLOR.Component.Quest.Enums
 {
     [SuppressMessage("ReSharper", "InconsistentNaming")]
     public enum NPCGroupType

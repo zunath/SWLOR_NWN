@@ -1,9 +1,9 @@
-using System.Collections.Generic;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Models;
+using SWLOR.Component.Crafting.Contracts;
+using SWLOR.Component.Crafting.Enums;
+using SWLOR.Component.Crafting.Model;
+using SWLOR.Component.Crafting.Service;
 
-namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
+namespace SWLOR.Component.Crafting.Feature.RecipeDefinition.SmitheryRecipeDefinition
 {
     public class HandRecipes: IRecipeListDefinition
     {

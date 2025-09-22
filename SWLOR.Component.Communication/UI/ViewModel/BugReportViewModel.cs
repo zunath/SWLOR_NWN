@@ -1,18 +1,12 @@
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Threading.Tasks;
-using Discord;
-using Discord.Webhook;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Enums;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Enums;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
 
-namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
+namespace SWLOR.Component.Communication.UI.ViewModel
 {
     public class BugReportViewModel: GuiViewModelBase<BugReportViewModel, GuiPayloadBase>
     {

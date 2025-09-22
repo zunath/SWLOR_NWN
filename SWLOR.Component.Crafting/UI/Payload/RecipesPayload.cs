@@ -1,8 +1,7 @@
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Shared.Core.Enums;
+using SWLOR.Component.Crafting.Enums;
 using SWLOR.Shared.UI.Model;
 
-namespace SWLOR.Game.Server.Feature.GuiDefinition.Payload
+namespace SWLOR.Component.Crafting.UI.Payload
 {
     public class RecipesPayload: GuiPayloadBase
     {

@@ -1,4 +1,4 @@
-namespace SWLOR.Game.Server.Service.LanguageService
+namespace SWLOR.Component.Communication.Contracts
 {
     public interface ITranslator
     {

@@ -1,8 +1,6 @@
-using System;
-using System.Collections.Generic;
-using SWLOR.Shared.Core.Models;
+using SWLOR.Component.Inventory.Model;
 
-namespace SWLOR.Game.Server.Service.LootService
+namespace SWLOR.Component.Inventory.Service
 {
     public class LootTableBuilder
     {

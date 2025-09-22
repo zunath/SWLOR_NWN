@@ -1,27 +1,22 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Newtonsoft.Json;
-using SWLOR.Game.Server.Service.AIService;
-using SWLOR.Game.Server.Service.DroidService;
-using SWLOR.Shared.Core.Enums;
+using SWLOR.Component.Associate.Contracts;
+using SWLOR.Component.Associate.Enums;
+using SWLOR.Component.Associate.Model;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
-using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Bioware;
-using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Models;
-using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
-using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Events.Module;
+using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Enums;
+using SWLOR.Shared.UI.Service;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Component.Associate.Service
 {
     
 

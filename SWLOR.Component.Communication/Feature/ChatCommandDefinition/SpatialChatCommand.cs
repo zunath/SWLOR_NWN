@@ -1,9 +1,8 @@
-using System;
-using System.Collections.Generic;
-using SWLOR.Game.Server.Service.ChatCommandService;
-using SWLOR.Shared.Core.Enums;
+using SWLOR.Component.Communication.Contracts;
+using SWLOR.Component.Communication.Model;
+using SWLOR.Component.Communication.Service;
 
-namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
+namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
 {
     public class SpatialChatCommand: IChatCommandListDefinition
     {

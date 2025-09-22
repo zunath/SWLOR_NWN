@@ -1,9 +1,8 @@
+using SWLOR.Component.Migration.Model;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Data.Entity;
 
-namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
+namespace SWLOR.Component.Migration.Feature.PlayerMigration
 {
     public class _7_FixDroids: PlayerMigrationBase
     {

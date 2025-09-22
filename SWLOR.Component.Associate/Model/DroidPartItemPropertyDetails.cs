@@ -1,6 +1,6 @@
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 
-namespace SWLOR.Shared.Core.Models
+namespace SWLOR.Component.Associate.Model
 {
     public class DroidPartItemPropertyDetails
     {

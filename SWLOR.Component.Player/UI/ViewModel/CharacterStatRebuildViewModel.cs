@@ -1,18 +1,14 @@
-using System;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Data.Entity;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Enums;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
 
-namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
+namespace SWLOR.Component.Player.UI.ViewModel
 {
     public class CharacterStatRebuildViewModel: GuiViewModelBase<CharacterStatRebuildViewModel, GuiPayloadBase>
     {
@@ -315,7 +311,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 UnequipAllItems();
 
                 var playerId = GetObjectUUID(Player);
-                var dbPlayer = _db.Get<Player>(playerId);
+                var dbPlayer = _db.Get<Entity.Player>(playerId);
 
                 CreaturePlugin.SetRawAbilityScore(Player, AbilityType.Might, 10 + _might);
                 CreaturePlugin.SetRawAbilityScore(Player, AbilityType.Perception, 10 + _perception);

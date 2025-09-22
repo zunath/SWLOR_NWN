@@ -1,9 +1,9 @@
+using SWLOR.Component.Space.Delegates;
+using SWLOR.Component.Space.Enums;
+using SWLOR.Component.Space.Model;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Models;
-using SWLOR.Shared.Core.Delegates;
 
-namespace SWLOR.Shared.Core.Contracts
+namespace SWLOR.Component.Space.Contracts
 {
     public interface IShipModuleBuilder
     {

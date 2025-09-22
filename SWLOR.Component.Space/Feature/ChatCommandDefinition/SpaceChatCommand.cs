@@ -1,9 +1,4 @@
-using System.Collections.Generic;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.ChatCommandService;
-using SWLOR.Shared.Core.Enums;
-
-namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
+namespace SWLOR.Component.Space.Feature.ChatCommandDefinition
 {
     public class SpaceChatCommand: IChatCommandListDefinition
     {
@@ -23,7 +18,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Permissions(AuthorizationLevel.All)
                 .Action((user, target, location, args) =>
                 {
-                    if (!Space.IsPlayerInSpaceMode(user))
+                    if (!Service.Space.IsPlayerInSpaceMode(user))
                     {
                         SendMessageToPC(user, "This command can only be used while piloting a starship.");
                         return;
@@ -35,7 +30,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         return;
                     }
 
-                    Space.WarpPlayerInsideShip(user);
+                    Service.Space.WarpPlayerInsideShip(user);
                 });
         }
     }

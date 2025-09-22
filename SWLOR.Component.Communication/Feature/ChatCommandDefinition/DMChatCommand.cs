@@ -1,25 +1,18 @@
-using System;
-using System.Collections.Generic;
-using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.ChatCommandService;
-using ChatChannel = SWLOR.NWN.API.NWNX.Enum.ChatChannel;
-using System.Threading.Tasks;
-using Discord;
-using Discord.Webhook;
+using SWLOR.Component.Communication.Contracts;
+using SWLOR.Component.Communication.Model;
+using SWLOR.Component.Communication.Service;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Data.Entity;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Enums;
+using SWLOR.Shared.UI.Service;
+using ChatChannel = SWLOR.NWN.API.NWNX.Enum.ChatChannel;
 
-namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
+namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
 {
     public class DMChatCommand: IChatCommandListDefinition
     {

@@ -1,4 +1,4 @@
-namespace SWLOR.Game.Server.Service.WeatherService
+namespace SWLOR.Component.World.Model
 {
     public static class WeatherFeedbackText
     {

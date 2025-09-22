@@ -1,12 +1,10 @@
-using System;
-using System.Collections.Generic;
+using SWLOR.Component.Skill.Enums;
 using SWLOR.NWN.API.NWNX;
-using SWLOR.Shared.Caching.Contracts;
-using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Component.Skill.Service
 {
     public partial class SkillService
     {

@@ -1,22 +1,21 @@
-using System;
-using System.Linq;
-using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
-using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.BeastMasteryService;
+using SWLOR.Component.Associate.Contracts;
+using SWLOR.Component.Associate.Entity;
+using SWLOR.Component.Associate.Enums;
+using SWLOR.Component.Associate.Service;
+using SWLOR.Component.Associate.UI.Payload;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data;
-using SWLOR.Shared.Core.Data.Entity;
-using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Enums;
 using SWLOR.Shared.UI.Service;
 
-namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
+namespace SWLOR.Component.Associate.UI.ViewModel
 {
     public class IncubatorViewModel : GuiViewModelBase<IncubatorViewModel, IncubatorPayload>,
         IGuiRefreshable<PerkAcquiredRefreshEvent>,

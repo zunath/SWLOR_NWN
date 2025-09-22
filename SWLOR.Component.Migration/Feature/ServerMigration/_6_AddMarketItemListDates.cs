@@ -1,10 +1,9 @@
-using System;
-using SWLOR.Game.Server.Service.MigrationService;
+using SWLOR.Component.Migration.Contracts;
+using SWLOR.Component.Migration.Enums;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
-using SWLOR.Shared.Core.Data.Entity;
 
-namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
+namespace SWLOR.Component.Migration.Feature.ServerMigration
 {
     public class _6_AddMarketItemListDates : IServerMigration
     {

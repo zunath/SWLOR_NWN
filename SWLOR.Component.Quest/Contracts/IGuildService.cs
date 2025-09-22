@@ -1,6 +1,6 @@
-using SWLOR.Shared.Core.Enums;
+using SWLOR.Component.Quest.Enums;
 
-namespace SWLOR.Shared.Core.Contracts
+namespace SWLOR.Component.Quest.Contracts
 {
     public interface IGuildService
     {

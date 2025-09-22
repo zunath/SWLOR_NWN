@@ -1,7 +1,8 @@
+using SWLOR.Component.Migration.Model;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 
-namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
+namespace SWLOR.Component.Migration.Feature.PlayerMigration
 {
     public class _9_FixSavingThrows: PlayerMigrationBase
     {

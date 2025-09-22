@@ -1,9 +1,8 @@
-using System.Collections.Generic;
-using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Models;
+using SWLOR.Component.Crafting.Contracts;
+using SWLOR.Component.Crafting.Enums;
+using SWLOR.Component.Crafting.Model;
 
-namespace SWLOR.Game.Server.Service.FishingService
+namespace SWLOR.Component.Crafting.Service
 {
     public class FishingLocationBuilder : IFishingLocationBuilder
     {

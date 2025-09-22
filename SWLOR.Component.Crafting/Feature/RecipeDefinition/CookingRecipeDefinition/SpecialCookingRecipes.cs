@@ -1,9 +1,9 @@
-using SWLOR.Game.Server.Service.CraftService;
-using System.Collections.Generic;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Models;
+using SWLOR.Component.Crafting.Contracts;
+using SWLOR.Component.Crafting.Enums;
+using SWLOR.Component.Crafting.Model;
+using SWLOR.Component.Crafting.Service;
 
-namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
+namespace SWLOR.Component.Crafting.Feature.RecipeDefinition.CookingRecipeDefinition
 {
     public class SpecialCookingRecipes : IRecipeListDefinition
     {

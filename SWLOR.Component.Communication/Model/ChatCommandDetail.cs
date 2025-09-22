@@ -1,8 +1,7 @@
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Core.Enums;
 
-namespace SWLOR.Game.Server.Service.ChatCommandService
+namespace SWLOR.Component.Communication.Model
 {
     public class ChatCommandDetail
     {

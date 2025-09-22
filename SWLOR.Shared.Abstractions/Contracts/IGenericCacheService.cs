@@ -1,4 +1,4 @@
-namespace SWLOR.Shared.Caching.Contracts
+namespace SWLOR.Shared.Abstractions.Contracts
 {
     /// <summary>
     /// Interface for a generic caching service that can handle both enum attribute caching and interface-based type discovery

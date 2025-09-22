@@ -1,10 +1,10 @@
+using SWLOR.Component.Inventory.Enums;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Models;
+using SWLOR.Shared.UI.Model;
 
-namespace SWLOR.Shared.Core.Contracts
+namespace SWLOR.Component.Inventory.Contracts
 {
     public interface IItemService
     {

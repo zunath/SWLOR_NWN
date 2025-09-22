@@ -1,18 +1,16 @@
-using System;
-using SWLOR.Game.Server.Service;
-
+using SWLOR.Component.Admin.Entity;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Core.Data;
-using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
+using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Module;
+using SWLOR.Shared.UI.Service;
 
-namespace SWLOR.Game.Server.Feature
+namespace SWLOR.Component.Admin.Feature
 {
     public class ServerTasks
     {

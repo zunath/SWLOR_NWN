@@ -1,9 +1,8 @@
-using System.Collections.Generic;
-using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Models;
+using SWLOR.Component.Space.Contracts;
+using SWLOR.Component.Space.Enums;
+using SWLOR.Component.Space.Model;
 
-namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
+namespace SWLOR.Component.Space.Feature.ShipModuleDefinition
 {
     public class TargetingArrayModuleDefinition : IShipModuleListDefinition
     {

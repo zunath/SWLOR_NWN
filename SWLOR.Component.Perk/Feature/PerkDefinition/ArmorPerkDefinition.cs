@@ -1,12 +1,11 @@
-using System.Collections.Generic;
-using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Component.Perk.Contracts;
+using SWLOR.Component.Perk.Enums;
+using SWLOR.Component.Perk.Model;
+using SWLOR.Component.Perk.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
-using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Models;
 
-namespace SWLOR.Game.Server.Feature.PerkDefinition
+namespace SWLOR.Component.Perk.Feature.PerkDefinition
 {
     public class ArmorPerkDefinition : IPerkListDefinition
     {

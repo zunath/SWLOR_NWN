@@ -1,8 +1,8 @@
-﻿using SWLOR.NWN.API.NWScript.Enum;
+﻿using SWLOR.Component.Associate.Enums;
+using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions;
-using SWLOR.Shared.Core.Enums;
 
-namespace SWLOR.Shared.Core.Data.Entity
+namespace SWLOR.Component.Associate.Entity
 {
     public class Beast: EntityBase
     {

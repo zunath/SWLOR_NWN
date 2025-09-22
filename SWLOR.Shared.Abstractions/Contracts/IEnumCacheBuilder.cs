@@ -1,4 +1,4 @@
-namespace SWLOR.Shared.Caching.Contracts
+namespace SWLOR.Shared.Abstractions.Contracts
 {
     /// <summary>
     /// Builder interface for configuring enum-based caching

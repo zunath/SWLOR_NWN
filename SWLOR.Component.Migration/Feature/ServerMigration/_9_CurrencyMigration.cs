@@ -1,12 +1,12 @@
 using Newtonsoft.Json.Linq;
-using SWLOR.Game.Server.Service.MigrationService;
+using SWLOR.Component.Migration.Contracts;
+using SWLOR.Component.Migration.Enums;
+using SWLOR.Component.Migration.Model;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
-using SWLOR.Shared.Core.Data.Entity;
-using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Log.LogGroup;
 
-namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
+namespace SWLOR.Component.Migration.Feature.ServerMigration
 {
     public class _9_CurrencyMigration : ServerMigrationBase, IServerMigration
     {

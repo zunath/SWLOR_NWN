@@ -1,6 +1,4 @@
-using SWLOR.Shared.Core.Enums;
-
-namespace SWLOR.Shared.Core.Models
+namespace SWLOR.Component.Ability.Model
 {
     public class PlayerAuraDetail
     {

@@ -1,16 +1,14 @@
-
-using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
+using SWLOR.Component.Player.UI.RefreshEvent;
 using SWLOR.NWN.API.NWNX;
-using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Events.Player;
-using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Events.Area;
 using SWLOR.Shared.Events.Events.Module;
+using SWLOR.Shared.Events.Events.NWNX;
+using SWLOR.Shared.Events.Events.Player;
 using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Enums;
 
-namespace SWLOR.Game.Server.Feature
+namespace SWLOR.Component.Player.Feature
 {
     public class PlayerStatusWindow
     {

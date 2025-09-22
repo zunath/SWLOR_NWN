@@ -1,18 +1,12 @@
-using System;
-using System.Collections.Generic;
-using SWLOR.Shared.Core.Constants;
+using SWLOR.Component.Player.Entity;
+using SWLOR.Component.Player.Enums;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Data.Entity;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Models;
-using SWLOR.Shared.Core.Service;
-using SWLOR.Shared.UI.Component;
 using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Enums;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
 
-namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
+namespace SWLOR.Component.Player.UI.ViewModel
 {
     public class SettingsViewModel: GuiViewModelBase<SettingsViewModel, GuiPayloadBase>
     {
@@ -156,7 +150,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void LoadGeneralView()
         {
             var playerId = GetObjectUUID(Player);
-            var dbPlayer = _db.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Entity.Player>(playerId);
 
             IsForceSensitive = dbPlayer.CharacterType == CharacterType.ForceSensitive;
 
@@ -170,7 +164,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void LoadChatView()
         {
             var playerId = GetObjectUUID(Player);
-            var dbPlayer = _db.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Entity.Player>(playerId);
             var colorSettings = dbPlayer.Settings.LanguageChatColors;
             var languages = _skillService.GetActiveSkillsByCategory(SkillCategoryType.Languages);
 
@@ -265,7 +259,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnSave() => () =>
         {
             var playerId = GetObjectUUID(Player);
-            var dbPlayer = _db.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Entity.Player>(playerId);
 
             dbPlayer.Settings.DisplayAchievementNotification = DisplayAchievementNotification;
             dbPlayer.Settings.IsHolonetEnabled = DisplayHolonetChannel;

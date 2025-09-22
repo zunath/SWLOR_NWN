@@ -1,13 +1,13 @@
-using SWLOR.Game.Server.Service;
+using SWLOR.Component.Properties.Entity;
+using SWLOR.Component.Properties.Enums;
+using SWLOR.Component.Properties.Service;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Data.Entity;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Dialog.Contracts;
 using SWLOR.Shared.Dialog.Model;
 using SWLOR.Shared.Dialog.Service;
+using SWLOR.Shared.UI.Service;
 
-namespace SWLOR.Game.Server.Feature.DialogDefinition
+namespace SWLOR.Component.Properties.Dialog
 {
     public class PropertyExitDialog: DialogBase
     {

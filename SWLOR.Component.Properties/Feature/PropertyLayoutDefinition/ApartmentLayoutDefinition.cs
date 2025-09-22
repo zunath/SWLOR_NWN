@@ -1,9 +1,9 @@
-using System.Collections.Generic;
-using SWLOR.Game.Server.Service.PropertyService;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Models;
+using SWLOR.Component.Properties.Contracts;
+using SWLOR.Component.Properties.Enums;
+using SWLOR.Component.Properties.Model;
+using SWLOR.Component.Properties.Service;
 
-namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
+namespace SWLOR.Component.Properties.Feature.PropertyLayoutDefinition
 {
     public class ApartmentLayoutDefinition: IPropertyLayoutListDefinition
     {

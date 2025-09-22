@@ -1,9 +1,8 @@
-using System.Collections.Generic;
-using SWLOR.Game.Server.Service.SpaceService;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Models;
+using SWLOR.Component.Space.Contracts;
+using SWLOR.Component.Space.Model;
+using SWLOR.Component.Space.Service;
 
-namespace SWLOR.Game.Server.Feature.ShipDefinition
+namespace SWLOR.Component.Space.Feature.ShipDefinition
 {
     public class NPCShipDefinition : IShipListDefinition
     {

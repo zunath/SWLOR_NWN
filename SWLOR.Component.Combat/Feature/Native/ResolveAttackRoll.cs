@@ -1,25 +1,24 @@
+using System.Runtime.InteropServices;
 using NWN.Native.API;
 using NWNX.NET;
+using SWLOR.Component.Combat.Contracts;
+using SWLOR.Component.Combat.Enums;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Log.LogGroup;
-using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
-using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
+using SWLOR.Shared.UI.Service;
 using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
 using FeatType = SWLOR.NWN.API.NWScript.Enum.FeatType;
 using ILogger = SWLOR.Shared.Abstractions.Contracts.ILogger;
 using ImmunityType = NWN.Native.API.ImmunityType;
 using ObjectType = NWN.Native.API.ObjectType;
 
-namespace SWLOR.Game.Server.Native
+namespace SWLOR.Component.Combat.Feature.Native
 {
     public static unsafe class ResolveAttackRoll
     {

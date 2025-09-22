@@ -1,9 +1,8 @@
-using System.Collections.Generic;
+using SWLOR.Component.StatusEffect.Enums;
+using SWLOR.Component.StatusEffect.Model;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Models;
 
-namespace SWLOR.Game.Server.Service.StatusEffectService
+namespace SWLOR.Component.StatusEffect.Service
 {
     public class StatusEffectBuilder
     {

@@ -1,15 +1,12 @@
-using System;
-using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Data.Entity;
-using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Enums;
 using SWLOR.Shared.UI.Service;
 
-namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
+namespace SWLOR.Component.Communication.UI.ViewModel
 {
     public class RenameTargetViewModel : GuiViewModelBase<RenameTargetViewModel, RenameItemPayload>
     {

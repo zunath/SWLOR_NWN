@@ -1,18 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
-using SWLOR.Game.Server.Service;
+using SWLOR.Component.Player.Entity;
+using SWLOR.Component.Player.Enums;
+using SWLOR.Component.Player.Service;
+using SWLOR.Component.Player.UI.RefreshEvent;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Data.Entity;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Models;
 using SWLOR.Shared.UI.Component;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
 
-namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
+namespace SWLOR.Component.Player.UI.ViewModel
 {
     public class AchievementsViewModel: GuiViewModelBase<AchievementsViewModel, GuiPayloadBase>,
         IGuiRefreshable<AchievementUnlockedRefreshEvent>

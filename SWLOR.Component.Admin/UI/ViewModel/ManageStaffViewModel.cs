@@ -1,17 +1,13 @@
-using System;
-using System.Collections.Generic;
+using SWLOR.Component.Admin.Entity;
+using SWLOR.Component.Admin.Enums;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
-using SWLOR.Shared.Core.Data.Entity;
-using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Log.LogGroup;
-using SWLOR.Shared.Core.Models;
-using SWLOR.Shared.UI.Component;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
 
-namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
+namespace SWLOR.Component.Admin.UI.ViewModel
 {
     public class ManageStaffViewModel: GuiViewModelBase<ManageStaffViewModel, GuiPayloadBase>
     {

@@ -1,18 +1,16 @@
-using System.Collections.Generic;
-using System.Linq;
-using SWLOR.Game.Server.Feature.AIDefinition;
-using SWLOR.Game.Server.Service.AIService;
+using SWLOR.Component.AI.Contracts;
+using SWLOR.Component.AI.Enums;
+using SWLOR.Component.AI.Model;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Dialog.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Creature;
 using SWLOR.Shared.Events.Events.Module;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Component.AI.Service
 {
     public class AI : IAI
     {

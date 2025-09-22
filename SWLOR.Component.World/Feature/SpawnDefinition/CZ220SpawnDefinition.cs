@@ -1,11 +1,10 @@
-using System.Collections.Generic;
-using SWLOR.Game.Server.Service.AnimationService;
-using SWLOR.Game.Server.Service.SpawnService;
+using SWLOR.Component.World.Contracts;
+using SWLOR.Component.World.Model;
+using SWLOR.Component.World.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
-using SWLOR.Shared.Core.Models;
 
-namespace SWLOR.Game.Server.Feature.SpawnDefinition
+namespace SWLOR.Component.World.Feature.SpawnDefinition
 {
     public class CZ220SpawnDefinition: ISpawnListDefinition
     {

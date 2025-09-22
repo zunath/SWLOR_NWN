@@ -1,7 +1,6 @@
-using System.Collections.Generic;
 using SWLOR.NWN.API.NWScript.Enum;
 
-namespace SWLOR.Game.Server.Service.AIService
+namespace SWLOR.Component.AI.Contracts
 {
     public interface IAIDefinition
     {

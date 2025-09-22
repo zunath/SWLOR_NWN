@@ -1,9 +1,10 @@
-using System.Collections.Generic;
-using SWLOR.Game.Server.Service.SnippetService;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Dialog.Contracts;
+using SWLOR.Shared.Dialog.Model;
+using SWLOR.Shared.Dialog.Service;
 
-namespace SWLOR.Game.Server.Feature.SnippetDefinition
+namespace SWLOR.Component.World.Feature.SnippetDefinition
 {
     public class TransportationSnippetDefinition: ISnippetListDefinition
     {

@@ -1,11 +1,10 @@
-using SWLOR.Game.Server.Service.PerkService;
-using System.Collections.Generic;
-using SWLOR.Game.Server.Service.BeastMasteryService;
+using SWLOR.Component.Perk.Contracts;
+using SWLOR.Component.Perk.Enums;
+using SWLOR.Component.Perk.Model;
+using SWLOR.Component.Perk.Service;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Models;
 
-namespace SWLOR.Game.Server.Feature.PerkDefinition
+namespace SWLOR.Component.Perk.Feature.PerkDefinition
 {
     public class BeastDamagePerkDefinition : IPerkListDefinition
     {

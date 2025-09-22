@@ -1,6 +1,6 @@
-using SWLOR.Shared.Core.Models;
+using SWLOR.Component.Inventory.Model;
 
-namespace SWLOR.Shared.Core.Contracts
+namespace SWLOR.Component.Inventory.Contracts
 {
     public interface ILootService
     {

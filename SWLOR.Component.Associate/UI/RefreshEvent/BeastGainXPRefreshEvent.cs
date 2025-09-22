@@ -1,6 +1,6 @@
 using SWLOR.Shared.UI.Contracts;
 
-namespace SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent
+namespace SWLOR.Component.Associate.UI.RefreshEvent
 {
     public class BeastGainXPRefreshEvent: IGuiRefreshEvent
     {

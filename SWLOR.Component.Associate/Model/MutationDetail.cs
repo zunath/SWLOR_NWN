@@ -1,7 +1,7 @@
-using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Enums;
+using SWLOR.Component.Associate.Contracts;
+using SWLOR.Component.Associate.Enums;
 
-namespace SWLOR.Shared.Core.Models
+namespace SWLOR.Component.Associate.Model
 {
     public class MutationDetail
     {

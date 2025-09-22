@@ -1,8 +1,7 @@
 using SWLOR.Component.Quest.Delegates;
+using SWLOR.Component.Quest.Enums;
 using SWLOR.Component.Quest.Service;
 using SWLOR.Shared.Core.Delegates;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Component.Quest.Contracts
 {

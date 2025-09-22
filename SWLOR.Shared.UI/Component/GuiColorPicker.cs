@@ -1,8 +1,8 @@
 ﻿using System.Linq.Expressions;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Nui;
-using SWLOR.Shared.Core.Models;
 using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Shared.UI.Component

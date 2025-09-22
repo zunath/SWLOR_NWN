@@ -1,9 +1,9 @@
-using System.Collections.Generic;
-using SWLOR.Game.Server.Service.ChatCommandService;
+using SWLOR.Component.Communication.Contracts;
+using SWLOR.Component.Communication.Model;
+using SWLOR.Component.Communication.Service;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Core.Enums;
 
-namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
+namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
 {
     public class EmoteChatCommand: IChatCommandListDefinition
     {

@@ -1,15 +1,11 @@
-using System;
 using NWN.Native.API;
-
-using SWLOR.Game.Server.Feature.StatusEffectDefinition.StatusEffectData;
-using SWLOR.Shared.Core.Enums;
+using SWLOR.Component.Combat.Contracts;
+using SWLOR.Component.Combat.Enums;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
-using SWLOR.Shared.Core.Models;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Module;
@@ -20,7 +16,7 @@ using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
 using SavingThrow = SWLOR.NWN.API.NWScript.Enum.SavingThrow;
 using MovementRate = SWLOR.NWN.API.NWScript.Enum.MovementRate;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Component.Combat.Service
 {
     public class Stat : IStatService
     {

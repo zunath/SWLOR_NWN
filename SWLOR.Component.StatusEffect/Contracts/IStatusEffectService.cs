@@ -1,7 +1,8 @@
+using SWLOR.Component.StatusEffect.Enums;
+using SWLOR.Component.StatusEffect.Model;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Core.Enums;
 
-namespace SWLOR.Shared.Core.Contracts
+namespace SWLOR.Component.StatusEffect.Contracts
 {
     public interface IStatusEffectService
     {
@@ -81,7 +82,7 @@ namespace SWLOR.Shared.Core.Contracts
         /// </summary>
         /// <param name="type">The type to search for.</param>
         /// <returns>A status effect detail</returns>
-        SWLOR.Shared.Core.Models.StatusEffectDetail GetDetail(StatusEffectType type);
+        StatusEffectDetail GetDetail(StatusEffectType type);
 
         /// <summary>
         /// Retrieves the effect data associated with a creature's effect.

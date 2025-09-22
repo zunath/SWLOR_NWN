@@ -1,18 +1,14 @@
-using System;
 using System.Globalization;
-
-using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Events.Player;
 using SWLOR.Shared.Events.Events.NWNX;
+using SWLOR.Shared.Events.Events.Player;
 using Player = SWLOR.Shared.Core.Data.Entity.Player;
 using ChatChannel = SWLOR.NWN.API.NWNX.Enum.ChatChannel;
 
-namespace SWLOR.Game.Server.Feature
+namespace SWLOR.Component.Communication.Feature
 {
     public class RoleplayXP
     {

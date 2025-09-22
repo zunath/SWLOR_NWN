@@ -1,7 +1,7 @@
-using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Data.Entity;
+using SWLOR.Component.Associate.Contracts;
+using SWLOR.Component.Associate.Entity;
 
-namespace SWLOR.Game.Server.Service.BeastMasteryService
+namespace SWLOR.Component.Associate.Model
 {
     public class MutationRequirementMinimumChance: IMutationRequirement
     {

@@ -1,18 +1,13 @@
-using System.Collections.Generic;
-using System.Linq;
-using SWLOR.Game.Server.Service;
+using SWLOR.Component.Space.Entity;
 using SWLOR.NWN.API.Engine;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Data.Entity;
-using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Log.LogGroup;
-using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Dialog.Contracts;
 using SWLOR.Shared.Dialog.Model;
 using SWLOR.Shared.Dialog.Service;
+using SWLOR.Shared.UI.Service;
 
-namespace SWLOR.Game.Server.Feature.DialogDefinition
+namespace SWLOR.Component.Space.Dialog
 {
     public class StarportDockDialog: DialogBase
     {
@@ -90,7 +85,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             var player = GetPC();
             var playerId = GetObjectUUID(player);
             var model = GetDataModel<Model>();
-            var dockPoints = Space.GetDockPointsByPlanet(model.Planet);
+            var dockPoints = Service.Space.GetDockPointsByPlanet(model.Planet);
 
             page.Header = "Please select a location.";
 
@@ -210,7 +205,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
                     _db.Set(dbProperty);
 
-                    Space.WarpPlayerInsideShip(player);
+                    Service.Space.WarpPlayerInsideShip(player);
                 });
             }
         }

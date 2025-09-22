@@ -1,10 +1,8 @@
-using System.Collections.Generic;
-using SWLOR.Game.Server.Feature.DialogDefinition;
-using SWLOR.Game.Server.Service.ChatCommandService;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Dialog.Service;
+using SWLOR.Component.Communication.Contracts;
+using SWLOR.Component.Communication.Model;
+using SWLOR.Component.Communication.Service;
 
-namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
+namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
 {
     public class DiceChatCommand: IChatCommandListDefinition
     {
@@ -17,7 +15,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Permissions(AuthorizationLevel.All)
                 .Action((user, target, location, args) =>
                 {
-                    Dialog.StartConversation(user, user, nameof(DiceDialog));
+                    Shared.Dialog.Service.Dialog.StartConversation(user, user, nameof(DiceDialog));
                 });
 
             return builder.Build();

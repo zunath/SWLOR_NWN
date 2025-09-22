@@ -1,4 +1,4 @@
-namespace SWLOR.Shared.Core.Constants
+namespace SWLOR.Component.Communication.Constants
 {
     public static class CommunicationConstants
     {

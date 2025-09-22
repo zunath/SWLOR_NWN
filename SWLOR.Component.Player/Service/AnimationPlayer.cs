@@ -1,10 +1,9 @@
-using SWLOR.Game.Server.Service.AnimationService;
+using SWLOR.Component.Player.Contracts;
+using SWLOR.Component.Player.Model;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
-using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Models;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Component.Player.Service
 {
     public class AnimationPlayerService : IAnimationPlayerService
     {

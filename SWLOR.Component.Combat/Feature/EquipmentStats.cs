@@ -1,19 +1,16 @@
-using System;
-using System.Collections.Generic;
+using SWLOR.Component.Combat.Contracts;
+using SWLOR.Component.Combat.Enums;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
-using SWLOR.Shared.Core.Bioware;
-using SWLOR.Shared.Core.Data.Entity;
-using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Events.Events.NWNX;
-using SWLOR.Shared.Core.Contracts;
 using ItemProperty = SWLOR.NWN.API.Engine.ItemProperty;
 
-namespace SWLOR.Game.Server.Feature
+namespace SWLOR.Component.Combat.Feature
 {
     public class EquipmentStats
     {

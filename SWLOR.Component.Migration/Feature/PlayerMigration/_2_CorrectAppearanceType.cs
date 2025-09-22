@@ -1,12 +1,9 @@
-using System.Linq;
-using SWLOR.Game.Server.Feature.AppearanceDefinition.RacialAppearance;
-using SWLOR.Game.Server.Service.MigrationService;
+using SWLOR.Component.Migration.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Data.Entity;
 
-namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
+namespace SWLOR.Component.Migration.Feature.PlayerMigration
 {
     public class _2_CorrectAppearanceType: IPlayerMigration
     {

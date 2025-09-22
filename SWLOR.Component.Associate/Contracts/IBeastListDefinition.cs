@@ -1,8 +1,7 @@
-using System.Collections.Generic;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Models;
+using SWLOR.Component.Associate.Enums;
+using SWLOR.Component.Associate.Model;
 
-namespace SWLOR.Game.Server.Service.BeastMasteryService
+namespace SWLOR.Component.Associate.Contracts
 {
     public interface IBeastListDefinition
     {

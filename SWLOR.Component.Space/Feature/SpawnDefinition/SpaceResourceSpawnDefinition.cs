@@ -1,8 +1,6 @@
-using System.Collections.Generic;
-using SWLOR.Game.Server.Service.SpawnService;
 using SWLOR.NWN.API.NWScript.Enum;
 
-namespace SWLOR.Game.Server.Feature.SpawnDefinition
+namespace SWLOR.Component.Space.Feature.SpawnDefinition
 {
     public class SpaceResourceSpawnDefinition : ISpawnListDefinition
     {

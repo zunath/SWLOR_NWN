@@ -1,7 +1,6 @@
-using System;
 using SWLOR.Shared.Core.Contracts;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Shared.Core.Service
 {
     public class Time : ITimeService
     {

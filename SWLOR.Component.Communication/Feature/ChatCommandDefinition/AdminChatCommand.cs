@@ -1,10 +1,10 @@
-using System.Collections.Generic;
-using SWLOR.Game.Server.Service.ChatCommandService;
-using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Enums;
+using SWLOR.Component.Communication.Contracts;
+using SWLOR.Component.Communication.Model;
+using SWLOR.Component.Communication.Service;
 using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Enums;
 
-namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
+namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
 {
     public class AdminChatCommand: IChatCommandListDefinition
     {

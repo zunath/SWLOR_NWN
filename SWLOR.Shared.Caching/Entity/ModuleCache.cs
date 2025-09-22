@@ -1,7 +1,7 @@
 ﻿using System.Numerics;
 using SWLOR.Shared.Abstractions;
 
-namespace SWLOR.Shared.Core.Data.Entity
+namespace SWLOR.Shared.Caching.Entity
 {
     public class ModuleCache: EntityBase
     {

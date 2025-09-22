@@ -1,17 +1,14 @@
+using System.Runtime.InteropServices;
 using NWN.Native.API;
 using NWNX.NET;
-using SWLOR.Game.Server.Server;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Events.Constants;
-using System;
-using System.Runtime.InteropServices;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 using SavingThrow = NWN.Native.API.SavingThrow;
 
-namespace SWLOR.Game.Server.Native
+namespace SWLOR.Component.Combat.Feature.Native
 {
     public static unsafe class GetFortitudeSavingThrow
     {

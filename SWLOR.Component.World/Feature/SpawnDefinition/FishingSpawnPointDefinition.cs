@@ -1,12 +1,11 @@
-using System.Collections.Generic;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.FishingService;
-using SWLOR.Game.Server.Service.SpawnService;
+using SWLOR.Component.World.Contracts;
+using SWLOR.Component.World.Model;
+using SWLOR.Component.World.Service;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Enums;
 
-namespace SWLOR.Game.Server.Feature.SpawnDefinition
+namespace SWLOR.Component.World.Feature.SpawnDefinition
 {
     public class FishingSpawnPointDefinition: ISpawnListDefinition
     {

@@ -1,8 +1,7 @@
-using System.Collections.Generic;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Models;
+using SWLOR.Component.Perk.Enums;
+using SWLOR.Component.Perk.Model;
 
-namespace SWLOR.Game.Server.Service.PerkService
+namespace SWLOR.Component.Perk.Contracts
 {
     public interface IPerkListDefinition
     {

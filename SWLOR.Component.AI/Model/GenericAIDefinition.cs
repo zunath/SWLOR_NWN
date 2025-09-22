@@ -1,6 +1,4 @@
-using SWLOR.Shared.Core.Contracts;
-
-namespace SWLOR.Game.Server.Feature.AIDefinition
+namespace SWLOR.Component.AI.Model
 {
     public class GenericAIDefinition: AIBase
     {

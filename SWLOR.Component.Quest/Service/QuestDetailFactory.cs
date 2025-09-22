@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Quest.Contracts;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Models;
 using SWLOR.Shared.Dialog.Contracts;
 using SWLOR.Shared.Dialog.Service;
 using SWLOR.Shared.UI.Contracts;

@@ -1,6 +1,6 @@
 using SWLOR.Shared.UI.Contracts;
 
-namespace SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent
+namespace SWLOR.Component.Perk.UI.RefreshEvent
 {
     public class PerkResetAcquiredRefreshEvent: IGuiRefreshEvent
     {

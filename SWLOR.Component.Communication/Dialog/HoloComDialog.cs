@@ -1,11 +1,10 @@
-using SWLOR.Game.Server.Service;
-using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Service;
+using SWLOR.Component.Communication.Contracts;
 using SWLOR.Shared.Dialog.Contracts;
 using SWLOR.Shared.Dialog.Model;
 using SWLOR.Shared.Dialog.Service;
+using SWLOR.Shared.UI.Service;
 
-namespace SWLOR.Game.Server.Feature.DialogDefinition
+namespace SWLOR.Component.Communication.Dialog
 {
     public class HoloComDialog: DialogBase
     {

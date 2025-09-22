@@ -1,6 +1,6 @@
-using System.Collections.Generic;
+using SWLOR.Shared.Dialog.Model;
 
-namespace SWLOR.Game.Server.Service.SnippetService
+namespace SWLOR.Shared.Dialog.Contracts
 {
     public interface ISnippetListDefinition
     {

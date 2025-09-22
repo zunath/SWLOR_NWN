@@ -1,11 +1,9 @@
-using System.Collections.Generic;
+using SWLOR.Component.Space.Model;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Log.LogGroup;
-using SWLOR.Shared.Core.Models;
 
-namespace SWLOR.Game.Server.Service.SpaceService
+namespace SWLOR.Component.Space.Service
 {
     public class ShipBuilder
     {

@@ -3,11 +3,10 @@ using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Models;
 using SWLOR.Shared.Core.Properties;
 using SWLOR.Shared.UI.Component;
 using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Enums;
 using SWLOR.Shared.UI.Model;
 
 namespace SWLOR.Shared.UI.Service

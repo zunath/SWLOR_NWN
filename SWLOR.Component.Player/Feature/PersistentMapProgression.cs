@@ -1,14 +1,11 @@
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Data.Entity;
-using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Area;
 using SWLOR.Shared.Events.Events.Module;
 
-namespace SWLOR.Game.Server.Feature
+namespace SWLOR.Component.Player.Feature
 {
     public class PersistentMapProgression
     {
@@ -34,7 +31,7 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = _db.Get<Player>(playerId) ?? new Player(playerId);
+            var dbPlayer = _db.Get<Entity.Player>(playerId) ?? new Entity.Player(playerId);
             var area = OBJECT_SELF;
             var areaResref = GetResRef(area);
 
@@ -84,7 +81,7 @@ namespace SWLOR.Game.Server.Feature
             if (GetLocalBool(player, localVarName)) return;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = _db.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Entity.Player>(playerId);
             if (dbPlayer == null)
                 return;
 

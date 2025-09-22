@@ -1,18 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Models;
-using SWLOR.Shared.UI.Component;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
 
-namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
+namespace SWLOR.Component.Crafting.UI.ViewModel
 {
     public class RefineryViewModel: GuiViewModelBase<RefineryViewModel, GuiPayloadBase>
     {

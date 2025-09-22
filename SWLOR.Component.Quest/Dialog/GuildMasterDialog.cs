@@ -1,18 +1,14 @@
-using System.Linq;
 using SWLOR.Component.Quest.Contracts;
+using SWLOR.Component.Quest.Enums;
 using SWLOR.Component.Quest.Model;
-using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Data.Entity;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Service;
+using SWLOR.Shared.Dialog.Contracts;
 using SWLOR.Shared.Dialog.Model;
 using SWLOR.Shared.Dialog.Service;
-using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Dialog.Contracts;
+using SWLOR.Shared.UI.Service;
 
-namespace SWLOR.Game.Server.Feature.DialogDefinition
+namespace SWLOR.Component.Quest.Dialog
 {
     public class GuildMasterDialog: DialogBase
     {

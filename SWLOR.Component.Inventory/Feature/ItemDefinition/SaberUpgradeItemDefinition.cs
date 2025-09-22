@@ -1,15 +1,13 @@
-using System.Collections.Generic;
-using SWLOR.Game.Server.Service.ItemService;
+using SWLOR.Component.Inventory.Contracts;
+using SWLOR.Component.Inventory.Model;
+using SWLOR.Component.Inventory.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Bioware;
-using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Models;
 using Player = SWLOR.Shared.Core.Data.Entity.Player;
 
-namespace SWLOR.Game.Server.Feature.ItemDefinition
+namespace SWLOR.Component.Inventory.Feature.ItemDefinition
 {
     public class SaberUpgradeItemDefinition: IItemListDefinition
     {

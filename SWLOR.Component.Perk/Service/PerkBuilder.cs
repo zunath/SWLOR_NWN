@@ -1,12 +1,9 @@
-using System.Collections.Generic;
-using System.Linq;
-using SWLOR.Game.Server.Service.BeastMasteryService;
+using SWLOR.Component.Perk.Delegates;
+using SWLOR.Component.Perk.Enums;
+using SWLOR.Component.Perk.Model;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Core.Delegates;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Models;
 
-namespace SWLOR.Game.Server.Service.PerkService
+namespace SWLOR.Component.Perk.Service
 {
     public class PerkBuilder
     {

@@ -1,10 +1,9 @@
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Dialog.Contracts;
 using SWLOR.Shared.Dialog.Model;
 using SWLOR.Shared.Dialog.Service;
 
-namespace SWLOR.Game.Server.Feature.DialogDefinition
+namespace SWLOR.Component.Player.Dialog
 {
     public class MedicalRegistrationDialog: DialogBase
     {
@@ -36,7 +35,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 if (!GetIsPC(player) || GetIsDM(player)) return;
 
                 var playerId = GetObjectUUID(player);
-                var dbPlayer = _db.Get<Player>(playerId);
+                var dbPlayer = _db.Get<Entity.Player>(playerId);
 
                 var position = GetPosition(player);
                 var orientation = GetFacing(player);

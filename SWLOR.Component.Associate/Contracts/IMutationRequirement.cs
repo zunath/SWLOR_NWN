@@ -1,6 +1,6 @@
-using SWLOR.Shared.Core.Data.Entity;
+using SWLOR.Component.Associate.Entity;
 
-namespace SWLOR.Shared.Core.Contracts
+namespace SWLOR.Component.Associate.Contracts
 {
     public interface IMutationRequirement
     {

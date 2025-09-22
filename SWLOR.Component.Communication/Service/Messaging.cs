@@ -1,7 +1,7 @@
+using SWLOR.Component.Communication.Contracts;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
-using SWLOR.Shared.Core.Contracts;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Component.Communication.Service
 {
     public class Messaging : IMessagingService
     {

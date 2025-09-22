@@ -1,14 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
+using SWLOR.Component.Player.Contracts;
 using SWLOR.NWN.API.NWNX;
-using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Events.Module;
+using SWLOR.Shared.Events.Events.NWNX;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Component.Player.Service
 {
     public class PartyService : IPartyService
     {

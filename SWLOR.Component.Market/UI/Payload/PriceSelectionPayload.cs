@@ -1,7 +1,7 @@
-using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.UI.Enums;
 using SWLOR.Shared.UI.Model;
 
-namespace SWLOR.Game.Server.Feature.GuiDefinition.Payload
+namespace SWLOR.Component.Market.UI.Payload
 {
     public class PriceSelectionPayload: GuiPayloadBase
     {

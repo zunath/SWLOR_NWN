@@ -1,11 +1,10 @@
-using System.Collections.Generic;
+using SWLOR.Component.Ability.Contracts;
+using SWLOR.Component.Ability.Enums;
+using SWLOR.Component.Ability.Model;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Models;
 
-namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
+namespace SWLOR.Component.Ability.Feature.AbilityDefinition.TwoHanded
 {
     public class CrescentMoonAbilityDefinition : IAbilityListDefinition
     {

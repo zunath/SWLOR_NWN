@@ -1,13 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using SWLOR.Game.Server.Service.AIService;
-using SWLOR.Game.Server.Service.AnimationService;
+using SWLOR.Component.World.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Enums;
 
-namespace SWLOR.Game.Server.Service.SpawnService
+namespace SWLOR.Component.World.Model
 {
     public class SpawnTable
     {

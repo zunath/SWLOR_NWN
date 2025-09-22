@@ -1,7 +1,6 @@
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Models;
+using SWLOR.Component.Communication.Model;
 
-namespace SWLOR.Shared.Core.Contracts
+namespace SWLOR.Component.Communication.Contracts
 {
     public interface ILanguageService
     {

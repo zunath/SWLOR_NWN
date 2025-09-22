@@ -1,13 +1,10 @@
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Data.Entity;
-using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
-using SWLOR.Shared.Core.Contracts;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Component.Combat.Service
 {
     public class Death
     {

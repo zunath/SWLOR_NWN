@@ -1,14 +1,12 @@
+using System.Runtime.InteropServices;
 using NWN.Native.API;
 using NWNX.NET;
+using SWLOR.Component.Combat.Contracts;
+using SWLOR.Component.Combat.Enums;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
-using SWLOR.Shared.Core.Enums;
-using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Events.Attributes;
@@ -20,7 +18,7 @@ using ILogger = SWLOR.Shared.Abstractions.Contracts.ILogger;
 using ObjectType = NWN.Native.API.ObjectType;
 using RacialType = SWLOR.NWN.API.NWScript.Enum.RacialType;
 
-namespace SWLOR.Game.Server.Native
+namespace SWLOR.Component.Combat.Feature.Native
 {
     public static unsafe class GetDamageRoll
     {

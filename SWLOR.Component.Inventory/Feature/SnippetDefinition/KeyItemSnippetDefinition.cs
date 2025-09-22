@@ -1,11 +1,12 @@
-using System.Collections.Generic;
-using SWLOR.Game.Server.Service.SnippetService;
+using SWLOR.Component.Inventory.Contracts;
+using SWLOR.Component.Inventory.Enums;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Dialog.Contracts;
+using SWLOR.Shared.Dialog.Model;
+using SWLOR.Shared.Dialog.Service;
 
-namespace SWLOR.Game.Server.Feature.SnippetDefinition
+namespace SWLOR.Component.Inventory.Feature.SnippetDefinition
 {
     public class KeyItemSnippetDefinition: ISnippetListDefinition
     {

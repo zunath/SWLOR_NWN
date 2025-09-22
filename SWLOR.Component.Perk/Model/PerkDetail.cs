@@ -1,7 +1,7 @@
-using SWLOR.Shared.Core.Delegates;
-using SWLOR.Shared.Core.Enums;
+using SWLOR.Component.Perk.Delegates;
+using SWLOR.Component.Perk.Enums;
 
-namespace SWLOR.Shared.Core.Models
+namespace SWLOR.Component.Perk.Model
 {
 
     public class PerkDetail

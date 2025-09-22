@@ -1,7 +1,7 @@
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Models;
+using SWLOR.Component.Crafting.Enums;
+using SWLOR.Component.Crafting.Model;
 
-namespace SWLOR.Shared.Core.Contracts
+namespace SWLOR.Component.Crafting.Contracts
 {
     public interface IFishingLocationBuilder
     {

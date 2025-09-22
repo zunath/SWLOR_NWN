@@ -1,9 +1,9 @@
+using SWLOR.Component.Ability.Enums;
+using SWLOR.Component.Ability.Model;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Models;
 
-namespace SWLOR.Shared.Core.Contracts
+namespace SWLOR.Component.Ability.Contracts
 {
     public interface IAbilityBuilder
     {

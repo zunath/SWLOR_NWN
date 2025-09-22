@@ -1,6 +1,6 @@
-using SWLOR.Shared.Core.Models;
+using SWLOR.Component.Space.Model;
 
-namespace SWLOR.Shared.Core.Contracts
+namespace SWLOR.Component.Space.Contracts
 {
     public interface IShipModuleListDefinition
     {

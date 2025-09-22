@@ -1,27 +1,21 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
-
-using SWLOR.Game.Server.Service.AIService;
-using SWLOR.Game.Server.Service.SpawnService;
+using SWLOR.Component.World.Contracts;
+using SWLOR.Component.World.Model;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Area;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Caching.Contracts;
-using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
-using SWLOR.Shared.Events.Events.NWNX;
-using SWLOR.Shared.Events.Events.Creature;
 using SWLOR.Shared.Events.Events.Area;
+using SWLOR.Shared.Events.Events.Creature;
 using SWLOR.Shared.Events.Events.Module;
+using SWLOR.Shared.Events.Events.NWNX;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Component.World.Service
 {
     public class Spawn : ISpawnService
     {

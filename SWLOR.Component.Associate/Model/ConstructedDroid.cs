@@ -1,7 +1,7 @@
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 
-namespace SWLOR.Shared.Core.Models
+namespace SWLOR.Component.Associate.Model
 {
     public class ConstructedDroid
     {

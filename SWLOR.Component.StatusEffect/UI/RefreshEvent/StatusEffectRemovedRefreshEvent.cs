@@ -1,6 +1,6 @@
 using SWLOR.Shared.UI.Contracts;
 
-namespace SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent
+namespace SWLOR.Component.StatusEffect.UI.RefreshEvent
 {
     public class StatusEffectRemovedRefreshEvent: IGuiRefreshEvent
     {

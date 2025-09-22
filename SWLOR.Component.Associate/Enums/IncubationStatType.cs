@@ -1,4 +1,4 @@
-namespace SWLOR.Game.Server.Service.BeastMasteryService
+namespace SWLOR.Component.Associate.Enums
 {
     // Corresponds to iprp_incubation.2da
     public enum IncubationStatType

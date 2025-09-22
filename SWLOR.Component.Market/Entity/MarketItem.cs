@@ -1,7 +1,7 @@
-﻿using SWLOR.Shared.Abstractions;
-using SWLOR.Shared.Core.Enums;
+﻿using SWLOR.Component.Market.Enums;
+using SWLOR.Shared.Abstractions;
 
-namespace SWLOR.Shared.Core.Data.Entity
+namespace SWLOR.Component.Market.Entity
 {
     public class MarketItem: EntityBase
     {

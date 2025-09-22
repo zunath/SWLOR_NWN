@@ -1,14 +1,12 @@
-using System.Collections.Generic;
-
-using SWLOR.Game.Server.Service;
-using SWLOR.Shared.Core.Service;
+using SWLOR.Component.World.Service;
 using SWLOR.Shared.Dialog.Contracts;
 using SWLOR.Shared.Dialog.Model;
 using SWLOR.Shared.Dialog.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
+using SWLOR.Shared.UI.Service;
 
-namespace SWLOR.Game.Server.Feature.DialogDefinition
+namespace SWLOR.Component.World.Dialog
 {
     public class CoxxionTerminalDialog: DialogBase
     {

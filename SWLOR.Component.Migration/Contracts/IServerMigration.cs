@@ -1,4 +1,6 @@
-namespace SWLOR.Game.Server.Service.MigrationService
+using SWLOR.Component.Migration.Enums;
+
+namespace SWLOR.Component.Migration.Contracts
 {
     public interface IServerMigration
     {

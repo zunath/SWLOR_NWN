@@ -1,10 +1,9 @@
-using System.Collections.Generic;
-using SWLOR.Game.Server.Service.SpaceService;
+using SWLOR.Component.Space.Contracts;
+using SWLOR.Component.Space.Model;
+using SWLOR.Component.Space.Service;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Models;
 
-namespace SWLOR.Game.Server.Feature.ShipDefinition
+namespace SWLOR.Component.Space.Feature.ShipDefinition
 {
     public class PlayerShipDefinition : IShipListDefinition
     {

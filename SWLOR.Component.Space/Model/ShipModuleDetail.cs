@@ -1,8 +1,8 @@
+using SWLOR.Component.Space.Delegates;
+using SWLOR.Component.Space.Enums;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Delegates;
 
-namespace SWLOR.Shared.Core.Models
+namespace SWLOR.Component.Space.Model
 {
 
     public class ShipModuleDetail

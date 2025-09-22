@@ -1,6 +1,6 @@
 using SWLOR.NWN.API.NWScript.Enum;
 
-namespace SWLOR.Shared.Core.Models
+namespace SWLOR.Component.Space.Model
 {
     public class ShipModuleFeat
     {

@@ -1,7 +1,7 @@
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWNX.Enum;
 
-namespace SWLOR.Game.Server.Feature.MigrationDefinition
+namespace SWLOR.Component.Migration.Model
 {
     public abstract class LegacyMigrationBase
     {

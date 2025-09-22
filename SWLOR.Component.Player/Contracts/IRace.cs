@@ -1,6 +1,6 @@
-using SWLOR.Shared.Core.Models;
+using SWLOR.Component.Player.Model;
 
-namespace SWLOR.Shared.Core.Contracts
+namespace SWLOR.Component.Player.Contracts
 {
     public interface IRace
     {

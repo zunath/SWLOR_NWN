@@ -1,16 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using SWLOR.Game.Server.Service;
+using SWLOR.Component.Player.Entity;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Events.Module;
-using Player = SWLOR.Shared.Core.Data.Entity.Player;
+using SWLOR.Shared.Events.Events.NWNX;
 
-namespace SWLOR.Game.Server.Feature
+namespace SWLOR.Component.Player.Feature
 {
     public class PersistentMapPin
     {
@@ -56,7 +51,7 @@ namespace SWLOR.Game.Server.Feature
             mapPin.Id = GetNumberOfMapPins(player) + 1;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = _db.Get<Player>(playerId) ?? new Player(playerId);
+            var dbPlayer = _db.Get<Entity.Player>(playerId) ?? new Entity.Player(playerId);
             var area = GetArea(player);
             var areaResref = GetResRef(area);
 
@@ -79,7 +74,7 @@ namespace SWLOR.Game.Server.Feature
 
             var mapPin = LoadMapPin(true, true);
             var playerId = GetObjectUUID(player);
-            var dbPlayer = _db.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Entity.Player>(playerId);
             if (dbPlayer == null) return;
 
             var area = GetArea(player);
@@ -111,7 +106,7 @@ namespace SWLOR.Game.Server.Feature
 
             var mapPin = LoadMapPin();
             var playerId = GetObjectUUID(player);
-            var dbPlayer = _db.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Entity.Player>(playerId);
             if (dbPlayer == null) return;
 
             var area = GetArea(player);
@@ -144,7 +139,7 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsPC(player) || GetIsDM(player) || GetLocalBool(player, "MAP_PINS_LOADED")) return;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = _db.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Entity.Player>(playerId);
 
             var mapPinTuple = dbPlayer
                 .MapPins

@@ -1,6 +1,6 @@
-using SWLOR.Shared.Core.Enums;
+using SWLOR.Component.Market.Enums;
 
-namespace SWLOR.Shared.Core.Contracts
+namespace SWLOR.Component.Market.Contracts
 {
     public interface IPlayerMarketService
     {

@@ -1,15 +1,14 @@
-using System.Collections.Generic;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Component.Properties.Contracts;
+using SWLOR.Component.Properties.Entity;
+using SWLOR.Component.Properties.Enums;
+using SWLOR.Component.Properties.Model;
+using SWLOR.Component.Properties.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Data.Entity;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Models;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 
-namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
+namespace SWLOR.Component.Properties.Feature.PropertyLayoutDefinition
 {
     public class BankLayoutDefinition: IPropertyLayoutListDefinition
     {

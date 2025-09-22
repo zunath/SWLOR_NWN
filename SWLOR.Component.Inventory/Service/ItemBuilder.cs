@@ -1,9 +1,7 @@
-using System.Collections.Generic;
+using SWLOR.Component.Inventory.Model;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Models;
 
-namespace SWLOR.Game.Server.Service.ItemService
+namespace SWLOR.Component.Inventory.Service
 {
     public class ItemBuilder
     {

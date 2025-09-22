@@ -1,12 +1,11 @@
 using SWLOR.Component.Quest.Contracts;
 using SWLOR.Component.Quest.Delegates;
 using SWLOR.Component.Quest.Dialog;
+using SWLOR.Component.Quest.Enums;
 using SWLOR.Component.Quest.Model;
 using SWLOR.Component.Quest.UI.RefreshEvent;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Data.Entity;
-using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Dialog.Contracts;
 using SWLOR.Shared.UI.Contracts;
 

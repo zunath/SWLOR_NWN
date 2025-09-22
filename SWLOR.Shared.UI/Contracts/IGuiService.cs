@@ -1,5 +1,5 @@
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.UI.Enums;
 using SWLOR.Shared.UI.Model;
 
 namespace SWLOR.Shared.UI.Contracts

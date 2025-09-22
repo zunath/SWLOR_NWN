@@ -1,8 +1,8 @@
 @page "/viewaccount/{AccountId}"
 @attribute [Authorize(Policy = "DiscordAdmin")]
+@using SWLOR.Component.Player.Entity
+@using SWLOR.Component.Player.Enums
 @using SWLOR.Shared.Abstractions.Contracts
-@using SWLOR.Shared.Core.Data.Entity
-@using SWLOR.Shared.Core.Enums
 @using SWLOR.Shared.Core.Extension
 @inject IDatabaseService _db
 

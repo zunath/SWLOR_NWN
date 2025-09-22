@@ -1,7 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using SWLOR.Game.Server.Service.SpaceService;
+using SWLOR.Component.Space.Contracts;
+using SWLOR.Component.Space.Entity;
+using SWLOR.Component.Space.Enums;
+using SWLOR.Component.Space.Model;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -10,22 +10,20 @@ using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Core.Data;
-using SWLOR.Shared.Core.Data.Entity;
-using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Log.LogGroup;
-using SWLOR.Shared.Core.Models;
-using SWLOR.Shared.Core.Service;
+using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
-using SWLOR.Shared.Events.Events.NWNX;
-using SWLOR.Shared.Events.Events.Creature;
 using SWLOR.Shared.Events.Events.Area;
+using SWLOR.Shared.Events.Events.Creature;
+using SWLOR.Shared.Events.Events.Module;
+using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Enums;
+using SWLOR.Shared.UI.Service;
 using Vector3 = System.Numerics.Vector3;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Component.Space.Service
 {
     public class Space : ISpaceService
     {

@@ -1,9 +1,9 @@
+using SWLOR.Component.Ability.Enums;
+using SWLOR.Component.Ability.Model;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Models;
 
-namespace SWLOR.Shared.Core.Contracts
+namespace SWLOR.Component.Ability.Contracts
 {
     public interface IAbilityService
     {
@@ -29,7 +29,7 @@ namespace SWLOR.Shared.Core.Contracts
         /// </summary>
         /// <param name="featType">The type of feat</param>
         /// <returns>The ability detail</returns>
-        SWLOR.Shared.Core.Models.AbilityDetail GetAbilityDetail(FeatType featType);
+        AbilityDetail GetAbilityDetail(FeatType featType);
 
         /// <summary>
         /// Checks whether a creature can activate the perk feat.

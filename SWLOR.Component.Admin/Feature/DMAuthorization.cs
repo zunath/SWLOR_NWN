@@ -1,12 +1,12 @@
-using SWLOR.Game.Server.Service;
+using SWLOR.Component.Admin.Enums;
+using SWLOR.Component.Admin.Service;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Module;
 
-namespace SWLOR.Game.Server.Feature
+namespace SWLOR.Component.Admin.Feature
 {
     public class DMAuthorization
     {

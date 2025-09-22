@@ -1,19 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Data.Entity;
-using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Log.LogGroup;
-using SWLOR.Shared.Core.Models;
-using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Enums;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
 using ClassType = SWLOR.NWN.API.NWScript.Enum.ClassType;
@@ -21,7 +13,7 @@ using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
 using RacialType = SWLOR.NWN.API.NWScript.Enum.RacialType;
 using SavingThrow = SWLOR.NWN.API.NWScript.Enum.SavingThrow;
 
-namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
+namespace SWLOR.Component.Player.UI.ViewModel
 {
     public class CharacterFullRebuildViewModel: GuiViewModelBase<CharacterFullRebuildViewModel, GuiPayloadBase>
     {
@@ -70,7 +62,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = _db.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Entity.Player>(playerId);
 
             if (!dbPlayer.RebuildComplete)
             {
@@ -98,7 +90,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = _db.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Entity.Player>(playerId);
 
             if (!dbPlayer.RebuildComplete)
             {
@@ -218,7 +210,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void ResetControls()
         {
             var playerId = GetObjectUUID(Player);
-            var dbPlayer = _db.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Entity.Player>(playerId);
 
             _might = 0;
             _perception = 0;
@@ -297,7 +289,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void RecalculateAvailableSkillPoints()
         {
             var playerId = GetObjectUUID(Player);
-            var dbPlayer = _db.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Entity.Player>(playerId);
 
             _remainingSkillPoints = dbPlayer.TotalSPAcquired - _skillDistributionPoints.Sum();
             RemainingSkillPoints = $"Skills - {_remainingSkillPoints} Points Remaining";
@@ -329,7 +321,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             void RefundAllPerks()
             {
                 var playerId = GetObjectUUID(Player);
-                var dbPlayer = _db.Get<Player>(playerId);
+                var dbPlayer = _db.Get<Entity.Player>(playerId);
                 var pcPerks = dbPlayer.Perks.ToDictionary(x => x.Key, y => y.Value);
 
                 foreach (var (type, level) in pcPerks)
@@ -363,7 +355,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             void RefundAllSkills()
             {
                 var playerId = GetObjectUUID(Player);
-                var dbPlayer = _db.Get<Player>(playerId);
+                var dbPlayer = _db.Get<Entity.Player>(playerId);
                 
                 foreach (var (type, _) in dbPlayer.Skills)
                 {
@@ -382,7 +374,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             void ResetStats()
             {
                 var playerId = GetObjectUUID(Player);
-                var dbPlayer = _db.Get<Player>(playerId);
+                var dbPlayer = _db.Get<Entity.Player>(playerId);
 
                 CreaturePlugin.SetRawAbilityScore(Player, AbilityType.Might, 10);
                 CreaturePlugin.SetRawAbilityScore(Player, AbilityType.Perception, 10);
@@ -678,7 +670,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
 
                 var playerId = GetObjectUUID(Player);
-                var dbPlayer = _db.Get<Player>(playerId);
+                var dbPlayer = _db.Get<Entity.Player>(playerId);
 
                 CreaturePlugin.ModifyRawAbilityScore(Player, AbilityType.Might, _might);
                 CreaturePlugin.ModifyRawAbilityScore(Player, AbilityType.Perception, _perception);
@@ -697,12 +689,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (CharacterType == 0)
                 {
                     CreaturePlugin.SetClassByPosition(Player, 0, ClassType.Standard);
-                    dbPlayer.CharacterType = Shared.Core.Enums.CharacterType.Standard;
+                    dbPlayer.CharacterType = Enums.CharacterType.Standard;
                 }
                 else
                 {
                     CreaturePlugin.SetClassByPosition(Player, 0, ClassType.ForceSensitive);
-                    dbPlayer.CharacterType = Shared.Core.Enums.CharacterType.ForceSensitive;
+                    dbPlayer.CharacterType = Enums.CharacterType.ForceSensitive;
                 }
 
                 for (var index = 0; index < _skills.Count; index++)

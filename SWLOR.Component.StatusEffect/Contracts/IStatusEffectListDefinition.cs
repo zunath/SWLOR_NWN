@@ -1,8 +1,7 @@
-using System.Collections.Generic;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Models;
+using SWLOR.Component.StatusEffect.Enums;
+using SWLOR.Component.StatusEffect.Model;
 
-namespace SWLOR.Game.Server.Service.StatusEffectService
+namespace SWLOR.Component.StatusEffect.Contracts
 {
     public interface IStatusEffectListDefinition
     {

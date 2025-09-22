@@ -1,13 +1,12 @@
-using System;
-using System.Collections.Generic;
-using SWLOR.Game.Server.Service.SnippetService;
+using SWLOR.Component.Player.Enums;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Data.Entity;
-using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Dialog.Contracts;
+using SWLOR.Shared.Dialog.Model;
+using SWLOR.Shared.Dialog.Service;
 
-namespace SWLOR.Game.Server.Feature.SnippetDefinition
+namespace SWLOR.Component.Player.Feature.SnippetDefinition
 {
     public class FactionSnippetDefinition: ISnippetListDefinition
     {
@@ -71,7 +70,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
 
                     var factionType = (FactionType) factionId;
                     var playerId = GetObjectUUID(player);
-                    var dbPlayer = _db.Get<Player>(playerId);
+                    var dbPlayer = _db.Get<Entity.Player>(playerId);
                     var factionStanding = 0;
 
                     if (dbPlayer.Factions.ContainsKey(factionType))
@@ -115,7 +114,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
 
                     var factionType = (FactionType)factionId;
                     var playerId = GetObjectUUID(player);
-                    var dbPlayer = _db.Get<Player>(playerId);
+                    var dbPlayer = _db.Get<Entity.Player>(playerId);
                     var factionStanding = 0;
 
                     if (dbPlayer.Factions.ContainsKey(factionType))

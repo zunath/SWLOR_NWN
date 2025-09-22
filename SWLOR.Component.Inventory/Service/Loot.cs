@@ -1,19 +1,15 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using SWLOR.Game.Server.Service.LootService;
+using SWLOR.Component.Inventory.Contracts;
+using SWLOR.Component.Inventory.Model;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Models;
+using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Creature;
 using SWLOR.Shared.Events.Events.Module;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Component.Inventory.Service
 {
     public class Loot : ILootService
     {

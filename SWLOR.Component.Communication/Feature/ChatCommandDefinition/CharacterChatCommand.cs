@@ -1,22 +1,20 @@
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.ChatCommandService;
+using SWLOR.Component.Communication.Contracts;
+using SWLOR.Component.Communication.Enums;
+using SWLOR.Component.Communication.Model;
+using SWLOR.Component.Communication.Service;
+using SWLOR.Component.Communication.UI.Payload;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Entity;
+using SWLOR.Shared.UI.Enums;
+using SWLOR.Shared.UI.Service;
 using Player = SWLOR.Shared.Core.Data.Entity.Player;
 
-namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
+namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
 {
     public class CharacterChatCommand: IChatCommandListDefinition
     {
@@ -24,11 +22,11 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
         private readonly IDatabaseService _db;
         private readonly IAbilityService _abilityService;
         private readonly IGuiService _guiService;
-        private readonly Communication _communication;
+        private readonly Service.Communication _communication;
         private readonly IHoloComService _holoComService;
         private readonly IRecastService _recastService;
 
-        public CharacterChatCommand(IDatabaseService db, IAbilityService abilityService, IGuiService guiService, Communication communication, IHoloComService holoComService, IRecastService recastService)
+        public CharacterChatCommand(IDatabaseService db, IAbilityService abilityService, IGuiService guiService, Service.Communication communication, IHoloComService holoComService, IRecastService recastService)
         {
             _db = db;
             _abilityService = abilityService;

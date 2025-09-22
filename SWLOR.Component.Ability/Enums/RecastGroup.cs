@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Shared.Core.Enums
+﻿namespace SWLOR.Component.Ability.Enums
 {
     // Note: Short names are what's displayed on the recast Gui element. They are limited to 14 characters.
     public enum RecastGroup

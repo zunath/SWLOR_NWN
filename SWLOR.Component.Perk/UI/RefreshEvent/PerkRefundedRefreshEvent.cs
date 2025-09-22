@@ -1,7 +1,7 @@
-using SWLOR.Shared.Core.Enums;
+using SWLOR.Component.Perk.Enums;
 using SWLOR.Shared.UI.Contracts;
 
-namespace SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent
+namespace SWLOR.Component.Perk.UI.RefreshEvent
 {
     public class PerkRefundedRefreshEvent: IGuiRefreshEvent
     {

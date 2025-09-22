@@ -1,4 +1,4 @@
-namespace SWLOR.Shared.Core.Models
+namespace SWLOR.Component.Space.Model
 {
     public class ShipBonuses
     {

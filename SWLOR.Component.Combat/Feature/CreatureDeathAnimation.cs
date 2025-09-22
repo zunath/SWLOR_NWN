@@ -1,12 +1,7 @@
-
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AnimationService;
-using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Models;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Creature;
 
-namespace SWLOR.Game.Server.Feature
+namespace SWLOR.Component.Combat.Feature
 {
     public class CreatureDeathAnimation
     {

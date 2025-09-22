@@ -1,10 +1,10 @@
 using System.Numerics;
+using SWLOR.Component.Properties.Entity;
+using SWLOR.Component.Properties.Enums;
+using SWLOR.Component.Properties.Model;
 using SWLOR.NWN.API.Engine;
-using SWLOR.Shared.Core.Data.Entity;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Models;
 
-namespace SWLOR.Shared.Core.Contracts
+namespace SWLOR.Component.Properties.Contracts
 {
     public interface IPropertyService
     {

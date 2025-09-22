@@ -1,4 +1,4 @@
-namespace SWLOR.Game.Server.Service.SnippetService
+namespace SWLOR.Shared.Dialog.Model
 {
     public delegate bool SnippetConditionDelegate(uint player, string[] args);
 

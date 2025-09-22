@@ -1,7 +1,8 @@
-using System.Collections.Generic;
-using SWLOR.Game.Server.Service.SpaceService;
+using SWLOR.Component.Space.Contracts;
+using SWLOR.Component.Space.Model;
+using SWLOR.Component.Space.Service;
 
-namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
+namespace SWLOR.Component.Space.Feature.SpaceObjectDefinition
 {
     public class NPCSpaceObjectDefinition : ISpaceObjectListDefinition
     {

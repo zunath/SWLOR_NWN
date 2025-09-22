@@ -1,9 +1,8 @@
-using System;
-using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.UI.Service;
 
-namespace SWLOR.Game.Server.Feature
+namespace SWLOR.Component.Quest.Feature
 {
     public static class ExplorationTrigger
     {

@@ -1,7 +1,6 @@
-using System.Collections.Generic;
-using SWLOR.Shared.Core.Enums;
+using SWLOR.Component.World.Enums;
 
-namespace SWLOR.Game.Server.Service.WeatherService
+namespace SWLOR.Component.World.Model
 {
     public static class WeatherPlanetDefinitions
     {

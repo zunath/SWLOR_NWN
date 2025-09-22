@@ -1,12 +1,10 @@
-using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
+using SWLOR.Component.Player.UI.RefreshEvent;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Data.Entity;
-using SWLOR.Shared.Core.Models;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
 
-namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
+namespace SWLOR.Component.Player.UI.ViewModel
 {
     public class CurrenciesViewModel: GuiViewModelBase<CurrenciesViewModel, GuiPayloadBase>,
         IGuiRefreshable<CurrencyRefreshEvent>
@@ -33,7 +31,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void LoadData()
         {
             var playerId = GetObjectUUID(Player);
-            var dbPlayer = _db.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Entity.Player>(playerId);
 
             var currencyNames = new GuiBindingList<string>();
             var currencyValues = new GuiBindingList<int>();

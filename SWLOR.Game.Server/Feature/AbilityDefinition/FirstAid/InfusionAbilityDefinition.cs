@@ -11,7 +11,20 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         private const string Tier1Tag = "ABILITY_INFUSION_1";
         private const string Tier2Tag = "ABILITY_INFUSION_2";
 
-        public InfusionAbilityDefinition(IRandomService random, IPerkService perkService, ICombatPointService combatPointService, IEnmityService enmityService, IAbilityService abilityService) : base(random, perkService, combatPointService, enmityService, abilityService)
+        public InfusionAbilityDefinition(
+            IRandomService random, 
+            IPerkService perkService, 
+            ICombatPointService combatPointService, 
+            IEnmityService enmityService, 
+            IAbilityService abilityService,
+            IStatusEffectService statusEffect) 
+            : base(
+                random, 
+                perkService, 
+                combatPointService, 
+                enmityService, 
+                abilityService, 
+                statusEffect)
         {
         }
 
@@ -58,8 +71,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             ApplyEffectToObject(DurationType.Temporary, effect, target, Duration);
 
             TakeStimPack(activator);
-            _enmityService.ModifyEnmityOnAll(activator, 5 * amount);
-            _combatPointService.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
+            EnmityService.ModifyEnmityOnAll(activator, 5 * amount);
+            CombatPointService.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
         }
 
         private void Infusion1(IAbilityBuilder builder)

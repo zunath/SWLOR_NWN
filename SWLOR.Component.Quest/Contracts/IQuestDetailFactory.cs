@@ -1,3 +1,4 @@
+using SWLOR.Component.Quest.Service;
 using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Component.Quest.Contracts

@@ -5,6 +5,7 @@ using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Dialog.Model;
 using SWLOR.Shared.Dialog.Service;
 using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.Dialog.Contracts;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
@@ -14,7 +15,8 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         private readonly IPropertyService _propertyService;
         private readonly IPerkService _perkService;
 
-        public PlaceCityHallDialog(IDatabaseService db, IPropertyService propertyService, IPerkService perkService)
+        public PlaceCityHallDialog(IDatabaseService db, IPropertyService propertyService, IPerkService perkService, IDialogService dialogService) 
+            : base(dialogService)
         {
             _db = db;
             _propertyService = propertyService;

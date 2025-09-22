@@ -1,13 +1,16 @@
-using SWLOR.Game.Server.Service.QuestService;
+using SWLOR.Component.Quest.Contracts;
+using SWLOR.Component.Quest.Delegates;
+using SWLOR.Component.Quest.Dialog;
+using SWLOR.Component.Quest.Model;
+using SWLOR.Component.Quest.UI.RefreshEvent;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Data.Entity;
-using SWLOR.Shared.Core.Delegates;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Dialog.Contracts;
+using SWLOR.Shared.UI.Contracts;
 
-namespace SWLOR.Shared.Core.Models
+namespace SWLOR.Component.Quest.Service
 {
     public class QuestDetail
     {

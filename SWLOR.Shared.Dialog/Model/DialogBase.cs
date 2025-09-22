@@ -1,9 +1,16 @@
 ﻿using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Dialog.Contracts;
 
 namespace SWLOR.Shared.Dialog.Model
 {
     public abstract class DialogBase : IConversation
     {
+        protected readonly IDialogService DialogService;
+
+        protected DialogBase(IDialogService dialogService)
+        {
+            DialogService = dialogService ?? throw new ArgumentNullException(nameof(dialogService));
+        }
         /// <summary>
         /// Retrieves the speaking player.
         /// </summary>
@@ -21,7 +28,7 @@ namespace SWLOR.Shared.Dialog.Model
         {
             var player = GetPC();
             var playerId = GetObjectUUID(player);
-            var dialog = Service.Dialog.LoadPlayerDialog(playerId);
+            var dialog = DialogService.LoadPlayerDialog(playerId);
             return dialog.DialogTarget;
         }
 
@@ -35,7 +42,7 @@ namespace SWLOR.Shared.Dialog.Model
         {
             var player = GetPC();
             var playerId = GetObjectUUID(player);
-            var dialog = Service.Dialog.LoadPlayerDialog(playerId);
+            var dialog = DialogService.LoadPlayerDialog(playerId);
             return dialog.DataModel as T;
         }
 
@@ -48,7 +55,7 @@ namespace SWLOR.Shared.Dialog.Model
         {
             var player = GetPC();
             var playerId = GetObjectUUID(player);
-            var dialog = Service.Dialog.LoadPlayerDialog(playerId);
+            var dialog = DialogService.LoadPlayerDialog(playerId);
 
             if (updateNavigationStack && dialog.EnableBackButton)
                 dialog.NavigationStack.Push(new DialogNavigation(dialog.CurrentPageName, dialog.ActiveDialogName));
@@ -66,7 +73,7 @@ namespace SWLOR.Shared.Dialog.Model
         {
             var player = GetPC();
             var playerId = GetObjectUUID(player);
-            var dialog = Service.Dialog.LoadPlayerDialog(playerId);
+            var dialog = DialogService.LoadPlayerDialog(playerId);
             Stack<DialogNavigation> navigationStack = null;
 
             if (dialog.EnableBackButton && maintainNavigationStack)
@@ -74,8 +81,8 @@ namespace SWLOR.Shared.Dialog.Model
                 navigationStack = dialog.NavigationStack;
                 navigationStack.Push(new DialogNavigation(dialog.CurrentPageName, dialog.ActiveDialogName));
             }
-            Service.Dialog.LoadConversation(GetPC(), dialog.DialogTarget, conversationName, dialog.DialogNumber);
-            dialog = Service.Dialog.LoadPlayerDialog(playerId);
+            DialogService.LoadConversation(GetPC(), dialog.DialogTarget, conversationName, dialog.DialogNumber);
+            dialog = DialogService.LoadPlayerDialog(playerId);
 
             if (dialog.EnableBackButton && navigationStack != null)
                 dialog.NavigationStack = navigationStack;
@@ -99,7 +106,7 @@ namespace SWLOR.Shared.Dialog.Model
         {
             var player = GetPC();
             var playerId = GetObjectUUID(player);
-            var dialog = Service.Dialog.LoadPlayerDialog(playerId);
+            var dialog = DialogService.LoadPlayerDialog(playerId);
             dialog.EnableBackButton = isOn;
             dialog.NavigationStack.Clear();
         }
@@ -113,14 +120,14 @@ namespace SWLOR.Shared.Dialog.Model
             {
                 var player = GetPC();
                 var playerId = GetObjectUUID(player);
-                var dialog = Service.Dialog.LoadPlayerDialog(playerId);
+                var dialog = DialogService.LoadPlayerDialog(playerId);
                 return dialog.NavigationStack;
             }
             set
             {
                 var player = GetPC();
                 var playerId = GetObjectUUID(player);
-                var dialog = Service.Dialog.LoadPlayerDialog(playerId);
+                var dialog = DialogService.LoadPlayerDialog(playerId);
                 dialog.NavigationStack = value;
             }
         }
@@ -132,7 +139,7 @@ namespace SWLOR.Shared.Dialog.Model
         {
             var player = GetPC();
             var playerId = GetObjectUUID(player);
-            var dialog = Service.Dialog.LoadPlayerDialog(playerId);
+            var dialog = DialogService.LoadPlayerDialog(playerId);
             dialog.NavigationStack.Clear();
         }
 
@@ -141,7 +148,7 @@ namespace SWLOR.Shared.Dialog.Model
         /// </summary>
         protected void EndConversation()
         {
-            Service.Dialog.EndConversation(GetPC());
+            DialogService.EndConversation(GetPC());
         }
 
         public abstract PlayerDialog SetUp(uint player);

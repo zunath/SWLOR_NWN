@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Component.Quest.Contracts;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.SnippetService;
 using SWLOR.Shared.Abstractions.Contracts;

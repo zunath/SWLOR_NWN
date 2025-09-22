@@ -1,4 +1,5 @@
 using SWLOR.Game.Server.Service;
+using SWLOR.Shared.Dialog.Contracts;
 using SWLOR.Shared.Dialog.Model;
 using SWLOR.Shared.Dialog.Service;
 
@@ -8,6 +9,9 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
     {
         private const string MainPageId = "MAIN_PAGE";
 
+        public JukeboxDialog(IDialogService dialogService) : base(dialogService)
+        {
+        }
 
         public override PlayerDialog SetUp(uint player)
         {

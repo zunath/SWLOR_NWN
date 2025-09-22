@@ -4,6 +4,7 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
+using SWLOR.Shared.Dialog.Contracts;
 using SWLOR.Shared.Dialog.Model;
 using SWLOR.Shared.Dialog.Service;
 using SWLOR.Shared.UI.Contracts;
@@ -16,7 +17,8 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         private readonly IGuiService _guiService;
         private const string MainPageId = "MAIN_PAGE";
 
-        public MarketDialog(IGuiService guiService, ILogger logger)
+        public MarketDialog(IGuiService guiService, ILogger logger, IDialogService dialogService) 
+            : base(dialogService)
         {
             _guiService = guiService;
             _logger = logger;

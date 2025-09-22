@@ -1,6 +1,6 @@
 using SWLOR.Shared.Dialog.Model;
 
-namespace SWLOR.Shared.Abstractions.Contracts;
+namespace SWLOR.Shared.Dialog.Contracts;
 
 public interface IDialogService
 {

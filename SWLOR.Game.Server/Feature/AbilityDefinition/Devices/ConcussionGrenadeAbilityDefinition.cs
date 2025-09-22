@@ -13,8 +13,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         private readonly ICombatPointService _combatPointService;
         private readonly IEnmityService _enmityService;
 
-        public ConcussionGrenadeAbilityDefinition(IRandomService random, IItemService itemService, IPerkService perkService, IStatService statService, ICombatService combatService, ICombatPointService combatPointService, IEnmityService enmityService) 
-            : base(random, itemService, perkService, statService, combatService, combatPointService, enmityService)
+        public ConcussionGrenadeAbilityDefinition(IRandomService random, IItemService itemService, IPerkService perkService, IStatService statService, ICombatService combatService, ICombatPointService combatPointService, IEnmityService enmityService, IStatusEffectService statusEffectService) 
+            : base(random, itemService, perkService, statService, combatService, combatPointService, enmityService, statusEffectService)
         {
             _combatPointService = combatPointService;
             _enmityService = enmityService;

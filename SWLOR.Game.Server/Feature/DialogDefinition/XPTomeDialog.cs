@@ -1,5 +1,6 @@
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Dialog.Contracts;
 using SWLOR.Shared.Dialog.Model;
 using SWLOR.Shared.Dialog.Service;
 
@@ -9,7 +10,8 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
     {
         private readonly ISkillService _skillService;
 
-        public XPTomeDialog(ISkillService skillService)
+        public XPTomeDialog(ISkillService skillService, IDialogService dialogService) 
+            : base(dialogService)
         {
             _skillService = skillService;
         }

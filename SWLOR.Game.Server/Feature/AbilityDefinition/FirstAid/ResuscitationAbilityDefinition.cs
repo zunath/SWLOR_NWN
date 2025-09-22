@@ -15,8 +15,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             IPerkService perkService, 
             ICombatPointService combatPointService, 
             IEnmityService enmityService, 
-            IAbilityService abilityService) 
-            : base(random, perkService, combatPointService, enmityService, abilityService)
+            IAbilityService abilityService,
+            IStatusEffectService statusEffect) 
+            : base(
+                random, 
+                perkService, 
+                combatPointService, 
+                enmityService, 
+                abilityService,
+                statusEffect)
         {
         }
 
@@ -69,7 +76,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             }
 
             ApplyEffectToObject(DurationType.Instant, EffectResurrection(), target);
-            _abilityService.ReapplyPlayerAuraAOE(target);
+            AbilityService.ReapplyPlayerAuraAOE(target);
 
             if (hp > 0)
             {
@@ -97,8 +104,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 {
                     Impact(activator, target, 0);
 
-                    _enmityService.ModifyEnmityOnAll(activator, 800);
-                    _combatPointService.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
+                    EnmityService.ModifyEnmityOnAll(activator, 800);
+                    CombatPointService.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
                 });
         }
 
@@ -119,8 +126,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 {
                     Impact(activator, target, 25);
 
-                    _enmityService.ModifyEnmityOnAll(activator, 1400);
-                    _combatPointService.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
+                    EnmityService.ModifyEnmityOnAll(activator, 1400);
+                    CombatPointService.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
                 });
         }
 
@@ -141,8 +148,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 {
                     Impact(activator, target, 50);
 
-                    _enmityService.ModifyEnmityOnAll(activator, 2500);
-                    _combatPointService.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
+                    EnmityService.ModifyEnmityOnAll(activator, 2500);
+                    CombatPointService.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
                 });
         }
     }

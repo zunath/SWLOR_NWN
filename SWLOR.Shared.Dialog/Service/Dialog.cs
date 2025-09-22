@@ -1,7 +1,9 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Dialog.Contracts;
 using SWLOR.Shared.Dialog.Model;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
@@ -11,12 +13,19 @@ namespace SWLOR.Shared.Dialog.Service
 {
     public class Dialog : IDialogService
     {
-        private readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private readonly ILogger _logger;
+        private readonly IServiceProvider _serviceProvider;
         private const int NumberOfDialogs = 255;
         private const int NumberOfResponsesPerPage = 12;
         private Dictionary<string, PlayerDialog> PlayerDialogs { get; } = new();
         private Dictionary<int, bool> DialogFilesInUse { get; } = new();
         private readonly Dictionary<string, IConversation> _conversations = new();
+
+        public Dialog(ILogger logger, IServiceProvider serviceProvider)
+        {
+            _logger = logger;
+            _serviceProvider = serviceProvider;
+        }
 
         /// <summary>
         /// When the module is loaded, the assembly will be searched for conversations.
@@ -29,14 +38,31 @@ namespace SWLOR.Shared.Dialog.Service
             var classes = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
                 .Where(w => typeof(IConversation).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
+            
             foreach (var type in classes)
             {
-                var instance = Activator.CreateInstance(type) as IConversation;
-                if (instance == null)
+                try
                 {
-                    throw new NullReferenceException("Unable to activate instance of type: " + type);
+                    // Try to resolve from DI container first
+                    var instance = _serviceProvider.GetService(type) as IConversation;
+                    if (instance == null)
+                    {
+                        // Fallback to Activator if not registered in DI
+                        instance = Activator.CreateInstance(type) as IConversation;
+                    }
+                    
+                    if (instance == null)
+                    {
+                        throw new NullReferenceException("Unable to activate instance of type: " + type);
+                    }
+                    
+                    _conversations.Add(type.Name, instance);
                 }
-                _conversations.Add(type.Name, instance);
+                catch (Exception ex)
+                {
+                    _logger.Write<ErrorLogGroup>($"Failed to register conversation '{type.Name}': {ex.Message}");
+                    throw;
+                }
             }
 
             Console.WriteLine($"Loaded {_conversations.Count} conversations.");

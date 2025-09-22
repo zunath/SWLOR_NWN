@@ -5,6 +5,7 @@ using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Service;
+using SWLOR.Shared.Dialog.Contracts;
 using SWLOR.Shared.Dialog.Model;
 using SWLOR.Shared.Dialog.Service;
 
@@ -18,7 +19,8 @@ namespace SWLOR.Component.World.Dialog
         
         private const string MainPageId = "MAIN_PAGE";
 
-        public TaxiTerminalDialog(IKeyItemService keyItemService)
+        public TaxiTerminalDialog(IKeyItemService keyItemService, IDialogService dialogService) 
+            : base(dialogService)
         {
             _keyItemService = keyItemService;
         }

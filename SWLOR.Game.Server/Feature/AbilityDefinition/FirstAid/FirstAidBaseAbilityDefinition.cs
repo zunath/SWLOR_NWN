@@ -10,19 +10,25 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
     {
         private readonly IRandomService _random;
         private readonly IPerkService _perkService;
-        protected readonly ICombatPointService _combatPointService;
-        protected readonly IEnmityService _enmityService;
-        protected readonly IAbilityService _abilityService;
-        protected readonly IStatusEffectService _statusEffectService;
+        protected readonly ICombatPointService CombatPointService;
+        protected readonly IEnmityService EnmityService;
+        protected readonly IAbilityService AbilityService;
+        protected readonly IStatusEffectService StatusEffectService;
 
-        protected FirstAidBaseAbilityDefinition(IRandomService random, IPerkService perkService, ICombatPointService combatPointService, IEnmityService enmityService, IAbilityService abilityService, IStatusEffectService statusEffectService)
+        protected FirstAidBaseAbilityDefinition(
+            IRandomService random, 
+            IPerkService perkService, 
+            ICombatPointService combatPointService, 
+            IEnmityService enmityService, 
+            IAbilityService abilityService, 
+            IStatusEffectService statusEffectService)
         {
             _random = random;
             _perkService = perkService;
-            _combatPointService = combatPointService;
-            _enmityService = enmityService;
-            _abilityService = abilityService;
-            _statusEffectService = statusEffectService;
+            CombatPointService = combatPointService;
+            EnmityService = enmityService;
+            AbilityService = abilityService;
+            StatusEffectService = statusEffectService;
         }
         private const string MedicalSuppliesItemTag = "med_supplies";
         private const string StimPackItemTag = "stim_pack";

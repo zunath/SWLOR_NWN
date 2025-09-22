@@ -13,8 +13,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
     public class GasBombAbilityDefinition : ExplosiveBaseAbilityDefinition
     {
 
-        public GasBombAbilityDefinition(IRandomService random, IItemService itemService, IPerkService perkService, IStatService statService, ICombatService combatService, ICombatPointService combatPointService, IEnmityService enmityService) 
-            : base(random, itemService, perkService, statService, combatService, combatPoint, enmityService)
+        public GasBombAbilityDefinition(IRandomService random, IItemService itemService, IPerkService perkService, IStatService statService, ICombatService combatService, ICombatPointService combatPointService, IEnmityService enmityService, IStatusEffectService statusEffectService) 
+            : base(random, itemService, perkService, statService, combatService, combatPointService, enmityService, statusEffectService)
         {
         }
 
@@ -32,14 +32,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         }
 
         [ScriptHandler(ScriptName.OnGrenadeGas1Enable)]
-        public static void GasBomb1Enter()
+        public void GasBomb1Enter()
         {
             var creature = GetEnteringObject();
             ApplyEffect(creature,  4);
         }
 
         [ScriptHandler(ScriptName.OnGrenadeGas1Heartbeat)]
-        public static void GasBomb1Heartbeat()
+        public void GasBomb1Heartbeat()
         {
             var creature = GetFirstInPersistentObject(OBJECT_SELF);
             while (GetIsObjectValid(creature))
@@ -50,14 +50,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         }
 
         [ScriptHandler(ScriptName.OnGrenadeGas2Enable)]
-        public static void GasBomb2Enter()
+        public void GasBomb2Enter()
         {
             var creature = GetEnteringObject();
             ApplyEffect(creature, 12);
         }
 
         [ScriptHandler(ScriptName.OnGrenadeGas2Heartbeat)]
-        public static void GasBomb2Heartbeat()
+        public void GasBomb2Heartbeat()
         {
             var creature = GetFirstInPersistentObject(OBJECT_SELF);
             while (GetIsObjectValid(creature))
@@ -68,14 +68,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         }
 
         [ScriptHandler(ScriptName.OnGrenadeGas3Enable)]
-        public static void GasBomb3Enter()
+        public void GasBomb3Enter()
         {
             var creature = GetEnteringObject();
             ApplyEffect(creature, 16);
         }
 
         [ScriptHandler(ScriptName.OnGrenadeGas3Heartbeat)]
-        public static void GasBomb3Heartbeat()
+        public void GasBomb3Heartbeat()
         {
             var creature = GetFirstInPersistentObject(OBJECT_SELF);
             while (GetIsObjectValid(creature))

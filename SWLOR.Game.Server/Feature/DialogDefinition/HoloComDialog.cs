@@ -1,6 +1,7 @@
 using SWLOR.Game.Server.Service;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Service;
+using SWLOR.Shared.Dialog.Contracts;
 using SWLOR.Shared.Dialog.Model;
 using SWLOR.Shared.Dialog.Service;
 
@@ -11,7 +12,8 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         private readonly IHoloComService _holoComService;
         private const string MainPageId = "MAIN_PAGE";
 
-        public HoloComDialog(IHoloComService holoComService)
+        public HoloComDialog(IHoloComService holoComService, IDialogService dialogService) 
+            : base(dialogService)
         {
             _holoComService = holoComService;
         }

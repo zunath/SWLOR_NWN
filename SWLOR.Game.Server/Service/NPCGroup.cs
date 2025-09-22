@@ -1,13 +1,14 @@
 using System;
 using System.Collections.Generic;
 using SWLOR.Shared.Caching.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class NPCGroup
+    public class NPCGroup : INPCGroupService
     {
         private readonly IGenericCacheService _cacheService;
         private static IEnumCache<NPCGroupType, NPCGroupAttribute> _npcGroupCache;

@@ -14,8 +14,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         private readonly ICombatService _combatService;
         private readonly IStatService _statService;
 
-        public IncendiaryBombAbilityDefinition(IRandomService random, IItemService itemService, IPerkService perkService, IStatService statService, ICombatService combatService, ICombatPointService combatPointService, IEnmityService enmityService) 
-            : base(random, itemService, perkService, statService, combatService, combatPoint, enmityService)
+        public IncendiaryBombAbilityDefinition(IRandomService random, IItemService itemService, IPerkService perkService, IStatService statService, ICombatService combatService, ICombatPointService combatPointService, IEnmityService enmityService, IStatusEffectService statusEffectService) 
+            : base(random, itemService, perkService, statService, combatService, combatPointService, enmityService, statusEffectService)
         {
             _combatService = combatService;
             _statService = statService;
@@ -59,7 +59,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         }
 
         [ScriptHandler(ScriptName.OnGrenadeIncendiary2Enable)]
-        public static void IncendiaryBomb2Enter()
+        public void IncendiaryBomb2Enter()
         {
             var creature = GetEnteringObject();
             ApplyEffect(creature, 10);

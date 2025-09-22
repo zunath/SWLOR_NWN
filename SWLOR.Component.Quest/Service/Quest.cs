@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Component.Quest.Contracts;
 using SWLOR.Component.Quest.Model;
 using SWLOR.NWN.API.NWNX;
@@ -25,6 +28,7 @@ namespace SWLOR.Component.Quest.Service
         private readonly IPerkService _perkService;
         private readonly IEnmityService _enmityService;
         private readonly IActivityService _activityService;
+        private readonly IRandomService _randomService;
         
         // Cached data
         private IInterfaceCache<string, QuestDetail> _questCache;
@@ -32,6 +36,11 @@ namespace SWLOR.Component.Quest.Service
         // Additional caches for complex data
         private readonly Dictionary<NPCGroupType, List<string>> _npcsWithKillQuests = new();
         private readonly Dictionary<GuildType, Dictionary<int, List<QuestDetail>>> _questsByGuildType = new();
+        
+        // Guild quest management
+        public DateTime? DateTasksLoaded { get; private set; }
+        private readonly Dictionary<GuildType, Dictionary<int, List<QuestDetail>>> _activeGuildTasksByRank = new();
+        private readonly Dictionary<GuildType, Dictionary<string, QuestDetail>> _activeGuildTasks = new();
 
         public Quest(
             IDatabaseService db,
@@ -40,7 +49,8 @@ namespace SWLOR.Component.Quest.Service
             IItemService itemService,
             IPerkService perkService,
             IEnmityService enmityService,
-            IActivityService activityService)
+            IActivityService activityService,
+            IRandomService randomService)
         {
             _db = db;
             _itemCache = itemCache;
@@ -49,6 +59,7 @@ namespace SWLOR.Component.Quest.Service
             _perkService = perkService;
             _enmityService = enmityService;
             _activityService = activityService;
+            _randomService = randomService;
         }
 
         /// <summary>
@@ -529,6 +540,85 @@ namespace SWLOR.Component.Quest.Service
                          (int)(baseAmount * guildRelations);
 
             return amount;
+        }
+
+        /// <summary>
+        /// After quests are registered, refresh the available guild tasks.
+        /// </summary>
+        [ScriptHandler(ScriptName.OnQuestsRegistered)]
+        public void RefreshGuildTasks()
+        {
+            if (DateTasksLoaded != null) return;
+
+            // Get the max rank - using hardcoded value to avoid circular dependency
+            // This should match the MaxRank in the Guild service
+            var maxRank = 5;
+
+            for (var rank = 0; rank < maxRank; rank++)
+            {
+                var guildTypes = Enum.GetValues(typeof(GuildType)).Cast<GuildType>();
+                foreach (var guildType in guildTypes)
+                {
+                    var potentialTasks = GetQuestsByGuild(guildType, rank);
+                    List<QuestDetail> tasks;
+
+                    // Need at least 11 tasks to randomize. We have ten or less. Simply enable all of these.
+                    if (potentialTasks.Count <= 10)
+                    {
+                        tasks = potentialTasks;
+                    }
+                    // Pick 10 tasks randomly out of the potential list.
+                    else
+                    {
+                        tasks = potentialTasks
+                            .OrderBy(o => _randomService.Next())
+                            .Take(10)
+                            .ToList();
+                    }
+
+                    if (!_activeGuildTasks.ContainsKey(guildType))
+                        _activeGuildTasks[guildType] = new Dictionary<string, QuestDetail>();
+
+                    if (!_activeGuildTasksByRank.ContainsKey(guildType))
+                        _activeGuildTasksByRank[guildType] = new Dictionary<int, List<QuestDetail>>();
+
+                    foreach (var task in tasks)
+                    {
+                        _activeGuildTasks[guildType][task.QuestId] = task;
+                    }
+
+                    _activeGuildTasksByRank[guildType][rank] = tasks;
+                }
+            }
+
+            DateTasksLoaded = DateTime.UtcNow;
+        }
+
+        /// <summary>
+        /// Retrieves quest details associated with the active guild tasks by rank.
+        /// </summary>
+        /// <param name="guild">The guild type to retrieve for</param>
+        /// <param name="rank">The rank to retrieve for</param>
+        /// <returns>A list of active guild tasks</returns>
+        public List<QuestDetail> GetActiveGuildTasksByRank(GuildType guild, int rank)
+        {
+            if (!_activeGuildTasksByRank.ContainsKey(guild))
+                return new List<QuestDetail>();
+
+            return _activeGuildTasksByRank[guild][rank].ToList();
+        }
+
+        /// <summary>
+        /// Retrieves quest details associated with the active guild tasks.
+        /// </summary>
+        /// <param name="guild">The guild type to retrieve for</param>
+        /// <returns>A list of active guild tasks</returns>
+        public Dictionary<string, QuestDetail> GetAllActiveGuildTasks(GuildType guild)
+        {
+            if (!_activeGuildTasks.ContainsKey(guild))
+                return new Dictionary<string, QuestDetail>();
+
+            return _activeGuildTasks[guild].ToDictionary(x => x.Key, y => y.Value);
         }
     }
 }

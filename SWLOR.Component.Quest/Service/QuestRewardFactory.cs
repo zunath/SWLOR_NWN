@@ -47,17 +47,20 @@ namespace SWLOR.Component.Quest.Service
 
         public IQuestReward CreateGPReward(GuildType guild, int amount, bool isSelectable = true)
         {
-            return new GPReward(guild, amount, isSelectable);
+            var guildService = _serviceProvider.GetRequiredService<IGuildService>();
+            return new GPReward(guildService, guild, amount, isSelectable);
         }
 
         public IQuestReward CreateFactionStandingReward(FactionType faction, int amount, bool isSelectable = true)
         {
-            return new FactionStandingReward(faction, amount, isSelectable);
+            var factionService = _serviceProvider.GetRequiredService<IFactionService>();
+            return new FactionStandingReward(factionService, faction, amount, isSelectable);
         }
 
         public IQuestReward CreateFactionPointsReward(FactionType faction, int amount, bool isSelectable = true)
         {
-            return new FactionPointsReward(faction, amount, isSelectable);
+            var factionService = _serviceProvider.GetRequiredService<IFactionService>();
+            return new FactionPointsReward(factionService, faction, amount, isSelectable);
         }
     }
 }

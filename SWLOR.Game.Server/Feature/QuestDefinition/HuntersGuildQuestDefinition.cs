@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Quest.Contracts;
 using SWLOR.Component.Quest.Service;
 using SWLOR.Game.Server.Service;
@@ -221,7 +222,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             int amount,
             int guildRank)
         {
-            var groupDetail = NPCGroup.GetNPCGroup(group);
+            var npcGroupService = _serviceProvider.GetRequiredService<INPCGroupService>();
+            var groupDetail = npcGroupService.GetNPCGroup(group);
             var rewardDetails = _rewardDetails[guildRank];
 
             _builder.Create(questId, $"Kill {amount}x {groupDetail.Name}")

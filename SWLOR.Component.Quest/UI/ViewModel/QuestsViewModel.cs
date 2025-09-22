@@ -1,4 +1,6 @@
 using System.Text;
+using SWLOR.Component.Quest.Contracts;
+using SWLOR.Component.Quest.Service;
 using SWLOR.Component.Quest.UI.RefreshEvent;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;

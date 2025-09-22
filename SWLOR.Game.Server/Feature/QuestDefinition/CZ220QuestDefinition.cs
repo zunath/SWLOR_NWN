@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using SWLOR.Component.Quest.Contracts;
+using SWLOR.Component.Quest.Service;
 using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.Shared.Abstractions.Contracts;

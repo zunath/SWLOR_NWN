@@ -12,16 +12,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
     {
         private readonly ICombatService _combatService;
         private readonly IStatService _statService;
-        private readonly IAbilityService _abilityService;
         private readonly ICombatPointService _combatPointService;
+        private readonly IEnmityService _enmityService;
+        private readonly IAbilityService _abilityService;
 
-        public IonGrenadeAbilityDefinition(IRandomService random, IItemService itemService, IPerkService perkService, IStatService statService, ICombatService combatService, IAbilityService abilityService, ICombatPointService combatPointService, IEnmityService enmityService) 
-            : base(random, itemService, perkService, statService, combatService, combatPointService, enmityService)
+        public IonGrenadeAbilityDefinition(IRandomService random, IItemService itemService, IPerkService perkService, IStatService statService, ICombatService combatService, ICombatPointService combatPointService, IEnmityService enmityService, IStatusEffectService statusEffectService, IAbilityService abilityService) 
+            : base(random, itemService, perkService, statService, combatService, combatPointService, enmityService, statusEffectService)
         {
             _combatService = combatService;
             _statService = statService;
-            _abilityService = abilityService;
             _combatPointService = combatPointService;
+            _enmityService = enmityService;
+            _abilityService = abilityService;
         }
 
         public override Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
@@ -42,10 +44,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             dmg += _combatService.GetAbilityDamageBonus(activator, SkillType.Devices);
 
             var attackerStat = GetAbilityScore(activator, AbilityType.Perception);
-            var attack = StatService.GetAttack(activator, AbilityType.Perception, SkillType.Devices);
+            var attack = _statService.GetAttack(activator, AbilityType.Perception, SkillType.Devices);
             var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-            var defense = StatService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
-            var damage = CombatService.CalculateDamage(
+            var defense = _statService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+            var damage = _combatService.CalculateDamage(
                 attack,
                 dmg, 
                 attackerStat, 
@@ -59,12 +61,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 race == RacialType.Droid ||
                 race == RacialType.Cyborg))
             {
-                dc = CombatService.CalculateSavingThrowDC(activator, SavingThrow.Fortitude, dc);
+                dc = _combatService.CalculateSavingThrowDC(activator, SavingThrow.Fortitude, dc);
                 var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
                 if (checkResult == SavingThrowResultType.Failed)
                 {
                     ApplyEffectToObject(DurationType.Temporary, EffectStunned(), target, Duration);
-                    AbilityService.ApplyTemporaryImmunity(target, Duration, ImmunityType.Stun);
+                    _abilityService.ApplyTemporaryImmunity(target, Duration, ImmunityType.Stun);
                 }
             }
 
@@ -77,7 +79,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             });
 
             _combatPointService.AddCombatPoint(activator, target, SkillType.Devices, 3);
-            EnmityService.ModifyEnmity(activator, target, 350);
+            _enmityService.ModifyEnmity(activator, target, 350);
         }
 
         private void IonGrenade1(IAbilityBuilder builder)

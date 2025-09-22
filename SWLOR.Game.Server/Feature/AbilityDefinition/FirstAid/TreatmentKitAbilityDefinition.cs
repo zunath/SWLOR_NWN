@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                         return "Your target is too far away.";
                     }
 
-                    if (!_statusEffectService.HasStatusEffect(target, StatusEffectType.Bleed, StatusEffectType.Poison))
+                    if (!StatusEffectService.HasStatusEffect(target, StatusEffectType.Bleed, StatusEffectType.Poison))
                     {
                         return "Your target is healthy.";
                     }
@@ -55,14 +55,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasImpactAction((activator, target, _, _) =>
                 {
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_G), target);
-                    _statusEffectService.Remove(target, StatusEffectType.Bleed);
-                    _statusEffectService.Remove(target, StatusEffectType.Poison);
+                    StatusEffectService.Remove(target, StatusEffectType.Bleed);
+                    StatusEffectService.Remove(target, StatusEffectType.Poison);
                     RemoveEffect(target, EffectTypeScript.Poison, EffectTypeScript.Disease);
 
                     TakeMedicalSupplies(activator);
 
-                    _enmityService.ModifyEnmityOnAll(activator, 200);
-                    _combatPointService.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
+                    EnmityService.ModifyEnmityOnAll(activator, 200);
+                    CombatPointService.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
                 });
         }
         private void TreatmentKit2(IAbilityBuilder builder)
@@ -84,7 +84,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                         return "Your target is too far away.";
                     }
 
-                    if (!_statusEffectService.HasStatusEffect(target, StatusEffectType.Bleed, StatusEffectType.Poison, StatusEffectType.Shock, StatusEffectType.Burn))
+                    if (!StatusEffectService.HasStatusEffect(target, StatusEffectType.Bleed, StatusEffectType.Poison, StatusEffectType.Shock, StatusEffectType.Burn))
                     {
                         return "Your target is healthy.";
                     }
@@ -99,17 +99,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasImpactAction((activator, target, _, _) =>
                 {
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_G), target);
-                    _statusEffectService.Remove(target, StatusEffectType.Bleed);
-                    _statusEffectService.Remove(target, StatusEffectType.Poison);
-                    _statusEffectService.Remove(target, StatusEffectType.Shock);
-                    _statusEffectService.Remove(target, StatusEffectType.Burn);
-                    _statusEffectService.Remove(target, StatusEffectType.Disease);
+                    StatusEffectService.Remove(target, StatusEffectType.Bleed);
+                    StatusEffectService.Remove(target, StatusEffectType.Poison);
+                    StatusEffectService.Remove(target, StatusEffectType.Shock);
+                    StatusEffectService.Remove(target, StatusEffectType.Burn);
+                    StatusEffectService.Remove(target, StatusEffectType.Disease);
                     RemoveEffect(target, EffectTypeScript.Poison, EffectTypeScript.Disease);
 
                     TakeMedicalSupplies(activator);
 
-                    _enmityService.ModifyEnmityOnAll(activator, 350);
-                    _combatPointService.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
+                    EnmityService.ModifyEnmityOnAll(activator, 350);
+                    CombatPointService.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
                 });
         }
     }

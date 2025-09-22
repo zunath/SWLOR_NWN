@@ -1,6 +1,7 @@
 using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Dialog.Contracts;
 using SWLOR.Shared.Dialog.Model;
 using SWLOR.Shared.Dialog.Service;
 
@@ -12,7 +13,8 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         private readonly IKeyItemService _keyItemService;
         private readonly IObjectVisibilityService _objectVisibilityService;
 
-        public SliceTerminalDialog(IKeyItemService keyItemService, IObjectVisibilityService objectVisibilityService)
+        public SliceTerminalDialog(IKeyItemService keyItemService, IObjectVisibilityService objectVisibilityService, IDialogService dialogService) 
+            : base(dialogService)
         {
             _keyItemService = keyItemService;
             _objectVisibilityService = objectVisibilityService;

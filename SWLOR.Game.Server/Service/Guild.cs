@@ -19,7 +19,6 @@ namespace SWLOR.Game.Server.Service
     {
         private readonly IDatabaseService _db;
         private readonly IRandomService _random;
-        private readonly IQuestService _questService;
         private readonly IPerkService _perkService;
         private readonly Dictionary<GuildType, GuildAttribute> _activeGuilds = new();
         private readonly Dictionary<int, int> _rankProgression = new()
@@ -33,18 +32,14 @@ namespace SWLOR.Game.Server.Service
             { 5, 60000 }
         };
 
-        public GuildService(IDatabaseService db, IRandomService random, IQuestService questService, IPerkService perkService)
+        public GuildService(IDatabaseService db, IRandomService random, IPerkService perkService)
         {
             _db = db;
             _random = random;
-            _questService = questService;
             _perkService = perkService;
         }
 
         public int MaxRank { get; private set; }
-        public DateTime? DateTasksLoaded { get; private set; }
-        private readonly Dictionary<GuildType, Dictionary<int, List<QuestDetail>>> _activeGuildTasksByRank = new();
-        private readonly Dictionary<GuildType, Dictionary<string, QuestDetail>> _activeGuildTasks = new();
 
         /// <summary>
         /// When the module caches, cache relevant data and load guild tasks.
@@ -138,79 +133,6 @@ namespace SWLOR.Game.Server.Service
             _db.Set(dbPlayer);
         }
 
-        /// <summary>
-        /// After quests are registered, refresh the available guild tasks.
-        /// </summary>
-        [ScriptHandler(ScriptName.OnQuestsRegistered)]
-        public void RefreshGuildTasks()
-        {
-            if (DateTasksLoaded != null) return;
-
-            for (var rank = 0; rank < MaxRank; rank++)
-            {
-                foreach (var (type, _) in _activeGuilds)
-                {
-                    var potentialTasks = _questService.GetQuestsByGuild(type, rank);
-                    List<QuestDetail> tasks;
-
-                    // Need at least 11 tasks to randomize. We have ten or less. Simply enable all of these.
-                    if (potentialTasks.Count <= 10)
-                    {
-                        tasks = potentialTasks;
-                    }
-                    // Pick 10 tasks randomly out of the potential list.
-                    else
-                    {
-                        tasks = potentialTasks
-                            .OrderBy(o => _random.Next())
-                            .Take(10)
-                            .ToList();
-                    }
-
-                    if(!_activeGuildTasks.ContainsKey(type))
-                        _activeGuildTasks[type] = new Dictionary<string, QuestDetail>();
-
-                    if(!_activeGuildTasksByRank.ContainsKey(type))
-                        _activeGuildTasksByRank[type] = new Dictionary<int, List<QuestDetail>>();
-
-                    foreach (var task in tasks)
-                    {
-                        _activeGuildTasks[type][task.QuestId] = task;
-                    }
-
-                    _activeGuildTasksByRank[type][rank] = tasks;
-                }
-            }
-
-            DateTasksLoaded = DateTime.UtcNow;
-        }
-
-        /// <summary>
-        /// Retrieves quest details associated with the active guild tasks by rank.
-        /// </summary>
-        /// <param name="guild">The guild type to retrieve for</param>
-        /// <param name="rank">The rank to retrieve for</param>
-        /// <returns>A list of active guild tasks</returns>
-        public List<QuestDetail> GetActiveGuildTasksByRank(GuildType guild, int rank)
-        {
-            if(!_activeGuildTasksByRank.ContainsKey(guild))
-                return new List<QuestDetail>();
-
-            return _activeGuildTasksByRank[guild][rank].ToList();
-        }
-
-        /// <summary>
-        /// Retrieves quest details associated with the active guild tasks.
-        /// </summary>
-        /// <param name="guild">The guild type to retrieve for</param>
-        /// <returns>A list of active guild tasks</returns>
-        public Dictionary<string, QuestDetail> GetAllActiveGuildTasks(GuildType guild)
-        {
-            if(!_activeGuildTasks.ContainsKey(guild))
-                return new Dictionary<string, QuestDetail>();
-
-            return _activeGuildTasks[guild].ToDictionary(x => x.Key, y => y.Value);
-        }
 
         /// <summary>
         /// Retrieves the GP required to reach next rank.
@@ -221,5 +143,6 @@ namespace SWLOR.Game.Server.Service
         {
             return _rankProgression[rank];
         }
+
     }
 }

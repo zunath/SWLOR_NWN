@@ -31,7 +31,9 @@ namespace SWLOR.Component.Quest.Service
         public IQuestObjective CreateKillTargetObjective(NPCGroupType group, int amount)
         {
             var db = _serviceProvider.GetRequiredService<IDatabaseService>();
-            return new KillTargetObjective(db, group, amount);
+            var questService = _serviceProvider.GetRequiredService<IQuestService>();
+            var npcGroupService = _serviceProvider.GetRequiredService<INPCGroupService>();
+            return new KillTargetObjective(db, questService, npcGroupService, group, amount);
         }
     }
 }

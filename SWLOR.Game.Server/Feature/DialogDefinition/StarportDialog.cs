@@ -6,6 +6,7 @@ using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
+using SWLOR.Shared.Dialog.Contracts;
 using SWLOR.Shared.Dialog.Model;
 using SWLOR.Shared.Dialog.Service;
 using SWLOR.Shared.UI.Contracts;
@@ -22,7 +23,8 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         private readonly IPlanetService _planetService;
         private const string MainPageId = "MAIN_PAGE";
 
-        public StarportDialog(ILogger logger, IDatabaseService db, IKeyItemService keyItemService, IPropertyService propertyService, IGuiService guiService, IPlanetService planetService)
+        public StarportDialog(ILogger logger, IDatabaseService db, IKeyItemService keyItemService, IPropertyService propertyService, IGuiService guiService, IPlanetService planetService, IDialogService dialogService) 
+            : base(dialogService)
         {
             _logger = logger;
             _db = db;

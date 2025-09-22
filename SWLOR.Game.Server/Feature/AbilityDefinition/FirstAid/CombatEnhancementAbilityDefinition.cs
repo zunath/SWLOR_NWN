@@ -10,7 +10,20 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 {
     public class CombatEnhancementAbilityDefinition: FirstAidBaseAbilityDefinition
     {
-        public CombatEnhancementAbilityDefinition(IRandomService random, IPerkService perkService, ICombatPointService combatPointService, IEnmityService enmityService, IAbilityService abilityService) : base(random, perkService, combatPointService, enmityService, abilityService)
+        public CombatEnhancementAbilityDefinition(
+            IRandomService random, 
+            IPerkService perkService, 
+            ICombatPointService combatPointService, 
+            IEnmityService enmityService, 
+            IAbilityService abilityService,
+            IStatusEffectService statusEffect) 
+            : base(
+                random, 
+                perkService, 
+                combatPointService, 
+                enmityService, 
+                abilityService,
+                statusEffect)
         {
         }
 
@@ -80,8 +93,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 {
                     Impact(activator, target, 1);
 
-                    _enmityService.ModifyEnmity(activator, target, 250);
-                    _combatPointService.AddCombatPoint(activator, target, SkillType.FirstAid, 3);
+                    EnmityService.ModifyEnmity(activator, target, 250);
+                    CombatPointService.AddCombatPoint(activator, target, SkillType.FirstAid, 3);
                 });
         }
         private void CombatEnhancement2(IAbilityBuilder builder)
@@ -100,8 +113,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 {
                     Impact(activator, target, 2);
 
-                    _enmityService.ModifyEnmity(activator, target, 350);
-                    _combatPointService.AddCombatPoint(activator, target, SkillType.FirstAid, 3);
+                    EnmityService.ModifyEnmity(activator, target, 350);
+                    CombatPointService.AddCombatPoint(activator, target, SkillType.FirstAid, 3);
                 });
         }
         private void CombatEnhancement3(IAbilityBuilder builder)
@@ -120,8 +133,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 {
                     Impact(activator, target, 3);
 
-                    _enmityService.ModifyEnmity(activator, target, 450);
-                    _combatPointService.AddCombatPoint(activator, target, SkillType.FirstAid, 3);
+                    EnmityService.ModifyEnmity(activator, target, 450);
+                    CombatPointService.AddCombatPoint(activator, target, SkillType.FirstAid, 3);
                 });
         }
     }

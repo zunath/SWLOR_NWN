@@ -1,6 +1,8 @@
+using System;
+using SWLOR.Component.Quest.Service;
 using SWLOR.Shared.Core.Enums;
 
-namespace SWLOR.Shared.Core.Contracts
+namespace SWLOR.Component.Quest.Contracts
 {
     public interface IQuestService
     {
@@ -107,5 +109,30 @@ namespace SWLOR.Shared.Core.Contracts
         void TriggerAndPlaceableProgression(uint player, uint triggerOrPlaceable);
 
         int CalculateQuestGoldReward(uint player, bool isGuildQuest, int baseAmount);
+
+        /// <summary>
+        /// After quests are registered, refresh the available guild tasks.
+        /// </summary>
+        void RefreshGuildTasks();
+
+        /// <summary>
+        /// Retrieves quest details associated with the active guild tasks by rank.
+        /// </summary>
+        /// <param name="guild">The guild type to retrieve for</param>
+        /// <param name="rank">The rank to retrieve for</param>
+        /// <returns>A list of active guild tasks</returns>
+        List<QuestDetail> GetActiveGuildTasksByRank(GuildType guild, int rank);
+
+        /// <summary>
+        /// Retrieves quest details associated with the active guild tasks.
+        /// </summary>
+        /// <param name="guild">The guild type to retrieve for</param>
+        /// <returns>A list of active guild tasks</returns>
+        Dictionary<string, QuestDetail> GetAllActiveGuildTasks(GuildType guild);
+
+        /// <summary>
+        /// Gets the date when guild tasks were last loaded.
+        /// </summary>
+        DateTime? DateTasksLoaded { get; }
     }
 }

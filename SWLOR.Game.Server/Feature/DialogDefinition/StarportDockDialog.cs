@@ -8,6 +8,7 @@ using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
+using SWLOR.Shared.Dialog.Contracts;
 using SWLOR.Shared.Dialog.Model;
 using SWLOR.Shared.Dialog.Service;
 
@@ -19,7 +20,8 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         private readonly IDatabaseService _db;
         private readonly IPropertyService _propertyService;
 
-        public StarportDockDialog(ILogger logger, IDatabaseService db, IPropertyService propertyService)
+        public StarportDockDialog(ILogger logger, IDatabaseService db, IPropertyService propertyService, IDialogService dialogService) 
+            : base(dialogService)
         {
             _logger = logger;
             _db = db;

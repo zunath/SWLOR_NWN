@@ -1,3 +1,5 @@
+using System.Linq;
+using SWLOR.Component.Quest.Contracts;
 using SWLOR.Component.Quest.Model;
 using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript;
@@ -8,6 +10,7 @@ using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Dialog.Model;
 using SWLOR.Shared.Dialog.Service;
 using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.Dialog.Contracts;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
@@ -17,7 +20,8 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         private readonly IQuestService _questService;
         private readonly IGuildService _guildService;
 
-        public GuildMasterDialog(IDatabaseService db, IQuestService questService, IGuildService guildService)
+        public GuildMasterDialog(IDatabaseService db, IQuestService questService, IGuildService guildService, IDialogService dialogService) 
+            : base(dialogService)
         {
             _db = db;
             _questService = questService;
@@ -130,7 +134,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             var dbPlayer = _db.Get<Player>(playerId);
             page.Header = "The following tasks are available for you.";
 
-            var currentTasks = _guildService.GetAllActiveGuildTasks(model.Guild);
+            var currentTasks = _questService.GetAllActiveGuildTasks(model.Guild);
             // Expired quests - Quests the player accepted but are no longer offered by the guild master.
             foreach (var (questId, pcQuest) in dbPlayer.Quests)
             {
@@ -153,7 +157,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 // If the player has completed the task during this task cycle, it will be excluded from this list.
                 // The reason for this is to prevent players from repeating the same tasks over and over without impunity.
                 if (dbPlayer.Quests.ContainsKey(task.QuestId) &&
-                    dbPlayer.Quests[task.QuestId].DateLastCompleted >= _guildService.DateTasksLoaded)
+                    dbPlayer.Quests[task.QuestId].DateLastCompleted >= _questService.DateTasksLoaded)
                     continue;
 
                 // Player doesn't have the requisite guild rank to accept this task. Skip over it.

@@ -1,9 +1,8 @@
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 
-namespace SWLOR.Shared.Abstractions.Contracts
+namespace SWLOR.Shared.UI.Contracts
 {
     public interface IGuiService
     {

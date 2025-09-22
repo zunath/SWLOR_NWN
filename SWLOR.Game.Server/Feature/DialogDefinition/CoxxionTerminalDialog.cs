@@ -2,6 +2,7 @@ using System.Collections.Generic;
 
 using SWLOR.Game.Server.Service;
 using SWLOR.Shared.Core.Service;
+using SWLOR.Shared.Dialog.Contracts;
 using SWLOR.Shared.Dialog.Model;
 using SWLOR.Shared.Dialog.Service;
 using SWLOR.Shared.Events.Attributes;
@@ -14,6 +15,10 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         private static readonly List<uint> _areaDoors = new();
 
         private const string MainPageId = "MAIN_PAGE";
+
+        public CoxxionTerminalDialog(IDialogService dialogService) : base(dialogService)
+        {
+        }
 
         /// <summary>
         /// When the module loads, store the doors for the Coxxion Base dungeon into cache.

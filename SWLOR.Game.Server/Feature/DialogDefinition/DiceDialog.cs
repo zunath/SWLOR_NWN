@@ -4,6 +4,7 @@ using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Service;
+using SWLOR.Shared.Dialog.Contracts;
 using SWLOR.Shared.Dialog.Model;
 using SWLOR.Shared.Dialog.Service;
 
@@ -15,7 +16,8 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         private readonly IRandomService _random;
         private readonly ISkillService _skillService;
 
-        public DiceDialog(IDatabaseService db, IRandomService random, ISkillService skillService)
+        public DiceDialog(IDatabaseService db, IRandomService random, ISkillService skillService, IDialogService dialogService) 
+            : base(dialogService)
         {
             _db = db;
             _random = random;

@@ -10,10 +10,7 @@ using SWLOR.Component.Language.Infrastructure;
 using SWLOR.Component.Market.Infrastructure;
 using SWLOR.Component.Player.Infrastructure;
 using SWLOR.Component.Properties.Infrastructure;
-using SWLOR.Component.Quest.Contracts;
 using SWLOR.Component.Quest.Dialog;
-using SWLOR.Component.Quest.Infrastructure;
-using SWLOR.Component.Quest.Service;
 using SWLOR.Component.Space.Infrastructure;
 using SWLOR.Component.World.Infrastructure;
 using SWLOR.Game.Server.Feature;
@@ -27,7 +24,6 @@ using SWLOR.Game.Server.Feature.AbilityDefinition.Ranged;
 using SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded;
 using SWLOR.Game.Server.Feature.ItemDefinition;
 using SWLOR.Game.Server.Feature.PerkDefinition;
-using SWLOR.Game.Server.Feature.QuestDefinition;
 using SWLOR.Game.Server.Feature.SnippetDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Server;
@@ -49,12 +45,14 @@ using SWLOR.Shared.Core.Configuration;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Log;
 using SWLOR.Shared.Core.Infrastructure;
+using SWLOR.Shared.Dialog.Contracts;
 using SWLOR.Shared.Events.Infrastructure;
 using SWLOR.Shared.Events.Service;
 using SWLOR.Shared.UI.Contracts;
 using ScriptExecutionProvider = SWLOR.Game.Server.Server.ScriptExecutionProvider;
 using SWLOR.Shared.UI.Infrastructure;
 using SWLOR.Shared.UI.Service;
+using SWLOR.Shared.Dialog.Service;
 
 namespace SWLOR.Game.Server
 {
@@ -107,6 +105,9 @@ namespace SWLOR.Game.Server
             services.AddSingleton<IEventService, EventService>();
             services.AddSingleton<IEventRegistrationService, EventRegistrationService>();
             services.AddSingleton<IScheduler, Scheduler>();
+            
+            // Dialog Service
+            services.AddSingleton<IDialogService, Dialog>();
         }
 
         private static void AddGameServices(IServiceCollection services)
@@ -142,25 +143,20 @@ namespace SWLOR.Game.Server
             services.AddSingleton<Feature.DialogDefinition.LockedDoorDialog>();
             services.AddSingleton<Feature.DialogDefinition.SliceTerminalDialog>();
             services.AddSingleton<Feature.DialogDefinition.StarportDialog>();
+            services.AddSingleton<Feature.DialogDefinition.StarportDockDialog>();
+            services.AddSingleton<Feature.DialogDefinition.StarportFlightsDialog>();
+            services.AddSingleton<Feature.DialogDefinition.PropertyExitDialog>();
+            services.AddSingleton<Feature.DialogDefinition.MedicalRegistrationDialog>();
+            services.AddSingleton<Feature.DialogDefinition.DiceDialog>();
+            services.AddSingleton<Feature.DialogDefinition.JukeboxDialog>();
+            services.AddSingleton<Feature.DialogDefinition.DestroyItemDialog>();
+            services.AddSingleton<Feature.DialogDefinition.CoxxionTerminalDialog>();
+            services.AddSingleton<Feature.DialogDefinition.MarketDialog>();
             services.AddSingleton<Component.World.Dialog.TaxiTerminalDialog>();
             services.AddSingleton<QuestRewardSelectionDialog>();
             services.AddSingleton<Feature.DialogDefinition.XPTomeDialog>();
             services.AddSingleton<Feature.DialogDefinition.HoloComDialog>();
 
-            // Quest Definition Services
-            services.AddSingleton<IQuestListDefinition, DantooineQuestDefinition>();
-            services.AddSingleton<IQuestListDefinition, CZ220QuestDefinition>();
-            services.AddSingleton<IQuestListDefinition, ViscaraQuestDefinition>();
-            services.AddSingleton<IQuestListDefinition, HiddenAccessQuestDefinition>();
-            services.AddSingleton<IQuestListDefinition, HutlarQuestDefinition>();
-            services.AddSingleton<IQuestListDefinition, SmitheryGuildQuestDefinition>();
-            services.AddSingleton<IQuestListDefinition, FabricationGuildQuestDefinition>();
-            services.AddSingleton<IQuestListDefinition, EngineeringGuildQuestDefinition>();
-            services.AddSingleton<IQuestListDefinition, AgricultureGuildQuestDefinition>();
-            services.AddSingleton<IQuestListDefinition, TatooineQuestDefinition>();
-            services.AddSingleton<IQuestListDefinition, HuntersGuildQuestDefinition>();
-            services.AddSingleton<IQuestListDefinition, KorribanQuestlineDefinition>();
-            services.AddSingleton<IQuestListDefinition, MonCalaQuestDefinition>();
 
         // Feature Services
         services.AddSingleton<MiniMaps>();
@@ -202,15 +198,6 @@ namespace SWLOR.Game.Server
         services.AddSingleton<DroidBlandPersonality>();
         services.AddSingleton<DroidWorshipfulPersonality>();
         
-        // Quest Builder Service
-        services.AddTransient<IQuestBuilder, QuestBuilder>();
-        services.AddSingleton<IQuestBuilderFactory, QuestBuilderFactory>();
-        
-        // Quest Component Factories
-        services.AddSingleton<IQuestDetailFactory, QuestDetailFactory>();
-        services.AddSingleton<IQuestRewardFactory, QuestRewardFactory>();
-        services.AddSingleton<IQuestPrerequisiteFactory, QuestPrerequisiteFactory>();
-        services.AddSingleton<IQuestObjectiveFactory, QuestObjectiveFactory>();
         
         
         // Fishing Location Builder Service
@@ -283,7 +270,6 @@ namespace SWLOR.Game.Server
             services.AddSingleton<PlayerInitialization>();
             services.AddSingleton<Feature.DialogDefinition.GuildMasterDialog>();
             services.AddSingleton<Feature.DialogDefinition.PlaceCityHallDialog>();
-            services.AddSingleton<Feature.DialogDefinition.StarportDialog>();
         services.AddSingleton<Feature.GuiDefinition.ViewModel.CraftViewModel>();
             services.AddSingleton<IDroid, Droid>();
             services.AddSingleton<Death>();
@@ -416,7 +402,6 @@ namespace SWLOR.Game.Server
             
             // Core Services
             services.AddSingleton<IObjectVisibilityService, ObjectVisibilityService>();
-            services.AddSingleton<IQuestService, Quest>();
             services.AddSingleton<IAbilityBuilder, AbilityBuilder>();
             services.AddSingleton<IAbilityService, Ability>();
             services.AddSingleton<IPerkService, Perk>();
@@ -435,6 +420,7 @@ namespace SWLOR.Game.Server
             services.AddSingleton<IGenericCacheService, GenericCacheService>();
             services.AddSingleton<IGuiService, GuiService>();
             services.AddSingleton<IAnimationPlayerService, AnimationPlayerService>();
+            services.AddSingleton<INPCGroupService, NPCGroup>();
                 
             // Static service conversions
             services.AddSingleton<CombatPoint>();

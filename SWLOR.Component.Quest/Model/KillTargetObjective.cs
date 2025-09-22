@@ -1,5 +1,6 @@
 using SWLOR.Component.Quest.Contracts;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Service;
@@ -10,12 +11,16 @@ namespace SWLOR.Component.Quest.Model
     public class KillTargetObjective : IQuestObjective
     {
         private readonly IDatabaseService _db;
+        private readonly IQuestService _questService;
+        private readonly INPCGroupService _npcGroupService;
         public NPCGroupType Group { get; }
         private readonly int _amount;
 
-        public KillTargetObjective(IDatabaseService db, NPCGroupType group, int amount)
+        public KillTargetObjective(IDatabaseService db, IQuestService questService, INPCGroupService npcGroupService, NPCGroupType group, int amount)
         {
             _db = db;
+            _questService = questService;
+            _npcGroupService = npcGroupService;
             Group = group;
             _amount = amount;
         }
@@ -44,7 +49,7 @@ namespace SWLOR.Component.Quest.Model
             quest.KillProgresses[Group]--;
             _db.Set(dbPlayer);
 
-            var npcGroup = NPCGroup.GetNPCGroup(Group);
+            var npcGroup = _npcGroupService.GetNPCGroup(Group);
             var questDetail = _questService.GetQuestById(questId);
 
             var statusMessage = $"[{questDetail.Name}] {npcGroup.Name} remaining: {quest.KillProgresses[Group]}";
@@ -81,7 +86,7 @@ namespace SWLOR.Component.Quest.Model
             if (!dbPlayer.Quests.ContainsKey(questId))
                 return "N/A";
 
-            var npcGroup = NPCGroup.GetNPCGroup(Group);
+            var npcGroup = _npcGroupService.GetNPCGroup(Group);
             var numberRemaining = dbPlayer.Quests[questId].KillProgresses[Group];
             
             return $"{_amount - numberRemaining} / {_amount} {npcGroup.Name}";

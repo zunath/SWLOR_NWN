@@ -1,4 +1,5 @@
 using SWLOR.Shared.Core.Service;
+using SWLOR.Shared.Dialog.Contracts;
 using SWLOR.Shared.Dialog.Model;
 using SWLOR.Shared.Dialog.Service;
 
@@ -14,6 +15,10 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
         private const string MainPageId = "MAIN_PAGE";
         private const string ConfirmPageId = "CONFIRM_PAGE";
+
+        public DestroyItemDialog(IDialogService dialogService) : base(dialogService)
+        {
+        }
 
         public override PlayerDialog SetUp(uint player)
         {

@@ -4,6 +4,7 @@ using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
+using SWLOR.Shared.Dialog.Contracts;
 using SWLOR.Shared.Dialog.Model;
 using SWLOR.Shared.Dialog.Service;
 
@@ -16,7 +17,8 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         private readonly IPlanetService _planetService;
         private readonly IPropertyService _propertyService;
 
-        public StarportFlightsDialog(ILogger logger, IDatabaseService db, IPlanetService planetService, IPropertyService propertyService)
+        public StarportFlightsDialog(ILogger logger, IDatabaseService db, IPlanetService planetService, IPropertyService propertyService, IDialogService dialogService) 
+            : base(dialogService)
         {
             _logger = logger;
             _db = db;

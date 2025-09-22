@@ -1,5 +1,6 @@
 using SWLOR.Component.Quest.Contracts;
 using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.Dialog.Contracts;
 using SWLOR.Shared.Dialog.Model;
 using SWLOR.Shared.Dialog.Service;
 
@@ -9,7 +10,8 @@ namespace SWLOR.Component.Quest.Dialog
     {
         private readonly IQuestService _questService;
 
-        public QuestRewardSelectionDialog(IQuestService questService)
+        public QuestRewardSelectionDialog(IQuestService questService, IDialogService dialogService) 
+            : base(dialogService)
         {
             _questService = questService;
         }

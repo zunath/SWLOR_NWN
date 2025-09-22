@@ -98,6 +98,8 @@ SWLOR.Component.[Domain]/
 ├── Service/
 │   ├── [Domain]Service.cs
 │   └── [Domain]Repository.cs
+├── EventHandlers/
+│   └── [Domain]EventHandlers.cs
 ├── Feature/
 │   ├── [Domain]Definition/
 │   └── [Domain]Progression/
@@ -151,6 +153,84 @@ public class SkillModifier
 }
 ```
 
+## Event Handler Separation
+
+### **Separation of Concerns**
+Event handlers and business logic should be separated to maintain clean architecture:
+
+- **Event Handlers**: Thin infrastructure layer that receives game events and delegates to services
+- **Services**: Contains pure business logic, testable independently of event infrastructure
+
+### **Event Handler Pattern**
+```csharp
+// SWLOR.Component.AI/EventHandlers/AIEventHandlers.cs
+public class AIEventHandlers
+{
+    private readonly IAI _aiService;
+
+    public AIEventHandlers(IAI aiService)
+    {
+        _aiService = aiService;
+    }
+
+    [ScriptHandler<OnCreatureHeartbeatAfter>]
+    public void CreatureHeartbeat()
+    {
+        _aiService.CreatureHeartbeat();
+    }
+
+    [ScriptHandler<OnCreaturePerceptionAfter>]
+    public void CreaturePerception()
+    {
+        _aiService.CreaturePerception();
+    }
+}
+```
+
+### **Service Implementation Pattern**
+```csharp
+// SWLOR.Component.AI/Service/AIService.cs - Pure business logic
+public class AIService : IAI
+{
+    private readonly IRandomService _random;
+    private readonly IStatService _statService;
+
+    public AIService(IRandomService random, IStatService statService)
+    {
+        _random = random;
+        _statService = statService;
+    }
+
+    public void CreatureHeartbeat()
+    {
+        // Pure business logic implementation
+        if (GetAILevel(OBJECT_SELF) == AILevel.VeryLow)
+            return;
+
+        _statService.RestoreNPCStats(true);
+        ProcessFlags();
+    }
+}
+```
+
+### **Singleton Service Registration**
+All services and event handlers should be registered as singletons for performance and state consistency:
+
+```csharp
+// In your DI configuration
+services.AddSingleton<IAI, AIService>();
+services.AddSingleton<AIEventHandlers>();
+services.AddSingleton<ISkillService, SkillService>();
+services.AddSingleton<SkillEventHandlers>();
+```
+
+### **Benefits of This Pattern**
+1. **Single Responsibility**: Event handlers only handle events, services only contain business logic
+2. **Testability**: Services can be unit tested without event infrastructure
+3. **Reusability**: Business logic can be called from multiple places, not just events
+4. **Performance**: Singleton registration ensures single instance per application lifecycle
+5. **Maintainability**: Clear separation makes code easier to understand and modify
+
 ## Refactoring Steps
 
 ### Phase 1: Create SWLOR.Shared.Domain
@@ -172,17 +252,27 @@ public class SkillModifier
 2. Remove empty folders and unused references
 3. Update project dependencies
 
-### Phase 4: Establish Component Boundaries
+### Phase 4: Separate Event Handlers from Services
+1. Create EventHandlers folder in each component
+2. Split existing service classes:
+   - Move `[ScriptHandler<>]` methods to new EventHandler classes
+   - Keep pure business logic in Service classes
+   - Update interfaces to remove event handler methods
+3. Register both services and event handlers as singletons in DI container
+4. Update service implementations to be testable without event infrastructure
+
+### Phase 5: Establish Component Boundaries
 1. Review each component for external dependencies
 2. Create interfaces for cross-component communication
 3. Implement dependency injection for component services
 4. Add integration tests to verify component isolation
 
-### Phase 5: Validation
+### Phase 6: Validation
 1. Ensure no component directly references another component's implementation
 2. Verify all cross-component communication goes through interfaces
 3. Confirm shared domain contains only truly shared entities
-4. Test that components can be developed and tested independently
+4. Verify event handlers are thin and delegate to services
+5. Test that components can be developed and tested independently
 
 ## Success Criteria
 
@@ -191,6 +281,8 @@ public class SkillModifier
 - [ ] Shared domain contains only entities used by 2+ components
 - [ ] Each component owns its specific business logic and entities
 - [ ] Infrastructure concerns are separated from business logic
+- [ ] Event handlers are separated from business services
+- [ ] All services and event handlers are registered as singletons
 - [ ] Components can be developed and tested independently
 
 ## Anti-Patterns to Avoid
@@ -200,6 +292,9 @@ public class SkillModifier
 3. **Shared Everything**: Putting all entities in shared domain regardless of usage
 4. **Infrastructure in Domain**: Mixing technical concerns with business logic
 5. **Direct Component References**: Components importing other components' implementation details
+6. **Fat Event Handlers**: Event handlers containing business logic instead of delegating to services
+7. **Mixed Responsibilities**: Services that contain both business logic and event handling code
+8. **Non-Singleton Services**: Registering services with shorter lifetimes when singleton is appropriate
 
 ## Maintenance Guidelines
 
@@ -207,6 +302,9 @@ public class SkillModifier
 - Only move to shared domain when a second component needs the entity
 - Use interfaces for cross-component communication
 - Keep domain models focused on business logic, not infrastructure
+- Keep event handlers thin - they should only delegate to services
+- Register all services and event handlers as singletons for performance
+- Separate event handling from business logic in new components
 - Regularly review component dependencies to prevent coupling
 
 This plan ensures consistent, maintainable component architecture that supports independent development and testing while maintaining clear domain boundaries.

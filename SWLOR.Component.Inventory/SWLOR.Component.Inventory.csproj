@@ -19,6 +19,7 @@
 
 	<ItemGroup>
 		<Folder Include="Delegates\" />
+		<Folder Include="EventHandlers\" />
 	</ItemGroup>
 
 </Project>

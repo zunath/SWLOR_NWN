@@ -20,6 +20,7 @@
 
 	<ItemGroup>
 		<Folder Include="Delegates\" />
+		<Folder Include="EventHandlers\" />
 		<Folder Include="Infrastructure\" />
 	</ItemGroup>
 

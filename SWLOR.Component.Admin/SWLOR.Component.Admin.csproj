@@ -23,6 +23,7 @@
 		<Folder Include="Delegates\" />
 		<Folder Include="Dialog\" />
 		<Folder Include="Enums\" />
+		<Folder Include="EventHandlers\" />
 		<Folder Include="Model\" />
 		<Folder Include="Infrastructure\" />
 	</ItemGroup>

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.0.11012.119 d18.0
+VisualStudioVersion = 18.0.11012.119
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SWLOR.Game.Server", "SWLOR.Game.Server\SWLOR.Game.Server.csproj", "{AB7417D9-A314-4ED6-8E7E-75B3F2A83DE1}"
 EndProject
@@ -79,6 +79,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Component.Ability", "SWLOR.Component.Ability\SWLOR.Component.Ability.csproj", "{5077A046-2DAE-45EB-A9E9-AE000BDF6908}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Component.StatusEffect", "SWLOR.Component.StatusEffect\SWLOR.Component.StatusEffect.csproj", "{BAF14F75-F5D9-4EA9-90AA-B714CC427C43}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Component.Migration", "SWLOR.Component.Migration\SWLOR.Component.Migration.csproj", "{87AE6190-5BB4-4709-A889-2073C32BA286}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Component.AI", "SWLOR.Component.AI\SWLOR.Component.AI.csproj", "{58CC78D5-699F-4C2F-B263-26EE6CD072CB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -198,6 +202,14 @@ Global
 		{BAF14F75-F5D9-4EA9-90AA-B714CC427C43}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BAF14F75-F5D9-4EA9-90AA-B714CC427C43}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BAF14F75-F5D9-4EA9-90AA-B714CC427C43}.Release|Any CPU.Build.0 = Release|Any CPU
+		{87AE6190-5BB4-4709-A889-2073C32BA286}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{87AE6190-5BB4-4709-A889-2073C32BA286}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{87AE6190-5BB4-4709-A889-2073C32BA286}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{87AE6190-5BB4-4709-A889-2073C32BA286}.Release|Any CPU.Build.0 = Release|Any CPU
+		{58CC78D5-699F-4C2F-B263-26EE6CD072CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{58CC78D5-699F-4C2F-B263-26EE6CD072CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{58CC78D5-699F-4C2F-B263-26EE6CD072CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{58CC78D5-699F-4C2F-B263-26EE6CD072CB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -229,6 +241,8 @@ Global
 		{82B65CA0-5CFA-4F9A-ABF7-BE5FC4399443} = {98BFD8AF-2D9B-4636-919F-4D3FE97E7C69}
 		{5077A046-2DAE-45EB-A9E9-AE000BDF6908} = {98BFD8AF-2D9B-4636-919F-4D3FE97E7C69}
 		{BAF14F75-F5D9-4EA9-90AA-B714CC427C43} = {98BFD8AF-2D9B-4636-919F-4D3FE97E7C69}
+		{87AE6190-5BB4-4709-A889-2073C32BA286} = {98BFD8AF-2D9B-4636-919F-4D3FE97E7C69}
+		{58CC78D5-699F-4C2F-B263-26EE6CD072CB} = {98BFD8AF-2D9B-4636-919F-4D3FE97E7C69}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {01933D17-C90C-4AB1-AD6C-523F2F4B584D}

@@ -23,10 +23,6 @@
 		<Folder Include="Enums\" />
 		<Folder Include="Infrastructure\" />
 		<Folder Include="SpaceService\" />
-		<Folder Include="UI\Payload\" />
-		<Folder Include="UI\RefreshEvent\" />
-		<Folder Include="UI\ViewModel\" />
-		<Folder Include="UI\View\" />
 	</ItemGroup>
 
 </Project>

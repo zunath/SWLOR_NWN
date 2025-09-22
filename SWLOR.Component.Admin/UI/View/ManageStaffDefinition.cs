@@ -11,12 +11,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     public class ManageStaffDefinition: IGuiWindowDefinition
     {
         private readonly IGuiService _guiService;
-        private readonly GuiWindowBuilder<ManageDMsViewModel> _builder;
+        private readonly GuiWindowBuilder<ManageStaffViewModel> _builder;
 
         public ManageStaffDefinition(IGuiService guiService)
         {
             _guiService = guiService;
-            _builder = new GuiWindowBuilder<ManageDMsViewModel>(_guiService);
+            _builder = new GuiWindowBuilder<ManageStaffViewModel>(_guiService);
         }
 
         public GuiConstructedWindow BuildWindow()

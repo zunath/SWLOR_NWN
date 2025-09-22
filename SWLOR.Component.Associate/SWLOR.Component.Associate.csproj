@@ -22,7 +22,6 @@
 		<Folder Include="Dialog\" />
 		<Folder Include="Entity\" />
 		<Folder Include="Infrastructure\" />
-		<Folder Include="UI\Payload\" />
 	</ItemGroup>
 
 </Project>

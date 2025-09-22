@@ -23,6 +23,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\SWLOR.Component.Ability\SWLOR.Component.Ability.csproj" />
 		<ProjectReference Include="..\SWLOR.Component.Admin\SWLOR.Component.Admin.csproj" />
+		<ProjectReference Include="..\SWLOR.Component.AI\SWLOR.Component.AI.csproj" />
 		<ProjectReference Include="..\SWLOR.Component.Associate\SWLOR.Component.Associate.csproj" />
 		<ProjectReference Include="..\SWLOR.Component.Combat\SWLOR.Component.Combat.csproj" />
 		<ProjectReference Include="..\SWLOR.Component.Communication\SWLOR.Component.Communication.csproj" />
@@ -30,6 +31,7 @@
 		<ProjectReference Include="..\SWLOR.Component.Inventory\SWLOR.Component.Inventory.csproj" />
 		<ProjectReference Include="..\SWLOR.Component.Language\SWLOR.Component.Language.csproj" />
 		<ProjectReference Include="..\SWLOR.Component.Market\SWLOR.Component.Market.csproj" />
+		<ProjectReference Include="..\SWLOR.Component.Migration\SWLOR.Component.Migration.csproj" />
 		<ProjectReference Include="..\SWLOR.Component.Perk\SWLOR.Component.Perk.csproj" />
 		<ProjectReference Include="..\SWLOR.Component.Player\SWLOR.Component.Player.csproj" />
 		<ProjectReference Include="..\SWLOR.Component.Properties\SWLOR.Component.Properties.csproj" />

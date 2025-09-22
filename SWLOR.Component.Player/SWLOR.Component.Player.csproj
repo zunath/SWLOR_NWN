@@ -19,16 +19,10 @@
 
 	<ItemGroup>
 		<Folder Include="Delegates\" />
-		<Folder Include="Dialog\" />
 		<Folder Include="Entity\" />
 		<Folder Include="Enums\" />
-		<Folder Include="Feature\" />
 		<Folder Include="Infrastructure\" />
 		<Folder Include="Model\" />
-		<Folder Include="UI\Payload\" />
-		<Folder Include="UI\RefreshEvent\" />
-		<Folder Include="UI\ViewModel\" />
-		<Folder Include="UI\View\" />
 	</ItemGroup>
 
 </Project>

@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NWN.Core;
 using SWLOR.Component.Ability.Infrastructure;
 using SWLOR.Component.Admin.Infrastructure;
+using SWLOR.Component.AI.Infrastructure;
 using SWLOR.Component.Associate.Infrastructure;
 using SWLOR.Component.Combat.Infrastructure;
 using SWLOR.Component.Communication.Infrastructure;
@@ -9,6 +10,7 @@ using SWLOR.Component.Crafting.Infrastructure;
 using SWLOR.Component.Inventory.Infrastructure;
 using SWLOR.Component.Language.Infrastructure;
 using SWLOR.Component.Market.Infrastructure;
+using SWLOR.Component.Migration.Infrastructure;
 using SWLOR.Component.Perk.Infrastructure;
 using SWLOR.Component.Player.Infrastructure;
 using SWLOR.Component.Properties.Infrastructure;
@@ -126,6 +128,7 @@ namespace SWLOR.Game.Server
             // Component Services
             services.AddAbilityServices();
             services.AddAdminServices();
+            services.AddAIServices();
             services.AddAssociateServices();
             services.AddCombatServices();
             services.AddCommunicationServices();
@@ -133,6 +136,7 @@ namespace SWLOR.Game.Server
             services.AddInventoryServices();
             services.AddLanguageServices();
             services.AddMarketServices();
+            services.AddMigrationServices();
             services.AddPerkServices();
             services.AddPlayerServices();
             services.AddQuestServices();
@@ -382,7 +386,7 @@ namespace SWLOR.Game.Server
             services.AddTransient<Feature.GuiDefinition.ViewModel.RentApartmentViewModel>();
             services.AddTransient<Feature.GuiDefinition.ViewModel.RenameTargetViewModel>();
             services.AddTransient<Feature.GuiDefinition.ViewModel.PropertyPermissionsViewModel>();
-            services.AddTransient<Feature.GuiDefinition.ViewModel.ManageDMsViewModel>();
+            services.AddTransient<Feature.GuiDefinition.ViewModel.ManageStaffViewModel>();
             services.AddTransient<Feature.GuiDefinition.ViewModel.ElectionViewModel>();
             services.AddTransient<Feature.GuiDefinition.ViewModel.CharacterStatRebuildViewModel>();
             services.AddTransient<Feature.GuiDefinition.ViewModel.BugReportViewModel>();

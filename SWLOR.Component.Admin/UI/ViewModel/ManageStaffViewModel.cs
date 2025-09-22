@@ -13,12 +13,12 @@ using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
-    public class ManageDMsViewModel: GuiViewModelBase<ManageDMsViewModel, GuiPayloadBase>
+    public class ManageStaffViewModel: GuiViewModelBase<ManageStaffViewModel, GuiPayloadBase>
     {
         private readonly ILogger _logger;
         private readonly IDatabaseService _db;
 
-        public ManageDMsViewModel(IGuiService guiService, ILogger logger, IDatabaseService db) : base(guiService)
+        public ManageStaffViewModel(IGuiService guiService, ILogger logger, IDatabaseService db) : base(guiService)
         {
             _logger = logger;
             _db = db;

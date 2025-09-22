@@ -12,7 +12,7 @@ using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Component.AI.Service
 {
-    public class AI : IAI
+    public class AIService : IAIService
     {
         private readonly IRandomService _random;
         private readonly IStatService _statService;
@@ -25,7 +25,7 @@ namespace SWLOR.Component.AI.Service
         private readonly Dictionary<uint, HashSet<uint>> _creatureAllies = new();
         private readonly Dictionary<AIDefinitionType, IAIDefinition> _aiDefinitions = new();
 
-        public AI(
+        public AIService(
             IRandomService random, 
             IStatService statService,
             IEnmityService enmity, 
@@ -45,7 +45,6 @@ namespace SWLOR.Component.AI.Service
             _activityService = activityService;
         }
 
-        [ScriptHandler<OnModuleCacheBefore>]
         public void CacheAIData()
         {
             _aiDefinitions[AIDefinitionType.Generic] = new GenericAIDefinition(_abilityService, _perkService, _statusEffectService);
@@ -54,37 +53,36 @@ namespace SWLOR.Component.AI.Service
         }
 
         /// <summary>
-        /// Entry point for creature heartbeat logic.
+        /// Processes creature heartbeat logic.
         /// </summary>
-        [ScriptHandler<OnCreatureHeartbeatAfter>]
-        public void CreatureHeartbeat()
+        /// <param name="creature">The creature to process</param>
+        public void ProcessCreatureHeartbeat(uint creature)
         {
-            if (GetAILevel(OBJECT_SELF) == AILevel.VeryLow)
+            if (GetAILevel(creature) == AILevel.VeryLow)
                 return;
 
             _statService.RestoreNPCStats(true);
-            ProcessFlags();
-            _enmity.AttackHighestEnmityTarget(OBJECT_SELF);
+            ProcessFlags(creature);
+            _enmity.AttackHighestEnmityTarget(creature);
         }
 
         /// <summary>
-        /// Entry point for creature perception logic.
+        /// Processes creature perception logic.
         /// </summary>
-        [ScriptHandler<OnCreaturePerceptionAfter>]
-        public void CreaturePerception()
+        /// <param name="creature">The creature to process</param>
+        public void ProcessCreaturePerception(uint creature)
         {
             // This is a stripped-down version of the default NWN perception event.
             // We handle most of our perception logic with the aggro aura effect.
-            ProcessCreatureAllies();
+            ProcessCreatureAllies(creature);
         }
 
         /// <summary>
-        /// Entry point for creature combat round end logic.
+        /// Processes creature combat round end logic.
         /// </summary>
-        [ScriptHandler<OnCreatureRoundEndAfter>]
-        public void CreatureCombatRoundEnd()
+        /// <param name="creature">The creature to process</param>
+        public void ProcessCreatureCombatRoundEnd(uint creature)
         {
-            var creature = OBJECT_SELF;
             if (!_activityService.IsBusy(creature))
             {
                 ProcessPerkAI(AIDefinitionType.Generic, creature, true);
@@ -94,110 +92,110 @@ namespace SWLOR.Component.AI.Service
         }
 
         /// <summary>
-        /// Entry point for creature conversation logic.
+        /// Processes creature conversation logic.
         /// </summary>
-        [ScriptHandler<OnCreatureConversationAfter>]
-        public void CreatureConversation()
+        /// <param name="creature">The creature to process</param>
+        public void ProcessCreatureConversation(uint creature)
         {
-            var conversation = GetLocalString(OBJECT_SELF, "CONVERSATION");
+            var conversation = GetLocalString(creature, "CONVERSATION");
             if (!string.IsNullOrWhiteSpace(conversation))
             {
                 var talker = GetLastSpeaker();
-                Dialog.StartConversation(talker, OBJECT_SELF, conversation);
+                Dialog.StartConversation(talker, creature, conversation);
             }
         }
 
         /// <summary>
-        /// Entry point for creature physical attacked logic
+        /// Processes creature physical attacked logic
         /// </summary>
-        [ScriptHandler<OnCreatureAttackAfter>]
-        public void CreaturePhysicalAttacked()
+        /// <param name="creature">The creature to process</param>
+        public void ProcessCreaturePhysicalAttacked(uint creature)
         {
-            _enmity.AttackHighestEnmityTarget(OBJECT_SELF);
+            _enmity.AttackHighestEnmityTarget(creature);
         }
 
         /// <summary>
-        /// Entry point for creature damaged logic
+        /// Processes creature damaged logic
         /// </summary>
-        [ScriptHandler<OnCreatureDamagedAfter>]
-        public void CreatureDamaged()
+        /// <param name="creature">The creature to process</param>
+        public void ProcessCreatureDamaged(uint creature)
         {
-            _enmity.AttackHighestEnmityTarget(OBJECT_SELF);
+            _enmity.AttackHighestEnmityTarget(creature);
         }
 
         /// <summary>
-        /// Entry point for creature death logic
+        /// Processes creature death logic
         /// </summary>
-        [ScriptHandler<OnCreatureDeathAfter>]
-        public void CreatureDeath()
+        /// <param name="creature">The creature to process</param>
+        public void ProcessCreatureDeath(uint creature)
         {
-            RemoveFromAlliesCache();
+            RemoveFromAlliesCache(creature);
         }
 
         /// <summary>
-        /// Entry point for creature disturbed logic
+        /// Processes creature disturbed logic
         /// </summary>
-        [ScriptHandler<OnCreatureDisturbedAfter>]
-        public void CreatureDisturbed()
+        /// <param name="creature">The creature to process</param>
+        public void ProcessCreatureDisturbed(uint creature)
         {
-            _enmity.AttackHighestEnmityTarget(OBJECT_SELF);
+            _enmity.AttackHighestEnmityTarget(creature);
         }
 
         /// <summary>
-        /// Entry point for creature spawn logic
+        /// Processes creature spawn logic
         /// </summary>
-        [ScriptHandler<OnCreatureSpawnAfter>]
-        public void CreatureSpawn()
+        /// <param name="creature">The creature to process</param>
+        public void ProcessCreatureSpawn(uint creature)
         {
-            SetLocalString(OBJECT_SELF, "X2_SPECIAL_COMBAT_AI_SCRIPT", "xxx");
+            SetLocalString(creature, "X2_SPECIAL_COMBAT_AI_SCRIPT", "xxx");
 
             _statService.LoadNPCStats();
-            LoadAggroEffect();
-            DoVFX();
-            SetLocalLocation(OBJECT_SELF, "HOME_LOCATION", GetLocation(OBJECT_SELF));
+            LoadAggroEffect(creature);
+            DoVFX(creature);
+            SetLocalLocation(creature, "HOME_LOCATION", GetLocation(creature));
         }
 
         /// <summary>
-        /// Entry point for creature rested logic
+        /// Processes creature rested logic
         /// </summary>
-        [ScriptHandler<OnCreatureRestedAfter>]
-        public void CreatureRested()
+        /// <param name="creature">The creature to process</param>
+        public void ProcessCreatureRested(uint creature)
         {
         }
 
         /// <summary>
-        /// Entry point for creature spell cast at logic
+        /// Processes creature spell cast at logic
         /// </summary>
-        [ScriptHandler<OnCreatureSpellCastAfter>]
-        public void CreatureSpellCastAt()
+        /// <param name="creature">The creature to process</param>
+        public void ProcessCreatureSpellCastAt(uint creature)
         {
         }
 
         /// <summary>
-        /// Entry point for creature user defined logic
+        /// Processes creature user defined logic
         /// </summary>
-        [ScriptHandler<OnCreatureUserDefinedAfter>]
-        public void CreatureUserDefined()
+        /// <param name="creature">The creature to process</param>
+        public void ProcessCreatureUserDefined(uint creature)
         {
         }
 
         /// <summary>
-        /// Entry point for creature blocked logic
+        /// Processes creature blocked logic
         /// </summary>
-        [ScriptHandler<OnCreatureBlockedAfter>]
-        public void CreatureBlocked()
+        /// <param name="creature">The creature to process</param>
+        public void ProcessCreatureBlocked(uint creature)
         {
         }
 
         /// <summary>
-        /// When a creature enters the aggro aura of another creature, increase their enmity and start the aggro process.
+        /// Processes when a creature enters the aggro aura of another creature, increase their enmity and start the aggro process.
         /// Invisible creatures do not trigger this.
         /// </summary>
-        [ScriptHandler<OnCreatureAggroEnter>]
-        public void CreatureAggroEnter()
+        /// <param name="creature">The creature to process</param>
+        public void ProcessCreatureAggroEnter(uint creature)
         {
             var entering = GetEnteringObject();
-            var self = GetAreaOfEffectCreator(OBJECT_SELF);
+            var self = GetAreaOfEffectCreator(creature);
 
             // Target is invisible
             if (GetHasEffect(entering, EffectTypeScript.Invisibility, EffectTypeScript.ImprovedInvisibility))
@@ -235,14 +233,13 @@ namespace SWLOR.Component.AI.Service
                     _enmity.ModifyEnmity(entering, ally, 1);
                 }
             }
-
         }
 
         /// <summary>
-        /// When a creature exits the aggro aura of another creature, 
+        /// Processes when a creature exits the aggro aura of another creature
         /// </summary>
-        [ScriptHandler<OnCreatureAggroExit>]
-        public void CreatureAggroExit()
+        /// <param name="creature">The creature to process</param>
+        public void ProcessCreatureAggroExit(uint creature)
         {
         }
 
@@ -337,43 +334,47 @@ namespace SWLOR.Component.AI.Service
         /// <summary>
         /// When the creature spawns, add an AOE effect to the creature which will be used to process aggro ranges.
         /// </summary>
-        private void LoadAggroEffect()
+        /// <param name="creature">The creature to add the effect to</param>
+        private void LoadAggroEffect(uint creature)
         {
             var effect = SupernaturalEffect(EffectAreaOfEffect(AreaOfEffect.CustomAoe, "crea_aggro_enter", string.Empty, "crea_aggro_exit"));
             effect = TagEffect(effect, "AGGRO_AOE");
-            ApplyEffectToObject(DurationType.Permanent, effect, OBJECT_SELF);
+            ApplyEffectToObject(DurationType.Permanent, effect, creature);
         }
 
-        private void DoVFX()
+        /// <summary>
+        /// Applies visual effects to a creature based on local variables.
+        /// </summary>
+        /// <param name="creature">The creature to apply effects to</param>
+        private void DoVFX(uint creature)
         {
             // Allow builders to put permanent effects on creatures - e.g. to make them statues, or make them glow.
             // Index of standard VFX effects here: https://nwnlexicon.com/index.php?title=Vfx_dur
-            var vfx = GetLocalInt(OBJECT_SELF, "PERMANENT_VFX_ID");
+            var vfx = GetLocalInt(creature, "PERMANENT_VFX_ID");
             if (vfx > 0) 
-                ApplyEffectToObject(DurationType.Permanent, EffectVisualEffect((VisualEffect)vfx), OBJECT_SELF);
+                ApplyEffectToObject(DurationType.Permanent, EffectVisualEffect((VisualEffect)vfx), creature);
 
             // Cutscene paralysis - for statues.
-            var paralyze = GetLocalInt(OBJECT_SELF, "PARALYZE");
+            var paralyze = GetLocalInt(creature, "PARALYZE");
             if (paralyze > 0) 
-                ApplyEffectToObject(DurationType.Permanent, SupernaturalEffect(EffectCutsceneParalyze()), OBJECT_SELF);
+                ApplyEffectToObject(DurationType.Permanent, SupernaturalEffect(EffectCutsceneParalyze()), creature);
 
             // Daze - for creatures that should not be able to attack.
-            var daze = GetLocalInt(OBJECT_SELF, "DAZE");
+            var daze = GetLocalInt(creature, "DAZE");
             if (daze > 0) 
-                ApplyEffectToObject(DurationType.Permanent, SupernaturalEffect(EffectDazed()), OBJECT_SELF);
+                ApplyEffectToObject(DurationType.Permanent, SupernaturalEffect(EffectDazed()), creature);
         }
 
         /// <summary>
         /// When a creature's heartbeat fires, if they have the RandomWalk or ReturnHome AI flag,
         /// and they are not currently preoccupied (combat, talking, etc.) force them to randomly walk or return home if they are too far away.
         /// </summary>
-        private void ProcessFlags()
+        /// <param name="creature">The creature to process</param>
+        private void ProcessFlags(uint creature)
         {
-            var self = OBJECT_SELF;
-
             // Certain effects should interrupt the random walk process.
             var effects = new[] {EffectTypeScript.Dazed, EffectTypeScript.Petrify};
-            for (var effect = GetFirstEffect(self); GetIsEffectValid(effect); effect = GetNextEffect(self))
+            for (var effect = GetFirstEffect(creature); GetIsEffectValid(effect); effect = GetNextEffect(creature))
             {
                 if (effects.Contains(GetEffectType(effect)))
                 {
@@ -381,27 +382,27 @@ namespace SWLOR.Component.AI.Service
                 }
             }
 
-            var aiFlags = GetAIFlag(self);
-            if (IsInConversation(self) ||
-                GetIsInCombat(self) ||
-                GetCurrentAction(self) == ActionType.RandomWalk ||
-                GetCurrentAction(self) == ActionType.MoveToPoint ||
-                GetIsObjectValid(_enmity.GetHighestEnmityTarget(self)))
+            var aiFlags = GetAIFlag(creature);
+            if (IsInConversation(creature) ||
+                GetIsInCombat(creature) ||
+                GetCurrentAction(creature) == ActionType.RandomWalk ||
+                GetCurrentAction(creature) == ActionType.MoveToPoint ||
+                GetIsObjectValid(_enmity.GetHighestEnmityTarget(creature)))
                 return;
 
             // Return Home flag
-            var homeLocation = GetLocalLocation(self, "HOME_LOCATION");
+            var homeLocation = GetLocalLocation(creature, "HOME_LOCATION");
             if (aiFlags.HasFlag(AIFlag.ReturnHome) &&
-                (GetAreaFromLocation(homeLocation) != GetArea(self) ||
-                 GetDistanceBetweenLocations(GetLocation(self), homeLocation) > 15f))
+                (GetAreaFromLocation(homeLocation) != GetArea(creature) ||
+                 GetDistanceBetweenLocations(GetLocation(creature), homeLocation) > 15f))
             {
-                AssignCommand(self, () => ActionForceMoveToLocation(homeLocation));
+                AssignCommand(creature, () => ActionForceMoveToLocation(homeLocation));
             }
             // Randomly walk flag
             else if(aiFlags.HasFlag(AIFlag.RandomWalk) &&
                 _random.D100(1) <= 40)
             {
-                AssignCommand(self, ActionRandomWalk);
+                AssignCommand(creature, ActionRandomWalk);
             }
         }
 
@@ -409,55 +410,54 @@ namespace SWLOR.Component.AI.Service
         /// When a creature perceives another creature, if the creature is part of the same faction add or remove it from their cache.
         /// Creatures in this cache will be used for AI decisions.
         /// </summary>
-        private void ProcessCreatureAllies()
+        /// <param name="creature">The creature to process</param>
+        private void ProcessCreatureAllies(uint creature)
         {
-            var self = OBJECT_SELF;
             var lastPerceived = GetLastPerceived();
-            if (self == lastPerceived) return;
+            if (creature == lastPerceived) return;
 
             var isSeen = GetLastPerceptionSeen();
             var isVanished = GetLastPerceptionVanished();
 
             if (GetIsPC(lastPerceived) || GetIsDead(lastPerceived)) return;
-            var isSameFaction = GetFactionEqual(self, lastPerceived);
+            var isSameFaction = GetFactionEqual(creature, lastPerceived);
             if (!isSameFaction) return;
 
-            if (!_creatureAllies.ContainsKey(self))
-                _creatureAllies[self] = new HashSet<uint>();
+            if (!_creatureAllies.ContainsKey(creature))
+                _creatureAllies[creature] = new HashSet<uint>();
 
             // Only make adjustments if the perceived creature is seen or vanished, as opposed to heard or inaudible.
             if (isSeen)
             {
-                if (!_creatureAllies[self].Contains(lastPerceived))
-                    _creatureAllies[self].Add(lastPerceived);
+                if (!_creatureAllies[creature].Contains(lastPerceived))
+                    _creatureAllies[creature].Add(lastPerceived);
             }
             else if (isVanished)
             {
-                if (_creatureAllies[self].Contains(lastPerceived))
-                    _creatureAllies[self].Remove(lastPerceived);
+                if (_creatureAllies[creature].Contains(lastPerceived))
+                    _creatureAllies[creature].Remove(lastPerceived);
             }
         }
 
         /// <summary>
         /// When the creature dies or is destroyed, remove it from all caches.
         /// </summary>
-        [ScriptHandler(ScriptName.OnObjectDestroyed)]
-        public void RemoveFromAlliesCache()
+        /// <param name="creature">The creature to remove from caches</param>
+        public void RemoveFromAlliesCache(uint creature)
         {
-            var self = OBJECT_SELF;
-            if (!_creatureAllies.ContainsKey(self)) return;
+            if (!_creatureAllies.ContainsKey(creature)) return;
 
             for(var index = _creatureAllies.Count-1; index >= 0; index--)
             {
                 var ally = _creatureAllies.ElementAt(index).Key;
                 if (_creatureAllies.ContainsKey(ally))
                 {
-                    if (_creatureAllies[ally].Contains(self))
-                        _creatureAllies[ally].Remove(self);
+                    if (_creatureAllies[ally].Contains(creature))
+                        _creatureAllies[ally].Remove(creature);
                 }
             }
 
-            _creatureAllies.Remove(self);
+            _creatureAllies.Remove(creature);
         }
 
         /// <summary>

@@ -17,15 +17,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <Compile Remove="Service\KeyItemService\**" />
-	  <Compile Remove="Service\TaxiService\**" />
-	  <EmbeddedResource Remove="Service\KeyItemService\**" />
-	  <EmbeddedResource Remove="Service\TaxiService\**" />
-	  <None Remove="Service\KeyItemService\**" />
-	  <None Remove="Service\TaxiService\**" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<PackageReference Include="Discord.Net" Version="3.18.0" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
 		<PackageReference Include="NWN.Core" Version="8193.37.3" />
@@ -42,7 +33,6 @@
 		<ProjectReference Include="..\SWLOR.Component.Communication\SWLOR.Component.Communication.csproj" />
 		<ProjectReference Include="..\SWLOR.Component.Crafting\SWLOR.Component.Crafting.csproj" />
 		<ProjectReference Include="..\SWLOR.Component.Inventory\SWLOR.Component.Inventory.csproj" />
-		<ProjectReference Include="..\SWLOR.Component.Language\SWLOR.Component.Language.csproj" />
 		<ProjectReference Include="..\SWLOR.Component.Market\SWLOR.Component.Market.csproj" />
 		<ProjectReference Include="..\SWLOR.Component.Migration\SWLOR.Component.Migration.csproj" />
 		<ProjectReference Include="..\SWLOR.Component.Perk\SWLOR.Component.Perk.csproj" />

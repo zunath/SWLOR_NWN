@@ -20,7 +20,6 @@
 	<ItemGroup>
 		<Folder Include="Entity\" />
 		<Folder Include="Infrastructure\" />
-		<Folder Include="Model\" />
 		<Folder Include="Delegates\" />
 		<Folder Include="UI\RefreshEvent\" />
 		<Folder Include="UI\Payload\" />

@@ -18,14 +18,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Folder Include="Contracts\" />
 		<Folder Include="Delegates\" />
 		<Folder Include="Dialog\" />
 		<Folder Include="Entity\" />
 		<Folder Include="Enums\" />
 		<Folder Include="Infrastructure\" />
-		<Folder Include="Model\" />
-		<Folder Include="Service\" />
 		<Folder Include="UI\RefreshEvent\" />
 	</ItemGroup>
 

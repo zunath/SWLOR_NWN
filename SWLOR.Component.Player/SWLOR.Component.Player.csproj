@@ -22,7 +22,6 @@
 		<Folder Include="Entity\" />
 		<Folder Include="Enums\" />
 		<Folder Include="Infrastructure\" />
-		<Folder Include="Model\" />
 	</ItemGroup>
 
 </Project>

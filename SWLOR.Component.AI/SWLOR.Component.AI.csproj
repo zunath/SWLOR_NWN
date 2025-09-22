@@ -18,7 +18,6 @@
 		</ItemGroup>
 
 		<ItemGroup>
-				<Folder Include="Contracts\" />
 				<Folder Include="Delegates\" />
 				<Folder Include="Dialog\" />
 				<Folder Include="Entity\" />

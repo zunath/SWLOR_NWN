@@ -21,6 +21,8 @@
 		<Folder Include="Entity\" />
 		<Folder Include="Infrastructure\" />
 		<Folder Include="Model\" />
+		<Folder Include="Feature\" />
+		<Folder Include="Delegates\" />
 		<Folder Include="UI\RefreshEvent\" />
 		<Folder Include="UI\Payload\" />
 		<Folder Include="UI\ViewModel\" />

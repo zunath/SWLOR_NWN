@@ -232,7 +232,7 @@ namespace SWLOR.Component.AI.Model
         private (bool, (FeatType, uint)) BolsterArmor()
         {
             if (CheckIfCanUseFeat(Self, Self, FeatType.BolsterArmor5, 
-                    () => !_statusEffectService.HasStatusEffect(Self, 
+                    () => !StatusEffectService.HasStatusEffect(Self, 
                         StatusEffectType.BolsterArmor5, 
                         StatusEffectType.BolsterArmor4, 
                         StatusEffectType.BolsterArmor3, 
@@ -242,7 +242,7 @@ namespace SWLOR.Component.AI.Model
                 return (true, (FeatType.BolsterArmor5, Self));
             }
             if (CheckIfCanUseFeat(Self, Self, FeatType.BolsterArmor4,
-                    () => !_statusEffectService.HasStatusEffect(Self,
+                    () => !StatusEffectService.HasStatusEffect(Self,
                         StatusEffectType.BolsterArmor5,
                         StatusEffectType.BolsterArmor4,
                         StatusEffectType.BolsterArmor3,
@@ -252,7 +252,7 @@ namespace SWLOR.Component.AI.Model
                 return (true, (FeatType.BolsterArmor4, Self));
             }
             if (CheckIfCanUseFeat(Self, Self, FeatType.BolsterArmor3,
-                    () => !_statusEffectService.HasStatusEffect(Self,
+                    () => !StatusEffectService.HasStatusEffect(Self,
                         StatusEffectType.BolsterArmor5,
                         StatusEffectType.BolsterArmor4,
                         StatusEffectType.BolsterArmor3,
@@ -262,7 +262,7 @@ namespace SWLOR.Component.AI.Model
                 return (true, (FeatType.BolsterArmor3, Self));
             }
             if (CheckIfCanUseFeat(Self, Self, FeatType.BolsterArmor2,
-                    () => !_statusEffectService.HasStatusEffect(Self,
+                    () => !StatusEffectService.HasStatusEffect(Self,
                         StatusEffectType.BolsterArmor5,
                         StatusEffectType.BolsterArmor4,
                         StatusEffectType.BolsterArmor3,
@@ -272,7 +272,7 @@ namespace SWLOR.Component.AI.Model
                 return (true, (FeatType.BolsterArmor2, Self));
             }
             if (CheckIfCanUseFeat(Self, Self, FeatType.BolsterArmor1,
-                    () => !_statusEffectService.HasStatusEffect(Self,
+                    () => !StatusEffectService.HasStatusEffect(Self,
                         StatusEffectType.BolsterArmor5,
                         StatusEffectType.BolsterArmor4,
                         StatusEffectType.BolsterArmor3,
@@ -340,7 +340,7 @@ namespace SWLOR.Component.AI.Model
         private (bool, (FeatType, uint)) BolsterAttack()
         {
             if (CheckIfCanUseFeat(Self, Self, FeatType.BolsterAttack5,
-                    () => !_statusEffectService.HasStatusEffect(Self,
+                    () => !StatusEffectService.HasStatusEffect(Self,
                         StatusEffectType.BolsterAttack5,
                         StatusEffectType.BolsterAttack4,
                         StatusEffectType.BolsterAttack3,
@@ -350,7 +350,7 @@ namespace SWLOR.Component.AI.Model
                 return (true, (FeatType.BolsterAttack5, Self));
             }
             if (CheckIfCanUseFeat(Self, Self, FeatType.BolsterAttack4,
-                    () => !_statusEffectService.HasStatusEffect(Self,
+                    () => !StatusEffectService.HasStatusEffect(Self,
                         StatusEffectType.BolsterAttack5,
                         StatusEffectType.BolsterAttack4,
                         StatusEffectType.BolsterAttack3,
@@ -360,7 +360,7 @@ namespace SWLOR.Component.AI.Model
                 return (true, (FeatType.BolsterAttack4, Self));
             }
             if (CheckIfCanUseFeat(Self, Self, FeatType.BolsterAttack3,
-                    () => !_statusEffectService.HasStatusEffect(Self,
+                    () => !StatusEffectService.HasStatusEffect(Self,
                         StatusEffectType.BolsterAttack5,
                         StatusEffectType.BolsterAttack4,
                         StatusEffectType.BolsterAttack3,
@@ -370,7 +370,7 @@ namespace SWLOR.Component.AI.Model
                 return (true, (FeatType.BolsterAttack3, Self));
             }
             if (CheckIfCanUseFeat(Self, Self, FeatType.BolsterAttack2,
-                    () => !_statusEffectService.HasStatusEffect(Self,
+                    () => !StatusEffectService.HasStatusEffect(Self,
                         StatusEffectType.BolsterAttack5,
                         StatusEffectType.BolsterAttack4,
                         StatusEffectType.BolsterAttack3,
@@ -380,7 +380,7 @@ namespace SWLOR.Component.AI.Model
                 return (true, (FeatType.BolsterAttack2, Self));
             }
             if (CheckIfCanUseFeat(Self, Self, FeatType.BolsterAttack1,
-                    () => !_statusEffectService.HasStatusEffect(Self,
+                    () => !StatusEffectService.HasStatusEffect(Self,
                         StatusEffectType.BolsterAttack5,
                         StatusEffectType.BolsterAttack4,
                         StatusEffectType.BolsterAttack3,
@@ -396,17 +396,17 @@ namespace SWLOR.Component.AI.Model
         private (bool, (FeatType, uint)) Hasten()
         {
             if (CheckIfCanUseFeat(Self, Self, FeatType.Hasten3,
-                    () => !HasEffectByTag(Self, HastenAbilityDefinition.HastenEffectTag)))
+                    () => !HasEffectByTag(Self, "BEAST_HASTEN")))
             {
                 return (true, (FeatType.Hasten3, Self));
             }
             if (CheckIfCanUseFeat(Self, Self, FeatType.Hasten2,
-                    () => !HasEffectByTag(Self, HastenAbilityDefinition.HastenEffectTag)))
+                    () => !HasEffectByTag(Self, "BEAST_HASTEN")))
             {
                 return (true, (FeatType.Hasten2, Self));
             }
             if (CheckIfCanUseFeat(Self, Self, FeatType.Hasten1,
-                    () => !HasEffectByTag(Self, HastenAbilityDefinition.HastenEffectTag)))
+                    () => !HasEffectByTag(Self, "BEAST_HASTEN")))
             {
                 return (true, (FeatType.Hasten1, Self));
             }
@@ -469,7 +469,7 @@ namespace SWLOR.Component.AI.Model
         private (bool, (FeatType, uint)) EvasiveManeuver()
         {
             if (CheckIfCanUseFeat(Self, Self, FeatType.EvasiveManeuver5,
-                    () => !_statusEffectService.HasStatusEffect(Self,
+                    () => !StatusEffectService.HasStatusEffect(Self,
                         StatusEffectType.EvasiveManeuver5,
                         StatusEffectType.EvasiveManeuver4,
                         StatusEffectType.EvasiveManeuver3,
@@ -479,7 +479,7 @@ namespace SWLOR.Component.AI.Model
                 return (true, (FeatType.EvasiveManeuver5, Self));
             }
             if (CheckIfCanUseFeat(Self, Self, FeatType.EvasiveManeuver4,
-                    () => !_statusEffectService.HasStatusEffect(Self,
+                    () => !StatusEffectService.HasStatusEffect(Self,
                         StatusEffectType.EvasiveManeuver5,
                         StatusEffectType.EvasiveManeuver4,
                         StatusEffectType.EvasiveManeuver3,
@@ -489,7 +489,7 @@ namespace SWLOR.Component.AI.Model
                 return (true, (FeatType.EvasiveManeuver4, Self));
             }
             if (CheckIfCanUseFeat(Self, Self, FeatType.EvasiveManeuver3,
-                    () => !_statusEffectService.HasStatusEffect(Self,
+                    () => !StatusEffectService.HasStatusEffect(Self,
                         StatusEffectType.EvasiveManeuver5,
                         StatusEffectType.EvasiveManeuver4,
                         StatusEffectType.EvasiveManeuver3,
@@ -499,7 +499,7 @@ namespace SWLOR.Component.AI.Model
                 return (true, (FeatType.EvasiveManeuver3, Self));
             }
             if (CheckIfCanUseFeat(Self, Self, FeatType.EvasiveManeuver2,
-                    () => !_statusEffectService.HasStatusEffect(Self,
+                    () => !StatusEffectService.HasStatusEffect(Self,
                         StatusEffectType.EvasiveManeuver5,
                         StatusEffectType.EvasiveManeuver4,
                         StatusEffectType.EvasiveManeuver3,
@@ -509,7 +509,7 @@ namespace SWLOR.Component.AI.Model
                 return (true, (FeatType.EvasiveManeuver2, Self));
             }
             if (CheckIfCanUseFeat(Self, Self, FeatType.EvasiveManeuver1,
-                    () => !_statusEffectService.HasStatusEffect(Self,
+                    () => !StatusEffectService.HasStatusEffect(Self,
                         StatusEffectType.EvasiveManeuver5,
                         StatusEffectType.EvasiveManeuver4,
                         StatusEffectType.EvasiveManeuver3,

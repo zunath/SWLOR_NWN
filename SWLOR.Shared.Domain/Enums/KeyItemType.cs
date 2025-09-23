@@ -1,4 +1,6 @@
-﻿namespace SWLOR.Shared.Domain.Enums
+﻿using SWLOR.Component.Inventory.Enums;
+
+namespace SWLOR.Shared.Domain.Enums
 {
     public enum KeyItemType
     {

@@ -45,12 +45,14 @@ namespace SWLOR.Component.Communication.EventHandlers
         }
 
         /// <summary>
-        /// Handles validating and processing chat commands sent by players and DMs.
+        /// Handle all NWNX chat events for communication features.
         /// </summary>
         [ScriptHandler<OnNWNXChat>]
-        public void HandleChatMessage()
+        public void OnNWNXChat()
         {
             _chatCommandService.HandleChatMessage();
+            _communicationService.ProcessChatMessage();
+            _roleplayXP.ProcessRPMessage();
         }
 
         /// <summary>
@@ -65,13 +67,13 @@ namespace SWLOR.Component.Communication.EventHandlers
         }
 
         /// <summary>
-        /// When a player enters the server, set a local bool on their PC representing
-        /// the current state of their holonet visibility.
+        /// When a player enters the server, handle all communication-related initialization.
         /// </summary>
         [ScriptHandler<OnModuleEnter>]
-        public void LoadHolonetSetting()
+        public void OnModuleEnter()
         {
             _communicationService.LoadHolonetSetting();
+            _holoComService.OnModuleEnter();
         }
 
         /// <summary>
@@ -85,22 +87,15 @@ namespace SWLOR.Component.Communication.EventHandlers
         }
 
         /// <summary>
-        /// Register DMFI Voice Command Handler which lives in nwscript land.
+        /// Handle all chat-related events for communication features.
         /// </summary>
         [ScriptHandler<OnModuleChat>]
-        public void ProcessNativeChatMessage()
+        public void OnModuleChat()
         {
             _communicationService.ProcessNativeChatMessage();
+            _holoComService.OnModuleChat();
         }
 
-        /// <summary>
-        /// Process chat messages for various communication features.
-        /// </summary>
-        [ScriptHandler<OnNWNXChat>]
-        public void ProcessChatMessage()
-        {
-            _communicationService.ProcessChatMessage();
-        }
 
         /// <summary>
         /// When the module loads, create translators for every language and store them into cache.
@@ -121,15 +116,6 @@ namespace SWLOR.Component.Communication.EventHandlers
             _roleplayXP.DistributeRoleplayXP();
         }
 
-        /// <summary>
-        /// Adds RP points to a player's RP progression.
-        /// If messages are sent too quickly, the message will be treated as spam and RP point will not be granted.
-        /// </summary>
-        [ScriptHandler<OnNWNXChat>]
-        public void ProcessRPMessage()
-        {
-            _roleplayXP.ProcessRPMessage();
-        }
 
         /// <summary>
         /// Handle player death in HoloCom calls.
@@ -140,14 +126,6 @@ namespace SWLOR.Component.Communication.EventHandlers
             _holoComService.OnModuleDeath();
         }
 
-        /// <summary>
-        /// Handle player entering the server for HoloCom.
-        /// </summary>
-        [ScriptHandler<OnModuleEnter>]
-        public void OnModuleEnter()
-        {
-            _holoComService.OnModuleEnter();
-        }
 
         /// <summary>
         /// Handle player leaving the server for HoloCom.
@@ -158,13 +136,5 @@ namespace SWLOR.Component.Communication.EventHandlers
             _holoComService.OnModuleLeave();
         }
 
-        /// <summary>
-        /// Handle chat events for HoloCom.
-        /// </summary>
-        [ScriptHandler<OnModuleChat>]
-        public void OnModuleChat()
-        {
-            _holoComService.OnModuleChat();
-        }
     }
 }

@@ -1,3 +1,4 @@
+using SWLOR.Component.Market.Enums;
 using SWLOR.Shared.Abstractions.Contracts;
 
 namespace SWLOR.Component.Market.UI.Payload

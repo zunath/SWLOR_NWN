@@ -3,6 +3,7 @@ using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Enums;
+using SWLOR.Shared.Abstractions.Models;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Properties;
 using SWLOR.Shared.UI.Component;
@@ -125,7 +126,7 @@ namespace SWLOR.Shared.UI.Service
                 {
                     var list = ((IGuiBindingList)_propertyValues[propertyName].Value);
                     oldMaxSize = list.MaxSize;
-                    oldListItemVisibility = list.ListItemVisibility;
+                    oldListItemVisibility = (GuiBindingList<bool>)list.ListItemVisibility;
                 }
             }
 

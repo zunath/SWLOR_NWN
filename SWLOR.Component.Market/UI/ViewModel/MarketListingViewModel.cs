@@ -1,3 +1,4 @@
+using SWLOR.Component.Market.Contracts;
 using SWLOR.Component.Market.Entity;
 using SWLOR.Component.Market.Enums;
 using SWLOR.Component.Market.Service;
@@ -9,6 +10,8 @@ using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Domain.Entity;
 using SWLOR.Component.Market.UI.Payload;
 using SWLOR.Shared.Abstractions.Enums;
+using SWLOR.Shared.Domain.Contracts;
+using SWLOR.Shared.Domain.Model.Payload;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
@@ -20,12 +23,20 @@ namespace SWLOR.Component.Market.UI.ViewModel
         private readonly IDatabaseService _db;
         private readonly IItemService _itemService;
         private readonly ITargetingService _targetingService;
+        private readonly IPlayerMarketService _playerMarket;
 
-        public MarketListingViewModel(IGuiService guiService, IDatabaseService db, IItemService itemService, ITargetingService targetingService) : base(guiService)
+        public MarketListingViewModel(
+            IGuiService guiService, 
+            IDatabaseService db, 
+            IItemService itemService, 
+            ITargetingService targetingService,
+            IPlayerMarketService playerMarket) 
+            : base(guiService)
         {
             _db = db;
             _itemService = itemService;
             _targetingService = targetingService;
+            _playerMarket = playerMarket;
         }
         
         private MarketRegionType _regionType;
@@ -112,7 +123,7 @@ namespace SWLOR.Component.Market.UI.ViewModel
             _itemIds.Clear();
             _itemPrices.Clear();
             var playerId = GetObjectUUID(Player);
-            var market = PlayerMarket.GetMarketRegion(_regionType);
+            var market = _playerMarket.GetMarketRegion(_regionType);
             var query = new DBQuery<MarketItem>()
                 .AddFieldSearch(nameof(MarketItem.PlayerId), playerId, false)
                 .AddFieldSearch(nameof(MarketItem.MarketId), market.MarketId, false)
@@ -161,7 +172,7 @@ namespace SWLOR.Component.Market.UI.ViewModel
         protected override void Initialize(MarketPayload initialPayload)
         {
             _regionType = initialPayload.RegionType;
-            var regionDetail = PlayerMarket.GetMarketRegion(_regionType);
+            var regionDetail = _playerMarket.GetMarketRegion(_regionType);
             var taxRate = regionDetail.TaxRate * 100;
             WindowTitle = $"  {regionDetail.Name} Market [Tax Rate {taxRate:0.#}%]";
             SearchText = string.Empty;
@@ -213,7 +224,7 @@ namespace SWLOR.Component.Market.UI.ViewModel
                 return;
             }
 
-            var marketDetail = PlayerMarket.GetMarketRegion(_regionType);
+            var marketDetail = _playerMarket.GetMarketRegion(_regionType);
             var listing = new MarketItem
             {
                 MarketId = marketDetail.MarketId,
@@ -229,7 +240,7 @@ namespace SWLOR.Component.Market.UI.ViewModel
                 Data = ObjectPlugin.Serialize(item),
                 Quantity = GetItemStackSize(item),
                 IconResref = _itemService.GetIconResref(item),
-                Category = PlayerMarket.GetItemMarketCategory(item)
+                Category = _playerMarket.GetItemMarketCategory(item)
             };
 
             _db.Set(listing);

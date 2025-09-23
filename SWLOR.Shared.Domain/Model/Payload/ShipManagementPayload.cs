@@ -1,6 +1,6 @@
-using SWLOR.Component.World.Enums;
 using SWLOR.NWN.API.Engine;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Domain.Enums;
 
 namespace SWLOR.Shared.Domain.Model.Payload
 {

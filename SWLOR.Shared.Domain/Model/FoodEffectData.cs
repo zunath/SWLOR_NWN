@@ -1,6 +1,6 @@
 using SWLOR.Shared.Domain.Enums;
 
-namespace SWLOR.Component.StatusEffect.Feature.StatusEffectDefinition.StatusEffectData
+namespace SWLOR.Shared.Domain.Model
 {
     public class FoodEffectData
     {

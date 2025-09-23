@@ -8,6 +8,7 @@ using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Domain.Entity;
 using SWLOR.Component.Market.UI.Payload;
 using SWLOR.Shared.Abstractions.Enums;
+using SWLOR.Shared.Domain.Contracts;
 using SWLOR.Shared.Domain.Model.Payload;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
@@ -35,8 +36,8 @@ namespace SWLOR.Component.Market.UI.ViewModel
         
         private const int ListingsPerPage = 20;
 
-        private static readonly List<MarketCategoryType> _categoryTypes = new();
-        private static readonly GuiBindingList<string> _categories = new();
+        private readonly List<MarketCategoryType> _categoryTypes = new();
+        private readonly GuiBindingList<string> _categories = new();
 
         private bool _skipPaginationSearch;
         private readonly List<int> _activeCategoryIdFilters = new();
@@ -48,7 +49,7 @@ namespace SWLOR.Component.Market.UI.ViewModel
         /// to be initialized for every player.
         /// </summary>
         [ScriptHandler<OnModuleLoad>]
-        public static void LoadCategories()
+        public void LoadCategories()
         {
             foreach (var (type, category) in _playerMarketService.GetActiveCategories())
             {

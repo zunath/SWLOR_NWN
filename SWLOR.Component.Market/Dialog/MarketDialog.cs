@@ -1,3 +1,4 @@
+using SWLOR.Component.Market.Contracts;
 using SWLOR.Component.Market.Enums;
 using SWLOR.Component.Market.Service;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -16,13 +17,19 @@ namespace SWLOR.Component.Market.Dialog
     {
         private readonly ILogger _logger;
         private readonly IGuiService _guiService;
+        private readonly IPlayerMarketService _playerMarket;
         private const string MainPageId = "MAIN_PAGE";
 
-        public MarketDialog(IGuiService guiService, ILogger logger, IDialogService dialogService) 
+        public MarketDialog(
+            IGuiService guiService, 
+            ILogger logger, 
+            IDialogService dialogService,
+            IPlayerMarketService playerMarket) 
             : base(dialogService)
         {
             _guiService = guiService;
             _logger = logger;
+            _playerMarket = playerMarket;
         }
 
         public override PlayerDialog SetUp(uint player)
@@ -38,7 +45,7 @@ namespace SWLOR.Component.Market.Dialog
             var player = GetPC();
             var terminal = OBJECT_SELF;
             var regionType = (MarketRegionType)GetLocalInt(terminal, "MARKET_ID");
-            var marketRegion = PlayerMarket.GetMarketRegion(regionType);
+            var marketRegion = _playerMarket.GetMarketRegion(regionType);
 
             if (regionType == MarketRegionType.Invalid)
             {

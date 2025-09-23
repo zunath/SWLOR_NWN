@@ -1,9 +1,11 @@
 using System.Globalization;
-using SWLOR.Component.Character.UI.RefreshEvent;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Caching.Contracts;
+using SWLOR.Shared.Domain.Contracts;
 using SWLOR.Shared.Domain.Entity;
+using SWLOR.Shared.Domain.Enums;
+using SWLOR.Shared.Domain.Model.RefreshEvent;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.UI.Contracts;
@@ -17,9 +19,14 @@ namespace SWLOR.Component.Inventory.UI.ViewModel
     {
         private readonly IDatabaseService _db;
         private readonly IItemCacheService _itemCache;
-        private readonly Property _property;
+        private readonly IPropertyService _property;
 
-        public TrainingStoreViewModel(IGuiService guiService, IDatabaseService db, IItemCacheService itemCache, Property property) : base(guiService)
+        public TrainingStoreViewModel(
+            IGuiService guiService, 
+            IDatabaseService db, 
+            IItemCacheService itemCache, 
+            IPropertyService property) 
+            : base(guiService)
         {
             _db = db;
             _itemCache = itemCache;

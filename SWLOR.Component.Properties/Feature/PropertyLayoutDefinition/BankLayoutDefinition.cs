@@ -1,12 +1,10 @@
 using SWLOR.Component.Properties.Contracts;
-using SWLOR.Component.Properties.Entity;
-using SWLOR.Component.Properties.Enums;
-using SWLOR.Component.Properties.Model;
 using SWLOR.Component.Properties.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Entity;
 using SWLOR.Shared.Domain.Enums;
+using SWLOR.Shared.Domain.Model;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 
@@ -16,9 +14,9 @@ namespace SWLOR.Component.Properties.Feature.PropertyLayoutDefinition
     {
         private readonly IDatabaseService _db;
         private readonly PropertyLayoutBuilder _builder = new();
-        private readonly Property _property;
+        private readonly PropertyService _property;
 
-        public BankLayoutDefinition(IDatabaseService db, Property property)
+        public BankLayoutDefinition(IDatabaseService db, PropertyService property)
         {
             _db = db;
             _property = property;
@@ -116,7 +114,7 @@ namespace SWLOR.Component.Properties.Feature.PropertyLayoutDefinition
                 {
                     var propertyId = _property.GetPropertyId(area);
                     var dbProperty = _db.Get<WorldProperty>(propertyId);
-                    var dbBuilding = _db.Get<WorldProperty>(db_property.ParentPropertyId);
+                    var dbBuilding = _db.Get<WorldProperty>(dbProperty.ParentPropertyId);
                     var upgradeLevel = _property.GetEffectiveUpgradeLevel(dbBuilding.ParentPropertyId, PropertyUpgradeType.BankLevel);
                     var storageCap = CalculateStorageCap(upgradeLevel);
                     var bankId = dbBuilding.ParentPropertyId;

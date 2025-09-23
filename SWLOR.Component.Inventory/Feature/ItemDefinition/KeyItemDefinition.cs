@@ -1,5 +1,4 @@
 using SWLOR.Component.Inventory.Contracts;
-using SWLOR.Component.Inventory.Enums;
 using SWLOR.Component.Inventory.Model;
 using SWLOR.Component.Inventory.Service;
 using SWLOR.NWN.API.NWScript.Enum;

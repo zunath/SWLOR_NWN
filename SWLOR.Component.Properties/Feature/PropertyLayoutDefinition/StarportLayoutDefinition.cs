@@ -1,12 +1,12 @@
 using SWLOR.Component.Properties.Contracts;
-using SWLOR.Component.Properties.Entity;
-using SWLOR.Component.Properties.Enums;
-using SWLOR.Component.Properties.Model;
 using SWLOR.Component.Properties.Service;
+using SWLOR.Component.World.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Domain.Contracts;
 using SWLOR.Shared.Domain.Entity;
 using SWLOR.Shared.Domain.Enums;
+using SWLOR.Shared.Domain.Model;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 
@@ -17,13 +17,22 @@ namespace SWLOR.Component.Properties.Feature.PropertyLayoutDefinition
         private readonly IDatabaseService _db;
         private readonly IPlanetService _planetService;
         private readonly IPropertyService _propertyService;
+        private readonly IAreaService _areaService;
+        private readonly ISpaceService _spaceService;
         private readonly PropertyLayoutBuilder _builder = new();
 
-        public StarportLayoutDefinition(IDatabaseService db, IPlanetService planetService, IPropertyService propertyService)
+        public StarportLayoutDefinition(
+            IDatabaseService db, 
+            IPlanetService planetService, 
+            IPropertyService propertyService,
+            IAreaService areaService,
+            ISpaceService spaceService)
         {
             _db = db;
             _planetService = planetService;
             _propertyService = propertyService;
+            _areaService = areaService;
+            _spaceService = spaceService;
         }
 
         public Dictionary<PropertyLayoutType, PropertyLayout> Build()
@@ -33,7 +42,7 @@ namespace SWLOR.Component.Properties.Feature.PropertyLayoutDefinition
             return _builder.Build();
         }
 
-        private static bool CanAccess(uint player)
+        private bool CanAccess(uint player)
         {
             if (!GetIsPC(player) || GetIsDM(player))
             {
@@ -66,7 +75,7 @@ namespace SWLOR.Component.Properties.Feature.PropertyLayoutDefinition
         }
 
         [ScriptHandler(ScriptName.OnPropertyStarportTerminal)]
-        public static void UsePropertyStarportTerminal()
+        public void UsePropertyStarportTerminal()
         {
             var player = GetLastUsedBy();
             var terminal = OBJECT_SELF;
@@ -173,7 +182,7 @@ namespace SWLOR.Component.Properties.Feature.PropertyLayoutDefinition
                     var dbProperty = _db.Get<WorldProperty>(propertyId);
                     var dbBuilding = _db.Get<WorldProperty>(dbProperty.ParentPropertyId);
                     var dbCity = _db.Get<WorldProperty>(dbBuilding.ParentPropertyId);
-                    var cityArea = Area.GetAreaByResref(dbCity.ParentPropertyId);
+                    var cityArea = _areaService.GetAreaByResref(dbCity.ParentPropertyId);
                     var planet = _planetService.GetPlanetType(cityArea);
 
                     if (planet == PlanetType.Invalid)
@@ -183,7 +192,7 @@ namespace SWLOR.Component.Properties.Feature.PropertyLayoutDefinition
                     SpawnDockhands(instance, planet);
 
                     var dockPoint = GetLandingWaypoint(instance);
-                    Space.RegisterLandingPoint(dockPoint, cityArea, false, propertyId);
+                    _spaceService.RegisterLandingPoint(dockPoint, cityArea, false, propertyId);
                 });
         }
     }

@@ -1,8 +1,8 @@
+using SWLOR.Component.Associate.Contracts;
+using SWLOR.Component.Associate.UI.Payload;
 using SWLOR.Component.Inventory.Contracts;
 using SWLOR.Component.Inventory.Model;
 using SWLOR.Component.Inventory.Service;
-using SWLOR.Component.Perk.Contracts;
-using SWLOR.Component.Associate.UI.Payload;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Enums;
@@ -24,7 +24,13 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
         private readonly IGuiService _guiService;
         private readonly ItemBuilder _builder = new();
 
-        public DroidControlItemDefinition(IDatabaseService db, IDroid droidService, ISpaceService spaceService, IRecastService recastService, IPerkService perkService, IGuiService guiService)
+        public DroidControlItemDefinition(
+            IDatabaseService db, 
+            IDroid droidService, 
+            ISpaceService spaceService, 
+            IRecastService recastService, 
+            IPerkService perkService, 
+            IGuiService guiService)
         {
             _db = db;
             _droidService = droidService;

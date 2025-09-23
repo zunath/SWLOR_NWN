@@ -9,6 +9,8 @@ using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Domain.Entity;
 using SWLOR.Component.Properties.UI.Payload;
 using SWLOR.Shared.Abstractions.Enums;
+using SWLOR.Shared.Abstractions.Models;
+using SWLOR.Shared.Domain.Contracts;
 using SWLOR.Shared.Domain.Enums;
 using SWLOR.Shared.Domain.Model.Payload;
 using SWLOR.Shared.UI.Component;

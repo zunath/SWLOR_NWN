@@ -1,10 +1,13 @@
 using SWLOR.Component.Properties.Entity;
 using SWLOR.Component.Properties.Enums;
+using SWLOR.Component.World.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Domain.Contracts;
 using SWLOR.Shared.Domain.Entity;
+using SWLOR.Shared.Domain.Enums;
 
 namespace SWLOR.Component.Properties.Service
 {
@@ -12,14 +15,23 @@ namespace SWLOR.Component.Properties.Service
     {
         private readonly ILogger _logger;
         private readonly IDatabaseService _db;
-        private readonly Property _property;
-        private static readonly Dictionary<StructureType, Dictionary<StructureChangeType, Action<WorldProperty, uint>>> _actions = new();
+        private readonly IAreaService _areaService;
+        private readonly ISpaceService _spaceService;
+        private readonly IPropertyService _property;
+        private readonly Dictionary<StructureType, Dictionary<StructureChangeType, Action<WorldProperty, uint>>> _actions = new();
 
-        public StructureChangedAction(ILogger logger, IDatabaseService db, Property property)
+        public StructureChangedAction(
+            ILogger logger, 
+            IDatabaseService db, 
+            IPropertyService property,
+            IAreaService areaService,
+            ISpaceService spaceService)
         {
             _logger = logger;
             _db = db;
             _property = property;
+            _areaService = areaService;
+            _spaceService = spaceService;
         }
 
         /// <summary>
@@ -71,7 +83,7 @@ namespace SWLOR.Component.Properties.Service
             return _actions;
         }
 
-        private static void Assign(StructureType structureType, StructureChangeType changeType, Action<WorldProperty, uint> action)
+        private void Assign(StructureType structureType, StructureChangeType changeType, Action<WorldProperty, uint> action)
         {
             if (!_actions.ContainsKey(structureType))
                 _actions[structureType] = new Dictionary<StructureChangeType, Action<WorldProperty, uint>>();
@@ -79,7 +91,7 @@ namespace SWLOR.Component.Properties.Service
             _actions[structureType][changeType] = action;
         }
 
-        private static Location GetDoorLocation(uint building, float orientationAdjustment, float sqrtAdjustment)
+        private Location GetDoorLocation(uint building, float orientationAdjustment, float sqrtAdjustment)
         {
             var area = GetArea(building);
             var location = GetLocation(building);
@@ -100,7 +112,7 @@ namespace SWLOR.Component.Properties.Service
             return doorLocation;
         }
 
-        private static void SpawnDoor(uint building, Location location, string name)
+        private void SpawnDoor(uint building, Location location, string name)
         {
             DestroyDoor(building);
             var door = CreateObject(ObjectType.Placeable, "building_ent1", location);
@@ -111,7 +123,7 @@ namespace SWLOR.Component.Properties.Service
             AssignExitLocationToInstance(building, GetLocation(door));
         }
 
-        private static void AssignExitLocationToInstance(uint building, Location location)
+        private void AssignExitLocationToInstance(uint building, Location location)
         {
             var propertyId = _property.GetPropertyId(building);
             var dbBuilding = _db.Get<WorldProperty>(propertyId);
@@ -126,14 +138,14 @@ namespace SWLOR.Component.Properties.Service
             SetLocalBool(instance.Area, "BUILDING_EXIT_SET", true);
         }
 
-        private static void DestroyDoor(uint building)
+        private void DestroyDoor(uint building)
         {
             var door = GetLocalObject(building, "PROPERTY_DOOR");
             if (GetIsObjectValid(door))
                 DestroyObject(door);
         }
 
-        private static void AdjustBuildingName(WorldProperty property)
+        private void AdjustBuildingName(WorldProperty property)
         {
             // If the interior has been linked, also update its name.
             var interiorId = property.ChildPropertyIds.ContainsKey(PropertyChildType.Interior) 
@@ -150,7 +162,7 @@ namespace SWLOR.Component.Properties.Service
             }
         }
 
-        private static Action<WorldProperty, uint> ClearDoor()
+        private Action<WorldProperty, uint> ClearDoor()
         {
             return (property, building) =>
             {
@@ -158,7 +170,7 @@ namespace SWLOR.Component.Properties.Service
             };
         }
 
-        private static Action<WorldProperty, uint> RetrieveStarport()
+        private Action<WorldProperty, uint> RetrieveStarport()
         {
             uint GetLandingWaypoint(uint area)
             {
@@ -200,15 +212,15 @@ namespace SWLOR.Component.Properties.Service
                 // The dock point needs to be unregistered from the space service so it no longer displays in the list
                 // of docking points.
                 var dbCity = _db.Get<WorldProperty>(property.ParentPropertyId);
-                var cityArea = Area.GetAreaByResref(dbCity.ParentPropertyId);
+                var cityArea = _areaService.GetAreaByResref(dbCity.ParentPropertyId);
                 var instance = _property.GetRegisteredInstance(interiorId);
                 var dockPoint = GetLandingWaypoint(instance.Area);
 
-                Space.RemoveLandingPoint(dockPoint, cityArea);
+                _spaceService.RemoveLandingPoint(dockPoint, cityArea);
             };
         }
 
-        private static Action<WorldProperty, uint> ChangeCityHall()
+        private Action<WorldProperty, uint> ChangeCityHall()
         {
             return (property, building) =>
             {
@@ -218,7 +230,7 @@ namespace SWLOR.Component.Properties.Service
             };
         }
 
-        private static Action<WorldProperty, uint> ChangeBank()
+        private Action<WorldProperty, uint> ChangeBank()
         {
             return (property, building) =>
             {
@@ -228,7 +240,7 @@ namespace SWLOR.Component.Properties.Service
             };
         }
 
-        private static Action<WorldProperty, uint> ChangeMedicalCenter()
+        private Action<WorldProperty, uint> ChangeMedicalCenter()
         {
             return (property, building) =>
             {
@@ -238,7 +250,7 @@ namespace SWLOR.Component.Properties.Service
             };
         }
 
-        private static Action<WorldProperty, uint> ChangeStarport()
+        private Action<WorldProperty, uint> ChangeStarport()
         {
             return (property, building) =>
             {
@@ -248,7 +260,7 @@ namespace SWLOR.Component.Properties.Service
             };
         }
 
-        private static Action<WorldProperty, uint> ChangeCantina()
+        private Action<WorldProperty, uint> ChangeCantina()
         {
             return (property, building) =>
             {
@@ -258,7 +270,7 @@ namespace SWLOR.Component.Properties.Service
             };
         }
 
-        private static Action<WorldProperty, uint> ChangeHouse()
+        private Action<WorldProperty, uint> ChangeHouse()
         {
             return (property, building) =>
             {
@@ -268,7 +280,7 @@ namespace SWLOR.Component.Properties.Service
             };
         }
 
-        private static Action<WorldProperty, uint> ChangeLab()
+        private Action<WorldProperty, uint> ChangeLab()
         {
             return (property, building) =>
             {

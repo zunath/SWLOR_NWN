@@ -3,6 +3,7 @@ using SWLOR.Component.Properties.Enums;
 using SWLOR.Component.Properties.Service;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Enums;
+using SWLOR.Shared.Abstractions.Models;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Domain.Entity;
 using SWLOR.Shared.Domain.Enums;
@@ -15,9 +16,9 @@ namespace SWLOR.Component.Properties.UI.ViewModel
     public class RentApartmentViewModel: GuiViewModelBase<RentApartmentViewModel, IGuiPayload>
     {
         private readonly IDatabaseService _db;
-        private readonly Property _property;
+        private readonly PropertyService _property;
 
-        public RentApartmentViewModel(IGuiService guiService, IDatabaseService db, Property property) : base(guiService)
+        public RentApartmentViewModel(IGuiService guiService, IDatabaseService db, PropertyService property) : base(guiService)
         {
             _db = db;
             _property = property;
@@ -85,9 +86,9 @@ namespace SWLOR.Component.Properties.UI.ViewModel
         {
             var playerId = GetObjectUUID(Player);
             var query = new DBQuery<WorldProperty>()
-                .AddFieldSearch(nameof(World_property.OwnerPlayerId), playerId, false)
-                .AddFieldSearch(nameof(World_property.PropertyType), (int)PropertyType.Apartment)
-                .AddFieldSearch(nameof(World_property.IsQueuedForDeletion), false);
+                .AddFieldSearch(nameof(WorldProperty.OwnerPlayerId), playerId, false)
+                .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.Apartment)
+                .AddFieldSearch(nameof(WorldProperty.IsQueuedForDeletion), false);
             var dbApartment = _db.Search(query).FirstOrDefault();
 
             return dbApartment == null;
@@ -161,9 +162,9 @@ namespace SWLOR.Component.Properties.UI.ViewModel
 
                     var playerId = GetObjectUUID(Player);
                     var query = new DBQuery<WorldProperty>()
-                        .AddFieldSearch(nameof(World_property.OwnerPlayerId), playerId, false)
-                        .AddFieldSearch(nameof(World_property.PropertyType), (int)PropertyType.Apartment)
-                        .AddFieldSearch(nameof(World_property.IsQueuedForDeletion), false);
+                        .AddFieldSearch(nameof(WorldProperty.OwnerPlayerId), playerId, false)
+                        .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.Apartment)
+                        .AddFieldSearch(nameof(WorldProperty.IsQueuedForDeletion), false);
                     var apartments = _db.Search(query).ToList();
 
                     if (apartments.Count > 0)

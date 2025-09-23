@@ -3,6 +3,7 @@ using SWLOR.Component.Properties.Enums;
 using SWLOR.Component.Properties.Service;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Enums;
+using SWLOR.Shared.Abstractions.Models;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Domain.Entity;
@@ -18,9 +19,9 @@ namespace SWLOR.Component.Properties.UI.ViewModel
     {
         private readonly ILogger _logger;
         private readonly IDatabaseService _db;
-        private readonly Property _property;
+        private readonly PropertyService _property;
 
-        public ManageCityViewModel(IGuiService guiService, ILogger logger, IDatabaseService db, Property property) : base(guiService)
+        public ManageCityViewModel(IGuiService guiService, ILogger logger, IDatabaseService db, PropertyService property) : base(guiService)
         {
             _logger = logger;
             _db = db;
@@ -209,7 +210,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
             var area = GetArea(TetherObject);
             var propertyId = _property.GetPropertyId(area);
             var dbProperty = _db.Get<WorldProperty>(propertyId);
-            var dbBuilding = _db.Get<WorldProperty>(db_property.ParentPropertyId);
+            var dbBuilding = _db.Get<WorldProperty>(dbProperty.ParentPropertyId);
             _cityId = dbBuilding.ParentPropertyId;
             
             RefreshPermissions();
@@ -275,8 +276,8 @@ namespace SWLOR.Component.Properties.UI.ViewModel
         private void RefreshCitizenList()
         {
             var dbCitizens = _db.Search(new DBQuery<Player>()
-                .AddFieldSearch(nameof(Shared.Core.Data.Entity.Player.CitizenPropertyId), _cityId, false)
-                .AddFieldSearch(nameof(Shared.Core.Data.Entity.Player.IsDeleted), false));
+                .AddFieldSearch(nameof(SWLOR.Shared.Domain.Entity.Player.CitizenPropertyId), _cityId, false)
+                .AddFieldSearch(nameof(SWLOR.Shared.Domain.Entity.Player.IsDeleted), false));
 
             var citizenNames = new GuiBindingList<string>();
             var citizenCreditsOwed = new GuiBindingList<string>();
@@ -483,8 +484,8 @@ namespace SWLOR.Component.Properties.UI.ViewModel
                         // Retrieve all interior property Ids in this city of the given type of property.
                         // I.E: All banks, all medical centers, etc.
                         var instancePropertyIds = _db.Search(new DBQuery<WorldProperty>()
-                            .AddFieldSearch(nameof(World_property.ParentPropertyId), _cityId, false)
-                            .AddFieldSearch(nameof(World_property.StructureType), structureTypeIds))
+                            .AddFieldSearch(nameof(WorldProperty.ParentPropertyId), _cityId, false)
+                            .AddFieldSearch(nameof(WorldProperty.StructureType), structureTypeIds))
                             .SelectMany(s => s.ChildPropertyIds[PropertyChildType.Interior]);
 
                         foreach (var propertyId in instancePropertyIds)

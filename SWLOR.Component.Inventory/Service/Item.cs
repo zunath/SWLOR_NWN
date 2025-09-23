@@ -1,11 +1,7 @@
 using System.Numerics;
 using System.Text;
 using SWLOR.Component.Inventory.Contracts;
-using SWLOR.Component.Inventory.Enums;
 using SWLOR.Component.Inventory.Model;
-using SWLOR.Component.Perk.Contracts;
-using SWLOR.Component.Player.Contracts;
-using SWLOR.Component.Player.Enums;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -895,7 +891,7 @@ namespace SWLOR.Component.Inventory.Service
         /// </summary>
         /// <param name="item">The item to use.</param>
         /// <returns>A list containing all of the item properties.</returns>
-        public GuiBindingList<string> BuildItemPropertyList(uint item)
+        public IGuiBindingList<string> BuildItemPropertyList(uint item)
         {
             var list = new GuiBindingList<string>();
             var sb = new StringBuilder();
@@ -914,7 +910,7 @@ namespace SWLOR.Component.Inventory.Service
         /// </summary>
         /// <param name="itemProperties">The list of item properties to use.</param>
         /// <returns>A list containing all of the item properties.</returns>
-        public GuiBindingList<string> BuildItemPropertyList(List<ItemProperty> itemProperties)
+        public IGuiBindingList<string> BuildItemPropertyList(List<ItemProperty> itemProperties)
         {
             var list = new GuiBindingList<string>();
             var sb = new StringBuilder();

@@ -1,11 +1,14 @@
 using SWLOR.Component.Properties.Entity;
 using SWLOR.Component.Properties.Enums;
 using SWLOR.Component.Properties.Service;
+using SWLOR.Component.World.Contracts;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Dialog.Contracts;
 using SWLOR.Shared.Dialog.Model;
 using SWLOR.Shared.Dialog.Service;
+using SWLOR.Shared.Domain.Contracts;
 using SWLOR.Shared.Domain.Entity;
+using SWLOR.Shared.Domain.Enums;
 using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Component.Properties.Dialog
@@ -13,13 +16,22 @@ namespace SWLOR.Component.Properties.Dialog
     public class PropertyExitDialog: DialogBase
     {
         private readonly IDatabaseService _db;
-        private readonly Property _property;
+        private readonly IAreaService _areaService;
+        private readonly IPropertyService _property;
+        private readonly ISpaceService _spaceService;
 
-        public PropertyExitDialog(IDatabaseService db, Property property, IDialogService dialogService) 
+        public PropertyExitDialog(
+            IDatabaseService db, 
+            IPropertyService property, 
+            IDialogService dialogService,
+            IAreaService areaService,
+            ISpaceService spaceService) 
             : base(dialogService)
         {
             _db = db;
             _property = property;
+            _areaService = areaService;
+            _spaceService = spaceService;
         }
         
         private const string MainPageId = "MAIN_PAGE";
@@ -37,7 +49,7 @@ namespace SWLOR.Component.Properties.Dialog
         {
             var returningArea = string.IsNullOrWhiteSpace(propertyLocation.AreaResref)
                 ? _property.GetRegisteredInstance(propertyLocation.InstancePropertyId).Area
-                : Area.GetAreaByResref(propertyLocation.AreaResref);
+                : _areaService.GetAreaByResref(propertyLocation.AreaResref);
             
             var location = Location(
                 returningArea,
@@ -68,7 +80,7 @@ namespace SWLOR.Component.Properties.Dialog
                     var propertyLocation = property.Positions[PropertyLocationType.DockPosition];
                     ReturnToLastDockedPosition(player, propertyLocation);
 
-                    Space.PerformEmergencyExit(area);
+                    _spaceService.PerformEmergencyExit(area);
                 });
             }
             // The existence of a "Last Docked" position means this is a starship currently docked at a starport.

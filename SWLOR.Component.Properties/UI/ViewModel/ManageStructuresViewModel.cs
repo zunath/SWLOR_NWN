@@ -9,6 +9,7 @@ using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Domain.Entity;
 using SWLOR.Component.Properties.UI.Payload;
 using SWLOR.Shared.Abstractions.Enums;
+using SWLOR.Shared.Abstractions.Models;
 using SWLOR.Shared.Domain.Enums;
 using SWLOR.Shared.Domain.Model.Payload;
 using SWLOR.Shared.UI.Component;
@@ -21,9 +22,9 @@ namespace SWLOR.Component.Properties.UI.ViewModel
     public class ManageStructuresViewModel: GuiViewModelBase<ManageStructuresViewModel, IGuiPayload>
     {
         private readonly IDatabaseService _db;
-        private readonly Property _property;
+        private readonly PropertyService _property;
 
-        public ManageStructuresViewModel(IGuiService guiService, IDatabaseService db, Property property) : base(guiService)
+        public ManageStructuresViewModel(IGuiService guiService, IDatabaseService db, PropertyService property) : base(guiService)
         {
             _db = db;
             _property = property;
@@ -171,8 +172,8 @@ namespace SWLOR.Component.Properties.UI.ViewModel
             var structureNames = new GuiBindingList<string>();
             var structureToggles = new GuiBindingList<bool>();
             var query = new DBQuery<WorldProperty>()
-                .AddFieldSearch(nameof(World_property.ParentPropertyId), propertyId, false)
-                .AddFieldSearch(nameof(World_property.PropertyType), (int)PropertyType.Structure);
+                .AddFieldSearch(nameof(WorldProperty.ParentPropertyId), propertyId, false)
+                .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.Structure);
             var structureCount = _db.SearchCount(query);
             UpdatePagination(structureCount);
 
@@ -428,7 +429,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
                 var categories = _db.Search(query).ToList();
                 var itemCount = categories.Sum(x => x.Items.Count);
 
-                if (itemCount > parent_property.ItemStorageCount - structure.ItemStorageCount)
+                if (itemCount > parentProperty.ItemStorageCount - structure.ItemStorageCount)
                 {
                     Instructions = $"Remove items from storage first.";
                     InstructionColor = GuiColor.Red;
@@ -437,10 +438,10 @@ namespace SWLOR.Component.Properties.UI.ViewModel
                 
                 var item = ObjectPlugin.Deserialize(structure.SerializedItem);
                 ObjectPlugin.AcquireItem(Player, item);
-                
+
                 // Remove the structure from the parent's child list.
-                parent_property.ChildPropertyIds[PropertyChildType.Structure].Remove(structure.Id);
-                parent_property.ItemStorageCount -= structure.ItemStorageCount;
+                parentProperty.ChildPropertyIds[PropertyChildType.Structure].Remove(structure.Id);
+                parentProperty.ItemStorageCount -= structure.ItemStorageCount;
 
                 _db.Set(parentProperty);
 

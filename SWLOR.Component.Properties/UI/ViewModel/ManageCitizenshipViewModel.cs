@@ -3,9 +3,11 @@ using SWLOR.Component.Properties.Enums;
 using SWLOR.Component.Properties.Service;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Enums;
+using SWLOR.Shared.Abstractions.Models;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Domain.Entity;
+using SWLOR.Shared.Domain.Enums;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
@@ -16,9 +18,9 @@ namespace SWLOR.Component.Properties.UI.ViewModel
     {
         private readonly ILogger _logger;
         private readonly IDatabaseService _db;
-        private readonly Property _property;
+        private readonly PropertyService _property;
 
-        public ManageCitizenshipViewModel(IGuiService guiService, ILogger logger, IDatabaseService db, Property property) : base(guiService)
+        public ManageCitizenshipViewModel(IGuiService guiService, ILogger logger, IDatabaseService db, PropertyService property) : base(guiService)
         {
             _logger = logger;
             _db = db;
@@ -71,15 +73,15 @@ namespace SWLOR.Component.Properties.UI.ViewModel
             var area = GetArea(TetherObject);
             var propertyId = _property.GetPropertyId(area);
             var dbProperty = _db.Get<WorldProperty>(propertyId);
-            var dbBuilding = _db.Get<WorldProperty>(db_property.ParentPropertyId);
+            var dbBuilding = _db.Get<WorldProperty>(dbProperty.ParentPropertyId);
             var dbCity = _db.Get<WorldProperty>(dbBuilding.ParentPropertyId);
             var dbMayorPlayer = _db.Get<Player>(dbCity.OwnerPlayerId);
             var dbElection = _db.Search(new DBQuery<Election>()
                 .AddFieldSearch(nameof(Election.PropertyId), dbCity.Id, false))
                 .SingleOrDefault();
             var dbCitizenCount = _db.SearchCount(new DBQuery<Player>()
-                .AddFieldSearch(nameof(Shared.Core.Data.Entity.Player.CitizenPropertyId), dbCity.Id, false)
-                .AddFieldSearch(nameof(Shared.Core.Data.Entity.Player.IsDeleted), false));
+                .AddFieldSearch(nameof(SWLOR.Shared.Domain.Entity.Player.CitizenPropertyId), dbCity.Id, false)
+                .AddFieldSearch(nameof(SWLOR.Shared.Domain.Entity.Player.IsDeleted), false));
 
             var cityDetails = new GuiBindingList<string>();
 
@@ -190,7 +192,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
 
                         // Pull back the full structure information
                         var structures = _db.Search(new DBQuery<WorldProperty>()
-                            .AddFieldSearch(nameof(World_property.Id), structureIds));
+                            .AddFieldSearch(nameof(WorldProperty.Id), structureIds));
 
                         // Look for any structures that have interior children and return their Ids
                         var interiorPropertyIds = structures.SelectMany(s =>

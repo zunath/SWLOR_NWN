@@ -5,6 +5,7 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Domain.Entity;
 using SWLOR.Component.Properties.UI.Payload;
+using SWLOR.Shared.Abstractions.Models;
 using SWLOR.Shared.Domain.Enums;
 using SWLOR.Shared.Domain.Model.Payload;
 using SWLOR.Shared.UI.Contracts;
@@ -16,9 +17,9 @@ namespace SWLOR.Component.Properties.UI.ViewModel
     public class PropertyPermissionsViewModel: GuiViewModelBase<PropertyPermissionsViewModel, PropertyPermissionPayload>
     {
         private readonly IDatabaseService _db;
-        private readonly Property _property;
+        private readonly PropertyService _property;
 
-        public PropertyPermissionsViewModel(IGuiService guiService, IDatabaseService db, Property property) : base(guiService)
+        public PropertyPermissionsViewModel(IGuiService guiService, IDatabaseService db, PropertyService property) : base(guiService)
         {
             _db = db;
             _property = property;
@@ -200,12 +201,12 @@ namespace SWLOR.Component.Properties.UI.ViewModel
             {
                 var dbCategory = _db.Get<WorldPropertyCategory>(PropertyId);
                 var dbProperty = _db.Get<WorldProperty>(dbCategory.ParentPropertyId);
-                ownerPlayerId = db_property.OwnerPlayerId;
+                ownerPlayerId = dbProperty.OwnerPlayerId;
             }
             else
             {
                 var dbProperty = _db.Get<WorldProperty>(PropertyId);
-                ownerPlayerId = db_property.OwnerPlayerId;
+                ownerPlayerId = dbProperty.OwnerPlayerId;
             }
 
             foreach (var type in AvailablePermissions)
@@ -308,22 +309,22 @@ namespace SWLOR.Component.Properties.UI.ViewModel
                     .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), PropertyId, false);
                 var playerIds = _db.Search(permissionQuery).Select(s => s.PlayerId);
                 var query = new DBQuery<Player>()
-                    .AddFieldSearch(nameof(Shared.Core.Data.Entity.Player.Id), playerIds)
-                    .AddFieldSearch(nameof(Shared.Core.Data.Entity.Player.IsDeleted), false);
+                    .AddFieldSearch(nameof(SWLOR.Shared.Domain.Entity.Player.Id), playerIds)
+                    .AddFieldSearch(nameof(SWLOR.Shared.Domain.Entity.Player.IsDeleted), false);
                 dbPlayers = _db.Search(query);
             }
             // Otherwise look for players by their names.
             else
             {
                 var query = new DBQuery<Player>()
-                    .AddFieldSearch(nameof(Shared.Core.Data.Entity.Player.Name), SearchText, true)
-                    .AddFieldSearch(nameof(Shared.Core.Data.Entity.Player.IsDeleted), false)
+                    .AddFieldSearch(nameof(SWLOR.Shared.Domain.Entity.Player.Name), SearchText, true)
+                    .AddFieldSearch(nameof(SWLOR.Shared.Domain.Entity.Player.IsDeleted), false)
                     .AddPaging(25, 0);
 
                 // Searches within City properties require that the players be a citizen.
                 if (!string.IsNullOrWhiteSpace(_cityId))
                 {
-                    query.AddFieldSearch(nameof(Shared.Core.Data.Entity.Player.CitizenPropertyId), _cityId, false);
+                    query.AddFieldSearch(nameof(SWLOR.Shared.Domain.Entity.Player.CitizenPropertyId), _cityId, false);
                 }
 
                 dbPlayers = _db.Search(query);
@@ -432,12 +433,12 @@ namespace SWLOR.Component.Properties.UI.ViewModel
             if (dbProperty == null)
                 return;
 
-            var propertyDetail = _property.GetPropertyDetail(db_property.PropertyType);
+            var propertyDetail = _property.GetPropertyDetail(dbProperty.PropertyType);
 
             if (propertyDetail.PublicSetting == PropertyPublicType.Adjustable &&
                 grantorPermissions.GrantPermissions[PropertyPermissionType.EnterProperty])
             {
-                db_property.IsPubliclyAccessible = IsPublic;
+                dbProperty.IsPubliclyAccessible = IsPublic;
                 _db.Set(dbProperty);
             }
 
@@ -473,7 +474,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
             }
 
             var dbProperty = _db.Get<WorldProperty>(PropertyId);
-            IsPublic = db_property.IsPubliclyAccessible;
+            IsPublic = dbProperty.IsPubliclyAccessible;
         };
     }
 }

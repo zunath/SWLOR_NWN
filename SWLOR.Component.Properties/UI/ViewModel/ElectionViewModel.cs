@@ -3,6 +3,7 @@ using SWLOR.Component.Properties.Enums;
 using SWLOR.Component.Properties.Service;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Enums;
+using SWLOR.Shared.Abstractions.Models;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Domain.Entity;
 using SWLOR.Shared.UI.Contracts;
@@ -14,9 +15,9 @@ namespace SWLOR.Component.Properties.UI.ViewModel
     public class ElectionViewModel: GuiViewModelBase<ElectionViewModel, IGuiPayload>
     {
         private readonly IDatabaseService _db;
-        private readonly Property _property;
+        private readonly PropertyService _property;
 
-        public ElectionViewModel(IGuiService guiService, IDatabaseService db, Property property) : base(guiService)
+        public ElectionViewModel(IGuiService guiService, IDatabaseService db, PropertyService property) : base(guiService)
         {
             _db = db;
             _property = property;
@@ -69,7 +70,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
             var area = GetArea(TetherObject);
             var propertyId = _property.GetPropertyId(area);
             var dbProperty = _db.Get<WorldProperty>(propertyId);
-            var dbBuilding = _db.Get<WorldProperty>(db_property.ParentPropertyId);
+            var dbBuilding = _db.Get<WorldProperty>(dbProperty.ParentPropertyId);
             var election = _db.Search(new DBQuery<Election>()
                 .AddFieldSearch(nameof(Election.PropertyId), dbBuilding.ParentPropertyId, false))
                 .Single();
@@ -99,7 +100,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
 
             var candidates = election.CandidatePlayerIds.Count > 0
                 ? _db.Search(new DBQuery<Player>()
-                    .AddFieldSearch(nameof(Shared.Core.Data.Entity.Player.Id), election.CandidatePlayerIds))
+                    .AddFieldSearch(nameof(SWLOR.Shared.Domain.Entity.Player.Id), election.CandidatePlayerIds))
                     .ToList()
                 : new List<Player>();
             var candidateNames = new GuiBindingList<string>();

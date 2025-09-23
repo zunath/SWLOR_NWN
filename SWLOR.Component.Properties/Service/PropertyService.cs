@@ -1,9 +1,10 @@
 using System.Numerics;
+using SWLOR.Component.Inventory.Entity;
 using SWLOR.Component.Properties.Contracts;
 using SWLOR.Component.Properties.Dialog;
 using SWLOR.Component.Properties.Entity;
 using SWLOR.Component.Properties.Enums;
-using SWLOR.Component.Properties.Model;
+using SWLOR.Component.World.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -13,8 +14,11 @@ using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Dialog.Contracts;
+using SWLOR.Shared.Domain.Contracts;
 using SWLOR.Shared.Domain.Entity;
 using SWLOR.Shared.Domain.Enums;
+using SWLOR.Shared.Domain.Model;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Area;
@@ -22,17 +26,17 @@ using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Service;
-using Player = SWLOR.Shared.Core.Data.Entity.Player;
 
 namespace SWLOR.Component.Properties.Service
 {
-    public class Property : IPropertyService
+    public class PropertyService : IPropertyService
     {
         private readonly ILogger _logger;
         private readonly IDatabaseService _db;
         private readonly IGuiService _guiService;
-        private readonly Area _areaService;
-        private readonly PlanetService _planetService;
+        private readonly IAreaService _areaService;
+        private readonly IPlanetService _planetService;
+        private readonly IDialogService _dialogService;
         private readonly StructureChangedAction _structureChangedAction;
         private readonly Dictionary<StructureType, StructureAttribute> _activeStructures = new();
         private readonly Dictionary<PropertyType, PropertyTypeAttribute> _propertyTypes = new();
@@ -59,13 +63,21 @@ namespace SWLOR.Component.Properties.Service
 
         private readonly Dictionary<PropertyType, List<StructureType>> _structureTypesByPropertyType = new();
 
-        public Property(ILogger logger, IDatabaseService db, IGuiService guiService, Area areaService, PlanetService planetService, StructureChangedAction structureChangedAction)
+        public PropertyService(
+            ILogger logger, 
+            IDatabaseService db, 
+            IGuiService guiService, 
+            IAreaService areaService, 
+            IPlanetService planetService, 
+            IDialogService dialogService,
+            StructureChangedAction structureChangedAction)
         {
             _logger = logger;
             _db = db;
             _guiService = guiService;
             _areaService = areaService;
             _planetService = planetService;
+            _dialogService = dialogService;
             _structureChangedAction = structureChangedAction;
             _structureChangedActions = _structureChangedAction.BuildSpawnActions();
         }
@@ -79,17 +91,17 @@ namespace SWLOR.Component.Properties.Service
         ///       it's possible the player will have more time than the value specified here.
         ///       This is expected.
         /// </summary>
-        public const int MinimumCitizensGracePeriodHours = 18;
+        public int MinimumCitizensGracePeriodHours => 18;
 
         /// <summary>
         /// Determines the number of days citizens have to register for an election.
         /// </summary>
-        public const int ElectionRegistrationDays = 14;
+        public int ElectionRegistrationDays => 14;
 
         /// <summary>
         /// Determines the number of days all citizens have to vote for an election.
         /// </summary>
-        public const int ElectionVotingDays = 7;
+        public int ElectionVotingDays => 7;
 
         /// <summary>
         /// When the module loads, cache all relevant data into memory.
@@ -1965,7 +1977,7 @@ namespace SWLOR.Component.Properties.Service
                 SetLocalFloat(player, "PROPERTY_CITY_HALL_X", position.X);
                 SetLocalFloat(player, "PROPERTY_CITY_HALL_Y", position.Y);
                 SetLocalFloat(player, "PROPERTY_CITY_HALL_Z", position.Z);
-                Shared.Dialog.Service.Dialog.StartConversation(player, player, nameof(PlaceCityHallDialog));
+                _dialogService.StartConversation(player, player, nameof(PlaceCityHallDialog));
                 return;
             }
             

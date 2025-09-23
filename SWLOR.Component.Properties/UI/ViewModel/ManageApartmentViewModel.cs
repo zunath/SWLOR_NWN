@@ -6,7 +6,9 @@ using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Domain.Entity;
 using SWLOR.Component.Properties.UI.Payload;
 using SWLOR.Shared.Abstractions.Enums;
+using SWLOR.Shared.Abstractions.Models;
 using SWLOR.Shared.Domain.Enums;
+using SWLOR.Shared.Domain.Model.Payload;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
@@ -16,9 +18,9 @@ namespace SWLOR.Component.Properties.UI.ViewModel
     public class ManageApartmentViewModel: GuiViewModelBase<ManageApartmentViewModel, ManageApartmentPayload>
     {
         private readonly IDatabaseService _db;
-        private readonly Property _property;
+        private readonly PropertyService _property;
 
-        public ManageApartmentViewModel(IGuiService guiService, IDatabaseService db, Property property) : base(guiService)
+        public ManageApartmentViewModel(IGuiService guiService, IDatabaseService db, PropertyService property) : base(guiService)
         {
             _db = db;
             _property = property;
@@ -180,7 +182,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
         {
             var selectedPropertyId = _propertyIds[SelectedApartmentIndex];
             var query = new DBQuery<WorldProperty>()
-                .AddFieldSearch(nameof(World_property.Id), selectedPropertyId, false);
+                .AddFieldSearch(nameof(WorldProperty.Id), selectedPropertyId, false);
             var apartment = _db.Search(query).Single();
 
             return apartment;
@@ -229,9 +231,9 @@ namespace SWLOR.Component.Properties.UI.ViewModel
                 {
                     var propertyIds = dbPermissions.Select(s => s.PropertyId);
                     var propertyQuery = new DBQuery<WorldProperty>()
-                        .AddFieldSearch(nameof(World_property.PropertyType), (int)PropertyType.Apartment)
-                        .AddFieldSearch(nameof(World_property.Id), propertyIds)
-                        .AddFieldSearch(nameof(World_property.IsQueuedForDeletion), false);
+                        .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.Apartment)
+                        .AddFieldSearch(nameof(WorldProperty.Id), propertyIds)
+                        .AddFieldSearch(nameof(WorldProperty.IsQueuedForDeletion), false);
                     var propertyCount = (int)_db.SearchCount(propertyQuery);
 
                     var properties = _db.Search(propertyQuery

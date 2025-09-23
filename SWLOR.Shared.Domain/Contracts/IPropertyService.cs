@@ -9,6 +9,26 @@ namespace SWLOR.Shared.Domain.Contracts
     public interface IPropertyService
     {
         /// <summary>
+        /// Determines the number of hours before the city will be destroyed due to
+        /// lack of citizens. This starts at the time of city hall placement for the initial check.
+        /// At boot time, if the number of citizens is below the required amount, the player will have 18 hours
+        /// to rectify it. Failure to do so will result in the city being lost upon the next server reboot.
+        /// Note: Due to the cleanup occurring on server boot, which occurs once every 24 hours,
+        ///       it's possible the player will have more time than the value specified here.
+        ///       This is expected.
+        /// </summary>
+        public int MinimumCitizensGracePeriodHours { get; }
+
+        /// <summary>
+        /// Determines the number of days citizens have to register for an election.
+        /// </summary>
+        public int ElectionRegistrationDays { get; }
+
+        /// <summary>
+        /// Determines the number of days all citizens have to vote for an election.
+        /// </summary>
+        public int ElectionVotingDays { get; }
+        /// <summary>
         /// When the module loads, cache all relevant data into memory.
         /// </summary>
         void CacheData();

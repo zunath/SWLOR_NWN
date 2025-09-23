@@ -1,5 +1,5 @@
-using SWLOR.Component.StatusEffect.Enums;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Domain.Enums;
 
 namespace SWLOR.Component.StatusEffect.Model
 {

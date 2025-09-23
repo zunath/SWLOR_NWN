@@ -1,4 +1,4 @@
-namespace SWLOR.Component.StatusEffect.Enums
+namespace SWLOR.Shared.Domain.Enums
 {
     public enum StatusEffectType
     {

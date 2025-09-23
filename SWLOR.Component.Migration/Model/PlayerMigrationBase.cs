@@ -1,7 +1,10 @@
 using SWLOR.Component.Migration.Contracts;
+using SWLOR.Component.Perk.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Domain.Contracts;
+using SWLOR.Shared.Domain.Enums;
 
 namespace SWLOR.Component.Migration.Model
 {

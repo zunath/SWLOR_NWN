@@ -1,3 +1,4 @@
+using SWLOR.Shared.Domain.Enums;
 using SWLOR.Shared.UI.Model;
 
 namespace SWLOR.Component.Player.UI.Payload

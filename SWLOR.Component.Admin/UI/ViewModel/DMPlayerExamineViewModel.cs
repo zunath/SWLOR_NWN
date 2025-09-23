@@ -1,4 +1,5 @@
 using SWLOR.Component.Admin.UI.Payload;
+using SWLOR.Component.Perk.Contracts;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;

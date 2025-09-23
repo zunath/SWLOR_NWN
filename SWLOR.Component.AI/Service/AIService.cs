@@ -1,10 +1,15 @@
 using SWLOR.Component.AI.Contracts;
 using SWLOR.Component.AI.Enums;
 using SWLOR.Component.AI.Model;
+using SWLOR.Component.Perk.Contracts;
+using SWLOR.Component.Player.Contracts;
+using SWLOR.Component.StatusEffect.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.Dialog.Contracts;
 using SWLOR.Shared.Dialog.Service;
+using SWLOR.Shared.Domain.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Creature;
@@ -22,6 +27,7 @@ namespace SWLOR.Component.AI.Service
         private readonly IStatusEffectService _statusEffectService;
         private readonly IPartyService _partyService;
         private readonly IActivityService _activityService;
+        private readonly IDialogService _dialogService;
         private readonly Dictionary<uint, HashSet<uint>> _creatureAllies = new();
         private readonly Dictionary<AIDefinitionType, IAIDefinition> _aiDefinitions = new();
 
@@ -33,7 +39,8 @@ namespace SWLOR.Component.AI.Service
             IPerkService perkService, 
             IStatusEffectService statusEffectService, 
             IPartyService partyService, 
-            IActivityService activityService)
+            IActivityService activityService,
+            IDialogService dialogService)
         {
             _random = random;
             _statService = statService;
@@ -43,6 +50,7 @@ namespace SWLOR.Component.AI.Service
             _statusEffectService = statusEffectService;
             _partyService = partyService;
             _activityService = activityService;
+            _dialogService = dialogService;
         }
 
         public void CacheAIData()
@@ -101,7 +109,7 @@ namespace SWLOR.Component.AI.Service
             if (!string.IsNullOrWhiteSpace(conversation))
             {
                 var talker = GetLastSpeaker();
-                Dialog.StartConversation(talker, creature, conversation);
+                _dialogService.StartConversation(talker, creature, conversation);
             }
         }
 

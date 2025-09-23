@@ -1,6 +1,7 @@
 using SWLOR.Component.Migration.Contracts;
 using SWLOR.Component.Migration.Enums;
 using SWLOR.Component.Migration.Model;
+using SWLOR.Shared.Domain.Enums;
 
 namespace SWLOR.Component.Migration.Feature.ServerMigration
 {

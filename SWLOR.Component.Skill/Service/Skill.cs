@@ -1,9 +1,13 @@
+using SWLOR.Component.Perk.Contracts;
 using SWLOR.Component.Skill.Contracts;
 using SWLOR.Component.Skill.Enums;
+using SWLOR.Component.Skill.UI.RefreshEvent;
+using SWLOR.Component.StatusEffect.Contracts;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.Domain.Entity;
 using SWLOR.Shared.Domain.Enums;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;

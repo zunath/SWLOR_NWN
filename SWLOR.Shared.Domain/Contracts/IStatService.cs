@@ -1,11 +1,12 @@
 using NWN.Native.API;
-using SWLOR.Component.Combat.Enums;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Domain.Entity;
 using SWLOR.Shared.Domain.Enums;
+using SWLOR.Shared.Domain.Model;
 using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
 using SavingThrow = SWLOR.NWN.API.NWScript.Enum.SavingThrow;
 
-namespace SWLOR.Component.Combat.Contracts
+namespace SWLOR.Shared.Domain.Contracts
 {
     public interface IStatService
     {

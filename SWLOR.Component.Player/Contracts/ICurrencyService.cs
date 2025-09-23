@@ -1,3 +1,5 @@
+using SWLOR.Shared.Domain.Enums;
+
 namespace SWLOR.Component.Player.Contracts
 {
     public interface ICurrencyService

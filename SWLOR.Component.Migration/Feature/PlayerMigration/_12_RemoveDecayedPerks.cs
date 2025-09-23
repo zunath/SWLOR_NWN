@@ -1,4 +1,5 @@
 using SWLOR.Component.Migration.Model;
+using SWLOR.Component.Perk.Contracts;
 using SWLOR.Shared.Abstractions.Contracts;
 
 namespace SWLOR.Component.Migration.Feature.PlayerMigration

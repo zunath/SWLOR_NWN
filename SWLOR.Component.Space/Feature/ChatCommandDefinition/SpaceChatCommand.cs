@@ -1,3 +1,5 @@
+using SWLOR.Shared.Domain.Enums;
+
 namespace SWLOR.Component.Space.Feature.ChatCommandDefinition
 {
     public class SpaceChatCommand: IChatCommandListDefinition

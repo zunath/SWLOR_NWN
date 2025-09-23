@@ -1,4 +1,5 @@
-﻿using SWLOR.Shared.Abstractions;
+﻿using SWLOR.Component.Space.Enums;
+using SWLOR.Shared.Abstractions;
 
 namespace SWLOR.Component.Space.Entity
 {

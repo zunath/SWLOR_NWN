@@ -3,6 +3,7 @@ using SWLOR.Component.Associate.Enums;
 using SWLOR.Component.Associate.Model;
 using SWLOR.Component.Associate.Service;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Domain.Enums;
 
 namespace SWLOR.Component.Associate.Feature.BeastDefinition.IncubationBeastDefinition
 {

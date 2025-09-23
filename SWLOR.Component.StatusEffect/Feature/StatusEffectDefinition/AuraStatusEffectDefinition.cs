@@ -1,9 +1,11 @@
+using SWLOR.Component.Perk.Contracts;
 using SWLOR.Component.StatusEffect.Contracts;
-using SWLOR.Component.StatusEffect.Enums;
 using SWLOR.Component.StatusEffect.Model;
 using SWLOR.Component.StatusEffect.Service;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Domain.Contracts;
+using SWLOR.Shared.Domain.Enums;
 
 namespace SWLOR.Component.StatusEffect.Feature.StatusEffectDefinition
 {

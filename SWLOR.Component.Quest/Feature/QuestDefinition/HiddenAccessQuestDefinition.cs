@@ -1,6 +1,7 @@
 using SWLOR.Component.Quest.Contracts;
 using SWLOR.Component.Quest.Service;
 using SWLOR.NWN.API.NWNX.Enum;
+using SWLOR.Shared.Domain.Enums;
 
 namespace SWLOR.Component.Quest.Feature.QuestDefinition
 {

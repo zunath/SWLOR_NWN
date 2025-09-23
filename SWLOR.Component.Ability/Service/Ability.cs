@@ -1,11 +1,16 @@
 using SWLOR.Component.Ability.Contracts;
-using SWLOR.Component.Ability.Enums;
 using SWLOR.Component.Ability.Model;
+using SWLOR.Component.Perk.Contracts;
+using SWLOR.Component.Player.Contracts;
+using SWLOR.Component.StatusEffect.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Domain.Contracts;
+using SWLOR.Shared.Domain.Entity;
 using SWLOR.Shared.Domain.Enums;
+using SWLOR.Shared.Domain.Model;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Module;

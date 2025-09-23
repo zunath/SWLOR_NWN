@@ -3,6 +3,8 @@ using SWLOR.Component.Space.Enums;
 using SWLOR.Component.Space.Model;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Domain.Contracts;
+using SWLOR.Shared.Domain.Enums;
 
 namespace SWLOR.Component.Space.Feature.ShipModuleDefinition
 {

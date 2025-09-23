@@ -117,6 +117,7 @@ using ScriptExecutionProvider = SWLOR.Game.Server.Server.ScriptExecutionProvider
 using SWLOR.Shared.UI.Infrastructure;
 using SWLOR.Shared.UI.Service;
 using SWLOR.Shared.Dialog.Service;
+using SWLOR.Shared.Domain.Contracts;
 
 namespace SWLOR.Game.Server
 {

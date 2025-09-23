@@ -1,8 +1,13 @@
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.Component.Ability.Model;
+using SWLOR.Component.Perk.Contracts;
+using SWLOR.Component.StatusEffect.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.Domain.Contracts;
+using SWLOR.Shared.Domain.Enums;
+using SWLOR.Shared.Domain.Model;
 
 namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
 {

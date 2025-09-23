@@ -3,6 +3,7 @@ using System.Text;
 using SWLOR.Component.Communication.Constants;
 using SWLOR.Component.Communication.Contracts;
 using SWLOR.Component.Communication.Enums;
+using SWLOR.Component.Player.Contracts;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;

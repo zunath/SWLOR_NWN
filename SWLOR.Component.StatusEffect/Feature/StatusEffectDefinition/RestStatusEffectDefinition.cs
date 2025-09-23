@@ -1,9 +1,12 @@
+using SWLOR.Component.Player.Contracts;
+using SWLOR.Component.Player.Enums;
 using SWLOR.Component.StatusEffect.Contracts;
-using SWLOR.Component.StatusEffect.Enums;
 using SWLOR.Component.StatusEffect.Feature.StatusEffectDefinition.StatusEffectData;
 using SWLOR.Component.StatusEffect.Model;
 using SWLOR.Component.StatusEffect.Service;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Domain.Contracts;
+using SWLOR.Shared.Domain.Enums;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Module;

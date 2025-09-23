@@ -1,3 +1,4 @@
+using System.Drawing;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Enums;
 using SWLOR.Shared.UI.Model;

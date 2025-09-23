@@ -1,4 +1,4 @@
-namespace SWLOR.Component.Combat.Contracts
+namespace SWLOR.Shared.Domain.Contracts
 {
     public interface IEnmityService
     {

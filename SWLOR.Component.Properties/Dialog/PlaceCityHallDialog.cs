@@ -1,9 +1,11 @@
+using SWLOR.Component.Perk.Contracts;
 using SWLOR.Component.Properties.Contracts;
 using SWLOR.Component.Properties.Enums;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Dialog.Contracts;
 using SWLOR.Shared.Dialog.Model;
 using SWLOR.Shared.Dialog.Service;
+using SWLOR.Shared.Domain.Enums;
 using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Component.Properties.Dialog

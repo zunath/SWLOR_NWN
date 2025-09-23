@@ -1,3 +1,5 @@
+using SWLOR.Shared.Domain.Enums;
+
 namespace SWLOR.Component.Associate.Model
 {
     public class DroidPerk

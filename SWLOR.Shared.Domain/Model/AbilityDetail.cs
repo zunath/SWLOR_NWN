@@ -1,11 +1,10 @@
-using SWLOR.Component.Ability.Contracts;
-using SWLOR.Component.Ability.Enums;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Domain.Contracts;
 using SWLOR.Shared.Domain.Enums;
 
-namespace SWLOR.Component.Ability.Model
+namespace SWLOR.Shared.Domain.Model
 {
     public delegate bool AbilityActivationAction(uint activator, uint target, int effectivePerkLevel, Location targetLocation);
     public delegate void AbilityImpactAction(uint activator, uint target, int effectivePerkLevel, Location targetLocation);

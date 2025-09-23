@@ -135,7 +135,7 @@ SWLOR.Component.[Domain]/
 Services used by multiple components should be moved to shared projects to maintain proper domain boundaries:
 
 ```csharp
-// Services moved to SWLOR.Shared.Abstractions/Contracts/
+// Services moved to SWLOR.Shared.Core/Contracts/ (Core game mechanics)
 // - IStatService (from Combat component)
 // - IEnmityService (from Combat component) 
 // - IAbilityService (from Ability component)
@@ -144,14 +144,14 @@ Services used by multiple components should be moved to shared projects to maint
 // - IPartyService (from Player component)
 // - IActivityService (from Player component)
 
-// Components reference shared abstractions, not other components
-using SWLOR.Shared.Abstractions.Contracts;
+// Components reference shared core services, not other components
+using SWLOR.Shared.Core.Contracts;
 
 public class AIService
 {
     private readonly IStatService _statService;
     private readonly IEnmityService _enmityService;
-    // Implementation uses shared interfaces, not component-specific ones
+    // Implementation uses shared core interfaces, not component-specific ones
 }
 ```
 
@@ -266,15 +266,15 @@ services.AddSingleton<SkillEventHandlers>();
 
 ### Phase 4: Move Cross-Component Services to Shared Projects
 1. Identify services used by multiple components
-2. Move service interfaces from component contracts to `SWLOR.Shared.Abstractions/Contracts/`:
-   - `IStatService` (from Combat component)
-   - `IEnmityService` (from Combat component)
-   - `IAbilityService` (from Ability component)
-   - `IPerkService` (from Perk component)
-   - `IStatusEffectService` (from StatusEffect component)
-   - `IPartyService` (from Player component)
-   - `IActivityService` (from Player component)
-3. Update all component references to use shared abstractions
+2. Move service interfaces from component contracts to `SWLOR.Shared.Domain/Contracts/`:
+   - `IStatService` (from Combat component) - Domain business logic for statistics and Player entities
+   - `IEnmityService` (from Combat component) - Domain business logic for combat enmity
+   - `IAbilityService` (from Ability component) - Domain business logic for abilities
+   - `IPerkService` (from Perk component) - Domain business logic for perks
+   - `IStatusEffectService` (from StatusEffect component) - Domain business logic for status effects
+   - `IPartyService` (from Player component) - Domain business logic for party management and Player entities
+   - `IActivityService` (from Player component) - Domain business logic for player activities and Player entities
+3. Update all component references to use shared domain services
 4. Remove cross-component project dependencies
 5. Update service registrations to use shared interfaces
 

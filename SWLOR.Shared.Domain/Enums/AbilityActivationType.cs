@@ -1,4 +1,4 @@
-namespace SWLOR.Component.Ability.Enums
+namespace SWLOR.Shared.Domain.Enums
 {
     public enum AbilityActivationType
     {

@@ -1,3 +1,4 @@
+using System.Drawing;
 using System.Globalization;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Enums;

@@ -1,8 +1,11 @@
 using SWLOR.Component.Migration.Model;
+using SWLOR.Component.Perk.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Bioware;
+using SWLOR.Shared.Domain.Contracts;
+using SWLOR.Shared.Domain.Enums;
 
 namespace SWLOR.Component.Migration.Feature.PlayerMigration
 {

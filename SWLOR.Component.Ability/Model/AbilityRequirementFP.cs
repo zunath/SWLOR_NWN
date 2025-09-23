@@ -1,4 +1,7 @@
 using SWLOR.Component.Ability.Contracts;
+using SWLOR.Component.StatusEffect.Contracts;
+using SWLOR.Shared.Domain.Contracts;
+using SWLOR.Shared.Domain.Enums;
 
 namespace SWLOR.Component.Ability.Model
 {

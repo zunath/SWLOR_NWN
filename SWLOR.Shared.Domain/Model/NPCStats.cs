@@ -1,4 +1,6 @@
-namespace SWLOR.Component.Quest.Model
+using SWLOR.Shared.Domain.Enums;
+
+namespace SWLOR.Shared.Domain.Model
 {
     public class NPCStats
     {

@@ -1,5 +1,6 @@
 using SWLOR.Component.Communication.Model;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Domain.Enums;
 
 namespace SWLOR.Component.Communication.Service
 {

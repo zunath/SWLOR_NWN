@@ -1,10 +1,9 @@
-using SWLOR.Component.Ability.Enums;
-using SWLOR.Component.Ability.Model;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Enums;
+using SWLOR.Shared.Domain.Model;
 
-namespace SWLOR.Component.Ability.Contracts
+namespace SWLOR.Shared.Domain.Contracts
 {
     public interface IAbilityService
     {

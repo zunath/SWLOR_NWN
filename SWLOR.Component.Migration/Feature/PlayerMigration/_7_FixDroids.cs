@@ -1,6 +1,8 @@
 using SWLOR.Component.Migration.Model;
+using SWLOR.Component.Perk.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Domain.Contracts;
 
 namespace SWLOR.Component.Migration.Feature.PlayerMigration
 {

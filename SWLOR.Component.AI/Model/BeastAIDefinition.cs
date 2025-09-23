@@ -1,4 +1,8 @@
+using SWLOR.Component.Perk.Contracts;
+using SWLOR.Component.StatusEffect.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Domain.Contracts;
+using SWLOR.Shared.Domain.Enums;
 
 namespace SWLOR.Component.AI.Model
 {

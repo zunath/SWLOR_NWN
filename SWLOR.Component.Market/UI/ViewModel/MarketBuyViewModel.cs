@@ -1,14 +1,14 @@
 using SWLOR.Component.Market.Contracts;
 using SWLOR.Component.Market.Entity;
 using SWLOR.Component.Market.Enums;
+using SWLOR.Component.Market.UI.Payload;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Log.LogGroup;
-using SWLOR.Shared.Domain.Entity;
-using SWLOR.Component.Market.UI.Payload;
-using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Domain.Contracts;
+using SWLOR.Shared.Domain.Entity;
 using SWLOR.Shared.Domain.Model.Payload;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
@@ -44,11 +44,6 @@ namespace SWLOR.Component.Market.UI.ViewModel
         private MarketRegionType _regionType;
         private bool _sortByPriceAscending;
 
-        /// <summary>
-        /// When the module loads, set up the category lists so they don't need
-        /// to be initialized for every player.
-        /// </summary>
-        [ScriptHandler<OnModuleLoad>]
         public void LoadCategories()
         {
             foreach (var (type, category) in _playerMarketService.GetActiveCategories())
@@ -154,6 +149,8 @@ namespace SWLOR.Component.Market.UI.ViewModel
 
         protected override void Initialize(MarketPayload initialPayload)
         {
+            LoadCategories();
+
             _regionType = initialPayload.RegionType;
             var regionDetail = _playerMarketService.GetMarketRegion(_regionType);
             _skipPaginationSearch = true;

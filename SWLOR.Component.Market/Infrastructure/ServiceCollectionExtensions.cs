@@ -1,4 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
+using SWLOR.Component.Market.Contracts;
+using SWLOR.Component.Market.EventHandlers;
+using SWLOR.Component.Market.Feature;
+using SWLOR.Component.Market.Service;
 
 namespace SWLOR.Component.Market.Infrastructure
 {
@@ -14,7 +18,14 @@ namespace SWLOR.Component.Market.Infrastructure
         /// <returns>The service collection for chaining</returns>
         public static IServiceCollection AddMarketServices(this IServiceCollection services)
         {
-            // TODO: Add Market services here as they are implemented
+            // Register services as singletons
+            services.AddSingleton<IPlayerMarketService, PlayerMarket>();
+            
+            // Register features as singletons
+            services.AddSingleton<StoreManagement>();
+            
+            // Register event handlers as singletons
+            services.AddSingleton<MarketEventHandlers>();
             
             return services;
         }

@@ -170,58 +170,92 @@ public class SkillModifier
 ### **Separation of Concerns**
 Event handlers and business logic should be separated to maintain clean architecture:
 
-- **Event Handlers**: Thin infrastructure layer that receives game events and delegates to services
+- **Event Handlers**: Thin infrastructure layer that receives game events and calls business logic methods directly
 - **Services**: Contains pure business logic, testable independently of event infrastructure
+- **No Wrapper Methods**: Event handlers should call actual business logic methods, not wrapper methods in services
 
-### **Event Handler Pattern**
+### **Correct Event Handler Pattern**
 ```csharp
-// SWLOR.Component.AI/EventHandlers/AIEventHandlers.cs
-public class AIEventHandlers
+// SWLOR.Component.Market/EventHandlers/MarketEventHandlers.cs
+public class MarketEventHandlers
 {
-    private readonly IAIService _aiService;
+    private readonly IPlayerMarketService _playerMarketService;
+    private readonly StoreManagement _storeManagement;
 
-    public AIEventHandlers(IAIService aiService)
+    public MarketEventHandlers(IPlayerMarketService playerMarketService, StoreManagement storeManagement)
     {
-        _aiService = aiService;
+        _playerMarketService = playerMarketService;
+        _storeManagement = storeManagement;
     }
 
-    [ScriptHandler<OnCreatureHeartbeatAfter>]
-    public void CreatureHeartbeat()
+    [ScriptHandler<OnModuleCacheBefore>]
+    public void CacheData()
     {
-        _aiService.ProcessCreatureHeartbeat(OBJECT_SELF);
+        _playerMarketService.LoadMarketCategories();
+        _playerMarketService.LoadMarkets();
     }
 
-    [ScriptHandler<OnCreaturePerceptionAfter>]
-    public void CreaturePerception()
+    [ScriptHandler<OnModuleLoad>]
+    public void RemoveOldListings()
     {
-        _aiService.ProcessCreaturePerception(OBJECT_SELF);
+        _playerMarketService.RemoveOldListingsInternal();
+    }
+
+    [ScriptHandler<OnModuleLoad>]
+    public void OnModuleLoad()
+    {
+        _storeManagement.ProcessStores();
     }
 }
 ```
 
 ### **Service Implementation Pattern**
 ```csharp
-// SWLOR.Component.AI/Service/AI.cs - Pure business logic
-public class AI : IAIService
+// SWLOR.Component.Market/Service/PlayerMarket.cs - Pure business logic
+public class PlayerMarket : IPlayerMarketService
 {
-    private readonly IRandomService _random;
-    private readonly IStatService _statService;
+    private readonly IDatabaseService _db;
+    private readonly IItemService _itemService;
 
-    public AI(IRandomService random, IStatService statService)
+    public PlayerMarket(IDatabaseService db, IItemService itemService)
     {
-        _random = random;
-        _statService = statService;
+        _db = db;
+        _itemService = itemService;
     }
 
-    public void CreatureHeartbeat()
+    public void LoadMarketCategories()
     {
-        // Pure business logic implementation
-        if (GetAILevel(OBJECT_SELF) == AILevel.VeryLow)
-            return;
-
-        _statService.RestoreNPCStats(true);
-        ProcessFlags();
+        var categories = _db.Search<MarketCategory>();
+        // ... implementation
     }
+
+    public void LoadMarkets()
+    {
+        var markets = _db.Search<Market>();
+        // ... implementation
+    }
+
+    private void RemoveOldListingsInternal()
+    {
+        var query = new DBQuery<MarketItem>()
+            .AddFieldSearch(nameof(MarketItem.IsListed), true);
+        // ... implementation
+    }
+}
+```
+
+### **Interface Pattern**
+```csharp
+// SWLOR.Component.Market/Contracts/IPlayerMarketService.cs
+public interface IPlayerMarketService
+{
+    void LoadMarketCategories();
+    void LoadMarkets();
+    void RemoveOldListingsInternal();
+    void CheckMarketTillInternal();
+    Dictionary<MarketCategoryType, MarketCategoryAttribute> GetActiveCategories();
+    MarketRegionAttribute GetMarketRegion(MarketRegionType regionType);
+    MarketCategoryType GetItemMarketCategory(uint item);
 }
 ```
 
@@ -282,10 +316,12 @@ services.AddSingleton<SkillEventHandlers>();
 1. Create EventHandlers folder in each component
 2. Split existing service classes:
    - Move `[ScriptHandler<>]` methods to new EventHandler classes
-   - Keep pure business logic in Service classes
-   - Update interfaces to remove event handler methods
-3. Register both services and event handlers as singletons in DI container
-4. Update service implementations to be testable without event infrastructure
+   - **Remove wrapper methods entirely** from service classes and interfaces
+   - Keep pure business logic methods in Service classes
+   - Event handlers call actual business logic methods directly
+3. Update interfaces to remove event handler wrapper methods
+4. Register both services and event handlers as singletons in DI container
+5. Update service implementations to be testable without event infrastructure
 
 ### Phase 6: Establish Component Boundaries
 1. Review each component for external dependencies
@@ -320,7 +356,8 @@ services.AddSingleton<SkillEventHandlers>();
 5. **Direct Component References**: Components importing other components' implementation details
 6. **Fat Event Handlers**: Event handlers containing business logic instead of delegating to services
 7. **Mixed Responsibilities**: Services that contain both business logic and event handling code
-8. **Non-Singleton Services**: Registering services with shorter lifetimes when singleton is appropriate
+8. **Event Handler Wrapper Methods**: Creating wrapper methods in services just to call from event handlers
+9. **Non-Singleton Services**: Registering services with shorter lifetimes when singleton is appropriate
 
 ## Maintenance Guidelines
 
@@ -328,7 +365,8 @@ services.AddSingleton<SkillEventHandlers>();
 - Only move to shared domain when a second component needs the entity
 - Use interfaces for cross-component communication
 - Keep domain models focused on business logic, not infrastructure
-- Keep event handlers thin - they should only delegate to services
+- Keep event handlers thin - they should only call business logic methods directly
+- **Never create wrapper methods** in services just for event handlers
 - Register all services and event handlers as singletons for performance
 - Separate event handling from business logic in new components
 - Regularly review component dependencies to prevent coupling

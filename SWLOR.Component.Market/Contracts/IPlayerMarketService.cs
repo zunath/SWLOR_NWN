@@ -5,17 +5,22 @@ namespace SWLOR.Component.Market.Contracts
     public interface IPlayerMarketService
     {
         /// <summary>
-        /// When the module caches, cache all static player market data for quick retrieval.
+        /// Loads market categories from the database.
         /// </summary>
-        void CacheData();
+        void LoadMarketCategories();
 
         /// <summary>
-        /// Marks items as unlisted if they have been sitting on the market for longer than two weeks.
+        /// Loads markets from the database.
+        /// </summary>
+        void LoadMarkets();
+
+        /// <summary>
+        /// Removes old listings that have been on the market for too long.
         /// </summary>
         void RemoveOldListings();
 
         /// <summary>
-        /// When a player enters the server, if they have credits in their market till, send them a message stating so.
+        /// Checks if a player has credits in their market till and notifies them.
         /// </summary>
         void CheckMarketTill();
 

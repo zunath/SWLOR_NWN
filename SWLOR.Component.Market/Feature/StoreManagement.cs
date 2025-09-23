@@ -4,9 +4,6 @@ using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Log.LogGroup;
-using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Events.Module;
-using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Component.Market.Feature
@@ -143,40 +140,8 @@ namespace SWLOR.Component.Market.Feature
             }
         }
 
-        /// <summary>
-        /// When the module loads, place all stores inside the cache and schedule the cleanup process.
-        /// </summary>
-        [ScriptHandler<OnModuleLoad>]
-        public void OnModuleLoad()
-        {
-            ProcessStores();
-        }
 
-        /// <summary>
-        /// When a store item is acquired, destroy the local flag indicating it's a store item.
-        /// </summary>
-        [ScriptHandler<OnModuleAcquire>]
-        public void OnModuleAcquire()
-        {
-            AcquireItem();
-        }
 
-        /// <summary>
-        /// Destroys items sold to NPC stores immediately.
-        /// </summary>
-        [ScriptHandler<OnStoreSellAfter>]
-        public void OnStoreSellAfter()
-        {
-            DestroySoldItem();
-        }
 
-        /// <summary>
-        /// Prevents items from being sold from a henchman's inventory.
-        /// </summary>
-        [ScriptHandler<OnStoreSellBefore>]
-        public void OnStoreSellBefore()
-        {
-            PreventSalesFromHenchmenInventory();
-        }
     }
 }

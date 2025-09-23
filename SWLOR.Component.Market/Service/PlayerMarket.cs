@@ -7,8 +7,6 @@ using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Domain.Contracts;
 using SWLOR.Shared.Domain.Entity;
 using SWLOR.Shared.Domain.Enums;
-using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Events.Module;
 using MarketCategoryType = SWLOR.Component.Market.Enums.MarketCategoryType;
 
 namespace SWLOR.Component.Market.Service
@@ -56,26 +54,8 @@ namespace SWLOR.Component.Market.Service
             _beastMasteryService = beastMasteryService;
         }
 
-        /// <summary>
-        /// When the module caches, cache all static player market data for quick retrieval.
-        /// </summary>
-        [ScriptHandler<OnModuleCacheBefore>]
-        public void CacheData()
-        {
-            LoadMarketCategories();
-            LoadMarkets();
-        }
 
-        /// <summary>
-        /// Marks items as unlisted if they have been sitting on the market for longer than two weeks.
-        /// </summary>
-        [ScriptHandler<OnModuleLoad>]
         public void RemoveOldListings()
-        {
-            RemoveOldListingsInternal();
-        }
-
-        private void RemoveOldListingsInternal()
         {
             var query = new DBQuery<MarketItem>()
                 .AddFieldSearch(nameof(MarketItem.IsListed), true);
@@ -95,16 +75,7 @@ namespace SWLOR.Component.Market.Service
             }
         }
 
-        /// <summary>
-        /// When a player enters the server, if they have credits in their market till, send them a message stating so.
-        /// </summary>
-        [ScriptHandler<OnModuleEnter>]
         public void CheckMarketTill()
-        {
-            CheckMarketTillInternal();
-        }
-
-        private void CheckMarketTillInternal()
         {
             var player = GetEnteringObject();
 
@@ -127,7 +98,7 @@ namespace SWLOR.Component.Market.Service
         /// <summary>
         /// Reads all of the MarketCategoryType enumerations and adds them to the related dictionaries.
         /// </summary>
-        private void LoadMarketCategories()
+        public void LoadMarketCategories()
         {
             _marketCategoryCache = _cacheService.BuildEnumCache<MarketCategoryType, MarketCategoryAttribute>()
                 .WithAllItems()
@@ -149,7 +120,7 @@ namespace SWLOR.Component.Market.Service
         /// <summary>
         /// Reads all of the MarketRegionType enumerations and adds them to the related dictionaries.
         /// </summary>
-        private void LoadMarkets()
+        public void LoadMarkets()
         {
             _marketRegionCache = _cacheService.BuildEnumCache<MarketRegionType, MarketRegionAttribute>()
                 .WithAllItems()

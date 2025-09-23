@@ -1,4 +1,5 @@
 using System.Net;
+using SWLOR.Component.Admin.Service;
 using SWLOR.Component.Communication.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
@@ -20,7 +21,7 @@ namespace SWLOR.Component.Communication.Service
     public class ChatCommand : IChatCommandService
     {
         private readonly IAppSettings _appSettings;
-        private readonly Authorization _authorization;
+        private readonly IAuthorizationService _authorization;
         private readonly ITargetingService _targetingService;
 
         private readonly Dictionary<string, ChatCommandDetail> _chatCommands = new();
@@ -35,7 +36,7 @@ namespace SWLOR.Component.Communication.Service
         public List<Animation> EmoteAnimations { get; } = new();
         public GuiBindingList<bool> EmoteIsLooping { get; } = new();
 
-        public ChatCommand(IAppSettings appSettings, Authorization authorization, ITargetingService targetingService)
+        public ChatCommand(IAppSettings appSettings, IAuthorizationService authorization, ITargetingService targetingService)
         {
             _appSettings = appSettings;
             _authorization = authorization;

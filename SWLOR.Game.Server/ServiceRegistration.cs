@@ -77,7 +77,6 @@ using SWLOR.Component.Quest.Contracts;
 using SWLOR.Component.Quest.Dialog;
 using SWLOR.Component.Quest.Infrastructure;
 using SWLOR.Component.Quest.Service;
-using SWLOR.Component.Skill.Contracts;
 using SWLOR.Component.Skill.Infrastructure;
 using SWLOR.Component.Skill.Service;
 using SWLOR.Component.Skill.UI.ViewModel;

@@ -6,7 +6,7 @@ using AuthorizationLevel = SWLOR.Shared.Domain.Enums.AuthorizationLevel;
 
 namespace SWLOR.Component.Admin.Service
 {
-    public class Authorization
+    public class Authorization : IAuthorizationService
     {
         private readonly IDatabaseService _db;
 

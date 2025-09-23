@@ -1,7 +1,7 @@
-﻿using SWLOR.Component.Space.Enums;
-using SWLOR.Shared.Abstractions;
+﻿using SWLOR.Shared.Abstractions;
+using SWLOR.Shared.Domain.Model;
 
-namespace SWLOR.Component.Space.Entity
+namespace SWLOR.Shared.Domain.Entity
 {
     public class PlayerShip: EntityBase
     {

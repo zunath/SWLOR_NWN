@@ -2,7 +2,6 @@ using SWLOR.Component.Inventory.Contracts;
 using SWLOR.Component.Inventory.Model;
 using SWLOR.Component.Inventory.Service;
 using SWLOR.Component.Perk.Contracts;
-using SWLOR.Component.Character.UI.Payload;
 using SWLOR.Component.Associate.UI.Payload;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -10,6 +9,7 @@ using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Domain.Contracts;
 using SWLOR.Shared.Domain.Entity;
 using SWLOR.Shared.Domain.Enums;
+using SWLOR.Shared.Domain.Model.Payload;
 using SWLOR.Shared.UI.Contracts;
 
 namespace SWLOR.Component.Inventory.Feature.ItemDefinition

@@ -1,6 +1,6 @@
 using SWLOR.Shared.Abstractions.Contracts;
 
-namespace SWLOR.Component.Character.UI.Payload
+namespace SWLOR.Shared.Domain.Model.Payload
 {
     public class AppearanceEditorPayload: IGuiPayload
     {

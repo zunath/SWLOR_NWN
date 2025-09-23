@@ -1,20 +1,28 @@
-using System.Drawing;
 using System.Globalization;
+using Discord;
+using Discord.Webhook;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
+using Color = System.Drawing.Color;
 
 namespace SWLOR.Component.Communication.UI.ViewModel
 {
     public class BugReportViewModel: GuiViewModelBase<BugReportViewModel, IGuiPayload>
     {
         private readonly IAppSettings _appSettings;
+        private readonly IDiscordNotificationService _discord;
 
-        public BugReportViewModel(IGuiService guiService, IAppSettings appSettings) : base(guiService)
+        public BugReportViewModel(
+            IGuiService guiService, 
+            IAppSettings appSettings,
+            IDiscordNotificationService discord) 
+            : base(guiService)
         {
             _appSettings = appSettings;
+            _discord = discord;
         }
 
         public const int MaxBugReportLength = 1000;
@@ -69,6 +77,8 @@ namespace SWLOR.Component.Communication.UI.ViewModel
             var title = _appSettings.ServerEnvironment == ServerEnvironmentType.Test
                 ? "Bug Report [TEST SERVER]"
                 : "Bug Report";
+
+            
 
             Task.Run(async () =>
             {

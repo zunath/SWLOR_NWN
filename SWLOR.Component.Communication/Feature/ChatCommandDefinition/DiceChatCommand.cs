@@ -1,12 +1,19 @@
 using SWLOR.Component.Communication.Contracts;
 using SWLOR.Component.Communication.Model;
 using SWLOR.Component.Communication.Service;
+using SWLOR.Shared.Dialog.Contracts;
 using SWLOR.Shared.Domain.Enums;
 
 namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
 {
     public class DiceChatCommand: IChatCommandListDefinition
     {
+        private readonly IDialogService _dialog;
+        public DiceChatCommand(IDialogService dialog)
+        {
+            _dialog = dialog;
+        }
+
         public Dictionary<string, ChatCommandDetail> BuildChatCommands()
         {
             var builder = new ChatCommandBuilder();
@@ -16,7 +23,7 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
                 .Permissions(AuthorizationLevel.All)
                 .Action((user, target, location, args) =>
                 {
-                    Shared.Dialog.Service.Dialog.StartConversation(user, user, nameof(DiceDialog));
+                    _dialog.StartConversation(user, user, nameof(DiceDialog));
                 });
 
             return builder.Build();

@@ -1,7 +1,6 @@
 using System.Text;
 using SWLOR.Component.Communication.Contracts;
 using SWLOR.Component.Communication.Model;
-using SWLOR.Component.StatusEffect.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
@@ -10,7 +9,6 @@ using SWLOR.Shared.Domain.Entity;
 using SWLOR.Shared.Domain.Enums;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
-using SkillType = SWLOR.Shared.Core.Enums.SkillType;
 
 namespace SWLOR.Component.Communication.Service
 {

@@ -2,10 +2,12 @@ using System.Globalization;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Domain.Contracts;
+using SWLOR.Shared.Domain.Entity;
+using SWLOR.Shared.Domain.Enums;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Events.Player;
-using Player = SWLOR.Shared.Core.Data.Entity.Player;
 using ChatChannel = SWLOR.NWN.API.NWNX.Enum.ChatChannel;
 
 namespace SWLOR.Component.Communication.Feature
@@ -13,10 +15,10 @@ namespace SWLOR.Component.Communication.Feature
     public class RoleplayXP
     {
         private readonly IDatabaseService _db;
-        private readonly Property _property;
+        private readonly IPropertyService _property;
         private const string RPTimestampVariable = "RP_SYSTEM_LAST_MESSAGE_TIMESTAMP";
 
-        public RoleplayXP(IDatabaseService db, Property property)
+        public RoleplayXP(IDatabaseService db, IPropertyService property)
         {
             _db = db;
             _property = property;
@@ -78,7 +80,7 @@ namespace SWLOR.Component.Communication.Feature
         /// If messages are sent too quickly, the message will be treated as spam and RP point will not be granted.
         /// </summary>
         [ScriptHandler<OnNWNXChat>]
-        public static void ProcessRPMessage()
+        public void ProcessRPMessage()
         {
             var channel = ChatPlugin.GetChannel();
             var player = ChatPlugin.GetSender();

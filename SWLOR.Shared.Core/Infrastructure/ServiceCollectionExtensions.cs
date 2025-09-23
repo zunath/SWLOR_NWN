@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Service;
 
@@ -17,6 +18,8 @@ namespace SWLOR.Shared.Core.Infrastructure
         public static IServiceCollection AddCoreServices(this IServiceCollection services)
         {
             services.AddSingleton<IRandomService, RandomService>();
+            services.AddSingleton<ITimeService, TimeService>();
+            services.AddSingleton<IDiscordNotificationService, DiscordNotificationService>();
             
             return services;
         }

@@ -1,4 +1,3 @@
-using SWLOR.Component.Space.Entity;
 using SWLOR.NWN.API.Engine;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;

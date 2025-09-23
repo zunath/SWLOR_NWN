@@ -1,6 +1,7 @@
 using SWLOR.Component.Communication.Contracts;
 using SWLOR.Component.Communication.Model;
 using SWLOR.Component.Communication.Service;
+using SWLOR.Component.Communication.UI.Payload;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Domain.Enums;

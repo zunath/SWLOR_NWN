@@ -1,5 +1,3 @@
-using System.Drawing;
-using SWLOR.Component.Character.UI.RefreshEvent;
 using SWLOR.Component.Communication.Contracts;
 using SWLOR.Component.Communication.Model;
 using SWLOR.Component.Communication.Service;
@@ -12,9 +10,12 @@ using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Domain.Contracts;
 using SWLOR.Shared.Domain.Entity;
 using SWLOR.Shared.Domain.Enums;
+using SWLOR.Shared.Domain.Model.RefreshEvent;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Service;
+using System;
+using System.Drawing;
 using ChatChannel = SWLOR.NWN.API.NWNX.Enum.ChatChannel;
 
 namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
@@ -26,15 +27,30 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
         private readonly IDatabaseService _db;
         private readonly IAbilityService _abilityService;
         private readonly IStatService _statService;
-        private readonly BeastMastery _beastMastery;
+        private readonly IBeastMasteryService _beastMastery;
+        private readonly IFactionService _faction;
+        private readonly ISpaceService _space;
+        private readonly IDiscordNotificationService _discord;
+        
 
-        public DMChatCommand(IGuiService guiService, IDatabaseService db, IAbilityService abilityService, IStatService statService, BeastMastery beastMastery)
+        public DMChatCommand(
+            IGuiService guiService, 
+            IDatabaseService db, 
+            IAbilityService abilityService, 
+            IStatService statService, 
+            IBeastMasteryService beastMastery,
+            IFactionService faction,
+            ISpaceService space,
+            IDiscordNotificationService discord)
         {
             _guiService = guiService;
             _db = db;
             _abilityService = abilityService;
             _statService = statService;
             _beastMastery = beastMastery;
+            _faction = faction;
+            _space = space;
+            _discord = discord;
         }
 
         public Dictionary<string, ChatCommandDetail> BuildChatCommands()
@@ -703,7 +719,7 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
         private void AdjustFactionStanding()
         {
             _builder.Create("adjustfactionstanding")
-                .Description($"Modifies a player's standing toward a particular faction. Scale ranges from {Faction.MinimumFaction} to {Faction.MaximumFaction}")
+                .Description($"Modifies a player's standing toward a particular faction. Scale ranges from {_faction.MinimumFaction} to {_faction.MaximumFaction}")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
                 .RequiresTarget()
                 .Validate((user, args) =>
@@ -712,7 +728,7 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
                        ((FactionType)factionId) == FactionType.Invalid)
                     {
                         var error = "Invalid faction Id. Must be one of the following values:";
-                        foreach (var (faction, detail) in Faction.GetAllFactions())
+                        foreach (var (faction, detail) in _faction.GetAllFactions())
                         {
                             error += $"{(int) faction} = {detail.Name}";
                         }
@@ -722,12 +738,12 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
 
                     if(!int.TryParse(args[1], out var amount))
                     {
-                        return $"Invalid amount. Must be a value ranging from {Faction.MinimumFaction} to {Faction.MaximumFaction}";
+                        return $"Invalid amount. Must be a value ranging from {_faction.MinimumFaction} to {_faction.MaximumFaction}";
                     }
 
-                    if (amount < Faction.MinimumFaction || amount > Faction.MaximumFaction)
+                    if (amount < _faction.MinimumFaction || amount > _faction.MaximumFaction)
                     {
-                        return $"Invalid amount. Must be a value ranging from {Faction.MinimumFaction} to {Faction.MaximumFaction}";
+                        return $"Invalid amount. Must be a value ranging from {_faction.MinimumFaction} to {_faction.MaximumFaction}";
                     }
 
                     return string.Empty;
@@ -745,7 +761,7 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
 
                     foreach (var (faction, standingDetail) in dbPlayer.Factions)
                     {
-                        var factionDetail = Faction.GetFactionDetail(faction);
+                        var factionDetail = _faction.GetFactionDetail(faction);
 
                         SendMessageToPC(user, $"{factionDetail.Name}: {standingDetail.Standing}");
                     }
@@ -755,7 +771,7 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
         private void GetFactionStanding()
         {
             _builder.Create("getfactionstanding")
-                .Description($"Retrieves a player's standing towards all factions. Scale ranges from {Faction.MinimumFaction} to {Faction.MaximumFaction}")
+                .Description($"Retrieves a player's standing towards all factions. Scale ranges from {_faction.MinimumFaction} to {_faction.MaximumFaction}")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
                 .AvailableToAllOnTestEnvironment()
                 .RequiresTarget()
@@ -772,7 +788,7 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
 
                     foreach (var (faction, standingDetail) in dbPlayer.Factions)
                     {
-                        var factionDetail = Faction.GetFactionDetail(faction);
+                        var factionDetail = _faction.GetFactionDetail(faction);
 
                         SendMessageToPC(user, $"{factionDetail.Name}: {standingDetail.Standing}");
                     }
@@ -947,29 +963,11 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
                 .Action((user, target, location, args) =>
                 {
                     var message = string.Join(" ", args);
-                    var url = Environment.GetEnvironmentVariable("SWLOR_DM_SHOUT_WEBHOOK_URL");
-
                     for (var onlinePlayer = GetFirstPC(); GetIsObjectValid(onlinePlayer); onlinePlayer = GetNextPC())
                         ChatPlugin.SendMessage(ChatChannel.DMShout, message, user, onlinePlayer);
                     
                     var authorName = $"{GetName(user)} ({GetPCPlayerName(user)}) [{GetPCPublicCDKey(user)}]";
-                    Task.Run(async () =>
-                    {
-                        using (var client = new DiscordWebhookClient(url))
-                        {
-                            var embed = new EmbedBuilder
-                            {
-                                Author = new EmbedAuthorBuilder
-                                {
-                                    Name = authorName
-                                },
-                                Description = message,
-                                Color = Color.Orange
-                            };
-
-                            await client.SendMessageAsync(string.Empty, embeds: new[] { embed.Build() });
-                        }
-                    });
+                    _discord.PublishMessage(authorName, message, Color.Orange, DiscordNotificationType.DMShout);
                 });
         }
 
@@ -1047,7 +1045,7 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
                 {
                     if (GetIsDM(target) != true && GetIsDMPossessed(target) != true)
                     {
-                        if (Space.GetShipStatus(target) != null)
+                        if (_space.GetShipStatus(target) != null)
                         {
                             var npcStats = _statService.GetNPCStats(target);
                             var level = npcStats.Level;
@@ -1058,7 +1056,7 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
                                 level = dbPlayer.Skills[SkillType.Piloting].Rank;
                             }
                             var targetName = GetName(target);
-                            var targetStatus = Space.GetShipStatus(target);
+                            var targetStatus = _space.GetShipStatus(target);
                             SendMessageToPC(user, $"{targetName} stats: \n" +
                                 $"Armor: {targetStatus.Hull} Max: {targetStatus.MaxHull} \n" +
                                 $"Shields: {targetStatus.Shield} Max: {targetStatus.MaxShield} \n" +
@@ -1087,9 +1085,9 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
                 .RequiresTarget()
                 .Action((user, target, location, args) =>
                 {
-                    if (Space.GetShipStatus(target) != null && !GetIsDM(target) && !GetIsDMPossessed(target))
+                    if (_space.GetShipStatus(target) != null && !GetIsDM(target) && !GetIsDMPossessed(target))
                     {
-                        var targetStatus = Space.GetShipStatus(target);
+                        var targetStatus = _space.GetShipStatus(target);
 
                         if (args.Length <= 0)
                         {
@@ -1099,9 +1097,9 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
                         }
                         else if (int.TryParse(args[0], out var amount))
                         {
-                            Space.RestoreHull(target, Space.GetShipStatus(target), amount);
-                            Space.RestoreShield(target, Space.GetShipStatus(target), amount);
-                            Space.RestoreCapacitor(target, Space.GetShipStatus(target), amount);
+                            _space.RestoreHull(target, _space.GetShipStatus(target), amount);
+                            _space.RestoreShield(target, _space.GetShipStatus(target), amount);
+                            _space.RestoreCapacitor(target, _space.GetShipStatus(target), amount);
                         }
 
                         if (GetIsPC(target))

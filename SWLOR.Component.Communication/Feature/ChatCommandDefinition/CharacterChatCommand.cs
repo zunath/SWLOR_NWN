@@ -11,10 +11,11 @@ using SWLOR.Shared.Domain.Contracts;
 using SWLOR.Shared.Domain.Enums;
 using SWLOR.Component.Communication.UI.Payload;
 using SWLOR.Shared.Abstractions.Enums;
+using SWLOR.Shared.Domain.Entity;
+using SWLOR.Shared.Domain.Model.Payload;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Entity;
 using SWLOR.Shared.UI.Service;
-using Player = SWLOR.Shared.Core.Data.Entity.Player;
 
 namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
 {
@@ -24,11 +25,19 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
         private readonly IDatabaseService _db;
         private readonly IAbilityService _abilityService;
         private readonly IGuiService _guiService;
-        private readonly Service.Communication _communication;
+        private readonly ICommunication _communication;
         private readonly IHoloComService _holoComService;
         private readonly IRecastService _recastService;
+        private readonly ILanguageService _language;
 
-        public CharacterChatCommand(IDatabaseService db, IAbilityService abilityService, IGuiService guiService, Service.Communication communication, IHoloComService holoComService, IRecastService recastService)
+        public CharacterChatCommand(
+            IDatabaseService db, 
+            IAbilityService abilityService, 
+            IGuiService guiService, 
+            ICommunication communication, 
+            IHoloComService holoComService, 
+            IRecastService recastService,
+            ILanguageService languageService)
         {
             _db = db;
             _abilityService = abilityService;
@@ -36,6 +45,7 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
             _communication = communication;
             _holoComService = holoComService;
             _recastService = recastService;
+            _language = languageService;
         }
 
         public Dictionary<string, ChatCommandDetail> BuildChatCommands()
@@ -213,7 +223,7 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
                 {
                     var command = args[0].ToLower();
                     var race = GetRacialType(user);
-                    var languages = Language.Languages;
+                    var languages = _language.Languages;
 
                     if (command == "help")
                     {
@@ -243,17 +253,17 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
                     if (race == RacialType.Wookiee &&
                         command != SkillType.Shyriiwook.ToString().ToLower())
                     {
-                        Language.SetActiveLanguage(user, SkillType.Shyriiwook);
+                        _language.SetActiveLanguage(user, SkillType.Shyriiwook);
                         SendMessageToPC(user, ColorToken.Red("Wookiees can only speak Shyriiwook."));
                         return;
                     }
 
 
-                    foreach (var language in Language.Languages)
+                    foreach (var language in _language.Languages)
                     {
                         if (language.ChatNames.Contains(command))
                         {
-                            Language.SetActiveLanguage(user, language.Skill);
+                            _language.SetActiveLanguage(user, language.Skill);
                             SendMessageToPC(user, $"Set active language to {language.ProperName}.");
                             return;
                         }

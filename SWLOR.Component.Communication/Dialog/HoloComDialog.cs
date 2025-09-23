@@ -2,6 +2,7 @@ using SWLOR.Component.Communication.Contracts;
 using SWLOR.Shared.Dialog.Contracts;
 using SWLOR.Shared.Dialog.Model;
 using SWLOR.Shared.Dialog.Service;
+using SWLOR.Shared.Domain.Contracts;
 using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Component.Communication.Dialog
@@ -9,12 +10,17 @@ namespace SWLOR.Component.Communication.Dialog
     public class HoloComDialog: DialogBase
     {
         private readonly IHoloComService _holoComService;
+        private readonly ISpaceService _space;
         private const string MainPageId = "MAIN_PAGE";
 
-        public HoloComDialog(IHoloComService holoComService, IDialogService dialogService) 
+        public HoloComDialog(
+            IHoloComService holoComService, 
+            IDialogService dialogService,
+            ISpaceService spaceService) 
             : base(dialogService)
         {
             _holoComService = holoComService;
+            _space = spaceService;
         }
         
         public override PlayerDialog SetUp(uint player)
@@ -31,7 +37,7 @@ namespace SWLOR.Component.Communication.Dialog
 
             var player  = GetPC();
 
-            if (Space.IsPlayerInSpaceMode(player))
+            if (_space.IsPlayerInSpaceMode(player))
             {
                 return;
             }
@@ -105,7 +111,7 @@ namespace SWLOR.Component.Communication.Dialog
 
             for (var pc = GetFirstPC(); GetIsObjectValid(pc); pc = GetNextPC())
             {
-                if (GetIsDM(pc) || pc == player || GetIsDMPossessed(pc) || Space.IsPlayerInSpaceMode(pc)) 
+                if (GetIsDM(pc) || pc == player || GetIsDMPossessed(pc) || _space.IsPlayerInSpaceMode(pc)) 
                     continue;
 
                 var message = $"Call {GetName(pc)}";
@@ -117,7 +123,7 @@ namespace SWLOR.Component.Communication.Dialog
                 var receiver = pc;
                 page.AddResponse(message, () =>
                 {
-                    if (!_holoComService.IsInCall(receiver) && !Space.IsPlayerInSpaceMode(player) && !Space.IsPlayerInSpaceMode(receiver))
+                    if (!_holoComService.IsInCall(receiver) && !_space.IsPlayerInSpaceMode(player) && !_space.IsPlayerInSpaceMode(receiver))
                     {
                         _holoComService.SetIsCallSender(player);
                         DelayCommand(1.0f, () =>

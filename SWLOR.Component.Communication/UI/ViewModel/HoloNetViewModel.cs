@@ -1,16 +1,24 @@
-using System.Drawing;
+using Discord;
+using Discord.Webhook;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
+using Color = System.Drawing.Color;
 
 namespace SWLOR.Component.Communication.UI.ViewModel
 {
     public class HoloNetViewModel : GuiViewModelBase<HoloNetViewModel, IGuiPayload>
     {
-        public HoloNetViewModel(IGuiService guiService) : base(guiService)
+        private IDiscordNotificationService _discord;
+
+        public HoloNetViewModel(
+            IGuiService guiService,
+            IDiscordNotificationService discord) 
+            : base(guiService)
         {
+            _discord = discord;
         }
 
         public string HoloNetText
@@ -62,24 +70,7 @@ namespace SWLOR.Component.Communication.UI.ViewModel
                 AssignCommand(Player, () => TakeGoldFromCreature(BroadcastPrice, Player, true));
 
                 var authorName = $"{GetName(Player)} ({GetPCPlayerName(Player)}) [{GetPCPublicCDKey(Player)}]";
-
-                Task.Run(async () =>
-                {
-                    using (var client = new DiscordWebhookClient(url))
-                    {
-                        var embed = new EmbedBuilder
-                        {
-                            Description = message,
-                            Author = new EmbedAuthorBuilder
-                            {
-                                Name = authorName
-                            },
-                            Color = Color.Blue
-                        };
-
-                        await client.SendMessageAsync(string.Empty, embeds: new[] { embed.Build() });
-                    }
-                });
+                _discord.PublishMessage(authorName, message, Color.Blue, DiscordNotificationType.Holonet);
 
                 SendMessageToPC(Player, "HoloNet message broadcasted!");
                 _guiService.TogglePlayerWindow(Player, GuiWindowType.HoloNet);

@@ -1,7 +1,7 @@
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Domain.Enums;
 
-namespace SWLOR.Component.Skill.Contracts
+namespace SWLOR.Shared.Domain.Contracts
 {
     public interface ISkillService
     {

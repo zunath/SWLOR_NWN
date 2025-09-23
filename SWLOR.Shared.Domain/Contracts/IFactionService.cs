@@ -1,9 +1,11 @@
 using SWLOR.Shared.Domain.Enums;
 
-namespace SWLOR.Component.Character.Contracts
+namespace SWLOR.Shared.Domain.Contracts
 {
     public interface IFactionService
     {
+        public int MinimumFaction { get; }
+        public int MaximumFaction { get; }
         void LoadFactions();
         Dictionary<FactionType, FactionAttribute> GetAllFactions();
         FactionAttribute GetFactionDetail(FactionType factionType);

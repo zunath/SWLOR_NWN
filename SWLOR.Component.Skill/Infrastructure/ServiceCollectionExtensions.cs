@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
-using SWLOR.Component.Skill.Contracts;
 using SWLOR.Component.Skill.EventHandlers;
 using SWLOR.Component.Skill.Service;
+using SWLOR.Shared.Domain.Contracts;
 
 namespace SWLOR.Component.Skill.Infrastructure
 {

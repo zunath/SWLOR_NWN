@@ -1,6 +1,7 @@
 using SWLOR.Component.Character.Contracts;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Extension;
+using SWLOR.Shared.Domain.Contracts;
 using SWLOR.Shared.Domain.Entity;
 using SWLOR.Shared.Domain.Enums;
 using SWLOR.Shared.Events.Attributes;
@@ -17,8 +18,8 @@ namespace SWLOR.Component.Character.Service
         {
             _db = db;
         }
-        public const int MinimumFaction = -5000;
-        public const int MaximumFaction = 5000;
+        public int MinimumFaction => -5000;
+        public int MaximumFaction => 5000;
 
         /// <summary>
         /// When the module caches, cache all faction details into memory.

@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Net;
+using SWLOR.Component.Admin.Service;
 using SWLOR.Component.Communication.Contracts;
 using SWLOR.Component.Communication.Model;
 using SWLOR.Component.Communication.Service;
@@ -15,11 +16,11 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
     {
         private readonly IAppSettings _appSettings;
         private readonly IGuiService _guiService;
-        private readonly Authorization _authorization;
-        private readonly ChatCommand _chatCommand;
+        private readonly IAuthorizationService _authorization;
+        private readonly IChatCommandService _chatCommand;
         private readonly ChatCommandBuilder _builder = new();
 
-        public SystemChatCommand(IAppSettings appSettings, IGuiService guiService, Authorization authorization, ChatCommand chatCommand)
+        public SystemChatCommand(IAppSettings appSettings, IGuiService guiService, IAuthorizationService authorization, IChatCommandService chatCommand)
         {
             _appSettings = appSettings;
             _guiService = guiService;

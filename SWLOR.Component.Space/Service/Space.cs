@@ -1,6 +1,5 @@
 using SWLOR.Component.Perk.Contracts;
 using SWLOR.Component.Space.Contracts;
-using SWLOR.Component.Space.Entity;
 using SWLOR.Component.Space.Enums;
 using SWLOR.Component.Space.Model;
 using SWLOR.Component.StatusEffect.Contracts;

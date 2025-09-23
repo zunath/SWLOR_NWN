@@ -28,7 +28,6 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
             //MoveDoor();
             EnmityDebugger();
             GetObjectId();
-            ResetBeast();
 
             return _builder.Build();
         }
@@ -109,23 +108,5 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
                 });
         }
 
-        private void ResetBeast()
-        {
-            _builder.Create("resetbeast")
-                .Description("")
-                .Permissions(AuthorizationLevel.Admin)
-                .RequiresTarget()
-                .Action((user, target, location, args) =>
-                {
-                    var playerId = GetObjectUUID(user);
-                    var dbPlayer = _db.Get<Player>(playerId);
-                    
-                    dbPlayer.ActiveBeastId = string.Empty;
-                    _db.Set(dbPlayer);
-
-                    _db.Delete<Beast>(dbPlayer.ActiveBeastId);
-
-                });
-        }
     }
 }

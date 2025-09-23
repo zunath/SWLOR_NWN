@@ -12,7 +12,7 @@ using SWLOR.Shared.Domain.Model.Payload;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
-using PlayerShip = SWLOR.Component.Space.Entity.PlayerShip;
+using PlayerShip = SWLOR.Shared.Domain.Entity.PlayerShip;
 
 namespace SWLOR.Component.Space.UI.ViewModel
 {

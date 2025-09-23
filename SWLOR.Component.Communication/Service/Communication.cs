@@ -3,19 +3,18 @@ using System.Text;
 using SWLOR.Component.Communication.Constants;
 using SWLOR.Component.Communication.Contracts;
 using SWLOR.Component.Communication.Enums;
-using SWLOR.Component.Player.Contracts;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Contracts;
+using SWLOR.Shared.Domain.Entity;
 using SWLOR.Shared.Domain.Enums;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.UI.Service;
 using ChatChannel = SWLOR.NWN.API.NWNX.Enum.ChatChannel;
-using Player = SWLOR.Shared.Core.Data.Entity.Player;
 
 namespace SWLOR.Component.Communication.Service
 {

@@ -7,8 +7,6 @@ using SWLOR.Shared.Domain.Entity;
 using SWLOR.Component.Admin.UI.Payload;
 using SWLOR.Component.Character.Enums;
 using SWLOR.Shared.Abstractions.Enums;
-using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
@@ -30,7 +28,6 @@ namespace SWLOR.Component.Admin.UI.ViewModel
         
         private const int MaxNotes = 50;
 
-        [ScriptHandler<OnExamineObjectBefore>]
         public void ExaminePlayer()
         {
             var dm = OBJECT_SELF;

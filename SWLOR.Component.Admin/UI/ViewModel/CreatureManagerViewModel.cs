@@ -4,8 +4,6 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data;
-using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.UI.Component;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
@@ -135,7 +133,6 @@ namespace SWLOR.Component.Admin.UI.ViewModel
             Search();
         };
 
-        [ScriptHandler<OnModulePlayerTarget>]
         public static void RunTargetedLocationAction()
         {
             var player = GetLastPlayerToSelectTarget();

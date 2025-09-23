@@ -2,9 +2,7 @@ using SWLOR.Component.Admin.Service;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Domain.Enums;
-using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
-using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Component.Admin.Feature
 {
@@ -22,7 +20,6 @@ namespace SWLOR.Component.Admin.Feature
         /// Verifies that a logging in player is an authorized DM.
         /// The player will be booted if they are not authorized.
         /// </summary>
-        [ScriptHandler<OnModuleEnter>]
         public void VerifyDM()
         {
             var dm = GetEnteringObject();

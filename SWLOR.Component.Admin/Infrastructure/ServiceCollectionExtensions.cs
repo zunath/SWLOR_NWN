@@ -1,4 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
+using SWLOR.Component.Admin.Contracts;
+using SWLOR.Component.Admin.EventHandlers;
+using SWLOR.Component.Admin.Feature;
+using SWLOR.Component.Admin.Service;
+using SWLOR.Component.Admin.UI.ViewModel;
+using SWLOR.Shared.Domain.Contracts;
 
 namespace SWLOR.Component.Admin.Infrastructure
 {
@@ -14,8 +20,24 @@ namespace SWLOR.Component.Admin.Infrastructure
         /// <returns>The service collection for chaining</returns>
         public static IServiceCollection AddAdminServices(this IServiceCollection services)
         {
-            // TODO: Add Admin services here as they are implemented
-            
+            // Register services as singletons
+            services.AddSingleton<IAuditingService, Auditing>();
+            services.AddSingleton<IAuthorizationService, Authorization>();
+
+            // Register features as singletons
+            services.AddSingleton<TlkOverrides>();
+            services.AddSingleton<DMActions>();
+            services.AddSingleton<ServerTasks>();
+            services.AddSingleton<DMAuthorization>();
+
+            // Register view models as singletons
+            services.AddSingleton<DMPlayerExamineViewModel>();
+            services.AddSingleton<DebugEnmityViewModel>();
+            services.AddSingleton<CreatureManagerViewModel>();
+
+            // Register event handlers as singletons
+            services.AddSingleton<AdminEventHandlers>();
+
             return services;
         }
     }

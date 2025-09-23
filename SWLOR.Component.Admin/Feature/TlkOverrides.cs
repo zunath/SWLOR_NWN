@@ -1,8 +1,6 @@
 using SWLOR.Component.Ability.Model;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Contracts;
-using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Component.Admin.Feature
 {
@@ -17,7 +15,6 @@ namespace SWLOR.Component.Admin.Feature
             _perkService = perkService;
         }
 
-        [ScriptHandler<OnModuleLoad>]
         public void OverrideTlks()
         {
             OverrideAttributeNames();

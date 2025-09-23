@@ -6,9 +6,6 @@ using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Domain.Entity;
-using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Constants;
-using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Component.Admin.Feature
@@ -46,7 +43,6 @@ namespace SWLOR.Component.Admin.Feature
         /// The server application is expected to restart the server when it sees it's down.
         /// This isn't handled by the C# code and should be set up on your server.
         /// </summary>
-        [ScriptHandler(ScriptName.OnSwlorHeartbeat)]
         public void ProcessAutoRestart()
         {
             var now = DateTime.UtcNow.TimeOfDay;
@@ -73,7 +69,6 @@ namespace SWLOR.Component.Admin.Feature
         /// <summary>
         /// When the server starts up, a log message will be written.
         /// </summary>
-        [ScriptHandler<OnModuleLoad>]
         public void ProcessBootUp()
         {
             _logger.Write<ServerLogGroup>("Server is starting up.");
@@ -145,7 +140,6 @@ namespace SWLOR.Component.Admin.Feature
         /// <summary>
         /// When a player enters the server, send them a greeting and a link to the Discord server.
         /// </summary>
-        [ScriptHandler<OnModuleEnter>]
         public void WelcomeMessage()
         {
             var player = GetEnteringObject();

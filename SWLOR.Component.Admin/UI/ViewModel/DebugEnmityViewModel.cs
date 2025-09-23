@@ -1,8 +1,6 @@
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Contracts;
 using SWLOR.Shared.Domain.Model.RefreshEvent;
-using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
@@ -21,7 +19,6 @@ namespace SWLOR.Component.Admin.UI.ViewModel
             _enmityService = enmityService;
         }
 
-        [ScriptHandler(ScriptName.OnEnmityChanged)]
         public void OnEnmityChanged()
         {
             foreach (var member in _partyService.GetAllPartyMembers(OBJECT_SELF))

@@ -3,8 +3,6 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Entity;
 using SWLOR.Shared.Domain.Model.RefreshEvent;
-using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.UI.Contracts;
 
 namespace SWLOR.Component.Admin.Feature
@@ -20,7 +18,6 @@ namespace SWLOR.Component.Admin.Feature
             _guiService = guiService;
         }
         
-        [ScriptHandler<OnDMSpawnObjectAfter>]
         public void OnDMSpawnObject()
         {
             OnDMSpawnObjectInstance();
@@ -40,7 +37,6 @@ namespace SWLOR.Component.Admin.Feature
             }
         }
 
-        [ScriptHandler<OnDMGiveXPBefore>]
         public void GrantRPXPViaDMCommand()
         {
             GrantRPXPViaDMCommandInstance();
@@ -78,7 +74,6 @@ namespace SWLOR.Component.Admin.Feature
                 SendMessageToPC(dm, "Only players may be targeted with this command.");
             }
         }
-        [ScriptHandler<OnDMGiveLevelBefore>]
         public void DisableGiveLevel()
         {
             DisableGiveLevelInstance();

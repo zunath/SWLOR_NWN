@@ -1,14 +1,12 @@
+using SWLOR.Component.Admin.Contracts;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
-using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Events.Module;
-using SWLOR.Shared.Events.Events.NWNX;
 
 namespace SWLOR.Component.Admin.Service
 {
-    public class Auditing
+    public class Auditing : IAuditingService
     {
         private readonly ILogger _logger;
 
@@ -19,7 +17,6 @@ namespace SWLOR.Component.Admin.Service
         /// <summary>
         /// Writes an audit log when a player connects to the server.
         /// </summary>
-        [ScriptHandler<OnModuleEnter>]
         public void AuditClientConnection()
         {
             var player = GetEnteringObject();
@@ -35,7 +32,6 @@ namespace SWLOR.Component.Admin.Service
         /// <summary>
         /// Writes an audit log when a player disconnects from the server.
         /// </summary>
-        [ScriptHandler<OnModuleExit>]
         public void AuditClientDisconnection()
         {
             var player = GetExitingObject();
@@ -51,7 +47,6 @@ namespace SWLOR.Component.Admin.Service
         /// <summary>
         /// Writes an audit log when a player sends a chat message.
         /// </summary>
-        [ScriptHandler<OnNWNXChat>]
         public void AuditChatMessages()
         {
             static string BuildRegularLog()

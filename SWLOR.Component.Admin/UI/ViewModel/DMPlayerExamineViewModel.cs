@@ -5,6 +5,7 @@ using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Domain.Contracts;
 using SWLOR.Shared.Domain.Entity;
 using SWLOR.Component.Admin.UI.Payload;
+using SWLOR.Component.Character.Enums;
 using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.NWNX;

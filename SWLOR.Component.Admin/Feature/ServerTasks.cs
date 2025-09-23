@@ -2,6 +2,7 @@ using SWLOR.Component.Admin.Entity;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Domain.Entity;
@@ -17,20 +18,26 @@ namespace SWLOR.Component.Admin.Feature
         private readonly ILogger _logger;
 
         private readonly IDatabaseService _db;
+        private readonly ITimeService _timeService;
         private readonly IScheduler _scheduler;
 
-        public ServerTasks(ILogger logger, IDatabaseService db, IScheduler scheduler)
+        public ServerTasks(
+            ILogger logger, 
+            IDatabaseService db, 
+            IScheduler scheduler,
+            ITimeService timeService)
         {
             _logger = logger;
             _db = db;
             _scheduler = scheduler;
+            _timeService = timeService;
         }
 
         // This determines what time the server will restart.
         // Restarts happen within a range of 30 seconds of this specified time. 
         // All times are in UTC.
-        private static TimeSpan RestartTime => new(0, 10, 0, 0); // 0 = Restarts happen at 6 AM eastern time
-        private static DateTime _nextNotification;
+        private TimeSpan RestartTime => new(0, 10, 0, 0); // 0 = Restarts happen at 6 AM eastern time
+        private DateTime _nextNotification;
         
         /// <summary>
         /// Every six seconds, the server will check to see if an automated restart is required.
@@ -75,13 +82,13 @@ namespace SWLOR.Component.Admin.Feature
             ScheduleRestartReminder();
         }
 
-        private static void ConfigureServerSettings()
+        private void ConfigureServerSettings()
         {
             AdministrationPlugin.SetPlayOption(AdministrationOption.ExamineChallengeRating, false);
             AdministrationPlugin.SetPlayOption(AdministrationOption.UseMaxHitpoints, true);
         }
 
-        private static void ApplyBans()
+        private void ApplyBans()
         {
             var query = new DBQuery<PlayerBan>();
 
@@ -94,7 +101,7 @@ namespace SWLOR.Component.Admin.Feature
             }
         }
 
-        private static void ScheduleRestartReminder()
+        private void ScheduleRestartReminder()
         {
             var bootNow = DateTime.UtcNow;
             _nextNotification = new DateTime(bootNow.Year, bootNow.Month, bootNow.Day, bootNow.Hour, 0, 0)
@@ -113,7 +120,7 @@ namespace SWLOR.Component.Admin.Feature
                 if (now >= _nextNotification)
                 {
                     var delta = restartDate - now;
-                    var rebootString = Time.GetTimeLongIntervals(delta, false);
+                    var rebootString = _timeService.GetTimeLongIntervals(delta, false);
                     var message = $"Server will automatically reboot in approximately {rebootString}.";
 
                     _logger.Write<ServerLogGroup>(message);

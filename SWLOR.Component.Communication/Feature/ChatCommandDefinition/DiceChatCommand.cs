@@ -1,3 +1,4 @@
+using SWLOR.Component.Character.Dialog;
 using SWLOR.Component.Communication.Contracts;
 using SWLOR.Component.Communication.Model;
 using SWLOR.Component.Communication.Service;

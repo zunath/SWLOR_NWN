@@ -8,20 +8,27 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SWLOR.Shared.Abstractions.Enums;
+using SWLOR.Shared.Abstractions.Models;
 using Color = System.Drawing.Color;
 
 namespace SWLOR.Shared.Core.Service
 {
     public class DiscordNotificationService: IDiscordNotificationService
     {
-        private IAppSettings _appSettings;
+        private readonly IAppSettings _appSettings;
         public DiscordNotificationService(
             IAppSettings appSettings)
         {
             _appSettings = appSettings;
         }
 
-        public void PublishMessage(string author, string message, Color color, DiscordNotificationType type)
+        public void PublishMessage(
+            string author, 
+            string message, 
+            Color color, 
+            DiscordNotificationType type,
+            string title = null,
+            List<DiscordNotificationField> fields = null)
         {
             string url;
 
@@ -54,7 +61,23 @@ namespace SWLOR.Shared.Core.Service
                         Color = new Discord.Color(color.R, color.G, color.B)
                     };
 
-                    await client.SendMessageAsync(string.Empty, embeds: new[] { embed.Build() });
+                    if (fields != null)
+                    {
+                        foreach (var field in fields)
+                        {
+                            embed.Fields.Add(new EmbedFieldBuilder
+                            {
+                                IsInline = field.IsInline,
+                                Name = field.Name,
+                                Value = field.Value
+                            });
+                        }
+                    }
+
+                    await client.SendMessageAsync(
+                        string.Empty, 
+                        embeds: new[] { embed.Build() },
+                        threadName: title);
                 }
             });
         }

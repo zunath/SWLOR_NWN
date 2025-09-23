@@ -3,6 +3,7 @@ using Discord;
 using Discord.Webhook;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Enums;
+using SWLOR.Shared.Abstractions.Models;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
@@ -78,69 +79,52 @@ namespace SWLOR.Component.Communication.UI.ViewModel
                 ? "Bug Report [TEST SERVER]"
                 : "Bug Report";
 
-            
-
-            Task.Run(async () =>
-            {
-                using (var client = new DiscordWebhookClient(url))
+            _discord.PublishMessage(
+                authorName,
+                message,
+                Color.Red,
+                DiscordNotificationType.Bug,
+                title,
+                new List<DiscordNotificationField>
                 {
-                    var embed = new EmbedBuilder
+                    new()
                     {
-                        Title = title,
-                        Description = message,
-                        Author = new EmbedAuthorBuilder
-                        {
-                            Name = authorName
-                        },
-                        Color = Color.Red,
-                        Fields = new List<EmbedFieldBuilder>
-                        {
-                            new()
-                            {
-                                IsInline = true,
-                                Name = "Area Name",
-                                Value = areaName
-                            },
-                            new()
-                            {
-                                IsInline = true,
-                                Name = "Area Tag",
-                                Value = areaTag
-                            },
-                            new()
-                            {
-                                IsInline = true,
-                                Name = "Area Resref",
-                                Value = areaResref
-                            },
-                            new()
-                            {
-                                IsInline = true,
-                                Name = "Position",
-                                Value = positionGroup
-                            },
-                            new()
-                            {
-                                IsInline = true,
-                                Name = "Date Reported",
-                                Value = dateReported,
-                            },
-                            new()
-                            {
-                                IsInline = true,
-                                Name = "Player ID",
-                                Value = playerId
-                            },
-                        }
-                    };
+                        IsInline = true,
+                        Name = "Area Name",
+                        Value = areaName
+                    },
+                    new()
+                    {
+                        IsInline = true,
+                        Name = "Area Tag",
+                        Value = areaTag
+                    },
+                    new()
+                    {
+                        IsInline = true,
+                        Name = "Area Resref",
+                        Value = areaResref
+                    },
+                    new()
+                    {
+                        IsInline = true,
+                        Name = "Position",
+                        Value = positionGroup
+                    },
+                    new()
+                    {
+                        IsInline = true,
+                        Name = "Date Reported",
+                        Value = dateReported,
+                    },
+                    new()
+                    {
+                        IsInline = true,
+                        Name = "Player ID",
+                        Value = playerId
+                    },
+                });
 
-
-                    await client.SendMessageAsync(
-                        string.Empty, 
-                        embeds: new[] { embed.Build() },
-                        threadName: title);
-                }
-            });
 
             SetLocalString(Player, "BUG_REPORT_LAST_SUBMISSION", nextReportAllowed.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture));
             SendMessageToPC(Player, "Bug report submitted! Thank you for your report.");

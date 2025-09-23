@@ -1,19 +1,27 @@
 using Microsoft.Extensions.DependencyInjection;
+using SWLOR.Component.Skill.Contracts;
+using SWLOR.Component.Skill.EventHandlers;
+using SWLOR.Component.Skill.Service;
 
 namespace SWLOR.Component.Skill.Infrastructure
 {
     /// <summary>
-    /// Extension methods for registering Properties-related services in the dependency injection container.
+    /// Extension methods for registering Skill-related services in the dependency injection container.
     /// </summary>
     public static class ServiceCollectionExtensions
     {
         /// <summary>
-        /// Registers all Properties services in the service collection.
+        /// Registers all Skill services in the service collection.
         /// </summary>
         /// <param name="services">The service collection to register services in</param>
         /// <returns>The service collection for chaining</returns>
         public static IServiceCollection AddSkillServices(this IServiceCollection services)
         {
+            // Register services as singletons
+            services.AddSingleton<ISkillService, SkillService>();
+            
+            // Register event handlers as singletons
+            services.AddSingleton<SkillEventHandlers>();
             
             return services;
         }

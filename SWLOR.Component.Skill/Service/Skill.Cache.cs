@@ -1,8 +1,6 @@
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Enums;
-using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Component.Skill.Service
 {
@@ -33,7 +31,6 @@ namespace SWLOR.Component.Skill.Service
         /// <summary>
         /// When the module loads, skills and categories are organized into dictionaries for quick look-ups later on.
         /// </summary>
-        [ScriptHandler<OnModuleCacheBefore>]
         public void CacheData()
         {
             Console.WriteLine("Skill.Cache.CacheData() called - starting skill cache initialization...");

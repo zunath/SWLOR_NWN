@@ -8,8 +8,6 @@ using SWLOR.Shared.Domain.Contracts;
 using SWLOR.Shared.Domain.Entity;
 using SWLOR.Shared.Domain.Enums;
 using SWLOR.Shared.Domain.Model.RefreshEvent;
-using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Service;
 
@@ -291,7 +289,6 @@ namespace SWLOR.Component.Skill.Service
         /// <summary>
         /// If a player is missing any skills in their DB record, they will be added here.
         /// </summary>
-        [ScriptHandler<OnModuleEnter>]
         public void AddMissingSkills()
         {
             var player = GetEnteringObject();

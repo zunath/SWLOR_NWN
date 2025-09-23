@@ -1,7 +1,5 @@
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Domain.Enums;
-using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Component.Skill.Service
 {
@@ -12,7 +10,6 @@ namespace SWLOR.Component.Skill.Service
         /// <summary>
         /// Handles creating all of the mapping dictionaries used by the skill system on module load.
         /// </summary>
-        [ScriptHandler<OnModuleCacheBefore>]
         public void LoadMappings()
         {
             LoadItemToSkillMapping();

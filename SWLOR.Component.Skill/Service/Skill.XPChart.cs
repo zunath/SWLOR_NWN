@@ -1,5 +1,3 @@
-using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Component.Skill.Service
 {
@@ -130,7 +128,6 @@ namespace SWLOR.Component.Skill.Service
         /// <summary>
         /// When the module loads, cache all XP chart data used for quick access.
         /// </summary>
-        [ScriptHandler<OnModuleCacheBefore>]
         public void CacheXPChartData()
         {
             CalculateTotalXP();

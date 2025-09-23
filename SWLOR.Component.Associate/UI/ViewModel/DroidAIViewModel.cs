@@ -21,14 +21,14 @@ namespace SWLOR.Component.Associate.UI.ViewModel
         private readonly ILogger _logger;
         private readonly IPerkService _perkService;
         private readonly ITargetingService _targetingService;
-        private readonly IDroid _droidService;
+        private readonly IDroidService _droidService;
 
         public DroidAIViewModel(
             IGuiService guiService, 
             ILogger logger, 
             IPerkService perkService, 
             ITargetingService targetingService,
-            IDroid droidService) 
+            IDroidService droidService) 
             : base(guiService)
         {
             _logger = logger;

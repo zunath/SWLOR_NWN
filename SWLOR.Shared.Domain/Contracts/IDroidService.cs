@@ -2,7 +2,7 @@ using SWLOR.Component.Associate.Model;
 
 namespace SWLOR.Component.Associate.Contracts
 {
-    public interface IDroid
+    public interface IDroidService
     {
         /// <summary>
         /// When the module loads, cache all relevant droid data into memory.

@@ -1,4 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
+using SWLOR.Component.Associate.EventHandlers;
+using SWLOR.Component.Associate.Service;
+using SWLOR.Component.Associate.Contracts;
+using SWLOR.Shared.Domain.Contracts;
 
 namespace SWLOR.Component.Associate.Infrastructure
 {
@@ -14,8 +18,13 @@ namespace SWLOR.Component.Associate.Infrastructure
         /// <returns>The service collection for chaining</returns>
         public static IServiceCollection AddAssociateServices(this IServiceCollection services)
         {
-            // TODO: Add Associate services here as they are implemented
-            
+            // Register services as singletons
+            services.AddSingleton<IBeastMasteryService, BeastMasteryService>();
+            services.AddSingleton<IDroidService, DroidService>();
+
+            // Register event handlers as singletons
+            services.AddSingleton<AssociateEventHandlers>();
+
             return services;
         }
     }

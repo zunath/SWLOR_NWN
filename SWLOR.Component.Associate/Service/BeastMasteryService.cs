@@ -16,16 +16,13 @@ using SWLOR.Component.Associate.UI.Payload;
 using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Domain.Model;
 using SWLOR.Shared.Domain.Model.RefreshEvent;
-using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Constants;
-using SWLOR.Shared.Events.Events.Module;
-using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Service;
+using SWLOR.Shared.Events.Constants;
 
 namespace SWLOR.Component.Associate.Service
 {
-    public class BeastMastery : IBeastMasteryService
+    public class BeastMasteryService : IBeastMasteryService
     {
         private readonly IDatabaseService _db;
         private readonly IRandomService _random;
@@ -39,7 +36,7 @@ namespace SWLOR.Component.Associate.Service
         private readonly IActivityService _activityService;
         private readonly ITimeService _timeService;
 
-        public BeastMastery(
+        public BeastMasteryService(
             IDatabaseService db,
             IRandomService random,
             IGenericCacheService cacheService,
@@ -78,7 +75,7 @@ namespace SWLOR.Component.Associate.Service
         public int MaxLevel => 50;
         private int _highestDelta;
 
-        public BeastMastery(
+        public BeastMasteryService(
             IDatabaseService db,
             IRandomService random,
             IGenericCacheService cacheService,
@@ -111,7 +108,6 @@ namespace SWLOR.Component.Associate.Service
         public string BeastTypeVariable => "BEAST_TYPE";
         public string BeastLevelVariable => "BEAST_LEVEL";
 
-        [ScriptHandler<OnModuleCacheBefore>]
         public void CacheData()
         {
             LoadBeasts();
@@ -443,7 +439,6 @@ namespace SWLOR.Component.Associate.Service
             return (likedFood, hatedFood);
         }
 
-        [ScriptHandler(ScriptName.OnCombatPointXPDistribute)]
         public void CombatPointXPDistributed()
         {
             var player = OBJECT_SELF;
@@ -471,8 +466,6 @@ namespace SWLOR.Component.Associate.Service
         /// <summary>
         /// When a player enters space or forcefully removes a beast from the party, the beast gets despawned.
         /// </summary>
-        [ScriptHandler(ScriptName.OnSpaceEnter)]
-        [ScriptHandler<OnAssociateRemoveBefore>]
         public void RemoveAssociate()
         {
             var player = OBJECT_SELF;
@@ -481,9 +474,8 @@ namespace SWLOR.Component.Associate.Service
         }
 
         /// <summary>
-        /// When a droid acquires an item, it is stored into a persistent variable on the controller item.
+        /// When a beast acquires an item, it is stored into a persistent variable on the controller item.
         /// </summary>
-        [ScriptHandler<OnModuleAcquire>]
         public void OnAcquireItem()
         {
             var beast = GetModuleItemAcquiredBy();
@@ -507,13 +499,11 @@ namespace SWLOR.Component.Associate.Service
             _itemService.ReturnItem(master, item);
         }
 
-        [ScriptHandler(ScriptName.OnBeastBlocked)]
         public void BeastOnBlocked()
         {
             ExecuteScript("x0_ch_hen_block", OBJECT_SELF);
         }
 
-        [ScriptHandler(ScriptName.OnBeastRoundEnd)]
         public void BeastOnEndCombatRound()
         {
             var beast = OBJECT_SELF;
@@ -525,19 +515,16 @@ namespace SWLOR.Component.Associate.Service
             }
         }
 
-        [ScriptHandler(ScriptName.OnBeastConversation)]
         public void BeastOnConversation()
         {
             ExecuteScript("x0_ch_hen_conv", OBJECT_SELF);
         }
 
-        [ScriptHandler(ScriptName.OnBeastDamaged)]
         public void BeastOnDamaged()
         {
             ExecuteScript("x0_ch_hen_damage", OBJECT_SELF);
         }
 
-        [ScriptHandler(ScriptName.OnBeastDeath)]
         public void BeastOnDeath()
         {
             var beast = OBJECT_SELF;
@@ -553,34 +540,29 @@ namespace SWLOR.Component.Associate.Service
             _db.Set(dbBeast);
         }
 
-        [ScriptHandler(ScriptName.OnBeastDisturbed)]
         public void BeastOnDisturbed()
         {
             ExecuteScript("x0_ch_hen_distrb", OBJECT_SELF);
         }
 
-        [ScriptHandler(ScriptName.OnBeastHeartbeat)]
         public void BeastOnHeartbeat()
         {
             ExecuteScript("x0_ch_hen_heart", OBJECT_SELF);
             _statService.RestoreNPCStats(false);
         }
 
-        [ScriptHandler(ScriptName.OnBeastPerception)]
         public void BeastOnPerception()
         {
             ExecuteScript("x0_ch_hen_percep", OBJECT_SELF);
 
         }
 
-        [ScriptHandler(ScriptName.OnBeastAttacked)]
         public void BeastOnPhysicalAttacked()
         {
             ExecuteScript("x0_ch_hen_attack", OBJECT_SELF);
 
         }
 
-        [ScriptHandler(ScriptName.OnBeastRest)]
         public void BeastOnRested()
         {
             var beast = OBJECT_SELF;
@@ -591,7 +573,6 @@ namespace SWLOR.Component.Associate.Service
             _statusEffectService.Apply(beast, beast, StatusEffectType.Rest, 0f);
         }
 
-        [ScriptHandler(ScriptName.OnBeastSpawn)]
         public void BeastOnSpawn()
         {
             var beast = OBJECT_SELF;
@@ -604,20 +585,17 @@ namespace SWLOR.Component.Associate.Service
             _statService.ApplyAttacksPerRound(beast, GetItemInSlot(InventorySlot.CreatureLeft));
         }
 
-        [ScriptHandler(ScriptName.OnBeastSpellCast)]
         public void BeastOnSpellCastAt()
         {
             ExecuteScript("x2_hen_spell", OBJECT_SELF);
 
         }
 
-        [ScriptHandler(ScriptName.OnBeastUserDefined)]
         public void BeastOnUserDefined()
         {
             ExecuteScript("x0_ch_hen_usrdef", OBJECT_SELF);
         }
 
-        [ScriptHandler(ScriptName.OnBeastTerminate)]
         public void OpenStablesMenu()
         {
             var player = GetLastUsedBy();
@@ -763,7 +741,6 @@ namespace SWLOR.Component.Associate.Service
                 : _incubationPercentages[itemPropertyId];
         }
 
-        [ScriptHandler(ScriptName.OnIncubatorTerminal)]
         public void UseIncubator()
         {
             var player = GetLastUsedBy();
@@ -913,7 +890,6 @@ namespace SWLOR.Component.Associate.Service
         /// <summary>
         /// When a property is removed, also remove any associated incubation jobs.
         /// </summary>
-        [ScriptHandler(ScriptName.OnSwlorDeleteProperty)]
         public void OnRemoveProperty()
         {
             var propertyId = EventsPlugin.GetEventData("PROPERTY_ID");
@@ -930,7 +906,6 @@ namespace SWLOR.Component.Associate.Service
         /// <summary>
         /// When a player clicks a "DNA Extract" object, they get a message stating to use the extractor item on it.
         /// </summary>
-        [ScriptHandler(ScriptName.OnDNAExtractUsed)]
         public void UseExtractDNAObject()
         {
             var player = GetLastUsedBy();

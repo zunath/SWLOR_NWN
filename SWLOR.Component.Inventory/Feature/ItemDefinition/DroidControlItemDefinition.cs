@@ -17,7 +17,7 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
     public class DroidControlItemDefinition: IItemListDefinition
     {
         private readonly IDatabaseService _db;
-        private readonly IDroid _droidService;
+        private readonly IDroidService _droidService;
         private readonly ISpaceService _spaceService;
         private readonly IRecastService _recastService;
         private readonly IPerkService _perkService;
@@ -26,7 +26,7 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
 
         public DroidControlItemDefinition(
             IDatabaseService db, 
-            IDroid droidService, 
+            IDroidService droidService, 
             ISpaceService spaceService, 
             IRecastService recastService, 
             IPerkService perkService, 

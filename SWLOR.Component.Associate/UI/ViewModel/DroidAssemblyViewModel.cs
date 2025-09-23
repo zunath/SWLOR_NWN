@@ -20,14 +20,14 @@ namespace SWLOR.Component.Associate.UI.ViewModel
         private readonly IPerkService _perkService;
         private readonly IItemService _itemService;
         private readonly ITargetingService _targetingService;
-        private readonly IDroid _droid;
+        private readonly IDroidService _droid;
 
         public DroidAssemblyViewModel(
             IGuiService guiService, 
             IPerkService perkService, 
             IItemService itemService, 
             ITargetingService targetingService,
-            IDroid droidService) 
+            IDroidService droidService) 
             : base(guiService)
         {
             _perkService = perkService;
@@ -707,7 +707,7 @@ namespace SWLOR.Component.Associate.UI.ViewModel
 
             ShowModal("You are about to construct the droid. Are you sure you want to continue?", () =>
             {
-                var controller = CreateItemOnObject(Droid.DroidControlItemResref, Player);
+                var controller = CreateItemOnObject(DroidService.DroidControlItemResref, Player);
                 SetName(controller, $"Droid Controller: {Name}");
 
                 var constructedDroid = _droid.LoadConstructedDroid(controller);

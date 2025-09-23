@@ -330,7 +330,7 @@ namespace SWLOR.Game.Server
             services.AddSingleton<GuildMasterDialog>();
             services.AddSingleton<PlaceCityHallDialog>();
             services.AddSingleton<CraftViewModel>();
-            services.AddSingleton<IDroid, Droid>();
+            services.AddSingleton<IDroidService, DroidService>();
             services.AddSingleton<Death>();
 
             // Other Services

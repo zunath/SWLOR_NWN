@@ -14,18 +14,15 @@ using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Domain.Contracts;
 using SWLOR.Shared.Domain.Enums;
-using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Constants;
-using SWLOR.Shared.Events.Events.Module;
-using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Service;
+using SWLOR.Shared.Events.Constants;
 
 namespace SWLOR.Component.Associate.Service
 {
     
 
-    public class Droid : IDroid
+    public class DroidService : IDroidService
     {
         private readonly Dictionary<int, Dictionary<PerkType, int>> _defaultPerksByTier = new();
         private readonly Dictionary<int, int> _levelsByTier = new();
@@ -56,7 +53,7 @@ namespace SWLOR.Component.Associate.Service
         private const string DroidItemId = "DROID_ITEM_ID";
         private const float RecastDelaySeconds = 1800f;
 
-        public Droid(
+        public DroidService(
             IPerkService perkService,
             IGuiService guiService,
             IItemService itemService,
@@ -93,7 +90,6 @@ namespace SWLOR.Component.Associate.Service
         /// <summary>
         /// When the module loads, cache all relevant droid data into memory.
         /// </summary>
-        [ScriptHandler<OnModuleCacheBefore>]
         public void CacheData()
         {
             CacheDroidLevels();
@@ -260,7 +256,6 @@ namespace SWLOR.Component.Associate.Service
         /// When a player uses a droid assembly terminal, displays the UI.
         /// Player will receive an error if they don't have any ranks in the Droid Assembly perk.
         /// </summary>
-        [ScriptHandler(ScriptName.OnDroidAssociateUsed)]
         public void UseDroidAssemblyTerminal()
         {
             UseDroidAssemblyTerminalInternal();
@@ -284,7 +279,6 @@ namespace SWLOR.Component.Associate.Service
         /// <summary>
         /// When a player leaves the server, any droids they have actives are despawned.
         /// </summary>
-        [ScriptHandler<OnModuleExit>]
         public void OnPlayerExit()
         {
             OnPlayerExitInternal();
@@ -314,7 +308,6 @@ namespace SWLOR.Component.Associate.Service
         /// <summary>
         /// When a droid acquires an item, it is stored into a persistent variable on the controller item.
         /// </summary>
-        [ScriptHandler<OnModuleAcquire>]
         public void OnAcquireItem()
         {
             OnAcquireItemInternal();
@@ -361,7 +354,6 @@ namespace SWLOR.Component.Associate.Service
         /// <summary>
         /// When a droid loses an item, it is removed from the persistent variable on the controller item.
         /// </summary>
-        [ScriptHandler<OnModuleUnacquire>]
         public void OnLostItem()
         {
             OnLostItemInternal();
@@ -380,7 +372,6 @@ namespace SWLOR.Component.Associate.Service
         /// <summary>
         /// When a droid equips an item, it is removed from its inventory and added to its equipped items.
         /// </summary>
-        [ScriptHandler<OnSWLORItemEquipValidBefore>]
         public void OnEquipItem()
         {
             OnEquipItemInternal();
@@ -424,7 +415,6 @@ namespace SWLOR.Component.Associate.Service
         /// <summary>
         /// When a droid unequips an item, it is removed from its equipped items and added to its inventory.
         /// </summary>
-        [ScriptHandler<OnItemUnequipBefore>]
         public void OnUnequipItem()
         {
             OnUnequipItemInternal();
@@ -920,7 +910,6 @@ namespace SWLOR.Component.Associate.Service
         /// <summary>
         /// When the appearance of a droid is changed, update the data on the local variable.
         /// </summary>
-        [ScriptHandler(ScriptName.OnAppearanceEdit)]
         public void EditDroidAppearance()
         {
             EditDroidAppearanceInternal();
@@ -965,8 +954,6 @@ namespace SWLOR.Component.Associate.Service
         /// <summary>
         /// When a player enters space or forcefully removes a droid from the party, the droid gets despawned.
         /// </summary>
-        [ScriptHandler(ScriptName.OnSpaceEnter)]
-        [ScriptHandler<OnAssociateRemoveBefore>]
         public void RemoveAssociate()
         {
             RemoveAssociateInternal();
@@ -1049,13 +1036,11 @@ namespace SWLOR.Component.Associate.Service
             SetLocalString(controller, ConstructedDroidVariable, serialized);
         }
         
-        [ScriptHandler(ScriptName.OnDroidBlocked)]
         public void DroidOnBlocked()
         {
             ExecuteScript("x0_ch_hen_block", OBJECT_SELF);
         }
 
-        [ScriptHandler(ScriptName.OnDroidRoundEnd)]
         public void DroidOnEndCombatRound()
         {
             DroidOnEndCombatRoundInternal();
@@ -1071,20 +1056,17 @@ namespace SWLOR.Component.Associate.Service
             }
         }
 
-        [ScriptHandler(ScriptName.OnDroidConversation)]
         public void DroidOnConversation()
         {
             ExecuteScript("x0_ch_hen_conv", OBJECT_SELF);
         }
 
-        [ScriptHandler(ScriptName.OnDroidDamaged)]
         public void DroidOnDamaged()
         {
             ExecuteScript("x0_ch_hen_damage", OBJECT_SELF);
 
         }
 
-        [ScriptHandler(ScriptName.OnDroidDeath)]
         public void DroidOnDeath()
         {
             var droid = OBJECT_SELF;
@@ -1101,13 +1083,11 @@ namespace SWLOR.Component.Associate.Service
             CloseAppearanceEditor(player);
         }
 
-        [ScriptHandler(ScriptName.OnDroidDisturbed)]
         public void DroidOnDisturbed()
         {
             ExecuteScript("x0_ch_hen_distrb", OBJECT_SELF);
         }
 
-        [ScriptHandler(ScriptName.OnDroidHeartbeat)]
         public void DroidOnHeartbeat()
         {
             DroidOnHeartbeatInternal();
@@ -1119,21 +1099,18 @@ namespace SWLOR.Component.Associate.Service
             _statService.RestoreNPCStats(false);
         }
 
-        [ScriptHandler(ScriptName.OnDroidPerception)]
         public void DroidOnPerception()
         {
             ExecuteScript("x0_ch_hen_percep", OBJECT_SELF);
 
         }
 
-        [ScriptHandler(ScriptName.OnDroidAttacked)]
         public void DroidOnPhysicalAttacked()
         {
             ExecuteScript("x0_ch_hen_attack", OBJECT_SELF);
 
         }
 
-        [ScriptHandler(ScriptName.OnDroidRest)]
         public void DroidOnRested()
         {
             DroidOnRestedInternal();
@@ -1149,7 +1126,6 @@ namespace SWLOR.Component.Associate.Service
             _statusEffectService.Apply(droid, droid, StatusEffectType.Rest, 0f);
         }
 
-        [ScriptHandler(ScriptName.OnDroidSpawn)]
         public void DroidOnSpawn()
         {
             DroidOnSpawnInternal();
@@ -1166,14 +1142,12 @@ namespace SWLOR.Component.Associate.Service
             _statService.LoadNPCStats();
         }
 
-        [ScriptHandler(ScriptName.OnDroidSpellCast)]
         public void DroidOnSpellCastAt()
         {
             ExecuteScript("x2_hen_spell", OBJECT_SELF);
 
         }
 
-        [ScriptHandler(ScriptName.OnDroidUserDefined)]
         public void DroidOnUserDefined()
         {
             ExecuteScript("x0_ch_hen_usrdef", OBJECT_SELF);

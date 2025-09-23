@@ -19,11 +19,6 @@ using SWLOR.Shared.Domain.Contracts;
 using SWLOR.Shared.Domain.Entity;
 using SWLOR.Shared.Domain.Enums;
 using SWLOR.Shared.Domain.Model;
-using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Constants;
-using SWLOR.Shared.Events.Events.Area;
-using SWLOR.Shared.Events.Events.Module;
-using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Service;
 
@@ -104,9 +99,8 @@ namespace SWLOR.Component.Properties.Service
         public int ElectionVotingDays => 7;
 
         /// <summary>
-        /// When the module loads, cache all relevant data into memory.
+        /// Cache all relevant data into memory.
         /// </summary>
-        [ScriptHandler<OnModuleCacheBefore>]
         public void CacheData()
         {
             CachePropertyTypes();
@@ -118,9 +112,8 @@ namespace SWLOR.Component.Properties.Service
         }
 
         /// <summary>
-        /// When the module loads, clean up any deleted data, refreshes permissions and then load properties.
+        /// Clean up any deleted data, refreshes permissions and then load properties.
         /// </summary>
-        [ScriptHandler<OnModuleLoad>]
         public void OnModuleLoad()
         {
             RefreshPermissions();
@@ -129,7 +122,7 @@ namespace SWLOR.Component.Properties.Service
             LoadProperties();
         }
 
-        private void CachePropertyTypes()
+        public void CachePropertyTypes()
         {
             var propertyTypes = Enum.GetValues(typeof(PropertyType)).Cast<PropertyType>();
             foreach (var type in propertyTypes)
@@ -139,7 +132,7 @@ namespace SWLOR.Component.Properties.Service
             }
         }
 
-        private void CachePropertyLayoutTypes()
+        public void CachePropertyLayoutTypes()
         {
             var types = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
@@ -165,7 +158,7 @@ namespace SWLOR.Component.Properties.Service
             Console.WriteLine($"Loaded {_activeLayouts.Count} property layouts.");
         }
 
-        private void CachePermissions()
+        public void CachePermissions()
         {
             var permissionTypes = Enum.GetValues(typeof(PropertyPermissionType)).Cast<PropertyPermissionType>();
             foreach (var type in permissionTypes)
@@ -286,7 +279,7 @@ namespace SWLOR.Component.Properties.Service
         /// <summary>
         /// When the module loads, read all structure types and store them into the cache.
         /// </summary>
-        private void CacheStructures()
+        public void CacheStructures()
         {
             var structureTypes = Enum.GetValues(typeof(StructureType)).Cast<StructureType>();
             foreach (var structure in structureTypes)
@@ -303,7 +296,7 @@ namespace SWLOR.Component.Properties.Service
         /// <summary>
         /// When the module loads, iterate over all areas and cache any that are instance templates.
         /// </summary>
-        private void CacheInstanceTemplates()
+        public void CacheInstanceTemplates()
         {
             var templateResrefs = _activeLayouts
                 .Select(x => x.Value.AreaInstanceResref)
@@ -320,7 +313,7 @@ namespace SWLOR.Component.Properties.Service
         /// <summary>
         /// When the module loads, link structures back to their property types.
         /// </summary>
-        private void CacheStructuresByPropertyType()
+        public void CacheStructuresByPropertyType()
         {
             foreach (var (structureType, detail) in _activeStructures)
             {
@@ -401,7 +394,7 @@ namespace SWLOR.Component.Properties.Service
         /// <summary>
         /// When the module loads, remove all data marked for deletion and any properties with expired leases.
         /// </summary>
-        private void CleanUpData()
+        public void CleanUpData()
         {
             var now = DateTime.UtcNow;
 
@@ -483,7 +476,7 @@ namespace SWLOR.Component.Properties.Service
         /// 2.) Processing elections. Moves the election process between stages and calculates votes at the end of the process.
         ///     If a new mayor is elected, the previous mayor's permissions are removed and given to the new one.
         /// </summary>
-        private void ProcessCities()
+        public void ProcessCities()
         {
             var cityQuery = new DBQuery<WorldProperty>()
                 .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.City)
@@ -979,7 +972,7 @@ namespace SWLOR.Component.Properties.Service
         /// <summary>
         /// When the module loads, update the permissions list on all properties to reflect any changes.
         /// </summary>
-        private void RefreshPermissions()
+        public void RefreshPermissions()
         {
             foreach (var (type, permissions) in _permissionsByPropertyType)
             {
@@ -1067,7 +1060,7 @@ namespace SWLOR.Component.Properties.Service
         /// <summary>
         /// When the module loads, load all properties.
         /// </summary>
-        private void LoadProperties()
+        public void LoadProperties()
         {
             var instanceTypes = _propertyTypes
                 .Where(x => x.Value.SpawnType == PropertySpawnType.Instance)
@@ -1661,9 +1654,8 @@ namespace SWLOR.Component.Properties.Service
         }
 
         /// <summary>
-        /// When an apartment terminal is used, open the Apartment NUI
+        /// Open the Apartment NUI when an apartment terminal is used.
         /// </summary>
-        [ScriptHandler(ScriptName.OnApartmentTerminal)]
         public void StartApartmentConversation()
         {
             var player = GetLastUsedBy();
@@ -1754,9 +1746,8 @@ namespace SWLOR.Component.Properties.Service
         }
 
         /// <summary>
-        /// When a player enters a property instance, add them to the list of players.
+        /// Add a player to the list of players when they enter a property instance.
         /// </summary>
-        [ScriptHandler<OnAreaEnter>]
         public void EnterPropertyInstance()
         {
             var player = GetExitingObject();
@@ -1773,9 +1764,8 @@ namespace SWLOR.Component.Properties.Service
         }
 
         /// <summary>
-        /// When a player exits a property instance, remove them from the list of players.
+        /// Remove a player from the list of players when they exit a property instance.
         /// </summary>
-        [ScriptHandler<OnAreaExit>]
         public void ExitPropertyInstance()
         {
             var player = GetExitingObject();
@@ -1860,9 +1850,8 @@ namespace SWLOR.Component.Properties.Service
         }
 
         /// <summary>
-        /// When the property menu feat is used, open the GUI window.
+        /// Open the GUI window when the property menu feat is used.
         /// </summary>
-        [ScriptHandler<OnFeatUseBefore>]
         public void PropertyMenu()
         {
             var feat = (FeatType)Convert.ToInt32(EventsPlugin.GetEventData("FEAT_ID"));
@@ -1943,9 +1932,8 @@ namespace SWLOR.Component.Properties.Service
         }
 
         /// <summary>
-        /// Before an item is used, if it is a structure item, place it at the specified location.
+        /// Place a structure item at the specified location before it is used.
         /// </summary>
-        [ScriptHandler<OnItemUseBefore>]
         public void PlaceStructure()
         {
             var item = StringToObject(EventsPlugin.GetEventData("ITEM_OBJECT_ID"));
@@ -2146,10 +2134,9 @@ namespace SWLOR.Component.Properties.Service
         }
 
         /// <summary>
-        /// When a building entrance is used, port the player inside the instance if they have permission
+        /// Port the player inside the instance if they have permission
         /// or display an error message saying they don't have permission to enter.
         /// </summary>
-        [ScriptHandler(ScriptName.OnEnterProperty)]
         public void EnterBuilding()
         {
             var player = GetLastUsedBy();
@@ -2204,9 +2191,8 @@ namespace SWLOR.Component.Properties.Service
         }
 
         /// <summary>
-        /// When the Citizenship terminal is used, open the Manage Citizenship UI.
+        /// Open the Manage Citizenship UI when the Citizenship terminal is used.
         /// </summary>
-        [ScriptHandler(ScriptName.OnOpenCitizenship)]
         public void OpenCitizenshipMenu()
         {
             var player = GetLastUsedBy();
@@ -2240,9 +2226,8 @@ namespace SWLOR.Component.Properties.Service
         }
 
         /// <summary>
-        /// When the City Management terminal is used, open the City Management UI.
+        /// Open the City Management UI when the City Management terminal is used.
         /// </summary>
-        [ScriptHandler(ScriptName.OnOpenCityManage)]
         public void OpenCityManagementMenu()
         {
             var player = GetLastUsedBy();

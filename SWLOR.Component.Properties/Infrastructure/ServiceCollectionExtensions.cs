@@ -1,4 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
+using SWLOR.Component.Properties.EventHandlers;
+using SWLOR.Component.Properties.Service;
+using SWLOR.Shared.Domain.Contracts;
 
 namespace SWLOR.Component.Properties.Infrastructure
 {
@@ -14,8 +17,12 @@ namespace SWLOR.Component.Properties.Infrastructure
         /// <returns>The service collection for chaining</returns>
         public static IServiceCollection AddPropertiesServices(this IServiceCollection services)
         {
-            // TODO: Add Properties services here as they are implemented
-            
+            // Register services as singletons
+            services.AddSingleton<IPropertyService, PropertyService>();
+
+            // Register event handlers as singletons
+            services.AddSingleton<PropertiesEventHandlers>();
+
             return services;
         }
     }

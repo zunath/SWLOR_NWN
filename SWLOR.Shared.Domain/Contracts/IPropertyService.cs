@@ -346,5 +346,56 @@ namespace SWLOR.Shared.Domain.Contracts
         /// <param name="upgradeType">The type of upgrade to check</param>
         /// <returns>A value ranging between 0 and 5.</returns>
         int GetEffectiveUpgradeLevel(string cityId, PropertyUpgradeType upgradeType);
+
+        // Additional Event Handler Methods
+        /// <summary>
+        /// Cache property types.
+        /// </summary>
+        void CachePropertyTypes();
+
+        /// <summary>
+        /// Cache property layout types.
+        /// </summary>
+        void CachePropertyLayoutTypes();
+
+        /// <summary>
+        /// Cache permissions.
+        /// </summary>
+        void CachePermissions();
+
+        /// <summary>
+        /// Cache structures.
+        /// </summary>
+        void CacheStructures();
+
+        /// <summary>
+        /// Cache instance templates.
+        /// </summary>
+        void CacheInstanceTemplates();
+
+        /// <summary>
+        /// Cache structures by property type.
+        /// </summary>
+        void CacheStructuresByPropertyType();
+
+        /// <summary>
+        /// Refresh permissions.
+        /// </summary>
+        void RefreshPermissions();
+
+        /// <summary>
+        /// Process cities.
+        /// </summary>
+        void ProcessCities();
+
+        /// <summary>
+        /// Clean up data.
+        /// </summary>
+        void CleanUpData();
+
+        /// <summary>
+        /// Load properties.
+        /// </summary>
+        void LoadProperties();
     }
 }

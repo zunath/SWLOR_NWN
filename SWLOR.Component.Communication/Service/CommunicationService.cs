@@ -1,24 +1,23 @@
-using System.Globalization;
-using System.Text;
 using SWLOR.Component.Communication.Constants;
 using SWLOR.Component.Communication.Contracts;
 using SWLOR.Component.Communication.Enums;
 using SWLOR.NWN.API.NWNX;
+using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Contracts;
 using SWLOR.Shared.Domain.Entity;
 using SWLOR.Shared.Domain.Enums;
-using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Events.Module;
-using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.UI.Service;
+using System.Globalization;
+using System.Text;
 using ChatChannel = SWLOR.NWN.API.NWNX.Enum.ChatChannel;
 
 namespace SWLOR.Component.Communication.Service
 {
-    public class Communication : ICommunication
+    
+    public class CommunicationService : ICommunicationService
     {
         private readonly IDatabaseService _db;
         private readonly IActivityService _activityService;
@@ -30,7 +29,7 @@ namespace SWLOR.Component.Communication.Service
         public (byte, byte, byte) OOCChatColor => CommunicationConstants.OOCChatColor;
         public (byte, byte, byte) EmoteChatColor => CommunicationConstants.EmoteChatColor;
 
-        public Communication(IDatabaseService db, IActivityService activityService, IHoloComService holoComService, ILanguageService languageService)
+        public CommunicationService(IDatabaseService db, IActivityService activityService, IHoloComService holoComService, ILanguageService languageService)
         {
             _db = db;
             _activityService = activityService;
@@ -60,8 +59,6 @@ namespace SWLOR.Component.Communication.Service
         /// Whenever a DM possesses a creature, track the NPC on their object so that messages can be
         /// sent to them during the possession.
         /// </summary>
-        [ScriptHandler<OnDMPossessBefore>]
-        [ScriptHandler<OnDMPossessFullPowerBefore>]
         public void OnDMPossess()
         {
             var dm = OBJECT_SELF;
@@ -87,7 +84,6 @@ namespace SWLOR.Component.Communication.Service
         /// When a player enters the server, set a local bool on their PC representing
         /// the current state of their holonet visibility.
         /// </summary>
-        [ScriptHandler<OnModuleEnter>]
         public void LoadHolonetSetting()
         {
             var player = GetEnteringObject();
@@ -104,7 +100,6 @@ namespace SWLOR.Component.Communication.Service
         /// unfocused, remove the indicator.
         /// </summary>
 
-        [ScriptHandler<OnModuleGuiEvent>]
         public void TypingIndicator()
         {
             var player = GetLastGuiEventPlayer();
@@ -122,13 +117,11 @@ namespace SWLOR.Component.Communication.Service
         }
 
         // Register DMFI Voice Command Handler which lives in nwscript land.
-        [ScriptHandler<OnModuleChat>]
         public void ProcessNativeChatMessage()
         {
             ExecuteScript("dmfi_onplychat", OBJECT_SELF);
         }
 
-        [ScriptHandler<OnNWNXChat>]
         public void ProcessChatMessage()
         {
             var channel = ChatPlugin.GetChannel();
@@ -775,6 +768,18 @@ namespace SWLOR.Component.Communication.Service
                 dbPlayer.EmoteStyle = style;
                 _db.Set(dbPlayer);
             }
+        }
+
+        public void ConfigureFeedbackMessages()
+        {
+            FeedbackPlugin.SetFeedbackMessageHidden(FeedbackMessageTypes.UseItemCantUse, true);
+            FeedbackPlugin.SetFeedbackMessageHidden(FeedbackMessageTypes.CombatRunningOutOfAmmo, true);
+            FeedbackPlugin.SetFeedbackMessageHidden(FeedbackMessageTypes.RestBeginningRest, true);
+            FeedbackPlugin.SetFeedbackMessageHidden(FeedbackMessageTypes.RestFinishedRest, true);
+            FeedbackPlugin.SetFeedbackMessageHidden(FeedbackMessageTypes.RestCancelRest, true);
+
+            FeedbackPlugin.SetCombatLogMessageHidden(CombatLogMessageType.Initiative, true);
+            FeedbackPlugin.SetCombatLogMessageHidden(CombatLogMessageType.ComplexAttack, true);
         }
     }
 }

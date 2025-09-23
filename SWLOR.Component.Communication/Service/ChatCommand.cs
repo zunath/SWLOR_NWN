@@ -8,16 +8,12 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Domain.Enums;
-using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Events.Module;
-using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
 using ChatCommandDetail = SWLOR.Component.Communication.Model.ChatCommandDetail;
 
 namespace SWLOR.Component.Communication.Service
 {
-
     public class ChatCommand : IChatCommandService
     {
         private readonly IAppSettings _appSettings;
@@ -45,21 +41,10 @@ namespace SWLOR.Component.Communication.Service
 
         private const string InvalidChatCommandMessage = "Invalid chat command. Use '/help' to get a list of available commands.";
 
-        /// <summary>
-        /// Loads all chat commands into cache and builds the related help text.
-        /// </summary>
-        [ScriptHandler<OnModuleCacheBefore>]
-        public void OnModuleLoad()
-        {
-            LoadChatCommands();
-            BuildHelpText();
-            BuildEmoteUILists();
-        }
 
         /// <summary>
         /// Handles validating and processing chat commands sent by players and DMs.
         /// </summary>
-        [ScriptHandler<OnNWNXChat>]
         public void HandleChatMessage()
         {
             var sender = OBJECT_SELF;
@@ -184,7 +169,7 @@ namespace SWLOR.Component.Communication.Service
         /// <summary>
         /// Builds all chat commands and puts them into cache.
         /// </summary>
-        private void LoadChatCommands()
+        public void LoadChatCommands()
         {
             var types = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
@@ -213,7 +198,7 @@ namespace SWLOR.Component.Communication.Service
         /// Builds text used by the /help command for each authorization level.
         /// This must be called after LoadChatCommands or there will be nothing to process.
         /// </summary>
-        private void BuildHelpText()
+        public void BuildHelpText()
         {
             var orderedCommands = _chatCommands.OrderBy(o => o.Key);
 
@@ -248,7 +233,7 @@ namespace SWLOR.Component.Communication.Service
             }
         }
 
-        private void BuildEmoteUILists()
+        public void BuildEmoteUILists()
         {
             foreach (var (text, command) in _emoteCommands)
             {

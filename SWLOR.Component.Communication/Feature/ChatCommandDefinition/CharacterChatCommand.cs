@@ -25,7 +25,7 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
         private readonly IDatabaseService _db;
         private readonly IAbilityService _abilityService;
         private readonly IGuiService _guiService;
-        private readonly ICommunication _communication;
+        private readonly ICommunicationService _communication;
         private readonly IHoloComService _holoComService;
         private readonly IRecastService _recastService;
         private readonly ILanguageService _language;
@@ -34,7 +34,7 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
             IDatabaseService db, 
             IAbilityService abilityService, 
             IGuiService guiService, 
-            ICommunication communication, 
+            ICommunicationService communication, 
             IHoloComService holoComService, 
             IRecastService recastService,
             ILanguageService languageService)

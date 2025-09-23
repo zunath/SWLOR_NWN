@@ -5,20 +5,17 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Contracts;
 using SWLOR.Shared.Domain.Entity;
 using SWLOR.Shared.Domain.Enums;
-using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Events.NWNX;
-using SWLOR.Shared.Events.Events.Player;
 using ChatChannel = SWLOR.NWN.API.NWNX.Enum.ChatChannel;
 
 namespace SWLOR.Component.Communication.Feature
 {
-    public class RoleplayXP
+    public class RoleplayXPService : IRoleplayXPService
     {
         private readonly IDatabaseService _db;
         private readonly IPropertyService _property;
         private const string RPTimestampVariable = "RP_SYSTEM_LAST_MESSAGE_TIMESTAMP";
 
-        public RoleplayXP(IDatabaseService db, IPropertyService property)
+        public RoleplayXPService(IDatabaseService db, IPropertyService property)
         {
             _db = db;
             _property = property;
@@ -27,7 +24,6 @@ namespace SWLOR.Component.Communication.Feature
         /// <summary>
         /// Once every 30 minutes, the RP system will check all players and distribute RP XP if applicable.
         /// </summary>
-        [ScriptHandler<OnPlayerHeartbeat>]
         public void DistributeRoleplayXP()
         {
             const string TrackerVariableName = "RP_SYSTEM_TICKS";
@@ -79,7 +75,6 @@ namespace SWLOR.Component.Communication.Feature
         /// Adds RP points to a player's RP progression.
         /// If messages are sent too quickly, the message will be treated as spam and RP point will not be granted.
         /// </summary>
-        [ScriptHandler<OnNWNXChat>]
         public void ProcessRPMessage()
         {
             var channel = ChatPlugin.GetChannel();

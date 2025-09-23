@@ -7,8 +7,6 @@ using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Domain.Contracts;
 using SWLOR.Shared.Domain.Entity;
 using SWLOR.Shared.Domain.Enums;
-using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Component.Communication.Service
 {
@@ -32,7 +30,6 @@ namespace SWLOR.Component.Communication.Service
         /// <summary>
         /// When the module loads, create translators for every language and store them into cache.
         /// </summary>
-        [ScriptHandler<OnModuleLoad>]
         public void LoadTranslators()
         {
             _translators = new Dictionary<SkillType, ITranslator>

@@ -16,13 +16,21 @@ namespace SWLOR.Component.Communication.Contracts
         GuiBindingList<bool> EmoteIsLooping { get; }
 
         /// <summary>
-        /// Loads all chat commands into cache and builds the related help text.
-        /// </summary>
-        void OnModuleLoad();
-
-        /// <summary>
         /// Handles validating and processing chat commands sent by players and DMs.
         /// </summary>
         void HandleChatMessage();
+
+        /// <summary>
+        /// Builds all chat commands and puts them into cache.
+        /// </summary>
+        void LoadChatCommands();
+
+        /// <summary>
+        /// Builds text used by the /help command for each authorization level.
+        /// This must be called after LoadChatCommands or there will be nothing to process.
+        /// </summary>
+        void BuildHelpText();
+
+        void BuildEmoteUILists();
     }
 }

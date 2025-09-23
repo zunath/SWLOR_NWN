@@ -19,7 +19,7 @@ namespace SWLOR.Component.Character.Feature
         private readonly IStatService _statService;
         private readonly ISkillService _skillService;
         private readonly IMigrationService _migrationService;
-        private readonly IRace _raceService;
+        private readonly IRaceService _raceService;
 
         public PlayerInitialization(
             ILogger logger, 
@@ -27,7 +27,7 @@ namespace SWLOR.Component.Character.Feature
             IStatService statService, 
             ISkillService skillService, 
             IMigrationService migrationService, 
-            IRace raceService)
+            IRaceService raceService)
         {
             _logger = logger;
             _db = db;

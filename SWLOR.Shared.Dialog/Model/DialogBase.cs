@@ -1,5 +1,4 @@
-﻿using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Dialog.Contracts;
+﻿using SWLOR.Shared.Dialog.Contracts;
 
 namespace SWLOR.Shared.Dialog.Model
 {

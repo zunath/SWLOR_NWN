@@ -1,4 +1,3 @@
-using SWLOR.Component.Crafting.Enums;
 using SWLOR.Component.Crafting.Model;
 using SWLOR.Shared.Domain.Enums;
 

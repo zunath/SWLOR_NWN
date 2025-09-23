@@ -5,7 +5,6 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Component.Character.UI.Payload;
 using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Domain.Model.Payload;
 using SWLOR.Shared.Domain.Model.RefreshEvent;
@@ -16,7 +15,6 @@ using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.UI.Component;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
-using SWLOR.Shared.UI.Model.RefreshEvent;
 using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Component.Character.UI.ViewModel

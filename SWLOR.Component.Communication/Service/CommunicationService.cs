@@ -1,6 +1,5 @@
 using SWLOR.Component.Communication.Constants;
 using SWLOR.Component.Communication.Contracts;
-using SWLOR.Component.Communication.Enums;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.NWN.API.NWScript.Enum;

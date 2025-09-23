@@ -1,6 +1,5 @@
+using SWLOR.Component.Associate.Contracts;
 using SWLOR.Component.Associate.Model;
-using SWLOR.Component.Associate.Service;
-using SWLOR.Component.Perk.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -10,6 +9,7 @@ using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Domain.Contracts;
 using SWLOR.Shared.Domain.Enums;
 using SWLOR.Component.Associate.UI.Payload;
+using SWLOR.Shared.Abstractions.Models;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
@@ -21,12 +21,20 @@ namespace SWLOR.Component.Associate.UI.ViewModel
         private readonly ILogger _logger;
         private readonly IPerkService _perkService;
         private readonly ITargetingService _targetingService;
+        private readonly IDroid _droidService;
 
-        public DroidAIViewModel(IGuiService guiService, ILogger logger, IPerkService perkService, ITargetingService targetingService) : base(guiService)
+        public DroidAIViewModel(
+            IGuiService guiService, 
+            ILogger logger, 
+            IPerkService perkService, 
+            ITargetingService targetingService,
+            IDroid droidService) 
+            : base(guiService)
         {
             _logger = logger;
             _perkService = perkService;
             _targetingService = targetingService;
+            _droidService = droidService;
         }
         private uint _controller;
         private List<DroidPerk> _availableDroidPerks;
@@ -78,8 +86,8 @@ namespace SWLOR.Component.Associate.UI.ViewModel
         {
             _controller = initialPayload.ControllerItem;
             
-            var constructedDroid = Droid.LoadConstructedDroid(_controller);
-            var controllerStats = Droid.LoadDroidItemPropertyDetails(_controller);
+            var constructedDroid = _droidService.LoadConstructedDroid(_controller);
+            var controllerStats = _droidService.LoadDroidItemPropertyDetails(_controller);
             
             var availablePerkNames = new GuiBindingList<string>();
             var availablePerkSelections = new GuiBindingList<bool>();
@@ -140,8 +148,8 @@ namespace SWLOR.Component.Associate.UI.ViewModel
 
         private void RefreshSlots()
         {
-            var constructedDroid = Droid.LoadConstructedDroid(_controller);
-            var controllerStats = Droid.LoadDroidItemPropertyDetails(_controller);
+            var constructedDroid = _droidService.LoadConstructedDroid(_controller);
+            var controllerStats = _droidService.LoadDroidItemPropertyDetails(_controller);
             var aiSlots = CalculateAISlots(constructedDroid);
 
             AISlots = $"{aiSlots} / {controllerStats.AISlots}";
@@ -157,8 +165,8 @@ namespace SWLOR.Component.Associate.UI.ViewModel
             _targetingService.EnterTargetingMode(Player, ObjectType.Item, "Please select an instruction disc from your inventory.",
                 item =>
                 {
-                    var constructedDroid = Droid.LoadConstructedDroid(_controller);
-                    var controllerDetails = Droid.LoadDroidItemPropertyDetails(_controller);
+                    var constructedDroid = _droidService.LoadConstructedDroid(_controller);
+                    var controllerDetails = _droidService.LoadDroidItemPropertyDetails(_controller);
 
                     for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
                     {
@@ -204,7 +212,7 @@ namespace SWLOR.Component.Associate.UI.ViewModel
                         }
                     }
 
-                    Droid.SaveConstructedDroid(_controller, constructedDroid);
+                    _droidService.SaveConstructedDroid(_controller, constructedDroid);
                     DestroyObject(item);
                     SendMessageToPC(Player, ColorToken.Green("Instruction disc uploaded to droid successfully."));
                 });
@@ -217,8 +225,8 @@ namespace SWLOR.Component.Associate.UI.ViewModel
 
         public Action AddToActivePerks() => () =>
         {
-            var constructedDroid = Droid.LoadConstructedDroid(_controller);
-            var controllerDetails = Droid.LoadDroidItemPropertyDetails(_controller);
+            var constructedDroid = _droidService.LoadConstructedDroid(_controller);
+            var controllerDetails = _droidService.LoadDroidItemPropertyDetails(_controller);
 
             for (var index = AvailablePerkSelections.Count-1; index >= 0; index--)
             {
@@ -258,13 +266,13 @@ namespace SWLOR.Component.Associate.UI.ViewModel
                 BiowareXP2.IPSafeAddItemProperty(_controller, ip, 0f, AddItemPropertyPolicy.ReplaceExisting, true, false);
             }
 
-            Droid.SaveConstructedDroid(_controller, constructedDroid);
+            _droidService.SaveConstructedDroid(_controller, constructedDroid);
             RefreshSlots();
         };
 
         public Action RemoveFromActivePerks() => () =>
         {
-            var constructedDroid = Droid.LoadConstructedDroid(_controller);
+            var constructedDroid = _droidService.LoadConstructedDroid(_controller);
 
             for (var index = ActivePerkSelections.Count - 1; index >= 0; index--)
             {
@@ -289,7 +297,7 @@ namespace SWLOR.Component.Associate.UI.ViewModel
                 BiowareXP2.IPRemoveMatchingItemProperties(_controller, ItemPropertyType.DroidInstruction, DurationType.Invalid, (int)perk.Perk);
             }
 
-            Droid.SaveConstructedDroid(_controller, constructedDroid);
+            _droidService.SaveConstructedDroid(_controller, constructedDroid);
             RefreshSlots();
         };
     }

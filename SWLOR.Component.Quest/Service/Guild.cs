@@ -1,4 +1,3 @@
-using SWLOR.Component.Perk.Contracts;
 using SWLOR.Component.Quest.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;

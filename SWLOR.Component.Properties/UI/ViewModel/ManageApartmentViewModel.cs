@@ -1,5 +1,3 @@
-using SWLOR.Component.Properties.Entity;
-using SWLOR.Component.Properties.Enums;
 using SWLOR.Component.Properties.Service;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;

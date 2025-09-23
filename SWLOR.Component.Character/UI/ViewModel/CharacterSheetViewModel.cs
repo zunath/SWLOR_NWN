@@ -1,7 +1,3 @@
-using SWLOR.Component.Associate.UI.RefreshEvent;
-using SWLOR.Component.Character.UI.RefreshEvent;
-using SWLOR.Component.Skill.UI.RefreshEvent;
-using SWLOR.Component.StatusEffect.UI.RefreshEvent;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -13,7 +9,6 @@ using SWLOR.Shared.Domain.Model;
 using SWLOR.Shared.Domain.Model.Payload;
 using SWLOR.Shared.Domain.Model.RefreshEvent;
 using SWLOR.Shared.UI.Contracts;
-using SWLOR.Shared.UI.Model.RefreshEvent;
 using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Component.Character.UI.ViewModel

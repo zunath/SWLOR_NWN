@@ -1,6 +1,4 @@
 using System.Numerics;
-using SWLOR.Component.Properties.Entity;
-using SWLOR.Component.Properties.Enums;
 using SWLOR.Component.Properties.Service;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;

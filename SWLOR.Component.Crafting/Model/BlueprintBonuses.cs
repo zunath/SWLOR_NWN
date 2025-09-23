@@ -1,4 +1,3 @@
-using SWLOR.Component.Crafting.Enums;
 using SWLOR.Shared.Core.Contracts;
 
 namespace SWLOR.Component.Crafting.Model

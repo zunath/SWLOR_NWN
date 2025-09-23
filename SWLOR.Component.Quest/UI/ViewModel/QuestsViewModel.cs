@@ -1,10 +1,7 @@
 using System.Text;
-using SWLOR.Component.Player.Contracts;
 using SWLOR.Component.Quest.Contracts;
 using SWLOR.Component.Quest.Service;
-using SWLOR.Component.Quest.UI.RefreshEvent;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Domain.Contracts;
 using SWLOR.Shared.Domain.Entity;
 using SWLOR.Shared.UI.Contracts;

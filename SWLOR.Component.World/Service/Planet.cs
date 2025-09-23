@@ -1,5 +1,4 @@
 using SWLOR.Component.World.Contracts;
-using SWLOR.Component.World.Enums;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;

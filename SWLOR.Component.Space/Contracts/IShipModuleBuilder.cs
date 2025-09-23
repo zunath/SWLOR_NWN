@@ -1,6 +1,3 @@
-using SWLOR.Component.Space.Delegates;
-using SWLOR.Component.Space.Enums;
-using SWLOR.Component.Space.Model;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Enums;
 

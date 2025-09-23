@@ -1,4 +1,3 @@
-using System.Net;
 using SWLOR.Component.Admin.Service;
 using SWLOR.Component.Communication.Contracts;
 using SWLOR.NWN.API.Engine;

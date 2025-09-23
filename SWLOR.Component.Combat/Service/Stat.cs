@@ -1,8 +1,4 @@
 using NWN.Native.API;
-using SWLOR.Component.Combat.Contracts;
-using SWLOR.Component.Combat.Enums;
-using SWLOR.Component.Perk.Contracts;
-using SWLOR.Component.StatusEffect.Contracts;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;

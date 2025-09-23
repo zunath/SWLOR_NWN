@@ -1,6 +1,5 @@
 using System.Globalization;
 using SWLOR.Component.Combat.Contracts;
-using SWLOR.Component.Combat.Enums;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.Shared.Abstractions.Contracts;

@@ -1,10 +1,10 @@
 using Newtonsoft.Json;
+using SWLOR.Component.AI.Contracts;
+using SWLOR.Component.AI.Enums;
 using SWLOR.Component.Associate.Contracts;
 using SWLOR.Component.Associate.Enums;
 using SWLOR.Component.Associate.Model;
-using SWLOR.Component.Perk.Contracts;
-using SWLOR.Component.Player.Contracts;
-using SWLOR.Component.StatusEffect.Contracts;
+using SWLOR.Component.Character.Contracts;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
@@ -34,10 +34,10 @@ namespace SWLOR.Component.Associate.Service
         private readonly IPerkService _perkService;
         private readonly IGuiService _guiService;
         private readonly IItemService _itemService;
-        private readonly IRace _raceService;
+        private readonly IRaceService _raceService;
         private readonly IStatService _statService;
         private readonly IStatusEffectService _statusEffectService;
-        private readonly AI _aiService;
+        private readonly IAIService _aiService;
         private readonly IActivityService _activityService;
         private readonly IRecastService _recastService;
         private readonly DroidGeekyPersonality _geekyPersonality;
@@ -60,10 +60,10 @@ namespace SWLOR.Component.Associate.Service
             IPerkService perkService,
             IGuiService guiService,
             IItemService itemService,
-            IRace raceService,
+            IRaceService raceService,
             IStatService statService,
             IStatusEffectService statusEffectService,
-            AI aiService,
+            IAIService aiService,
             IActivityService activityService,
             IRecastService recastService,
             DroidGeekyPersonality geekyPersonality,

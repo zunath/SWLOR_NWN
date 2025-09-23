@@ -1,6 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using SWLOR.Component.Perk.Contracts;
-using SWLOR.Component.Player.Contracts;
 using SWLOR.Component.Quest.Contracts;
 using SWLOR.Component.Quest.Feature.QuestDefinition;
 using SWLOR.Component.Quest.Service;

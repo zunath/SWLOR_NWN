@@ -1,5 +1,4 @@
 using SWLOR.Component.AI.Contracts;
-using SWLOR.Component.AI.Enums;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Creature;

@@ -2,11 +2,6 @@
 using SWLOR.Component.Character.UI.Payload;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.UI.Contracts;
 

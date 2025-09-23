@@ -1,11 +1,6 @@
 using SWLOR.Component.Associate.Contracts;
 using SWLOR.Component.Associate.Entity;
 using SWLOR.Component.Associate.Enums;
-using SWLOR.Component.Associate.Model;
-using SWLOR.Component.Associate.UI.RefreshEvent;
-using SWLOR.Component.Perk.Contracts;
-using SWLOR.Component.Player.Contracts;
-using SWLOR.Component.StatusEffect.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -16,10 +11,11 @@ using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Domain.Contracts;
-using SWLOR.Shared.Domain.Entity;
 using SWLOR.Shared.Domain.Enums;
 using SWLOR.Component.Associate.UI.Payload;
 using SWLOR.Shared.Abstractions.Enums;
+using SWLOR.Shared.Domain.Model;
+using SWLOR.Shared.Domain.Model.RefreshEvent;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Module;
@@ -29,8 +25,6 @@ using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Component.Associate.Service
 {
-    
-
     public class BeastMastery : IBeastMasteryService
     {
         private readonly IDatabaseService _db;
@@ -81,7 +75,7 @@ namespace SWLOR.Component.Associate.Service
 
         private const string BeastResref = "pc_beast";
         public const string BeastClawResref = "beast_claw";
-        public const int MaxLevel = 50;
+        public int MaxLevel => 50;
         private int _highestDelta;
 
         public BeastMastery(
@@ -106,10 +100,10 @@ namespace SWLOR.Component.Associate.Service
             _propertyService = propertyService;
         }
 
-        public const string HydrolaseResrefPrefix = "hydrolase_";
-        public const string LyaseResrefPrefix = "lyase_";
-        public const string IsomeraseResrefPrefix = "isomerase_";
-        public const string DNAResref = "beast_dna";
+        public string HydrolaseResrefPrefix => "hydrolase_";
+        public string LyaseResrefPrefix => "lyase_";
+        public string IsomeraseResrefPrefix => "isomerase_";
+        public string DNAResref => "beast_dna";
         public const string BeastEggResref = "beast_egg";
         public const string EnzymeTag = "INCUBATION_ENZYME";
 

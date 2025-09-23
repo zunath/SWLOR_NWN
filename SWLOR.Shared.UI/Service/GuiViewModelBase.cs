@@ -4,7 +4,6 @@ using System.Runtime.CompilerServices;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Abstractions.Models;
-using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Properties;
 using SWLOR.Shared.UI.Component;
 using SWLOR.Shared.UI.Contracts;

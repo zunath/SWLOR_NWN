@@ -1,5 +1,4 @@
 using SWLOR.Component.Inventory.Contracts;
-using SWLOR.Component.Inventory.Enums;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Dialog.Contracts;

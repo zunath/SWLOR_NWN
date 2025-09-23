@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using SWLOR.Component.Perk.Contracts;
-using SWLOR.Component.Player.Contracts;
-using SWLOR.Component.Player.Enums;
 using SWLOR.Component.Quest.Contracts;
 using SWLOR.Component.Quest.Model;
 using SWLOR.NWN.API.NWNX;

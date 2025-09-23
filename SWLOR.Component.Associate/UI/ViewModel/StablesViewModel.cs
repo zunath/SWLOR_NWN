@@ -1,12 +1,11 @@
-using SWLOR.Component.Associate.Contracts;
 using SWLOR.Component.Associate.Entity;
 using SWLOR.Component.Associate.Enums;
-using SWLOR.Component.Perk.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Abstractions.Models;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Domain.Contracts;
@@ -25,7 +24,13 @@ namespace SWLOR.Component.Associate.UI.ViewModel
         private readonly IPerkService _perkService;
         private readonly IBeastMasteryService _beastMasteryService;
 
-        public StablesViewModel(IGuiService guiService, IDatabaseService db, IStatService statService, IPerkService perkService, IBeastMasteryService beastMasteryService) : base(guiService)
+        public StablesViewModel(
+            IGuiService guiService, 
+            IDatabaseService db, 
+            IStatService statService, 
+            IPerkService perkService, 
+            IBeastMasteryService beastMasteryService) 
+            : base(guiService)
         {
             _db = db;
             _statService = statService;
@@ -460,9 +465,8 @@ namespace SWLOR.Component.Associate.UI.ViewModel
             var beastId = _beastIds[_selectedBeastIndex];
             var dbBeast = _db.Get<Beast>(beastId);
             var dbPlayer = _db.Get<Player>(playerId);
-            var beastMasteryService = _beastMasteryService;
-            var beastDetails = beastMasteryService.GetBeastDetail(dbBeast.Type);
-            var roleDetails = beastMasteryService.GetBeastRoleDetail(beastDetails.Role);
+            var beastDetails = _beastMasteryService.GetBeastDetail(dbBeast.Type);
+            var roleDetails = _beastMasteryService.GetBeastRoleDetail(beastDetails.Role);
             var level = beastDetails.Levels[dbBeast.Level];
 
             if (dbPlayer.ActiveBeastId == beastId)
@@ -476,7 +480,7 @@ namespace SWLOR.Component.Associate.UI.ViewModel
 
             // Details Page
             Name = dbBeast.Name;
-            XPTooltip = $"XP: {dbBeast.XP} / {beastMasteryService.GetRequiredXP(dbBeast.Level, dbBeast.XPPenaltyPercent)}";
+            XPTooltip = $"XP: {dbBeast.XP} / {_beastMasteryService.GetRequiredXP(dbBeast.Level, dbBeast.XPPenaltyPercent)}";
 
             var hp = level.HP + 1 * ((level.Stats[AbilityType.Vitality] - 10) / 2);
             var fp = _statService.GetMaxFP(level.FP, (level.Stats[AbilityType.Willpower] - 10) / 2, 0);
@@ -490,8 +494,8 @@ namespace SWLOR.Component.Associate.UI.ViewModel
             HP = $"{hp}";
             FP = $"{fp}";
             STM = $"{stm}";
-            SP = $"{dbBeast.Level} / {beastMasteryService.MaxLevel} ({dbBeast.UnallocatedSP})";
-            Level = $"{dbBeast.Level} / {beastMasteryService.MaxLevel}";
+            SP = $"{dbBeast.Level} / {_beastMasteryService.MaxLevel} ({dbBeast.UnallocatedSP})";
+            Level = $"{dbBeast.Level} / {_beastMasteryService.MaxLevel}";
             Might = $"{level.Stats[AbilityType.Might]}";
             Perception = $"{level.Stats[AbilityType.Perception]}";
             Vitality = $"{level.Stats[AbilityType.Vitality]}";
@@ -636,10 +640,9 @@ namespace SWLOR.Component.Associate.UI.ViewModel
         private void CreateDNAItem(Beast dbBeast)
         {
             const int PurityMaxId = 1000;
-            var beastMasteryService = _beastMasteryService;
-            var beastDetail = beastMasteryService.GetBeastDetail(dbBeast.Type);
-            var dna = CreateItemOnObject(beastMasteryService.DNAResref, Player);
-            var percentage = (float)dbBeast.Level / (float)beastMasteryService.MaxLevel;
+            var beastDetail = _beastMasteryService.GetBeastDetail(dbBeast.Type);
+            var dna = CreateItemOnObject(_beastMasteryService.DNAResref, Player);
+            var percentage = (float)dbBeast.Level / (float)_beastMasteryService.MaxLevel;
 
             var attackPurity = (int)(dbBeast.AttackPurity * percentage) * 10;
             var accuracyPurity = (int)(dbBeast.AccuracyPurity * percentage) * 10;

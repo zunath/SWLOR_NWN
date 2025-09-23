@@ -1,8 +1,6 @@
 using SWLOR.Component.Crafting.Entity;
-using SWLOR.Component.Crafting.Enums;
 using SWLOR.Component.Crafting.Model;
 using SWLOR.Component.Crafting.Service;
-using SWLOR.Component.Perk.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -11,9 +9,7 @@ using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data;
-using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Domain.Contracts;
-using SWLOR.Shared.Domain.Entity;
 using SWLOR.Shared.Domain.Enums;
 using SWLOR.Component.Crafting.UI.Payload;
 using SWLOR.Shared.Abstractions.Enums;

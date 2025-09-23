@@ -5,12 +5,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Dialog.Contracts;
-using SWLOR.Shared.Dialog.Service;
 using SWLOR.Shared.Domain.Contracts;
-using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Constants;
-using SWLOR.Shared.Events.Events.Creature;
-using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Component.AI.Service
 {

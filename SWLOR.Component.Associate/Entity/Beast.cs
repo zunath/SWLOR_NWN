@@ -1,5 +1,4 @@
-﻿using SWLOR.Component.Associate.Enums;
-using SWLOR.NWN.API.NWScript.Enum;
+﻿using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions;
 using SWLOR.Shared.Domain.Enums;
 

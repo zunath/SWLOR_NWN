@@ -1,6 +1,6 @@
+using SWLOR.Component.Associate.Contracts;
 using SWLOR.Component.Associate.Model;
 using SWLOR.Component.Associate.Service;
-using SWLOR.Component.Perk.Contracts;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -11,7 +11,6 @@ using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Domain.Contracts;
 using SWLOR.Shared.Domain.Enums;
 using SWLOR.Shared.UI.Contracts;
-using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Component.Associate.UI.ViewModel
@@ -21,12 +20,20 @@ namespace SWLOR.Component.Associate.UI.ViewModel
         private readonly IPerkService _perkService;
         private readonly IItemService _itemService;
         private readonly ITargetingService _targetingService;
+        private readonly IDroid _droid;
 
-        public DroidAssemblyViewModel(IGuiService guiService, IPerkService perkService, IItemService itemService, ITargetingService targetingService) : base(guiService)
+        public DroidAssemblyViewModel(
+            IGuiService guiService, 
+            IPerkService perkService, 
+            IItemService itemService, 
+            ITargetingService targetingService,
+            IDroid droidService) 
+            : base(guiService)
         {
             _perkService = perkService;
             _itemService = itemService;
             _targetingService = targetingService;
+            _droid = droidService;
         }
 
         private const string BlankTexture = "Blank";
@@ -464,7 +471,7 @@ namespace SWLOR.Component.Associate.UI.ViewModel
                         var item = ObjectPlugin.Deserialize(_cpuItem);
                         ObjectPlugin.AcquireItem(Player, item);
                         CPUResref = BlankTexture;
-                        var part = Droid.LoadDroidPartItemPropertyDetails(item);
+                        var part = _droid.LoadDroidPartItemPropertyDetails(item);
 
                         RemovePart(part);
                     }
@@ -481,7 +488,7 @@ namespace SWLOR.Component.Associate.UI.ViewModel
                         return;
                     }
 
-                    var part = Droid.LoadDroidPartItemPropertyDetails(item);
+                    var part = _droid.LoadDroidPartItemPropertyDetails(item);
 
                     if (part.PartType != DroidPartItemPropertySubType.CPU)
                     {
@@ -505,7 +512,7 @@ namespace SWLOR.Component.Associate.UI.ViewModel
                     var item = ObjectPlugin.Deserialize(_headItem);
                     ObjectPlugin.AcquireItem(Player, item);
                     HeadResref = BlankTexture;
-                    var part = Droid.LoadDroidPartItemPropertyDetails(item);
+                    var part = _droid.LoadDroidPartItemPropertyDetails(item);
 
                     RemovePart(part);
                 });
@@ -521,7 +528,7 @@ namespace SWLOR.Component.Associate.UI.ViewModel
                         return;
                     }
 
-                    var part = Droid.LoadDroidPartItemPropertyDetails(item);
+                    var part = _droid.LoadDroidPartItemPropertyDetails(item);
 
                     if (part.PartType != DroidPartItemPropertySubType.Head)
                     {
@@ -544,7 +551,7 @@ namespace SWLOR.Component.Associate.UI.ViewModel
                     var item = ObjectPlugin.Deserialize(_bodyItem);
                     ObjectPlugin.AcquireItem(Player, item);
                     BodyResref = BlankTexture;
-                    var part = Droid.LoadDroidPartItemPropertyDetails(item);
+                    var part = _droid.LoadDroidPartItemPropertyDetails(item);
 
                     RemovePart(part);
                 });
@@ -560,7 +567,7 @@ namespace SWLOR.Component.Associate.UI.ViewModel
                         return;
                     }
 
-                    var part = Droid.LoadDroidPartItemPropertyDetails(item);
+                    var part = _droid.LoadDroidPartItemPropertyDetails(item);
 
                     if (part.PartType != DroidPartItemPropertySubType.Body)
                     {
@@ -583,7 +590,7 @@ namespace SWLOR.Component.Associate.UI.ViewModel
                     var item = ObjectPlugin.Deserialize(_armsItem);
                     ObjectPlugin.AcquireItem(Player, item);
                     ArmsResref = BlankTexture;
-                    var part = Droid.LoadDroidPartItemPropertyDetails(item);
+                    var part = _droid.LoadDroidPartItemPropertyDetails(item);
 
                     RemovePart(part);
                 });
@@ -599,7 +606,7 @@ namespace SWLOR.Component.Associate.UI.ViewModel
                         return;
                     }
 
-                    var part = Droid.LoadDroidPartItemPropertyDetails(item);
+                    var part = _droid.LoadDroidPartItemPropertyDetails(item);
 
                     if (part.PartType != DroidPartItemPropertySubType.Arms)
                     {
@@ -622,7 +629,7 @@ namespace SWLOR.Component.Associate.UI.ViewModel
                     var item = ObjectPlugin.Deserialize(_legsItem);
                     ObjectPlugin.AcquireItem(Player, item);
                     LegsResref = BlankTexture;
-                    var part = Droid.LoadDroidPartItemPropertyDetails(item);
+                    var part = _droid.LoadDroidPartItemPropertyDetails(item);
 
                     RemovePart(part);
                 });
@@ -638,7 +645,7 @@ namespace SWLOR.Component.Associate.UI.ViewModel
                         return;
                     }
 
-                    var part = Droid.LoadDroidPartItemPropertyDetails(item);
+                    var part = _droid.LoadDroidPartItemPropertyDetails(item);
 
                     if (part.PartType != DroidPartItemPropertySubType.Legs)
                     {
@@ -703,7 +710,7 @@ namespace SWLOR.Component.Associate.UI.ViewModel
                 var controller = CreateItemOnObject(Droid.DroidControlItemResref, Player);
                 SetName(controller, $"Droid Controller: {Name}");
 
-                var constructedDroid = Droid.LoadConstructedDroid(controller);
+                var constructedDroid = _droid.LoadConstructedDroid(controller);
                 constructedDroid.Name = Name;
 
                 var ipPersonality = ItemPropertyCustom(ItemPropertyType.DroidPersonality, PersonalityIndex);
@@ -747,7 +754,7 @@ namespace SWLOR.Component.Associate.UI.ViewModel
                 constructedDroid.SerializedArms = _armsItem;
                 constructedDroid.SerializedLegs = _legsItem;
 
-                Droid.SaveConstructedDroid(controller, constructedDroid);
+                _droid.SaveConstructedDroid(controller, constructedDroid);
 
                 _cpuItem = string.Empty;
                 _headItem = string.Empty;

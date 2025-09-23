@@ -1,7 +1,6 @@
 ﻿using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.UI.Component;
-using SWLOR.Shared.UI.Model;
 
 namespace SWLOR.Shared.UI.Contracts
 {

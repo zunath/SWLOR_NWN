@@ -1,7 +1,6 @@
 using SWLOR.Component.Inventory.Contracts;
 using SWLOR.Component.Inventory.Model;
 using SWLOR.Component.Inventory.Service;
-using SWLOR.Component.Perk.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;

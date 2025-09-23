@@ -7,7 +7,7 @@ using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Component.Character.Service
 {
-    public class Race : IRace
+    public class Race : IRaceService
     {
 
         private static readonly Dictionary<RacialType, RacialAppearance> _defaultRaceAppearancesMale = new();

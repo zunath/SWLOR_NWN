@@ -1,5 +1,3 @@
-using SWLOR.Component.Combat.Contracts;
-using SWLOR.Component.StatusEffect.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Contracts;

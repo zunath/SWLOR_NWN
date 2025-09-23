@@ -1,5 +1,3 @@
-using SWLOR.Component.Combat.Contracts;
-using SWLOR.Component.Player.Contracts;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Contracts;

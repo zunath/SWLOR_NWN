@@ -1,9 +1,7 @@
 using System.Text.RegularExpressions;
-using SWLOR.Component.Character.UI.RefreshEvent;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Entity;
 using SWLOR.Shared.Domain.Enums;
-using SWLOR.Component.Character.UI.Payload;
 using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Domain.Contracts;
 using SWLOR.Shared.Domain.Model.Payload;

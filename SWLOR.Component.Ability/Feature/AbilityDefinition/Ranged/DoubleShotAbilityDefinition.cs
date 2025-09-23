@@ -1,5 +1,4 @@
 using SWLOR.Component.Ability.Contracts;
-using SWLOR.Component.Ability.Model;
 using SWLOR.Component.Ability.Service;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;

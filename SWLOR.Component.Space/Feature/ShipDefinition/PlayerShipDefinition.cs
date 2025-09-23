@@ -1,5 +1,4 @@
 using SWLOR.Component.Space.Contracts;
-using SWLOR.Component.Space.Model;
 using SWLOR.Component.Space.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Enums;

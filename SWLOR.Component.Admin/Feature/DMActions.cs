@@ -1,4 +1,3 @@
-using SWLOR.Component.Character.UI.RefreshEvent;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;

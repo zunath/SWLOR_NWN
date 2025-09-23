@@ -1,4 +1,3 @@
-using SWLOR.Component.Space.Enums;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -6,7 +5,6 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Domain.Entity;
-using SWLOR.Component.Space.UI.Payload;
 using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Domain.Model.Payload;
 using SWLOR.Shared.UI.Contracts;

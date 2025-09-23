@@ -2,8 +2,6 @@ using System.Numerics;
 using SWLOR.Component.Crafting.Contracts;
 using SWLOR.Component.Crafting.Enums;
 using SWLOR.Component.Crafting.Model;
-using SWLOR.Component.Player.Contracts;
-using SWLOR.Component.Player.Enums;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;

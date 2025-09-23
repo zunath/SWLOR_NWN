@@ -1,8 +1,9 @@
+
 using SWLOR.Component.Character.Model;
 
 namespace SWLOR.Component.Character.Contracts
 {
-    public interface IRace
+    public interface IRaceService
     {
         /// <summary>
         /// When the module loads, cache all default race appearances.

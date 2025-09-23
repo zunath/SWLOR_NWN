@@ -1,6 +1,5 @@
 using SWLOR.Component.Market.Contracts;
 using SWLOR.Component.Market.Feature;
-using SWLOR.Component.Market.UI.ViewModel;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.NWNX;

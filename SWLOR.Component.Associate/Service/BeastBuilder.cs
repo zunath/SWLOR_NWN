@@ -1,7 +1,7 @@
-using SWLOR.Component.Associate.Enums;
 using SWLOR.Component.Associate.Model;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Enums;
+using SWLOR.Shared.Domain.Model;
 
 namespace SWLOR.Component.Associate.Service
 {

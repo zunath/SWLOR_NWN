@@ -6,7 +6,6 @@ using SWLOR.Shared.Domain.Enums;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.UI.Contracts;
-using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Component.Character.UI.ViewModel

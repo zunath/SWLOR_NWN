@@ -1,4 +1,3 @@
-using SWLOR.Component.Character.UI.RefreshEvent;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Component.Character.UI.Payload;

@@ -1,5 +1,3 @@
-using SWLOR.Component.Properties.Entity;
-using SWLOR.Component.Properties.Enums;
 using SWLOR.Component.World.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;

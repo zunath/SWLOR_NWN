@@ -1,5 +1,4 @@
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Core.Extension;
 
 namespace SWLOR.Shared.Caching.Service

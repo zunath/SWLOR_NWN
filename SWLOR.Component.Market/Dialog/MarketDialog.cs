@@ -1,6 +1,5 @@
 using SWLOR.Component.Market.Contracts;
 using SWLOR.Component.Market.Enums;
-using SWLOR.Component.Market.Service;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Dialog.Contracts;

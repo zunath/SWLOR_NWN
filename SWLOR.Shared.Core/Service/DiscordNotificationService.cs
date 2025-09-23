@@ -1,12 +1,6 @@
 ﻿using Discord;
 using Discord.Webhook;
 using SWLOR.Shared.Abstractions.Contracts;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Abstractions.Models;
 using Color = System.Drawing.Color;

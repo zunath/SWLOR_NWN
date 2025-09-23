@@ -1,7 +1,4 @@
 using SWLOR.Component.Space.Contracts;
-using SWLOR.Component.Space.Delegates;
-using SWLOR.Component.Space.Enums;
-using SWLOR.Component.Space.Model;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;

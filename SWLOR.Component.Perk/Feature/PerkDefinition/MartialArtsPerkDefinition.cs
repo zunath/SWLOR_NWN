@@ -1,6 +1,4 @@
 using SWLOR.Component.Perk.Contracts;
-using SWLOR.Component.Perk.Enums;
-using SWLOR.Component.Perk.Model;
 using SWLOR.Component.Perk.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Contracts;

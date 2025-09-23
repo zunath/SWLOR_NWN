@@ -1,5 +1,4 @@
 using SWLOR.Component.Character.Service;
-using SWLOR.Component.Character.UI.RefreshEvent;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Models;
 using SWLOR.Shared.Domain.Entity;

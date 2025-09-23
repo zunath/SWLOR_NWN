@@ -4,7 +4,6 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Nui;
 using SWLOR.Shared.Abstractions.Models;
 using SWLOR.Shared.UI.Contracts;
-using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Shared.UI.Component

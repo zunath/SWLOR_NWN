@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Quest.Contracts;
-using SWLOR.Shared.Core.Contracts;
 
 namespace SWLOR.Component.Quest.Service
 {

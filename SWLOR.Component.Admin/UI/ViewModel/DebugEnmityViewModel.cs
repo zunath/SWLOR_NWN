@@ -1,5 +1,3 @@
-using SWLOR.Component.Admin.UI.RefreshEvent;
-using SWLOR.Component.Player.Contracts;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Contracts;
 using SWLOR.Shared.Events.Attributes;

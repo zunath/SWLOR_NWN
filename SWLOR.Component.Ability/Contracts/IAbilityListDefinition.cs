@@ -1,4 +1,3 @@
-using SWLOR.Component.Ability.Model;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Model;
 

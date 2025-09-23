@@ -1,4 +1,3 @@
-using SWLOR.Component.Ability.Contracts;
 using SWLOR.Shared.Domain.Contracts;
 
 namespace SWLOR.Component.Ability.Model

@@ -1,6 +1,4 @@
 using System.Globalization;
-using SWLOR.Component.Ability.Contracts;
-using SWLOR.Component.StatusEffect.Contracts;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Extension;

@@ -1,8 +1,5 @@
-using SWLOR.Component.Perk.Contracts;
 using SWLOR.Component.Space.Contracts;
-using SWLOR.Component.Space.Enums;
 using SWLOR.Component.Space.Model;
-using SWLOR.Component.StatusEffect.Contracts;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.NWN.API.NWScript.Enum;

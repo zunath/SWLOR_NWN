@@ -1,9 +1,6 @@
-using Discord;
-using Discord.Webhook;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.UI.Contracts;
-using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
 using Color = System.Drawing.Color;
 

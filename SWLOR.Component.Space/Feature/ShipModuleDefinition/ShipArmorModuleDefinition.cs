@@ -1,6 +1,4 @@
 using SWLOR.Component.Space.Contracts;
-using SWLOR.Component.Space.Enums;
-using SWLOR.Component.Space.Model;
 using SWLOR.Shared.Domain.Enums;
 
 namespace SWLOR.Component.Space.Feature.ShipModuleDefinition

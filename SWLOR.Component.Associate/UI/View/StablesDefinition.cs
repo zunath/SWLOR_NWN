@@ -1,6 +1,7 @@
 using SWLOR.Component.Associate.UI.ViewModel;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Enums;
+using SWLOR.Shared.Abstractions.Models;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;

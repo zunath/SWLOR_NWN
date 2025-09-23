@@ -1,8 +1,6 @@
 using SWLOR.Component.Inventory.Contracts;
-using SWLOR.Component.Inventory.Enums;
 using SWLOR.Component.Inventory.Model;
 using SWLOR.Component.Inventory.Service;
-using SWLOR.Component.StatusEffect.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.NWN.API.NWScript.Enum.Item;

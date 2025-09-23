@@ -1,6 +1,4 @@
-using SWLOR.Component.Perk.Contracts;
 using SWLOR.Component.StatusEffect.Contracts;
-using SWLOR.Component.StatusEffect.Model;
 using SWLOR.Component.StatusEffect.Service;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;

@@ -1,6 +1,5 @@
-using SWLOR.Component.Associate.Contracts;
-using SWLOR.Component.Associate.Entity;
-using SWLOR.Shared.Domain.Entity;
+using SWLOR.Shared.Domain.Contracts;
+using SWLOR.Shared.Domain.Model;
 
 namespace SWLOR.Component.Associate.Model
 {

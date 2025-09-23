@@ -1,5 +1,4 @@
 using SWLOR.Shared.Caching.Contracts;
-using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 

@@ -14,7 +14,6 @@ using SWLOR.Shared.Domain.Model.RefreshEvent;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Service;
-using System;
 using System.Drawing;
 using ChatChannel = SWLOR.NWN.API.NWNX.Enum.ChatChannel;
 

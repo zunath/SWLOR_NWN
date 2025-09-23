@@ -1,4 +1,3 @@
-using SWLOR.Component.Character.Contracts;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Domain.Contracts;

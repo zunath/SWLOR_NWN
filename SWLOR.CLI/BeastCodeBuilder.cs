@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using SWLOR.Component.Associate.Enums;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.CLI

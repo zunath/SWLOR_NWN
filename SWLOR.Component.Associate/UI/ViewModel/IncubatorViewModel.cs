@@ -1,9 +1,4 @@
-using SWLOR.Component.Associate.Contracts;
-using SWLOR.Component.Associate.Entity;
 using SWLOR.Component.Associate.Enums;
-using SWLOR.Component.Associate.Service;
-using SWLOR.Component.Perk.Contracts;
-using SWLOR.Component.Perk.UI.RefreshEvent;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -11,12 +6,12 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Log.LogGroup;
-using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Domain.Contracts;
-using SWLOR.Shared.Domain.Entity;
 using SWLOR.Shared.Domain.Enums;
 using SWLOR.Component.Associate.UI.Payload;
 using SWLOR.Shared.Abstractions.Enums;
+using SWLOR.Shared.Domain.Model;
+using SWLOR.Shared.Domain.Model.RefreshEvent;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Service;
 
@@ -30,17 +25,28 @@ namespace SWLOR.Component.Associate.UI.ViewModel
         private readonly IPerkService _perkService;
         private readonly IItemService _itemService;
         private readonly IBeastMasteryService _beastMasteryService;
-        private readonly BeastMastery _beastMastery;
         private readonly ITargetingService _targetingService;
+        private readonly IDatabaseService _db;
+        private readonly ITimeService _timeService;
 
-        public IncubatorViewModel(IGuiService guiService, ILogger logger, IPerkService perkService, IItemService itemService, IBeastMasteryService beastMasteryService, BeastMastery beastMastery, ITargetingService targetingService) : base(guiService)
+        public IncubatorViewModel(
+            IGuiService guiService, 
+            ILogger logger, 
+            IPerkService perkService, 
+            IItemService itemService, 
+            IBeastMasteryService beastMasteryService, 
+            ITargetingService targetingService,
+            IDatabaseService db,
+            ITimeService timeService) 
+            : base(guiService)
         {
             _logger = logger;
             _perkService = perkService;
             _itemService = itemService;
             _beastMasteryService = beastMasteryService;
-            _beastMastery = beastMastery;
             _targetingService = targetingService;
+            _db = db;
+            _timeService = timeService;
         }
         public const string PartialElement = "PARTIAL_VIEW";
         public const string NewJobPartial = "NEW_JOB_PARTIAL";
@@ -316,7 +322,7 @@ namespace SWLOR.Component.Associate.UI.ViewModel
                 else
                 {
                     var deltaTime = dbJob.DateCompleted - now;
-                    JobProgressTime = $"Stage {dbJob.CurrentStage} Remaining: {Time.GetTimeShortIntervals(deltaTime, false)}";
+                    JobProgressTime = $"Stage {dbJob.CurrentStage} Remaining: {_timeService.GetTimeShortIntervals(deltaTime, false)}";
                     IsStartJobEnabled = false;
                     ChangePartialView(PartialElement, InProgressJobPartial);
                 }
@@ -348,7 +354,7 @@ namespace SWLOR.Component.Associate.UI.ViewModel
         {
             var dbQuery = new DBQuery<IncubationJob>()
                 .AddFieldSearch(nameof(IncubationJob.ParentPropertyId), _incubatorPropertyId, false);
-            var dbJob = DB.Search(dbQuery)
+            var dbJob = _db.Search(dbQuery)
                 .FirstOrDefault();
 
             return dbJob;
@@ -356,13 +362,13 @@ namespace SWLOR.Component.Associate.UI.ViewModel
 
         private string FormatStat(int baseStat, int bonusStat, int additionalBonus)
         {
-            var bonusPercentage = _beastMastery.GetIncubationPercentageById(bonusStat);
+            var bonusPercentage = _beastMasteryService.GetIncubationPercentageById(bonusStat);
             if (bonusPercentage > 10f)
                 bonusPercentage = 10f;
 
             bonusPercentage += additionalBonus;
 
-            var baseStatText = _beastMastery.GetIncubationPercentageById(baseStat);
+            var baseStatText = _beastMasteryService.GetIncubationPercentageById(baseStat);
 
             return $"{baseStatText}% [+{bonusPercentage:0.0###}%]";
         }
@@ -437,7 +443,7 @@ namespace SWLOR.Component.Associate.UI.ViewModel
 
             DNALabel = _dnaType == BeastType.Invalid
                 ? "DNA [N/A]"
-                : $"DNA [{_beastMastery.GetBeastDetail(_dnaType).Name}]";
+                : $"DNA [{_beastMasteryService.GetBeastDetail(_dnaType).Name}]";
 
             AttackPurity = FormatStat(_attack, _stageAttack, 0);
             AccuracyPurity = FormatStat(_accuracy, _stageAccuracy, 0);
@@ -473,7 +479,7 @@ namespace SWLOR.Component.Associate.UI.ViewModel
         {
             var seconds = CalculateIncubationSeconds();
             var timespan = TimeSpan.FromSeconds(seconds);
-            EstimatedTimeToCompletion = $"Time Required: {Time.GetTimeShortIntervals(timespan, false)}";
+            EstimatedTimeToCompletion = $"Time Required: {_timeService.GetTimeShortIntervals(timespan, false)}";
         }
 
         private void RemoveDNA()
@@ -573,7 +579,7 @@ namespace SWLOR.Component.Associate.UI.ViewModel
             {
                 _targetingService.EnterTargetingMode(Player, ObjectType.Item, "Select a DNA item from your inventory.", item =>
                 {
-                    if (GetResRef(item) != _beastMastery.DNAResref)
+                    if (GetResRef(item) != _beastMasteryService.DNAResref)
                     {
                         FloatingTextStringOnCreature("Only DNA items may be selected.", Player, false);
                         return;
@@ -822,7 +828,7 @@ namespace SWLOR.Component.Associate.UI.ViewModel
                 _targetingService.EnterTargetingMode(Player, ObjectType.Item, "Select a Hydrolase item from your inventory.",
                 item =>
                 {
-                    if (!GetResRef(item).StartsWith(_beastMastery.HydrolaseResrefPrefix))
+                    if (!GetResRef(item).StartsWith(_beastMasteryService.HydrolaseResrefPrefix))
                     {
                         FloatingTextStringOnCreature("Only Hydrolase items may be selected.", Player, false);
                         return;
@@ -868,7 +874,7 @@ namespace SWLOR.Component.Associate.UI.ViewModel
                 _targetingService.EnterTargetingMode(Player, ObjectType.Item, "Select a Lyase item from your inventory.",
                 item =>
                 {
-                    if (!GetResRef(item).StartsWith(_beastMastery.LyaseResrefPrefix))
+                    if (!GetResRef(item).StartsWith(_beastMasteryService.LyaseResrefPrefix))
                     {
                         FloatingTextStringOnCreature("Only Lyase items may be selected.", Player, false);
                         return;
@@ -949,7 +955,7 @@ namespace SWLOR.Component.Associate.UI.ViewModel
             var maxConcurrentJobs = _perkService.GetPerkLevel(Player, PerkType.IncubationManagement) + 1;
             var dbQuery = new DBQuery<IncubationJob>()
                 .AddFieldSearch(nameof(IncubationJob.PlayerId), playerId, false);
-            var currentJobs = DB.Search(dbQuery).ToList();
+            var currentJobs = _db.Search(dbQuery).ToList();
             var currentJobCount = currentJobs.Count(x => x.ParentPropertyId != _incubatorPropertyId);
 
             if (currentJobCount >= maxConcurrentJobs)
@@ -1033,13 +1039,13 @@ namespace SWLOR.Component.Associate.UI.ViewModel
                 job.DateStarted = now;
                 job.DateCompleted = now.AddSeconds(incubationSeconds);
 
-                DB.Set(job);
+                _db.Set(job);
 
                 _dnaItem = string.Empty;
                 _hydrolaseItem = string.Empty;
                 _isomeraseItem = string.Empty;
                 _lyaseItem = string.Empty;
-                Gui.CloseWindow(Player, GuiWindowType.Incubator, Player);
+                _guiService.CloseWindow(Player, GuiWindowType.Incubator, Player);
                 FloatingTextStringOnCreature($"Incubation job started!", Player, false);
             }
             else
@@ -1087,8 +1093,8 @@ namespace SWLOR.Component.Associate.UI.ViewModel
                 if (dbJob == null)
                     return;
 
-                DB.Delete<IncubationJob>(dbJob.Id);
-                Gui.CloseWindow(Player, GuiWindowType.Incubator, Player);
+                _db.Delete<IncubationJob>(dbJob.Id);
+                _guiService.CloseWindow(Player, GuiWindowType.Incubator, Player);
                 _logger.Write<IncubationLogGroup>($"Player '{GetName(Player)}' ({GetObjectUUID(Player)}) canceled incubation job '{dbJob.Id}' on incubator property Id '{dbJob.ParentPropertyId}'.");
                 FloatingTextStringOnCreature($"Incubation job cancelled!", Player, false);
 
@@ -1102,7 +1108,7 @@ namespace SWLOR.Component.Associate.UI.ViewModel
             {
                 var job = GetJob();
                 _beastMasteryService.CreateBeastEgg(job, Player);
-                Gui.CloseWindow(Player, GuiWindowType.Incubator, Player);
+                _guiService.CloseWindow(Player, GuiWindowType.Incubator, Player);
 
                 SwitchViews();
             }, SwitchViews);

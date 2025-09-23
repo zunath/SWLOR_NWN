@@ -1,13 +1,9 @@
-using SWLOR.Component.Properties.Contracts;
-using SWLOR.Component.Properties.Entity;
-using SWLOR.Component.Properties.Enums;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Domain.Entity;
-using SWLOR.Component.Properties.UI.Payload;
 using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Abstractions.Models;
 using SWLOR.Shared.Domain.Contracts;

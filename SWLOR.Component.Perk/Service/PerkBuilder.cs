@@ -1,5 +1,3 @@
-using SWLOR.Component.Perk.Delegates;
-using SWLOR.Component.Perk.Enums;
 using SWLOR.Component.Perk.Model;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Delegates;

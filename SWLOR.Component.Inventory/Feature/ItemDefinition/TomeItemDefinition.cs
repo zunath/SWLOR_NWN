@@ -3,6 +3,7 @@ using SWLOR.Component.Inventory.Dialog;
 using SWLOR.Component.Inventory.Enums;
 using SWLOR.Component.Inventory.Model;
 using SWLOR.Component.Inventory.Service;
+using SWLOR.Component.Perk.UI.RefreshEvent;
 using SWLOR.Shared.Domain.Enums;
 using SWLOR.Shared.UI.Contracts;
 

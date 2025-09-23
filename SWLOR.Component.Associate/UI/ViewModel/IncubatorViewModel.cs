@@ -2,8 +2,8 @@ using SWLOR.Component.Associate.Contracts;
 using SWLOR.Component.Associate.Entity;
 using SWLOR.Component.Associate.Enums;
 using SWLOR.Component.Associate.Service;
-using SWLOR.Component.Associate.UI.Payload;
 using SWLOR.Component.Perk.Contracts;
+using SWLOR.Component.Perk.UI.RefreshEvent;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -12,10 +12,12 @@ using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
+using SWLOR.Shared.Domain.Contracts;
 using SWLOR.Shared.Domain.Entity;
 using SWLOR.Shared.Domain.Enums;
+using SWLOR.Component.Associate.UI.Payload;
+using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.UI.Contracts;
-using SWLOR.Shared.UI.Enums;
 using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Component.Associate.UI.ViewModel

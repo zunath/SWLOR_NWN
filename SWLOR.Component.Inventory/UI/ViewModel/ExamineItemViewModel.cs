@@ -1,4 +1,4 @@
-using SWLOR.Component.Inventory.UI.Payload;
+using SWLOR.Shared.Domain.Model.Payload;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Service;
 

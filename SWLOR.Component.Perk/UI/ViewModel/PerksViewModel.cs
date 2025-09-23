@@ -2,6 +2,7 @@ using SWLOR.Component.Perk.Contracts;
 using SWLOR.Component.Perk.Enums;
 using SWLOR.Component.Perk.Model;
 using SWLOR.Component.Perk.UI.RefreshEvent;
+using SWLOR.Component.Skill.UI.RefreshEvent;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -10,7 +11,9 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Domain.Contracts;
+using SWLOR.Shared.Domain.Entity;
 using SWLOR.Shared.Domain.Enums;
+using SWLOR.Shared.Domain.Model;
 using SWLOR.Shared.UI.Component;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
@@ -18,7 +21,7 @@ using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Component.Perk.UI.ViewModel
 {
-    public class PerksViewModel : GuiViewModelBase<PerksViewModel, GuiPayloadBase>,
+    public class PerksViewModel : GuiViewModelBase<PerksViewModel, IGuiPayload>,
         IGuiRefreshable<SkillXPRefreshEvent>,
         IGuiRefreshable<PerkResetAcquiredRefreshEvent>
     {
@@ -209,7 +212,7 @@ namespace SWLOR.Component.Perk.UI.ViewModel
             set => Set(value);
         }
 
-        protected override void Initialize(GuiPayloadBase initialPayload)
+        protected override void Initialize(IGuiPayload initialPayload)
         {
             IsInMyPerksMode = true;
             IsInBeastPerksMode = false;

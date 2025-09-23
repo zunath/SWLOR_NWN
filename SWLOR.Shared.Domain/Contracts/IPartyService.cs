@@ -1,4 +1,4 @@
-namespace SWLOR.Component.Player.Contracts
+namespace SWLOR.Shared.Domain.Contracts
 {
     public interface IPartyService
     {

@@ -1,8 +1,8 @@
-using SWLOR.Shared.UI.Model;
+using SWLOR.Shared.Abstractions.Contracts;
 
 namespace SWLOR.Component.Associate.UI.Payload
 {
-    public class DroidAIPayload: GuiPayloadBase
+    public class DroidAIPayload: IGuiPayload
     {
         public uint ControllerItem { get; set; }
 

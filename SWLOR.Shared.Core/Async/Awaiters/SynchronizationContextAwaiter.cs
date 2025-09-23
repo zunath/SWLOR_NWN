@@ -2,7 +2,7 @@
 {
     public readonly struct SynchronizationContextAwaiter : IAwaiter
     {
-        private static readonly SendOrPostCallback PostCallback = state => ((System.Action)state)?.Invoke();
+        private static readonly SendOrPostCallback PostCallback = state => ((Action)state)?.Invoke();
 
         private readonly SynchronizationContext context;
 
@@ -16,7 +16,7 @@
             get => context == SynchronizationContext.Current;
         }
 
-        public void OnCompleted(System.Action continuation)
+        public void OnCompleted(Action continuation)
         {
             context.Post(PostCallback, continuation);
         }

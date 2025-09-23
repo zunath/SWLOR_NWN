@@ -9,7 +9,7 @@ using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Component.World.UI.ViewModel
 {
-    public class AreaNotesViewModel: GuiViewModelBase<AreaNotesViewModel, GuiPayloadBase>
+    public class AreaNotesViewModel: GuiViewModelBase<AreaNotesViewModel, IGuiPayload>
     {
         private readonly IDatabaseService _db;
 
@@ -91,7 +91,7 @@ namespace SWLOR.Component.World.UI.ViewModel
             set => Set(value);
         }
 
-        protected override void Initialize(GuiPayloadBase initialPayload)
+        protected override void Initialize(IGuiPayload initialPayload)
         {
             var areaResrefs = new GuiBindingList<string>();
             var areaNames = new GuiBindingList<string>();

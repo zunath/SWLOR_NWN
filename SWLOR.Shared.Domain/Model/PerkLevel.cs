@@ -1,7 +1,7 @@
-using SWLOR.Component.Perk.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Domain.Contracts;
 
-namespace SWLOR.Component.Perk.Model
+namespace SWLOR.Shared.Domain.Model
 {
     public class PerkLevel
     {

@@ -1,5 +1,6 @@
 using SWLOR.Component.Space.UI.RefreshEvent;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.UI.Component;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
@@ -7,7 +8,7 @@ using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Component.Space.UI.ViewModel
 {
-    internal class TargetStatusViewModel : GuiViewModelBase<TargetStatusViewModel, GuiPayloadBase>,
+    internal class TargetStatusViewModel : GuiViewModelBase<TargetStatusViewModel, IGuiPayload>,
         IGuiRefreshable<TargetStatusRefreshEvent>
     {
         public TargetStatusViewModel(IGuiService guiService) : base(guiService)
@@ -100,7 +101,7 @@ namespace SWLOR.Component.Space.UI.ViewModel
             set => Set(value);
         }
 
-        protected override void Initialize(GuiPayloadBase initialPayload)
+        protected override void Initialize(IGuiPayload initialPayload)
         {
             _screenHeight = -1;
             _screenScale = -1;

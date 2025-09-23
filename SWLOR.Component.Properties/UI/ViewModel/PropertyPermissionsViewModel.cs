@@ -1,10 +1,12 @@
 using SWLOR.Component.Properties.Entity;
 using SWLOR.Component.Properties.Enums;
 using SWLOR.Component.Properties.Service;
-using SWLOR.Component.Properties.UI.Payload;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Domain.Entity;
+using SWLOR.Component.Properties.UI.Payload;
+using SWLOR.Shared.Domain.Enums;
+using SWLOR.Shared.Domain.Model.Payload;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;

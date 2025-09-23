@@ -1,4 +1,5 @@
 using SWLOR.Component.Properties.Enums;
+using SWLOR.Shared.Domain.Enums;
 
 namespace SWLOR.Component.Properties.Model
 {

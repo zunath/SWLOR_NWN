@@ -1,15 +1,15 @@
 using SWLOR.Component.Market.Entity;
 using SWLOR.Component.Market.Enums;
 using SWLOR.Component.Market.Service;
-using SWLOR.Component.Market.UI.Payload;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Domain.Entity;
+using SWLOR.Component.Market.UI.Payload;
+using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.UI.Contracts;
-using SWLOR.Shared.UI.Enums;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
 

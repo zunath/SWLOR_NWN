@@ -2,9 +2,9 @@ using SWLOR.Component.Communication.Contracts;
 using SWLOR.Component.Communication.Model;
 using SWLOR.Component.Communication.Service;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Domain.Enums;
 using SWLOR.Shared.UI.Contracts;
-using SWLOR.Shared.UI.Enums;
 
 namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
 {

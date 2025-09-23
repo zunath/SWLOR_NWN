@@ -2,6 +2,7 @@ using SWLOR.Component.Ability.Contracts;
 using SWLOR.Component.Ability.Model;
 using SWLOR.Component.StatusEffect.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Domain.Contracts;
 using SWLOR.Shared.Domain.Enums;
 using SWLOR.Shared.Domain.Model;
 

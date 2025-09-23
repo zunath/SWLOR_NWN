@@ -1,0 +1,60 @@
+using SWLOR.NWN.API.NWNX;
+using SWLOR.Shared.Events.Attributes;
+using SWLOR.Shared.Events.Events.NWNX;
+using SWLOR.Shared.Events.Events.Player;
+
+namespace SWLOR.Component.Character.Feature
+{
+    public static class SaveCharacters
+    {
+        private const string SaveCharactersVariable = "SAVE_CHARACTERS_TICK";
+        private const string IsBarteringVariable = "IS_BARTERING";
+
+        /// <summary>
+        /// Saves characters every minute unless they're currently preoccupied (barter)
+        /// </summary>
+        [ScriptHandler<OnPlayerHeartbeat>]
+        public static void HandleSaveCharacters()
+        {
+            var player = OBJECT_SELF;
+            var tick = GetLocalInt(player, SaveCharactersVariable) + 1;
+
+            if(tick >= 10)
+            {
+                if (!GetLocalBool(player, IsBarteringVariable))
+                {
+                    ExportSingleCharacter(player);
+                    tick = 0;
+                }
+            }
+
+            SetLocalInt(player, SaveCharactersVariable, tick);
+        }
+
+        /// <summary>
+        /// Marks players as bartering. This is used to ensure the PCs are not exported during this process.
+        /// </summary>
+        [ScriptHandler<OnBartenderStartBefore>]
+        public static void SetBarteringFlag()
+        {
+            var player1 = OBJECT_SELF;
+            var player2 = StringToObject(EventsPlugin.GetEventData("BARTER_TARGET"));
+
+            SetLocalBool(player1, IsBarteringVariable, true);
+            SetLocalBool(player2, IsBarteringVariable, true);
+        }
+
+        /// <summary>
+        /// Removes the bartering flag from PCs involved in a trade. This will ensure their files are exported on the next save occurrence.
+        /// </summary>
+        [ScriptHandler<OnBartenderEndBefore>]
+        public static void RemoveBarteringFlag()
+        {
+            var player1 = OBJECT_SELF;
+            var player2 = StringToObject(EventsPlugin.GetEventData("BARTER_TARGET"));
+
+            DeleteLocalBool(player1, IsBarteringVariable);
+            DeleteLocalBool(player2, IsBarteringVariable);
+        }
+    }
+}

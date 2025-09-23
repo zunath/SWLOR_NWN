@@ -1,7 +1,8 @@
 using System.Text.RegularExpressions;
 using SWLOR.Component.Market.UI.Payload;
+using SWLOR.Shared.Abstractions.Enums;
+using SWLOR.Shared.Domain.Model.Payload;
 using SWLOR.Shared.UI.Contracts;
-using SWLOR.Shared.UI.Enums;
 using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Component.Market.UI.ViewModel

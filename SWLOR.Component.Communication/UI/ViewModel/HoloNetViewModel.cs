@@ -1,12 +1,13 @@
 using System.Drawing;
+using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.UI.Contracts;
-using SWLOR.Shared.UI.Enums;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Component.Communication.UI.ViewModel
 {
-    public class HoloNetViewModel : GuiViewModelBase<HoloNetViewModel, GuiPayloadBase>
+    public class HoloNetViewModel : GuiViewModelBase<HoloNetViewModel, IGuiPayload>
     {
         public HoloNetViewModel(IGuiService guiService) : base(guiService)
         {
@@ -21,7 +22,7 @@ namespace SWLOR.Component.Communication.UI.ViewModel
         public const int MaxHoloNetTextLength = 600;
         public const int BroadcastPrice = 2500;
 
-        protected override void Initialize(GuiPayloadBase initialPayload)
+        protected override void Initialize(IGuiPayload initialPayload)
         {
             HoloNetText = string.Empty;
             WatchOnClient(model => model.HoloNetText);

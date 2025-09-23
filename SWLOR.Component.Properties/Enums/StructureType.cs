@@ -1,4 +1,6 @@
-﻿namespace SWLOR.Component.Properties.Enums
+﻿using SWLOR.Shared.Domain.Enums;
+
+namespace SWLOR.Component.Properties.Enums
 {
     public enum StructureType
     {

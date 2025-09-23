@@ -6,6 +6,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.Shared.Domain.Contracts;
 using SWLOR.Shared.Domain.Enums;
+using SWLOR.Shared.Domain.Model;
 
 namespace SWLOR.Component.Perk.Feature.PerkDefinition
 {

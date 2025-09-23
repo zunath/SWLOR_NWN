@@ -1,19 +1,17 @@
-using SWLOR.Component.Perk.Contracts;
 using SWLOR.Component.Skill.Contracts;
-using SWLOR.Component.Skill.Enums;
-using SWLOR.Component.Skill.UI.RefreshEvent;
-using SWLOR.Component.StatusEffect.Contracts;
+using SWLOR.Component.StatusEffect.Feature.StatusEffectDefinition.StatusEffectData;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.Domain.Contracts;
 using SWLOR.Shared.Domain.Entity;
 using SWLOR.Shared.Domain.Enums;
+using SWLOR.Shared.Domain.Model.RefreshEvent;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Service;
-using Player = SWLOR.Shared.Core.Data.Entity.Player;
 
 namespace SWLOR.Component.Skill.Service
 {

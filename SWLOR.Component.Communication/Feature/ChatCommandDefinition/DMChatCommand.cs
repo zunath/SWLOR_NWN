@@ -1,4 +1,5 @@
 using System.Drawing;
+using SWLOR.Component.Character.UI.RefreshEvent;
 using SWLOR.Component.Communication.Contracts;
 using SWLOR.Component.Communication.Model;
 using SWLOR.Component.Communication.Service;
@@ -7,11 +8,12 @@ using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Domain.Contracts;
+using SWLOR.Shared.Domain.Entity;
 using SWLOR.Shared.Domain.Enums;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.UI.Contracts;
-using SWLOR.Shared.UI.Enums;
 using SWLOR.Shared.UI.Service;
 using ChatChannel = SWLOR.NWN.API.NWNX.Enum.ChatChannel;
 

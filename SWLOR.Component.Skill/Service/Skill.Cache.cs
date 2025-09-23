@@ -1,4 +1,3 @@
-using SWLOR.Component.Skill.Enums;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Enums;

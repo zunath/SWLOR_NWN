@@ -1,5 +1,3 @@
-using SWLOR.Component.Perk.Contracts;
-using SWLOR.Component.StatusEffect.Contracts;
 using SWLOR.Shared.Domain.Contracts;
 
 namespace SWLOR.Component.AI.Model

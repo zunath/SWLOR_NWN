@@ -61,8 +61,8 @@ namespace SWLOR.Shared.Core.Async
 
             public QueuedTask(SendOrPostCallback callback, object state)
             {
-                this._callback = callback;
-                this._state = state;
+                _callback = callback;
+                _state = state;
             }
 
             public void Invoke()

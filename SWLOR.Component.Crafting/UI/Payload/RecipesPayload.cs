@@ -1,10 +1,9 @@
-using SWLOR.Component.Crafting.Enums;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Enums;
-using SWLOR.Shared.UI.Model;
 
 namespace SWLOR.Component.Crafting.UI.Payload
 {
-    public class RecipesPayload: GuiPayloadBase
+    public class RecipesPayload: IGuiPayload
     {
         public RecipesUIMode Mode { get; set; }
         public SkillType Skill { get; set; }

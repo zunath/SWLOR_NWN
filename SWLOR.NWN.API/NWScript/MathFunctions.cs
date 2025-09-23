@@ -337,7 +337,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The created vector</returns>
         public static Vector3 Vector3(float x = 0.0f, float y = 0.0f, float z = 0.0f)
         {
-            return global::NWN.Core.NWScript.Vector(x, y, z);
+            return Vector(x, y, z);
         }
 
         /// <summary>

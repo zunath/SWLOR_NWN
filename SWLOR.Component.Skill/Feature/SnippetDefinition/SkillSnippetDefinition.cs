@@ -1,9 +1,9 @@
-using SWLOR.Component.Skill.Enums;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Dialog.Contracts;
 using SWLOR.Shared.Dialog.Model;
 using SWLOR.Shared.Dialog.Service;
+using SWLOR.Shared.Domain.Entity;
 using SWLOR.Shared.Domain.Enums;
 
 namespace SWLOR.Component.Skill.Feature.SnippetDefinition

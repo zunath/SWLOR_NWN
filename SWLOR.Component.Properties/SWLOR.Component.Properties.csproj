@@ -22,6 +22,7 @@
 		<Folder Include="Delegates\" />
 		<Folder Include="EventHandlers\" />
 		<Folder Include="Infrastructure\" />
+		<Folder Include="UI\Payload\" />
 		<Folder Include="UI\RefreshEvent\" />
 	</ItemGroup>
 

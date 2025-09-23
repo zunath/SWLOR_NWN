@@ -3,13 +3,14 @@ using SWLOR.Component.Inventory.UI.RefreshEvent;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Infrastructure;
+using SWLOR.Shared.Domain.Entity;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Component.Inventory.UI.ViewModel
 {
-    public class KeyItemsViewModel: GuiViewModelBase<KeyItemsViewModel, GuiPayloadBase>,
+    public class KeyItemsViewModel: GuiViewModelBase<KeyItemsViewModel, IGuiPayload>,
         IGuiRefreshable<KeyItemReceivedRefreshEvent>
     {
         private readonly IKeyItemService _keyItemService;
@@ -48,7 +49,7 @@ namespace SWLOR.Component.Inventory.UI.ViewModel
             }
         }
 
-        protected override void Initialize(GuiPayloadBase initialPayload)
+        protected override void Initialize(IGuiPayload initialPayload)
         {
             SelectedCategoryId = 0;
             LoadKeyItems();

@@ -1,12 +1,13 @@
 using SWLOR.Component.Communication.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Component.Communication.UI.ViewModel
 {
-    public class EmotesViewModel: GuiViewModelBase<EmotesViewModel, GuiPayloadBase>
+    public class EmotesViewModel: GuiViewModelBase<EmotesViewModel, IGuiPayload>
     {
         private readonly IChatCommandService _chatCommandService;
 
@@ -41,7 +42,7 @@ namespace SWLOR.Component.Communication.UI.ViewModel
             set => Set(value);
         }
 
-        protected override void Initialize(GuiPayloadBase initialPayload)
+        protected override void Initialize(IGuiPayload initialPayload)
         {
             var emoteNames = _chatCommandService.EmoteNames;
             var emoteDescriptions = _chatCommandService.EmoteDescriptions;

@@ -3,6 +3,7 @@ using SWLOR.Component.StatusEffect.Model;
 using SWLOR.Component.StatusEffect.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Enums;
+using SWLOR.Shared.Domain.Model;
 
 namespace SWLOR.Component.StatusEffect.Feature.StatusEffectDefinition
 {

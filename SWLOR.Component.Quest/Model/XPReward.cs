@@ -2,6 +2,7 @@ using SWLOR.Component.Quest.Contracts;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.Domain.Entity;
 
 namespace SWLOR.Component.Quest.Model
 {

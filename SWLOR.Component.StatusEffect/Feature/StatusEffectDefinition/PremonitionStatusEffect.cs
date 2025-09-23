@@ -5,6 +5,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Domain.Contracts;
 using SWLOR.Shared.Domain.Enums;
+using SWLOR.Shared.Domain.Model;
 
 namespace SWLOR.Component.StatusEffect.Feature.StatusEffectDefinition
 {

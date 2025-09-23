@@ -1,16 +1,18 @@
 using System.Globalization;
+using SWLOR.Component.Character.UI.RefreshEvent;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Caching.Contracts;
+using SWLOR.Shared.Domain.Entity;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.UI.Contracts;
-using SWLOR.Shared.UI.Enums;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Component.Inventory.UI.ViewModel
 {
-    public class TrainingStoreViewModel: GuiViewModelBase<TrainingStoreViewModel, GuiPayloadBase>,
+    public class TrainingStoreViewModel: GuiViewModelBase<TrainingStoreViewModel, IGuiPayload>,
         IGuiRefreshable<RPXPRefreshEvent>
     {
         private readonly IDatabaseService _db;
@@ -112,7 +114,7 @@ namespace SWLOR.Component.Inventory.UI.ViewModel
             PriceTexts = priceTexts;
         }
 
-        protected override void Initialize(GuiPayloadBase initialPayload)
+        protected override void Initialize(IGuiPayload initialPayload)
         {
             LoadData();
         }

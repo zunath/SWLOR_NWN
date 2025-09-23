@@ -1,5 +1,6 @@
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.UI.Enums;
+using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.UI.Model;
 
 namespace SWLOR.Shared.UI.Contracts
@@ -75,7 +76,7 @@ namespace SWLOR.Shared.UI.Contracts
         void TogglePlayerWindow(
             uint player,
             GuiWindowType type,
-            GuiPayloadBase payload = null,
+            IGuiPayload payload = null,
             uint tetherObject = OBJECT_INVALID,
             uint uiTarget = OBJECT_INVALID);
 
@@ -89,12 +90,6 @@ namespace SWLOR.Shared.UI.Contracts
         /// <param name="payload">The refresh payload.</param>
         void PublishRefreshEvent<T>(uint player, T payload)
             where T : IGuiRefreshEvent;
-
-        /// <summary>
-        /// Skips the default NWN window open events and shows the SWLOR windows instead.
-        /// Applies to the Journal and Character Sheet.
-        /// </summary>
-        void ReplaceNWNGuis();
 
         /// <summary>
         /// Retrieves the window instance of a player's window.
@@ -151,8 +146,5 @@ namespace SWLOR.Shared.UI.Contracts
         /// <param name="windowWidth">The width of the window.</param>
         /// <returns>The X coordinate to place a string so that it will be in the center of the window.</returns>
         int CenterStringInWindow(string text, int windowX, int windowWidth);
-
-        void RefreshOnEquip();
-        void RefreshOnUnequip();
     }
 }

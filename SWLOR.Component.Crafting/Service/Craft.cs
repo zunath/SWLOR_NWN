@@ -1,7 +1,6 @@
 using SWLOR.Component.Crafting.Contracts;
 using SWLOR.Component.Crafting.Enums;
 using SWLOR.Component.Crafting.Model;
-using SWLOR.Component.Crafting.UI.Payload;
 using SWLOR.Component.Perk.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
@@ -13,11 +12,13 @@ using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data;
+using SWLOR.Shared.Domain.Contracts;
 using SWLOR.Shared.Domain.Enums;
+using SWLOR.Component.Crafting.UI.Payload;
+using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.UI.Contracts;
-using SWLOR.Shared.UI.Enums;
 using SWLOR.Shared.UI.Model;
 using ResearchJob = SWLOR.Component.Crafting.Entity.ResearchJob;
 

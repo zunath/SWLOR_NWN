@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
@@ -11,10 +12,7 @@ using SWLOR.Shared.Events.Events.Player;
 using SWLOR.Shared.UI.Component;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Entity;
-using SWLOR.Shared.UI.Enums;
 using SWLOR.Shared.UI.Model;
-using SWLOR.Shared.UI.Model.Payload;
-using SWLOR.Shared.UI.Model.RefreshEvent;
 
 namespace SWLOR.Shared.UI.Service
 {
@@ -328,7 +326,7 @@ namespace SWLOR.Shared.UI.Service
         public void TogglePlayerWindow(
             uint player,
             GuiWindowType type,
-            GuiPayloadBase payload = null,
+            IGuiPayload payload = null,
             uint tetherObject = OBJECT_INVALID,
             uint uiTarget = OBJECT_INVALID)
         {
@@ -384,40 +382,6 @@ namespace SWLOR.Shared.UI.Service
 
                 if(NuiFindWindow(player, windowId) != 0)
                     ((IGuiRefreshable<T>)playerWindow.ViewModel).Refresh(payload);
-            }
-        }
-
-        /// <summary>
-        /// Skips the default NWN window open events and shows the SWLOR windows instead.
-        /// Applies to the Journal and Character Sheet.
-        /// </summary>
-        [ScriptHandler<OnModuleGuiEvent>]
-        public void ReplaceNWNGuis()
-        {
-            var player = GetLastGuiEventPlayer();
-            var type = GetLastGuiEventType();
-            if (type != GuiEventType.DisabledPanelAttemptOpen) return;
-            var target = GetLastGuiEventObject();
-
-            var panelType = (GuiPanel)GetLastGuiEventInteger();
-            if (panelType == GuiPanel.CharacterSheet)
-            {
-                // Player character sheet
-                if (target == player)
-                {
-                    var payload = new CharacterSheetPayload(player, true);
-                    TogglePlayerWindow(player, GuiWindowType.CharacterSheet, payload);
-                }
-                // Associate character sheet (droid, pet, etc.)
-                else if(GetMaster(target) == player)
-                {
-                    var payload = new CharacterSheetPayload(target, false);
-                    TogglePlayerWindow(player, GuiWindowType.CharacterSheet, payload);
-                }
-            }
-            else if (panelType == GuiPanel.Journal)
-            {
-                TogglePlayerWindow(player, GuiWindowType.Quests);
             }
         }
 
@@ -576,26 +540,6 @@ namespace SWLOR.Shared.UI.Service
         public int CenterStringInWindow(string text, int windowX, int windowWidth)
         {
             return (windowX + (windowWidth / 2)) - ((text.Length + 2) / 2);
-        }
-
-        [ScriptHandler<OnModuleEquip>]
-        public void RefreshOnEquip()
-        {
-            var player = GetPCItemLastEquippedBy();
-            if (!GetIsPC(player))
-                return;
-
-            DelayCommand(0.1f, () => PublishRefreshEvent(player, new EquipItemRefreshEvent()));
-        }
-
-        [ScriptHandler<OnModuleUnequip>]
-        public void RefreshOnUnequip()
-        {
-            var player = GetPCItemLastUnequippedBy();
-            if (!GetIsPC(player))
-                return;
-
-            DelayCommand(0.1f, () => PublishRefreshEvent(player, new UnequipItemRefreshEvent()));
         }
 
         /// <summary>

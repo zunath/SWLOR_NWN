@@ -274,7 +274,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>On SWLOR, this is used for Accuracy.</remarks>
         public static Effect EffectAccuracyIncrease(int nBonus, AttackBonus nModifierType = AttackBonus.Misc)
         {
-            return global::NWN.Core.NWScript.EffectAttackIncrease(nBonus, (int)nModifierType);
+            return EffectAttackIncrease(nBonus, (int)nModifierType);
         }
 
         /// <summary>
@@ -813,7 +813,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>On SWLOR, this is used for Accuracy.</remarks>
         public static Effect EffectAccuracyDecrease(int nPenalty, AttackBonus nModifierType = AttackBonus.Misc)
         {
-            return global::NWN.Core.NWScript.EffectAttackDecrease(nPenalty, (int)nModifierType);
+            return EffectAttackDecrease(nPenalty, (int)nModifierType);
         }
 
         /// <summary>

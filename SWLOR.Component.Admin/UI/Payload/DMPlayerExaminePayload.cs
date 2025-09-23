@@ -1,8 +1,8 @@
-using SWLOR.Shared.UI.Model;
+using SWLOR.Shared.Abstractions.Contracts;
 
 namespace SWLOR.Component.Admin.UI.Payload
 {
-    public class DMPlayerExaminePayload: GuiPayloadBase
+    public class DMPlayerExaminePayload: IGuiPayload
     {
         public uint Target { get; set; }
 

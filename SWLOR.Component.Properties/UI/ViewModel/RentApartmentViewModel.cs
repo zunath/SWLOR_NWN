@@ -2,16 +2,17 @@ using SWLOR.Component.Properties.Entity;
 using SWLOR.Component.Properties.Enums;
 using SWLOR.Component.Properties.Service;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Domain.Entity;
+using SWLOR.Shared.Domain.Enums;
 using SWLOR.Shared.UI.Contracts;
-using SWLOR.Shared.UI.Enums;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Component.Properties.UI.ViewModel
 {
-    public class RentApartmentViewModel: GuiViewModelBase<RentApartmentViewModel, GuiPayloadBase>
+    public class RentApartmentViewModel: GuiViewModelBase<RentApartmentViewModel, IGuiPayload>
     {
         private readonly IDatabaseService _db;
         private readonly Property _property;
@@ -92,7 +93,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
             return dbApartment == null;
         }
 
-        protected override void Initialize(GuiPayloadBase initialPayload)
+        protected override void Initialize(IGuiPayload initialPayload)
         {
             SelectedLayout = -1;
             IsRentApartmentEnabled = CanRentApartment();

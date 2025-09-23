@@ -1,7 +1,7 @@
+using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.UI.Contracts;
-using SWLOR.Shared.UI.Enums;
 
 namespace SWLOR.Component.World.Feature
 {

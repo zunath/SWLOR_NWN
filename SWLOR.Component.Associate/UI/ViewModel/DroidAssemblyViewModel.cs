@@ -5,8 +5,10 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.Domain.Contracts;
 using SWLOR.Shared.Domain.Enums;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
@@ -14,7 +16,7 @@ using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Component.Associate.UI.ViewModel
 {
-    public class DroidAssemblyViewModel : GuiViewModelBase<DroidAssemblyViewModel, GuiPayloadBase>
+    public class DroidAssemblyViewModel : GuiViewModelBase<DroidAssemblyViewModel, IGuiPayload>
     {
         private readonly IPerkService _perkService;
         private readonly IItemService _itemService;
@@ -204,7 +206,7 @@ namespace SWLOR.Component.Associate.UI.ViewModel
         }
 
 
-        protected override void Initialize(GuiPayloadBase initialPayload)
+        protected override void Initialize(IGuiPayload initialPayload)
         {
             Reset();
 

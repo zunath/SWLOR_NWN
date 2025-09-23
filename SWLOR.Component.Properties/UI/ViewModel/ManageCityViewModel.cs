@@ -2,18 +2,19 @@ using SWLOR.Component.Properties.Entity;
 using SWLOR.Component.Properties.Enums;
 using SWLOR.Component.Properties.Service;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Domain.Entity;
 using SWLOR.Shared.Domain.Enums;
+using SWLOR.Shared.Domain.Model.Payload;
 using SWLOR.Shared.UI.Contracts;
-using SWLOR.Shared.UI.Enums;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Component.Properties.UI.ViewModel
 {
-    public class ManageCityViewModel : GuiViewModelBase<ManageCityViewModel, GuiPayloadBase>, IGuiAcceptsPriceChange
+    public class ManageCityViewModel : GuiViewModelBase<ManageCityViewModel, IGuiPayload>, IGuiAcceptsPriceChange
     {
         private readonly ILogger _logger;
         private readonly IDatabaseService _db;
@@ -203,7 +204,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
             set => Set(value);
         }
 
-        protected override void Initialize(GuiPayloadBase initialPayload)
+        protected override void Initialize(IGuiPayload initialPayload)
         {
             var area = GetArea(TetherObject);
             var propertyId = _property.GetPropertyId(area);

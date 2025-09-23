@@ -282,7 +282,7 @@ namespace SWLOR.Game.Server.Server
                             attr.GetType().GetGenericTypeDefinition() == typeof(ScriptHandlerAttribute<>));
         }
 
-        private System.Collections.Generic.IEnumerable<Attribute> GetEventHandlerAttributes(MethodInfo method)
+        private IEnumerable<Attribute> GetEventHandlerAttributes(MethodInfo method)
         {
             return method.GetCustomAttributes()
                 .Where(attr => attr.GetType().IsGenericType &&

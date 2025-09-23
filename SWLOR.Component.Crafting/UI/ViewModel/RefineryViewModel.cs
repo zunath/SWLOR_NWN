@@ -1,8 +1,10 @@
 using SWLOR.Component.Perk.Contracts;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.Domain.Contracts;
 using SWLOR.Shared.Domain.Enums;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
@@ -10,7 +12,7 @@ using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Component.Crafting.UI.ViewModel
 {
-    public class RefineryViewModel: GuiViewModelBase<RefineryViewModel, GuiPayloadBase>
+    public class RefineryViewModel: GuiViewModelBase<RefineryViewModel, IGuiPayload>
     {
         private readonly IItemCacheService _itemCache;
         private readonly IPerkService _perkService;
@@ -122,7 +124,7 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
             set => Set(value);
         }
 
-        protected override void Initialize(GuiPayloadBase initialPayload)
+        protected override void Initialize(IGuiPayload initialPayload)
         {
             IsCloseEnabled = true;
             _isRefining = false;

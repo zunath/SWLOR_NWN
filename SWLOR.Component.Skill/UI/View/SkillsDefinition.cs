@@ -1,7 +1,8 @@
+using SWLOR.Component.Skill.Contracts;
 using SWLOR.Component.Skill.UI.ViewModel;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.UI.Contracts;
-using SWLOR.Shared.UI.Enums;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
 
@@ -10,11 +11,15 @@ namespace SWLOR.Component.Skill.UI.View
     public class SkillsDefinition: IGuiWindowDefinition
     {
         private readonly IGuiService _guiService;
+        private readonly ISkillService _skillService;
         private readonly GuiWindowBuilder<SkillsViewModel> _builder;
 
-        public SkillsDefinition(IGuiService guiService)
+        public SkillsDefinition(
+            IGuiService guiService,
+            ISkillService skillService)
         {
             _guiService = guiService;
+            _skillService = skillService;
             _builder = new GuiWindowBuilder<SkillsViewModel>(_guiService);
         }
 

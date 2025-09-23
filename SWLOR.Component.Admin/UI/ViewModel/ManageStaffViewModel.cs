@@ -10,7 +10,7 @@ using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Component.Admin.UI.ViewModel
 {
-    public class ManageStaffViewModel: GuiViewModelBase<ManageStaffViewModel, GuiPayloadBase>
+    public class ManageStaffViewModel: GuiViewModelBase<ManageStaffViewModel, IGuiPayload>
     {
         private readonly ILogger _logger;
         private readonly IDatabaseService _db;
@@ -78,7 +78,7 @@ namespace SWLOR.Component.Admin.UI.ViewModel
             set => Set(value);
         }
 
-        protected override void Initialize(GuiPayloadBase initialPayload)
+        protected override void Initialize(IGuiPayload initialPayload)
         {
             SelectedUserIndex = -1;
             ActiveUserCDKey = string.Empty;

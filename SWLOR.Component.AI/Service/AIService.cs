@@ -1,9 +1,6 @@
 using SWLOR.Component.AI.Contracts;
 using SWLOR.Component.AI.Enums;
 using SWLOR.Component.AI.Model;
-using SWLOR.Component.Perk.Contracts;
-using SWLOR.Component.Player.Contracts;
-using SWLOR.Component.StatusEffect.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Core.Contracts;

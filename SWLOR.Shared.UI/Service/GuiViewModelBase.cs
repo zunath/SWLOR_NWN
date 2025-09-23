@@ -2,18 +2,18 @@
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Properties;
 using SWLOR.Shared.UI.Component;
 using SWLOR.Shared.UI.Contracts;
-using SWLOR.Shared.UI.Enums;
 using SWLOR.Shared.UI.Model;
 
 namespace SWLOR.Shared.UI.Service
 {
     public abstract class GuiViewModelBase<TDerived, TPayload>: IGuiViewModel, INotifyPropertyChanged
         where TDerived: GuiViewModelBase<TDerived, TPayload>
-        where TPayload: GuiPayloadBase
+        where TPayload: IGuiPayload
     {
         protected readonly IGuiService _guiService;
         
@@ -236,7 +236,7 @@ namespace SWLOR.Shared.UI.Service
             int windowToken, 
             GuiRectangle initialGeometry, 
             GuiWindowType type,
-            GuiPayloadBase payload,
+            IGuiPayload payload,
             uint tetherObject)
         {
             Player = player;

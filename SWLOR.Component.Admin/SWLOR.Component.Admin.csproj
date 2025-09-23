@@ -26,6 +26,8 @@
 		<Folder Include="EventHandlers\" />
 		<Folder Include="Model\" />
 		<Folder Include="Infrastructure\" />
+		<Folder Include="UI\Payload\" />
+		<Folder Include="UI\RefreshEvent\" />
 	</ItemGroup>
 
 </Project>

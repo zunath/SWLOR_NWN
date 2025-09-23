@@ -1,8 +1,8 @@
-using SWLOR.Shared.UI.Model;
+using SWLOR.Shared.Abstractions.Contracts;
 
 namespace SWLOR.Component.Properties.UI.Payload
 {
-    public class ManageApartmentPayload: GuiPayloadBase
+    public class ManageApartmentPayload: IGuiPayload
     {
         public string SpecificPropertyId { get; set; }
 

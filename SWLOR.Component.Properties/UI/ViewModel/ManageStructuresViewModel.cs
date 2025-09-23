@@ -2,21 +2,23 @@ using System.Numerics;
 using SWLOR.Component.Properties.Entity;
 using SWLOR.Component.Properties.Enums;
 using SWLOR.Component.Properties.Service;
-using SWLOR.Component.Properties.UI.Payload;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Domain.Entity;
+using SWLOR.Component.Properties.UI.Payload;
+using SWLOR.Shared.Abstractions.Enums;
+using SWLOR.Shared.Domain.Enums;
+using SWLOR.Shared.Domain.Model.Payload;
 using SWLOR.Shared.UI.Component;
 using SWLOR.Shared.UI.Contracts;
-using SWLOR.Shared.UI.Enums;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Component.Properties.UI.ViewModel
 {
-    public class ManageStructuresViewModel: GuiViewModelBase<ManageStructuresViewModel, GuiPayloadBase>
+    public class ManageStructuresViewModel: GuiViewModelBase<ManageStructuresViewModel, IGuiPayload>
     {
         private readonly IDatabaseService _db;
         private readonly Property _property;
@@ -235,7 +237,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
                                    (permissions.Count > 0 || canEditCategories);
         }
 
-        protected override void Initialize(GuiPayloadBase initialPayload)
+        protected override void Initialize(IGuiPayload initialPayload)
         {
             _skipPaginationSearch = true;
             Instructions = string.Empty;

@@ -1,4 +1,4 @@
-namespace SWLOR.Component.Perk.Contracts
+namespace SWLOR.Shared.Domain.Contracts
 {
     public interface IPerkRequirement
     {

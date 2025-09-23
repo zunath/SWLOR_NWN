@@ -2,7 +2,6 @@ using SWLOR.Component.Associate.Contracts;
 using SWLOR.Component.Associate.Entity;
 using SWLOR.Component.Associate.Enums;
 using SWLOR.Component.Associate.Model;
-using SWLOR.Component.Associate.UI.Payload;
 using SWLOR.Component.Associate.UI.RefreshEvent;
 using SWLOR.Component.Perk.Contracts;
 using SWLOR.Component.Player.Contracts;
@@ -19,12 +18,13 @@ using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Domain.Contracts;
 using SWLOR.Shared.Domain.Entity;
 using SWLOR.Shared.Domain.Enums;
+using SWLOR.Component.Associate.UI.Payload;
+using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.UI.Contracts;
-using SWLOR.Shared.UI.Enums;
 using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Component.Associate.Service

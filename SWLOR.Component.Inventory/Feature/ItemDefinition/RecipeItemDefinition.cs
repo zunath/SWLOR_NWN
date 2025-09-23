@@ -5,6 +5,8 @@ using SWLOR.Component.Perk.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Caching.Contracts;
+using SWLOR.Shared.Domain.Contracts;
+using SWLOR.Shared.Domain.Entity;
 using SWLOR.Shared.Domain.Enums;
 
 namespace SWLOR.Component.Inventory.Feature.ItemDefinition

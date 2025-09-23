@@ -4,6 +4,7 @@ using SWLOR.Component.Migration.Model;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
+using SWLOR.Shared.Domain.Entity;
 
 namespace SWLOR.Component.Migration.Feature.ServerMigration
 {

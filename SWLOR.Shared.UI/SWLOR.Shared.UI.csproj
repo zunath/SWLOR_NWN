@@ -14,4 +14,8 @@
 		<ProjectReference Include="..\SWLOR.Shared.Events\SWLOR.Shared.Events.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Enums\" />
+	</ItemGroup>
+
 </Project>

@@ -1,6 +1,7 @@
 using SWLOR.Component.Perk.Enums;
 using SWLOR.Component.Perk.Model;
 using SWLOR.Shared.Domain.Enums;
+using SWLOR.Shared.Domain.Model;
 
 namespace SWLOR.Component.Perk.Contracts
 {

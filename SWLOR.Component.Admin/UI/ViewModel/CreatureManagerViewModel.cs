@@ -14,7 +14,7 @@ using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Component.Admin.UI.ViewModel
 {
-    public class CreatureManagerViewModel: GuiViewModelBase<CreatureManagerViewModel, GuiPayloadBase>
+    public class CreatureManagerViewModel: GuiViewModelBase<CreatureManagerViewModel, IGuiPayload>
     {
         private readonly IDatabaseService _db;
         private readonly ITargetingService _targetingService;
@@ -65,7 +65,7 @@ namespace SWLOR.Component.Admin.UI.ViewModel
             set => Set(value);
         }
 
-        protected override void Initialize(GuiPayloadBase initialPayload)
+        protected override void Initialize(IGuiPayload initialPayload)
         {   
             SearchText = string.Empty;
             Search();

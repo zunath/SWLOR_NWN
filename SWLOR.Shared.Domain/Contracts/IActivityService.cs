@@ -1,6 +1,6 @@
-using SWLOR.Component.Player.Enums;
+using SWLOR.Shared.Domain.Enums;
 
-namespace SWLOR.Component.Player.Contracts
+namespace SWLOR.Shared.Domain.Contracts
 {
     public interface IActivityService
     {

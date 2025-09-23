@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Inventory.Contracts;
+using SWLOR.Component.Inventory.EventHandlers;
 using SWLOR.Component.Inventory.Service;
-using SWLOR.Shared.Core.Contracts;
 
 namespace SWLOR.Component.Inventory.Infrastructure
 {
@@ -18,7 +18,8 @@ namespace SWLOR.Component.Inventory.Infrastructure
         public static IServiceCollection AddInventoryServices(this IServiceCollection services)
         {
             services.AddSingleton<IKeyItemService, KeyItemService>();
-            
+            services.AddSingleton<InventoryEventHandlers>();
+
             return services;
         }
     }

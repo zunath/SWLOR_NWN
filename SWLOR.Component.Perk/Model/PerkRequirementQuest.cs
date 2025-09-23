@@ -1,5 +1,7 @@
 using SWLOR.Component.Perk.Contracts;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Domain.Contracts;
+using SWLOR.Shared.Domain.Entity;
 
 namespace SWLOR.Component.Perk.Model
 {

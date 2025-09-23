@@ -1,5 +1,6 @@
-﻿using SWLOR.Shared.UI.Component;
-using SWLOR.Shared.UI.Enums;
+﻿using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Abstractions.Enums;
+using SWLOR.Shared.UI.Component;
 using SWLOR.Shared.UI.Model;
 
 namespace SWLOR.Shared.UI.Contracts
@@ -31,7 +32,7 @@ namespace SWLOR.Shared.UI.Contracts
             int windowToken, 
             GuiRectangle initialGeometry, 
             GuiWindowType type, 
-            GuiPayloadBase payload,
+            IGuiPayload payload,
             uint tetherObject);
 
         /// <summary>

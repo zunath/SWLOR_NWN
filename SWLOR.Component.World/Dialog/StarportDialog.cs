@@ -2,13 +2,14 @@ using SWLOR.Component.World.Contracts;
 using SWLOR.Component.World.Enums;
 using SWLOR.Component.World.Service;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Dialog.Contracts;
 using SWLOR.Shared.Dialog.Model;
 using SWLOR.Shared.Dialog.Service;
 using SWLOR.Shared.Domain.Enums;
+using SWLOR.Shared.Domain.Model.Payload;
 using SWLOR.Shared.UI.Contracts;
-using SWLOR.Shared.UI.Enums;
 using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Component.World.Dialog

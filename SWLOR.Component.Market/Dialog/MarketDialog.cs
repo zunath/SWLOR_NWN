@@ -1,13 +1,13 @@
 using SWLOR.Component.Market.Enums;
 using SWLOR.Component.Market.Service;
-using SWLOR.Component.Market.UI.Payload;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Dialog.Contracts;
 using SWLOR.Shared.Dialog.Model;
 using SWLOR.Shared.Dialog.Service;
+using SWLOR.Component.Market.UI.Payload;
+using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.UI.Contracts;
-using SWLOR.Shared.UI.Enums;
 using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Component.Market.Dialog

@@ -5,13 +5,15 @@ using SWLOR.Component.Quest.Service;
 using SWLOR.Component.Quest.UI.RefreshEvent;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.Domain.Contracts;
+using SWLOR.Shared.Domain.Entity;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Component.Quest.UI.ViewModel
 {
-    public class QuestsViewModel: GuiViewModelBase<QuestsViewModel, GuiPayloadBase>,
+    public class QuestsViewModel: GuiViewModelBase<QuestsViewModel, IGuiPayload>,
         IGuiRefreshable<QuestAcquiredRefreshEvent>,
         IGuiRefreshable<QuestProgressedRefreshEvent>,
         IGuiRefreshable<QuestCompletedRefreshEvent>
@@ -146,7 +148,7 @@ namespace SWLOR.Component.Quest.UI.ViewModel
             LoadQuest();
         }
 
-        protected override void Initialize(GuiPayloadBase initialPayload)
+        protected override void Initialize(IGuiPayload initialPayload)
         {
             SearchText = string.Empty;
             SelectedQuestIndex = -1;

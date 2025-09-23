@@ -1,4 +1,4 @@
-namespace SWLOR.Component.Perk.Enums
+namespace SWLOR.Shared.Domain.Enums
 {
     public enum PerkCategoryType
     {

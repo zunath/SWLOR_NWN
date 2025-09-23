@@ -1,22 +1,24 @@
 using SWLOR.Component.Properties.Contracts;
 using SWLOR.Component.Properties.Entity;
 using SWLOR.Component.Properties.Enums;
-using SWLOR.Component.Properties.UI.Payload;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Domain.Entity;
+using SWLOR.Component.Properties.UI.Payload;
+using SWLOR.Shared.Abstractions.Enums;
+using SWLOR.Shared.Domain.Enums;
+using SWLOR.Shared.Domain.Model.Payload;
 using SWLOR.Shared.UI.Component;
 using SWLOR.Shared.UI.Contracts;
-using SWLOR.Shared.UI.Enums;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Component.Properties.UI.ViewModel
 {
-    public class PropertyItemStorageViewModel: GuiViewModelBase<PropertyItemStorageViewModel, GuiPayloadBase>
+    public class PropertyItemStorageViewModel: GuiViewModelBase<PropertyItemStorageViewModel, IGuiPayload>
     {
         private readonly IDatabaseService _db;
         private readonly IItemService _itemService;
@@ -195,7 +197,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
             ItemCount = $"Items: {current} / {max}";
         }
 
-        protected override void Initialize(GuiPayloadBase initialPayload)
+        protected override void Initialize(IGuiPayload initialPayload)
         {
             Instructions = string.Empty;
             CategoryName = string.Empty;

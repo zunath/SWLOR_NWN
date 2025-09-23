@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using NWN.Core;
 using SWLOR.Component.Ability.Contracts;
@@ -223,7 +224,7 @@ namespace SWLOR.Game.Server
             services.AddSingleton<DestroyItemDialog>();
             services.AddSingleton<CoxxionTerminalDialog>();
             services.AddSingleton<MarketDialog>();
-            services.AddSingleton<Component.World.Dialog.TaxiTerminalDialog>();
+            services.AddSingleton<TaxiTerminalDialog>();
             services.AddSingleton<QuestRewardSelectionDialog>();
             services.AddSingleton<XPTomeDialog>();
             services.AddSingleton<HoloComDialog>();

@@ -1,15 +1,17 @@
 using SWLOR.Component.Crafting.Enums;
 using SWLOR.Component.Crafting.Model;
 using SWLOR.Component.Crafting.Service;
-using SWLOR.Component.Crafting.UI.Payload;
 using SWLOR.Component.Perk.Contracts;
+using SWLOR.Component.Perk.UI.RefreshEvent;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.Domain.Contracts;
 using SWLOR.Shared.Domain.Enums;
+using SWLOR.Component.Crafting.UI.Payload;
+using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.UI.Component;
 using SWLOR.Shared.UI.Contracts;
-using SWLOR.Shared.UI.Enums;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
 

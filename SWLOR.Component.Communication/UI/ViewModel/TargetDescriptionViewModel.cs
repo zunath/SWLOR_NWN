@@ -1,6 +1,6 @@
 using SWLOR.Component.Communication.UI.Payload;
+using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.UI.Contracts;
-using SWLOR.Shared.UI.Enums;
 using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Component.Communication.UI.ViewModel

@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Component.Skill.Enums
+﻿namespace SWLOR.Shared.Domain.Enums
 {
     public enum SkillCategoryType
     {

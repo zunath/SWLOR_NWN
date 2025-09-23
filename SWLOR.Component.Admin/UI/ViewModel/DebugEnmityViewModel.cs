@@ -1,5 +1,6 @@
 using SWLOR.Component.Admin.UI.RefreshEvent;
 using SWLOR.Component.Player.Contracts;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
@@ -9,7 +10,7 @@ using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Component.Admin.UI.ViewModel
 {
-    public class DebugEnmityViewModel: GuiViewModelBase<DebugEnmityViewModel, GuiPayloadBase>,
+    public class DebugEnmityViewModel: GuiViewModelBase<DebugEnmityViewModel, IGuiPayload>,
         IGuiRefreshable<EnmityChangedRefreshEvent>
     {
         private readonly IPartyService _partyService;
@@ -54,7 +55,7 @@ namespace SWLOR.Component.Admin.UI.ViewModel
             EnmityDetails = enmityDetails;
         }
 
-        protected override void Initialize(GuiPayloadBase initialPayload)
+        protected override void Initialize(IGuiPayload initialPayload)
         {
             RefreshData();
         }

@@ -1,9 +1,8 @@
-using SWLOR.Component.Market.Enums;
-using SWLOR.Shared.UI.Model;
+using SWLOR.Shared.Abstractions.Contracts;
 
 namespace SWLOR.Component.Market.UI.Payload
 {
-    public class MarketPayload: GuiPayloadBase
+    public class MarketPayload: IGuiPayload
     {
         public MarketRegionType RegionType { get; set; }
 

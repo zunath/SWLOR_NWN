@@ -3,13 +3,12 @@ using System.Globalization;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.UI.Contracts;
-using SWLOR.Shared.UI.Enums;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Component.Communication.UI.ViewModel
 {
-    public class BugReportViewModel: GuiViewModelBase<BugReportViewModel, GuiPayloadBase>
+    public class BugReportViewModel: GuiViewModelBase<BugReportViewModel, IGuiPayload>
     {
         private readonly IAppSettings _appSettings;
 
@@ -20,7 +19,7 @@ namespace SWLOR.Component.Communication.UI.ViewModel
 
         public const int MaxBugReportLength = 1000;
 
-        protected override void Initialize(GuiPayloadBase initialPayload)
+        protected override void Initialize(IGuiPayload initialPayload)
         {
             BugReportText = string.Empty;
             WatchOnClient(model => model.BugReportText);

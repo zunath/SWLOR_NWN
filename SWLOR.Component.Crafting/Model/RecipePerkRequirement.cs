@@ -1,7 +1,9 @@
 using SWLOR.Component.Crafting.Contracts;
 using SWLOR.Component.Perk.Contracts;
 using SWLOR.Component.Perk.Model;
+using SWLOR.Shared.Domain.Contracts;
 using SWLOR.Shared.Domain.Enums;
+using SWLOR.Shared.Domain.Model;
 
 namespace SWLOR.Component.Crafting.Model
 {

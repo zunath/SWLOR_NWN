@@ -2,16 +2,16 @@ using SWLOR.Component.Properties.Entity;
 using SWLOR.Component.Properties.Enums;
 using SWLOR.Component.Properties.Service;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Domain.Entity;
 using SWLOR.Shared.UI.Contracts;
-using SWLOR.Shared.UI.Enums;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Component.Properties.UI.ViewModel
 {
-    public class ElectionViewModel: GuiViewModelBase<ElectionViewModel, GuiPayloadBase>
+    public class ElectionViewModel: GuiViewModelBase<ElectionViewModel, IGuiPayload>
     {
         private readonly IDatabaseService _db;
         private readonly Property _property;
@@ -62,7 +62,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
             set => Set(value);
         }
 
-        protected override void Initialize(GuiPayloadBase initialPayload)
+        protected override void Initialize(IGuiPayload initialPayload)
         {
             var cdKey = GetPCPublicCDKey(Player);
             var playerId = GetObjectUUID(Player);

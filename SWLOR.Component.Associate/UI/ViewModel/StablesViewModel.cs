@@ -18,7 +18,7 @@ using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Component.Associate.UI.ViewModel
 {
-    internal class StablesViewModel : GuiViewModelBase<StablesViewModel, GuiPayloadBase>
+    internal class StablesViewModel : GuiViewModelBase<StablesViewModel, IGuiPayload>
     {
         private readonly IDatabaseService _db;
         private readonly IStatService _statService;
@@ -340,7 +340,7 @@ namespace SWLOR.Component.Associate.UI.ViewModel
             set => Set(value);
         }
 
-        protected override void Initialize(GuiPayloadBase initialPayload)
+        protected override void Initialize(IGuiPayload initialPayload)
         {
             _selectedBeastIndex = -1;
             IsBeastSelected = false;

@@ -1,8 +1,7 @@
-﻿using SWLOR.Component.Perk.Enums;
-using SWLOR.NWN.API.NWScript.Enum;
+﻿using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Enums;
 
-namespace SWLOR.Component.Perk.Delegates
+namespace SWLOR.Shared.Domain.Delegates
 {
     public delegate string PerkPurchaseRequirementAction(uint player);
     public delegate string PerkRefundRequirementAction(uint player);

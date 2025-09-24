@@ -7,7 +7,12 @@ namespace SWLOR.Component.World.Feature.SpawnDefinition
 {
     public class HutlarResourceSpawnDefinition: ISpawnListDefinition
     {
-        private readonly SpawnTableBuilder _builder = new();
+        private readonly ISpawnTableBuilder _builder;
+
+        public HutlarResourceSpawnDefinition(ISpawnTableBuilder spawnTableBuilder)
+        {
+            _builder = spawnTableBuilder;
+        }
         public Dictionary<string, SpawnTable> BuildSpawnTables()
         {
             QionTundra();

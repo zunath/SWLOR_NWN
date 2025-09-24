@@ -18,6 +18,7 @@ namespace SWLOR.Component.World.Infrastructure
         {
             services.AddSingleton<ITileMagicService, TileMagicService>();
             services.AddSingleton<ITaxiService, Taxi>();
+            services.AddSingleton<ISpawnTableBuilder, SpawnTableBuilder>();
 
             return services;
         }

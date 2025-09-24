@@ -7,7 +7,12 @@ namespace SWLOR.Component.World.Feature.SpawnDefinition
 {
     public class MonCalaResourceSpawnDefinition: ISpawnListDefinition
     {
-        private readonly SpawnTableBuilder _builder = new();
+        private readonly ISpawnTableBuilder _builder;
+
+        public MonCalaResourceSpawnDefinition(ISpawnTableBuilder spawnTableBuilder)
+        {
+            _builder = spawnTableBuilder;
+        }
 
         public Dictionary<string, SpawnTable> BuildSpawnTables()
         {

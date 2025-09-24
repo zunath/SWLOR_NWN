@@ -7,35 +7,41 @@ namespace SWLOR.Component.World.Feature.SpawnDefinition
 {
     public class CZ220ResourceSpawnDefinition: ISpawnListDefinition
     {
-        public Dictionary<string, SpawnTable> BuildSpawnTables()
-        {
-            var builder = new SpawnTableBuilder();
-            JunkPiles(builder);
-            Caches(builder);
-            OreVeins(builder);
+        private readonly ISpawnTableBuilder _builder;
 
-            return builder.Build();
+        public CZ220ResourceSpawnDefinition(ISpawnTableBuilder spawnTableBuilder)
+        {
+            _builder = spawnTableBuilder;
         }
 
-        private void JunkPiles(SpawnTableBuilder builder)
+        public Dictionary<string, SpawnTable> BuildSpawnTables()
         {
-            builder.Create("CZ220_JUNKPILES")
+            JunkPiles();
+            Caches();
+            OreVeins();
+
+            return _builder.Build();
+        }
+
+        private void JunkPiles()
+        {
+            _builder.Create("CZ220_JUNKPILES")
                 .ResourceDespawnDelay(90) // 1.5 hours for space station junk
                 .AddSpawn(ObjectType.Placeable, "cz220_junk")
                 .WithFrequency(50);
         }
 
-        private void Caches(SpawnTableBuilder builder)
+        private void Caches()
         {
-            builder.Create("CZ220_CACHES")
+            _builder.Create("CZ220_CACHES")
                 .ResourceDespawnDelay(120) // 2 hours for valuable caches
                 .AddSpawn(ObjectType.Placeable, "cz220_cache")
                 .WithFrequency(50);
         }
 
-        private void OreVeins(SpawnTableBuilder builder)
+        private void OreVeins()
         {
-            builder.Create("CZ220_VELDITE")
+            _builder.Create("CZ220_VELDITE")
                 .ResourceDespawnDelay(240) // 4 hours for basic tier veldite
                 .AddSpawn(ObjectType.Placeable, "veldite_vein")
                 .WithFrequency(50);

@@ -1,10 +1,16 @@
+using SWLOR.Component.World.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Component.Space.Feature.SpawnDefinition
 {
     public class SpaceResourceSpawnDefinition : ISpawnListDefinition
     {
-        private readonly SpawnTableBuilder _builder = new();
+        private readonly ISpawnTableBuilder _builder;
+
+        public SpaceResourceSpawnDefinition(ISpawnTableBuilder spawnTableBuilder)
+        {
+            _builder = spawnTableBuilder;
+        }
         public Dictionary<string, SpawnTable> BuildSpawnTables()
         {
             ViscaraOrbit();

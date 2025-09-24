@@ -1,6 +1,8 @@
-using SWLOR.Component.World.Service;
+using SWLOR.Component.Character.Contracts;
+using SWLOR.Component.World.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.Domain.AI.Enums;
 
 namespace SWLOR.Component.World.Model
 {
@@ -12,11 +14,11 @@ namespace SWLOR.Component.World.Model
         public int ResourceDespawnMinutes { get; set; }
         public List<SpawnObject> Spawns { get; set; }
 
-        public SpawnTable(IRandomService random, string name)
+        public SpawnTable(IRandomService random, ISpawnService spawn, string name)
         {
             _random = random;
             Name = name;
-            RespawnDelayMinutes = Spawn.DefaultRespawnMinutes;
+            RespawnDelayMinutes = spawn.DefaultRespawnMinutes;
             ResourceDespawnMinutes = 180; // Default: 3 hours for resources
             Spawns = new List<SpawnObject>();
         }

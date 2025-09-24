@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <Folder Include="Delegates\" />
+    <Folder Include="Model\" />
     <Folder Include="UI\Payload\" />
     <Folder Include="UI\RefreshEvent\" />
   </ItemGroup>

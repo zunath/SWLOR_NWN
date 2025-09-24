@@ -1,3 +1,4 @@
+using SWLOR.Component.Inventory.Contracts;
 using SWLOR.Component.World.Contracts;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Infrastructure;

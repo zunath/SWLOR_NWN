@@ -8,6 +8,8 @@ using SWLOR.NWN.API.NWScript.Enum.Area;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Domain.AI.Contracts;
+using SWLOR.Shared.Domain.AI.Enums;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Area;
@@ -17,20 +19,20 @@ using SWLOR.Shared.Events.Events.NWNX;
 
 namespace SWLOR.Component.World.Service
 {
-    public class Spawn : ISpawnService
+    public class SpawnService : ISpawnService
     {
         private readonly ILogger _logger;
         private readonly IRandomService _random;
         private readonly IGenericCacheService _cacheService;
         private readonly Walkmesh _walkmesh;
-        private readonly AI _ai;
+        private readonly IAIService _ai;
 
-        public Spawn(
+        public SpawnService(
             ILogger logger, 
             IRandomService random, 
             IGenericCacheService cacheService, 
-            Walkmesh walkmesh, 
-            AI ai)
+            Walkmesh walkmesh,
+            IAIService ai)
         {
             _logger = logger;
             _random = random;
@@ -38,8 +40,8 @@ namespace SWLOR.Component.World.Service
             _walkmesh = walkmesh;
             _ai = ai;
         }
-        public const int DespawnMinutes = 20;
-        public const int DefaultRespawnMinutes = 5;
+        public int DespawnMinutes => 20;
+        public int DefaultRespawnMinutes => 5;
 
         private class SpawnDetail
         {

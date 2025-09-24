@@ -9,8 +9,14 @@ namespace SWLOR.Component.World.Dialog
     {
         private const string MainPageId = "MAIN_PAGE";
 
-        public JukeboxDialog(IDialogService dialogService) : base(dialogService)
+        private readonly IMusicService _musicService;
+
+        public JukeboxDialog(
+            IDialogService dialogService,
+            IMusicService musicService) 
+            : base(dialogService)
         {
+            _musicService = musicService;
         }
 
         public override PlayerDialog SetUp(uint player)
@@ -20,7 +26,7 @@ namespace SWLOR.Component.World.Dialog
                 {
                     page.Header = "Please select a song.";
 
-                    foreach (var song in Music.GetAllSongs())
+                    foreach (var song in _musicService.GetAllSongs())
                     {
                         page.AddResponse(song.DisplayName, () =>
                         {

@@ -1,4 +1,6 @@
+using SWLOR.Component.Character.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Domain.AI.Enums;
 
 namespace SWLOR.Component.World.Model
 {

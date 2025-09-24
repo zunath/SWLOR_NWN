@@ -7,13 +7,13 @@ using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Component.World.Service
 {
-    public class Music
+    public class MusicService : IMusicService
     {
         private readonly IDatabaseService _db;
         private static readonly Dictionary<int, Song> _songs = new();
         private static readonly Dictionary<int, Song> _playerBattleSongs = new();
 
-        public Music(IDatabaseService db)
+        public MusicService(IDatabaseService db)
         {
             _db = db;
         }

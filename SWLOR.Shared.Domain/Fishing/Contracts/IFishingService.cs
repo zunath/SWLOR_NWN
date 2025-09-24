@@ -8,6 +8,7 @@ namespace SWLOR.Shared.Domain.Fishing.Contracts
         public string RemainingBaitVariable { get; }
         public string LoadedBaitTypeVariable { get; }
         public string FishingRodTag { get; }
+        public string FishingPointLocationVariable { get; }
         /// <summary>
         /// When the module loads, retrieve and organize all fishing data for quick look-ups.
         /// </summary>

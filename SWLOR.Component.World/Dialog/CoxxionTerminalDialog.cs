@@ -2,6 +2,7 @@ using SWLOR.Component.World.Service;
 using SWLOR.Shared.Dialog.Contracts;
 using SWLOR.Shared.Dialog.Model;
 using SWLOR.Shared.Dialog.Service;
+using SWLOR.Shared.Domain.Common.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.UI.Service;
@@ -10,21 +11,26 @@ namespace SWLOR.Component.World.Dialog
 {
     public class CoxxionTerminalDialog: DialogBase
     {
-        private static readonly List<uint> _areaDoors = new();
+        private readonly List<uint> _areaDoors = new();
 
         private const string MainPageId = "MAIN_PAGE";
+        private readonly IAreaService _areaService;
 
-        public CoxxionTerminalDialog(IDialogService dialogService) : base(dialogService)
+        public CoxxionTerminalDialog(
+            IDialogService dialogService,
+            IAreaService areaService) 
+            : base(dialogService)
         {
+            _areaService = areaService;
         }
 
         /// <summary>
         /// When the module loads, store the doors for the Coxxion Base dungeon into cache.
         /// </summary>
         [ScriptHandler<OnModuleLoad>]
-        public static void LoadDoors()
+        public void LoadDoors()
         {
-            var area = Area.GetAreaByResref("v_cox_base");
+            var area = _areaService.GetAreaByResref("v_cox_base");
             if (!GetIsObjectValid(area)) return;
 
             for (var obj = GetFirstObjectInArea(area); GetIsObjectValid(obj); obj = GetNextObjectInArea(area))
@@ -89,7 +95,7 @@ namespace SWLOR.Component.World.Dialog
                     }
                 }
 
-                foreach (var areaPlayer in Area.GetPlayersInArea(area))
+                foreach (var areaPlayer in _areaService.GetPlayersInArea(area))
                 {
                     FloatingTextStringOnCreature($"{terminalColor} doors are now unlocked.", areaPlayer, false);
                 }

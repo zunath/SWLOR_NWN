@@ -4,6 +4,8 @@ using SWLOR.Component.World.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.Domain.Fishing.Contracts;
+using SWLOR.Shared.Domain.Fishing.Enums;
 
 namespace SWLOR.Component.World.Feature.SpawnDefinition
 {
@@ -11,12 +13,19 @@ namespace SWLOR.Component.World.Feature.SpawnDefinition
     {
         private readonly IRandomService _random;
         private readonly IItemCacheService _itemCache;
-        private readonly SpawnTableBuilder _builder = new();
+        private readonly IFishingService _fishingService;
+        private readonly ISpawnTableBuilder _builder;
 
-        public FishingSpawnPointDefinition(IRandomService random, IItemCacheService itemCache)
+        public FishingSpawnPointDefinition(
+            IRandomService random, 
+            IItemCacheService itemCache,
+            IFishingService fishingService,
+            ISpawnTableBuilder spawnTableBuilder)
         {
             _random = random;
             _itemCache = itemCache;
+            _fishingService = fishingService;
+            _builder = spawnTableBuilder;
         }
 
         public Dictionary<string, SpawnTable> BuildSpawnTables()
@@ -33,7 +42,7 @@ namespace SWLOR.Component.World.Feature.SpawnDefinition
                 .RespawnDelay(90 + _random.Next(30))
                 .SpawnAction(spawn =>
                 {
-                    var fishResrefList = Fishing.GetFishAvailableAtLocation(location);
+                    var fishResrefList = _fishingService.GetFishAvailableAtLocation(location);
                     var description = $"Equip a fishing rod, load some bait, and click this to begin fishing.\n\n" +
                                       "You spot the following fish in this location:\n\n";
 
@@ -43,7 +52,7 @@ namespace SWLOR.Component.World.Feature.SpawnDefinition
                         description += itemName + "\n";
                     }
 
-                    SetLocalInt(spawn, Fishing.FishingPointLocationVariable, (int)location);
+                    SetLocalInt(spawn, _fishingService.FishingPointLocationVariable, (int)location);
                     SetDescription(spawn, description);
                 });
         }

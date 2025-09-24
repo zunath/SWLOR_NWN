@@ -1,6 +1,10 @@
+using SWLOR.Component.Character.Contracts;
+using SWLOR.Component.Inventory.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Dialog.Contracts;
+using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Common.Enums;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
@@ -11,10 +15,20 @@ namespace SWLOR.Component.World.Feature
     public class PlaceableScripts
     {
         private readonly IKeyItemService _keyItemService;
+        private readonly IEnmityService _enmityService;
+        private readonly ICurrencyService _currencyService;
+        private readonly IDialogService _dialogService;
 
-        public PlaceableScripts(IKeyItemService keyItemService)
+        public PlaceableScripts(
+            IKeyItemService keyItemService,
+            IEnmityService enmityService,
+            ICurrencyService currencyService,
+            IDialogService dialogService)
         {
             _keyItemService = keyItemService;
+            _enmityService = enmityService;
+            _currencyService = currencyService;
+            _dialogService = dialogService;
         }
         /// <summary>
         /// When a teleport placeable is used, send the user to the configured waypoint.
@@ -25,7 +39,7 @@ namespace SWLOR.Component.World.Feature
         {
             var user = GetLastUsedBy();
 
-            if (GetIsInCombat(user) || Enmity.HasEnmity(user))
+            if (GetIsInCombat(user) || _enmityService.HasEnmity(user))
             {
                 SendMessageToPC(user, "You are in combat.");
                 return;
@@ -121,7 +135,7 @@ namespace SWLOR.Component.World.Feature
 
             if (!string.IsNullOrWhiteSpace(conversation))
             {
-                Shared.Dialog.Service.Dialog.StartConversation(user, target, conversation);
+                _dialogService.StartConversation(user, target, conversation);
             }
             else
             {
@@ -161,20 +175,20 @@ namespace SWLOR.Component.World.Feature
                 return;
             }
 
-            if (Currency.GetCurrency(player, CurrencyType.RebuildToken) <= 0)
+            if (_currencyService.GetCurrency(player, CurrencyType.RebuildToken) <= 0)
             {
                 SendMessageToPC(player, ColorToken.Red($"You do not have any rebuild tokens."));
                 return;
             }
 
-            Currency.TakeCurrency(player, CurrencyType.RebuildToken, 1);
+            _currencyService.TakeCurrency(player, CurrencyType.RebuildToken, 1);
 
             var waypoint = GetWaypointByTag("REBUILD_LANDING");
             var location = GetLocation(waypoint);
             AssignCommand(player, () => ClearAllActions());
             AssignCommand(player, () => JumpToLocation(location));
 
-            SendMessageToPC(player, $"Remaining rebuild tokens: {Currency.GetCurrency(player, CurrencyType.RebuildToken)}");
+            SendMessageToPC(player, $"Remaining rebuild tokens: {_currencyService.GetCurrency(player, CurrencyType.RebuildToken)}");
         }
     }
 }

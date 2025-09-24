@@ -9,11 +9,12 @@ namespace SWLOR.Component.World.Feature.SpawnDefinition
     public class DantooineSpawnDefinition : ISpawnListDefinition
     {
         private readonly IRandomService _random;
-        private readonly SpawnTableBuilder _builder = new();
+        private readonly ISpawnTableBuilder _builder;
 
-        public DantooineSpawnDefinition(IRandomService random)
+        public DantooineSpawnDefinition(IRandomService random, ISpawnTableBuilder spawnTableBuilder)
         {
             _random = random;
+            _builder = spawnTableBuilder;
         }
 
         public Dictionary<string, SpawnTable> BuildSpawnTables()

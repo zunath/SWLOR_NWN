@@ -1,3 +1,4 @@
+using SWLOR.Component.Inventory.Contracts;
 using SWLOR.Component.World.Contracts;
 using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.Shared.Dialog.Contracts;
@@ -13,7 +14,10 @@ namespace SWLOR.Component.World.Dialog
         private readonly IKeyItemService _keyItemService;
         private readonly IObjectVisibilityService _objectVisibilityService;
 
-        public SliceTerminalDialog(IKeyItemService keyItemService, IObjectVisibilityService objectVisibilityService, IDialogService dialogService) 
+        public SliceTerminalDialog(
+            IKeyItemService keyItemService, 
+            IObjectVisibilityService objectVisibilityService, 
+            IDialogService dialogService) 
             : base(dialogService)
         {
             _keyItemService = keyItemService;

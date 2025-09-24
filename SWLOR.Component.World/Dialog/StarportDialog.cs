@@ -1,3 +1,4 @@
+using SWLOR.Component.Inventory.Contracts;
 using SWLOR.Component.World.Contracts;
 using SWLOR.Component.World.Service;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -8,6 +9,8 @@ using SWLOR.Shared.Dialog.Model;
 using SWLOR.Shared.Dialog.Service;
 using SWLOR.Shared.Domain.Common.Contracts;
 using SWLOR.Shared.Domain.Common.Enums;
+using SWLOR.Shared.Domain.Properties.Contracts;
+using SWLOR.Shared.Domain.Properties.Entities;
 using SWLOR.Shared.Domain.UI.Payloads;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Service;
@@ -22,9 +25,18 @@ namespace SWLOR.Component.World.Dialog
         private readonly IPropertyService _propertyService;
         private readonly IGuiService _guiService;
         private readonly IPlanetService _planetService;
+        private readonly IAreaService _areaService;
         private const string MainPageId = "MAIN_PAGE";
 
-        public StarportDialog(ILogger logger, IDatabaseService db, IKeyItemService keyItemService, IPropertyService propertyService, IGuiService guiService, IPlanetService planetService, IDialogService dialogService) 
+        public StarportDialog(
+            ILogger logger, 
+            IDatabaseService db, 
+            IKeyItemService keyItemService, 
+            IPropertyService propertyService, 
+            IGuiService guiService, 
+            IPlanetService planetService, 
+            IDialogService dialogService,
+            IAreaService areaService) 
             : base(dialogService)
         {
             _logger = logger;
@@ -33,6 +45,7 @@ namespace SWLOR.Component.World.Dialog
             _propertyService = propertyService;
             _guiService = guiService;
             _planetService = planetService;
+            _areaService = areaService;
         }
 
         public override PlayerDialog SetUp(uint player)
@@ -83,7 +96,7 @@ namespace SWLOR.Component.World.Dialog
                         var dbProperty = _db.Get<WorldProperty>(propertyId);
                         var dbBuilding = _db.Get<WorldProperty>(dbProperty.ParentPropertyId);
                         var dbCity = _db.Get<WorldProperty>(dbBuilding.ParentPropertyId);
-                        var cityArea = Area.GetAreaByResref(dbCity.ParentPropertyId);
+                        var cityArea = _areaService.GetAreaByResref(dbCity.ParentPropertyId);
 
                         planetType = _planetService.GetPlanetType(cityArea);
                     }

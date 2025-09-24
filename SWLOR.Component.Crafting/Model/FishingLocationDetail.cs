@@ -1,5 +1,6 @@
 using SWLOR.Component.Crafting.Enums;
 using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.Domain.Fishing.Enums;
 
 namespace SWLOR.Component.Crafting.Model
 {

@@ -1,3 +1,5 @@
+using SWLOR.Shared.Domain.Common.Enums;
+
 namespace SWLOR.Component.World.Model
 {
     public static class WeatherPlanetDefinitions

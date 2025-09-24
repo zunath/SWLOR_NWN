@@ -2,6 +2,7 @@ using SWLOR.Component.World.Entity;
 using SWLOR.Component.World.Service;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
+using SWLOR.Shared.Domain.Common.Contracts;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
@@ -11,10 +12,16 @@ namespace SWLOR.Component.World.UI.ViewModel
     public class AreaNotesViewModel: GuiViewModelBase<AreaNotesViewModel, IGuiPayload>
     {
         private readonly IDatabaseService _db;
+        private readonly IAreaService _area;
 
-        public AreaNotesViewModel(IGuiService guiService, IDatabaseService db) : base(guiService)
+        public AreaNotesViewModel(
+            IGuiService guiService, 
+            IDatabaseService db,
+            IAreaService areaService) 
+            : base(guiService)
         {
             _db = db;
+            _area = areaService;
         }
         
         public const int MaxNoteLength = 10000;
@@ -98,7 +105,7 @@ namespace SWLOR.Component.World.UI.ViewModel
 
             _areas.Clear();
 
-            foreach (var area in Area.GetAreas())
+            foreach (var area in _area.GetAreas())
             {
                 _areas.Add(area.Value);
                 areaResrefs.Add(area.Key);
@@ -175,7 +182,7 @@ namespace SWLOR.Component.World.UI.ViewModel
             }
 
             var message = AreaNames[SelectedAreaIndex] + ": " + notes[0].PublicText;            
-            foreach (var player in Area.GetPlayersInArea(_areas[SelectedAreaIndex]))
+            foreach (var player in _area.GetPlayersInArea(_areas[SelectedAreaIndex]))
             {
                 SendMessageToPC(player, ColorToken.Purple(message));
             }
@@ -245,7 +252,7 @@ namespace SWLOR.Component.World.UI.ViewModel
 
             if (string.IsNullOrWhiteSpace(SearchText)) 
             {
-                foreach (var area in Area.GetAreas())
+                foreach (var area in _area.GetAreas())
                 {
                     _areas.Add(area.Value);
                     areaResrefs.Add(area.Key);
@@ -255,7 +262,7 @@ namespace SWLOR.Component.World.UI.ViewModel
             }
             else
             {
-                foreach (var area in Area.GetAreas())
+                foreach (var area in _area.GetAreas())
                 {
                     if (GetStringUpperCase(GetName(area.Value)).Contains(GetStringUpperCase(SearchText)))
                     {

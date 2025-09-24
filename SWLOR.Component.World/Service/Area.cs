@@ -3,6 +3,8 @@ using SWLOR.Component.World.Entity;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Domain.Common.Contracts;
+using SWLOR.Shared.Domain.Properties.Contracts;
+using SWLOR.Shared.Domain.Properties.Enums;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Area;
 using SWLOR.Shared.Events.Events.Module;
@@ -13,11 +15,11 @@ namespace SWLOR.Component.World.Service
     public class Area : IAreaService
     {
         private readonly IDatabaseService _db;
-        private readonly Property _property;
+        private readonly IPropertyService _property;
         private Dictionary<string, uint> AreasByResref { get; } = new();
         private Dictionary<uint, List<uint>> PlayersByArea { get; } = new();
 
-        public Area(IDatabaseService db, Property property)
+        public Area(IDatabaseService db, IPropertyService property)
         {
             _db = db;
             _property = property;

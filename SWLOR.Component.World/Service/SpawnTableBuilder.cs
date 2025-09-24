@@ -1,16 +1,29 @@
+using SWLOR.Component.Character.Model;
+using SWLOR.Component.World.Contracts;
 using SWLOR.Component.World.Model;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.Domain.AI.Enums;
+using SWLOR.Shared.Domain.AI.ValueObjects;
 
 namespace SWLOR.Component.World.Service
 {
-    public class SpawnTableBuilder
+    public class SpawnTableBuilder : ISpawnTableBuilder
     {
         private readonly Dictionary<string, SpawnTable> _spawnTables = new();
 
         private SpawnTable ActiveTable { get; set; }
         private SpawnObject ActiveSpawn { get; set; }
 
+        private readonly IRandomService _random;
+        private readonly ISpawnService _spawn;
+
+        public SpawnTableBuilder(IRandomService random, ISpawnService spawn)
+        {
+            _random = random;
+            _spawn = spawn;
+        }
 
         /// <summary>
         /// Creates a new spawn table with the specified Id
@@ -18,12 +31,12 @@ namespace SWLOR.Component.World.Service
         /// <param name="spawnTableId">The spawn table Id to create the table with</param>
         /// <param name="name">The name of the spawn table. This is purely for the programmer's benefit. Not used by the system.</param>
         /// <returns>A spawn table builder with the configured settings.</returns>
-        public SpawnTableBuilder Create(string spawnTableId, string name = null)
+        public ISpawnTableBuilder Create(string spawnTableId, string name = null)
         {
             if (string.IsNullOrWhiteSpace(name))
                 name = $"Spawn Table {spawnTableId}";
 
-            ActiveTable = new SpawnTable(name);
+            ActiveTable = new SpawnTable(_random, _spawn, name);
             _spawnTables[spawnTableId] = ActiveTable;
 
             return this;
@@ -34,7 +47,7 @@ namespace SWLOR.Component.World.Service
         /// Values less than 1 will default to 1.
         /// </summary>
         /// <param name="minutes">The number of minutes before a respawn takes place.</param>
-        public SpawnTableBuilder RespawnDelay(int minutes)
+        public ISpawnTableBuilder RespawnDelay(int minutes)
         {
             if (minutes < 1) minutes = 1;
             ActiveTable.RespawnDelayMinutes = minutes;
@@ -48,7 +61,7 @@ namespace SWLOR.Component.World.Service
         /// Values less than 1 will default to 180 minutes (3 hours).
         /// </summary>
         /// <param name="minutes">The number of minutes before a resource despawns.</param>
-        public SpawnTableBuilder ResourceDespawnDelay(int minutes)
+        public ISpawnTableBuilder ResourceDespawnDelay(int minutes)
         {
             if (minutes < 1) minutes = 180;
             ActiveTable.ResourceDespawnMinutes = minutes;
@@ -62,7 +75,7 @@ namespace SWLOR.Component.World.Service
         /// <param name="type">The object type to spawn</param>
         /// <param name="resref">The resref of the object</param>
         /// <returns>A spawn table builder with the configured settings</returns>
-        public SpawnTableBuilder AddSpawn(ObjectType type, string resref)
+        public ISpawnTableBuilder AddSpawn(ObjectType type, string resref)
         {
             ActiveSpawn = new SpawnObject
             {
@@ -82,7 +95,7 @@ namespace SWLOR.Component.World.Service
         /// </summary>
         /// <param name="frequency">The frequency to set.</param>
         /// <returns>A spawn table builder with the configured settings</returns>
-        public SpawnTableBuilder WithFrequency(int frequency)
+        public ISpawnTableBuilder WithFrequency(int frequency)
         {
             if (frequency < 1) frequency = 1;
 
@@ -97,7 +110,7 @@ namespace SWLOR.Component.World.Service
         /// </summary>
         /// <param name="restrictedDaysOfWeek">The days which the spawn may appear.</param>
         /// <returns>A spawn table builder with the configured settings.</returns>
-        public SpawnTableBuilder OnDayOfWeek(params DayOfWeek[] restrictedDaysOfWeek)
+        public ISpawnTableBuilder OnDayOfWeek(params DayOfWeek[] restrictedDaysOfWeek)
         {
             ActiveSpawn.RealWorldDayOfWeekRestriction = restrictedDaysOfWeek.ToList();
             return this;
@@ -110,7 +123,7 @@ namespace SWLOR.Component.World.Service
         /// <param name="start">The starting timespan</param>
         /// <param name="end">The ending timespan</param>
         /// <returns>A spawn table builder with the configured settings.</returns>
-        public SpawnTableBuilder BetweenRealWorldHours(TimeSpan start, TimeSpan end)
+        public ISpawnTableBuilder BetweenRealWorldHours(TimeSpan start, TimeSpan end)
         {
             ActiveSpawn.RealWorldStartRestriction = start;
             ActiveSpawn.RealWorldEndRestriction = end;
@@ -125,7 +138,7 @@ namespace SWLOR.Component.World.Service
         /// <param name="startHour">The starting game hour</param>
         /// <param name="endHour">The ending game hour</param>
         /// <returns>A spawn table builder with the configured settings.</returns>
-        public SpawnTableBuilder BetweenGameHours(int startHour, int endHour)
+        public ISpawnTableBuilder BetweenGameHours(int startHour, int endHour)
         {
             ActiveSpawn.GameHourStartRestriction = startHour;
             ActiveSpawn.GameHourEndRestriction = endHour;
@@ -137,7 +150,7 @@ namespace SWLOR.Component.World.Service
         /// Indicates that this spawn object will randomly walk when not in combat.
         /// </summary>
         /// <returns>A spawn table builder with the configured settings.</returns>
-        public SpawnTableBuilder RandomlyWalks()
+        public ISpawnTableBuilder RandomlyWalks()
         {
             ActiveSpawn.AIFlags |= AIFlag.RandomWalk;
 
@@ -148,14 +161,14 @@ namespace SWLOR.Component.World.Service
         /// Indicates that this spawn object will return home if they stray too far from their spawn point.
         /// </summary>
         /// <returns>A spawn table builder with the configured settings.</returns>
-        public SpawnTableBuilder ReturnsHome()
+        public ISpawnTableBuilder ReturnsHome()
         {
             ActiveSpawn.AIFlags |= AIFlag.ReturnHome;
 
             return this;
         }
 
-        public SpawnTableBuilder PlayAnimation(DurationType duration, AnimationEvent animEvent, VisualEffect vfx)
+        public ISpawnTableBuilder PlayAnimation(DurationType duration, AnimationEvent animEvent, VisualEffect vfx)
         {
             var animation = new Animator()
             {
@@ -172,7 +185,7 @@ namespace SWLOR.Component.World.Service
         /// </summary>
         /// <param name="action">The action to run when the spawn is created.</param>
         /// <returns>A spawn table builder with the configured settings.</returns>
-        public SpawnTableBuilder SpawnAction(OnSpawnDelegate action)
+        public ISpawnTableBuilder SpawnAction(OnSpawnDelegate action)
         {
             ActiveSpawn.OnSpawnActions.Add(action);
 

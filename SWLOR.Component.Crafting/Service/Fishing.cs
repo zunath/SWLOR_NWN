@@ -71,7 +71,7 @@ namespace SWLOR.Component.Crafting.Service
         private const string FishingPointRemainingAttemptsVariable = "FISHING_POINT_REMAINING_ATTEMPTS";
         private const string FishingPointInitializedVariable = "FISHING_POINT_INITIALIZED";
         private const string FishingAttemptVariable = "FISHING_ATTEMPT_ID";
-        public const string FishingPointLocationVariable = "FISHING_LOCATION_ID";
+        public string FishingPointLocationVariable => "FISHING_LOCATION_ID";
         public string FishingRodTag => "FISHING_ROD";
 
         /// <summary>

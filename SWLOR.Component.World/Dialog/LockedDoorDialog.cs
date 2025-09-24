@@ -1,7 +1,9 @@
+using SWLOR.Component.Inventory.Contracts;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.Shared.Dialog.Contracts;
 using SWLOR.Shared.Dialog.Model;
 using SWLOR.Shared.Dialog.Service;
+using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Common.Enums;
 
 namespace SWLOR.Component.World.Dialog
@@ -10,11 +12,16 @@ namespace SWLOR.Component.World.Dialog
     {
         private const string MainPageId = "MAIN_PAGE";
         private readonly IKeyItemService _keyItemService;
+        private readonly IEnmityService _enmityService;
 
-        public LockedDoorDialog(IKeyItemService keyItemService, IDialogService dialogService) 
+        public LockedDoorDialog(
+            IKeyItemService keyItemService, 
+            IDialogService dialogService,
+            IEnmityService enmityService) 
             : base(dialogService)
         {
             _keyItemService = keyItemService;
+            _enmityService = enmityService;
         }
 
         public override PlayerDialog SetUp(uint player)
@@ -54,7 +61,7 @@ namespace SWLOR.Component.World.Dialog
             {
                 page.AddResponse("Use Key", () =>
                 {
-                    if (Enmity.HasEnmity(player))
+                    if (_enmityService.HasEnmity(player))
                     {
                         FloatingTextStringOnCreature("An enemy is targeting you. Defeat them before entering!", player, false);
                     }

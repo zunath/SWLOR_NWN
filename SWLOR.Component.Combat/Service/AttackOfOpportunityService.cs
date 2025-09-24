@@ -11,7 +11,6 @@ namespace SWLOR.Component.Combat.Service
         /// Whenever an attack of opportunity is broadcast, skip the event to disable it.
         /// This should effectively disable AOOs across the board.
         /// </summary>
-        [ScriptHandler<OnBroadcastAttackOfOpportunityBefore>]
         public void OnAttackOfOpportunity()
         {
             EventsPlugin.SkipEvent();

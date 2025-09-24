@@ -28,7 +28,6 @@ namespace SWLOR.Component.Combat.Service
         /// <summary>
         /// When an enemy is damaged, increase enmity toward that creature by the amount of damage dealt.
         /// </summary>
-        [ScriptHandler<OnCreatureDamagedBefore>]
         public void CreatureDamaged()
         {
             var enemy = OBJECT_SELF;
@@ -41,7 +40,6 @@ namespace SWLOR.Component.Combat.Service
         /// <summary>
         /// When a creature attacks an enemy, increase enmity by 1.
         /// </summary>
-        [ScriptHandler<OnCreatureAttackBefore>]
         public void CreatureAttacked()
         {
             var enemy = OBJECT_SELF;
@@ -53,7 +51,6 @@ namespace SWLOR.Component.Combat.Service
         /// <summary>
         /// When a creature dies, remove all enmity tables it is associated with.
         /// </summary>
-        [ScriptHandler<OnCreatureDeathAfter>]
         public void CreatureDeath()
         {
             var enemy = OBJECT_SELF;
@@ -64,7 +61,6 @@ namespace SWLOR.Component.Combat.Service
         /// <summary>
         /// When a creature is destroyed with DestroyObject, remove all enmity tables it is associated with.
         /// </summary>
-        [ScriptHandler(ScriptName.OnObjectDestroyed)]
         public void CreatureDestroyed()
         {
             var enemy = OBJECT_SELF;
@@ -75,7 +71,6 @@ namespace SWLOR.Component.Combat.Service
         /// <summary>
         /// When a player dies, remove them from all enmity tables.
         /// </summary>
-        [ScriptHandler<OnModuleDeath>]
         public void PlayerDeath()
         {
             var player = GetLastPlayerDied();
@@ -85,8 +80,6 @@ namespace SWLOR.Component.Combat.Service
         /// <summary>
         /// When a player leaves, remove them from all enmity tables.
         /// </summary>
-        [ScriptHandler<OnModuleExit>]
-        [ScriptHandler<OnAreaExit>]
         public void PlayerExit()
         {
             var player = GetExitingObject();
@@ -96,7 +89,6 @@ namespace SWLOR.Component.Combat.Service
         /// <summary>
         /// When a DM limbos creatures, ensure their enmity is wiped.
         /// </summary>
-        [ScriptHandler<OnDMLimboBefore>]
         public void CreatureLimbo()
         {
             var count = Convert.ToInt32(EventsPlugin.GetEventData("NUM_TARGETS"));

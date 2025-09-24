@@ -238,7 +238,7 @@ namespace SWLOR.Game.Server
             // Combat Services
             services.AddSingleton<ICombatService, Combat>();
             services.AddSingleton<IEnmityService, Enmity>();
-            services.AddSingleton<ICombatPointService, CombatPoint>();
+            services.AddSingleton<ICombatPointService, CombatPointService>();
 
             // Planet Service
             services.AddSingleton<IPlanetService, PlanetService>();
@@ -482,7 +482,7 @@ namespace SWLOR.Game.Server
             services.AddSingleton<INPCGroupService, NPCGroup>();
 
             // Static service conversions
-            services.AddSingleton<CombatPoint>();
+            services.AddSingleton<CombatPointService>();
             services.AddSingleton<BeastMastery>();
             services.AddSingleton<AI>();
             services.AddSingleton<Property>();

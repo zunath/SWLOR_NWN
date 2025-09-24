@@ -14,7 +14,7 @@ using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Component.Combat.Service
 {
-    public class CombatPoint : ICombatPointService
+    public class CombatPointService : ICombatPointService
     {
         private readonly IDatabaseService _db;
         private readonly ISkillService _skillService;
@@ -33,7 +33,7 @@ namespace SWLOR.Component.Combat.Service
         /// </summary>
         private readonly Dictionary<uint, HashSet<uint>> _playerToCreatureTracker = new();
 
-        public CombatPoint(
+        public CombatPointService(
             IDatabaseService db,
             ISkillService skillService,
             IItemService itemService,
@@ -52,7 +52,6 @@ namespace SWLOR.Component.Combat.Service
         /// <summary>
         /// Adds a combat point to a given NPC creature for a given player and skill type.
         /// </summary>
-        [ScriptHandler(ScriptName.OnItemHit)]
         public void OnHitCastSpell()
         {
             var player = OBJECT_SELF;
@@ -94,7 +93,6 @@ namespace SWLOR.Component.Combat.Service
         /// When a creature dies, skill XP is given to all players who contributed during battle.
         /// Then, those combat points are cleared out.
         /// </summary>
-        [ScriptHandler<OnCreatureDeathAfter>]
         public void OnCreatureDeath()
         {
             // Clears the combat point cache information for an NPC and all player associated.
@@ -210,8 +208,6 @@ namespace SWLOR.Component.Combat.Service
         /// When a player leaves an area or the server, we need to remove all combat points
         /// that may be referenced to their character.
         /// </summary>
-        [ScriptHandler<OnModuleExit>]
-        [ScriptHandler<OnAreaExit>]
         public void OnPlayerExit()
         {
             var player = GetExitingObject();

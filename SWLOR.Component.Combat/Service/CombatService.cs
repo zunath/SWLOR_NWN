@@ -19,7 +19,7 @@ namespace SWLOR.Component.Combat.Service
 {
     
 
-    public class Combat : ICombatService
+    public class CombatService : ICombatService
     {
         private readonly ILogger _logger;
         private readonly IDatabaseService _db;
@@ -30,7 +30,7 @@ namespace SWLOR.Component.Combat.Service
         private readonly IStatService _statService;
         private readonly List<CombatDamageType> _allValidDamageTypes = new();
 
-        public Combat(ILogger logger, IDatabaseService db, IRandomService random, IItemService itemService, IAbilityService abilityService, IPerkService perkService, IStatService statService)
+        public CombatService(ILogger logger, IDatabaseService db, IRandomService random, IItemService itemService, IAbilityService abilityService, IPerkService perkService, IStatService statService)
         {
             _logger = logger;
             _db = db;
@@ -44,7 +44,6 @@ namespace SWLOR.Component.Combat.Service
         /// <summary>
         /// When the module loads, add all valid damage types to the cache.
         /// </summary>
-        [ScriptHandler<OnModuleLoad>]
         public void LoadDamageTypes()
         {
             var allValues = Enum.GetValues(typeof(CombatDamageType)).Cast<CombatDamageType>();
@@ -61,7 +60,6 @@ namespace SWLOR.Component.Combat.Service
         /// <summary>
         /// When a player enters the server, apply any defenses towards damage types they don't already have.
         /// </summary>
-        [ScriptHandler<OnModuleEnter>]
         public void AddDamageTypeDefenses()
         {
             var player = GetEnteringObject();
@@ -268,7 +266,6 @@ namespace SWLOR.Component.Combat.Service
         /// <summary>
         /// On module heartbeat, clear a PC's saved combat facing if they are no longer in combat.
         /// </summary>
-        [ScriptHandler(ScriptName.OnIntervalPC6Seconds)]
         public void ClearCombatState()
         {
             uint player = OBJECT_SELF;

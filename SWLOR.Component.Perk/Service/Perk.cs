@@ -69,7 +69,6 @@ namespace SWLOR.Component.Perk.Service
         /// <summary>
         /// When the module loads, cache all perk and character type information.
         /// </summary>
-        [ScriptHandler<OnModuleCacheBefore>]
         public void CacheData()
         {
             CachePerks();
@@ -675,7 +674,6 @@ namespace SWLOR.Component.Perk.Service
         /// When a skill receives decay, any perks tied to that skill should be checked.
         /// If the player no longer meets the requirements for those perks, they should be reduced in level.
         /// </summary>
-        [ScriptHandler(ScriptName.OnSwlorLoseSkill)]
         public void RemovePerkLevelOnSkillDecay()
         {
             var skillType = (SkillType)Convert.ToInt32(EventsPlugin.GetEventData("SKILL_TYPE_ID"));

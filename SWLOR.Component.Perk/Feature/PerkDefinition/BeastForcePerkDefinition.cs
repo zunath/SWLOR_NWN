@@ -124,28 +124,6 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Innervate5);
         }
 
-        [ScriptHandler(ScriptName.OnItemHit)]
-        public void OnForceLinkHit()
-        {
-            var beast = OBJECT_SELF;
-            var item = GetSpellCastItem();
-
-            if (!_beastMastery.IsPlayerBeast(beast) || GetResRef(item) != _beastMastery.BeastClawResref)
-            {
-                return;
-            }
-
-            var player = GetMaster(beast);
-            if (GetIsPC(player) && !GetIsDead(player))
-            {
-                var chance = _perkService.GetPerkLevel(beast, PerkType.ForceLink) * 10;
-
-                if (_random.D100(1) <= chance)
-                {
-                    _statService.RestoreFP(player, 1);
-                }
-            }
-        }
         private void ForceLink(IPerkBuilder builder)
         {
             builder.Create(PerkCategoryType.BeastForce, PerkType.ForceLink)

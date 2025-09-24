@@ -334,28 +334,6 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 });
         }
 
-        [ScriptHandler(ScriptName.OnItemHit)]
-        public void ApplyAlacrityAndClarity()
-        {
-            var defender = OBJECT_SELF;
-            var item = GetSpellCastItem();
-            var itemType = GetBaseItemType(item);
-
-            if (_itemService.ShieldBaseItemTypes.Contains(itemType))
-            {
-                if (_random.D100(1) <= 10)
-                {
-                    if (_perkService.GetPerkLevel(defender, PerkType.Alacrity) > 0)
-                    {
-                        _statService.RestoreStamina(defender, 4);
-                    }
-                    else if (_perkService.GetPerkLevel(defender, PerkType.Clarity) > 0)
-                    {
-                        _statService.RestoreFP(defender, 4);
-                    }
-                }
-            }
-        }
 
         private void Alacrity(IPerkBuilder builder)
         {

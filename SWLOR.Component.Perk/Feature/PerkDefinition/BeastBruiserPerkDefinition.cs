@@ -125,28 +125,6 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
         }
 
 
-        [ScriptHandler(ScriptName.OnItemHit)]
-        public void OnEnduranceLinkHit()
-        {
-            var beast = OBJECT_SELF;
-            var item = GetSpellCastItem();
-
-            if (!_beastMastery.IsPlayerBeast(beast) || GetResRef(item) != _beastMastery.BeastClawResref)
-            {
-                return;
-            }
-
-            var player = GetMaster(beast);
-            if (GetIsPC(player) && !GetIsDead(player))
-            {
-                var chance = _perkService.GetPerkLevel(beast, PerkType.EnduranceLink) * 10;
-
-                if (_random.D100(1) <= chance)
-                {
-                    _statService.RestoreStamina(player, 1);
-                }
-            }
-        }
 
         private void EnduranceLink(IPerkBuilder builder)
         {

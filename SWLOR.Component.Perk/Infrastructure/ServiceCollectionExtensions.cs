@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Perk.Contracts;
+using SWLOR.Component.Perk.EventHandlers;
 using SWLOR.Component.Perk.Service;
 
 namespace SWLOR.Component.Perk.Infrastructure
@@ -21,6 +22,15 @@ namespace SWLOR.Component.Perk.Infrastructure
             
             // Register PerkRequirementFactory as transient
             services.AddTransient<IPerkRequirementFactory, PerkRequirementFactory>();
+            
+            // Register UsePerkFeat as singleton
+            services.AddSingleton<IUsePerkFeat, UsePerkFeat>();
+            
+            // Register PerkEffectService as singleton
+            services.AddSingleton<IPerkEffectService, PerkEffectService>();
+            
+            // Register PerkEventHandler as singleton
+            services.AddSingleton<PerkEventHandler>();
             
             return services;
         }

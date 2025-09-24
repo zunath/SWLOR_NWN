@@ -1,4 +1,5 @@
 using System.Numerics;
+using SWLOR.Component.Perk.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -20,7 +21,7 @@ using SWLOR.Shared.Events.Events.NWNX;
 
 namespace SWLOR.Component.Perk.Service
 {
-    public class UsePerkFeat
+    public class UsePerkFeat : IUsePerkFeat
     {
         private readonly IAbilityService _abilityService;
         private readonly IPerkService _perkService;
@@ -82,7 +83,6 @@ namespace SWLOR.Component.Perk.Service
         /// If it is, requirements to use the feat will be checked and then the ability will activate.
         /// If there are errors at any point in this process, the creature will be notified and the execution will end.
         /// </summary>
-        [ScriptHandler<OnFeatUseBefore>]
         public void UseFeat()
         {
             var activator = OBJECT_SELF;
@@ -408,7 +408,6 @@ namespace SWLOR.Component.Perk.Service
         /// <summary>
         /// When a player's weapon hits a target, if an ability is queued, that ability will be executed.
         /// </summary>
-        [ScriptHandler(ScriptName.OnItemHit)]
         public void ProcessQueuedWeaponAbility()
         {
             var activator = OBJECT_SELF;
@@ -439,7 +438,6 @@ namespace SWLOR.Component.Perk.Service
         /// Whenever a player enters the server, any temporary variables related to ability execution
         /// will be removed from their PC.
         /// </summary>
-        [ScriptHandler<OnModuleEnter>]
         public void ClearTemporaryQueuedVariables()
         {
             var player = GetEnteringObject();
@@ -449,7 +447,6 @@ namespace SWLOR.Component.Perk.Service
         /// <summary>
         /// Whenever a player starts resting, clear any queued abilities.
         /// </summary>
-        [ScriptHandler(ScriptName.OnRestStarted)]
         public void ClearTemporaryQueuedVariablesOnRest()
         {
             ClearQueuedAbility(OBJECT_SELF);
@@ -458,7 +455,6 @@ namespace SWLOR.Component.Perk.Service
         /// <summary>
         /// Whenever a player equips an item, clear any queued abilities.
         /// </summary>
-        [ScriptHandler<OnSWLORItemEquipValidBefore>]
         public void ClearTemporaryQueuedVariablesOnEquip()
         {
             ClearQueuedAbility(OBJECT_SELF);

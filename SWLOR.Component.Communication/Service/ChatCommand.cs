@@ -1,4 +1,3 @@
-using SWLOR.Component.Admin.Service;
 using SWLOR.Component.Communication.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
@@ -6,7 +5,8 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Domain.Enums;
+using SWLOR.Shared.Domain.Common.Contracts;
+using SWLOR.Shared.Domain.Common.Enums;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
 using ChatCommandDetail = SWLOR.Component.Communication.Model.ChatCommandDetail;

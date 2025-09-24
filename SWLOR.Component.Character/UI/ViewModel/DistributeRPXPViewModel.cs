@@ -1,11 +1,11 @@
 using System.Text.RegularExpressions;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Domain.Entity;
-using SWLOR.Shared.Domain.Enums;
 using SWLOR.Shared.Abstractions.Enums;
-using SWLOR.Shared.Domain.Contracts;
-using SWLOR.Shared.Domain.Model.Payload;
-using SWLOR.Shared.Domain.Model.RefreshEvent;
+using SWLOR.Shared.Domain.Character.Contracts;
+using SWLOR.Shared.Domain.Character.Entities;
+using SWLOR.Shared.Domain.Character.Enums;
+using SWLOR.Shared.Domain.UI.Events;
+using SWLOR.Shared.Domain.UI.Payloads;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Service;
 

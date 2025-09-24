@@ -2,9 +2,10 @@ using SWLOR.Component.Properties.Contracts;
 using SWLOR.Component.Properties.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Domain.Entity;
-using SWLOR.Shared.Domain.Enums;
-using SWLOR.Shared.Domain.Model;
+using SWLOR.Shared.Domain.Character.Entities;
+using SWLOR.Shared.Domain.Properties.Entities;
+using SWLOR.Shared.Domain.Properties.Enums;
+using SWLOR.Shared.Domain.Properties.ValueObjects;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 

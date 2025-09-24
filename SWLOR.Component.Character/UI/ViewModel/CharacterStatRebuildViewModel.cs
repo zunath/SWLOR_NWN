@@ -2,7 +2,8 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Enums;
-using SWLOR.Shared.Domain.Enums;
+using SWLOR.Shared.Domain.Character.Entities;
+using SWLOR.Shared.Domain.Common.Enums;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.UI.Contracts;
@@ -311,7 +312,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
                 UnequipAllItems();
 
                 var playerId = GetObjectUUID(Player);
-                var dbPlayer = _db.Get<Shared.Domain.Entity.Player>(playerId);
+                var dbPlayer = _db.Get<Player>(playerId);
 
                 CreaturePlugin.SetRawAbilityScore(Player, AbilityType.Might, 10 + _might);
                 CreaturePlugin.SetRawAbilityScore(Player, AbilityType.Perception, 10 + _perception);

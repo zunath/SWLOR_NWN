@@ -4,9 +4,16 @@ using SWLOR.Component.Market.Enums;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
-using SWLOR.Shared.Domain.Contracts;
-using SWLOR.Shared.Domain.Entity;
-using SWLOR.Shared.Domain.Enums;
+using SWLOR.Shared.Domain.Beasts.Contracts;
+using SWLOR.Shared.Domain.Character.Entities;
+using SWLOR.Shared.Domain.Character.Enums;
+using SWLOR.Shared.Domain.Common.Contracts;
+using SWLOR.Shared.Domain.Crafting.Contracts;
+using SWLOR.Shared.Domain.Crafting.Enums;
+using SWLOR.Shared.Domain.Fishing.Contracts;
+using SWLOR.Shared.Domain.Properties.Contracts;
+using SWLOR.Shared.Domain.Properties.Enums;
+using SWLOR.Shared.Domain.Space.Contracts;
 using MarketCategoryType = SWLOR.Component.Market.Enums.MarketCategoryType;
 
 namespace SWLOR.Component.Market.Service

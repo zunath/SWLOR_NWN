@@ -1,7 +1,7 @@
 using SWLOR.Component.Properties.Contracts;
 using SWLOR.Component.Properties.Service;
-using SWLOR.Shared.Domain.Enums;
-using SWLOR.Shared.Domain.Model;
+using SWLOR.Shared.Domain.Properties.Enums;
+using SWLOR.Shared.Domain.Properties.ValueObjects;
 
 namespace SWLOR.Component.Properties.Feature.PropertyLayoutDefinition
 {

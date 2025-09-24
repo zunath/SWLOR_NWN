@@ -1,7 +1,10 @@
 using SWLOR.Component.Associate.Model;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Domain.Enums;
-using SWLOR.Shared.Domain.Model;
+using SWLOR.Shared.Domain.Beasts.Enums;
+using SWLOR.Shared.Domain.Beasts.ValueObjects;
+using SWLOR.Shared.Domain.Combat.Enums;
+using SWLOR.Shared.Domain.Crafting.Enums;
+using SWLOR.Shared.Domain.Crafting.ValueObjects;
 
 namespace SWLOR.Component.Associate.Service
 {

@@ -6,8 +6,9 @@ using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Abstractions.Models;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Log.LogGroup;
-using SWLOR.Shared.Domain.Entity;
-using SWLOR.Shared.Domain.Enums;
+using SWLOR.Shared.Domain.Character.Entities;
+using SWLOR.Shared.Domain.Properties.Entities;
+using SWLOR.Shared.Domain.Properties.Enums;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
@@ -80,8 +81,8 @@ namespace SWLOR.Component.Properties.UI.ViewModel
                 .AddFieldSearch(nameof(Election.PropertyId), dbCity.Id, false))
                 .SingleOrDefault();
             var dbCitizenCount = _db.SearchCount(new DBQuery<Player>()
-                .AddFieldSearch(nameof(SWLOR.Shared.Domain.Entity.Player.CitizenPropertyId), dbCity.Id, false)
-                .AddFieldSearch(nameof(SWLOR.Shared.Domain.Entity.Player.IsDeleted), false));
+                .AddFieldSearch(nameof(Shared.Domain.Character.Entities.Player.CitizenPropertyId), dbCity.Id, false)
+                .AddFieldSearch(nameof(Shared.Domain.Character.Entities.Player.IsDeleted), false));
 
             var cityDetails = new GuiBindingList<string>();
 

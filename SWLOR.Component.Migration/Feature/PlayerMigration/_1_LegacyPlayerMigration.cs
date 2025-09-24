@@ -5,8 +5,9 @@ using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Domain.Contracts;
-using SWLOR.Shared.Domain.Entity;
+using SWLOR.Shared.Domain.Character.Contracts;
+using SWLOR.Shared.Domain.Character.Entities;
+using SWLOR.Shared.Domain.Common.Contracts;
 
 namespace SWLOR.Component.Migration.Feature.PlayerMigration
 {

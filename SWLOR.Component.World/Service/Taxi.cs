@@ -1,8 +1,8 @@
 using SWLOR.Component.World.Contracts;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Extension;
-using SWLOR.Shared.Domain.Entity;
-using SWLOR.Shared.Domain.Enums;
+using SWLOR.Shared.Domain.Character.Entities;
+using SWLOR.Shared.Domain.Common.Enums;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 

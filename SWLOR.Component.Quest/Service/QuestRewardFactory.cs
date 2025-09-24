@@ -3,7 +3,8 @@ using SWLOR.Component.Quest.Contracts;
 using SWLOR.Component.Quest.Model;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Caching.Contracts;
-using SWLOR.Shared.Domain.Enums;
+using SWLOR.Shared.Domain.Common.Enums;
+using SWLOR.Shared.Domain.Social.Enums;
 
 namespace SWLOR.Component.Quest.Service
 {

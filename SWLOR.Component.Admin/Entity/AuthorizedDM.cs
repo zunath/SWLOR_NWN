@@ -1,5 +1,5 @@
 ﻿using SWLOR.Shared.Abstractions;
-using SWLOR.Shared.Domain.Enums;
+using SWLOR.Shared.Domain.Common.Enums;
 
 namespace SWLOR.Component.Admin.Entity
 {

@@ -6,7 +6,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Core.Log.LogGroup;
-using SWLOR.Shared.Domain.Entity;
+using SWLOR.Shared.Domain.Character.Entities;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Infrastructure;
 using SWLOR.Shared.Events.Events.Module;

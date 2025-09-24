@@ -2,7 +2,7 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Dialog.Contracts;
 using SWLOR.Shared.Dialog.Model;
 using SWLOR.Shared.Dialog.Service;
-using SWLOR.Shared.Domain.Entity;
+using SWLOR.Shared.Domain.Common.Entities;
 
 namespace SWLOR.Component.Character.Feature.SnippetDefinition
 {

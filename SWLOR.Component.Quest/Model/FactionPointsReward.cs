@@ -1,5 +1,5 @@
 using SWLOR.Component.Quest.Contracts;
-using SWLOR.Shared.Domain.Enums;
+using SWLOR.Shared.Domain.Social.Enums;
 
 namespace SWLOR.Component.Quest.Model
 {

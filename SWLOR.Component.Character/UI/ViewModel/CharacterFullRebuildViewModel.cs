@@ -3,8 +3,9 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Core.Log.LogGroup;
-using SWLOR.Shared.Domain.Contracts;
-using SWLOR.Shared.Domain.Enums;
+using SWLOR.Shared.Domain.Character.Contracts;
+using SWLOR.Shared.Domain.Character.Entities;
+using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.UI.Contracts;
@@ -64,7 +65,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
             }
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = _db.Get<Shared.Domain.Entity.Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
 
             if (!dbPlayer.RebuildComplete)
             {
@@ -92,7 +93,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
             }
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = _db.Get<Shared.Domain.Entity.Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
 
             if (!dbPlayer.RebuildComplete)
             {
@@ -212,7 +213,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
         private void ResetControls()
         {
             var playerId = GetObjectUUID(Player);
-            var dbPlayer = _db.Get<Shared.Domain.Entity.Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
 
             _might = 0;
             _perception = 0;
@@ -291,7 +292,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
         private void RecalculateAvailableSkillPoints()
         {
             var playerId = GetObjectUUID(Player);
-            var dbPlayer = _db.Get<Shared.Domain.Entity.Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
 
             _remainingSkillPoints = dbPlayer.TotalSPAcquired - _skillDistributionPoints.Sum();
             RemainingSkillPoints = $"Skills - {_remainingSkillPoints} Points Remaining";
@@ -323,7 +324,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
             void RefundAllPerks()
             {
                 var playerId = GetObjectUUID(Player);
-                var dbPlayer = _db.Get<Shared.Domain.Entity.Player>(playerId);
+                var dbPlayer = _db.Get<Player>(playerId);
                 var pcPerks = dbPlayer.Perks.ToDictionary(x => x.Key, y => y.Value);
 
                 foreach (var (type, level) in pcPerks)
@@ -357,7 +358,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
             void RefundAllSkills()
             {
                 var playerId = GetObjectUUID(Player);
-                var dbPlayer = _db.Get<Shared.Domain.Entity.Player>(playerId);
+                var dbPlayer = _db.Get<Player>(playerId);
                 
                 foreach (var (type, _) in dbPlayer.Skills)
                 {
@@ -376,7 +377,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
             void ResetStats()
             {
                 var playerId = GetObjectUUID(Player);
-                var dbPlayer = _db.Get<Shared.Domain.Entity.Player>(playerId);
+                var dbPlayer = _db.Get<Player>(playerId);
 
                 CreaturePlugin.SetRawAbilityScore(Player, AbilityType.Might, 10);
                 CreaturePlugin.SetRawAbilityScore(Player, AbilityType.Perception, 10);
@@ -672,7 +673,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
                 }
 
                 var playerId = GetObjectUUID(Player);
-                var dbPlayer = _db.Get<Shared.Domain.Entity.Player>(playerId);
+                var dbPlayer = _db.Get<Player>(playerId);
 
                 CreaturePlugin.ModifyRawAbilityScore(Player, AbilityType.Might, _might);
                 CreaturePlugin.ModifyRawAbilityScore(Player, AbilityType.Perception, _perception);
@@ -691,12 +692,12 @@ namespace SWLOR.Component.Character.UI.ViewModel
                 if (CharacterType == 0)
                 {
                     CreaturePlugin.SetClassByPosition(Player, 0, ClassType.Standard);
-                    dbPlayer.CharacterType = Shared.Domain.Enums.CharacterType.Standard;
+                    dbPlayer.CharacterType = Shared.Domain.Character.Enums.CharacterType.Standard;
                 }
                 else
                 {
                     CreaturePlugin.SetClassByPosition(Player, 0, ClassType.ForceSensitive);
-                    dbPlayer.CharacterType = Shared.Domain.Enums.CharacterType.ForceSensitive;
+                    dbPlayer.CharacterType = Shared.Domain.Character.Enums.CharacterType.ForceSensitive;
                 }
 
                 for (var index = 0; index < _skills.Count; index++)

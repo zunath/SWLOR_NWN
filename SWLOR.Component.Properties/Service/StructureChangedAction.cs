@@ -1,11 +1,12 @@
-using SWLOR.Component.World.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
-using SWLOR.Shared.Domain.Contracts;
-using SWLOR.Shared.Domain.Entity;
-using SWLOR.Shared.Domain.Enums;
+using SWLOR.Shared.Domain.Common.Contracts;
+using SWLOR.Shared.Domain.Properties.Contracts;
+using SWLOR.Shared.Domain.Properties.Entities;
+using SWLOR.Shared.Domain.Properties.Enums;
+using SWLOR.Shared.Domain.Space.Contracts;
 
 namespace SWLOR.Component.Properties.Service
 {

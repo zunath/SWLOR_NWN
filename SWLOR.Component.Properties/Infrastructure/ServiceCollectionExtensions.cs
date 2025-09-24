@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Properties.EventHandlers;
 using SWLOR.Component.Properties.Service;
-using SWLOR.Shared.Domain.Contracts;
+using SWLOR.Shared.Domain.Properties.Contracts;
 
 namespace SWLOR.Component.Properties.Infrastructure
 {

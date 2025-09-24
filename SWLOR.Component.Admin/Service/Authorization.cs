@@ -1,7 +1,8 @@
 using SWLOR.Component.Admin.Entity;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
-using AuthorizationLevel = SWLOR.Shared.Domain.Enums.AuthorizationLevel;
+using SWLOR.Shared.Domain.Common.Contracts;
+using AuthorizationLevel = SWLOR.Shared.Domain.Common.Enums.AuthorizationLevel;
 
 namespace SWLOR.Component.Admin.Service
 {

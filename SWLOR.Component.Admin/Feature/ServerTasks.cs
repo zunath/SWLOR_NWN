@@ -5,7 +5,7 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Log.LogGroup;
-using SWLOR.Shared.Domain.Entity;
+using SWLOR.Shared.Domain.Character.Entities;
 using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Component.Admin.Feature

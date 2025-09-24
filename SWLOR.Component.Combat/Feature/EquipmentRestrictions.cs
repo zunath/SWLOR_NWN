@@ -1,12 +1,13 @@
-using SWLOR.Component.Associate.Contracts;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Enums;
-using SWLOR.Shared.Domain.Contracts;
-using SWLOR.Shared.Domain.Entity;
-using SWLOR.Shared.Domain.Enums;
+using SWLOR.Shared.Domain.Character.Contracts;
+using SWLOR.Shared.Domain.Character.Entities;
+using SWLOR.Shared.Domain.Character.Enums;
+using SWLOR.Shared.Domain.Common.Contracts;
+using SWLOR.Shared.Domain.Droids.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.UI.Contracts;

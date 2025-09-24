@@ -2,7 +2,7 @@ using SWLOR.Component.Inventory.Contracts;
 using SWLOR.Component.Inventory.Dialog;
 using SWLOR.Component.Inventory.Model;
 using SWLOR.Component.Inventory.Service;
-using SWLOR.Shared.Domain.Enums;
+using SWLOR.Shared.Domain.Common.Enums;
 using SWLOR.Shared.UI.Contracts;
 
 namespace SWLOR.Component.Inventory.Feature.ItemDefinition

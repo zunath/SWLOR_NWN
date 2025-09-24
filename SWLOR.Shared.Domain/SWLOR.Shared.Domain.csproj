@@ -13,10 +13,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="ValueObjects\" />
-	</ItemGroup>
-
-	<ItemGroup>
 	  <PackageReference Include="NWN.Native" Version="8193.37.3" />
 	</ItemGroup>
 

@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 using SWLOR.Shared.Abstractions.Enums;
-using SWLOR.Shared.Domain.Model.Payload;
+using SWLOR.Shared.Domain.UI.Payloads;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Service;
 

@@ -7,14 +7,20 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Enums;
-using SWLOR.Shared.Domain.Contracts;
-using SWLOR.Shared.Domain.Entity;
-using SWLOR.Shared.Domain.Enums;
-using SWLOR.Shared.Domain.Model.RefreshEvent;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Service;
 using System.Drawing;
+using SWLOR.Shared.Domain.Beasts.Contracts;
+using SWLOR.Shared.Domain.Character.Contracts;
+using SWLOR.Shared.Domain.Character.Entities;
+using SWLOR.Shared.Domain.Character.Enums;
+using SWLOR.Shared.Domain.Common.Enums;
+using SWLOR.Shared.Domain.Social.Contracts;
+using SWLOR.Shared.Domain.Social.Enums;
+using SWLOR.Shared.Domain.Space.Contracts;
+using SWLOR.Shared.Domain.Space.Entities;
+using SWLOR.Shared.Domain.UI.Events;
 using ChatChannel = SWLOR.NWN.API.NWNX.Enum.ChatChannel;
 
 namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition

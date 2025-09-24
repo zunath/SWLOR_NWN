@@ -1,7 +1,7 @@
 using SWLOR.Component.Character.Service;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Domain.Entity;
-using SWLOR.Shared.Domain.Enums;
+using SWLOR.Shared.Domain.Common.Entities;
+using SWLOR.Shared.Domain.Common.Enums;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Area;

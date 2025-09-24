@@ -8,8 +8,11 @@ using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Domain.Contracts;
-using SWLOR.Shared.Domain.Enums;
+using SWLOR.Shared.Domain.Character.Contracts;
+using SWLOR.Shared.Domain.Character.Enums;
+using SWLOR.Shared.Domain.Common.Contracts;
+using SWLOR.Shared.Domain.Crafting.ValueObjects;
+using SWLOR.Shared.Domain.Droids.Contracts;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Service;
 

@@ -1,15 +1,17 @@
-using SWLOR.Component.Associate.Contracts;
-using SWLOR.Component.Associate.UI.Payload;
 using SWLOR.Component.Inventory.Contracts;
 using SWLOR.Component.Inventory.Model;
 using SWLOR.Component.Inventory.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Enums;
-using SWLOR.Shared.Domain.Contracts;
-using SWLOR.Shared.Domain.Entity;
-using SWLOR.Shared.Domain.Enums;
-using SWLOR.Shared.Domain.Model.Payload;
+using SWLOR.Shared.Domain.Character.Contracts;
+using SWLOR.Shared.Domain.Character.Entities;
+using SWLOR.Shared.Domain.Character.Enums;
+using SWLOR.Shared.Domain.Common.Contracts;
+using SWLOR.Shared.Domain.Common.Enums;
+using SWLOR.Shared.Domain.Droids.Contracts;
+using SWLOR.Shared.Domain.Space.Contracts;
+using SWLOR.Shared.Domain.UI.Payloads;
 using SWLOR.Shared.UI.Contracts;
 
 namespace SWLOR.Component.Inventory.Feature.ItemDefinition

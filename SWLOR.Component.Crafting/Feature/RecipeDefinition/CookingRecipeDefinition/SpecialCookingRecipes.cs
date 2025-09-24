@@ -1,6 +1,7 @@
 using SWLOR.Component.Crafting.Contracts;
 using SWLOR.Component.Crafting.Service;
-using SWLOR.Shared.Domain.Enums;
+using SWLOR.Shared.Domain.Character.Enums;
+using SWLOR.Shared.Domain.Crafting.Enums;
 
 namespace SWLOR.Component.Crafting.Feature.RecipeDefinition.CookingRecipeDefinition
 {

@@ -4,7 +4,7 @@ using SWLOR.Component.Admin.EventHandlers;
 using SWLOR.Component.Admin.Feature;
 using SWLOR.Component.Admin.Service;
 using SWLOR.Component.Admin.UI.ViewModel;
-using SWLOR.Shared.Domain.Contracts;
+using SWLOR.Shared.Domain.Common.Contracts;
 
 namespace SWLOR.Component.Admin.Infrastructure
 {

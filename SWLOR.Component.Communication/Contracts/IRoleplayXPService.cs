@@ -1,4 +1,4 @@
-namespace SWLOR.Component.Communication.Feature;
+namespace SWLOR.Component.Communication.Contracts;
 
 public interface IRoleplayXPService
 {

@@ -5,7 +5,9 @@ using SWLOR.Component.Quest.Service;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Domain.Contracts;
+using SWLOR.Shared.Domain.Character.Contracts;
+using SWLOR.Shared.Domain.Combat.Contracts;
+using SWLOR.Shared.Domain.Common.Contracts;
 
 namespace SWLOR.Component.Quest.Infrastructure
 {

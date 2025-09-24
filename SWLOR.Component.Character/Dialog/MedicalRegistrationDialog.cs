@@ -2,6 +2,7 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Dialog.Contracts;
 using SWLOR.Shared.Dialog.Model;
 using SWLOR.Shared.Dialog.Service;
+using SWLOR.Shared.Domain.Character.Entities;
 
 namespace SWLOR.Component.Character.Dialog
 {
@@ -35,7 +36,7 @@ namespace SWLOR.Component.Character.Dialog
                 if (!GetIsPC(player) || GetIsDM(player)) return;
 
                 var playerId = GetObjectUUID(player);
-                var dbPlayer = _db.Get<Shared.Domain.Entity.Player>(playerId);
+                var dbPlayer = _db.Get<Player>(playerId);
 
                 var position = GetPosition(player);
                 var orientation = GetFacing(player);

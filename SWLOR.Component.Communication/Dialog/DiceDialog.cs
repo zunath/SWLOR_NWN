@@ -3,11 +3,12 @@ using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Dialog.Contracts;
 using SWLOR.Shared.Dialog.Model;
 using SWLOR.Shared.Dialog.Service;
-using SWLOR.Shared.Domain.Contracts;
-using SWLOR.Shared.Domain.Enums;
+using SWLOR.Shared.Domain.Character.Contracts;
+using SWLOR.Shared.Domain.Character.Entities;
+using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.UI.Service;
 
-namespace SWLOR.Component.Character.Dialog
+namespace SWLOR.Component.Communication.Dialog
 {
     public class DiceDialog : DialogBase
     {
@@ -217,7 +218,7 @@ namespace SWLOR.Component.Character.Dialog
             if (!GetIsDM(user))
             {
                 var playerId = GetObjectUUID(user);
-                var dbPlayer = _db.Get<Shared.Domain.Entity.Player>(playerId);
+                var dbPlayer = _db.Get<Player>(playerId);
 
                 // Skills
                  if (model.Skill != SkillType.Invalid)

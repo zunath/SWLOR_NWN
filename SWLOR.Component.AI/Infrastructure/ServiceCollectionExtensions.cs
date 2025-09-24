@@ -3,6 +3,7 @@ using SWLOR.Component.AI.Contracts;
 using SWLOR.Component.AI.EventHandlers;
 using SWLOR.Component.AI.Model;
 using SWLOR.Component.AI.Service;
+using SWLOR.Shared.Domain.AI.Contracts;
 
 namespace SWLOR.Component.AI.Infrastructure
 {

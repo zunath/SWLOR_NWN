@@ -4,7 +4,8 @@ using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Dialog.Contracts;
 using SWLOR.Shared.Dialog.Model;
 using SWLOR.Shared.Dialog.Service;
-using SWLOR.Shared.Domain.Enums;
+using SWLOR.Shared.Domain.Character.Entities;
+using SWLOR.Shared.Domain.Social.Enums;
 
 namespace SWLOR.Component.Character.Feature.SnippetDefinition
 {
@@ -70,7 +71,7 @@ namespace SWLOR.Component.Character.Feature.SnippetDefinition
 
                     var factionType = (FactionType) factionId;
                     var playerId = GetObjectUUID(player);
-                    var dbPlayer = _db.Get<Shared.Domain.Entity.Player>(playerId);
+                    var dbPlayer = _db.Get<Player>(playerId);
                     var factionStanding = 0;
 
                     if (dbPlayer.Factions.ContainsKey(factionType))
@@ -114,7 +115,7 @@ namespace SWLOR.Component.Character.Feature.SnippetDefinition
 
                     var factionType = (FactionType)factionId;
                     var playerId = GetObjectUUID(player);
-                    var dbPlayer = _db.Get<Shared.Domain.Entity.Player>(playerId);
+                    var dbPlayer = _db.Get<Player>(playerId);
                     var factionStanding = 0;
 
                     if (dbPlayer.Factions.ContainsKey(factionType))

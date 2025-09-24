@@ -1,4 +1,4 @@
-using SWLOR.Shared.Domain.Enums;
+using SWLOR.Shared.Domain.Character.Enums;
 
 namespace SWLOR.Component.Communication.Model
 {

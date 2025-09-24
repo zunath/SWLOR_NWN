@@ -1,8 +1,8 @@
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Domain.Entity;
-using SWLOR.Shared.Domain.Model.RefreshEvent;
+using SWLOR.Shared.Domain.Character.Entities;
+using SWLOR.Shared.Domain.UI.Events;
 using SWLOR.Shared.UI.Contracts;
 
 namespace SWLOR.Component.Admin.Feature

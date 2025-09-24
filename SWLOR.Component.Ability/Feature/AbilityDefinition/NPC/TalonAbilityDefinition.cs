@@ -1,10 +1,12 @@
 using SWLOR.Component.Ability.Contracts;
-using SWLOR.Component.Combat.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
-using SWLOR.Shared.Domain.Contracts;
-using SWLOR.Shared.Domain.Enums;
-using SWLOR.Shared.Domain.Model;
+using SWLOR.Shared.Domain.Character.Contracts;
+using SWLOR.Shared.Domain.Character.Enums;
+using SWLOR.Shared.Domain.Character.ValueObjects;
+using SWLOR.Shared.Domain.Combat.Contracts;
+using SWLOR.Shared.Domain.Combat.Enums;
+using SWLOR.Shared.Domain.Common.Enums;
 
 namespace SWLOR.Component.Ability.Feature.AbilityDefinition.NPC
 {

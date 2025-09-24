@@ -1,7 +1,8 @@
 using SWLOR.Component.Space.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
-using SWLOR.Shared.Domain.Enums;
+using SWLOR.Shared.Domain.Character.Enums;
+using SWLOR.Shared.Domain.Space.Enums;
 
 namespace SWLOR.Component.Space.Feature.ShipModuleDefinition
 {

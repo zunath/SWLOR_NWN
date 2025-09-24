@@ -1,5 +1,5 @@
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Domain.Enums;
+using SWLOR.Shared.Domain.Crafting.Enums;
 
 namespace SWLOR.Component.Crafting.UI.Payload
 {

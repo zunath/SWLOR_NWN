@@ -105,7 +105,16 @@ using ScriptExecutionProvider = SWLOR.Game.Server.Server.ScriptExecutionProvider
 using SWLOR.Shared.UI.Infrastructure;
 using SWLOR.Shared.UI.Service;
 using SWLOR.Shared.Dialog.Service;
-using SWLOR.Shared.Domain.Contracts;
+using SWLOR.Shared.Domain.Beasts.Contracts;
+using SWLOR.Shared.Domain.Character.Contracts;
+using SWLOR.Shared.Domain.Combat.Contracts;
+using SWLOR.Shared.Domain.Common.Contracts;
+using SWLOR.Shared.Domain.Crafting.Contracts;
+using SWLOR.Shared.Domain.Droids.Contracts;
+using SWLOR.Shared.Domain.Fishing.Contracts;
+using SWLOR.Shared.Domain.Properties.Contracts;
+using SWLOR.Shared.Domain.Social.Contracts;
+using SWLOR.Shared.Domain.Space.Contracts;
 
 namespace SWLOR.Game.Server
 {

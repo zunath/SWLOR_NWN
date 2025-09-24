@@ -2,9 +2,12 @@ using SWLOR.Component.Space.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Domain.Contracts;
-using SWLOR.Shared.Domain.Entity;
-using SWLOR.Shared.Domain.Enums;
+using SWLOR.Shared.Domain.Character.Entities;
+using SWLOR.Shared.Domain.Character.Enums;
+using SWLOR.Shared.Domain.Combat.Contracts;
+using SWLOR.Shared.Domain.Space.Contracts;
+using SWLOR.Shared.Domain.Space.Entities;
+using SWLOR.Shared.Domain.Space.Enums;
 using SWLOR.Shared.Events.Constants;
 
 namespace SWLOR.Component.Space.Feature.ShipModuleDefinition

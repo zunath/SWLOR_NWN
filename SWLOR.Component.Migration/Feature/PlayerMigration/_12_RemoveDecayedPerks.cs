@@ -1,7 +1,7 @@
 using SWLOR.Component.Migration.Model;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Domain.Contracts;
-using SWLOR.Shared.Domain.Entity;
+using SWLOR.Shared.Domain.Character.Contracts;
+using SWLOR.Shared.Domain.Character.Entities;
 
 namespace SWLOR.Component.Migration.Feature.PlayerMigration
 {

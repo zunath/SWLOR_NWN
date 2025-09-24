@@ -1,13 +1,14 @@
 using System.Globalization;
+using SWLOR.Component.Communication.Contracts;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Domain.Contracts;
-using SWLOR.Shared.Domain.Entity;
-using SWLOR.Shared.Domain.Enums;
+using SWLOR.Shared.Domain.Character.Entities;
+using SWLOR.Shared.Domain.Properties.Contracts;
+using SWLOR.Shared.Domain.Properties.Enums;
 using ChatChannel = SWLOR.NWN.API.NWNX.Enum.ChatChannel;
 
-namespace SWLOR.Component.Communication.Feature
+namespace SWLOR.Component.Communication.Service
 {
     public class RoleplayXPService : IRoleplayXPService
     {

@@ -5,8 +5,8 @@ using SWLOR.Component.Quest.Model;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Dialog.Contracts;
-using SWLOR.Shared.Domain.Entity;
-using SWLOR.Shared.Domain.Enums;
+using SWLOR.Shared.Domain.Character.Entities;
+using SWLOR.Shared.Domain.Social.Enums;
 using SWLOR.Shared.UI.Contracts;
 
 namespace SWLOR.Component.Quest.Service

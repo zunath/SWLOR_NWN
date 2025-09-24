@@ -1,4 +1,5 @@
-using SWLOR.Shared.Domain.Contracts;
+using SWLOR.Shared.Domain.Character.Contracts;
+using SWLOR.Shared.Domain.Combat.Contracts;
 
 namespace SWLOR.Component.AI.Model
 {

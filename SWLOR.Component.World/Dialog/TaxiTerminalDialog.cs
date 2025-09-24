@@ -4,8 +4,8 @@ using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Dialog.Contracts;
 using SWLOR.Shared.Dialog.Model;
 using SWLOR.Shared.Dialog.Service;
-using SWLOR.Shared.Domain.Entity;
-using SWLOR.Shared.Domain.Enums;
+using SWLOR.Shared.Domain.Character.Entities;
+using SWLOR.Shared.Domain.Common.Enums;
 using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Component.World.Dialog

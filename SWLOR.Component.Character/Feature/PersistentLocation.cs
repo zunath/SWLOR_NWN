@@ -1,5 +1,6 @@
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Domain.Character.Entities;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Area;
 using SWLOR.Shared.Events.Events.Module;
@@ -35,7 +36,7 @@ namespace SWLOR.Component.Character.Feature
             var position = GetPosition(player);
             var orientation = GetFacing(player);
             var playerId = GetObjectUUID(player);
-            var entity = _db.Get<Shared.Domain.Entity.Player>(playerId) ?? new Shared.Domain.Entity.Player(playerId);
+            var entity = _db.Get<Player>(playerId) ?? new Player(playerId);
 
             entity.LocationX = position.X;
             entity.LocationY = position.Y;
@@ -95,7 +96,7 @@ namespace SWLOR.Component.Character.Feature
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = _db.Get<Shared.Domain.Entity.Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
 
             if (dbPlayer == null)
                 return;

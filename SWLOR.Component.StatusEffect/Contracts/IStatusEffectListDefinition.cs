@@ -1,5 +1,5 @@
-using SWLOR.Shared.Domain.Enums;
-using SWLOR.Shared.Domain.Model;
+using SWLOR.Shared.Domain.Combat.Enums;
+using SWLOR.Shared.Domain.Combat.ValueObjects;
 
 namespace SWLOR.Component.StatusEffect.Contracts
 {

@@ -4,7 +4,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Core.Log.LogGroup;
-using SWLOR.Shared.Domain.Entity;
+using SWLOR.Shared.Domain.Character.Entities;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Service;
 

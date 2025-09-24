@@ -1,5 +1,6 @@
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Domain.Enums;
+using SWLOR.Shared.Domain.Character.Enums;
+using SWLOR.Shared.Domain.Space.Enums;
 
 namespace SWLOR.Component.Space.Contracts
 {

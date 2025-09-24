@@ -1,5 +1,5 @@
 using SWLOR.Component.Communication.Model;
-using SWLOR.Shared.Domain.Enums;
+using SWLOR.Shared.Domain.Character.Enums;
 
 namespace SWLOR.Component.Communication.Contracts
 {

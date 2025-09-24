@@ -1,9 +1,10 @@
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Models;
-using SWLOR.Shared.Domain.Contracts;
-using SWLOR.Shared.Domain.Enums;
-using SWLOR.Shared.Domain.Model;
+using SWLOR.Shared.Domain.Character.Contracts;
+using SWLOR.Shared.Domain.Character.Entities;
+using SWLOR.Shared.Domain.Character.Enums;
+using SWLOR.Shared.Domain.Space.ValueObjects;
 using SWLOR.Shared.UI.Component;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Service;
@@ -202,7 +203,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
         private void UpdateFP()
         {
             var playerId = GetObjectUUID(Player);
-            var dbPlayer = _db.Get<Shared.Domain.Entity.Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             var currentFP = dbPlayer.FP;
             var maxFP = _statService.GetMaxFP(Player, dbPlayer);
             var isStandard = dbPlayer.CharacterType == CharacterType.Standard;
@@ -213,7 +214,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
         private void UpdateSTM()
         {
             var playerId = GetObjectUUID(Player);
-            var dbPlayer = _db.Get<Shared.Domain.Entity.Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             var currentSTM = dbPlayer.Stamina;
             var maxSTM = _statService.GetMaxStamina(Player, dbPlayer);
 

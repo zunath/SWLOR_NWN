@@ -4,13 +4,14 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data;
-using SWLOR.Shared.Domain.Entity;
 using SWLOR.Shared.Abstractions.Enums;
-using SWLOR.Shared.Domain.Model.Payload;
+using SWLOR.Shared.Domain.Character.Entities;
+using SWLOR.Shared.Domain.Properties.Entities;
+using SWLOR.Shared.Domain.UI.Payloads;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
-using PlayerShip = SWLOR.Shared.Domain.Entity.PlayerShip;
+using PlayerShip = SWLOR.Shared.Domain.Space.Entities.PlayerShip;
 
 namespace SWLOR.Component.Space.UI.ViewModel
 {

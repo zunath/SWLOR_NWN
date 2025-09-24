@@ -1,6 +1,6 @@
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Domain.Entity;
-using SWLOR.Shared.Domain.Enums;
+using SWLOR.Shared.Domain.Character.Entities;
+using SWLOR.Shared.Domain.Character.Enums;
 
 namespace SWLOR.Admin.Services
 {

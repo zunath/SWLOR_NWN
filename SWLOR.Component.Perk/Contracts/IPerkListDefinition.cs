@@ -1,5 +1,5 @@
-using SWLOR.Shared.Domain.Enums;
-using SWLOR.Shared.Domain.Model;
+using SWLOR.Shared.Domain.Character.Enums;
+using SWLOR.Shared.Domain.Character.ValueObjects;
 
 namespace SWLOR.Component.Perk.Contracts
 {

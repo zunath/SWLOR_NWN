@@ -1,5 +1,6 @@
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Domain.Model.RefreshEvent;
+using SWLOR.Shared.Domain.Character.Entities;
+using SWLOR.Shared.Domain.UI.Events;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
@@ -31,7 +32,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
         private void LoadData()
         {
             var playerId = GetObjectUUID(Player);
-            var dbPlayer = _db.Get<Shared.Domain.Entity.Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
 
             var currencyNames = new GuiBindingList<string>();
             var currencyValues = new GuiBindingList<int>();

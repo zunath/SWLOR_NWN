@@ -1,11 +1,11 @@
-using SWLOR.Component.Communication.Contracts;
-using SWLOR.Component.World.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
-using SWLOR.Shared.Domain.Contracts;
-using SWLOR.Shared.Domain.Entity;
-using SWLOR.Shared.Domain.Enums;
+using SWLOR.Shared.Domain.Character.Entities;
+using SWLOR.Shared.Domain.Common.Contracts;
+using SWLOR.Shared.Domain.Properties.Contracts;
+using SWLOR.Shared.Domain.Properties.Enums;
+using SWLOR.Shared.Domain.Social.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 

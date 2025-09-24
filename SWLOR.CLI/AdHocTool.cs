@@ -3,7 +3,7 @@ using System.Linq;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Infrastructure;
-using SWLOR.Shared.Domain.Entity;
+using SWLOR.Shared.Domain.Properties.Entities;
 
 namespace SWLOR.CLI
 {

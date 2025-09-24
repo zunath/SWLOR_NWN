@@ -1,4 +1,4 @@
-using SWLOR.Shared.Domain.Enums;
+using SWLOR.Shared.Domain.Common.Enums;
 
 namespace SWLOR.Component.Inventory.Contracts
 {

@@ -1,4 +1,4 @@
-using SWLOR.Shared.Domain.Enums;
+using SWLOR.Shared.Domain.Combat.Enums;
 
 namespace SWLOR.Component.Ability.Model
 {

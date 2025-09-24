@@ -1,9 +1,9 @@
 using SWLOR.Component.Ability.Contracts;
-using SWLOR.Component.Combat.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Domain.Contracts;
-using SWLOR.Shared.Domain.Enums;
-using SWLOR.Shared.Domain.Model;
+using SWLOR.Shared.Domain.Character.Enums;
+using SWLOR.Shared.Domain.Character.ValueObjects;
+using SWLOR.Shared.Domain.Combat.Contracts;
+using SWLOR.Shared.Domain.Common.Enums;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Player;

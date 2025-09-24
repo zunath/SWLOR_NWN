@@ -4,7 +4,9 @@ using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Dialog.Contracts;
 using SWLOR.Shared.Dialog.Model;
 using SWLOR.Shared.Dialog.Service;
-using SWLOR.Shared.Domain.Entity;
+using SWLOR.Shared.Domain.Character.Entities;
+using SWLOR.Shared.Domain.Properties.Entities;
+using SWLOR.Shared.Domain.Space.Entities;
 using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Component.Space.Dialog

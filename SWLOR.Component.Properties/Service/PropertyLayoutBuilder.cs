@@ -1,5 +1,5 @@
-using SWLOR.Shared.Domain.Enums;
-using SWLOR.Shared.Domain.Model;
+using SWLOR.Shared.Domain.Properties.Enums;
+using SWLOR.Shared.Domain.Properties.ValueObjects;
 
 namespace SWLOR.Component.Properties.Service
 {

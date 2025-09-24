@@ -1,6 +1,6 @@
-using SWLOR.Component.Ability.Model;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Domain.Contracts;
+using SWLOR.Shared.Domain.Character.Contracts;
+using SWLOR.Shared.Domain.Character.ValueObjects;
 
 namespace SWLOR.Component.Admin.Feature
 {

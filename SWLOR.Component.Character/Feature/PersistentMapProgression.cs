@@ -1,7 +1,8 @@
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
-using SWLOR.Shared.Domain.Enums;
+using SWLOR.Shared.Domain.Character.Entities;
+using SWLOR.Shared.Domain.Common.Enums;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Area;
 using SWLOR.Shared.Events.Events.Module;
@@ -32,7 +33,7 @@ namespace SWLOR.Component.Character.Feature
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = _db.Get<Shared.Domain.Entity.Player>(playerId) ?? new Shared.Domain.Entity.Player(playerId);
+            var dbPlayer = _db.Get<Player>(playerId) ?? new Player(playerId);
             var area = OBJECT_SELF;
             var areaResref = GetResRef(area);
 
@@ -82,7 +83,7 @@ namespace SWLOR.Component.Character.Feature
             if (GetLocalBool(player, localVarName)) return;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = _db.Get<Shared.Domain.Entity.Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             if (dbPlayer == null)
                 return;
 

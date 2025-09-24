@@ -4,7 +4,8 @@ using SWLOR.Component.Migration.Model;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Log.LogGroup;
-using SWLOR.Shared.Domain.Enums;
+using SWLOR.Shared.Domain.Character.Enums;
+using SWLOR.Shared.Domain.Properties.Enums;
 
 namespace SWLOR.Component.Migration.Feature.ServerMigration
 {

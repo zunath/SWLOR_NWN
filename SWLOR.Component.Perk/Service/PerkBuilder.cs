@@ -1,8 +1,8 @@
 using SWLOR.Component.Perk.Model;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Domain.Delegates;
-using SWLOR.Shared.Domain.Enums;
-using SWLOR.Shared.Domain.Model;
+using SWLOR.Shared.Domain.Beasts.Enums;
+using SWLOR.Shared.Domain.Character.Enums;
+using SWLOR.Shared.Domain.Character.ValueObjects;
 
 namespace SWLOR.Component.Perk.Service
 {

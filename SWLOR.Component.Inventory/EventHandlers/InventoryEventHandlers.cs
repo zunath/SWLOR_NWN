@@ -1,4 +1,4 @@
-﻿using SWLOR.Shared.Domain.Model.RefreshEvent;
+﻿using SWLOR.Shared.Domain.UI.Events;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.UI.Contracts;

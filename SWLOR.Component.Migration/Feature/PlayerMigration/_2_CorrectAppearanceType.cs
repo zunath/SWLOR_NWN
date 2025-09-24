@@ -2,7 +2,7 @@ using SWLOR.Component.Migration.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Domain.Entity;
+using SWLOR.Shared.Domain.Character.Entities;
 
 namespace SWLOR.Component.Migration.Feature.PlayerMigration
 {

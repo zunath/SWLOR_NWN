@@ -6,8 +6,9 @@ using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Enums;
-using SWLOR.Shared.Domain.Model.Payload;
-using SWLOR.Shared.Domain.Model.RefreshEvent;
+using SWLOR.Shared.Domain.Character.Entities;
+using SWLOR.Shared.Domain.UI.Events;
+using SWLOR.Shared.Domain.UI.Payloads;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Module;
@@ -1126,7 +1127,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
                 return;
 
             var playerId = GetObjectUUID(_target);
-            var dbPlayer = _db.Get<Shared.Domain.Entity.Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             if (dbPlayer == null)
                 return;
 
@@ -1303,7 +1304,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
             IsSettingsSelected = true;
 
             var playerId = GetObjectUUID(_target);
-            var dbPlayer = _db.Get<Shared.Domain.Entity.Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
 
             ShowHelmet = dbPlayer.Settings.ShowHelmet;
             ShowCloak = dbPlayer.Settings.ShowCloak;
@@ -1783,7 +1784,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
                 return;
 
             var playerId = GetObjectUUID(_target);
-            var dbPlayer = _db.Get<Shared.Domain.Entity.Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
 
             SetObjectVisualTransform(_target, ObjectVisualTransform.Scale, dbPlayer.AppearanceScale);
         };
@@ -1791,7 +1792,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
         public Action OnClickSaveSettings() => () =>
         {
             var playerId = GetObjectUUID(_target);
-            var dbPlayer = _db.Get<Shared.Domain.Entity.Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
 
             dbPlayer.Settings.ShowCloak = ShowCloak;
             dbPlayer.Settings.ShowHelmet = ShowHelmet;

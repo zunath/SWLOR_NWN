@@ -1,7 +1,8 @@
 using SWLOR.Component.AI.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Domain.Contracts;
-using SWLOR.Shared.Domain.Enums;
+using SWLOR.Shared.Domain.Character.Contracts;
+using SWLOR.Shared.Domain.Combat.Contracts;
+using SWLOR.Shared.Domain.Combat.Enums;
 
 namespace SWLOR.Component.AI.Model
 {

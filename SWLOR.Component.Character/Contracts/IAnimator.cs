@@ -1,6 +1,7 @@
 using SWLOR.Component.Character.Model;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Domain.AI.ValueObjects;
 
 namespace SWLOR.Component.Character.Contracts
 {

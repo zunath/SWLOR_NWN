@@ -1,6 +1,6 @@
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Domain.Entity;
-using SWLOR.Shared.Domain.Enums;
+using SWLOR.Shared.Domain.Character.Entities;
+using SWLOR.Shared.Domain.Crafting.Enums;
 
 namespace SWLOR.Component.Crafting.Model
 {

@@ -5,7 +5,8 @@ using SWLOR.Component.Ability.Feature.AbilityDefinition.Devices;
 using SWLOR.Component.Ability.Feature.AbilityDefinition.Force;
 using SWLOR.Component.Ability.Feature.AbilityDefinition.General;
 using SWLOR.Component.Ability.Service;
-using SWLOR.Shared.Domain.Contracts;
+using SWLOR.Shared.Domain.Character.Contracts;
+using SWLOR.Shared.Domain.Common.Contracts;
 
 namespace SWLOR.Component.Ability.Infrastructure
 {

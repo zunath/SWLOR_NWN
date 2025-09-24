@@ -1,5 +1,5 @@
-using SWLOR.Component.Character.Contracts;
-using SWLOR.Component.Character.Model;
+using SWLOR.Shared.Domain.AI.ValueObjects;
+using SWLOR.Shared.Domain.Common.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Creature;
 

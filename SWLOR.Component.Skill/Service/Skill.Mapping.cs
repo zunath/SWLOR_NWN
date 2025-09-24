@@ -1,5 +1,5 @@
 using SWLOR.NWN.API.NWScript.Enum.Item;
-using SWLOR.Shared.Domain.Enums;
+using SWLOR.Shared.Domain.Character.Enums;
 
 namespace SWLOR.Component.Skill.Service
 {

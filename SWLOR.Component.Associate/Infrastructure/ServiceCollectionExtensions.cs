@@ -2,7 +2,8 @@ using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Associate.EventHandlers;
 using SWLOR.Component.Associate.Service;
 using SWLOR.Component.Associate.Contracts;
-using SWLOR.Shared.Domain.Contracts;
+using SWLOR.Shared.Domain.Beasts.Contracts;
+using SWLOR.Shared.Domain.Droids.Contracts;
 
 namespace SWLOR.Component.Associate.Infrastructure
 {

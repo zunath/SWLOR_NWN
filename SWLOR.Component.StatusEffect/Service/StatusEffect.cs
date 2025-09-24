@@ -6,9 +6,6 @@ using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Combat.ValueObjects;
 using SWLOR.Shared.Domain.Social.Contracts;
 using SWLOR.Shared.Domain.UI.Events;
-using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Constants;
-using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.UI.Contracts;
 
 namespace SWLOR.Component.StatusEffect.Service
@@ -197,7 +194,6 @@ namespace SWLOR.Component.StatusEffect.Service
         /// <summary>
         /// When the module loads, cache all status effects.
         /// </summary>
-        [ScriptHandler<OnModuleCacheBefore>]
         public void CacheStatusEffects()
         {
             // Organize perks to make later reads quicker.
@@ -319,7 +315,6 @@ namespace SWLOR.Component.StatusEffect.Service
         /// When a player enters the server, if any of their status effects in limbo, re-add them to the
         /// dictionary for processing.
         /// </summary>
-        [ScriptHandler<OnModuleEnter>]
         public void PlayerEnter()
         {
             var player = GetEnteringObject();
@@ -339,7 +334,6 @@ namespace SWLOR.Component.StatusEffect.Service
         /// When a player leaves the server, move their status effects to a different dictionary
         /// so they aren't processed unnecessarily.  
         /// </summary>
-        [ScriptHandler<OnModuleExit>]
         public void PlayerExit()
         {
             var player = GetExitingObject();
@@ -356,7 +350,6 @@ namespace SWLOR.Component.StatusEffect.Service
         /// <summary>
         /// When the module heartbeat runs, execute and clean up status effects on all creatures.
         /// </summary>
-        [ScriptHandler(ScriptName.OnSwlorHeartbeat)]
         public void TickStatusEffects()
         {
             var now = DateTime.UtcNow;
@@ -415,7 +408,6 @@ namespace SWLOR.Component.StatusEffect.Service
         /// <summary>
         /// When a player dies, remove any status effects which are present.
         /// </summary>
-        [ScriptHandler<OnModuleDeath>]
         public void OnPlayerDeath()
         {
             var player = GetLastPlayerDied();

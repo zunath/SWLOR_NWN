@@ -28,7 +28,6 @@ namespace SWLOR.Component.Ability.Service
             _time = time;
         }
 
-        [ScriptHandler<OnModuleCacheBefore>]
         public void CacheRecastGroups()
         {
             CacheRecastGroupNames();

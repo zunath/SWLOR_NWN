@@ -31,14 +31,12 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Acid), creature);
         }
 
-        [ScriptHandler(ScriptName.OnGrenadeGas1Enable)]
         public void GasBomb1Enter()
         {
             var creature = GetEnteringObject();
             ApplyEffect(creature,  4);
         }
 
-        [ScriptHandler(ScriptName.OnGrenadeGas1Heartbeat)]
         public void GasBomb1Heartbeat()
         {
             var creature = GetFirstInPersistentObject(OBJECT_SELF);
@@ -49,14 +47,12 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
             }
         }
 
-        [ScriptHandler(ScriptName.OnGrenadeGas2Enable)]
         public void GasBomb2Enter()
         {
             var creature = GetEnteringObject();
             ApplyEffect(creature, 12);
         }
 
-        [ScriptHandler(ScriptName.OnGrenadeGas2Heartbeat)]
         public void GasBomb2Heartbeat()
         {
             var creature = GetFirstInPersistentObject(OBJECT_SELF);
@@ -67,14 +63,12 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
             }
         }
 
-        [ScriptHandler(ScriptName.OnGrenadeGas3Enable)]
         public void GasBomb3Enter()
         {
             var creature = GetEnteringObject();
             ApplyEffect(creature, 16);
         }
 
-        [ScriptHandler(ScriptName.OnGrenadeGas3Heartbeat)]
         public void GasBomb3Heartbeat()
         {
             var creature = GetFirstInPersistentObject(OBJECT_SELF);

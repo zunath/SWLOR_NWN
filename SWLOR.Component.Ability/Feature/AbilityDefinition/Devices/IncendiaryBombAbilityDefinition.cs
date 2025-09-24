@@ -41,14 +41,12 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Fire), creature);
         }
 
-        [ScriptHandler(ScriptName.OnGrenadeIncendiary1Enable)]
         public void IncendiaryBomb1Enter()
         {
             var creature = GetEnteringObject();
             ApplyEffect(creature, 4);
         }
 
-        [ScriptHandler(ScriptName.OnGrenadeIncendiary1Heartbeat)]
         public void IncendiaryBomb1Heartbeat()
         {
             var creature = GetFirstInPersistentObject(OBJECT_SELF);
@@ -59,14 +57,12 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
             }
         }
 
-        [ScriptHandler(ScriptName.OnGrenadeIncendiary2Enable)]
         public void IncendiaryBomb2Enter()
         {
             var creature = GetEnteringObject();
             ApplyEffect(creature, 10);
         }
 
-        [ScriptHandler(ScriptName.OnGrenadeIncendiary2Heartbeat)]
         public void IncendiaryBomb2Heartbeat()
         {
             var creature = GetFirstInPersistentObject(OBJECT_SELF);
@@ -77,14 +73,12 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
             }
         }
 
-        [ScriptHandler(ScriptName.OnGrenadeIncendiary3Enable)]
         public void IncendiaryBomb3Enter()
         {
             var creature = GetEnteringObject();
             ApplyEffect(creature, 16);
         }
 
-        [ScriptHandler(ScriptName.OnGrenadeIncendiary3Heartbeat)]
         public void IncendiaryBomb3Heartbeat()
         {
             var creature = GetFirstInPersistentObject(OBJECT_SELF);

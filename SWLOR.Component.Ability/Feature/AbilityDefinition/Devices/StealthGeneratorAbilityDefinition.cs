@@ -30,8 +30,6 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
             return builder.Build();
         }
 
-        [ScriptHandler(ScriptName.OnHarvesterUsed)]
-        [ScriptHandler<OnPlayerDamaged>]
         public static void ClearInvisibility()
         {
             RemoveEffect(OBJECT_SELF, EffectTypeScript.Invisibility, EffectTypeScript.ImprovedInvisibility);

@@ -45,7 +45,6 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
             return string.Empty;
         }
 
-        [ScriptHandler(ScriptName.OnBurstOfSpeedApply)]
         public static void ApplyEffect()
         {
             var activeEffect = GetLastRunScriptEffect();
@@ -80,7 +79,6 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
             statService.ApplyPlayerMovementRate(target);
         }
 
-        [ScriptHandler(ScriptName.OnBurstOfSpeedRemoved)]
         public static void RemoveEffect()
         {
             var target = OBJECT_SELF;

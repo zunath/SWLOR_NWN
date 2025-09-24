@@ -29,5 +29,10 @@ namespace SWLOR.Shared.Domain.Contracts
         /// <param name="delaySeconds">The number of seconds to delay.</param>
         /// <param name="ignoreRecastReduction">If true, recast reduction bonuses are ignored.</param>
         void ApplyRecastDelay(uint activator, RecastGroup group, float delaySeconds, bool ignoreRecastReduction);
+
+        /// <summary>
+        /// Caches recast group data on module load.
+        /// </summary>
+        void CacheRecastGroups();
     }
 }

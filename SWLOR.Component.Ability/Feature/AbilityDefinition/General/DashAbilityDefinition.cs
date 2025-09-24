@@ -24,7 +24,6 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.General
             return builder.Build();
         }
 
-        [ScriptHandler(ScriptName.OnSpaceEnter)]
         public void EnterSpace()
         {
             var player = OBJECT_SELF;

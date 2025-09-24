@@ -76,7 +76,6 @@ namespace SWLOR.Component.Ability.Service
         /// <summary>
         /// When the module caches, abilities will be cached and events will be scheduled.
         /// </summary>
-        [ScriptHandler<OnModuleCacheBefore>]
         public void CacheData()
         {
             CacheAbilities();
@@ -290,7 +289,6 @@ namespace SWLOR.Component.Ability.Service
         /// Each tick, creatures with a concentration effect will be processed.
         /// This will drain FP and reapply whatever effect is associated with an ability.
         /// </summary>
-        [ScriptHandler(ScriptName.OnSwlorHeartbeat)]
         public void ProcessConcentrationEffects()
         {
             var pairs = _activeConcentrationAbilities.ToList();
@@ -488,7 +486,6 @@ namespace SWLOR.Component.Ability.Service
         /// <summary>
         /// Whenever a weapon's OnHit event is fired, add a Leadership combat point if an Aura is active.
         /// </summary>
-        [ScriptHandler(ScriptName.OnItemHit)]
         public void AddLeadershipCombatPoint()
         {
             var player = OBJECT_SELF;
@@ -687,7 +684,6 @@ namespace SWLOR.Component.Ability.Service
         /// <summary>
         /// When a player enters the server, apply the Aura AOE effect.
         /// </summary>
-        [ScriptHandler<OnModuleEnter>]
         public void ApplyAuraAOE()
         {
             var player = GetEnteringObject();
@@ -697,7 +693,6 @@ namespace SWLOR.Component.Ability.Service
         /// <summary>
         /// When a player exits the server, remove all of their Aura effects.
         /// </summary>
-        [ScriptHandler<OnModuleExit>]
         public void ClearAurasOnExit()
         {
             var player = GetExitingObject();
@@ -707,7 +702,6 @@ namespace SWLOR.Component.Ability.Service
         /// <summary>
         /// When a player dies, remove all of their Aura effects.
         /// </summary>
-        [ScriptHandler<OnModuleDeath>]
         public void ClearAurasOnDeath()
         {
             var player = GetLastPlayerDied();
@@ -717,7 +711,6 @@ namespace SWLOR.Component.Ability.Service
         /// <summary>
         /// When a player respawns, reapply the aura AOE effect
         /// </summary>
-        [ScriptHandler<OnModuleRespawn>]
         public void ReapplyAuraOnRespawn()
         {
             var player = GetLastRespawnButtonPresser();
@@ -727,7 +720,6 @@ namespace SWLOR.Component.Ability.Service
         /// <summary>
         /// When a player enters space mode, remove all of their Aura effects.
         /// </summary>
-        [ScriptHandler(ScriptName.OnSpaceEnter)]
         public void ClearAurasOnSpaceEntry()
         {
             var player = OBJECT_SELF;
@@ -737,7 +729,6 @@ namespace SWLOR.Component.Ability.Service
         /// <summary>
         /// Whenever a creature enters the aura, add them to the cache.
         /// </summary>
-        [ScriptHandler(ScriptName.OnAuraEnter)]
         public void AuraEnter()
         {
             var entering = GetEnteringObject();
@@ -784,7 +775,6 @@ namespace SWLOR.Component.Ability.Service
         /// <summary>
         /// Whenever a creature exits the aura, remove it from the cache.
         /// </summary>
-        [ScriptHandler(ScriptName.OnAuraExit)]
         public void AuraExit()
         {
             var exiting = GetExitingObject();

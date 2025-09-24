@@ -47,21 +47,24 @@ namespace SWLOR.Component.Inventory.UI.ViewModel
             public int BasePrice { get; set; }
             public string Name { get; set; }
 
-            public TerminalItem(string icon, string resref, int basePrice)
+            public TerminalItem(IItemCacheService itemCache, string icon, string resref, int basePrice)
             {
                 Icon = icon;
                 Resref = resref;
                 BasePrice = basePrice;
 
-                Name = _itemCache.GetItemNameByResref(resref);
+                Name = itemCache.GetItemNameByResref(resref);
             }
         }
 
-        private static readonly List<TerminalItem> _availableItems = new()
+        private List<TerminalItem> GetAvailableItems()
         {
-            new("iIT_BOOK_244", "refund_tome", 10000),
-            new("iIT_BOOK_246", "recond_tome", 300000),
-        };
+            return new List<TerminalItem>
+            {
+                new(_itemCache, "iIT_BOOK_244", "refund_tome", 10000),
+                new(_itemCache, "iIT_BOOK_246", "recond_tome", 300000),
+            };
+        }
 
         public string AvailableXP
         {
@@ -105,7 +108,7 @@ namespace SWLOR.Component.Inventory.UI.ViewModel
             Resrefs = new List<string>();
             Prices = new List<int>();
 
-            foreach (var item in _availableItems)
+            foreach (var item in GetAvailableItems())
             {
                 icons.Add(item.Icon);
                 names.Add(item.Name);

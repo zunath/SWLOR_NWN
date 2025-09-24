@@ -1,3 +1,4 @@
+using SWLOR.Component.Associate.Enums;
 using SWLOR.Component.Inventory.Contracts;
 using SWLOR.Component.Inventory.Model;
 using SWLOR.Component.Inventory.Service;
@@ -10,11 +11,14 @@ namespace SWLOR.Component.Inventory.Feature.LootTableDefinition
     public class EnzymeLootTableDefinition: ILootTableDefinition
     {
         private readonly IRandomService _random;
-        private readonly LootTableBuilder _builder = new();
+        private readonly ILootTableBuilder _builder;
 
-        public EnzymeLootTableDefinition(IRandomService random)
+        public EnzymeLootTableDefinition(
+            IRandomService random, 
+            ILootTableBuilder lootTableBuilder)
         {
             _random = random;
+            _builder = lootTableBuilder;
         }
 
         private static readonly int[] _primaryWeights =

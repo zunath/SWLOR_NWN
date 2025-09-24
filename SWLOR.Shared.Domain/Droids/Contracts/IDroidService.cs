@@ -4,6 +4,8 @@ namespace SWLOR.Shared.Domain.Droids.Contracts
 {
     public interface IDroidService
     {
+        public string DroidResref { get; }
+        public string DroidControlItemResref { get; }
         /// <summary>
         /// When the module loads, cache all relevant droid data into memory.
         /// </summary>

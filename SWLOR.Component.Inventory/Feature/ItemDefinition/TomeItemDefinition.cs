@@ -1,8 +1,11 @@
+using SWLOR.Component.Character.Contracts;
 using SWLOR.Component.Inventory.Contracts;
 using SWLOR.Component.Inventory.Dialog;
 using SWLOR.Component.Inventory.Model;
 using SWLOR.Component.Inventory.Service;
+using SWLOR.Shared.Dialog.Contracts;
 using SWLOR.Shared.Domain.Common.Enums;
+using SWLOR.Shared.Domain.UI.Events;
 using SWLOR.Shared.UI.Contracts;
 
 namespace SWLOR.Component.Inventory.Feature.ItemDefinition
@@ -10,13 +13,18 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
     public class TomeItemDefinition: IItemListDefinition
     {
         private readonly ICurrencyService _currencyService;
+        private readonly IDialogService _dialogService;
         private readonly IGuiService _guiService;
-        private readonly ItemBuilder _builder = new();
+        private readonly IItemBuilder _builder;
 
-        public TomeItemDefinition(ICurrencyService currencyService, IGuiService guiService)
+        public TomeItemDefinition(
+            ICurrencyService currencyService, 
+            IGuiService guiService,
+            IDialogService dialogService)
         {
             _currencyService = currencyService;
             _guiService = guiService;
+            _dialogService = dialogService;
         }
 
         public Dictionary<string, ItemDetail> BuildItems()
@@ -36,7 +44,7 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
                     SetLocalObject(user, "XP_TOME_OBJECT", item);
                     AssignCommand(user, () => ClearAllActions());
 
-                    Shared.Dialog.Service.Dialog.StartConversation(user, user, nameof(XPTomeDialog));
+                    _dialogService.StartConversation(user, user, nameof(XPTomeDialog));
                 });
         }
 

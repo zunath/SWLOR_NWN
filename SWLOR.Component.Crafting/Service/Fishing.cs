@@ -15,6 +15,7 @@ using SWLOR.Shared.Domain.Common.Contracts;
 using SWLOR.Shared.Domain.Common.Enums;
 using SWLOR.Shared.Domain.Fishing.Contracts;
 using SWLOR.Shared.Domain.Fishing.Enums;
+using SWLOR.Shared.Domain.Social.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Module;
@@ -60,9 +61,9 @@ namespace SWLOR.Component.Crafting.Service
             _messagingService = messagingService;
         }
 
-        public const string ActiveBaitVariable = "ACTIVE_BAIT";
-        public const string RemainingBaitVariable = "REMAINING_BAIT";
-        public const string LoadedBaitTypeVariable = "LOADED_BAIT_TYPE";
+        public string ActiveBaitVariable => "ACTIVE_BAIT";
+        public string RemainingBaitVariable => "REMAINING_BAIT";
+        public string LoadedBaitTypeVariable => "LOADED_BAIT_TYPE";
         private const string FishingPositionVariableX = "FISHING_POSITION_X";
         private const string FishingPositionVariableY = "FISHING_POSITION_Y";
         private const string FishingPositionVariableZ = "FISHING_POSITION_Z";
@@ -71,7 +72,7 @@ namespace SWLOR.Component.Crafting.Service
         private const string FishingPointInitializedVariable = "FISHING_POINT_INITIALIZED";
         private const string FishingAttemptVariable = "FISHING_ATTEMPT_ID";
         public const string FishingPointLocationVariable = "FISHING_LOCATION_ID";
-        public const string FishingRodTag = "FISHING_ROD";
+        public string FishingRodTag => "FISHING_ROD";
 
         /// <summary>
         /// When the module loads, retrieve and organize all fishing data for quick look-ups.

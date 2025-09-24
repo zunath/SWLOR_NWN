@@ -1,3 +1,4 @@
+
 using SWLOR.Shared.Core.Contracts;
 
 namespace SWLOR.Component.Inventory.Model

@@ -6,7 +6,12 @@ namespace SWLOR.Component.Inventory.Feature.LootTableDefinition
 {
     public class CZ220LootTableDefinition: ILootTableDefinition
     {
-        private readonly LootTableBuilder _builder = new();
+        private readonly ILootTableBuilder _builder;
+
+        public CZ220LootTableDefinition(ILootTableBuilder lootTableBuilder)
+        {
+            _builder = lootTableBuilder;
+        }
 
         public Dictionary<string, LootTable> BuildLootTables()
         {

@@ -50,8 +50,8 @@ namespace SWLOR.Component.Associate.Service
         private readonly DroidBlandPersonality _blandPersonality;
         private readonly DroidWorshipfulPersonality _worshipfulPersonality;
 
-        public const string DroidResref = "pc_droid";
-        public const string DroidControlItemResref = "droid_control";
+        public string DroidResref => "pc_droid";
+        public string DroidControlItemResref => "droid_control";
         private const string DroidObjectVariable = "ACTIVE_DROID";
         private const string DroidControlItemVariable = "ACTIVE_DROID_ITEM";
         private const string ConstructedDroidVariable = "CONSTRUCTED_DROID";

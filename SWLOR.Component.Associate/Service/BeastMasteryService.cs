@@ -108,7 +108,7 @@ namespace SWLOR.Component.Associate.Service
         public string LyaseResrefPrefix => "lyase_";
         public string IsomeraseResrefPrefix => "isomerase_";
         public string DNAResref => "beast_dna";
-        public const string BeastEggResref = "beast_egg";
+        public string BeastEggResref => "beast_egg";
         public const string EnzymeTag = "INCUBATION_ENZYME";
 
         public string ExtractCorpseObjectResref => "extract_corpse";

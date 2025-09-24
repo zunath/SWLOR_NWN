@@ -1,10 +1,11 @@
+using SWLOR.Component.Inventory.Delegates;
 using SWLOR.Component.Inventory.Model;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Common.Enums;
 
 namespace SWLOR.Component.Inventory.Service
 {
-    public class ItemBuilder
+    public class ItemBuilder : IItemBuilder
     {
         private readonly Dictionary<string, ItemDetail> _items = new();
         private readonly List<ItemDetail> _activeItems = new();
@@ -15,7 +16,7 @@ namespace SWLOR.Component.Inventory.Service
         /// <param name="itemTag">The tag of the item which will use these rules.</param>
         /// <param name="itemTags">The additional item tags which will also use these rules.</param>
         /// <returns>An item builder with the configured options.</returns>
-        public ItemBuilder Create(string itemTag, params string[] itemTags)
+        public IItemBuilder Create(string itemTag, params string[] itemTags)
         {
             _activeItems.Clear();
 
@@ -38,7 +39,7 @@ namespace SWLOR.Component.Inventory.Service
         /// </summary>
         /// <param name="message">The message to send.</param>
         /// <returns>An item builder with the configured options.</returns>
-        public ItemBuilder InitializationMessage(string message)
+        public IItemBuilder InitializationMessage(string message)
         {
             foreach (var item in _activeItems)
             {
@@ -53,7 +54,7 @@ namespace SWLOR.Component.Inventory.Service
         /// </summary>
         /// <param name="action">The action to run.</param>
         /// <returns>An item builder with the configured options.</returns>
-        public ItemBuilder InitializationMessage(InitializationMessageDelegate action)
+        public IItemBuilder InitializationMessage(InitializationMessageDelegate action)
         {
             foreach (var item in _activeItems)
             {
@@ -69,7 +70,7 @@ namespace SWLOR.Component.Inventory.Service
         /// </summary>
         /// <param name="seconds">The number of seconds.</param>
         /// <returns>An item builder with the configured options.</returns>
-        public ItemBuilder Delay(float seconds)
+        public IItemBuilder Delay(float seconds)
         {
             foreach (var item in _activeItems)
             {
@@ -84,7 +85,7 @@ namespace SWLOR.Component.Inventory.Service
         /// </summary>
         /// <param name="action">The action to run.</param>
         /// <returns>An item builder with the configured options.</returns>
-        public ItemBuilder Delay(CalculateDelayDelegate action)
+        public IItemBuilder Delay(CalculateDelayDelegate action)
         {
             foreach (var item in _activeItems)
             {
@@ -98,7 +99,7 @@ namespace SWLOR.Component.Inventory.Service
         /// Forces the user to turn and face the target.
         /// </summary>
         /// <returns>An item builder with the configured options.</returns>
-        public ItemBuilder UserFacesTarget()
+        public IItemBuilder UserFacesTarget()
         {
             foreach (var item in _activeItems)
             {
@@ -113,7 +114,7 @@ namespace SWLOR.Component.Inventory.Service
         /// </summary>
         /// <param name="animation">The animation to play</param>
         /// <returns>An item builder with the configured options.</returns>
-        public ItemBuilder PlaysAnimation(Animation animation)
+        public IItemBuilder PlaysAnimation(Animation animation)
         {
             foreach (var item in _activeItems)
             {
@@ -129,7 +130,7 @@ namespace SWLOR.Component.Inventory.Service
         /// </summary>
         /// <param name="maxDistance">The max distance in meters.</param>
         /// <returns>An item builder with the configured options.</returns>
-        public ItemBuilder MaxDistance(float maxDistance)
+        public IItemBuilder MaxDistance(float maxDistance)
         {
             foreach (var item in _activeItems)
             {
@@ -144,7 +145,7 @@ namespace SWLOR.Component.Inventory.Service
         /// </summary>
         /// <param name="action">The action to run.</param>
         /// <returns>An item builder with the configured options.</returns>
-        public ItemBuilder MaxDistance(CalculateDistanceDelegate action)
+        public IItemBuilder MaxDistance(CalculateDistanceDelegate action)
         {
             foreach (var item in _activeItems)
             {
@@ -158,7 +159,7 @@ namespace SWLOR.Component.Inventory.Service
         /// Indicates that the item will lose a charge when successfully used.
         /// </summary>
         /// <returns>An item builder with the configured options.</returns>
-        public ItemBuilder ReducesItemCharge()
+        public IItemBuilder ReducesItemCharge()
         {
             foreach (var item in _activeItems)
             {
@@ -173,7 +174,7 @@ namespace SWLOR.Component.Inventory.Service
         /// </summary>
         /// <param name="action">The action to run.</param>
         /// <returns>An item builder with the configured options.</returns>
-        public ItemBuilder ReducesItemCharge(ReducesItemChargeDelegate action)
+        public IItemBuilder ReducesItemCharge(ReducesItemChargeDelegate action)
         {
             foreach (var item in _activeItems)
             {
@@ -187,7 +188,7 @@ namespace SWLOR.Component.Inventory.Service
         /// Enables targeting locations in addition to other objects.
         /// </summary>
         /// <returns>An item builder with the configured options.</returns>
-        public ItemBuilder TargetsLocation()
+        public IItemBuilder TargetsLocation()
         {
             foreach (var item in _activeItems)
             {
@@ -202,7 +203,7 @@ namespace SWLOR.Component.Inventory.Service
         /// </summary>
         /// <param name="action">The action to run.</param>
         /// <returns>An item builder with the configured options.</returns>
-        public ItemBuilder ValidationAction(ValidateItemDelegate action)
+        public IItemBuilder ValidationAction(ValidateItemDelegate action)
         {
             foreach (var item in _activeItems)
             {
@@ -217,7 +218,7 @@ namespace SWLOR.Component.Inventory.Service
         /// </summary>
         /// <param name="action">The action to run.</param>
         /// <returns>An item builder with the configured options.</returns>
-        public ItemBuilder ApplyAction(ApplyItemEffectsDelegate action)
+        public IItemBuilder ApplyAction(ApplyItemEffectsDelegate action)
         {
             foreach (var item in _activeItems)
             {
@@ -233,7 +234,7 @@ namespace SWLOR.Component.Inventory.Service
         /// <param name="type">The recast group type</param>
         /// <param name="delaySeconds">The delay in seconds</param>
         /// <returns>An item builder with the configured options.</returns>
-        public ItemBuilder HasRecastDelay(RecastGroup type, float delaySeconds)
+        public IItemBuilder HasRecastDelay(RecastGroup type, float delaySeconds)
         {
             foreach (var item in _activeItems)
             {

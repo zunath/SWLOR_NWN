@@ -27,7 +27,7 @@ namespace SWLOR.Component.Inventory.Service
         private readonly Dictionary<string, LootTable> _lootTables = new();
 
         private const float CorpseLifespanSeconds = 360f;
-        public const string CorpseBodyVariable = "CORPSE_BODY";
+        public string CorpseBodyVariable => "CORPSE_BODY";
         private const string CorpseCopyItemVariable = "CORPSE_ITEM_COPY";
 
         public Loot(

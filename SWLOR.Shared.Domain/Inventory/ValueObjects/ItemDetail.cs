@@ -1,21 +1,10 @@
+using SWLOR.Component.Inventory.Delegates;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Common.Enums;
 
 namespace SWLOR.Component.Inventory.Model
 {
-    public delegate void ApplyItemEffectsDelegate(uint user, uint item, uint target, Location targetLocation, int itemPropertyIndex);
-
-    public delegate string ValidateItemDelegate(uint user, uint item, uint target, Location targetLocation, int itemPropertyIndex);
-
-    public delegate float CalculateDistanceDelegate(uint user, uint item, uint target, Location targetLocation, int itemPropertyIndex );
-
-    public delegate bool ReducesItemChargeDelegate(uint user, uint item, uint target, Location targetLocation, int itemPropertyIndex );
-
-    public delegate string InitializationMessageDelegate(uint user, uint item, uint target, Location targetLocation, int itemPropertyIndex);
-
-    public delegate float CalculateDelayDelegate(uint user, uint item, uint target, Location targetLocation, int itemPropertyIndex);
-    
     public class ItemDetail
     {
         public InitializationMessageDelegate InitializationMessageAction { get; set; }

@@ -6,7 +6,12 @@ namespace SWLOR.Component.Inventory.Feature.LootTableDefinition
 {
     public class KorribanLootTableDefinition : ILootTableDefinition
     {
-        private readonly LootTableBuilder _builder = new();
+        private readonly ILootTableBuilder _builder;
+
+        public KorribanLootTableDefinition(ILootTableBuilder lootTableBuilder)
+        {
+            _builder = lootTableBuilder;
+        }
 
         public Dictionary<string, LootTable> BuildLootTables()
         {

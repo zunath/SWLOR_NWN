@@ -6,7 +6,12 @@ namespace SWLOR.Component.Inventory.Feature.LootTableDefinition
 {
     public class HutlarLootTableDefinition: ILootTableDefinition
     {
-        private readonly LootTableBuilder _builder = new();
+        private readonly ILootTableBuilder _builder;
+
+        public HutlarLootTableDefinition(ILootTableBuilder lootTableBuilder)
+        {
+            _builder = lootTableBuilder;
+        }
 
         public Dictionary<string, LootTable> BuildLootTables()
         {

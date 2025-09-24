@@ -1,3 +1,4 @@
+using SWLOR.Component.Associate.Enums;
 using SWLOR.Component.Inventory.Contracts;
 using SWLOR.Component.Inventory.Model;
 using SWLOR.Component.Inventory.Service;
@@ -19,14 +20,20 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
         private readonly IBeastMasteryService _beastMasteryService;
         private readonly IPerkService _perkService;
         private readonly ILootService _lootService;
-        private readonly ItemBuilder _builder = new();
+        private readonly IItemBuilder _builder;
 
-        public DNAExtractorItemDefinition(IRandomService random, IBeastMasteryService beastMasteryService, IPerkService perkService, ILootService lootService)
+        public DNAExtractorItemDefinition(
+            IRandomService random, 
+            IBeastMasteryService beastMasteryService, 
+            IPerkService perkService, 
+            ILootService lootService,
+            IItemBuilder itemBuilder)
         {
             _random = random;
             _beastMasteryService = beastMasteryService;
             _perkService = perkService;
             _lootService = lootService;
+            _builder = itemBuilder;
         }
 
         public Dictionary<string, ItemDetail> BuildItems()

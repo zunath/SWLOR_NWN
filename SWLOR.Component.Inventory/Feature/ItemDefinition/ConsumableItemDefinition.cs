@@ -1,3 +1,4 @@
+using SWLOR.Component.Character.Contracts;
 using SWLOR.Component.Inventory.Contracts;
 using SWLOR.Component.Inventory.Model;
 using SWLOR.Component.Inventory.Service;
@@ -8,12 +9,14 @@ using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Domain.Beasts.Contracts;
+using SWLOR.Shared.Domain.Beasts.Entities;
 using SWLOR.Shared.Domain.Beasts.Enums;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Common.Contracts;
 using SWLOR.Shared.Domain.Common.Enums;
+using SWLOR.Shared.Domain.Crafting.ValueObjects;
 
 namespace SWLOR.Component.Inventory.Feature.ItemDefinition
 {
@@ -27,7 +30,13 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
         private readonly ICurrencyService _currencyService;
         private readonly ItemBuilder _builder = new();
 
-        public ConsumableItemDefinition(IRandomService random, IDatabaseService db, IStatusEffectService statusEffectService, IBeastMasteryService beastMasteryService, IItemService itemService, ICurrencyService currencyService)
+        public ConsumableItemDefinition(
+            IRandomService random, 
+            IDatabaseService db, 
+            IStatusEffectService statusEffectService, 
+            IBeastMasteryService beastMasteryService, 
+            IItemService itemService, 
+            ICurrencyService currencyService)
         {
             _random = random;
             _db = db;

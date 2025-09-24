@@ -1,3 +1,4 @@
+using SWLOR.Component.Associate.Enums;
 using SWLOR.Component.Inventory.Contracts;
 using SWLOR.Component.Inventory.Model;
 using SWLOR.Component.Inventory.Service;
@@ -7,6 +8,7 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Domain.Beasts.Contracts;
+using SWLOR.Shared.Domain.Beasts.Entities;
 using SWLOR.Shared.Domain.Beasts.Enums;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Entities;
@@ -21,14 +23,20 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
         private readonly IDatabaseService _db;
         private readonly IBeastMasteryService _beastMasteryService;
         private readonly IPerkService _perkService;
-        private readonly ItemBuilder _builder = new();
+        private readonly IItemBuilder _builder;
 
-        public BeastEggItemDefinition(ILogger logger, IDatabaseService db, IBeastMasteryService beastMasteryService, IPerkService perkService)
+        public BeastEggItemDefinition(
+            ILogger logger, 
+            IDatabaseService db, 
+            IBeastMasteryService beastMasteryService, 
+            IPerkService perkService,
+            IItemBuilder itemBuilder)
         {
             _logger = logger;
             _db = db;
             _beastMasteryService = beastMasteryService;
             _perkService = perkService;
+            _builder = itemBuilder;
         }
 
         public Dictionary<string, ItemDetail> BuildItems()

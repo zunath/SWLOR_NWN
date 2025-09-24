@@ -12,6 +12,7 @@ using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Common.Contracts;
 using SWLOR.Shared.Domain.Common.Enums;
+using SWLOR.Shared.Domain.Droids.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.NWNX;
@@ -26,6 +27,7 @@ namespace SWLOR.Component.Inventory.Service
         private readonly IPerkService _perkService;
         private readonly IActivityService _activityService;
         private readonly IRecastService _recastService;
+        private readonly IDroidService _droidService;
         
         // Cached data
         private IInterfaceCache<string, ItemDetail> _itemCache;
@@ -38,13 +40,20 @@ namespace SWLOR.Component.Inventory.Service
         private readonly Dictionary<BaseItem, AbilityType> _itemToDamageAbilityMapping = new();
         private readonly Dictionary<BaseItem, AbilityType> _itemToAccuracyAbilityMapping = new();
 
-        public Item(ILogger logger, IGenericCacheService cacheService, IPerkService perkService, IActivityService activityService, IRecastService recastService)
+        public Item(
+            ILogger logger, 
+            IGenericCacheService cacheService, 
+            IPerkService perkService, 
+            IActivityService activityService, 
+            IRecastService recastService,
+            IDroidService droidService)
         {
             _logger = logger;
             _cacheService = cacheService;
             _perkService = perkService;
             _activityService = activityService;
             _recastService = recastService;
+            _droidService = droidService;
         }
 
         /// <summary>
@@ -982,7 +991,7 @@ namespace SWLOR.Component.Inventory.Service
         public string CanBePersistentlyStored(uint player, uint item)
         {
             var resref = GetResRef(item);
-            string[] disallowedResrefs = { Droid.DroidControlItemResref };
+            string[] disallowedResrefs = { _droidService.DroidControlItemResref };
 
             if (GetItemPossessor(item) != player)
             {

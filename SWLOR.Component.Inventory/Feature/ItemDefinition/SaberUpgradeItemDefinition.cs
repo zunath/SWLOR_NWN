@@ -5,9 +5,9 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Bioware;
+using SWLOR.Shared.Domain.Character.Entities;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Combat.Enums;
-using Player = SWLOR.Shared.Core.Data.Entity.Player;
 
 namespace SWLOR.Component.Inventory.Feature.ItemDefinition
 {

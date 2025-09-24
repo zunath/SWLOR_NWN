@@ -11,6 +11,7 @@ namespace SWLOR.Shared.Domain.Beasts.Contracts
         public string LyaseResrefPrefix { get; }
         public string IsomeraseResrefPrefix { get; }
         public string DNAResref { get; }
+        public string BeastEggResref { get; }
         string ExtractCorpseObjectResref { get; }
         string BeastTypeVariable { get; }
         string BeastLevelVariable { get; }

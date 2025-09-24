@@ -1,13 +1,20 @@
 using SWLOR.Component.Inventory.Model;
+using SWLOR.Shared.Core.Contracts;
 
 namespace SWLOR.Component.Inventory.Service
 {
-    public class LootTableBuilder
+    public class LootTableBuilder : ILootTableBuilder
     {
         private readonly Dictionary<string, LootTable> _lootTables = new();
+        private readonly IRandomService _random;
 
         private LootTable _activeTable;
-        private LootTableItem _activeItem { get; set; }
+        private LootTableItem ActiveItem { get; set; }
+
+        public LootTableBuilder(IRandomService random)
+        {
+            _random = random;
+        }
 
 
         /// <summary>
@@ -15,9 +22,9 @@ namespace SWLOR.Component.Inventory.Service
         /// </summary>
         /// <param name="lootTableId">The loot table Id to create the table with</param>
         /// <returns>A loot table builder with the configured settings.</returns>
-        public LootTableBuilder Create(string lootTableId)
+        public ILootTableBuilder Create(string lootTableId)
         {
-            _activeTable = new LootTable();
+            _activeTable = new LootTable(_random);
             _lootTables[lootTableId] = _activeTable;
 
             return this;
@@ -27,7 +34,7 @@ namespace SWLOR.Component.Inventory.Service
         /// Marks the loot table as rare which will increase the chance the table is used if a player has tagged a creature with Treasure Hunter during combat.
         /// </summary>
         /// <returns>A loot table builder with the configured settings.</returns>
-        public LootTableBuilder IsRare()
+        public ILootTableBuilder IsRare()
         {
             _activeTable.IsRare = true;
 
@@ -42,10 +49,10 @@ namespace SWLOR.Component.Inventory.Service
         /// <param name="maxQuantity">The max quantity of this item to drop. A random value is selected, not to exceed this value.</param>
         /// <param name="isRare">If true, item frequency will be adjusted by the Treasure Hunter perk.</param>
         /// <returns>A loot table builder with the configured settings.</returns>
-        public LootTableBuilder AddItem(string resref, int frequency, int maxQuantity = 1, bool isRare = false)
+        public ILootTableBuilder AddItem(string resref, int frequency, int maxQuantity = 1, bool isRare = false)
         {
-            _activeItem = new LootTableItem(resref, maxQuantity, frequency, isRare);
-            _activeTable.Add(_activeItem);
+            ActiveItem = new LootTableItem(resref, maxQuantity, frequency, isRare);
+            _activeTable.Add(ActiveItem);
 
             return this;
         }
@@ -56,11 +63,11 @@ namespace SWLOR.Component.Inventory.Service
         /// <param name="maxAmount">The max amount of gold to drop. A random value is selected, not to exceed this value.</param>
         /// <param name="frequency">The weighted chance of the gold to drop</param>
         /// <returns>A loot table builder with the configured settings.</returns>
-        public LootTableBuilder AddGold(int maxAmount, int frequency)
+        public ILootTableBuilder AddGold(int maxAmount, int frequency)
         {
             const string GoldResref = "nw_it_gold001";
-            _activeItem = new LootTableItem(GoldResref, maxAmount, frequency, false);
-            _activeTable.Add(_activeItem);
+            ActiveItem = new LootTableItem(GoldResref, maxAmount, frequency, false);
+            _activeTable.Add(ActiveItem);
 
             return this;
         }
@@ -71,9 +78,9 @@ namespace SWLOR.Component.Inventory.Service
         /// </summary>
         /// <param name="spawnAction">The action to run when the item is spawned.</param>
         /// <returns>A loot table builder with the configured settings.</returns>
-        public LootTableBuilder AddSpawnAction(Action<uint> spawnAction)
+        public ILootTableBuilder AddSpawnAction(Action<uint> spawnAction)
         {
-            _activeItem.OnSpawn = spawnAction;
+            ActiveItem.OnSpawn = spawnAction;
 
             return this;
         }

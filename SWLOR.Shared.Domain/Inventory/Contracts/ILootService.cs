@@ -4,6 +4,7 @@ namespace SWLOR.Component.Inventory.Contracts
 {
     public interface ILootService
     {
+        public string CorpseBodyVariable { get; }
         void RegisterLootTables();
 
         /// <summary>

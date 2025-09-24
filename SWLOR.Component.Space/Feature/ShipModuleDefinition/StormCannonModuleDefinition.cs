@@ -4,8 +4,10 @@ using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Combat.Contracts;
+using SWLOR.Shared.Domain.Social.Contracts;
 using SWLOR.Shared.Domain.Space.Contracts;
 using SWLOR.Shared.Domain.Space.Enums;
+using SWLOR.Shared.Domain.Space.ValueObjects;
 
 namespace SWLOR.Component.Space.Feature.ShipModuleDefinition
 {

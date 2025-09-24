@@ -5,9 +5,11 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Character.Entities;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Combat.Contracts;
+using SWLOR.Shared.Domain.Social.Contracts;
 using SWLOR.Shared.Domain.Space.Contracts;
 using SWLOR.Shared.Domain.Space.Entities;
 using SWLOR.Shared.Domain.Space.Enums;
+using SWLOR.Shared.Domain.Space.ValueObjects;
 using SWLOR.Shared.Events.Constants;
 
 namespace SWLOR.Component.Space.Feature.ShipModuleDefinition

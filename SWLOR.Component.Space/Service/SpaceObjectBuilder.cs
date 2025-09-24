@@ -1,6 +1,7 @@
 using SWLOR.Component.Space.Model;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Domain.Space.Enums;
 
 namespace SWLOR.Component.Space.Service
 {

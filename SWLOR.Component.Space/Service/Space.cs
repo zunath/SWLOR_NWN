@@ -89,7 +89,7 @@ namespace SWLOR.Component.Space.Service
             _enmityService = enmityService;
         }
 
-        public const int MaxRegisteredShips = 10;
+        public int MaxRegisteredShips => 10;
 
         private readonly Dictionary<string, ShipDetail> _shipTypes = new();
         private readonly Dictionary<string, ShipModuleDetail> _shipModules = new();

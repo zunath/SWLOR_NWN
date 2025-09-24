@@ -4,7 +4,7 @@ using SWLOR.Shared.Domain.Common.Enums;
 
 namespace SWLOR.Component.Communication.Service
 {
-    public class ChatCommandBuilder
+    public class ChatCommandBuilder : IChatCommandBuilder
     {
         private readonly Dictionary<string, ChatCommandDetail> _chatCommands = new();
         private ChatCommandDetail _currentDetail;
@@ -15,7 +15,7 @@ namespace SWLOR.Component.Communication.Service
         /// <param name="command">The primary command name.</param>
         /// <param name="alternativeCommands">Alternative commands which also perform the same method.</param>
         /// <returns>A configured ChatCommandBuilder.</returns>
-        public ChatCommandBuilder Create(string command, params string[] alternativeCommands)
+        public IChatCommandBuilder Create(string command, params string[] alternativeCommands)
         {
             _currentDetail = new ChatCommandDetail();
             _chatCommands[command] = _currentDetail;
@@ -36,7 +36,7 @@ namespace SWLOR.Component.Communication.Service
         /// </summary>
         /// <param name="description">The description to set.</param>
         /// <returns>A configured ChatCommandBuilder.</returns>
-        public ChatCommandBuilder Description(string description)
+        public IChatCommandBuilder Description(string description)
         {
             _currentDetail.Description = description;
 
@@ -48,7 +48,7 @@ namespace SWLOR.Component.Communication.Service
         /// </summary>
         /// <param name="authorizationLevels">The authorization levels to allow.</param>
         /// <returns>A configured ChatCommandBuilder.</returns>
-        public ChatCommandBuilder Permissions(params AuthorizationLevel[] authorizationLevels)
+        public IChatCommandBuilder Permissions(params AuthorizationLevel[] authorizationLevels)
         {
             var authorization = AuthorizationLevel.None;
 
@@ -67,7 +67,7 @@ namespace SWLOR.Component.Communication.Service
         /// </summary>
         /// <param name="validation">The validation routine to run against arguments.</param>
         /// <returns>A configured ChatCommandBuilder.</returns>
-        public ChatCommandBuilder Validate(ChatCommandDetail.ValidateArgumentsDelegate validation)
+        public IChatCommandBuilder Validate(ChatCommandDetail.ValidateArgumentsDelegate validation)
         {
             _currentDetail.ValidateArguments = validation;
 
@@ -79,7 +79,7 @@ namespace SWLOR.Component.Communication.Service
         /// </summary>
         /// <param name="action">The action routine to run.</param>
         /// <returns>A configured ChatCommandBuilder.</returns>
-        public ChatCommandBuilder Action(ChatCommandDetail.ExecuteChatCommandDelegate action)
+        public IChatCommandBuilder Action(ChatCommandDetail.ExecuteChatCommandDelegate action)
         {
             _currentDetail.DoAction = action;
 
@@ -90,7 +90,7 @@ namespace SWLOR.Component.Communication.Service
         /// the general purpose chat commands.
         /// </summary>
         /// <returns>A configured ChatCommandBuilder.</returns>
-        public ChatCommandBuilder IsEmote()
+        public IChatCommandBuilder IsEmote()
         {
             _currentDetail.IsEmote = true;
 
@@ -101,7 +101,7 @@ namespace SWLOR.Component.Communication.Service
         /// </summary>
         /// <param name="animation">The animation to play.</param>
         /// <returns>A configured ChatCommandBuilder.</returns>
-        public ChatCommandBuilder AnimationAction(Animation animation)
+        public IChatCommandBuilder AnimationAction(Animation animation)
         {
             _currentDetail.DoAction = (user, target, location, args) =>
             {
@@ -118,7 +118,7 @@ namespace SWLOR.Component.Communication.Service
         /// </summary>
         /// <param name="animation">The looping animation to play.</param>
         /// <returns>A configured ChatCommandBuilder.</returns>
-        public ChatCommandBuilder AnimationLoopingAction(Animation animation)
+        public IChatCommandBuilder AnimationLoopingAction(Animation animation)
         {
             _currentDetail.DoAction = (user, target, location, args) =>
             {
@@ -145,7 +145,7 @@ namespace SWLOR.Component.Communication.Service
         /// The objectTypes argument determines the type of objects that can be selected.
         /// </summary>
         /// <returns>A configured ChatCommandBuilder.</returns>
-        public ChatCommandBuilder RequiresTarget(ObjectType objectTypes = ObjectType.All)
+        public IChatCommandBuilder RequiresTarget(ObjectType objectTypes = ObjectType.All)
         {
             _currentDetail.RequiresTarget = true;
             _currentDetail.ValidTargetTypes = objectTypes;
@@ -157,7 +157,7 @@ namespace SWLOR.Component.Communication.Service
         /// Indicates this chat command can be used by anyone if the server is set to 'test' mode.
         /// </summary>
         /// <returns>A configured ChatCommandBuilder.</returns>
-        public ChatCommandBuilder AvailableToAllOnTestEnvironment()
+        public IChatCommandBuilder AvailableToAllOnTestEnvironment()
         {
             _currentDetail.AvailableToAllOnTestEnvironment = true;
 

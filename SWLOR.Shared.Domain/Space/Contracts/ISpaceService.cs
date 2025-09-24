@@ -343,6 +343,11 @@ namespace SWLOR.Shared.Domain.Space.Contracts
         /// exit the stealth mode and send an error message.
         /// </summary>
         void PreventSpaceStealth();
+
+        /// <summary>
+        /// Gets the maximum number of ships a player can register.
+        /// </summary>
+        int MaxRegisteredShips { get; }
     }
 
 }

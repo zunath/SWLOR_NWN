@@ -2,7 +2,7 @@ using SWLOR.Shared.Abstractions.Contracts;
 
 namespace SWLOR.Shared.Domain.UI.Events
 {
-    internal class TargetStatusRefreshEvent: IGuiRefreshEvent
+    public class TargetStatusRefreshEvent: IGuiRefreshEvent
     {
 
     }

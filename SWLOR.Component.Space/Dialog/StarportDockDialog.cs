@@ -1,3 +1,4 @@
+using SWLOR.Component.Space.Service;
 using SWLOR.NWN.API.Engine;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
@@ -5,10 +6,12 @@ using SWLOR.Shared.Dialog.Contracts;
 using SWLOR.Shared.Dialog.Model;
 using SWLOR.Shared.Dialog.Service;
 using SWLOR.Shared.Domain.Character.Entities;
+using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Common.Enums;
 using SWLOR.Shared.Domain.Properties.Contracts;
 using SWLOR.Shared.Domain.Properties.Entities;
 using SWLOR.Shared.Domain.Properties.Enums;
+using SWLOR.Shared.Domain.Space.Contracts;
 using SWLOR.Shared.Domain.Space.Entities;
 using SWLOR.Shared.UI.Service;
 
@@ -19,13 +22,23 @@ namespace SWLOR.Component.Space.Dialog
         private readonly ILogger _logger;
         private readonly IDatabaseService _db;
         private readonly IPropertyService _propertyService;
+        private readonly ISpaceService _spaceService;
+        private readonly IEnmityService _enmityService;
 
-        public StarportDockDialog(ILogger logger, IDatabaseService db, IPropertyService propertyService, IDialogService dialogService) 
+        public StarportDockDialog(
+            ILogger logger, 
+            IDatabaseService db, 
+            IPropertyService propertyService, 
+            IDialogService dialogService,
+            ISpaceService spaceService,
+            IEnmityService enmityService) 
             : base(dialogService)
         {
             _logger = logger;
             _db = db;
             _propertyService = propertyService;
+            _spaceService = spaceService;
+            _enmityService = enmityService;
         }
         
         private class Model
@@ -90,7 +103,7 @@ namespace SWLOR.Component.Space.Dialog
             var player = GetPC();
             var playerId = GetObjectUUID(player);
             var model = GetDataModel<Model>();
-            var dockPoints = Service.Space.GetDockPointsByPlanet(model.Planet);
+            var dockPoints = _spaceService.GetDockPointsByPlanet(model.Planet);
 
             page.Header = "Please select a location.";
 
@@ -102,7 +115,7 @@ namespace SWLOR.Component.Space.Dialog
 
                 page.AddResponse(dockName, () =>
                 {
-                    if (Enmity.HasEnmity(player))
+                    if (_enmityService.HasEnmity(player))
                     {
                         SendMessageToPC(player, ColorToken.Red("You cannot dock while being targeted."));
                         return;
@@ -210,7 +223,7 @@ namespace SWLOR.Component.Space.Dialog
 
                     _db.Set(dbProperty);
 
-                    Service.Space.WarpPlayerInsideShip(player);
+                    _spaceService.WarpPlayerInsideShip(player);
                 });
             }
         }

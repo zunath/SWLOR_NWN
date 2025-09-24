@@ -1,5 +1,6 @@
 using SWLOR.Component.World.Contracts;
 using SWLOR.Component.World.Model;
+using SWLOR.Component.World.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Component.Space.Feature.SpawnDefinition

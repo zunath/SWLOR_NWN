@@ -6,7 +6,12 @@ namespace SWLOR.Component.Space.Feature.SpaceObjectDefinition
 {
     public class NPCSpaceObjectDefinition : ISpaceObjectListDefinition
     {
-        private readonly SpaceObjectBuilder _builder = new();
+        private readonly ISpaceObjectBuilder _builder;
+
+        public NPCSpaceObjectDefinition(ISpaceObjectBuilder builder)
+        {
+            _builder = builder;
+        }
 
         public Dictionary<string, SpaceObjectDetail> BuildSpaceObjects()
         {

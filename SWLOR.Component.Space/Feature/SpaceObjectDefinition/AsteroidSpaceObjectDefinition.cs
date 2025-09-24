@@ -6,7 +6,12 @@ namespace SWLOR.Component.Space.Feature.SpaceObjectDefinition
 {
     public class AsteroidSpaceObjectDefinition : ISpaceObjectListDefinition
     {
-        private readonly SpaceObjectBuilder _builder = new();
+        private readonly ISpaceObjectBuilder _builder;
+
+        public AsteroidSpaceObjectDefinition(ISpaceObjectBuilder builder)
+        {
+            _builder = builder;
+        }
 
         public Dictionary<string, SpaceObjectDetail> BuildSpaceObjects()
         {

@@ -9,7 +9,12 @@ namespace SWLOR.Component.Space.Feature.ShipDefinition
 {
     public class PlayerShipDefinition : IShipListDefinition
     {
-        private readonly ShipBuilder _builder = new();
+        private readonly IShipBuilder _builder;
+
+        public PlayerShipDefinition(IShipBuilder builder)
+        {
+            _builder = builder;
+        }
 
         public Dictionary<string, ShipDetail> BuildShips()
         {

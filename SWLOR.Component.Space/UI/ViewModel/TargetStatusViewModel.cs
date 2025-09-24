@@ -1,6 +1,9 @@
+using SWLOR.Component.Space.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Models;
+using SWLOR.Shared.Domain.Space.Contracts;
+using SWLOR.Shared.Domain.UI.Events;
 using SWLOR.Shared.UI.Component;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Service;
@@ -10,8 +13,14 @@ namespace SWLOR.Component.Space.UI.ViewModel
     internal class TargetStatusViewModel : GuiViewModelBase<TargetStatusViewModel, IGuiPayload>,
         IGuiRefreshable<TargetStatusRefreshEvent>
     {
-        public TargetStatusViewModel(IGuiService guiService) : base(guiService)
+        private readonly ISpaceService _space;
+
+        public TargetStatusViewModel(
+            IGuiService guiService,
+            ISpaceService space) 
+            : base(guiService)
         {
+            _space = space;
         }
 
         private int _screenHeight;
@@ -146,7 +155,7 @@ namespace SWLOR.Component.Space.UI.ViewModel
 
         private void UpdateData()
         {
-            var (target, targetStatus) = Service.Space.GetCurrentTarget(Player);
+            var (target, targetStatus) = _space.GetCurrentTarget(Player);
 
             if (!GetIsObjectValid(target) || targetStatus == null)
                 return;
@@ -175,7 +184,7 @@ namespace SWLOR.Component.Space.UI.ViewModel
 
         public void Refresh(TargetStatusRefreshEvent payload)
         {
-            if (!Service.Space.IsPlayerInSpaceMode(Player))
+            if (!_space.IsPlayerInSpaceMode(Player))
                 return;
 
             UpdateWidget();

@@ -7,7 +7,13 @@ namespace SWLOR.Component.Space.Feature.ShipDefinition
 {
     public class NPCShipDefinition : IShipListDefinition
     {
-        private readonly ShipBuilder _builder = new();
+        private readonly IShipBuilder _builder;
+
+        public NPCShipDefinition(IShipBuilder shipBuilder)
+        {
+            _builder = shipBuilder;
+        }
+
         public Dictionary<string, ShipDetail> BuildShips()
         {
             Tier1();

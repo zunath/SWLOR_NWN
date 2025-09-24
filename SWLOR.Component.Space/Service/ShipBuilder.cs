@@ -7,7 +7,7 @@ using SWLOR.Shared.Domain.Space.ValueObjects;
 
 namespace SWLOR.Component.Space.Service
 {
-    public class ShipBuilder
+    public class ShipBuilder : IShipBuilder
     {
         private readonly ILogger _logger;
         private readonly Dictionary<string, ShipDetail> _ships = new();

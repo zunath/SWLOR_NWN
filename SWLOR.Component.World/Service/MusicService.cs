@@ -1,9 +1,6 @@
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Character.Entities;
-using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Events.Area;
-using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Component.World.Service
 {
@@ -34,7 +31,6 @@ namespace SWLOR.Component.World.Service
         /// When the module loads, read the ambientmusic.2da file for all active songs.
         /// Add these to the cache.
         /// </summary>
-        [ScriptHandler<OnModuleCacheBefore>]
         public void LoadSongList()
         {
             const string File = "ambientmusic";
@@ -68,7 +64,6 @@ namespace SWLOR.Component.World.Service
         /// When a player enters the server, if a battle theme has been selected by the player,
         /// apply the battle theme to the player.
         /// </summary>
-        [ScriptHandler<OnAreaEnter>]
         public void ApplyBattleThemeToPlayer()
         {
             var player = GetEnteringObject();

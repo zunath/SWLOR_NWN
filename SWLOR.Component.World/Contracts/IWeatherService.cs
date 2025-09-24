@@ -1,6 +1,6 @@
 namespace SWLOR.Component.World.Contracts
 {
-    public interface IWeather
+    public interface IWeatherService
     {
         /// <summary>
         /// Adjusts the weather based on current conditions and time.
@@ -86,5 +86,20 @@ namespace SWLOR.Component.World.Contracts
         /// <param name="oArea">The area to set modifier for.</param>
         /// <param name="nModifier">The acid rain modifier value.</param>
         void SetAreaAcidRain(uint oArea, int nModifier);
+
+        /// <summary>
+        /// Loads weather data when the module caches.
+        /// </summary>
+        void LoadData();
+
+        /// <summary>
+        /// Handles weather when a player enters an area.
+        /// </summary>
+        void OnAreaEnter();
+
+        /// <summary>
+        /// Handles weather updates on module heartbeat.
+        /// </summary>
+        void OnModuleHeartbeat();
     }
 }

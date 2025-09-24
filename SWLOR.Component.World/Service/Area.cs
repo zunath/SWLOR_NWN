@@ -5,9 +5,6 @@ using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Domain.Common.Contracts;
 using SWLOR.Shared.Domain.Properties.Contracts;
 using SWLOR.Shared.Domain.Properties.Enums;
-using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Events.Area;
-using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Component.World.Service
@@ -25,7 +22,6 @@ namespace SWLOR.Component.World.Service
             _property = property;
         }
 
-        [ScriptHandler<OnModuleCacheBefore>]
         public void CacheData()
         {
             CacheAreasByResref();
@@ -49,7 +45,6 @@ namespace SWLOR.Component.World.Service
         /// Remove instance templates from the area cache on module load.
         /// This ensures player locations are not updated in places they shouldn't be.
         /// </summary>
-        [ScriptHandler<OnModuleCacheAfter>]
         public void RemoveInstancesFromCache()
         {
             var propertyLayouts = _property.GetAllLayoutsByPropertyType(PropertyType.Apartment);
@@ -101,7 +96,6 @@ namespace SWLOR.Component.World.Service
         /// <summary>
         /// When a player or DM enters an area, add them to the cache.
         /// </summary>
-        [ScriptHandler<OnAreaEnter>]
         public void EnterArea()
         {
             var player = GetEnteringObject();
@@ -141,7 +135,6 @@ namespace SWLOR.Component.World.Service
         /// <summary>
         /// When a player or DM leaves an area, remove them from the cache.
         /// </summary>
-        [ScriptHandler<OnAreaExit>]
         public void ExitArea()
         {
             var player = GetExitingObject();

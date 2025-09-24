@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.World.Contracts;
+using SWLOR.Component.World.EventHandlers;
 using SWLOR.Component.World.Service;
 
 namespace SWLOR.Component.World.Infrastructure
@@ -19,6 +20,7 @@ namespace SWLOR.Component.World.Infrastructure
             services.AddSingleton<ITileMagicService, TileMagicService>();
             services.AddSingleton<ITaxiService, Taxi>();
             services.AddSingleton<ISpawnTableBuilder, SpawnTableBuilder>();
+            services.AddSingleton<WorldEventHandlers>();
 
             return services;
         }

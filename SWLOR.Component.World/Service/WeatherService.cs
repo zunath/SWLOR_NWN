@@ -14,7 +14,7 @@ using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Component.World.Service
 {
-    public class Weather : IWeather
+    public class WeatherService : IWeatherService
     {
         private readonly Dictionary<uint, List<uint>> _areaWeatherPlaceables = new();
         private Dictionary<PlanetType, WeatherClimate> _planetClimates;

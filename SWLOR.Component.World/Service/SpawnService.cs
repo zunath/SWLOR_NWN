@@ -10,12 +10,6 @@ using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Domain.AI.Contracts;
 using SWLOR.Shared.Domain.AI.Enums;
-using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Constants;
-using SWLOR.Shared.Events.Events.Area;
-using SWLOR.Shared.Events.Events.Creature;
-using SWLOR.Shared.Events.Events.Module;
-using SWLOR.Shared.Events.Events.NWNX;
 
 namespace SWLOR.Component.World.Service
 {
@@ -87,7 +81,6 @@ namespace SWLOR.Component.World.Service
         // Cached data
         private IInterfaceCache<string, SpawnTable> _spawnTableCache;
 
-        [ScriptHandler<OnModuleCacheBefore>]
         public void CacheData()
         {
             LoadSpawnTables();
@@ -301,7 +294,6 @@ namespace SWLOR.Component.World.Service
             return count;
         }
 
-        [ScriptHandler<OnAreaEnter>]
         public void SpawnArea()
         {
             var player = GetEnteringObject();
@@ -336,7 +328,6 @@ namespace SWLOR.Component.World.Service
         /// When the last player in an area leaves, a despawn request is queued up.
         /// The heartbeat processor will despawn all objects when this happens
         /// </summary>
-        [ScriptHandler<OnAreaExit>]
         public void QueueDespawnArea()
         {
             var player = GetExitingObject();
@@ -419,8 +410,6 @@ namespace SWLOR.Component.World.Service
         /// via DestroyObject.  Call this method directly if you need to use DestroyObject
         /// on a respawning object.
         /// </summary>
-        [ScriptHandler<OnCreatureDeathAfter>]
-        [ScriptHandler(ScriptName.OnPlaceableDeath)]
         public void QueueRespawn()
         {
             uint creature = OBJECT_SELF;
@@ -440,7 +429,6 @@ namespace SWLOR.Component.World.Service
         /// On each module heartbeat, process queued spawns and
         /// process dequeue area event requests.
         /// </summary>
-        [ScriptHandler(ScriptName.OnSwlorHeartbeat)]
         public void ProcessSpawnSystem()
         {
             ProcessQueuedSpawns();
@@ -693,7 +681,6 @@ namespace SWLOR.Component.World.Service
         /// <summary>
         /// When a DM spawns a creature, attach all required scripts to it.
         /// </summary>
-        [ScriptHandler<OnDMSpawnObjectAfter>]
         public void DMSpawnCreature()
         {
             var objectType = (InternalObjectType)Convert.ToInt32(EventsPlugin.GetEventData("OBJECT_TYPE"));

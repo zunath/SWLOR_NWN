@@ -12,6 +12,7 @@ using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Common.Contracts;
 using SWLOR.Shared.Domain.Common.Enums;
+using SWLOR.Shared.Domain.Social.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Module;
@@ -29,7 +30,14 @@ namespace SWLOR.Component.Perk.Service
         private readonly IActivityService _activityService;
         private readonly IMessagingService _messagingService;
 
-        public UsePerkFeat(IAbilityService abilityService, IPerkService perkService, IItemService itemService, IRecastService recastService, IEnmityService enmityService, IActivityService activityService, IMessagingService messagingService)
+        public UsePerkFeat(
+            IAbilityService abilityService, 
+            IPerkService perkService, 
+            IItemService itemService, 
+            IRecastService recastService, 
+            IEnmityService enmityService, 
+            IActivityService activityService, 
+            IMessagingService messagingService)
         {
             _abilityService = abilityService;
             _perkService = perkService;

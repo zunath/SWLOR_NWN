@@ -8,23 +8,21 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
 {
     public class AgriculturePerkDefinition: IPerkListDefinition
     {
-        private readonly PerkBuilder _builder = new();
-
-        public Dictionary<PerkType, PerkDetail> BuildPerks()
+        public Dictionary<PerkType, PerkDetail> BuildPerks(IPerkBuilder builder)
         {
-            Synthesis();
-            Touch();
-            Abilities();
-            CookingRecipes();
-            AgricultureEquipment();
-            FishingRods();
+            Synthesis(builder);
+            Touch(builder);
+            Abilities(builder);
+            CookingRecipes(builder);
+            AgricultureEquipment(builder);
+            FishingRods(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
 
-        private void Synthesis()
+        private void Synthesis(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Agriculture, PerkType.RapidSynthesisCooking)
+            builder.Create(PerkCategoryType.Agriculture, PerkType.RapidSynthesisCooking)
                 .Name("Rapid Synthesis (Cooking)")
 
                 .AddPerkLevel()
@@ -33,7 +31,7 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Agriculture, 10);
 
 
-            _builder.Create(PerkCategoryType.Agriculture, PerkType.CarefulSynthesisCooking)
+            builder.Create(PerkCategoryType.Agriculture, PerkType.CarefulSynthesisCooking)
                 .Name("Careful Synthesis (Cooking)")
 
                 .AddPerkLevel()
@@ -42,9 +40,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Agriculture, 30);
         }
 
-        private void Touch()
+        private void Touch(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Agriculture, PerkType.BasicTouchCooking)
+            builder.Create(PerkCategoryType.Agriculture, PerkType.BasicTouchCooking)
                 .Name("Basic Touch (Cooking)")
 
                 .AddPerkLevel()
@@ -52,7 +50,7 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .Price(1)
                 .RequirementSkill(SkillType.Agriculture, 5);
 
-            _builder.Create(PerkCategoryType.Agriculture, PerkType.StandardTouchCooking)
+            builder.Create(PerkCategoryType.Agriculture, PerkType.StandardTouchCooking)
                 .Name("Standard Touch (Cooking)")
 
                 .AddPerkLevel()
@@ -60,7 +58,7 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .Price(1)
                 .RequirementSkill(SkillType.Agriculture, 15);
 
-            _builder.Create(PerkCategoryType.Agriculture, PerkType.PreciseTouchCooking)
+            builder.Create(PerkCategoryType.Agriculture, PerkType.PreciseTouchCooking)
                 .Name("Precise Touch (Cooking)")
 
                 .AddPerkLevel()
@@ -69,9 +67,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Agriculture, 35);
         }
 
-        private void Abilities()
+        private void Abilities(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Agriculture, PerkType.MastersMendCooking)
+            builder.Create(PerkCategoryType.Agriculture, PerkType.MastersMendCooking)
                 .Name("Master's Mend (Cooking)")
 
                 .AddPerkLevel()
@@ -79,7 +77,7 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .Price(1)
                 .RequirementSkill(SkillType.Agriculture, 10);
 
-            _builder.Create(PerkCategoryType.Agriculture, PerkType.SteadyHandCooking)
+            builder.Create(PerkCategoryType.Agriculture, PerkType.SteadyHandCooking)
                 .Name("Steady Hand (Cooking)")
 
                 .AddPerkLevel()
@@ -87,7 +85,7 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .Price(1)
                 .RequirementSkill(SkillType.Agriculture, 20);
 
-            _builder.Create(PerkCategoryType.Agriculture, PerkType.MuscleMemoryCooking)
+            builder.Create(PerkCategoryType.Agriculture, PerkType.MuscleMemoryCooking)
                 .Name("Muscle Memory (Cooking)")
 
                 .AddPerkLevel()
@@ -95,7 +93,7 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .Price(1)
                 .RequirementSkill(SkillType.Agriculture, 40);
 
-            _builder.Create(PerkCategoryType.Agriculture, PerkType.VenerationCooking)
+            builder.Create(PerkCategoryType.Agriculture, PerkType.VenerationCooking)
                 .Name("Veneration (Cooking)")
 
                 .AddPerkLevel()
@@ -103,7 +101,7 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .Price(1)
                 .RequirementSkill(SkillType.Agriculture, 25);
 
-            _builder.Create(PerkCategoryType.Agriculture, PerkType.WasteNotCooking)
+            builder.Create(PerkCategoryType.Agriculture, PerkType.WasteNotCooking)
                 .Name("Waste Not (Cooking)")
 
                 .AddPerkLevel()
@@ -112,9 +110,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Agriculture, 8);
         }
 
-        private void CookingRecipes()
+        private void CookingRecipes(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Agriculture, PerkType.CookingRecipes)
+            builder.Create(PerkCategoryType.Agriculture, PerkType.CookingRecipes)
                 .Name("Cooking Recipes")
 
                 .AddPerkLevel()
@@ -147,9 +145,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.CookingRecipes5);
         }
 
-        private void AgricultureEquipment()
+        private void AgricultureEquipment(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Agriculture, PerkType.AgricultureEquipment)
+            builder.Create(PerkCategoryType.Agriculture, PerkType.AgricultureEquipment)
                 .Name("Agriculture Equipment")
 
                 .AddPerkLevel()
@@ -183,9 +181,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.AgricultureEquipment5);
         }
 
-        private void FishingRods()
+        private void FishingRods(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Agriculture, PerkType.FishingRods)
+            builder.Create(PerkCategoryType.Agriculture, PerkType.FishingRods)
                 .Name("Fishing Rods")
 
                 .AddPerkLevel()

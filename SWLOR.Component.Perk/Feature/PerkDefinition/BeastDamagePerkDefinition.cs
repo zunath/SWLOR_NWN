@@ -9,20 +9,18 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
 {
     public class BeastDamagePerkDefinition : IPerkListDefinition
     {
-        private readonly PerkBuilder _builder = new();
-
-        public Dictionary<PerkType, PerkDetail> BuildPerks()
+                public Dictionary<PerkType, PerkDetail> BuildPerks(IPerkBuilder builder)
         {
-            Bite();
-            FlameBreath();
-            ShockingSlash();
+            Bite(builder);
+            FlameBreath(builder);
+            ShockingSlash(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
 
-        private void Bite()
+        private void Bite(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.BeastDamage, PerkType.Bite)
+            builder.Create(PerkCategoryType.BeastDamage, PerkType.Bite)
                 .Name("Bite")
                 .GroupType(PerkGroupType.Beast)
 
@@ -62,9 +60,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Bite5);
         }
 
-        private void FlameBreath()
+        private void FlameBreath(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.BeastDamage, PerkType.FlameBreath)
+            builder.Create(PerkCategoryType.BeastDamage, PerkType.FlameBreath)
                 .Name("Flame Breath")
                 .GroupType(PerkGroupType.Beast)
 
@@ -104,9 +102,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.FlameBreath5);
         }
 
-        private void ShockingSlash()
+        private void ShockingSlash(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.BeastDamage, PerkType.ShockingSlash)
+            builder.Create(PerkCategoryType.BeastDamage, PerkType.ShockingSlash)
                 .Name("Shocking Slash")
                 .GroupType(PerkGroupType.Beast)
 

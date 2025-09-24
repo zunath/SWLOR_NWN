@@ -8,28 +8,26 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
 {
     public class FirstAidPerkDefinition : IPerkListDefinition
     {
-        private readonly PerkBuilder _builder = new();
-
-        public Dictionary<PerkType, PerkDetail> BuildPerks()
+                public Dictionary<PerkType, PerkDetail> BuildPerks(IPerkBuilder builder)
         {
-            RangedHealing();
-            FrugalMedic();
-            MedKit();
-            KoltoRecovery();
-            Resuscitation();
-            TreatmentKit();
-            StasisField();
-            CombatEnhancement();
-            Shielding();
-            Infusion();
-            AdrenalStim();
+            RangedHealing(builder);
+            FrugalMedic(builder);
+            MedKit(builder);
+            KoltoRecovery(builder);
+            Resuscitation(builder);
+            TreatmentKit(builder);
+            StasisField(builder);
+            CombatEnhancement(builder);
+            Shielding(builder);
+            Infusion(builder);
+            AdrenalStim(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
 
-        private void RangedHealing()
+        private void RangedHealing(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.FirstAid, PerkType.RangedHealing)
+            builder.Create(PerkCategoryType.FirstAid, PerkType.RangedHealing)
                 .Name("Ranged Healing")
 
                 .AddPerkLevel()
@@ -59,9 +57,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.RangedHealing4);
         }
 
-        private void FrugalMedic()
+        private void FrugalMedic(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.FirstAid, PerkType.FrugalMedic)
+            builder.Create(PerkCategoryType.FirstAid, PerkType.FrugalMedic)
                 .Name("Frugal Medic")
 
                 .AddPerkLevel()
@@ -85,9 +83,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.FrugalMedic3);
         }
 
-        private void MedKit()
+        private void MedKit(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.FirstAid, PerkType.MedKit)
+            builder.Create(PerkCategoryType.FirstAid, PerkType.MedKit)
                 .Name("Med Kit")
 
                 .AddPerkLevel()
@@ -125,9 +123,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.MedKit5);
         }
 
-        private void KoltoRecovery()
+        private void KoltoRecovery(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.FirstAid, PerkType.KoltoRecovery)
+            builder.Create(PerkCategoryType.FirstAid, PerkType.KoltoRecovery)
                 .Name("Kolto Recovery")
 
                 .AddPerkLevel()
@@ -155,9 +153,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.KoltoRecovery3);
         }
 
-        private void Resuscitation()
+        private void Resuscitation(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.FirstAid, PerkType.Resuscitation)
+            builder.Create(PerkCategoryType.FirstAid, PerkType.Resuscitation)
                 .Name("Resuscitation")
 
                 .AddPerkLevel()
@@ -184,9 +182,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Resuscitation3);
         }
 
-        private void TreatmentKit()
+        private void TreatmentKit(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.FirstAid, PerkType.TreatmentKit)
+            builder.Create(PerkCategoryType.FirstAid, PerkType.TreatmentKit)
                 .Name("Treatment Kit")
 
                 .AddPerkLevel()
@@ -205,9 +203,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.TreatmentKit2);
         }
 
-        private void StasisField()
+        private void StasisField(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.FirstAid, PerkType.StasisField)
+            builder.Create(PerkCategoryType.FirstAid, PerkType.StasisField)
                 .Name("Stasis Field")
 
                 .AddPerkLevel()
@@ -235,9 +233,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.StasisField3);
         }
 
-        private void CombatEnhancement()
+        private void CombatEnhancement(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.FirstAid, PerkType.CombatEnhancement)
+            builder.Create(PerkCategoryType.FirstAid, PerkType.CombatEnhancement)
                 .Name("Combat Enhancement")
 
                 .AddPerkLevel()
@@ -265,9 +263,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.CombatEnhancement3);
         }
 
-        private void Shielding()
+        private void Shielding(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.FirstAid, PerkType.Shielding)
+            builder.Create(PerkCategoryType.FirstAid, PerkType.Shielding)
                 .Name("Shielding")
 
                 .AddPerkLevel()
@@ -303,9 +301,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Shielding4);
         }
 
-        private void Infusion()
+        private void Infusion(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.FirstAid, PerkType.Infusion)
+            builder.Create(PerkCategoryType.FirstAid, PerkType.Infusion)
                 .Name("Infusion")
 
                 .AddPerkLevel()
@@ -325,9 +323,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Infusion2);
         }
 
-        private void AdrenalStim()
+        private void AdrenalStim(IPerkBuilder builder)
         { 
-            _builder.Create(PerkCategoryType.FirstAid, PerkType.AdrenalStim)
+            builder.Create(PerkCategoryType.FirstAid, PerkType.AdrenalStim)
                 .Name("Adrenal Stim")
 
                 .AddPerkLevel()

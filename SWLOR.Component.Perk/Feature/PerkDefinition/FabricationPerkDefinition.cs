@@ -8,26 +8,24 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
 {
     public class FabricationPerkDefinition : IPerkListDefinition
     {
-        private readonly PerkBuilder _builder = new();
-
-        public Dictionary<PerkType, PerkDetail> BuildPerks()
+                public Dictionary<PerkType, PerkDetail> BuildPerks(IPerkBuilder builder)
         {
-            Synthesis();
-            Touch();
-            Abilities();
-            FurnitureBlueprints();
-            StructureBlueprints();
-            FabricationEquipment();
-            Research();
-            ScientificNetworking();
-            ResearchProjects();
+            Synthesis(builder);
+            Touch(builder);
+            Abilities(builder);
+            FurnitureBlueprints(builder);
+            StructureBlueprints(builder);
+            FabricationEquipment(builder);
+            Research(builder);
+            ScientificNetworking(builder);
+            ResearchProjects(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
 
-        private void Synthesis()
+        private void Synthesis(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Fabrication, PerkType.RapidSynthesisFabrication)
+            builder.Create(PerkCategoryType.Fabrication, PerkType.RapidSynthesisFabrication)
                 .Name("Rapid Synthesis (Fabrication)")
 
                 .AddPerkLevel()
@@ -36,7 +34,7 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Fabrication, 10);
 
 
-            _builder.Create(PerkCategoryType.Fabrication, PerkType.CarefulSynthesisFabrication)
+            builder.Create(PerkCategoryType.Fabrication, PerkType.CarefulSynthesisFabrication)
                 .Name("Careful Synthesis (Fabrication)")
 
                 .AddPerkLevel()
@@ -45,9 +43,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Fabrication, 30);
         }
 
-        private void Touch()
+        private void Touch(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Fabrication, PerkType.BasicTouchFabrication)
+            builder.Create(PerkCategoryType.Fabrication, PerkType.BasicTouchFabrication)
                 .Name("Basic Touch (Fabrication)")
 
                 .AddPerkLevel()
@@ -55,7 +53,7 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .Price(1)
                 .RequirementSkill(SkillType.Fabrication, 5);
 
-            _builder.Create(PerkCategoryType.Fabrication, PerkType.StandardTouchFabrication)
+            builder.Create(PerkCategoryType.Fabrication, PerkType.StandardTouchFabrication)
                 .Name("Standard Touch (Fabrication)")
 
                 .AddPerkLevel()
@@ -63,7 +61,7 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .Price(1)
                 .RequirementSkill(SkillType.Fabrication, 15);
 
-            _builder.Create(PerkCategoryType.Fabrication, PerkType.PreciseTouchFabrication)
+            builder.Create(PerkCategoryType.Fabrication, PerkType.PreciseTouchFabrication)
                 .Name("Precise Touch (Fabrication)")
 
                 .AddPerkLevel()
@@ -72,9 +70,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Fabrication, 35);
         }
 
-        private void Abilities()
+        private void Abilities(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Fabrication, PerkType.MastersMendFabrication)
+            builder.Create(PerkCategoryType.Fabrication, PerkType.MastersMendFabrication)
                 .Name("Master's Mend (Fabrication)")
 
                 .AddPerkLevel()
@@ -82,7 +80,7 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .Price(1)
                 .RequirementSkill(SkillType.Fabrication, 10);
 
-            _builder.Create(PerkCategoryType.Fabrication, PerkType.SteadyHandFabrication)
+            builder.Create(PerkCategoryType.Fabrication, PerkType.SteadyHandFabrication)
                 .Name("Steady Hand (Fabrication)")
 
                 .AddPerkLevel()
@@ -90,7 +88,7 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .Price(1)
                 .RequirementSkill(SkillType.Fabrication, 20);
 
-            _builder.Create(PerkCategoryType.Fabrication, PerkType.MuscleMemoryFabrication)
+            builder.Create(PerkCategoryType.Fabrication, PerkType.MuscleMemoryFabrication)
                 .Name("Muscle Memory (Fabrication)")
 
                 .AddPerkLevel()
@@ -98,7 +96,7 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .Price(1)
                 .RequirementSkill(SkillType.Fabrication, 40);
 
-            _builder.Create(PerkCategoryType.Fabrication, PerkType.VenerationFabrication)
+            builder.Create(PerkCategoryType.Fabrication, PerkType.VenerationFabrication)
                 .Name("Veneration (Fabrication)")
 
                 .AddPerkLevel()
@@ -106,7 +104,7 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .Price(1)
                 .RequirementSkill(SkillType.Fabrication, 25);
 
-            _builder.Create(PerkCategoryType.Fabrication, PerkType.WasteNotFabrication)
+            builder.Create(PerkCategoryType.Fabrication, PerkType.WasteNotFabrication)
                 .Name("Waste Not (Fabrication)")
 
                 .AddPerkLevel()
@@ -115,9 +113,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Fabrication, 8);
         }
 
-        private void FurnitureBlueprints()
+        private void FurnitureBlueprints(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Fabrication, PerkType.FurnitureBlueprints)
+            builder.Create(PerkCategoryType.Fabrication, PerkType.FurnitureBlueprints)
                 .Name("Furniture Blueprints")
 
                 .AddPerkLevel()
@@ -150,9 +148,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.FurnitureBlueprints5);
         }
 
-        private void StructureBlueprints()
+        private void StructureBlueprints(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Fabrication, PerkType.StructureBlueprints)
+            builder.Create(PerkCategoryType.Fabrication, PerkType.StructureBlueprints)
                 .Name("Structure Blueprints")
 
                 .AddPerkLevel()
@@ -168,9 +166,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.StructureBlueprints2);
         }
 
-        private void FabricationEquipment()
+        private void FabricationEquipment(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Fabrication, PerkType.FabricationEquipment)
+            builder.Create(PerkCategoryType.Fabrication, PerkType.FabricationEquipment)
                 .Name("Fabrication Equipment")
 
                 .AddPerkLevel()
@@ -204,9 +202,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.FabricationEquipment5);
         }
 
-        private void Research()
+        private void Research(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Fabrication, PerkType.Research)
+            builder.Create(PerkCategoryType.Fabrication, PerkType.Research)
                 .Name("Research")
 
                 .AddPerkLevel()
@@ -235,9 +233,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Fabrication, 50);
         }
 
-        private void ScientificNetworking()
+        private void ScientificNetworking(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Fabrication, PerkType.ScientificNetworking)
+            builder.Create(PerkCategoryType.Fabrication, PerkType.ScientificNetworking)
                 .Name("Scientific Networking")
 
                 .AddPerkLevel()
@@ -251,9 +249,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Fabrication, 50);
         }
 
-        private void ResearchProjects()
+        private void ResearchProjects(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Fabrication, PerkType.ResearchProjects)
+            builder.Create(PerkCategoryType.Fabrication, PerkType.ResearchProjects)
                 .Name("Research Projects")
 
                 .AddPerkLevel()

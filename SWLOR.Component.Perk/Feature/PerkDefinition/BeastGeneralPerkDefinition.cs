@@ -2,6 +2,7 @@ using SWLOR.Component.Perk.Contracts;
 using SWLOR.Component.Perk.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
+using SWLOR.Shared.Domain.Beasts.Contracts;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Character.ValueObjects;
@@ -10,29 +11,28 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
 {
     public class BeastGeneralPerkDefinition : IPerkListDefinition
     {
-        private readonly PerkBuilder _builder = new();
-        private readonly IStatService _statService;
-        private readonly BeastMastery _beastMastery;
+                private readonly IStatService _statService;
+        private readonly IBeastMasteryService _beastMastery;
 
-        public BeastGeneralPerkDefinition(IStatService statService, BeastMastery beastMastery)
+        public BeastGeneralPerkDefinition(IStatService statService, IBeastMasteryService beastMastery)
         {
             _statService = statService;
             _beastMastery = beastMastery;
         }
 
-        public Dictionary<PerkType, PerkDetail> BuildPerks()
+        public Dictionary<PerkType, PerkDetail> BuildPerks(IPerkBuilder builder)
         {
-            DiseasedTouch();
-            Clip();
-            SpinningClaw();
-            BeastSpeed();
+            DiseasedTouch(builder);
+            Clip(builder);
+            SpinningClaw(builder);
+            BeastSpeed(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
 
-        private void DiseasedTouch()
+        private void DiseasedTouch(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.BeastGeneral, PerkType.DiseasedTouch)
+            builder.Create(PerkCategoryType.BeastGeneral, PerkType.DiseasedTouch)
                 .Name("Diseased Touch")
                 .GroupType(PerkGroupType.Beast)
 
@@ -67,9 +67,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.DiseasedTouch5);
         }
 
-        private void Clip()
+        private void Clip(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.BeastGeneral, PerkType.Clip)
+            builder.Create(PerkCategoryType.BeastGeneral, PerkType.Clip)
                 .Name("Clip")
                 .GroupType(PerkGroupType.Beast)
 
@@ -104,9 +104,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Clip5);
         }
 
-        private void SpinningClaw()
+        private void SpinningClaw(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.BeastGeneral, PerkType.SpinningClaw)
+            builder.Create(PerkCategoryType.BeastGeneral, PerkType.SpinningClaw)
                 .Name("Spinning Claw")
                 .GroupType(PerkGroupType.Beast)
 
@@ -141,9 +141,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.SpinningClaw5);
         }
 
-        private void BeastSpeed()
+        private void BeastSpeed(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.BeastGeneral, PerkType.BeastSpeed)
+            builder.Create(PerkCategoryType.BeastGeneral, PerkType.BeastSpeed)
                 .Name("Beast Speed")
                 .GroupType(PerkGroupType.Beast)
                 .TriggerPurchase((player) =>

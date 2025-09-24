@@ -6,6 +6,7 @@ namespace SWLOR.Shared.Domain.Beasts.Contracts
 {
     public interface IBeastMasteryService
     {
+        public string BeastClawResref { get; }
         public int MaxLevel { get; }
         public string HydrolaseResrefPrefix { get; }
         public string LyaseResrefPrefix { get; }

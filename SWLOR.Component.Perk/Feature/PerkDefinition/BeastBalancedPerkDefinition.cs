@@ -9,20 +9,18 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
 {
     public class BeastBalancedPerkDefinition : IPerkListDefinition
     {
-        private readonly PerkBuilder _builder = new();
-
-        public Dictionary<PerkType, PerkDetail> BuildPerks()
+                public Dictionary<PerkType, PerkDetail> BuildPerks(IPerkBuilder builder)
         {
-            Claw();
-            BolsterAttack();
-            Hasten();
+            Claw(builder);
+            BolsterAttack(builder);
+            Hasten(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
 
-        private void Claw()
+        private void Claw(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.BeastBalanced, PerkType.Claw)
+            builder.Create(PerkCategoryType.BeastBalanced, PerkType.Claw)
                 .Name("Claw")
                 .GroupType(PerkGroupType.Beast)
 
@@ -62,9 +60,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Claw5);
         }
 
-        private void BolsterAttack()
+        private void BolsterAttack(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.BeastBalanced, PerkType.BolsterAttack)
+            builder.Create(PerkCategoryType.BeastBalanced, PerkType.BolsterAttack)
                 .Name("Bolster Attack")
                 .GroupType(PerkGroupType.Beast)
 
@@ -104,9 +102,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.BolsterAttack5);
         }
 
-        private void Hasten()
+        private void Hasten(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.BeastBalanced, PerkType.Hasten)
+            builder.Create(PerkCategoryType.BeastBalanced, PerkType.Hasten)
                 .Name("Hasten")
                 .GroupType(PerkGroupType.Beast)
 

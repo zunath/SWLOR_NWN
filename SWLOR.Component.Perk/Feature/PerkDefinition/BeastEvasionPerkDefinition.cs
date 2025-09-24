@@ -9,20 +9,18 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
 {
     public class BeastEvasionPerkDefinition : IPerkListDefinition
     {
-        private readonly PerkBuilder _builder = new();
-
-        public Dictionary<PerkType, PerkDetail> BuildPerks()
+                public Dictionary<PerkType, PerkDetail> BuildPerks(IPerkBuilder builder)
         {
-            EvasiveManeuver();
-            Assault();
-            Sniff();
+            EvasiveManeuver(builder);
+            Assault(builder);
+            Sniff(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
 
-        private void EvasiveManeuver()
+        private void EvasiveManeuver(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.BeastEvasion, PerkType.EvasiveManeuver)
+            builder.Create(PerkCategoryType.BeastEvasion, PerkType.EvasiveManeuver)
                 .Name("Evasive Maneuver")
                 .GroupType(PerkGroupType.Beast)
 
@@ -62,9 +60,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.EvasiveManeuver5);
         }
 
-        private void Assault()
+        private void Assault(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.BeastEvasion, PerkType.Assault)
+            builder.Create(PerkCategoryType.BeastEvasion, PerkType.Assault)
                 .Name("Assault")
                 .GroupType(PerkGroupType.Beast)
 
@@ -104,9 +102,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Assault5);
         }
 
-        private void Sniff()
+        private void Sniff(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.BeastEvasion, PerkType.Sniff)
+            builder.Create(PerkCategoryType.BeastEvasion, PerkType.Sniff)
                 .Name("Sniff")
                 .GroupType(PerkGroupType.Beast)
 

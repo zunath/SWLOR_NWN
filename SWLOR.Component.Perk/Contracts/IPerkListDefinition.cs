@@ -5,6 +5,6 @@ namespace SWLOR.Component.Perk.Contracts
 {
     public interface IPerkListDefinition
     {
-        public Dictionary<PerkType, PerkDetail> BuildPerks();
+        public Dictionary<PerkType, PerkDetail> BuildPerks(IPerkBuilder builder);
     }
 }

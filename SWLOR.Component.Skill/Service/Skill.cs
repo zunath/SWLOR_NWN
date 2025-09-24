@@ -41,12 +41,12 @@ namespace SWLOR.Component.Skill.Service
         /// <summary>
         /// This is the maximum number of skill points a single character can have at any time.
         /// </summary>
-        public const int SkillCap = 350;
+        public int SkillCap => 350;
 
         /// <summary>
         /// This is the maximum number of AP a single character can earn in total. This must be evenly divisible into SkillCap.
         /// </summary>
-        public int APCap { get; } = SkillCap / 10;
+        public int APCap => SkillCap / 10;
 
         /// <summary>
         /// Gives XP towards a specific skill to a player.

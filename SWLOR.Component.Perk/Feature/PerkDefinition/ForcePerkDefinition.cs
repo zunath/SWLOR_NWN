@@ -8,39 +8,37 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
 {
     public class ForcePerkDefinition : IPerkListDefinition
     {
-        private readonly PerkBuilder _builder = new();
-
-        public Dictionary<PerkType, PerkDetail> BuildPerks()
+                public Dictionary<PerkType, PerkDetail> BuildPerks(IPerkBuilder builder)
         {
-            ForcePush();
-            BurstOfSpeed();
-            ThrowLightsaber();
-            ForceStun();
-            ComprehendSpeech();
-            BattleInsight();
-            MindTrick();
-            ForceHeal();
-            ForceBurst();
-            ForceBody();
-            ForceDrain();
-            ForceLightning();
-            ForceMind();
-            Premonition();
-            Disturbance();
-            Benevolence();
-            ForceValor();
-            ForceSpark();
-            CreepingTerror();
-            ForceRage();
-            ThrowRock();
-            ForceInspiration();
+            ForcePush(builder);
+            BurstOfSpeed(builder);
+            ThrowLightsaber(builder);
+            ForceStun(builder);
+            ComprehendSpeech(builder);
+            BattleInsight(builder);
+            MindTrick(builder);
+            ForceHeal(builder);
+            ForceBurst(builder);
+            ForceBody(builder);
+            ForceDrain(builder);
+            ForceLightning(builder);
+            ForceMind(builder);
+            Premonition(builder);
+            Disturbance(builder);
+            Benevolence(builder);
+            ForceValor(builder);
+            ForceSpark(builder);
+            CreepingTerror(builder);
+            ForceRage(builder);
+            ThrowRock(builder);
+            ForceInspiration(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
 
-        private void ForcePush()
+        private void ForcePush(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.ForceUniversal, PerkType.ForcePush)
+            builder.Create(PerkCategoryType.ForceUniversal, PerkType.ForcePush)
                 .Name("Force Push")
 
                 .AddPerkLevel()
@@ -71,9 +69,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForcePush4);
         }
 
-        private void ThrowRock()
+        private void ThrowRock(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.ForceUniversal, PerkType.ThrowRock)
+            builder.Create(PerkCategoryType.ForceUniversal, PerkType.ThrowRock)
                 .Name("Throw Rock")
 
                 .AddPerkLevel()
@@ -112,9 +110,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ThrowRock5);
         }
 
-        private void BurstOfSpeed()
+        private void BurstOfSpeed(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.ForceUniversal, PerkType.BurstOfSpeed)
+            builder.Create(PerkCategoryType.ForceUniversal, PerkType.BurstOfSpeed)
                 .Name("Burst of Speed")
 
                 .AddPerkLevel()
@@ -132,9 +130,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.BurstOfSpeed2);
         }
 
-        private void ThrowLightsaber()
+        private void ThrowLightsaber(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.ForceUniversal, PerkType.ThrowLightsaber)
+            builder.Create(PerkCategoryType.ForceUniversal, PerkType.ThrowLightsaber)
                 .Name("Throw Lightsaber")
 
                 .AddPerkLevel()
@@ -158,9 +156,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ThrowLightsaber3);
         }
 
-        private void ForceStun()
+        private void ForceStun(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.ForceUniversal, PerkType.ForceStun)
+            builder.Create(PerkCategoryType.ForceUniversal, PerkType.ForceStun)
                 .Name("Force Stun")
 
                 .AddPerkLevel()
@@ -185,9 +183,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceStun3);
         }
 
-        private void ComprehendSpeech()
+        private void ComprehendSpeech(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.ForceUniversal, PerkType.ComprehendSpeech)
+            builder.Create(PerkCategoryType.ForceUniversal, PerkType.ComprehendSpeech)
                 .Name("Comprehend Speech")
 
                 .AddPerkLevel()
@@ -219,9 +217,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ComprehendSpeech4);
         }
 
-        private void BattleInsight()
+        private void BattleInsight(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.ForceUniversal, PerkType.BattleInsight)
+            builder.Create(PerkCategoryType.ForceUniversal, PerkType.BattleInsight)
                 .Name("Battle Insight")
 
                 .AddPerkLevel()
@@ -239,9 +237,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.BattleInsight2);
         }
 
-        private void MindTrick()
+        private void MindTrick(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.ForceUniversal, PerkType.MindTrick)
+            builder.Create(PerkCategoryType.ForceUniversal, PerkType.MindTrick)
                 .Name("Mind Trick")
 
                 .AddPerkLevel()
@@ -259,9 +257,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.MindTrick2);
         }
 
-        private void ForceHeal()
+        private void ForceHeal(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.ForceLight, PerkType.ForceHeal)
+            builder.Create(PerkCategoryType.ForceLight, PerkType.ForceHeal)
                 .Name("Force Heal")
 
                 .AddPerkLevel()
@@ -305,9 +303,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceHeal5);
         }
 
-        private void ForceBurst()
+        private void ForceBurst(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.ForceLight, PerkType.ForceBurst)
+            builder.Create(PerkCategoryType.ForceLight, PerkType.ForceBurst)
                 .Name("Force Burst")
 
                 .AddPerkLevel()
@@ -342,9 +340,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .RequirementCannotHavePerk(PerkType.ForceLightning)
                 .GrantsFeat(FeatType.ForceBurst4);
         }
-        private void ForceMind()
+        private void ForceMind(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.ForceUniversal, PerkType.ForceMind)
+            builder.Create(PerkCategoryType.ForceUniversal, PerkType.ForceMind)
                 .Name("Force Mind")
 
                 .AddPerkLevel()
@@ -362,9 +360,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceMind2);
         }
 
-        private void ForceDrain()
+        private void ForceDrain(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.ForceDark, PerkType.ForceDrain)
+            builder.Create(PerkCategoryType.ForceDark, PerkType.ForceDrain)
                 .Name("Force Drain")
 
                 .AddPerkLevel()
@@ -408,9 +406,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceDrain5);
         }
 
-        private void ForceLightning()
+        private void ForceLightning(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.ForceDark, PerkType.ForceLightning)
+            builder.Create(PerkCategoryType.ForceDark, PerkType.ForceLightning)
                 .Name("Force Lightning")
 
                 .AddPerkLevel()
@@ -446,9 +444,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceLightning4);
         }
 
-        private void ForceBody()
+        private void ForceBody(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.ForceUniversal, PerkType.ForceBody)
+            builder.Create(PerkCategoryType.ForceUniversal, PerkType.ForceBody)
                 .Name("Force Body")
 
                 .AddPerkLevel()
@@ -466,9 +464,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceBody2);
         }
 
-        private void Premonition()
+        private void Premonition(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.ForceUniversal, PerkType.Premonition)
+            builder.Create(PerkCategoryType.ForceUniversal, PerkType.Premonition)
                 .Name("Premonition")
 
                 .AddPerkLevel()
@@ -486,9 +484,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Premonition2);
         }
 
-        private void Disturbance()
+        private void Disturbance(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.ForceLight, PerkType.Disturbance)
+            builder.Create(PerkCategoryType.ForceLight, PerkType.Disturbance)
                 .Name("Disturbance")
 
                 .AddPerkLevel()
@@ -516,9 +514,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Disturbance3);
         }
 
-        private void Benevolence()
+        private void Benevolence(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.ForceLight, PerkType.Benevolence)
+            builder.Create(PerkCategoryType.ForceLight, PerkType.Benevolence)
                 .Name("Benevolence")
 
                 .AddPerkLevel()
@@ -546,9 +544,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Benevolence3);
         }
 
-        private void ForceValor()
+        private void ForceValor(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.ForceLight, PerkType.ForceValor)
+            builder.Create(PerkCategoryType.ForceLight, PerkType.ForceValor)
                 .Name("Force Valor")
 
                 .AddPerkLevel()
@@ -568,9 +566,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceValor2);
         }
 
-        private void ForceSpark()
+        private void ForceSpark(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.ForceDark, PerkType.ForceSpark)
+            builder.Create(PerkCategoryType.ForceDark, PerkType.ForceSpark)
                 .Name("Force Spark")
 
                 .AddPerkLevel()
@@ -598,9 +596,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceSpark3);
         }
 
-        private void CreepingTerror()
+        private void CreepingTerror(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.ForceDark, PerkType.CreepingTerror)
+            builder.Create(PerkCategoryType.ForceDark, PerkType.CreepingTerror)
                 .Name("Creeping Terror")
 
                 .AddPerkLevel()
@@ -628,9 +626,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.CreepingTerror3);
         }
 
-        private void ForceRage()
+        private void ForceRage(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.ForceDark, PerkType.ForceRage)
+            builder.Create(PerkCategoryType.ForceDark, PerkType.ForceRage)
                 .Name("Force Rage")
 
                 .AddPerkLevel()
@@ -650,9 +648,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceRage2);
         }
 
-        private void ForceInspiration()
+        private void ForceInspiration(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.ForceUniversal, PerkType.ForceInspiration)
+            builder.Create(PerkCategoryType.ForceUniversal, PerkType.ForceInspiration)
                 .Name("Force Inspiration")
 
                 .AddPerkLevel()

@@ -8,23 +8,22 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
 {
     public class GatheringPerkDefinition : IPerkListDefinition
     {
-        private readonly PerkBuilder _builder = new();
-        public Dictionary<PerkType, PerkDetail> BuildPerks()
+                public Dictionary<PerkType, PerkDetail> BuildPerks(IPerkBuilder builder)
         {
-            TreasureHunter();
-            Creditfinder();
-            Harvesting();
-            Refining();
-            RefineryManagement();
-            Scavenging();
-            HardLook();
+            TreasureHunter(builder);
+            Creditfinder(builder);
+            Harvesting(builder);
+            Refining(builder);
+            RefineryManagement(builder);
+            Scavenging(builder);
+            HardLook(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
 
-        private void TreasureHunter()
+        private void TreasureHunter(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Gathering, PerkType.TreasureHunter)
+            builder.Create(PerkCategoryType.Gathering, PerkType.TreasureHunter)
                 .Name("Treasure Hunter")
 
                 .AddPerkLevel()
@@ -43,9 +42,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Gathering, 45);
         }
 
-        private void Creditfinder()
+        private void Creditfinder(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Gathering, PerkType.CreditFinder)
+            builder.Create(PerkCategoryType.Gathering, PerkType.CreditFinder)
                 .Name("Creditfinder")
 
                 .AddPerkLevel()
@@ -64,9 +63,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Gathering, 50);
         }
 
-        private void Harvesting()
+        private void Harvesting(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Gathering, PerkType.Harvesting)
+            builder.Create(PerkCategoryType.Gathering, PerkType.Harvesting)
                 .Name("Harvesting")
 
                 .AddPerkLevel()
@@ -99,9 +98,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Harvesting5);
         }
 
-        private void Refining()
+        private void Refining(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Gathering, PerkType.Refining)
+            builder.Create(PerkCategoryType.Gathering, PerkType.Refining)
                 .Name("Refining")
 
                 .AddPerkLevel()
@@ -134,9 +133,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Refining5);
         }
 
-        private void RefineryManagement()
+        private void RefineryManagement(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Gathering, PerkType.RefineryManagement)
+            builder.Create(PerkCategoryType.Gathering, PerkType.RefineryManagement)
                 .Name("Refinery Management")
 
                 .AddPerkLevel()
@@ -175,9 +174,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.RefineryManagement6);
         }
 
-        private void Scavenging()
+        private void Scavenging(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Gathering, PerkType.Scavenging)
+            builder.Create(PerkCategoryType.Gathering, PerkType.Scavenging)
                 .Name("Scavenging")
 
                 .AddPerkLevel()
@@ -210,9 +209,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Scavenging5);
         }
 
-        private void HardLook()
+        private void HardLook(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Gathering, PerkType.HardLook)
+            builder.Create(PerkCategoryType.Gathering, PerkType.HardLook)
                 .Name("Hard Look")
 
                 .AddPerkLevel()

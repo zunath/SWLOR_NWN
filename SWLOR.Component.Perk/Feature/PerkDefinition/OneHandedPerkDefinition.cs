@@ -18,9 +18,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
         private readonly IItemService _itemService;
         private readonly IStatService _statService;
         private readonly IPerkService _perkService;
-        private readonly Ability _abilityService;
+        private readonly IAbilityService _abilityService;
 
-        public OneHandedPerkDefinition(IRandomService random, IItemService itemService, IStatService statService, IPerkService perkService, Ability abilityService)
+        public OneHandedPerkDefinition(IRandomService random, IItemService itemService, IStatService statService, IPerkService perkService, IAbilityService abilityService)
         {
             _random = random;
             _itemService = itemService;
@@ -28,46 +28,45 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
             _perkService = perkService;
             _abilityService = abilityService;
         }
-        private readonly PerkBuilder _builder = new();
-        public Dictionary<PerkType, PerkDetail> BuildPerks()
+                public Dictionary<PerkType, PerkDetail> BuildPerks(IPerkBuilder builder)
         {
-            Doublehand();
-            DualWield();
-            WeaponFocusVibroblades();
-            ImprovedCriticalVibroblades();
-            VibrobladeProficiency();
-            VibrobladeMastery();
-            HackingBlade();
-            RiotBlade();
-            WeaponFocusFinesseVibroblades();
-            ImprovedCriticalFinesseVibroblades();
-            FinesseVibrobladeProficiency();
-            FinesseVibrobladeMastery();
-            PoisonStab();
-            Backstab();
-            WeaponFocusLightsabers();
-            ImprovedCriticalLightsabers();
-            LightsaberProficiency();
-            LightsaberMastery();
-            ForceLeap();
-            SaberStrike();
-            ImprovedTwoWeaponFighting();
-            StrongStyleLightsaber();
-            Duelist();
-            WailingBlows();
-            ShieldMaster();
-            ShieldBash();
-            Bulwark();
-            ShieldResistance();
-            Alacrity();
-            Clarity();
+            Doublehand(builder);
+            DualWield(builder);
+            WeaponFocusVibroblades(builder);
+            ImprovedCriticalVibroblades(builder);
+            VibrobladeProficiency(builder);
+            VibrobladeMastery(builder);
+            HackingBlade(builder);
+            RiotBlade(builder);
+            WeaponFocusFinesseVibroblades(builder);
+            ImprovedCriticalFinesseVibroblades(builder);
+            FinesseVibrobladeProficiency(builder);
+            FinesseVibrobladeMastery(builder);
+            PoisonStab(builder);
+            Backstab(builder);
+            WeaponFocusLightsabers(builder);
+            ImprovedCriticalLightsabers(builder);
+            LightsaberProficiency(builder);
+            LightsaberMastery(builder);
+            ForceLeap(builder);
+            SaberStrike(builder);
+            ImprovedTwoWeaponFighting(builder);
+            StrongStyleLightsaber(builder);
+            Duelist(builder);
+            WailingBlows(builder);
+            ShieldMaster(builder);
+            ShieldBash(builder);
+            Bulwark(builder);
+            ShieldResistance(builder);
+            Alacrity(builder);
+            Clarity(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
 
-        private void Doublehand()
+        private void Doublehand(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.OneHandedGeneral, PerkType.Doublehand)
+            builder.Create(PerkCategoryType.OneHandedGeneral, PerkType.Doublehand)
                 .Name("Doublehand")
 
                 .AddPerkLevel()
@@ -105,9 +104,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Doublehand5);
         }
 
-        private void DualWield()
+        private void DualWield(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.OneHandedGeneral, PerkType.DualWield)
+            builder.Create(PerkCategoryType.OneHandedGeneral, PerkType.DualWield)
                 .Name("Dual Wield")
 
                 .AddPerkLevel()
@@ -118,9 +117,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.DualWield);
         }
 
-        private void WailingBlows()
+        private void WailingBlows(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.OneHandedGeneral, PerkType.WailingBlows)
+            builder.Create(PerkCategoryType.OneHandedGeneral, PerkType.WailingBlows)
                 .Name("Wailing Blows")
 
                 .AddPerkLevel()
@@ -153,9 +152,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 });
         }
 
-        private void Duelist()
+        private void Duelist(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.OneHandedGeneral, PerkType.Duelist)
+            builder.Create(PerkCategoryType.OneHandedGeneral, PerkType.Duelist)
                 .Name("Duelist")
 
                 .AddPerkLevel()
@@ -188,9 +187,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 });
         }
 
-        private void ShieldMaster()
+        private void ShieldMaster(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.OneHandedShield, PerkType.ShieldMaster)
+            builder.Create(PerkCategoryType.OneHandedShield, PerkType.ShieldMaster)
                 .Name("Shield Master")
                 .TriggerEquippedItem((player, item, slot, type, level) =>
                 {
@@ -241,9 +240,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ShieldMaster);
         }
 
-        private void ShieldBash()
+        private void ShieldBash(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.OneHandedShield, PerkType.ShieldBash)
+            builder.Create(PerkCategoryType.OneHandedShield, PerkType.ShieldBash)
                 .Name("Shield Bash")
 
                 .AddPerkLevel()
@@ -268,9 +267,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ShieldBash3);
         }
 
-        private void Bulwark()
+        private void Bulwark(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.OneHandedShield, PerkType.Bulwark)
+            builder.Create(PerkCategoryType.OneHandedShield, PerkType.Bulwark)
                 .Name("Bulwark")
 
                 .AddPerkLevel()
@@ -281,7 +280,7 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Bulwark);
         }
 
-        private void ShieldResistance()
+        private void ShieldResistance(IPerkBuilder builder)
         {
             void AdjustSavingThrows(uint player, uint item)
             {
@@ -290,7 +289,7 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 CreaturePlugin.SetBaseSavingThrow(player, SavingThrow.Reflex, _statService.CalculateBaseSavingThrow(player, SavingThrow.Reflex, item));
             }
 
-            _builder.Create(PerkCategoryType.OneHandedShield, PerkType.ShieldResistance)
+            builder.Create(PerkCategoryType.OneHandedShield, PerkType.ShieldResistance)
                 .Name("Shield Resistance")
 
                 .AddPerkLevel()
@@ -336,7 +335,7 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
         }
 
         [ScriptHandler(ScriptName.OnItemHit)]
-        public static void ApplyAlacrityAndClarity()
+        public void ApplyAlacrityAndClarity()
         {
             var defender = OBJECT_SELF;
             var item = GetSpellCastItem();
@@ -358,9 +357,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
             }
         }
 
-        private void Alacrity()
+        private void Alacrity(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.OneHandedShield, PerkType.Alacrity)
+            builder.Create(PerkCategoryType.OneHandedShield, PerkType.Alacrity)
                 .Name("Alacrity")
 
                 .AddPerkLevel()
@@ -371,9 +370,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .RequirementSkill(SkillType.OneHanded, 25);
         }
 
-        private void Clarity()
+        private void Clarity(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.OneHandedShield, PerkType.Clarity)
+            builder.Create(PerkCategoryType.OneHandedShield, PerkType.Clarity)
                 .Name("Clarity")
 
                 .AddPerkLevel()
@@ -384,9 +383,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .RequirementSkill(SkillType.OneHanded, 25);
         }
 
-        private void WeaponFocusVibroblades()
+        private void WeaponFocusVibroblades(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.OneHandedVibroblade, PerkType.WeaponFocusVibroblades)
+            builder.Create(PerkCategoryType.OneHandedVibroblade, PerkType.WeaponFocusVibroblades)
                 .Name("Weapon Focus - Vibroblades")
 
                 .AddPerkLevel()
@@ -402,9 +401,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.WeaponSpecializationVibroblades);
         }
 
-        private void ImprovedCriticalVibroblades()
+        private void ImprovedCriticalVibroblades(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.OneHandedVibroblade, PerkType.ImprovedCriticalVibroblades)
+            builder.Create(PerkCategoryType.OneHandedVibroblade, PerkType.ImprovedCriticalVibroblades)
                 .Name("Improved Critical - Vibroblades")
 
                 .AddPerkLevel()
@@ -414,9 +413,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ImprovedCriticalVibroblades);
         }
 
-        private void VibrobladeProficiency()
+        private void VibrobladeProficiency(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.OneHandedVibroblade, PerkType.VibrobladeProficiency)
+            builder.Create(PerkCategoryType.OneHandedVibroblade, PerkType.VibrobladeProficiency)
                 .Name("Vibroblade Proficiency")
 
                 .AddPerkLevel()
@@ -449,9 +448,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.VibrobladeProficiency5);
         }
 
-        private void VibrobladeMastery()
+        private void VibrobladeMastery(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.OneHandedVibroblade, PerkType.VibrobladeMastery)
+            builder.Create(PerkCategoryType.OneHandedVibroblade, PerkType.VibrobladeMastery)
                 .Name("Vibroblade Mastery")
                 .TriggerEquippedItem((player, item, slot, type, level) =>
                 {
@@ -489,9 +488,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.VibrobladeMastery2);
         }
 
-        private void HackingBlade()
+        private void HackingBlade(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.OneHandedVibroblade, PerkType.HackingBlade)
+            builder.Create(PerkCategoryType.OneHandedVibroblade, PerkType.HackingBlade)
                 .Name("Hacking Blade")
 
                 .AddPerkLevel()
@@ -516,9 +515,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.HackingBlade3);
         }
 
-        private void RiotBlade()
+        private void RiotBlade(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.OneHandedVibroblade, PerkType.RiotBlade)
+            builder.Create(PerkCategoryType.OneHandedVibroblade, PerkType.RiotBlade)
                 .Name("Riot Blade")
 
                 .AddPerkLevel()
@@ -543,9 +542,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.RiotBlade3);
         }
 
-        private void WeaponFocusFinesseVibroblades()
+        private void WeaponFocusFinesseVibroblades(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.OneHandedFinesseVibroblade, PerkType.WeaponFocusFinesseVibroblades)
+            builder.Create(PerkCategoryType.OneHandedFinesseVibroblade, PerkType.WeaponFocusFinesseVibroblades)
                 .Name("Weapon Focus - Finesse Vibroblades")
 
                 .AddPerkLevel()
@@ -561,9 +560,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.WeaponSpecializationFinesseVibroblades);
         }
 
-        private void ImprovedCriticalFinesseVibroblades()
+        private void ImprovedCriticalFinesseVibroblades(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.OneHandedFinesseVibroblade, PerkType.ImprovedCriticalFinesseVibroblades)
+            builder.Create(PerkCategoryType.OneHandedFinesseVibroblade, PerkType.ImprovedCriticalFinesseVibroblades)
                 .Name("Improved Critical - Finesse Vibroblades")
 
                 .AddPerkLevel()
@@ -573,9 +572,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ImprovedCriticalFinesseVibroblades);
         }
 
-        private void FinesseVibrobladeProficiency()
+        private void FinesseVibrobladeProficiency(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.OneHandedFinesseVibroblade, PerkType.FinesseVibrobladeProficiency)
+            builder.Create(PerkCategoryType.OneHandedFinesseVibroblade, PerkType.FinesseVibrobladeProficiency)
                 .Name("Finesse Vibroblade Proficiency")
 
                 .AddPerkLevel()
@@ -608,9 +607,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.FinesseVibrobladeProficiency5);
         }
 
-        private void FinesseVibrobladeMastery()
+        private void FinesseVibrobladeMastery(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.OneHandedFinesseVibroblade, PerkType.FinesseVibrobladeMastery)
+            builder.Create(PerkCategoryType.OneHandedFinesseVibroblade, PerkType.FinesseVibrobladeMastery)
                 .Name("Finesse Vibroblade Mastery")
                 .TriggerEquippedItem((player, item, slot, type, level) =>
                 {
@@ -648,9 +647,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.FinesseVibrobladeMastery2);
         }
 
-        private void PoisonStab()
+        private void PoisonStab(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.OneHandedFinesseVibroblade, PerkType.PoisonStab)
+            builder.Create(PerkCategoryType.OneHandedFinesseVibroblade, PerkType.PoisonStab)
                 .Name("Poison Stab")
 
                 .AddPerkLevel()
@@ -678,9 +677,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.PoisonStab3);
         }
 
-        private void Backstab()
+        private void Backstab(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.OneHandedFinesseVibroblade, PerkType.Backstab)
+            builder.Create(PerkCategoryType.OneHandedFinesseVibroblade, PerkType.Backstab)
                 .Name("Backstab")
 
                 .AddPerkLevel()
@@ -708,9 +707,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Backstab3);
         }
 
-        private void WeaponFocusLightsabers()
+        private void WeaponFocusLightsabers(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.OneHandedLightsaber, PerkType.WeaponFocusLightsabers)
+            builder.Create(PerkCategoryType.OneHandedLightsaber, PerkType.WeaponFocusLightsabers)
                 .Name("Weapon Focus - Lightsabers")
 
                 .AddPerkLevel()
@@ -728,9 +727,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.WeaponSpecializationLightsabers);
         }
 
-        private void ImprovedCriticalLightsabers()
+        private void ImprovedCriticalLightsabers(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.OneHandedLightsaber, PerkType.ImprovedCriticalLightsabers)
+            builder.Create(PerkCategoryType.OneHandedLightsaber, PerkType.ImprovedCriticalLightsabers)
                 .Name("Improved Critical - Lightsabers")
 
                 .AddPerkLevel()
@@ -741,9 +740,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ImprovedCriticalLightsabers);
         }
 
-        private void LightsaberProficiency()
+        private void LightsaberProficiency(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.OneHandedLightsaber, PerkType.LightsaberProficiency)
+            builder.Create(PerkCategoryType.OneHandedLightsaber, PerkType.LightsaberProficiency)
                 .Name("Lightsaber Proficiency")
 
                 .AddPerkLevel()
@@ -781,9 +780,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.LightsaberProficiency5);
         }
 
-        private void LightsaberMastery()
+        private void LightsaberMastery(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.OneHandedLightsaber, PerkType.LightsaberMastery)
+            builder.Create(PerkCategoryType.OneHandedLightsaber, PerkType.LightsaberMastery)
                 .Name("Lightsaber Mastery")
                 .TriggerEquippedItem((player, item, slot, type, level) =>
                 {
@@ -823,9 +822,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.LightsaberMastery2);
         }
 
-        private void ForceLeap()
+        private void ForceLeap(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.OneHandedLightsaber, PerkType.ForceLeap)
+            builder.Create(PerkCategoryType.OneHandedLightsaber, PerkType.ForceLeap)
                 .Name("Force Leap")
 
                 .AddPerkLevel()
@@ -850,9 +849,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceLeap3);
         }
 
-        private void SaberStrike()
+        private void SaberStrike(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.OneHandedLightsaber, PerkType.SaberStrike)
+            builder.Create(PerkCategoryType.OneHandedLightsaber, PerkType.SaberStrike)
                 .Name("Saber Strike")
 
                 .AddPerkLevel()
@@ -877,9 +876,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.SaberStrike3);
         }
 
-        private void ImprovedTwoWeaponFighting()
+        private void ImprovedTwoWeaponFighting(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.OneHandedGeneral, PerkType.ImprovedTwoWeaponFightingOneHanded)
+            builder.Create(PerkCategoryType.OneHandedGeneral, PerkType.ImprovedTwoWeaponFightingOneHanded)
                 .Name("Improved Two Weapon Fighting (One-Handed)")
 
                 .AddPerkLevel()
@@ -890,9 +889,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ImprovedTwoWeaponFighting);
         }
 
-        private void StrongStyleLightsaber()
+        private void StrongStyleLightsaber(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.OneHandedLightsaber, PerkType.StrongStyleLightsaber)
+            builder.Create(PerkCategoryType.OneHandedLightsaber, PerkType.StrongStyleLightsaber)
                 .Name("Strong Style (Lightsaber)")
                 .TriggerRefund((player) =>
                 {

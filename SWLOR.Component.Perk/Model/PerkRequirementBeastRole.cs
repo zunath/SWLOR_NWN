@@ -1,4 +1,7 @@
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Domain.Beasts.Contracts;
+using SWLOR.Shared.Domain.Beasts.Entities;
+using SWLOR.Shared.Domain.Beasts.Enums;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Entities;
 
@@ -8,9 +11,9 @@ namespace SWLOR.Component.Perk.Model
     {
         private readonly IDatabaseService _db;
         private readonly BeastRoleType _requiredRole;
-        private readonly BeastMastery _beastMastery;
+        private readonly IBeastMasteryService _beastMastery;
 
-        public PerkRequirementBeastRole(IDatabaseService db, BeastRoleType requiredRole, BeastMastery beastMastery)
+        public PerkRequirementBeastRole(IDatabaseService db, BeastRoleType requiredRole, IBeastMasteryService beastMastery)
         {
             _db = db;
             _requiredRole = requiredRole;

@@ -1,108 +1,56 @@
-using SWLOR.Component.Perk.Contracts;
 using SWLOR.Component.Perk.Model;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Beasts.Enums;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Character.ValueObjects;
 
-namespace SWLOR.Component.Perk.Service
+namespace SWLOR.Component.Perk.Contracts
 {
-    public class PerkBuilder : IPerkBuilder
+    /// <summary>
+    /// Interface for building perk definitions.
+    /// </summary>
+    public interface IPerkBuilder
     {
-        private readonly IPerkRequirementFactory _requirementFactory;
-        private readonly Dictionary<PerkType, PerkDetail> _perks = new();
-        private PerkDetail _activePerk;
-        private PerkLevel _activeLevel;
-
-        public PerkBuilder(IPerkRequirementFactory requirementFactory)
-        {
-            _requirementFactory = requirementFactory;
-        }
-
         /// <summary>
         /// Creates a new perk.
         /// </summary>
         /// <param name="category">The category under which this perk is grouped.</param>
         /// <param name="type">The type of perk.</param>
         /// <returns>A perk builder with the configured options</returns>
-        public IPerkBuilder Create(PerkCategoryType category, PerkType type)
-        {
-            _activeLevel = null;
-
-            _activePerk = new PerkDetail
-            {
-                Category = category,
-                Type = type,
-                IsActive = true
-            };
-            _perks[type] = _activePerk;
-
-            return this;
-        }
+        IPerkBuilder Create(PerkCategoryType category, PerkType type);
 
         /// <summary>
         /// Sets the name of a perk which will be displayed to the player.
         /// </summary>
         /// <param name="name">The name of the perk.</param>
         /// <returns>A perk builder with the configured options</returns>
-        public IPerkBuilder Name(string name)
-        {
-            _activePerk.Name = name;
-            return this;
-        }
+        IPerkBuilder Name(string name);
 
         /// <summary>
         /// Sets the description of the perk or the perk level.
         /// </summary>
         /// <param name="description">The description to set.</param>
         /// <returns>A perk builder with the configured options</returns>
-        public IPerkBuilder Description(string description)
-        {
-            if(_activeLevel == null)
-            {
-                _activePerk.Description = description;
-            }
-            else
-            {
-                _activeLevel.Description = description;
-            }
-
-            return this;
-        }
+        IPerkBuilder Description(string description);
 
         /// <summary>
         /// Deactivates the perk which will prevent players from purchasing and using it.
         /// </summary>
         /// <returns>A perk builder with the configured options</returns>
-        public IPerkBuilder Inactive()
-        {
-            _activePerk.IsActive = false;
-            return this;
-        }
+        IPerkBuilder Inactive();
 
         /// <summary>
         /// Creates a new perk level on the active perk we're building.
         /// </summary>
         /// <returns>A perk builder with the configured options</returns>
-        public IPerkBuilder AddPerkLevel()
-        {
-            var level = _activePerk.PerkLevels.Count + 1;
-            _activeLevel = new PerkLevel();
-            _activePerk.PerkLevels[level] = _activeLevel;
-
-            return this;
-        }
+        IPerkBuilder AddPerkLevel();
 
         /// <summary>
         /// Sets the amount of SP it costs to purchase this perk level.
         /// </summary>
         /// <param name="price">The price to purchase this perk level.</param>
         /// <returns>A perk builder with the configured options</returns>
-        public IPerkBuilder Price(int price)
-        {
-            _activeLevel.Price = price;
-            return this;
-        }
+        IPerkBuilder Price(int price);
 
         /// <summary>
         /// Sets the number of droid AI slots needed to equip a droid with this perk.
@@ -110,11 +58,7 @@ namespace SWLOR.Component.Perk.Service
         /// </summary>
         /// <param name="aiSlots">The amount of AI slots needed to equip a droid with this perk.</param>
         /// <returns>A perk builder with the configured options</returns>
-        public IPerkBuilder DroidAISlots(int aiSlots)
-        {
-            _activeLevel.DroidAISlots = aiSlots;
-            return this;
-        }
+        IPerkBuilder DroidAISlots(int aiSlots);
 
         /// <summary>
         /// Sets the group associated with this perk. This determines which window the perk shows up in.
@@ -123,22 +67,14 @@ namespace SWLOR.Component.Perk.Service
         /// </summary>
         /// <param name="groupType">The type of group to assign</param>
         /// <returns>A perk builder with the configured options</returns>
-        public IPerkBuilder GroupType(PerkGroupType groupType)
-        {
-            _activePerk.GroupType = groupType;
-            return this;
-        }
+        IPerkBuilder GroupType(PerkGroupType groupType);
 
         /// <summary>
         /// Adds a feat to grant to the player when the perk is purchased.
         /// </summary>
         /// <param name="feat">The feat to grant</param>
         /// <returns>A perk builder with the configured options</returns>
-        public IPerkBuilder GrantsFeat(FeatType feat)
-        {
-            _activeLevel.GrantedFeats.Add(feat);
-            return this;
-        }
+        IPerkBuilder GrantsFeat(FeatType feat);
 
         /// <summary>
         /// Adds a skill requirement to purchase and use the perk.
@@ -146,51 +82,27 @@ namespace SWLOR.Component.Perk.Service
         /// <param name="skill">The skill to require</param>
         /// <param name="requiredRank">The number of ranks to require</param>
         /// <returns>A perk builder with the configured options</returns>
-        public IPerkBuilder RequirementSkill(SkillType skill, int requiredRank)
-        {
-            var requirement = _requirementFactory.CreateSkillRequirement(skill, requiredRank);
-            _activeLevel.Requirements.Add(requirement);
-
-            return this;
-        }
+        IPerkBuilder RequirementSkill(SkillType skill, int requiredRank);
 
         /// <summary>
         /// Adds a quest requirement to purchase and use the perk.
         /// </summary>
         /// <param name="questId">The quest Id to require.</param>
         /// <returns>A perk builder with the configured options.</returns>
-        public IPerkBuilder RequirementQuest(string questId)
-        {
-            var requirement = _requirementFactory.CreateQuestRequirement(questId);
-            _activeLevel.Requirements.Add(requirement);
-
-            return this;
-        }
+        IPerkBuilder RequirementQuest(string questId);
 
         /// <summary>
         /// Adds a character type requirement to purchase and use the perk.
         /// </summary>
         /// <param name="characterType"></param>
         /// <returns></returns>
-        public IPerkBuilder RequirementCharacterType(CharacterType characterType)
-        {
-            var requirement = _requirementFactory.CreateCharacterTypeRequirement(characterType);
-            _activeLevel.Requirements.Add(requirement);
-
-            return this;
-        }
+        IPerkBuilder RequirementCharacterType(CharacterType characterType);
 
         /// <summary>
         /// Adds an unlock requirement to purchase the perk.
         /// </summary>
         /// <returns>A perk builder with the configured options.</returns>
-        public IPerkBuilder RequirementUnlocked()
-        {
-            var requirement = _requirementFactory.CreateUnlockRequirement(_activePerk.Type);
-            _activeLevel.Requirements.Add(requirement);
-
-            return this;
-        }
+        IPerkBuilder RequirementUnlocked();
 
         /// <summary>
         /// Adds a requirement that the player must have leveled a specific other perk.
@@ -198,96 +110,56 @@ namespace SWLOR.Component.Perk.Service
         /// <param name="mustHavePerkType">The type of perk the player must have.</param>
         /// <param name="mustHavePerkLevel">Optionally, the level of the perk required.</param>
         /// <returns>A perk builder with the configured options.</returns>
-        public IPerkBuilder RequirementMustHavePerk(PerkType mustHavePerkType, int mustHavePerkLevel = 0)
-        {
-            var requirement = _requirementFactory.CreateMustHavePerkRequirement(mustHavePerkType, mustHavePerkLevel);
-            _activeLevel.Requirements.Add(requirement);
-
-            return this;
-        }
+        IPerkBuilder RequirementMustHavePerk(PerkType mustHavePerkType, int mustHavePerkLevel = 0);
 
         /// <summary>
         /// Adds a requirement that the player cannot have a specific other perk.
         /// </summary>
         /// <param name="cannotHavePerkType">The type of perk the player cannot have.</param>
         /// <returns>A perk builder with the configured options.</returns>
-        public IPerkBuilder RequirementCannotHavePerk(PerkType cannotHavePerkType)
-        {
-            var requirement = _requirementFactory.CreateCannotHavePerkRequirement(cannotHavePerkType);
-            _activeLevel.Requirements.Add(requirement);
-
-            return this;
-        }
+        IPerkBuilder RequirementCannotHavePerk(PerkType cannotHavePerkType);
 
         /// <summary>
         /// Adds a requirement that the beast must meet a level requirement.
         /// </summary>
         /// <param name="level">The level to require</param>
         /// <returns>A perk builder with the configured options.</returns>
-        public IPerkBuilder RequirementBeastLevel(int level)
-        {
-            var requirement = _requirementFactory.CreateBeastLevelRequirement(level);
-            _activeLevel.Requirements.Add(requirement);
-
-            return this;
-        }
+        IPerkBuilder RequirementBeastLevel(int level);
 
         /// <summary>
         /// Adds a requirement that the beast must be of a certain role.
         /// </summary>
         /// <param name="role">The type of role to require</param>
         /// <returns>A perk builder with the configured options.</returns>
-        public IPerkBuilder RequirementBeastRole(BeastRoleType role)
-        {
-            var requirement = _requirementFactory.CreateBeastRoleRequirement(role);
-            _activeLevel.Requirements.Add(requirement);
-
-            return this;
-        }
+        IPerkBuilder RequirementBeastRole(BeastRoleType role);
 
         /// <summary>
         /// Adds an action to run when an item is equipped and the player has this perk.
         /// </summary>
         /// <param name="equipAction">The action to run when an item is equipped.</param>
         /// <returns>A perk builder with the configured options</returns>
-        public IPerkBuilder TriggerEquippedItem(PerkTriggerEquippedAction equipAction)
-        {
-            _activePerk.EquippedTriggers.Add(equipAction);
-            return this;
-        }
+        IPerkBuilder TriggerEquippedItem(PerkTriggerEquippedAction equipAction);
 
         /// <summary>
         /// Adds an action to run when an item is unequipped and the player has this perk.
         /// </summary>
         /// <param name="unequipAction">The action to run when an item is unequipped.</param>
         /// <returns>A perk builder with the configured options</returns>
-        public IPerkBuilder TriggerUnequippedItem(PerkTriggerUnequippedAction unequipAction)
-        {
-            _activePerk.UnequippedTriggers.Add(unequipAction);
-            return this;
-        }
+        IPerkBuilder TriggerUnequippedItem(PerkTriggerUnequippedAction unequipAction);
 
         /// <summary>
         /// Adds an action to run when this perk is purchased.
         /// </summary>
         /// <param name="purchaseAction">The action to run when this perk is purchased.</param>
         /// <returns>A perk builder with the configured options</returns>
-        public IPerkBuilder TriggerPurchase(PerkTriggerPurchasedRefundedAction purchaseAction)
-        {
-            _activePerk.PurchasedTriggers.Add(purchaseAction);
-            return this;
-        }
+        IPerkBuilder TriggerPurchase(PerkTriggerPurchasedRefundedAction purchaseAction);
 
         /// <summary>
         /// Adds an action to run when this perk is refunded.
         /// </summary>
         /// <param name="refundAction">The action to run when this perk is refunded.</param>
         /// <returns>A perk builder with the configured options</returns>
-        public IPerkBuilder TriggerRefund(PerkTriggerPurchasedRefundedAction refundAction)
-        {
-            _activePerk.RefundedTriggers.Add(refundAction);
-            return this;
-        }
+        IPerkBuilder TriggerRefund(PerkTriggerPurchasedRefundedAction refundAction);
 
         /// <summary>
         /// Adds a requirement check for purchasing this perk. Check must pass otherwise the
@@ -295,11 +167,7 @@ namespace SWLOR.Component.Perk.Service
         /// </summary>
         /// <param name="requirementAction">The action to run when a player attempts to purchase this perk.</param>
         /// <returns>A perk builder with the configured options</returns>
-        public IPerkBuilder PurchaseRequirement(PerkPurchaseRequirementAction requirementAction)
-        {
-            _activePerk.PurchaseRequirement = requirementAction;
-            return this;
-        }
+        IPerkBuilder PurchaseRequirement(PerkPurchaseRequirementAction requirementAction);
 
         /// <summary>
         /// Adds a requirement check for refunding this perk. Check must pass otherwise the
@@ -307,40 +175,12 @@ namespace SWLOR.Component.Perk.Service
         /// </summary>
         /// <param name="requirementAction">The action to run when a player attempts to refund this perk.</param>
         /// <returns>A perk builder with the configured options</returns>
-        public IPerkBuilder RefundRequirement(PerkRefundRequirementAction requirementAction)
-        {
-            _activePerk.RefundRequirement = requirementAction;
-            return this;
-        }
+        IPerkBuilder RefundRequirement(PerkRefundRequirementAction requirementAction);
 
         /// <summary>
         /// Returns a built list of perks.
         /// </summary>
         /// <returns>A list of built perks.</returns>
-        public Dictionary<PerkType, PerkDetail> Build()
-        {
-            // Determine the icon to display within the perk menus.
-            // The first feat's icon will be used if found.
-            // If not found, it will fall back to the 'default_perk' icon instead.
-            foreach (var (_, detail) in _perks)
-            {
-                detail.IconResref = "default_perk";
-                foreach (var (_, perkLevel) in detail.PerkLevels)
-                {
-                    var feat = perkLevel.GrantedFeats.FirstOrDefault();
-                    if (feat == default)
-                        continue;
-
-                    var resref = Get2DAString("feat", "ICON", (int)feat);
-                    if (!string.IsNullOrWhiteSpace(resref))
-                    {
-                        detail.IconResref = resref;
-                        break;
-                    }
-                }
-            }
-
-            return _perks;
-        }
+        Dictionary<PerkType, PerkDetail> Build();
     }
 }

@@ -9,20 +9,18 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
 {
     public class BeastTankPerkDefinition : IPerkListDefinition
     {
-        private readonly PerkBuilder _builder = new();
-
-        public Dictionary<PerkType, PerkDetail> BuildPerks()
+                public Dictionary<PerkType, PerkDetail> BuildPerks(IPerkBuilder builder)
         {
-            BolsterArmor();
-            Anger();
-            FocusAttention();
+            BolsterArmor(builder);
+            Anger(builder);
+            FocusAttention(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
 
-        private void BolsterArmor()
+        private void BolsterArmor(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.BeastTank, PerkType.BolsterArmor)
+            builder.Create(PerkCategoryType.BeastTank, PerkType.BolsterArmor)
                 .Name("Bolster Armor")
                 .GroupType(PerkGroupType.Beast)
 
@@ -62,9 +60,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.BolsterArmor5);
         }
 
-        private void Anger()
+        private void Anger(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.BeastTank, PerkType.Anger)
+            builder.Create(PerkCategoryType.BeastTank, PerkType.Anger)
                 .Name("Anger")
                 .GroupType(PerkGroupType.Beast)
 
@@ -104,9 +102,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Anger5);
         }
 
-        private void FocusAttention()
+        private void FocusAttention(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.BeastTank, PerkType.FocusAttention)
+            builder.Create(PerkCategoryType.BeastTank, PerkType.FocusAttention)
                 .Name("Focus Attention")
                 .GroupType(PerkGroupType.Beast)
 

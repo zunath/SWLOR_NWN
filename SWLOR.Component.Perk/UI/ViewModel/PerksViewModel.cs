@@ -1,9 +1,14 @@
+using SWLOR.Component.Character.Contracts;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Abstractions.Models;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Domain.Beasts.Contracts;
+using SWLOR.Shared.Domain.Beasts.Entities;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Entities;
 using SWLOR.Shared.Domain.Character.Enums;
@@ -11,6 +16,7 @@ using SWLOR.Shared.Domain.Character.ValueObjects;
 using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Common.Contracts;
 using SWLOR.Shared.Domain.Common.Enums;
+using SWLOR.Shared.Domain.UI.Events;
 using SWLOR.Shared.UI.Component;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
@@ -28,9 +34,22 @@ namespace SWLOR.Component.Perk.UI.ViewModel
         private readonly IAbilityService _abilityService;
         private readonly IItemService _itemService;
         private readonly ISkillService _skillService;
-        private readonly BeastMastery _beastMastery;
+        private readonly IBeastMasteryService _beastMastery;
+        private readonly ITimeService _timeService;
+        private readonly ICurrencyService _currencyService;
 
-        public PerksViewModel(IGuiService guiService, ILogger logger, IDatabaseService db, IPerkService perkService, IAbilityService abilityService, IItemService itemService, ISkillService skillService, BeastMastery beastMastery) : base(guiService)
+        public PerksViewModel(
+            IGuiService guiService, 
+            ILogger logger, 
+            IDatabaseService db, 
+            IPerkService perkService, 
+            IAbilityService abilityService, 
+            IItemService itemService, 
+            ISkillService skillService,
+            IBeastMasteryService beastMastery,
+            ITimeService timeService,
+            ICurrencyService currencyService) 
+            : base(guiService)
         {
             _logger = logger;
             _db = db;
@@ -39,6 +58,8 @@ namespace SWLOR.Component.Perk.UI.ViewModel
             _itemService = itemService;
             _skillService = skillService;
             _beastMastery = beastMastery;
+            _timeService = timeService;
+            _currencyService = currencyService;
         }
         
         private const int ItemsPerPage = 30;
@@ -269,8 +290,8 @@ namespace SWLOR.Component.Perk.UI.ViewModel
             var isRefundAvailable = dateRefundAvailable <= now;
             var dateRefundAvailableText = isRefundAvailable
                 ? "Now"
-                : Time.GetTimeToWaitLongIntervals(now, dateRefundAvailable, true);
-            ResetNextAvailable = $"Reset Available: {dateRefundAvailableText} [# Available: {Currency.GetCurrency(Player, CurrencyType.PerkRefundToken)}]";
+                : _timeService.GetTimeToWaitLongIntervals(now, dateRefundAvailable, true);
+            ResetNextAvailable = $"Reset Available: {dateRefundAvailableText} [# Available: {_currencyService.GetCurrency(Player, CurrencyType.PerkRefundToken)}]";
             IsRefundEnabled = false;
             HasBeast = !string.IsNullOrWhiteSpace(dbPlayer.ActiveBeastId);
         }
@@ -505,7 +526,7 @@ namespace SWLOR.Component.Perk.UI.ViewModel
             IsPerkSelected = true;
             IsRefundEnabled = (dbPlayer.DatePerkRefundAvailable == null ||
                                dbPlayer.DatePerkRefundAvailable <= DateTime.UtcNow) &&
-                              Currency.GetCurrency(Player, CurrencyType.PerkRefundToken) > 0 &&
+                              _currencyService.GetCurrency(Player, CurrencyType.PerkRefundToken) > 0 &&
                               currentUpgrade != null;
         };
 
@@ -746,7 +767,7 @@ namespace SWLOR.Component.Perk.UI.ViewModel
                 var perkDetail = _perkService.GetPerkDetails(selectedPerk);
                 var target = IsInMyPerksMode ? Player : GetAssociate(AssociateType.Henchman, Player);
 
-                if (Currency.GetCurrency(Player, CurrencyType.PerkRefundToken) <= 0)
+                if (_currencyService.GetCurrency(Player, CurrencyType.PerkRefundToken) <= 0)
                 {
                     FloatingTextStringOnCreature($"You do not have any refund tokens.", Player, false);
                 }
@@ -754,7 +775,7 @@ namespace SWLOR.Component.Perk.UI.ViewModel
                     dbPlayer.DatePerkRefundAvailable > DateTime.UtcNow)
                 {
                     var delta = (DateTime)dbPlayer.DatePerkRefundAvailable - DateTime.UtcNow;
-                    var time = Time.GetTimeLongIntervals(delta.Days, delta.Hours, delta.Minutes, delta.Seconds, false);
+                    var time = _timeService.GetTimeLongIntervals(delta.Days, delta.Hours, delta.Minutes, delta.Seconds, false);
                     FloatingTextStringOnCreature($"You can refund another perk in {time}.", Player, false);
                 }
                 else
@@ -805,7 +826,7 @@ namespace SWLOR.Component.Perk.UI.ViewModel
 
                     dbPlayer.DatePerkRefundAvailable = DateTime.UtcNow.AddHours(1);
                     _db.Set(dbPlayer);
-                    Currency.TakeCurrency(Player, CurrencyType.PerkRefundToken, 1);
+                    _currencyService.TakeCurrency(Player, CurrencyType.PerkRefundToken, 1);
 
                     _guiService.PublishRefreshEvent(Player, new PerkRefundedRefreshEvent(selectedPerk));
 

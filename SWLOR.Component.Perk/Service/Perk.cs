@@ -4,13 +4,14 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Domain.Beasts.Contracts;
+using SWLOR.Shared.Domain.Beasts.Entities;
 using SWLOR.Shared.Domain.Character.Contracts;
+using SWLOR.Shared.Domain.Character.Entities;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Character.ValueObjects;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Module;
-using Player = SWLOR.Shared.Core.Data.Entity.Player;
 
 namespace SWLOR.Component.Perk.Service
 {
@@ -20,6 +21,7 @@ namespace SWLOR.Component.Perk.Service
         private readonly IDatabaseService _db;
         private readonly IGenericCacheService _cacheService;
         private readonly IBeastMasteryService _beastMasteryService;
+        private readonly IPerkBuilder _perkBuilder;
         
         // Cached data
         private IEnumCache<PerkCategoryType, PerkCategoryAttribute> _categoryCache;
@@ -37,12 +39,13 @@ namespace SWLOR.Component.Perk.Service
         private readonly Dictionary<PerkType, Dictionary<int, int>> _perkLevelTiers = new();
         private readonly Dictionary<SkillType, List<PerkType>> _perksWithSkillRequirement = new();
 
-        public Perk(ILogger logger, IDatabaseService db, IGenericCacheService cacheService, IBeastMasteryService beastMasteryService)
+        public Perk(ILogger logger, IDatabaseService db, IGenericCacheService cacheService, IBeastMasteryService beastMasteryService, IPerkBuilder perkBuilder)
         {
             _logger = logger;
             _db = db;
             _cacheService = cacheService;
             _beastMasteryService = beastMasteryService;
+            _perkBuilder = perkBuilder;
         }
 
         /// <summary>
@@ -96,7 +99,7 @@ namespace SWLOR.Component.Perk.Service
 
             // Cache perks using interface discovery
             _perkCache = _cacheService.BuildInterfaceCache<IPerkListDefinition, PerkType, PerkDetail>()
-                .WithDataExtractor(instance => instance.BuildPerks())
+                .WithDataExtractor(instance => instance.BuildPerks(_perkBuilder))
                 .WithFilteredCache("Active", p => p.IsActive)
                 .WithGroupedCache<PerkGroupType>("ByGroup", p => p.GroupType)
                 .WithFilteredGroupedCache<PerkGroupType>("ActiveByGroup", p => p.IsActive, p => p.GroupType)

@@ -1,4 +1,5 @@
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Domain.Beasts.Entities;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Entities;
 

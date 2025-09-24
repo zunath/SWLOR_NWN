@@ -8,32 +8,30 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
 {
     public class DevicesPerkDefinition: IPerkListDefinition
     {
-        private readonly PerkBuilder _builder = new();
-
-        public Dictionary<PerkType, PerkDetail> BuildPerks()
+                public Dictionary<PerkType, PerkDetail> BuildPerks(IPerkBuilder builder)
         {
-            DemolitionExpert();
-            FragGrenade();
-            ConcussionGrenade();
-            FlashbangGrenade();
-            IonGrenade();
-            KoltoGrenade();
-            AdhesiveGrenade();
-            SmokeBomb();
-            KoltoBomb();
-            IncendiaryBomb();
-            GasBomb();
-            StealthGenerator();
-            Flamethrower();
-            WristRocket();
-            DeflectorShield();
+            DemolitionExpert(builder);
+            FragGrenade(builder);
+            ConcussionGrenade(builder);
+            FlashbangGrenade(builder);
+            IonGrenade(builder);
+            KoltoGrenade(builder);
+            AdhesiveGrenade(builder);
+            SmokeBomb(builder);
+            KoltoBomb(builder);
+            IncendiaryBomb(builder);
+            GasBomb(builder);
+            StealthGenerator(builder);
+            Flamethrower(builder);
+            WristRocket(builder);
+            DeflectorShield(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
 
-        private void DemolitionExpert()
+        private void DemolitionExpert(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Devices, PerkType.DemolitionExpert)
+            builder.Create(PerkCategoryType.Devices, PerkType.DemolitionExpert)
                 .Name("Demolition Expert")
 
                 .AddPerkLevel()
@@ -58,9 +56,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.DemolitionExpert3);
         }
 
-        private void FragGrenade()
+        private void FragGrenade(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Devices, PerkType.FragGrenade)
+            builder.Create(PerkCategoryType.Devices, PerkType.FragGrenade)
                 .Name("Frag Grenade")
 
                 .AddPerkLevel()
@@ -87,9 +85,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.FragGrenade3);
         }
 
-        private void ConcussionGrenade()
+        private void ConcussionGrenade(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Devices, PerkType.ConcussionGrenade)
+            builder.Create(PerkCategoryType.Devices, PerkType.ConcussionGrenade)
                 .Name("Concussion Grenade")
 
                 .AddPerkLevel()
@@ -117,9 +115,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ConcussionGrenade3);
         }
 
-        private void FlashbangGrenade()
+        private void FlashbangGrenade(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Devices, PerkType.FlashbangGrenade)
+            builder.Create(PerkCategoryType.Devices, PerkType.FlashbangGrenade)
                 .Name("Flashbang Grenade")
 
                 .AddPerkLevel()
@@ -147,9 +145,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.FlashbangGrenade3);
         }
 
-        private void IonGrenade()
+        private void IonGrenade(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Devices, PerkType.IonGrenade)
+            builder.Create(PerkCategoryType.Devices, PerkType.IonGrenade)
                 .Name("Ion Grenade")
 
                 .AddPerkLevel()
@@ -177,9 +175,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.IonGrenade3);
         }
 
-        private void KoltoGrenade()
+        private void KoltoGrenade(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Devices, PerkType.KoltoGrenade)
+            builder.Create(PerkCategoryType.Devices, PerkType.KoltoGrenade)
                 .Name("Kolto Grenade")
 
                 .AddPerkLevel()
@@ -207,9 +205,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.KoltoGrenade3);
         }
 
-        private void AdhesiveGrenade()
+        private void AdhesiveGrenade(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Devices, PerkType.AdhesiveGrenade)
+            builder.Create(PerkCategoryType.Devices, PerkType.AdhesiveGrenade)
                 .Name("Adhesive Grenade")
 
                 .AddPerkLevel()
@@ -237,9 +235,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.AdhesiveGrenade3);
         }
 
-        private void SmokeBomb()
+        private void SmokeBomb(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Devices, PerkType.SmokeBomb)
+            builder.Create(PerkCategoryType.Devices, PerkType.SmokeBomb)
                 .Name("Smoke Bomb")
 
                 .AddPerkLevel()
@@ -264,9 +262,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.SmokeBomb3);
         }
 
-        private void KoltoBomb()
+        private void KoltoBomb(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Devices, PerkType.KoltoBomb)
+            builder.Create(PerkCategoryType.Devices, PerkType.KoltoBomb)
                 .Name("Kolto Bomb")
 
                 .AddPerkLevel()
@@ -291,9 +289,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.KoltoBomb3);
         }
 
-        private void IncendiaryBomb()
+        private void IncendiaryBomb(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Devices, PerkType.IncendiaryBomb)
+            builder.Create(PerkCategoryType.Devices, PerkType.IncendiaryBomb)
                 .Name("Incendiary Bomb")
 
                 .AddPerkLevel()
@@ -318,9 +316,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.IncendiaryBomb3);
         }
 
-        private void GasBomb()
+        private void GasBomb(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Devices, PerkType.GasBomb)
+            builder.Create(PerkCategoryType.Devices, PerkType.GasBomb)
                 .Name("Gas Bomb")
 
                 .AddPerkLevel()
@@ -345,9 +343,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.GasBomb3);
         }
 
-        private void StealthGenerator()
+        private void StealthGenerator(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Devices, PerkType.StealthGenerator)
+            builder.Create(PerkCategoryType.Devices, PerkType.StealthGenerator)
                 .Name("Stealth Generator")
 
                 .AddPerkLevel()
@@ -372,9 +370,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.StealthGenerator3);
         }
 
-        private void Flamethrower()
+        private void Flamethrower(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Devices, PerkType.Flamethrower)
+            builder.Create(PerkCategoryType.Devices, PerkType.Flamethrower)
                 .Name("Flamethrower")
 
                 .AddPerkLevel()
@@ -402,9 +400,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Flamethrower3);
         }
 
-        private void WristRocket()
+        private void WristRocket(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Devices, PerkType.WristRocket)
+            builder.Create(PerkCategoryType.Devices, PerkType.WristRocket)
                 .Name("Wrist Rocket")
 
                 .AddPerkLevel()
@@ -432,9 +430,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.WristRocket3);
         }
 
-        private void DeflectorShield()
+        private void DeflectorShield(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Devices, PerkType.DeflectorShield)
+            builder.Create(PerkCategoryType.Devices, PerkType.DeflectorShield)
                 .Name("Deflector Shield")
 
                 .AddPerkLevel()

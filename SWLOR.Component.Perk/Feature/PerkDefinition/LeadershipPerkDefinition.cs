@@ -1,5 +1,6 @@
 using SWLOR.Component.Perk.Contracts;
 using SWLOR.Component.Perk.Service;
+using SWLOR.Component.Properties.Entity;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
@@ -15,36 +16,34 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
     {
         private readonly IDatabaseService _db;
         private readonly IAbilityService _abilityService;
-        private readonly PerkBuilder _builder = new();
-
-        public LeadershipPerkDefinition(IDatabaseService db, IAbilityService abilityService)
+                public LeadershipPerkDefinition(IDatabaseService db, IAbilityService abilityService)
         {
             _db = db;
             _abilityService = abilityService;
         }
 
-        public Dictionary<PerkType, PerkDetail> BuildPerks()
+        public Dictionary<PerkType, PerkDetail> BuildPerks(IPerkBuilder builder)
         {
-            CityManagement();
-            Upkeep();
-            GuildRelations();
-            ShoutRange();
-            RousingShout();
-            Dedication();
-            SoldiersSpeed();
-            SoldiersStrike();
-            Charge();
-            SoldiersPrecision();
-            ShockingShout();
-            Rejuvenation();
-            FrenziedShout();
+            CityManagement(builder);
+            Upkeep(builder);
+            GuildRelations(builder);
+            ShoutRange(builder);
+            RousingShout(builder);
+            Dedication(builder);
+            SoldiersSpeed(builder);
+            SoldiersStrike(builder);
+            Charge(builder);
+            SoldiersPrecision(builder);
+            ShockingShout(builder);
+            Rejuvenation(builder);
+            FrenziedShout(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
 
-        private void CityManagement()
+        private void CityManagement(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Leadership, PerkType.CityManagement)
+            builder.Create(PerkCategoryType.Leadership, PerkType.CityManagement)
                 .Name("City Management")
                 .RefundRequirement((player) =>
                 {
@@ -106,9 +105,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.CityManagement4);
         }
 
-        private void Upkeep()
+        private void Upkeep(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Leadership, PerkType.Upkeep)
+            builder.Create(PerkCategoryType.Leadership, PerkType.Upkeep)
                 .Name("Upkeep")
 
                 .AddPerkLevel()
@@ -124,9 +123,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Upkeep2);
         }
 
-        private void GuildRelations()
+        private void GuildRelations(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Leadership, PerkType.GuildRelations)
+            builder.Create(PerkCategoryType.Leadership, PerkType.GuildRelations)
                 .Name("Guild Relations")
 
                 .AddPerkLevel()
@@ -150,9 +149,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Leadership, 20);
         }
 
-        private void ShoutRange()
+        private void ShoutRange(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Leadership, PerkType.ShoutRange)
+            builder.Create(PerkCategoryType.Leadership, PerkType.ShoutRange)
                 .Name("Shout Range")
 
                 .AddPerkLevel()
@@ -169,9 +168,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .TriggerRefund(_abilityService.ReapplyPlayerAuraAOE);
         }
 
-        private void RousingShout()
+        private void RousingShout(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Leadership, PerkType.RousingShout)
+            builder.Create(PerkCategoryType.Leadership, PerkType.RousingShout)
                 .Name("Rousing Shout")
 
                 .AddPerkLevel()
@@ -191,9 +190,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Leadership, 45);
         }
 
-        private void Dedication()
+        private void Dedication(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Leadership, PerkType.Dedication)
+            builder.Create(PerkCategoryType.Leadership, PerkType.Dedication)
                 .Name("Dedication")
 
                 .AddPerkLevel()
@@ -212,9 +211,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Leadership, 30);
         }
 
-        private void SoldiersSpeed()
+        private void SoldiersSpeed(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Leadership, PerkType.SoldiersSpeed)
+            builder.Create(PerkCategoryType.Leadership, PerkType.SoldiersSpeed)
                 .Name("Soldier's Speed")
 
                 .AddPerkLevel()
@@ -234,9 +233,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Leadership, 40);
         }
 
-        private void SoldiersStrike()
+        private void SoldiersStrike(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Leadership, PerkType.SoldiersStrike)
+            builder.Create(PerkCategoryType.Leadership, PerkType.SoldiersStrike)
                 .Name("Soldier's Strike")
 
                 .AddPerkLevel()
@@ -256,9 +255,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Leadership, 40);
         }
 
-        private void Charge()
+        private void Charge(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Leadership, PerkType.Charge)
+            builder.Create(PerkCategoryType.Leadership, PerkType.Charge)
                 .Name("Charge")
 
                 .AddPerkLevel()
@@ -273,9 +272,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Leadership, 35);
         }
 
-        private void SoldiersPrecision()
+        private void SoldiersPrecision(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Leadership, PerkType.SoldiersPrecision)
+            builder.Create(PerkCategoryType.Leadership, PerkType.SoldiersPrecision)
                 .Name("Soldier's Precision")
 
                 .AddPerkLevel()
@@ -295,9 +294,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Leadership, 45);
         }
 
-        private void ShockingShout()
+        private void ShockingShout(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Leadership, PerkType.ShockingShout)
+            builder.Create(PerkCategoryType.Leadership, PerkType.ShockingShout)
                 .Name("Shocking Shout")
 
                 .AddPerkLevel()
@@ -308,9 +307,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ShockingShout);
         }
 
-        private void Rejuvenation()
+        private void Rejuvenation(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Leadership, PerkType.Rejuvenation)
+            builder.Create(PerkCategoryType.Leadership, PerkType.Rejuvenation)
                 .Name("Rejuvenation")
 
                 .AddPerkLevel()
@@ -330,9 +329,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Leadership, 45);
         }
 
-        private void FrenziedShout()
+        private void FrenziedShout(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Leadership, PerkType.FrenziedShout)
+            builder.Create(PerkCategoryType.Leadership, PerkType.FrenziedShout)
                 .Name("Frenzied Shout")
 
                 .AddPerkLevel()

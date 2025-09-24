@@ -7,11 +7,12 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Dialog.Contracts;
 using SWLOR.Shared.Domain.Character.Entities;
 using SWLOR.Shared.Domain.Social.Enums;
+using SWLOR.Shared.Domain.UI.Events;
 using SWLOR.Shared.UI.Contracts;
 
 namespace SWLOR.Component.Quest.Service
 {
-    public class QuestDetail
+    public class QuestDetail : IQuestDetail
     {
         public string QuestId { get; set; }
         public string Name { get; set; }

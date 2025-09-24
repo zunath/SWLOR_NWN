@@ -8,25 +8,23 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
 {
     public class EngineeringPerkDefinition : IPerkListDefinition
     {
-        private readonly PerkBuilder _builder = new();
-
-        public Dictionary<PerkType, PerkDetail> BuildPerks()
+                public Dictionary<PerkType, PerkDetail> BuildPerks(IPerkBuilder builder)
         {
-            Synthesis();
-            Touch();
-            Abilities();
-            StarshipBlueprints();
-            EngineeringEquipment();
-            EnhancementBlueprints();
-            DroidEquipmentBlueprints();
-            DroidAssembly();
+            Synthesis(builder);
+            Touch(builder);
+            Abilities(builder);
+            StarshipBlueprints(builder);
+            EngineeringEquipment(builder);
+            EnhancementBlueprints(builder);
+            DroidEquipmentBlueprints(builder);
+            DroidAssembly(builder);
             
-            return _builder.Build();
+            return builder.Build();
         }
 
-        private void Synthesis()
+        private void Synthesis(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Engineering, PerkType.RapidSynthesisEngineering)
+            builder.Create(PerkCategoryType.Engineering, PerkType.RapidSynthesisEngineering)
                 .Name("Rapid Synthesis (Engineering)")
 
                 .AddPerkLevel()
@@ -35,7 +33,7 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Engineering, 10);
 
 
-            _builder.Create(PerkCategoryType.Engineering, PerkType.CarefulSynthesisEngineering)
+            builder.Create(PerkCategoryType.Engineering, PerkType.CarefulSynthesisEngineering)
                 .Name("Careful Synthesis (Engineering)")
 
                 .AddPerkLevel()
@@ -44,9 +42,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Engineering, 30);
         }
 
-        private void Touch()
+        private void Touch(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Engineering, PerkType.BasicTouchEngineering)
+            builder.Create(PerkCategoryType.Engineering, PerkType.BasicTouchEngineering)
                 .Name("Basic Touch (Engineering)")
 
                 .AddPerkLevel()
@@ -54,7 +52,7 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .Price(1)
                 .RequirementSkill(SkillType.Engineering, 5);
 
-            _builder.Create(PerkCategoryType.Engineering, PerkType.StandardTouchEngineering)
+            builder.Create(PerkCategoryType.Engineering, PerkType.StandardTouchEngineering)
                 .Name("Standard Touch (Engineering)")
 
                 .AddPerkLevel()
@@ -62,7 +60,7 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .Price(1)
                 .RequirementSkill(SkillType.Engineering, 15);
 
-            _builder.Create(PerkCategoryType.Engineering, PerkType.PreciseTouchEngineering)
+            builder.Create(PerkCategoryType.Engineering, PerkType.PreciseTouchEngineering)
                 .Name("Precise Touch (Engineering)")
 
                 .AddPerkLevel()
@@ -71,9 +69,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Engineering, 35);
         }
 
-        private void Abilities()
+        private void Abilities(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Engineering, PerkType.MastersMendEngineering)
+            builder.Create(PerkCategoryType.Engineering, PerkType.MastersMendEngineering)
                 .Name("Master's Mend (Engineering)")
 
                 .AddPerkLevel()
@@ -81,7 +79,7 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .Price(1)
                 .RequirementSkill(SkillType.Engineering, 10);
 
-            _builder.Create(PerkCategoryType.Engineering, PerkType.SteadyHandEngineering)
+            builder.Create(PerkCategoryType.Engineering, PerkType.SteadyHandEngineering)
                 .Name("Steady Hand (Engineering)")
 
                 .AddPerkLevel()
@@ -89,7 +87,7 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .Price(1)
                 .RequirementSkill(SkillType.Engineering, 20);
 
-            _builder.Create(PerkCategoryType.Engineering, PerkType.MuscleMemoryEngineering)
+            builder.Create(PerkCategoryType.Engineering, PerkType.MuscleMemoryEngineering)
                 .Name("Muscle Memory (Engineering)")
 
                 .AddPerkLevel()
@@ -97,7 +95,7 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .Price(1)
                 .RequirementSkill(SkillType.Engineering, 40);
 
-            _builder.Create(PerkCategoryType.Engineering, PerkType.VenerationEngineering)
+            builder.Create(PerkCategoryType.Engineering, PerkType.VenerationEngineering)
                 .Name("Veneration (Engineering)")
 
                 .AddPerkLevel()
@@ -105,7 +103,7 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .Price(1)
                 .RequirementSkill(SkillType.Engineering, 25);
 
-            _builder.Create(PerkCategoryType.Engineering, PerkType.WasteNotEngineering)
+            builder.Create(PerkCategoryType.Engineering, PerkType.WasteNotEngineering)
                 .Name("Waste Not (Engineering)")
 
                 .AddPerkLevel()
@@ -114,9 +112,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Engineering, 8);
         }
 
-        private void StarshipBlueprints()
+        private void StarshipBlueprints(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Engineering, PerkType.StarshipBlueprints)
+            builder.Create(PerkCategoryType.Engineering, PerkType.StarshipBlueprints)
                 .Name("Starship Blueprints")
 
                 .AddPerkLevel()
@@ -150,9 +148,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
         }
 
 
-        private void EngineeringEquipment()
+        private void EngineeringEquipment(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Engineering, PerkType.EngineeringEquipment)
+            builder.Create(PerkCategoryType.Engineering, PerkType.EngineeringEquipment)
                 .Name("Engineering Equipment")
 
                 .AddPerkLevel()
@@ -187,9 +185,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
         }
 
 
-        private void EnhancementBlueprints()
+        private void EnhancementBlueprints(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Engineering, PerkType.EnhancementBlueprints)
+            builder.Create(PerkCategoryType.Engineering, PerkType.EnhancementBlueprints)
                 .Name("Enhancement Blueprints")
 
                 .AddPerkLevel()
@@ -222,9 +220,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.EnhancementBlueprints5);
         }
 
-        private void DroidEquipmentBlueprints()
+        private void DroidEquipmentBlueprints(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Engineering, PerkType.DroidEquipmentBlueprints)
+            builder.Create(PerkCategoryType.Engineering, PerkType.DroidEquipmentBlueprints)
                 .Name("Droid Equipment Blueprints")
 
                 .AddPerkLevel()
@@ -257,9 +255,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.DroidEquipmentBlueprints5);
         }
 
-        private void DroidAssembly()
+        private void DroidAssembly(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Engineering, PerkType.DroidAssembly)
+            builder.Create(PerkCategoryType.Engineering, PerkType.DroidAssembly)
                 .Name("Droid Assembly")
 
                 .AddPerkLevel()

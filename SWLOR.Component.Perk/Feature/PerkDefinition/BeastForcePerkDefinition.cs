@@ -2,6 +2,7 @@ using SWLOR.Component.Perk.Contracts;
 using SWLOR.Component.Perk.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.Domain.Beasts.Contracts;
 using SWLOR.Shared.Domain.Beasts.Enums;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
@@ -16,10 +17,13 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
         private readonly IRandomService _random;
         private readonly IPerkService _perkService;
         private readonly IStatService _statService;
-        private readonly PerkBuilder _builder = new();
-        private readonly BeastMastery _beastMastery;
+                private readonly IBeastMasteryService _beastMastery;
 
-        public BeastForcePerkDefinition(IRandomService random, IPerkService perkService, IStatService statService, BeastMastery beastMastery)
+        public BeastForcePerkDefinition(
+            IRandomService random, 
+            IPerkService perkService, 
+            IStatService statService, 
+            IBeastMasteryService beastMastery)
         {
             _random = random;
             _perkService = perkService;
@@ -27,18 +31,18 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
             _beastMastery = beastMastery;
         }
 
-        public Dictionary<PerkType, PerkDetail> BuildPerks()
+        public Dictionary<PerkType, PerkDetail> BuildPerks(IPerkBuilder builder)
         {
-            ForceTouch();
-            Innervate();
-            ForceLink();
+            ForceTouch(builder);
+            Innervate(builder);
+            ForceLink(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
 
-        private void ForceTouch()
+        private void ForceTouch(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.BeastForce, PerkType.ForceTouch)
+            builder.Create(PerkCategoryType.BeastForce, PerkType.ForceTouch)
                 .Name("Force Touch")
                 .GroupType(PerkGroupType.Beast)
 
@@ -78,9 +82,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceTouch5);
         }
 
-        private void Innervate()
+        private void Innervate(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.BeastForce, PerkType.Innervate)
+            builder.Create(PerkCategoryType.BeastForce, PerkType.Innervate)
                 .Name("Innervate")
                 .GroupType(PerkGroupType.Beast)
 
@@ -121,7 +125,7 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
         }
 
         [ScriptHandler(ScriptName.OnItemHit)]
-        public static void OnForceLinkHit()
+        public void OnForceLinkHit()
         {
             var beast = OBJECT_SELF;
             var item = GetSpellCastItem();
@@ -142,9 +146,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 }
             }
         }
-        private void ForceLink()
+        private void ForceLink(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.BeastForce, PerkType.ForceLink)
+            builder.Create(PerkCategoryType.BeastForce, PerkType.ForceLink)
                 .Name("Force Link")
                 .GroupType(PerkGroupType.Beast)
 

@@ -10,21 +10,20 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
     public class GeneralPerkDefinition: IPerkListDefinition
     {
         private readonly IAbilityService _abilityService;
-        private readonly PerkBuilder _builder = new();
 
         public GeneralPerkDefinition(IAbilityService abilityService)
         {
             _abilityService = abilityService;
         }
 
-        public Dictionary<PerkType, PerkDetail> BuildPerks()
+        public Dictionary<PerkType, PerkDetail> BuildPerks(IPerkBuilder builder)
         {
-            Dash();
+            Dash(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
 
-        private void Dash()
+        private void Dash(IPerkBuilder builder)
         {
             void ToggleDash(uint player)
             {
@@ -34,7 +33,7 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 }
             }
 
-            _builder.Create(PerkCategoryType.General, PerkType.Dash)
+            builder.Create(PerkCategoryType.General, PerkType.Dash)
                 .Name("Dash")
                 
                 .AddPerkLevel()

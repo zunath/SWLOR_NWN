@@ -2,6 +2,7 @@ using SWLOR.Component.Perk.Contracts;
 using SWLOR.Component.Perk.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.Domain.Beasts.Contracts;
 using SWLOR.Shared.Domain.Beasts.Enums;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
@@ -16,10 +17,13 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
         private readonly IRandomService _random;
         private readonly IPerkService _perkService;
         private readonly IStatService _statService;
-        private readonly PerkBuilder _builder = new();
-        private readonly BeastMastery _beastMastery;
+                private readonly IBeastMasteryService _beastMastery;
 
-        public BeastBruiserPerkDefinition(IRandomService random, IPerkService perkService, IStatService statService, BeastMastery beastMastery)
+        public BeastBruiserPerkDefinition(
+            IRandomService random, 
+            IPerkService perkService, 
+            IStatService statService,
+            IBeastMasteryService beastMastery)
         {
             _random = random;
             _perkService = perkService;
@@ -27,18 +31,18 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
             _beastMastery = beastMastery;
         }
 
-        public Dictionary<PerkType, PerkDetail> BuildPerks()
+        public Dictionary<PerkType, PerkDetail> BuildPerks(IPerkBuilder builder)
         {
-            PoisonBreath();
-            IceBreath();
-            EnduranceLink();
+            PoisonBreath(builder);
+            IceBreath(builder);
+            EnduranceLink(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
 
-        private void PoisonBreath()
+        private void PoisonBreath(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.BeastBruiser, PerkType.PoisonBreath)
+            builder.Create(PerkCategoryType.BeastBruiser, PerkType.PoisonBreath)
                 .Name("Poison Breath")
                 .GroupType(PerkGroupType.Beast)
 
@@ -78,9 +82,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.PoisonBreath5);
         }
 
-        private void IceBreath()
+        private void IceBreath(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.BeastBruiser, PerkType.IceBreath)
+            builder.Create(PerkCategoryType.BeastBruiser, PerkType.IceBreath)
                 .Name("Ice Breath")
                 .GroupType(PerkGroupType.Beast)
 
@@ -122,7 +126,7 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
 
 
         [ScriptHandler(ScriptName.OnItemHit)]
-        public static void OnEnduranceLinkHit()
+        public void OnEnduranceLinkHit()
         {
             var beast = OBJECT_SELF;
             var item = GetSpellCastItem();
@@ -144,9 +148,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
             }
         }
 
-        private void EnduranceLink()
+        private void EnduranceLink(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.BeastBruiser, PerkType.EnduranceLink)
+            builder.Create(PerkCategoryType.BeastBruiser, PerkType.EnduranceLink)
                 .Name("Endurance Link")
                 .GroupType(PerkGroupType.Beast)
 

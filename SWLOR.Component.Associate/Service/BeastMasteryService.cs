@@ -78,7 +78,7 @@ namespace SWLOR.Component.Associate.Service
         private readonly Dictionary<int, float> _incubationPercentages = new();
 
         private const string BeastResref = "pc_beast";
-        public const string BeastClawResref = "beast_claw";
+        public string BeastClawResref => "beast_claw";
         public int MaxLevel => 50;
         private int _highestDelta;
 

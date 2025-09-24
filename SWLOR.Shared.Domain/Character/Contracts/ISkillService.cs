@@ -5,6 +5,7 @@ namespace SWLOR.Shared.Domain.Character.Contracts
 {
     public interface ISkillService
     {
+        public int SkillCap { get; }
         /// <summary>
         /// Handles creating all of the mapping dictionaries used by the skill system on module load.
         /// </summary>

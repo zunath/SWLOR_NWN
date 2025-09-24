@@ -8,29 +8,27 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
 {
     public class BeastMasteryPerkDefinition: IPerkListDefinition
     {
-        private readonly PerkBuilder _builder = new();
-
-        public Dictionary<PerkType, PerkDetail> BuildPerks()
+                public Dictionary<PerkType, PerkDetail> BuildPerks(IPerkBuilder builder)
         {
-            Tame();
-            Reward();
-            Stabling();
-            Snarl();
-            Growl();
-            SoothePet();
-            ReviveBeast();
+            Tame(builder);
+            Reward(builder);
+            Stabling(builder);
+            Snarl(builder);
+            Growl(builder);
+            SoothePet(builder);
+            ReviveBeast(builder);
 
-            DNAManipulation();
-            IncubationProcessing();
-            ErraticGenius();
-            IncubationManagement();
+            DNAManipulation(builder);
+            IncubationProcessing(builder);
+            ErraticGenius(builder);
+            IncubationManagement(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
 
-        private void Tame()
+        private void Tame(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.BeastMasteryTraining, PerkType.Tame)
+            builder.Create(PerkCategoryType.BeastMasteryTraining, PerkType.Tame)
                 .Name("Tame")
 
                 .AddPerkLevel()
@@ -60,9 +58,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .RequirementSkill(SkillType.BeastMastery, 40);
         }
 
-        private void Reward()
+        private void Reward(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.BeastMasteryTraining, PerkType.Reward)
+            builder.Create(PerkCategoryType.BeastMasteryTraining, PerkType.Reward)
                 .Name("Reward")
 
                 .AddPerkLevel()
@@ -84,9 +82,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Reward3);
         }
 
-        private void Stabling()
+        private void Stabling(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.BeastMasteryTraining, PerkType.Stabling)
+            builder.Create(PerkCategoryType.BeastMasteryTraining, PerkType.Stabling)
                 .Name("Stabling")
 
                 .AddPerkLevel()
@@ -115,9 +113,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .RequirementSkill(SkillType.BeastMastery, 50);
         }
         
-        private void Snarl()
+        private void Snarl(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.BeastMasteryTraining, PerkType.Snarl)
+            builder.Create(PerkCategoryType.BeastMasteryTraining, PerkType.Snarl)
                 .Name("Snarl")
 
                 .AddPerkLevel()
@@ -127,9 +125,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Snarl);
         }
 
-        private void Growl()
+        private void Growl(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.BeastMasteryTraining, PerkType.Growl)
+            builder.Create(PerkCategoryType.BeastMasteryTraining, PerkType.Growl)
                 .Name("Growl")
 
                 .AddPerkLevel()
@@ -139,9 +137,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Growl);
         }
 
-        private void SoothePet()
+        private void SoothePet(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.BeastMasteryTraining, PerkType.SoothePet)
+            builder.Create(PerkCategoryType.BeastMasteryTraining, PerkType.SoothePet)
                 .Name("Soothe Pet")
 
                 .AddPerkLevel()
@@ -151,9 +149,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.SoothePet);
         }
 
-        private void ReviveBeast()
+        private void ReviveBeast(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.BeastMasteryTraining, PerkType.ReviveBeast)
+            builder.Create(PerkCategoryType.BeastMasteryTraining, PerkType.ReviveBeast)
                 .Name("Revive Beast")
 
                 .AddPerkLevel()
@@ -174,9 +172,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ReviveBeast3);
         }
 
-        private void DNAManipulation()
+        private void DNAManipulation(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.BeastMasteryIncubation, PerkType.DNAManipulation)
+            builder.Create(PerkCategoryType.BeastMasteryIncubation, PerkType.DNAManipulation)
                 .Name("DNA Manipulation")
 
                 .AddPerkLevel()
@@ -206,9 +204,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
 
         }
 
-        private void IncubationProcessing()
+        private void IncubationProcessing(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.BeastMasteryIncubation, PerkType.IncubationProcessing)
+            builder.Create(PerkCategoryType.BeastMasteryIncubation, PerkType.IncubationProcessing)
                 .Name("Incubation Processing")
 
                 .AddPerkLevel()
@@ -232,9 +230,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .RequirementSkill(SkillType.BeastMastery, 45);
         }
 
-        private void ErraticGenius()
+        private void ErraticGenius(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.BeastMasteryIncubation, PerkType.ErraticGenius)
+            builder.Create(PerkCategoryType.BeastMasteryIncubation, PerkType.ErraticGenius)
                 .Name("Erratic Genius")
 
                 .AddPerkLevel()
@@ -253,9 +251,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .RequirementSkill(SkillType.BeastMastery, 40);
         }
 
-        private void IncubationManagement()
+        private void IncubationManagement(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.BeastMasteryIncubation, PerkType.IncubationManagement)
+            builder.Create(PerkCategoryType.BeastMasteryIncubation, PerkType.IncubationManagement)
                 .Name("Incubation Management")
 
                 .AddPerkLevel()

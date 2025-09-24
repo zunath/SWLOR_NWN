@@ -8,30 +8,28 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
 {
     public class SmitheryPerkDefinition : IPerkListDefinition
     {
-        private readonly PerkBuilder _builder = new();
-
-        public Dictionary<PerkType, PerkDetail> BuildPerks()
+                public Dictionary<PerkType, PerkDetail> BuildPerks(IPerkBuilder builder)
         {
-            Synthesis();
-            Touch();
-            Abilities();
+            Synthesis(builder);
+            Touch(builder);
+            Abilities(builder);
 
-            OneHandedBlueprints();
-            TwoHandedBlueprints();
-            MartialBlueprints();
-            RangedBlueprints();
+            OneHandedBlueprints(builder);
+            TwoHandedBlueprints(builder);
+            MartialBlueprints(builder);
+            RangedBlueprints(builder);
 
-            ArmorBlueprints();
-            AccessoryBlueprints();
+            ArmorBlueprints(builder);
+            AccessoryBlueprints(builder);
 
-            SmitheryEquipment();
+            SmitheryEquipment(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
 
-        private void Synthesis()
+        private void Synthesis(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Smithery, PerkType.RapidSynthesisSmithery)
+            builder.Create(PerkCategoryType.Smithery, PerkType.RapidSynthesisSmithery)
                 .Name("Rapid Synthesis (Smithery)")
 
                 .AddPerkLevel()
@@ -40,7 +38,7 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Smithery, 10);
 
 
-            _builder.Create(PerkCategoryType.Smithery, PerkType.CarefulSynthesisSmithery)
+            builder.Create(PerkCategoryType.Smithery, PerkType.CarefulSynthesisSmithery)
                 .Name("Careful Synthesis (Smithery)")
 
                 .AddPerkLevel()
@@ -49,9 +47,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Smithery, 30);
         }
 
-        private void Touch()
+        private void Touch(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Smithery, PerkType.BasicTouchSmithery)
+            builder.Create(PerkCategoryType.Smithery, PerkType.BasicTouchSmithery)
                 .Name("Basic Touch (Smithery)")
 
                 .AddPerkLevel()
@@ -59,7 +57,7 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .Price(1)
                 .RequirementSkill(SkillType.Smithery, 5);
 
-            _builder.Create(PerkCategoryType.Smithery, PerkType.StandardTouchSmithery)
+            builder.Create(PerkCategoryType.Smithery, PerkType.StandardTouchSmithery)
                 .Name("Standard Touch (Smithery)")
 
                 .AddPerkLevel()
@@ -67,7 +65,7 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .Price(1)
                 .RequirementSkill(SkillType.Smithery, 15);
 
-            _builder.Create(PerkCategoryType.Smithery, PerkType.PreciseTouchSmithery)
+            builder.Create(PerkCategoryType.Smithery, PerkType.PreciseTouchSmithery)
                 .Name("Precise Touch (Smithery)")
 
                 .AddPerkLevel()
@@ -76,9 +74,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Smithery, 35);
         }
 
-        private void Abilities()
+        private void Abilities(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Smithery, PerkType.MastersMendSmithery)
+            builder.Create(PerkCategoryType.Smithery, PerkType.MastersMendSmithery)
                 .Name("Master's Mend (Smithery)")
 
                 .AddPerkLevel()
@@ -86,7 +84,7 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .Price(1)
                 .RequirementSkill(SkillType.Smithery, 10);
 
-            _builder.Create(PerkCategoryType.Smithery, PerkType.SteadyHandSmithery)
+            builder.Create(PerkCategoryType.Smithery, PerkType.SteadyHandSmithery)
                 .Name("Steady Hand (Smithery)")
 
                 .AddPerkLevel()
@@ -94,7 +92,7 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .Price(1)
                 .RequirementSkill(SkillType.Smithery, 20);
 
-            _builder.Create(PerkCategoryType.Smithery, PerkType.MuscleMemorySmithery)
+            builder.Create(PerkCategoryType.Smithery, PerkType.MuscleMemorySmithery)
                 .Name("Muscle Memory (Smithery)")
 
                 .AddPerkLevel()
@@ -102,7 +100,7 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .Price(1)
                 .RequirementSkill(SkillType.Smithery, 40);
 
-            _builder.Create(PerkCategoryType.Smithery, PerkType.VenerationSmithery)
+            builder.Create(PerkCategoryType.Smithery, PerkType.VenerationSmithery)
                 .Name("Veneration (Smithery)")
 
                 .AddPerkLevel()
@@ -110,7 +108,7 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .Price(1)
                 .RequirementSkill(SkillType.Smithery, 25);
 
-            _builder.Create(PerkCategoryType.Smithery, PerkType.WasteNotSmithery)
+            builder.Create(PerkCategoryType.Smithery, PerkType.WasteNotSmithery)
                 .Name("Waste Not (Smithery)")
 
                 .AddPerkLevel()
@@ -118,9 +116,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .Price(1)
                 .RequirementSkill(SkillType.Smithery, 8);
         }
-        private void OneHandedBlueprints()
+        private void OneHandedBlueprints(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Smithery, PerkType.OneHandedBlueprints)
+            builder.Create(PerkCategoryType.Smithery, PerkType.OneHandedBlueprints)
                 .Name("One-Handed Blueprints")
 
                 .AddPerkLevel()
@@ -153,9 +151,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.OneHandedBlueprints5);
         }
 
-        private void TwoHandedBlueprints()
+        private void TwoHandedBlueprints(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Smithery, PerkType.TwoHandedBlueprints)
+            builder.Create(PerkCategoryType.Smithery, PerkType.TwoHandedBlueprints)
                 .Name("Two-Handed Blueprints")
 
                 .AddPerkLevel()
@@ -188,9 +186,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.TwoHandedBlueprints5);
         }
 
-        private void MartialBlueprints()
+        private void MartialBlueprints(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Smithery, PerkType.MartialBlueprints)
+            builder.Create(PerkCategoryType.Smithery, PerkType.MartialBlueprints)
                 .Name("Martial Blueprints")
 
                 .AddPerkLevel()
@@ -223,9 +221,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.MartialBlueprints5);
         }
 
-        private void RangedBlueprints()
+        private void RangedBlueprints(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Smithery, PerkType.RangedBlueprints)
+            builder.Create(PerkCategoryType.Smithery, PerkType.RangedBlueprints)
                 .Name("Ranged Blueprints")
 
                 .AddPerkLevel()
@@ -258,9 +256,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.RangedBlueprints5);
         }
 
-        private void ArmorBlueprints()
+        private void ArmorBlueprints(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Smithery, PerkType.ArmorBlueprints)
+            builder.Create(PerkCategoryType.Smithery, PerkType.ArmorBlueprints)
                 .Name("Armor Blueprints")
 
                 .AddPerkLevel()
@@ -293,9 +291,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ArmorBlueprints5);
         }
 
-        private void AccessoryBlueprints()
+        private void AccessoryBlueprints(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Smithery, PerkType.AccessoryBlueprints)
+            builder.Create(PerkCategoryType.Smithery, PerkType.AccessoryBlueprints)
                 .Name("Accessory Blueprints")
 
                 .AddPerkLevel()
@@ -328,9 +326,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.AccessoryBlueprints5);
         }
 
-        private void SmitheryEquipment()
+        private void SmitheryEquipment(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.Smithery, PerkType.SmitheryEquipment)
+            builder.Create(PerkCategoryType.Smithery, PerkType.SmitheryEquipment)
                 .Name("Smithery Equipment")
 
                 .AddPerkLevel()

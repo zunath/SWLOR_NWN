@@ -8,9 +8,8 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
 {
     public class PilotingPerkDefinition : IPerkListDefinition
     {
-        public Dictionary<PerkType, PerkDetail> BuildPerks()
+        public Dictionary<PerkType, PerkDetail> BuildPerks(IPerkBuilder builder)
         {
-            var builder = new PerkBuilder();
             Starships(builder);
             DefensiveModules(builder);
             OffensiveModules(builder);
@@ -22,7 +21,7 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
             return builder.Build();
         }
 
-        private void Starships(PerkBuilder builder)
+        private void Starships(IPerkBuilder builder)
         {
             builder.Create(PerkCategoryType.Piloting, PerkType.Starships)
                 .Name("Starships")
@@ -57,7 +56,7 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Starships5);
         }
 
-        private void DefensiveModules(PerkBuilder builder)
+        private void DefensiveModules(IPerkBuilder builder)
         {
             builder.Create(PerkCategoryType.Piloting, PerkType.DefensiveModules)
                 .Name("Defensive Modules")
@@ -92,7 +91,7 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.DefensiveModules5);
         }
 
-        private void OffensiveModules(PerkBuilder builder)
+        private void OffensiveModules(IPerkBuilder builder)
         {
             builder.Create(PerkCategoryType.Piloting, PerkType.OffensiveModules)
                 .Name("Offensive Modules")
@@ -127,7 +126,7 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.OffensiveModules5);
         }
 
-        private void EnergyManagement(PerkBuilder builder)
+        private void EnergyManagement(IPerkBuilder builder)
         {
             builder.Create(PerkCategoryType.Piloting, PerkType.EnergyManagement)
                 .Name("Energy Management")
@@ -145,7 +144,7 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.EnergyManagement2);
         }
 
-        private void MiningModules(PerkBuilder builder)
+        private void MiningModules(IPerkBuilder builder)
         {
             builder.Create(PerkCategoryType.Piloting, PerkType.MiningModules)
                 .Name("Mining Modules")
@@ -180,7 +179,7 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.MiningModules5);
         }
 
-        private void StarshipMining(PerkBuilder builder)
+        private void StarshipMining(IPerkBuilder builder)
         {
             builder.Create(PerkCategoryType.Piloting, PerkType.StarshipMining)
                 .Name("Starship Mining")
@@ -198,7 +197,7 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.StarshipMining2);
         }
 
-        private void IntuitivePiloting(PerkBuilder builder)
+        private void IntuitivePiloting(IPerkBuilder builder)
         {
             builder.Create(PerkCategoryType.Piloting, PerkType.IntuitivePiloting)
                 .Name("Intuitive Piloting")

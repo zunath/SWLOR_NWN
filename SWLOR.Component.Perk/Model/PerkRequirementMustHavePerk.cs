@@ -8,12 +8,18 @@ namespace SWLOR.Component.Perk.Model
     public class PerkRequirementMustHavePerk: IPerkRequirement
     {
         private readonly IDatabaseService _db;
+        private readonly IPerkService _perkService;
         private readonly PerkType _mustHavePerkType;
         private readonly int _mustHavePerkLevel;
 
-        public PerkRequirementMustHavePerk(IDatabaseService db, PerkType mustHavePerkType, int mustHavePerkLevel = 1)
+        public PerkRequirementMustHavePerk(
+            IDatabaseService db, 
+            IPerkService perkService,
+            PerkType mustHavePerkType, 
+            int mustHavePerkLevel = 1)
         {
             _db = db;
+            _perkService = perkService;
             _mustHavePerkType = mustHavePerkType;
             _mustHavePerkLevel = mustHavePerkLevel;
         }

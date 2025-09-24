@@ -10,46 +10,44 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
     public class RangedPerkDefinition : IPerkListDefinition
     {
         private readonly IStatService _statService;
-        private readonly PerkBuilder _builder = new();
-
-        public RangedPerkDefinition(IStatService statService)
+                public RangedPerkDefinition(IStatService statService)
         {
             _statService = statService;
         }
 
-        public Dictionary<PerkType, PerkDetail> BuildPerks()
+        public Dictionary<PerkType, PerkDetail> BuildPerks(IPerkBuilder builder)
         {
-            RapidShot();
-            DirtyBlow();
-            RapidReload();
-            PrecisionAim();
-            PointBlankShot();
-            WeaponFocusPistols();
-            ImprovedCriticalPistols();
-            PistolProficiency();
-            PistolMastery();
-            QuickDraw();
-            DoubleShot();
-            WeaponFocusThrowingWeapons();
-            ImprovedCriticalThrowingWeapons();
-            ThrowingWeaponProficiency();
-            ThrowingWeaponMastery();
-            ExplosiveToss();
-            PiercingToss();
-            WeaponFocusRifles();
-            ImprovedCriticalRifles();
-            RifleProficiency();
-            RifleMastery();
-            TranquilizerShot();
-            CripplingShot();
-            ZenMarksmanship();
+            RapidShot(builder);
+            DirtyBlow(builder);
+            RapidReload(builder);
+            PrecisionAim(builder);
+            PointBlankShot(builder);
+            WeaponFocusPistols(builder);
+            ImprovedCriticalPistols(builder);
+            PistolProficiency(builder);
+            PistolMastery(builder);
+            QuickDraw(builder);
+            DoubleShot(builder);
+            WeaponFocusThrowingWeapons(builder);
+            ImprovedCriticalThrowingWeapons(builder);
+            ThrowingWeaponProficiency(builder);
+            ThrowingWeaponMastery(builder);
+            ExplosiveToss(builder);
+            PiercingToss(builder);
+            WeaponFocusRifles(builder);
+            ImprovedCriticalRifles(builder);
+            RifleProficiency(builder);
+            RifleMastery(builder);
+            TranquilizerShot(builder);
+            CripplingShot(builder);
+            ZenMarksmanship(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
 
-        private void RapidShot()
+        private void RapidShot(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.RangedPistol, PerkType.RapidShot)
+            builder.Create(PerkCategoryType.RangedPistol, PerkType.RapidShot)
                 .Name("Rapid Shot")
 
                 .AddPerkLevel()
@@ -86,9 +84,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 });
         }
 
-        private void DirtyBlow()
+        private void DirtyBlow(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.RangedGeneral, PerkType.DirtyBlow)
+            builder.Create(PerkCategoryType.RangedGeneral, PerkType.DirtyBlow)
                 .Name("Dirty Blow")
 
                 .AddPerkLevel()
@@ -124,9 +122,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
 
         }
 
-        private void RapidReload()
+        private void RapidReload(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.RangedRifle, PerkType.RapidReload)
+            builder.Create(PerkCategoryType.RangedRifle, PerkType.RapidReload)
                 .Name("Rapid Reload")
 
                 .AddPerkLevel()
@@ -136,9 +134,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.RapidReload);
         }
 
-        private void PrecisionAim()
+        private void PrecisionAim(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.RangedGeneral, PerkType.PrecisionAim)
+            builder.Create(PerkCategoryType.RangedGeneral, PerkType.PrecisionAim)
                 .Name("Precision Aim")
 
                 .AddPerkLevel()
@@ -158,9 +156,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.PrecisionAim2);
         }
 
-        private void PointBlankShot()
+        private void PointBlankShot(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.RangedGeneral, PerkType.PointBlankShot)
+            builder.Create(PerkCategoryType.RangedGeneral, PerkType.PointBlankShot)
                 .Name("Point Blank Shot")
 
                 .AddPerkLevel()
@@ -170,9 +168,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.PointBlankShot);
         }
 
-        private void WeaponFocusPistols()
+        private void WeaponFocusPistols(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.RangedPistol, PerkType.WeaponFocusPistols)
+            builder.Create(PerkCategoryType.RangedPistol, PerkType.WeaponFocusPistols)
                 .Name("Weapon Focus - Pistols")
 
                 .AddPerkLevel()
@@ -188,9 +186,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.WeaponSpecializationPistol);
         }
 
-        private void ImprovedCriticalPistols()
+        private void ImprovedCriticalPistols(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.RangedPistol, PerkType.ImprovedCriticalPistols)
+            builder.Create(PerkCategoryType.RangedPistol, PerkType.ImprovedCriticalPistols)
                 .Name("Improved Critical - Pistols")
 
                 .AddPerkLevel()
@@ -200,9 +198,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ImprovedCriticalPistol);
         }
 
-        private void PistolProficiency()
+        private void PistolProficiency(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.RangedPistol, PerkType.PistolProficiency)
+            builder.Create(PerkCategoryType.RangedPistol, PerkType.PistolProficiency)
                 .Name("Pistol Proficiency")
 
                 .AddPerkLevel()
@@ -235,9 +233,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.PistolProficiency5);
         }
 
-        private void PistolMastery()
+        private void PistolMastery(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.RangedPistol, PerkType.PistolMastery)
+            builder.Create(PerkCategoryType.RangedPistol, PerkType.PistolMastery)
                 .Name("Pistol Mastery")
                 .TriggerEquippedItem((player, item, slot, type, level) =>
                 {
@@ -275,9 +273,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.PistolMastery2);
         }
 
-        private void QuickDraw()
+        private void QuickDraw(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.RangedPistol, PerkType.QuickDraw)
+            builder.Create(PerkCategoryType.RangedPistol, PerkType.QuickDraw)
                 .Name("Quick Draw")
 
                 .AddPerkLevel()
@@ -305,9 +303,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.QuickDraw3);
         }
 
-        private void DoubleShot()
+        private void DoubleShot(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.RangedPistol, PerkType.DoubleShot)
+            builder.Create(PerkCategoryType.RangedPistol, PerkType.DoubleShot)
                 .Name("Double Shot")
 
                 .AddPerkLevel()
@@ -335,9 +333,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.DoubleShot3);
         }
 
-        private void WeaponFocusThrowingWeapons()
+        private void WeaponFocusThrowingWeapons(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.RangedThrowing, PerkType.WeaponFocusThrowingWeapons)
+            builder.Create(PerkCategoryType.RangedThrowing, PerkType.WeaponFocusThrowingWeapons)
                 .Name("Weapon Focus - Throwing Weapons")
 
                 .AddPerkLevel()
@@ -353,9 +351,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.WeaponSpecializationThrowingWeapons);
         }
 
-        private void ImprovedCriticalThrowingWeapons()
+        private void ImprovedCriticalThrowingWeapons(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.RangedThrowing, PerkType.ImprovedCriticalThrowingWeapons)
+            builder.Create(PerkCategoryType.RangedThrowing, PerkType.ImprovedCriticalThrowingWeapons)
                 .Name("Improved Critical - Throwing Weapons")
 
                 .AddPerkLevel()
@@ -365,9 +363,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ImprovedCriticalThrowingWeapons);
         }
 
-        private void ThrowingWeaponProficiency()
+        private void ThrowingWeaponProficiency(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.RangedThrowing, PerkType.ThrowingWeaponProficiency)
+            builder.Create(PerkCategoryType.RangedThrowing, PerkType.ThrowingWeaponProficiency)
                 .Name("Throwing Weapon Proficiency")
 
                 .AddPerkLevel()
@@ -400,9 +398,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ThrowingWeaponProficiency5);
         }
 
-        private void ThrowingWeaponMastery()
+        private void ThrowingWeaponMastery(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.RangedThrowing, PerkType.ThrowingWeaponMastery)
+            builder.Create(PerkCategoryType.RangedThrowing, PerkType.ThrowingWeaponMastery)
                 .Name("Throwing Weapon Mastery")
                 .TriggerEquippedItem((player, item, slot, type, level) =>
                 {
@@ -440,9 +438,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ThrowingWeaponMastery2);
         }
 
-        private void ExplosiveToss()
+        private void ExplosiveToss(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.RangedThrowing, PerkType.ExplosiveToss)
+            builder.Create(PerkCategoryType.RangedThrowing, PerkType.ExplosiveToss)
                 .Name("Explosive Toss")
 
                 .AddPerkLevel()
@@ -470,9 +468,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ExplosiveToss3);
         }
 
-        private void PiercingToss()
+        private void PiercingToss(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.RangedThrowing, PerkType.PiercingToss)
+            builder.Create(PerkCategoryType.RangedThrowing, PerkType.PiercingToss)
                 .Name("Piercing Toss")
 
                 .AddPerkLevel()
@@ -500,9 +498,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.PiercingToss3);
         }
         
-        private void WeaponFocusRifles()
+        private void WeaponFocusRifles(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.RangedRifle, PerkType.WeaponFocusRifles)
+            builder.Create(PerkCategoryType.RangedRifle, PerkType.WeaponFocusRifles)
                 .Name("Weapon Focus - Rifles")
 
                 .AddPerkLevel()
@@ -518,9 +516,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.WeaponSpecializationRifles);
         }
 
-        private void ImprovedCriticalRifles()
+        private void ImprovedCriticalRifles(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.RangedRifle, PerkType.ImprovedCriticalRifles)
+            builder.Create(PerkCategoryType.RangedRifle, PerkType.ImprovedCriticalRifles)
                 .Name("Improved Critical - Rifles")
 
                 .AddPerkLevel()
@@ -530,9 +528,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ImprovedCriticalRifles);
         }
 
-        private void RifleProficiency()
+        private void RifleProficiency(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.RangedRifle, PerkType.RifleProficiency)
+            builder.Create(PerkCategoryType.RangedRifle, PerkType.RifleProficiency)
                 .Name("Rifle Proficiency")
 
                 .AddPerkLevel()
@@ -565,9 +563,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.RifleProficiency5);
         }
 
-        private void RifleMastery()
+        private void RifleMastery(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.RangedRifle, PerkType.RifleMastery)
+            builder.Create(PerkCategoryType.RangedRifle, PerkType.RifleMastery)
                 .Name("Rifle Mastery")
                 .TriggerEquippedItem((player, item, slot, type, level) =>
                 {
@@ -606,9 +604,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.RifleMastery2);
         }
 
-        private void TranquilizerShot()
+        private void TranquilizerShot(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.RangedRifle, PerkType.TranquilizerShot)
+            builder.Create(PerkCategoryType.RangedRifle, PerkType.TranquilizerShot)
                 .Name("Tranquilizer Shot")
 
                 .AddPerkLevel()
@@ -636,9 +634,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.TranquilizerShot3);
         }
 
-        private void CripplingShot()
+        private void CripplingShot(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.RangedRifle, PerkType.CripplingShot)
+            builder.Create(PerkCategoryType.RangedRifle, PerkType.CripplingShot)
                 .Name("Crippling Shot")
 
                 .AddPerkLevel()
@@ -666,9 +664,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.CripplingShot3);
         }
 
-        private void ZenMarksmanship()
+        private void ZenMarksmanship(IPerkBuilder builder)
         {
-            _builder.Create(PerkCategoryType.RangedGeneral, PerkType.ZenMarksmanship)
+            builder.Create(PerkCategoryType.RangedGeneral, PerkType.ZenMarksmanship)
                 .Name("Zen Marksmanship")
 
                 .AddPerkLevel()

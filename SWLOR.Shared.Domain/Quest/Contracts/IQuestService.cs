@@ -22,7 +22,7 @@ namespace SWLOR.Component.Quest.Contracts
         /// <param name="guild">The guild to search for</param>
         /// <param name="rank">The rank to search for</param>
         /// <returns>A list of quests associated with the guild.</returns>
-        List<QuestDetail> GetQuestsByGuild(GuildType guild, int rank);
+        List<IQuestDetail> GetQuestsByGuild(GuildType guild, int rank);
 
         /// <summary>
         /// When a player enters the module, load their quests.
@@ -34,7 +34,7 @@ namespace SWLOR.Component.Quest.Contracts
         /// </summary>
         /// <param name="questId">The quest Id to search for.</param>
         /// <returns>The quest detail matching this Id.</returns>
-        QuestDetail GetQuestById(string questId);
+        IQuestDetail GetQuestById(string questId);
 
         /// <summary>
         /// Retrieves the quests associated with an NPC group.
@@ -121,14 +121,14 @@ namespace SWLOR.Component.Quest.Contracts
         /// <param name="guild">The guild type to retrieve for</param>
         /// <param name="rank">The rank to retrieve for</param>
         /// <returns>A list of active guild tasks</returns>
-        List<QuestDetail> GetActiveGuildTasksByRank(GuildType guild, int rank);
+        List<IQuestDetail> GetActiveGuildTasksByRank(GuildType guild, int rank);
 
         /// <summary>
         /// Retrieves quest details associated with the active guild tasks.
         /// </summary>
         /// <param name="guild">The guild type to retrieve for</param>
         /// <returns>A list of active guild tasks</returns>
-        Dictionary<string, QuestDetail> GetAllActiveGuildTasks(GuildType guild);
+        Dictionary<string, IQuestDetail> GetAllActiveGuildTasks(GuildType guild);
 
         /// <summary>
         /// Gets the date when guild tasks were last loaded.

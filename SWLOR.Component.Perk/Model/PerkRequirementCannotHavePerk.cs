@@ -9,10 +9,15 @@ namespace SWLOR.Component.Perk.Model
     {
         private readonly IDatabaseService _db;
         private readonly PerkType _cannotHavePerkType;
+        private readonly IPerkService _perkService;
 
-        public PerkRequirementCannotHavePerk(IDatabaseService db, PerkType cannotHavePerkType)
+        public PerkRequirementCannotHavePerk(
+            IDatabaseService db, 
+            IPerkService perkService,
+            PerkType cannotHavePerkType)
         {
             _db = db;
+            _perkService = perkService;
             _cannotHavePerkType = cannotHavePerkType;
         }
 

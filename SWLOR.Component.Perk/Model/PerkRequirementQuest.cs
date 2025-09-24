@@ -1,3 +1,4 @@
+using SWLOR.Component.Quest.Contracts;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Entities;

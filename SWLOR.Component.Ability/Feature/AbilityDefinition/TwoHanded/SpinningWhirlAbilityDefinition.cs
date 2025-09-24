@@ -1,6 +1,7 @@
 //using Random = SWLOR.Game.Server.Service.Random;
 
 using SWLOR.Component.Ability.Contracts;
+using SWLOR.Component.Combat.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Contracts;
@@ -47,7 +48,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.TwoHanded
                 return string.Empty;
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var dmg = 0;
 

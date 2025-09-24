@@ -1,5 +1,6 @@
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.Component.Ability.Service;
+using SWLOR.Component.Combat.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Contracts;
@@ -14,13 +15,15 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Ranged
         private readonly ICombatService _combatService;
         private readonly IStatService _statService;
         private readonly ICombatPointService _combatPointService;
+        private readonly IEnmityService _enmityService;
 
-        public DoubleShotAbilityDefinition(IItemService itemService, ICombatService combatService, IStatService statService, ICombatPointService combatPointService)
+        public DoubleShotAbilityDefinition(IItemService itemService, ICombatService combatService, IStatService statService, ICombatPointService combatPointService, IEnmityService enmityService)
         {
             _itemService = itemService;
             _combatService = combatService;
             _statService = statService;
             _combatPointService = combatPointService;
+            _enmityService = enmityService;
         }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
@@ -82,15 +85,15 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Ranged
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Piercing), target);
 
             // Second attack
-            damage = CombatService.CalculateDamage(attack, dmg, attackerStat, defense, defenderStat, 0);
+            damage = _combatService.CalculateDamage(attack, dmg, attackerStat, defense, defenderStat, 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Piercing), target);
             AssignCommand(activator, () => ActionPlayAnimation(Animation.DoubleShot));
             AssignCommand(activator, () => ActionPlayAnimation(Animation.DoubleShot));
 
-            Enmity.ModifyEnmity(activator, target, 200 * level + damage);
+            _enmityService.ModifyEnmity(activator, target, 200 * level + damage);
         }
 
-        private void DoubleShot1(AbilityBuilder builder)
+        private void DoubleShot1(IAbilityBuilder builder)
         {
             builder.Create(FeatType.DoubleShot1, PerkType.DoubleShot)
                 .Name("Double Shot I")
@@ -106,7 +109,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Ranged
                     ImpactAction(activator, target, level, targetLocation);
                 });
         }
-        private void DoubleShot2(AbilityBuilder builder)
+        private void DoubleShot2(IAbilityBuilder builder)
         {
             builder.Create(FeatType.DoubleShot2, PerkType.DoubleShot)
                 .Name("Double Shot II")
@@ -122,7 +125,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Ranged
                     ImpactAction(activator, target, level, targetLocation);
                 });
         }
-        private void DoubleShot3(AbilityBuilder builder)
+        private void DoubleShot3(IAbilityBuilder builder)
         {
             builder.Create(FeatType.DoubleShot3, PerkType.DoubleShot)
                 .Name("Double Shot III")

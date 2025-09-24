@@ -21,6 +21,7 @@
 	<ItemGroup>
 		<Folder Include="Delegates\" />
 		<Folder Include="Dialog\" />
+		<Folder Include="Entity\" />
 		<Folder Include="EventHandlers\" />
 		<Folder Include="Infrastructure\" />
 		<Folder Include="UI\Payload\" />

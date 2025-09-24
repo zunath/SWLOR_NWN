@@ -1,4 +1,5 @@
 using SWLOR.Component.Ability.Contracts;
+using SWLOR.Component.Combat.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Domain.Contracts;
@@ -32,7 +33,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
             return builder.Build();
         }
 
-        private static string Validation(uint target, int tier)
+        private string Validation(uint target, int tier)
         {
             if (HasMorePowerfulEffect(target, tier,
                     new(Tier1Tag, 1),

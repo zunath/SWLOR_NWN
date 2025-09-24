@@ -1,4 +1,5 @@
 using SWLOR.Component.Ability.Contracts;
+using SWLOR.Component.Combat.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Domain.Contracts;
@@ -37,10 +38,10 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.NPC
                 {
                     const int DMG = 1;
                     var attackerStat = GetAbilityScore(activator, AbilityType.Might);
-                    var attack = StatService.GetAttack(activator, AbilityType.Might, SkillType.Invalid);
-                    var defense = StatService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+                    var attack = _statService.GetAttack(activator, AbilityType.Might, SkillType.Invalid);
+                    var defense = _statService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
                     var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-                    var damage = CombatService.CalculateDamage(
+                    var damage = _combatService.CalculateDamage(
                         attack,
                         DMG, 
                         attackerStat, 

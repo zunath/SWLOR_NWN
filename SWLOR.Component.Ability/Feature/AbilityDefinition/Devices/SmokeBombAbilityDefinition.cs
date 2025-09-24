@@ -1,4 +1,5 @@
 using SWLOR.Component.Ability.Contracts;
+using SWLOR.Component.Combat.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Domain.Contracts;
@@ -17,20 +18,18 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
         {
         }
 
-        private static void ApplyEffect(uint creature)
+        private void ApplyEffect(uint creature)
         {
             ApplyEffectToObject(DurationType.Temporary, EffectInvisibility(InvisibilityType.Normal), creature, 6f);
         }
 
-        [ScriptHandler(ScriptName.OnGrenadeSmokeEnable)]
-        public static void SmokeBombEnter()
+        public void SmokeBombEnter()
         {
             var creature = GetEnteringObject();
             ApplyEffect(creature);
         }
 
-        [ScriptHandler(ScriptName.OnGrenadeSmokeHeartbeat)]
-        public static void SmokeBombHeartbeat()
+        public void SmokeBombHeartbeat()
         {
             var creature = GetFirstInPersistentObject(OBJECT_SELF);
             while (GetIsObjectValid(creature))

@@ -1,6 +1,7 @@
 //using Random = SWLOR.Game.Server.Service.Random;
 
 using SWLOR.Component.Ability.Contracts;
+using SWLOR.Component.Combat.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Contracts;
@@ -15,13 +16,20 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Ranged
         private readonly ICombatService _combatService;
         private readonly IStatService _statService;
         private readonly ICombatPointService _combatPointService;
+        private readonly IEnmityService _enmityService;
 
-        public ExplosiveTossAbilityDefinition(IItemService itemService, ICombatService combatService, IStatService statService, ICombatPointService combatPointService)
+        public ExplosiveTossAbilityDefinition(
+            IItemService itemService, 
+            ICombatService combatService, 
+            IStatService statService, 
+            ICombatPointService combatPointService,
+            IEnmityService enmityService)
         {
             _itemService = itemService;
             _combatService = combatService;
             _statService = statService;
             _combatPointService = combatPointService;
+            _enmityService = enmityService;
         }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
@@ -45,7 +53,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Ranged
                 return string.Empty;
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var dmg = 0;
 
@@ -93,7 +101,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Ranged
                     });
 
                     _combatPointService.AddCombatPoint(activator, creature, SkillType.Ranged, 3);
-                    Enmity.ModifyEnmity(activator, creature, 250 * level + damage);
+                    _enmityService.ModifyEnmity(activator, creature, 250 * level + damage);
 
                     count++;
                 }

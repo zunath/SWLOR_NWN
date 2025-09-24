@@ -1,4 +1,5 @@
 using SWLOR.Component.Ability.Contracts;
+using SWLOR.Component.Combat.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -172,7 +173,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .UsesAnimation(Animation.CastOutAnimation)
                 .HasImpactAction(ImpactAction);
         }
-        private static void DoThrowRock(uint target, int level)
+        private void DoThrowRock(uint target, int level)
         {
             VisualEffect rockType = VisualEffect.Vfx_Imp_Mirv_Rock;
             if(level >= 3 && level < 5) { rockType = VisualEffect.Vfx_Imp_Mirv_Rock3; }

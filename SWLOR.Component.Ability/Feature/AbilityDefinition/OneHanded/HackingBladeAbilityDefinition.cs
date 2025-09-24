@@ -1,4 +1,5 @@
 using SWLOR.Component.Ability.Contracts;
+using SWLOR.Component.Combat.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Contracts;
@@ -90,7 +91,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.OneHanded
                 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
 
-            dc = _combatService.CalculateSavingThrowDC(activator, dc, 0, 0);
+            dc = _combatService.CalculateSavingThrowDC(activator, SavingThrow.Will, dc);
             var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
 
             if (checkResult == SavingThrowResultType.Failed)

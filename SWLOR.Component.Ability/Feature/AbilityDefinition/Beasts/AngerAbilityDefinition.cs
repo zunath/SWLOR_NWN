@@ -29,7 +29,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beasts
             return builder.Build();
         }
 
-        private static string Validation(uint target)
+        private string Validation(uint target)
         {
             if (GetIsPC(target))
             {

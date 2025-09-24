@@ -1,4 +1,5 @@
 using SWLOR.Component.Ability.Contracts;
+using SWLOR.Component.Combat.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Contracts;
@@ -18,7 +19,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
         {
         }
 
-        private static void ApplyEffect(uint creature, int hpRegen)
+        private void ApplyEffect(uint creature, int hpRegen)
         {
 
             RemoveEffectByTag(creature, "kolto_regen"); // Get rid of any regen effects to prevent stacking
@@ -29,15 +30,13 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
             ApplyEffectToObject(DurationType.Temporary, eKolto, creature, 6f);
         }
 
-        [ScriptHandler(ScriptName.OnGrenadeKolto1Enable)]
-        public static void KoltoBomb1Enter()
+        public void KoltoBomb1Enter()
         {
             var creature = GetEnteringObject();
             ApplyEffect(creature, 4);
         }
 
-        [ScriptHandler(ScriptName.OnGrenadeKolto1Heartbeat)]
-        public static void KoltoBomb1Heartbeat()
+        public void KoltoBomb1Heartbeat()
         {
             var creature = GetFirstInPersistentObject(OBJECT_SELF);
             while (GetIsObjectValid(creature))
@@ -47,15 +46,13 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
             }
         }
 
-        [ScriptHandler(ScriptName.OnGrenadeKolto2Enable)]
-        public static void KoltoBomb2Enter()
+        public void KoltoBomb2Enter()
         {
             var creature = GetEnteringObject();
             ApplyEffect(creature, 12);
         }
 
-        [ScriptHandler(ScriptName.OnGrenadeKolto2Heartbeat)]
-        public static void KoltoBomb2Heartbeat()
+        public void KoltoBomb2Heartbeat()
         {
             var creature = GetFirstInPersistentObject(OBJECT_SELF);
             while (GetIsObjectValid(creature))
@@ -65,15 +62,13 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
             }
         }
 
-        [ScriptHandler(ScriptName.OnGrenadeKolto3Enable)]
-        public static void KoltoBomb3Enter()
+        public void KoltoBomb3Enter()
         {
             var creature = GetEnteringObject();
             ApplyEffect(creature, 20);
         }
 
-        [ScriptHandler(ScriptName.OnGrenadeKolto3Heartbeat)]
-        public static void KoltoBomb3Heartbeat()
+        public void KoltoBomb3Heartbeat()
         {
             var creature = GetFirstInPersistentObject(OBJECT_SELF);
             while (GetIsObjectValid(creature))

@@ -1,6 +1,7 @@
 //using Random = SWLOR.Game.Server.Service.Random;
 
 using SWLOR.Component.Ability.Contracts;
+using SWLOR.Component.Combat.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Contracts;
@@ -50,7 +51,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.TwoHanded
                 return string.Empty;
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
 
             int dmg;
@@ -88,11 +89,12 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.TwoHanded
                 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Piercing), target);
 
-            dc = _combatService.CalculateSavingThrowDC(activator, dc, 0, 0);
+            dc = _combatService.CalculateSavingThrowDC(activator, SavingThrow.Will, dc);
             var checkResult = WillSave(target, dc, SavingThrowType.None, activator);
             if (checkResult == SavingThrowResultType.Failed)
             {
-                UsePerkFeat.DequeueWeaponAbility(target);
+                // TODO: Implement DequeueWeaponAbility method
+                // _abilityService.DequeueWeaponAbility(target);
                 _abilityService.EndConcentrationAbility(target);
                 SendMessageToPC(activator, ColorToken.Gray(GetName(target)) + "'s  concentration has been broken.");
                 SendMessageToPC(target, ColorToken.Gray(GetName(activator)) + " broke your concentration.");

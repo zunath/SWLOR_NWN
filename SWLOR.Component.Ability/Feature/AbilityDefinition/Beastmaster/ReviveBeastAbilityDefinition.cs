@@ -1,4 +1,6 @@
 using SWLOR.Component.Ability.Contracts;
+using SWLOR.Component.Associate.Entity;
+using SWLOR.Component.Combat.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.Shared.Abstractions.Contracts;

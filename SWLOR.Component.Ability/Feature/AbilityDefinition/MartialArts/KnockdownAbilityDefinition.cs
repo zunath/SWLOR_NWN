@@ -1,4 +1,5 @@
 using SWLOR.Component.Ability.Contracts;
+using SWLOR.Component.Combat.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Contracts;
 using SWLOR.Shared.Domain.Enums;
@@ -39,7 +40,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.MartialArts
                 {
                     const float Duration = 4f;
 
-                    var dc = _combatService.CalculateSavingThrowDC(activator, 12, 0, 0);
+                    var dc = _combatService.CalculateSavingThrowDC(activator, SavingThrow.Fortitude, 12);
                     var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
                     if (checkResult == SavingThrowResultType.Failed)
                     {

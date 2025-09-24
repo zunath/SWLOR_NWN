@@ -1,4 +1,5 @@
 using SWLOR.Component.Ability.Contracts;
+using SWLOR.Component.Combat.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Core.Contracts;
@@ -12,12 +13,14 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
     {
         private readonly ICombatPointService _combatPointService;
         private readonly IEnmityService _enmityService;
+        private readonly IAbilityService _abilityService;
 
-        public ConcussionGrenadeAbilityDefinition(IRandomService random, IItemService itemService, IPerkService perkService, IStatService statService, ICombatService combatService, ICombatPointService combatPointService, IEnmityService enmityService, IStatusEffectService statusEffectService) 
+        public ConcussionGrenadeAbilityDefinition(IRandomService random, IItemService itemService, IPerkService perkService, IStatService statService, ICombatService combatService, ICombatPointService combatPointService, IEnmityService enmityService, IStatusEffectService statusEffectService, IAbilityService abilityService) 
             : base(random, itemService, perkService, statService, combatService, combatPointService, enmityService, statusEffectService)
         {
             _combatPointService = combatPointService;
             _enmityService = enmityService;
+            _abilityService = abilityService;
         }
 
         public override Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
@@ -57,7 +60,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                     const float Duration = 3f;
                     ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), target, Duration);
 
-                    AbilityService.ApplyTemporaryImmunity(target, Duration, ImmunityType.Knockdown);
+                    _abilityService.ApplyTemporaryImmunity(target, Duration, ImmunityType.Knockdown);
                 }
             }
 

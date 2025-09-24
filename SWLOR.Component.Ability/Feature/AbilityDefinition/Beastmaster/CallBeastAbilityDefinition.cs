@@ -1,4 +1,6 @@
 using SWLOR.Component.Ability.Contracts;
+using SWLOR.Component.Associate.Entity;
+using SWLOR.Component.Combat.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -13,14 +15,14 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beastmaster
     {
         private readonly IDatabaseService _db;
         private readonly ICombatPointService _combatPointService;
-        private readonly BeastMastery _beastMastery;
+        private readonly IBeastMasteryService _beastMastery;
         private readonly IEnmityService _enmityService;
         private readonly IPerkService _perkService;
 
         public CallBeastAbilityDefinition(
             IDatabaseService db, 
-            ICombatPointService combatPointService, 
-            BeastMastery beastMastery, 
+            ICombatPointService combatPointService,
+            IBeastMasteryService beastMastery, 
             IEnmityService enmityService, 
             IPerkService perkService)
         {

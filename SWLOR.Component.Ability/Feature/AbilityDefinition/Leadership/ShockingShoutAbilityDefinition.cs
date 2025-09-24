@@ -1,4 +1,5 @@
 using SWLOR.Component.Ability.Contracts;
+using SWLOR.Component.Combat.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -62,7 +63,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Leadership
                         {
                             count++;
 
-                            var dc = _combatService.CalculateSavingThrowDC(activator, 14, 0, 0);
+                            var dc = _combatService.CalculateSavingThrowDC(activator, SavingThrow.Will, 14);
                             const float BaseDuration = 2f;
                             var bonusDuration = GetAbilityModifier(AbilityType.Social, activator) * 0.5f;
                             var duration = BaseDuration + bonusDuration;

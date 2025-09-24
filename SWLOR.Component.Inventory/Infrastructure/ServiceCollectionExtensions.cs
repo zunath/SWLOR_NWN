@@ -20,6 +20,7 @@ namespace SWLOR.Component.Inventory.Infrastructure
             services.AddSingleton<IKeyItemService, KeyItemService>();
             services.AddSingleton<ILootTableBuilder, LootTableBuilder>();
             services.AddSingleton<InventoryEventHandlers>();
+            services.AddSingleton<InventoryServiceEventHandlers>();
 
             return services;
         }

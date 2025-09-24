@@ -13,9 +13,6 @@ using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Common.Contracts;
 using SWLOR.Shared.Domain.Common.Enums;
 using SWLOR.Shared.Domain.Droids.Contracts;
-using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Events.Module;
-using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.UI.Model;
 
 namespace SWLOR.Component.Inventory.Service
@@ -59,7 +56,6 @@ namespace SWLOR.Component.Inventory.Service
         /// <summary>
         /// When the module loads, all item details are loaded into the cache.
         /// </summary>
-        [ScriptHandler<OnModuleCacheBefore>]
         public void CacheData()
         {
             Load2DACache();
@@ -270,7 +266,6 @@ namespace SWLOR.Component.Inventory.Service
         /// <summary>
         /// When an item is used, if its tag is in the item cache, run it through the action item process.
         /// </summary>
-        [ScriptHandler<OnItemUseBefore>]
         public void UseItem()
         {
             var user = OBJECT_SELF;

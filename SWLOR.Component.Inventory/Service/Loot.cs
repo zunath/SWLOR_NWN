@@ -9,10 +9,6 @@ using SWLOR.Shared.Domain.Beasts.Enums;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Common.Contracts;
-using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Constants;
-using SWLOR.Shared.Events.Events.Creature;
-using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Component.Inventory.Service
 {
@@ -46,7 +42,6 @@ namespace SWLOR.Component.Inventory.Service
             _itemService = itemService;
         }
 
-        [ScriptHandler<OnModuleCacheBefore>]
         public void RegisterLootTables()
         {
             RegisterLootTablesInternal();
@@ -87,7 +82,6 @@ namespace SWLOR.Component.Inventory.Service
         /// When a creature spawns, items which can be stolen are spawned and marked as undroppable.
         /// These items are only available with the Thief ability "Steal" and related perks.
         /// </summary>
-        [ScriptHandler<OnCreatureSpawnBefore>]
         public void SpawnStealLoot()
         {
             SpawnStealLootInternal();
@@ -210,7 +204,6 @@ namespace SWLOR.Component.Inventory.Service
         /// <summary>
         /// When a creature dies, loot tables are spawned based on local variables.
         /// </summary>
-        [ScriptHandler<OnCreatureDeathBefore>]
         public void SpawnLootOnCreatureDeath()
         {
             SpawnLoot(OBJECT_SELF, OBJECT_SELF, "LOOT_TABLE_");
@@ -273,7 +266,6 @@ namespace SWLOR.Component.Inventory.Service
         /// a local variable is set on the creature which will be picked up when spawning items.
         /// These will be checked later when the creature dies and loot is spawned.
         /// </summary>
-        [ScriptHandler(ScriptName.OnItemHit)]
         public void MarkCreditfinderAndTreasureHunterOnTarget()
         {
             MarkCreditfinderAndTreasureHunterOnTargetInternal();
@@ -328,7 +320,6 @@ namespace SWLOR.Component.Inventory.Service
         /// Handles creating a corpse placeable on a creature's death, copying its inventory to the placeable,
         /// and changing the name of the placeable to match the creature.
         /// </summary>
-        [ScriptHandler<OnCreatureDeathBefore>]
         public void ProcessCorpse()
         {
             ProcessCorpseInternal();
@@ -424,7 +415,6 @@ namespace SWLOR.Component.Inventory.Service
         /// When the loot corpse is closed, either spawn an "Extract" placeable to be used with Beast Mastery DNA extraction
         /// or remove the dead creature from the game.
         /// </summary>
-        [ScriptHandler(ScriptName.OnCorpseClosed)]
         public void CloseCorpseContainer()
         {
             CloseCorpseContainerInternal();
@@ -471,7 +461,6 @@ namespace SWLOR.Component.Inventory.Service
         /// When a player adds an item to a corpse, return it to them.
         /// When a player removes an item from the corpse, update the connected creature's appearance if needed.
         /// </summary>
-        [ScriptHandler(ScriptName.OnCorpseDisturbed)]
         public void DisturbCorpseContainer()
         {
             DisturbCorpseContainerInternal();

@@ -204,17 +204,6 @@ namespace SWLOR.Shared.Domain.Space.Contracts
         bool CanPlayerUseShipModule(uint player, string itemTag);
 
         /// <summary>
-        /// When a ship module item is examined,
-        /// append the configured description to the item's description and add prerequisite perk item properties.
-        /// </summary>
-        void ExamineShipModuleItem();
-
-        /// <summary>
-        /// When a ship item is examined, add the prerequisite perk item properties.
-        /// </summary>
-        void ExamineShipItem();
-
-        /// <summary>
         /// When a ship module's feat is used, execute the currently equipped module's custom code.
         /// </summary>
         void HandleShipModuleFeats();
@@ -343,6 +332,17 @@ namespace SWLOR.Shared.Domain.Space.Contracts
         /// exit the stealth mode and send an error message.
         /// </summary>
         void PreventSpaceStealth();
+
+        /// <summary>
+        /// When a ship module item is examined,
+        /// append the configured description to the item's description and add prerequisite perk item properties.
+        /// </summary>
+        void ExamineShipModuleItem();
+
+        /// <summary>
+        /// When a ship item is examined, add the prerequisite perk item properties.
+        /// </summary>
+        void ExamineShipItem();
 
         /// <summary>
         /// Gets the maximum number of ships a player can register.

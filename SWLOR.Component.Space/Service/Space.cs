@@ -112,7 +112,6 @@ namespace SWLOR.Component.Space.Service
         /// <summary>
         /// When the module loads, cache all space data into memory.
         /// </summary>
-        [ScriptHandler<OnModuleCacheBefore>]
         public void LoadSpaceSystem()
         {
             LoadShips();
@@ -127,7 +126,6 @@ namespace SWLOR.Component.Space.Service
             _scheduler.ScheduleRepeating(PlayerShipRecovery, TimeSpan.FromSeconds(1), TimeSpan.FromMilliseconds(100d));
         }
 
-        [ScriptHandler<OnModuleEnter>]
         public void EnterServer()
         {
             var player = GetEnteringObject();
@@ -135,7 +133,6 @@ namespace SWLOR.Component.Space.Service
             WarpPlayerInsideShip(player);
         }
 
-        [ScriptHandler<OnModuleExit>]
         public void ExitServer()
         {
             var player = GetExitingObject();
@@ -149,9 +146,8 @@ namespace SWLOR.Component.Space.Service
         }
 
         /// <summary>
-        /// When the module loads, 
+        /// When the module loads, register all landing points.
         /// </summary>
-        [ScriptHandler<OnModuleLoad>]
         public void LoadLandingPoints()
         {
             var count = 0;
@@ -452,7 +448,6 @@ namespace SWLOR.Component.Space.Service
         /// <summary>
         /// Handles swapping a player's target to the object they attempted to attack using NWN's combat system.
         /// </summary>
-        [ScriptHandler<OnInputAttackObjectBefore>]
         public void SelectTarget()
         {
             var player = OBJECT_SELF;
@@ -487,7 +482,6 @@ namespace SWLOR.Component.Space.Service
         /// <summary>
         /// When a player enters a space area, update the property's space position.
         /// </summary>
-        [ScriptHandler<OnAreaEnter>]
         public void UpdateSpacePosition()
         {
             var player = GetEnteringObject();
@@ -517,7 +511,6 @@ namespace SWLOR.Component.Space.Service
         /// <summary>
         /// When a creature leaves an area, their current target is cleared.
         /// </summary>
-        [ScriptHandler<OnAreaExit>]
         public void ClearTargetOnAreaExit()
         {
             var player = GetExitingObject();
@@ -531,7 +524,6 @@ namespace SWLOR.Component.Space.Service
         /// If player has permission and the ship isn't currently being controlled by another player,
         /// send the player into space mode.
         /// </summary>
-        [ScriptHandler(ScriptName.OnShipComputer)]
         public void UseShipComputer()
         {
             var area = GetArea(OBJECT_SELF);
@@ -1063,7 +1055,6 @@ namespace SWLOR.Component.Space.Service
         /// When a ship module item is examined,
         /// append the configured description to the item's description and add prerequisite perk item properties.
         /// </summary>
-        [ScriptHandler<OnExamineObjectBefore>]
         public void ExamineShipModuleItem()
         {
             var item = StringToObject(EventsPlugin.GetEventData("EXAMINEE_OBJECT_ID"));
@@ -1096,7 +1087,6 @@ namespace SWLOR.Component.Space.Service
         /// <summary>
         /// When a ship item is examined, add the prerequisite perk item properties.
         /// </summary>
-        [ScriptHandler<OnExamineObjectBefore>]
         public void ExamineShipItem()
         {
             var item = StringToObject(EventsPlugin.GetEventData("EXAMINEE_OBJECT_ID"));
@@ -1119,7 +1109,6 @@ namespace SWLOR.Component.Space.Service
         /// <summary>
         /// When a ship module's feat is used, execute the currently equipped module's custom code.
         /// </summary>
-        [ScriptHandler<OnFeatUseBefore>]
         public void HandleShipModuleFeats()
         {
             var feat = (FeatType)Convert.ToInt32(EventsPlugin.GetEventData("FEAT_ID"));
@@ -1361,7 +1350,6 @@ namespace SWLOR.Component.Space.Service
         /// <summary>
         /// When a creature spawns, track it in the cache.
         /// </summary>
-        [ScriptHandler<OnCreatureSpawnBefore>]
         public void CreatureSpawn()
         {
             var creature = OBJECT_SELF;
@@ -1440,7 +1428,6 @@ namespace SWLOR.Component.Space.Service
         /// <summary>
         /// When a creature dies, remove it from the cache.
         /// </summary>
-        [ScriptHandler<OnCreatureDeathAfter>]
         public void CreatureDeath()
         {
             var creature = OBJECT_SELF;
@@ -1812,7 +1799,6 @@ namespace SWLOR.Component.Space.Service
         ///     - The ship will relocate back to the last dock it was at
         /// If this is an NPC, they will be killed and explode in spectacular fashion.
         /// </summary>
-        [ScriptHandler<OnModuleDeath>]
         public void ApplyDeath()
         {
             var creature = GetLastPlayerDied();
@@ -2017,7 +2003,6 @@ namespace SWLOR.Component.Space.Service
         /// <summary>
         /// When a creature clicks on a space object, target that object.
         /// </summary>
-        [ScriptHandler(ScriptName.OnSpaceTarget)]
         public void TargetSpaceObject()
         {
             var creature = GetPlaceableLastClickedBy();
@@ -2182,7 +2167,6 @@ namespace SWLOR.Component.Space.Service
         /// When a player attempts to stealth while in space mode,
         /// exit the stealth mode and send an error message.
         /// </summary>
-        [ScriptHandler<OnStealthEnterBefore>]
         public void PreventSpaceStealth()
         {
             var creature = OBJECT_SELF;

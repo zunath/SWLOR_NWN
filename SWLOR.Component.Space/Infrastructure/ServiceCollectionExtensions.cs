@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using SWLOR.Component.Space.EventHandlers;
 
 namespace SWLOR.Component.Space.Infrastructure
 {
@@ -14,7 +15,8 @@ namespace SWLOR.Component.Space.Infrastructure
         /// <returns>The service collection for chaining</returns>
         public static IServiceCollection AddSpaceServices(this IServiceCollection services)
         {
-            // TODO: Add Space services here as they are implemented
+            // Register Space EventHandlers
+            services.AddSingleton<SpaceEventHandler>();
             
             return services;
         }

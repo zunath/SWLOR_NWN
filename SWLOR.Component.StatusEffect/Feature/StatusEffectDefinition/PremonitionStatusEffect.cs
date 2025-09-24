@@ -6,6 +6,7 @@ using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Combat.ValueObjects;
+using SWLOR.Shared.Domain.Social.Contracts;
 
 namespace SWLOR.Component.StatusEffect.Feature.StatusEffectDefinition
 {
@@ -14,11 +15,16 @@ namespace SWLOR.Component.StatusEffect.Feature.StatusEffectDefinition
         private readonly StatusEffectBuilder _builder = new();
         private readonly ICombatPointService _combatPointService;
         private readonly IEnmityService _enmityService;
+        private readonly IPartyService _partyService;
 
-        public PremonitionStatusEffect(ICombatPointService combatPointService, IEnmityService enmityService)
+        public PremonitionStatusEffect(
+            ICombatPointService combatPointService, 
+            IEnmityService enmityService,
+            IPartyService partyService)
         {
             _combatPointService = combatPointService;
             _enmityService = enmityService;
+            _partyService = partyService;
         }
 
         public Dictionary<StatusEffectType, StatusEffectDetail> BuildStatusEffects()
@@ -31,7 +37,7 @@ namespace SWLOR.Component.StatusEffect.Feature.StatusEffectDefinition
 
         private void Impact(uint source, int amount)
         {
-            foreach (var member in Party.GetAllPartyMembersWithinRange(source, 10f))
+            foreach (var member in _partyService.GetAllPartyMembersWithinRange(source, 10f))
             {
                 // Caster does not get this bonus.
                 if (source == member)

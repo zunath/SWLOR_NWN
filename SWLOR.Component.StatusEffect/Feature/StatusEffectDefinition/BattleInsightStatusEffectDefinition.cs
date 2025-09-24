@@ -5,6 +5,7 @@ using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Combat.ValueObjects;
+using SWLOR.Shared.Domain.Social.Contracts;
 
 namespace SWLOR.Component.StatusEffect.Feature.StatusEffectDefinition
 {
@@ -12,11 +13,16 @@ namespace SWLOR.Component.StatusEffect.Feature.StatusEffectDefinition
     {
         private readonly ICombatPointService _combatPointService;
         private readonly IEnmityService _enmityService;
+        private readonly IPartyService _partyService;
 
-        public BattleInsightStatusEffectDefinition(ICombatPointService combatPointService, IEnmityService enmityService)
+        public BattleInsightStatusEffectDefinition(
+            ICombatPointService combatPointService, 
+            IEnmityService enmityService,
+            IPartyService partyService)
         {
             _combatPointService = combatPointService;
             _enmityService = enmityService;
+            _partyService = partyService;
         }
 
         public Dictionary<StatusEffectType, StatusEffectDetail> BuildStatusEffects()
@@ -41,7 +47,7 @@ namespace SWLOR.Component.StatusEffect.Feature.StatusEffectDefinition
                     effect = TagEffect(effect, "StatusEffectType." + StatusEffectType.BattleInsight1);
                     ApplyEffectToObject(DurationType.Temporary, effect, source, 6f);
 
-                    var party = Party.GetAllPartyMembersWithinRange(source, RadiusSize.Medium);
+                    var party = _partyService.GetAllPartyMembersWithinRange(source, RadiusSize.Medium);
 
                     foreach (var player in party)
                     {
@@ -71,7 +77,7 @@ namespace SWLOR.Component.StatusEffect.Feature.StatusEffectDefinition
                     effect = TagEffect(effect, "StatusEffectType." + StatusEffectType.BattleInsight2);
                     ApplyEffectToObject(DurationType.Temporary, effect, source, 6f);
 
-                    var party = Party.GetAllPartyMembersWithinRange(source, RadiusSize.Medium);
+                    var party = _partyService.GetAllPartyMembersWithinRange(source, RadiusSize.Medium);
 
                     foreach (var player in party)
                     {

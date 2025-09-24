@@ -7,14 +7,20 @@ using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Component.StatusEffect.Feature
 {
-    public static class BuffTimer
+    public class BuffTimer
     {
+        private readonly IStatusEffectService _statusEffectService;
+
+        public BuffTimer(IStatusEffectService statusEffectService)
+        {
+            _statusEffectService = statusEffectService;
+        }
         /// <summary>
         /// Get the information for different status effects and report to the player
         /// when the icon(s) are clicked.
         /// </summary>
         [ScriptHandler<OnModuleGuiEvent>]
-        public static void DisplayBuffInfo()
+        public void DisplayBuffInfo()
         {
             var player = GetLastGuiEventPlayer();
             var type = GetLastGuiEventType();
@@ -24,8 +30,8 @@ namespace SWLOR.Component.StatusEffect.Feature
             var buffInt = GetLastGuiEventInteger();
             if (buffInt == (int)EffectIconType.Invalid) return;
 
-            var buffType = ServiceContainer.GetService<IStatusEffectService>().GetEffectTypeFromIcon((EffectIconType)buffInt);
-            var statusTypes = ServiceContainer.GetService<IStatusEffectService>().GetStatusEffectTypesFromIcon((EffectIconType)buffInt);
+            var buffType = _statusEffectService.GetEffectTypeFromIcon((EffectIconType)buffInt);
+            var statusTypes = _statusEffectService.GetStatusEffectTypesFromIcon((EffectIconType)buffInt);
             var effectName = "Unknown Effect";
 
             if (buffType == EffectTypeScript.Invalideffect && statusTypes.Count == 0) return;
@@ -38,7 +44,7 @@ namespace SWLOR.Component.StatusEffect.Feature
 
         }
 
-        public static void SendBuffInfo(uint player, EffectTypeScript effectType, EffectIconType effectIcon, string effectName)
+        public void SendBuffInfo(uint player, EffectTypeScript effectType, EffectIconType effectIcon, string effectName)
         {
             if (effectType == EffectTypeScript.Invalideffect) return;
 
@@ -49,7 +55,7 @@ namespace SWLOR.Component.StatusEffect.Feature
                 if (GetEffectType(eff) != effectType) continue;
                 if (GetEffectType(eff) == EffectTypeScript.AbilityIncrease)
                 {
-                    var abilityType = ServiceContainer.GetService<IStatusEffectService>().GetAbilityTypeBuffed(effectIcon);
+                    var abilityType = _statusEffectService.GetAbilityTypeBuffed(effectIcon);
                     if (abilityType != (AbilityType)GetEffectInteger(eff, 0)) continue;
                 };
                 var duration = TimeSpan.FromSeconds(GetEffectDurationRemaining(eff)).ToString(@"mm\:ss");
@@ -63,11 +69,11 @@ namespace SWLOR.Component.StatusEffect.Feature
             }
         }
 
-        public static void SendStatusInfo(uint player, string statusName, params StatusEffectType[] statusTypes)
+        public void SendStatusInfo(uint player, string statusName, params StatusEffectType[] statusTypes)
         {
-            if (!ServiceContainer.GetService<IStatusEffectService>().HasStatusEffect(player, statusTypes)) return;
+            if (!_statusEffectService.HasStatusEffect(player, statusTypes)) return;
 
-            var duration = ServiceContainer.GetService<IStatusEffectService>().GetEffectDuration(player, statusTypes);
+            var duration = _statusEffectService.GetEffectDuration(player, statusTypes);
 
             SendMessageToPC(player, "Status Effects:");
 

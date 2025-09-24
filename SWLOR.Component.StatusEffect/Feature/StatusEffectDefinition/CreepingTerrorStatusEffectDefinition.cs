@@ -4,6 +4,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
+using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Combat.ValueObjects;
 
@@ -15,12 +16,21 @@ namespace SWLOR.Component.StatusEffect.Feature.StatusEffectDefinition
         private readonly ICombatService _combatService;
         private readonly IAbilityService _abilityService;
         private readonly ICombatPointService _combatPointService;
+        private readonly IStatService _statService;
+        private readonly IEnmityService _enmityService;
 
-        public CreepingTerrorStatusEffectDefinition(ICombatService combatService, IAbilityService abilityService, ICombatPointService combatPointService)
+        public CreepingTerrorStatusEffectDefinition(
+            ICombatService combatService, 
+            IAbilityService abilityService, 
+            ICombatPointService combatPointService,
+            IStatService statService,
+            IEnmityService enmityService)
         {
             _combatService = combatService;
             _abilityService = abilityService;
             _combatPointService = combatPointService;
+            _statService = statService;
+            _enmityService = enmityService;
         }
 
         public Dictionary<StatusEffectType, StatusEffectDetail> BuildStatusEffects()
@@ -65,7 +75,7 @@ namespace SWLOR.Component.StatusEffect.Feature.StatusEffectDefinition
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Poison_S), target);
 
                 var enmity = level * 50 + damage + 6;
-                Enmity.ModifyEnmity(source, target, enmity);
+                _enmityService.ModifyEnmity(source, target, enmity);
                 _combatPointService.AddCombatPoint(source, target, SkillType.Force, 3);
             }
 
@@ -103,7 +113,7 @@ namespace SWLOR.Component.StatusEffect.Feature.StatusEffectDefinition
                     }
 
                     ApplyDamage(source, target, level);
-                    Enmity.ModifyEnmity(source, target, 350);
+                    _enmityService.ModifyEnmity(source, target, 350);
                 })
                 .TickAction((source, target, effectData) =>
                 {

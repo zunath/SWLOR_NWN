@@ -1,7 +1,11 @@
+using SWLOR.Component.Communication.Contracts;
+using SWLOR.Component.World.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Domain.Contracts;
 using SWLOR.Shared.Domain.Entity;
+using SWLOR.Shared.Domain.Enums;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 
@@ -12,10 +16,15 @@ namespace SWLOR.Component.Combat.Service
         private readonly ILogger _logger;
         private readonly IDatabaseService _db;
         private readonly IPropertyService _propertyService;
-        private readonly Area _areaService;
+        private readonly IAreaService _areaService;
         private readonly IMessagingService _messagingService;
 
-        public Death(ILogger logger, IDatabaseService db, IPropertyService propertyService, Area areaService, IMessagingService messagingService)
+        public Death(
+            ILogger logger, 
+            IDatabaseService db, 
+            IPropertyService propertyService, 
+            IAreaService areaService, 
+            IMessagingService messagingService)
         {
             _logger = logger;
             _db = db;

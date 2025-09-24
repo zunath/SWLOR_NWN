@@ -3,6 +3,7 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Contracts;
 using SWLOR.Shared.Domain.Entity;
 using SWLOR.Shared.Domain.Enums;
+using SWLOR.Shared.Domain.Model;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Player;
 

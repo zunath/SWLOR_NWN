@@ -20,8 +20,8 @@ namespace SWLOR.Component.Combat.Service
         private readonly ISkillService _skillService;
         private readonly IItemService _itemService;
         private readonly IStatService _statService;
-        private readonly BeastMastery _beastMastery;
-        private readonly Space _spaceService;
+        private readonly IBeastMasteryService _beastMastery;
+        private readonly ISpaceService _spaceService;
         
         /// <summary>
         /// Tracks the combat points earned by players during combat.
@@ -38,8 +38,8 @@ namespace SWLOR.Component.Combat.Service
             ISkillService skillService,
             IItemService itemService,
             IStatService statService,
-            BeastMastery beastMastery,
-            Space spaceService)
+            IBeastMasteryService beastMastery,
+            ISpaceService spaceService)
         {
             _db = db;
             _skillService = skillService;

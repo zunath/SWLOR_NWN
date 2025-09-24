@@ -1,15 +1,16 @@
+using SWLOR.Component.Associate.Contracts;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Domain.Contracts;
+using SWLOR.Shared.Domain.Entity;
 using SWLOR.Shared.Domain.Enums;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Service;
-using Player = SWLOR.Shared.Core.Data.Entity.Player;
 
 namespace SWLOR.Component.Combat.Feature
 {
@@ -18,10 +19,15 @@ namespace SWLOR.Component.Combat.Feature
         private readonly IDatabaseService _db;
         private readonly IItemService _itemService;
         private readonly IPerkService _perkService;
-        private readonly IDroid _droidService;
+        private readonly IDroidService _droidService;
         private readonly IGuiService _guiService;
 
-        public EquipmentRestrictions(IDatabaseService db, IItemService itemService, IPerkService perkService, IDroid droidService, IGuiService guiService)
+        public EquipmentRestrictions(
+            IDatabaseService db, 
+            IItemService itemService, 
+            IPerkService perkService, 
+            IDroidService droidService, 
+            IGuiService guiService)
         {
             _db = db;
             _itemService = itemService;

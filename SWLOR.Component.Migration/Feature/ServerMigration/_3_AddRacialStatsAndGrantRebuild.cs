@@ -5,12 +5,13 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Domain.Character.Entities;
+using SWLOR.Shared.Domain.Space.Contracts;
 
 namespace SWLOR.Component.Migration.Feature.ServerMigration
 {
     public class _3_AddRacialStatsAndGrantRebuild: ServerMigrationBase, IServerMigration
     {
-        public _3_AddRacialStatsAndGrantRebuild(ILogger logger, IDatabaseService db) : base(logger, db)
+        public _3_AddRacialStatsAndGrantRebuild(ILogger logger, IDatabaseService db, ISpaceService spaceService) : base(logger, db, spaceService)
         {
         }
         
@@ -19,14 +20,14 @@ namespace SWLOR.Component.Migration.Feature.ServerMigration
         public void Migrate()
         {
             var query = new DBQuery<Player>();
-            var playerCount = (int)_db.SearchCount(query);
-            var players = _db.Search(query.AddPaging(playerCount, 0));
+            var playerCount = (int)DB.SearchCount(query);
+            var players = DB.Search(query.AddPaging(playerCount, 0));
 
             foreach (var player in players)
             {
                 player.RacialStat = AbilityType.Invalid;
 
-                _db.Set(player);
+                DB.Set(player);
             }
         }
     }

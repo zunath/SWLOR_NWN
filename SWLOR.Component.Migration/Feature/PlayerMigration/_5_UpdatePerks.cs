@@ -1,32 +1,39 @@
 using SWLOR.Component.Migration.Contracts;
+using SWLOR.Component.Migration.Model;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
+using SWLOR.Shared.Domain.Combat.Contracts;
+using SWLOR.Shared.Domain.Common.Contracts;
 
 namespace SWLOR.Component.Migration.Feature.PlayerMigration
 {
-    public class _5_UpdatePerks: IPlayerMigration
+    public class _5_UpdatePerks: PlayerMigrationBase
     {
-        private readonly IStatService _statService;
-        private readonly IPerkService _perkService;
-
-        public _5_UpdatePerks(IStatService statService, IPerkService perkService)
+        public _5_UpdatePerks(
+            ILogger logger, 
+            IDatabaseService database, 
+            IStatService statService, 
+            ISkillService skillService, 
+            ICombatService combatService, 
+            IPerkService perkService, 
+            IItemService itemService) 
+            : base(logger, database, statService, skillService, combatService, perkService, itemService)
         {
-            _statService = statService;
-            _perkService = perkService;
         }
 
-        public int Version => 5;
-        public void Migrate(uint player)
+        public override int Version => 5;
+        public override void Migrate(uint player)
         {
             var rightHandWeapon = GetItemInSlot(InventorySlot.RightHand, player);
 
             CreaturePlugin.RemoveFeat(player, FeatType.RapidShot);
-            _statService.ApplyAttacksPerRound(player, rightHandWeapon);
+            StatService.ApplyAttacksPerRound(player, rightHandWeapon);
 
-            var innerStrength = _perkService.GetPerkLevel(player, PerkType.InnerStrength);
+            var innerStrength = PerkService.GetPerkLevel(player, PerkType.InnerStrength);
             if (innerStrength > 0)
             {
                 // Remove old one which only targeted gloves.

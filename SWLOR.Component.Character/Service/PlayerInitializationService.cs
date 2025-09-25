@@ -1,4 +1,5 @@
 using SWLOR.Component.Character.Contracts;
+using SWLOR.Component.Migration.Contracts;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -12,7 +13,7 @@ using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Component.Character.Feature
 {
-    public class PlayerInitialization
+    public class PlayerInitializationService : IPlayerInitializationService
     {
         private readonly ILogger _logger;
         private readonly IDatabaseService _db;
@@ -21,7 +22,7 @@ namespace SWLOR.Component.Character.Feature
         private readonly IMigrationService _migrationService;
         private readonly IRaceService _raceService;
 
-        public PlayerInitialization(
+        public PlayerInitializationService(
             ILogger logger, 
             IDatabaseService db, 
             IStatService statService, 

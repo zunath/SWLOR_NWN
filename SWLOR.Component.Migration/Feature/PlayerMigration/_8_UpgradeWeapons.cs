@@ -6,6 +6,7 @@ using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Entities;
 using SWLOR.Shared.Domain.Character.Enums;
+using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Common.Contracts;
 
@@ -13,7 +14,14 @@ namespace SWLOR.Component.Migration.Feature.PlayerMigration
 {
     public class _8_UpgradeWeapons : PlayerMigrationBase
     {
-        public _8_UpgradeWeapons(ILogger logger, IDatabaseService database, IStatService statService, ISkillService skillService, ICombatService combatService, IPerkService perkService, IItemService itemService) 
+        public _8_UpgradeWeapons(
+            ILogger logger, 
+            IDatabaseService database, 
+            IStatService statService, 
+            ISkillService skillService, 
+            ICombatService combatService, 
+            IPerkService perkService, 
+            IItemService itemService) 
             : base(logger, database, statService, skillService, combatService, perkService, itemService)
         {
         }
@@ -76,7 +84,7 @@ namespace SWLOR.Component.Migration.Feature.PlayerMigration
                 { "h_twinelec_5", (25, 28) }
             };
 
-        private static void RefundPerks(Player dbPlayer, uint player)
+        private void RefundPerks(Player dbPlayer, uint player)
         {
             List<PerkType> refundList = new()
             {
@@ -101,7 +109,7 @@ namespace SWLOR.Component.Migration.Feature.PlayerMigration
                 dbPlayer.UnallocatedSP += refundAmount;
                 dbPlayer.Perks.Remove(PerkType.RapidShot);
 
-                var perkDetail = _perkService.GetPerkDetails(PerkType.RapidShot);
+                var perkDetail = PerkService.GetPerkDetails(PerkType.RapidShot);
 
                 foreach (var action in perkDetail.RefundedTriggers)
                 {
@@ -130,8 +138,7 @@ namespace SWLOR.Component.Migration.Feature.PlayerMigration
         private void Update (uint item)
         {
             var baseItem = GetBaseItemType(item);
-            // Use injected itemService
-            if (!_itemService.RifleBaseItemTypes.Contains(baseItem) && !_itemService.SaberstaffBaseItemTypes.Contains(baseItem) && !_itemService.TwinBladeBaseItemTypes.Contains(baseItem))
+            if (!ItemService.RifleBaseItemTypes.Contains(baseItem) && !ItemService.SaberstaffBaseItemTypes.Contains(baseItem) && !ItemService.TwinBladeBaseItemTypes.Contains(baseItem))
                 return;
 
             var itemResRef = GetResRef(item);

@@ -3,12 +3,14 @@ using SWLOR.Component.Migration.Enums;
 using SWLOR.Component.Migration.Model;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
+using SWLOR.Shared.Domain.Character.Entities;
+using SWLOR.Shared.Domain.Space.Contracts;
 
 namespace SWLOR.Component.Migration.Feature.ServerMigration
 {
     public class _4_ResaveNotes : ServerMigrationBase, IServerMigration
     {
-        public _4_ResaveNotes(ILogger logger, IDatabaseService db) : base(logger, db)
+        public _4_ResaveNotes(ILogger logger, IDatabaseService db, ISpaceService spaceService) : base(logger, db, spaceService)
         {
         }
         
@@ -17,8 +19,8 @@ namespace SWLOR.Component.Migration.Feature.ServerMigration
         public void Migrate()
         {
             var query = new DBQuery<PlayerNote>();
-            var noteCount = (int)_db.SearchCount(query);
-            var notes = _db.Search(query.AddPaging(noteCount, 0));
+            var noteCount = (int)DB.SearchCount(query);
+            var notes = DB.Search(query.AddPaging(noteCount, 0));
 
             foreach (var note in notes)
             {
@@ -26,7 +28,7 @@ namespace SWLOR.Component.Migration.Feature.ServerMigration
                 note.DMCreatorName = string.Empty;
                 note.IsDMNote = false;
 
-                _db.Set(note);
+                DB.Set(note);
             }
         }
     }

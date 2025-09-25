@@ -3,13 +3,29 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Entities;
+using SWLOR.Shared.Domain.Combat.Contracts;
+using SWLOR.Shared.Domain.Common.Contracts;
 
 namespace SWLOR.Component.Migration.Feature.PlayerMigration
 {
     public class _7_FixDroids: PlayerMigrationBase
     {
-        public _7_FixDroids(ILogger logger, IDatabaseService database, IStatService statService, ISkillService skillService, ICombatService combatService, IPerkService perkService) 
-            : base(logger, database, statService, skillService, combatService, perkService)
+        public _7_FixDroids(
+            ILogger logger, 
+            IDatabaseService database, 
+            IStatService statService, 
+            ISkillService skillService, 
+            ICombatService combatService, 
+            IPerkService perkService,
+            IItemService itemService) 
+            : base(
+                logger, 
+                database, 
+                statService, 
+                skillService, 
+                combatService, 
+                perkService, 
+                itemService)
         {
         }
         
@@ -27,7 +43,7 @@ namespace SWLOR.Component.Migration.Feature.PlayerMigration
 
             dbPlayer.OriginalAppearanceType = AppearanceType.Droid;
 
-            _db.Set(dbPlayer);
+            Database.Set(dbPlayer);
 
             SetCreatureAppearanceType(player, AppearanceType.Droid);
         }

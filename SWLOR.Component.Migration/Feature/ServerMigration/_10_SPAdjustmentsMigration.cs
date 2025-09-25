@@ -8,12 +8,13 @@ using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Domain.Character.Entities;
 using SWLOR.Shared.Domain.Character.Enums;
+using SWLOR.Shared.Domain.Space.Contracts;
 
 namespace SWLOR.Component.Migration.Feature.ServerMigration
 {
     public class _10_SPAdjustmentsMigration : ServerMigrationBase, IServerMigration
     {
-        public _10_SPAdjustmentsMigration(ILogger logger, IDatabaseService db) : base(logger, db)
+        public _10_SPAdjustmentsMigration(ILogger logger, IDatabaseService db, ISpaceService spaceService) : base(logger, db, spaceService)
         {
         }
         private readonly Dictionary<(PerkType, int), int> _refundMap = new()
@@ -107,8 +108,8 @@ namespace SWLOR.Component.Migration.Feature.ServerMigration
         private void RemoveGrenadesRecast()
         {
             var dbQuery = new DBQuery<Player>();
-            var playerCount = (int)_db.SearchCount(dbQuery);
-            var dbPlayersRaw = _db.SearchRawJson(dbQuery
+            var playerCount = (int)DB.SearchCount(dbQuery);
+            var dbPlayersRaw = DB.SearchRawJson(dbQuery
                 .AddPaging(playerCount, 0));
 
             foreach (var dbPlayerJson in dbPlayersRaw)
@@ -123,9 +124,9 @@ namespace SWLOR.Component.Migration.Feature.ServerMigration
 
                     var dbPlayer = jObject.ToObject<Player>();
 
-                    _db.Set(dbPlayer);
+                    DB.Set(dbPlayer);
 
-                    _logger.Write<MigrationLogGroup>($"{dbPlayer.Name} ({dbPlayer.Id}): Replaced recast timer for Grenades.");
+                    Logger.Write<MigrationLogGroup>($"{dbPlayer.Name} ({dbPlayer.Id}): Replaced recast timer for Grenades.");
                 }
             }
         }

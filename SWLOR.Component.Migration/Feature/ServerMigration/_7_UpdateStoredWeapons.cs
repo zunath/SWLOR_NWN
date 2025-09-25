@@ -6,18 +6,24 @@ using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Data;
+using SWLOR.Shared.Domain.Character.Entities;
 using SWLOR.Shared.Domain.Combat.Enums;
+using SWLOR.Shared.Domain.Common.Contracts;
+using SWLOR.Shared.Domain.Space.Contracts;
 
 namespace SWLOR.Component.Migration.Feature.ServerMigration
 {
     public class _7_UpdateStoredWeapons: ServerMigrationBase, IServerMigration
     {
-        private readonly IDatabaseService _db;
         private readonly IItemService _itemService;
 
-        public _7_UpdateStoredWeapons(IDatabaseService db, IItemService itemService)
+        public _7_UpdateStoredWeapons(
+            ILogger logger,
+            IDatabaseService db, 
+            IItemService itemService,
+            ISpaceService spaceService)
+            : base(logger, db, spaceService)
         {
-            _db = db;
             _itemService = itemService;
         }
         
@@ -80,8 +86,8 @@ namespace SWLOR.Component.Migration.Feature.ServerMigration
         private void UpdatePersistentStorageWeapons()
         {
             var query = new DBQuery<InventoryItem>();
-            var itemCount = (int)_db.SearchCount(query);
-            var items = _db.Search(query.AddPaging(itemCount, 0)).ToList();
+            var itemCount = (int)DB.SearchCount(query);
+            var items = DB.Search(query.AddPaging(itemCount, 0)).ToList();
 
             foreach (var item in items)
             {
@@ -92,7 +98,7 @@ namespace SWLOR.Component.Migration.Feature.ServerMigration
                 UpdateWeapon(deserialized);
 
                 item.Data = ObjectPlugin.Serialize(deserialized);
-                _db.Set(item);
+                DB.Set(item);
 
                 DestroyObject(deserialized);
             }

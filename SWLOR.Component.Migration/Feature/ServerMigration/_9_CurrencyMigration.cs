@@ -7,12 +7,13 @@ using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Domain.Character.Entities;
 using SWLOR.Shared.Domain.Common.Enums;
+using SWLOR.Shared.Domain.Space.Contracts;
 
 namespace SWLOR.Component.Migration.Feature.ServerMigration
 {
     public class _9_CurrencyMigration : ServerMigrationBase, IServerMigration
     {
-        public _9_CurrencyMigration(ILogger logger, IDatabaseService db) : base(logger, db)
+        public _9_CurrencyMigration(ILogger logger, IDatabaseService db, ISpaceService spaceService) : base(logger, db, spaceService)
         {
         }
         public int Version => 9;
@@ -22,14 +23,14 @@ namespace SWLOR.Component.Migration.Feature.ServerMigration
         public void Migrate()
         {
             var dbQuery = new DBQuery<Player>();
-            var playerCount = (int)_db.SearchCount(dbQuery);
+            var playerCount = (int)DB.SearchCount(dbQuery);
 
-            var dbPlayers = _db.Search(dbQuery
+            var dbPlayers = DB.Search(dbQuery
                 .AddPaging(playerCount, 0));
 
             foreach (var dbPlayer in dbPlayers)
             {
-                var json = _db.GetRawJson<Player>(dbPlayer.Id);
+                var json = DB.GetRawJson<Player>(dbPlayer.Id);
                 var jObject = JObject.Parse(json);
 
                 var perkResets = jObject["NumberPerkResetsAvailable"]?.Value<int>() ?? 0;
@@ -38,9 +39,9 @@ namespace SWLOR.Component.Migration.Feature.ServerMigration
                 dbPlayer.Currencies[CurrencyType.PerkRefundToken] = perkResets;
                 dbPlayer.Currencies[CurrencyType.RebuildToken] = rebuildCount;
 
-                _db.Set(dbPlayer);
+                DB.Set(dbPlayer);
 
-                _logger.Write<MigrationLogGroup>($"Migrated {perkResets} perk resets and {rebuildCount} rebuild tokens for player {dbPlayer.Name} ({dbPlayer.Id})");
+                Logger.Write<MigrationLogGroup>($"Migrated {perkResets} perk resets and {rebuildCount} rebuild tokens for player {dbPlayer.Name} ({dbPlayer.Id})");
             }
         }
     }

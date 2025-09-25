@@ -5,6 +5,7 @@ using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Entities;
 using SWLOR.Shared.Domain.Character.Enums;
+using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Common.Contracts;
 
 namespace SWLOR.Component.Migration.Model
@@ -19,7 +20,14 @@ namespace SWLOR.Component.Migration.Model
         protected readonly IPerkService PerkService;
         protected readonly IItemService ItemService;
 
-        protected PlayerMigrationBase(ILogger logger, IDatabaseService database, IStatService statService, ISkillService skillService, ICombatService combatService, IPerkService perkService, IItemService itemService)
+        protected PlayerMigrationBase(
+            ILogger logger, 
+            IDatabaseService database, 
+            IStatService statService, 
+            ISkillService skillService, 
+            ICombatService combatService, 
+            IPerkService perkService, 
+            IItemService itemService)
         {
             Logger = logger;
             Database = database;
@@ -87,7 +95,7 @@ namespace SWLOR.Component.Migration.Model
                 dbPlayer.ForceAttack = 0;
 
                 // Defenses
-                foreach (var defense in _combatService.GetAllDamageTypes())
+                foreach (var defense in CombatService.GetAllDamageTypes())
                 {
                     dbPlayer.Defenses[defense] = 0;
                 }
@@ -107,13 +115,13 @@ namespace SWLOR.Component.Migration.Model
         protected void RefundPerk(uint player, PerkType perkType)
         {
             var playerId = GetObjectUUID(player);
-            var dbPlayer = _db.Get<Player>(playerId);
+            var dbPlayer = Database.Get<Player>(playerId);
 
             if (!dbPlayer.Perks.ContainsKey(perkType))
                 return;
 
             var perkLevel = dbPlayer.Perks[perkType];
-            var perkDetail = _perkService.GetPerkDetails(perkType);
+            var perkDetail = PerkService.GetPerkDetails(perkType);
             var refundAmount = perkDetail.PerkLevels
                 .Where(x => x.Key <= perkLevel)
                 .Sum(x => x.Value.Price);
@@ -121,9 +129,9 @@ namespace SWLOR.Component.Migration.Model
             dbPlayer.UnallocatedSP += refundAmount;
             dbPlayer.Perks.Remove(perkType);
 
-            _db.Set(dbPlayer);
+            Database.Set(dbPlayer);
 
-            _logger.Write<MigrationLogGroup>($"{dbPlayer.Name} ({dbPlayer.Id}) refunded {refundAmount} SP for perk '{perkType}'.");
+            Logger.Write<MigrationLogGroup>($"{dbPlayer.Name} ({dbPlayer.Id}) refunded {refundAmount} SP for perk '{perkType}'.");
             SendMessageToPC(player, $"Perk '{perkDetail.Name}' was automatically refunded. You reclaimed {refundAmount} SP.");
         }
     }

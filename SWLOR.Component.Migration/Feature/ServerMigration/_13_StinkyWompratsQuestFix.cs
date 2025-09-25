@@ -4,12 +4,13 @@ using SWLOR.Component.Migration.Model;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Domain.Character.Entities;
+using SWLOR.Shared.Domain.Space.Contracts;
 
 namespace SWLOR.Component.Migration.Feature.ServerMigration
 {
     public class _13_StinkyWompratsQuestFix: ServerMigrationBase, IServerMigration
     {
-        public _13_StinkyWompratsQuestFix(ILogger logger, IDatabaseService db) : base(logger, db)
+        public _13_StinkyWompratsQuestFix(ILogger logger, IDatabaseService db, ISpaceService spaceService) : base(logger, db, spaceService)
         {
         }
         
@@ -18,8 +19,8 @@ namespace SWLOR.Component.Migration.Feature.ServerMigration
         public void Migrate()
         {
             var query = new DBQuery<Player>();
-            var count = (int)_db.SearchCount(query);
-            var dbPlayers = _db.Search(query
+            var count = (int)DB.SearchCount(query);
+            var dbPlayers = DB.Search(query
                 .AddPaging(count, 0));
 
             foreach (var dbPlayer in dbPlayers)
@@ -35,7 +36,7 @@ namespace SWLOR.Component.Migration.Feature.ServerMigration
                             dbPlayer.Quests["stinky_womprats"].ItemProgresses["womprathide"] = 1;
                     }
                     
-                    _db.Set(dbPlayer);
+                    DB.Set(dbPlayer);
                 }
             }
             

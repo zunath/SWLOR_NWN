@@ -4,12 +4,13 @@ using SWLOR.Component.Migration.Model;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Domain.Character.Entities;
+using SWLOR.Shared.Domain.Space.Contracts;
 
 namespace SWLOR.Component.Migration.Feature.ServerMigration
 {
     public class _8_EnableServerResetReminders: ServerMigrationBase, IServerMigration
     {
-        public _8_EnableServerResetReminders(ILogger logger, IDatabaseService db) : base(logger, db)
+        public _8_EnableServerResetReminders(ILogger logger, IDatabaseService db, ISpaceService spaceService) : base(logger, db, spaceService)
         {
         }
         
@@ -18,14 +19,14 @@ namespace SWLOR.Component.Migration.Feature.ServerMigration
         public void Migrate()
         {
             var query = new DBQuery<Player>();
-            var playerCount = (int)_db.SearchCount(query);
-            var dbPlayers = _db.Search(query
+            var playerCount = (int)DB.SearchCount(query);
+            var dbPlayers = DB.Search(query
                 .AddPaging(playerCount, 0));
 
             foreach (var dbPlayer in dbPlayers)
             {
                 dbPlayer.Settings.DisplayServerResetReminders = true;
-                _db.Set(dbPlayer);
+                DB.Set(dbPlayer);
             }
         }
     }

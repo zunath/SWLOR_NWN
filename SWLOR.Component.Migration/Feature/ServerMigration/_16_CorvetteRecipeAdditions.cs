@@ -4,13 +4,14 @@ using SWLOR.Component.Migration.Model;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Domain.Character.Entities;
+using SWLOR.Shared.Domain.Space.Contracts;
 using SWLOR.Shared.Domain.Crafting.Enums;
 
 namespace SWLOR.Component.Migration.Feature.ServerMigration
 {
     public class _16_CorvetteRecipeAdditions: ServerMigrationBase, IServerMigration
     {
-        public _16_CorvetteRecipeAdditions(ILogger logger, IDatabaseService db) : base(logger, db)
+        public _16_CorvetteRecipeAdditions(ILogger logger, IDatabaseService db, ISpaceService spaceService) : base(logger, db, spaceService)
         {
         }
         
@@ -19,8 +20,8 @@ namespace SWLOR.Component.Migration.Feature.ServerMigration
         public void Migrate()
         {
             var query = new DBQuery<Player>();
-            var count = (int)_db.SearchCount(query);
-            var dbPlayers = _db.Search(query
+            var count = (int)DB.SearchCount(query);
+            var dbPlayers = DB.Search(query
                 .AddPaging(count, 0));
 
             foreach (var player in dbPlayers)
@@ -29,7 +30,7 @@ namespace SWLOR.Component.Migration.Feature.ServerMigration
                 {
                     player.UnlockedRecipes[RecipeType.CorvetteJehaveyFrigate] = DateTime.UtcNow;
                 }
-                _db.Set(player);
+                DB.Set(player);
             }
         }
     }

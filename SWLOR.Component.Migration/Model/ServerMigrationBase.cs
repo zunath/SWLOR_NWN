@@ -7,25 +7,31 @@ using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Domain.Character.Entities;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Common.Enums;
+using SWLOR.Shared.Domain.Space.Contracts;
 using SWLOR.Shared.Domain.Space.Entities;
 
 namespace SWLOR.Component.Migration.Model
 {
     public abstract class ServerMigrationBase
     {
-        protected readonly ILogger _logger;
-        protected readonly IDatabaseService _db;
+        protected readonly ILogger Logger;
+        protected readonly IDatabaseService DB;
+        protected readonly ISpaceService SpaceService;
 
-        protected ServerMigrationBase(ILogger logger, IDatabaseService db)
+        protected ServerMigrationBase(
+            ILogger logger, 
+            IDatabaseService db,
+            ISpaceService spaceService)
         {
-            _logger = logger;
-            _db = db;
+            Logger = logger;
+            DB = db;
+            SpaceService = spaceService;
         }
         protected void GrantRebuildTokenToAllPlayers()
         {
             var query = new DBQuery<Player>();
-            var count = (int)_db.SearchCount(query);
-            var dbPlayers = _db.Search(query
+            var count = (int)DB.SearchCount(query);
+            var dbPlayers = DB.Search(query
                 .AddPaging(count, 0));
 
             foreach (var dbPlayer in dbPlayers)
@@ -35,16 +41,16 @@ namespace SWLOR.Component.Migration.Model
 
                 dbPlayer.Currencies[CurrencyType.RebuildToken]++;
 
-                _db.Set(dbPlayer);
+                DB.Set(dbPlayer);
             }
         }
 
         protected void RefundPerksByMapping(Dictionary<(PerkType, int), int> refundMap)
         {
             var dbQuery = new DBQuery<Player>();
-            var playerCount = (int)_db.SearchCount(dbQuery);
+            var playerCount = (int)DB.SearchCount(dbQuery);
 
-            var dbPlayers = _db.Search(dbQuery
+            var dbPlayers = DB.Search(dbQuery
                 .AddPaging(playerCount, 0));
 
             foreach (var dbPlayer in dbPlayers)
@@ -73,9 +79,9 @@ namespace SWLOR.Component.Migration.Model
                 {
                     dbPlayer.UnallocatedSP += refundAmount;
 
-                    _logger.Write<MigrationLogGroup>($"{dbPlayer.Name} ({dbPlayer.Id}) refunded {refundAmount} SP.");
+                    Logger.Write<MigrationLogGroup>($"{dbPlayer.Name} ({dbPlayer.Id}) refunded {refundAmount} SP.");
 
-                    _db.Set(dbPlayer);
+                    DB.Set(dbPlayer);
                 }
             }
         }
@@ -88,15 +94,15 @@ namespace SWLOR.Component.Migration.Model
             }
 
             var query = new DBQuery<PlayerShip>();
-            var count = (int)_db.SearchCount(query);
-            var dbShips = _db.Search(query
+            var count = (int)DB.SearchCount(query);
+            var dbShips = DB.Search(query
                 .AddPaging(count, 0));
 
             foreach (var dbShip in dbShips)
             {
-                var shipDetail = Space.GetShipDetailByItemTag(dbShip.Status.ItemTag);
+                var shipDetail = SpaceService.GetShipDetailByItemTag(dbShip.Status.ItemTag);
                 var shipItem = ObjectPlugin.Deserialize(dbShip.SerializedItem);
-                var shipBonuses = Space.GetShipBonuses(shipItem);
+                var shipBonuses = SpaceService.GetShipBonuses(shipItem);
 
                 dbShip.Status.Shield = shipDetail.MaxShield + shipBonuses.Shield;
                 dbShip.Status.MaxShield = shipDetail.MaxShield + shipBonuses.Shield;
@@ -122,11 +128,11 @@ namespace SWLOR.Component.Migration.Model
                         var tempStorage = GetTempStorage();
                         var oldItem = ObjectPlugin.Deserialize(dbShip.Status.HighPowerModules[slot].SerializedItem);
                         var resref = GetResRef(oldItem);
-                        var moduleBonus = Space.GetModuleBonus(oldItem);
+                        var moduleBonus = SpaceService.GetModuleBonus(oldItem);
 
                         var newItem = CreateItemOnObject(resref, tempStorage);
                         var newItemTag = GetTag(newItem);
-                        var moduleDetails = Space.GetShipModuleDetailByItemTag(newItemTag);
+                        var moduleDetails = SpaceService.GetShipModuleDetailByItemTag(newItemTag);
 
                         if (moduleBonus > 0)
                         {
@@ -148,11 +154,11 @@ namespace SWLOR.Component.Migration.Model
                         var tempStorage = GetTempStorage();
                         var oldItem = ObjectPlugin.Deserialize(dbShip.Status.LowPowerModules[slot].SerializedItem);
                         var resref = GetResRef(oldItem);
-                        var moduleBonus = Space.GetModuleBonus(oldItem);
+                        var moduleBonus = SpaceService.GetModuleBonus(oldItem);
 
                         var newItem = CreateItemOnObject(resref, tempStorage);
                         var newItemTag = GetTag(newItem);
-                        var moduleDetails = Space.GetShipModuleDetailByItemTag(newItemTag);
+                        var moduleDetails = SpaceService.GetShipModuleDetailByItemTag(newItemTag);
 
                         if (moduleBonus > 0)
                         {
@@ -174,11 +180,11 @@ namespace SWLOR.Component.Migration.Model
                         var tempStorage = GetTempStorage();
                         var oldItem = ObjectPlugin.Deserialize(dbShip.Status.ConfigurationModules[slot].SerializedItem);
                         var resref = GetResRef(oldItem);
-                        var moduleBonus = Space.GetModuleBonus(oldItem);
+                        var moduleBonus = SpaceService.GetModuleBonus(oldItem);
 
                         var newItem = CreateItemOnObject(resref, tempStorage);
                         var newItemTag = GetTag(newItem);
-                        var moduleDetails = Space.GetShipModuleDetailByItemTag(newItemTag);
+                        var moduleDetails = SpaceService.GetShipModuleDetailByItemTag(newItemTag);
 
                         if (moduleBonus > 0)
                         {
@@ -196,7 +202,7 @@ namespace SWLOR.Component.Migration.Model
                     }
                 }
 
-                _db.Set(dbShip);
+                DB.Set(dbShip);
 
                 DestroyObject(shipItem);
             }

@@ -24,7 +24,13 @@ namespace SWLOR.Component.Market.UI.ViewModel
         private readonly IItemService _itemService;
         private readonly IPlayerMarketService _playerMarketService;
 
-        public MarketBuyViewModel(IGuiService guiService, ILogger logger, IDatabaseService db, IItemService itemService, IPlayerMarketService playerMarketService) : base(guiService)
+        public MarketBuyViewModel(
+            IGuiService guiService, 
+            ILogger logger, 
+            IDatabaseService db, 
+            IItemService itemService, 
+            IPlayerMarketService playerMarketService) 
+            : base(guiService)
         {
             _logger = logger;
             _db = db;

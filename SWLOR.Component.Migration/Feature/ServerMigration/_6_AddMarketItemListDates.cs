@@ -1,3 +1,4 @@
+using SWLOR.Component.Market.Entity;
 using SWLOR.Component.Migration.Contracts;
 using SWLOR.Component.Migration.Enums;
 using SWLOR.Shared.Abstractions.Contracts;

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Domain.Beasts.Enums;
 
 namespace SWLOR.CLI
 {

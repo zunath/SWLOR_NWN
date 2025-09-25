@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using SWLOR.Shared.Core.Extension;
+using SWLOR.Shared.Domain.Properties.Enums;
 
 namespace SWLOR.CLI
 {

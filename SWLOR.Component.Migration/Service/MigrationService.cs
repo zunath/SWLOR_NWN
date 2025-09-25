@@ -15,7 +15,7 @@ using Exception = System.Exception;
 
 namespace SWLOR.Component.Migration.Service
 {
-    public class Migration : IMigrationService
+    public class MigrationService : IMigrationService
     {
         private readonly ILogger _logger;
         private readonly IDatabaseService _db;
@@ -25,13 +25,12 @@ namespace SWLOR.Component.Migration.Service
         private static readonly Dictionary<int, IServerMigration> _serverMigrationsPostCache = new();
         private static readonly Dictionary<int, IPlayerMigration> _playerMigrations = new();
 
-        public Migration(ILogger logger, IDatabaseService db)
+        public MigrationService(ILogger logger, IDatabaseService db)
         {
             _logger = logger;
             _db = db;
         }
 
-        [ScriptHandler<OnServerLoaded>]
         public void AfterDatabaseLoaded()
         {
             var config = GetServerConfiguration();
@@ -43,7 +42,6 @@ namespace SWLOR.Component.Migration.Service
             RunServerMigrationsPostDatabase();
         }
 
-        [ScriptHandler<OnModuleCacheAfter>]
         public void AfterCacheLoaded()
         {
             RunServerMigrationsPostCache();
@@ -132,7 +130,6 @@ namespace SWLOR.Component.Migration.Service
         /// <summary>
         /// When a player logs into the server and after initialization has run, run the migration process on their character.
         /// </summary>
-        [ScriptHandler<OnCharacterInitAfter>]
         public void RunPlayerMigrations()
         {
             var player = GetEnteringObject();

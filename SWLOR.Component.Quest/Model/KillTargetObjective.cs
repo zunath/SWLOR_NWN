@@ -4,7 +4,6 @@ using SWLOR.Shared.Domain.Common.Enums;
 using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Quest.Contracts;
 using SWLOR.Shared.UI.Service;
-using Player = SWLOR.Shared.Core.Data.Entity.Player;
 
 namespace SWLOR.Component.Quest.Model
 {

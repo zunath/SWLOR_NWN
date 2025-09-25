@@ -1,3 +1,4 @@
+using SWLOR.Component.Character.Service;
 using SWLOR.Component.Quest.Contracts;
 using SWLOR.Component.Quest.Service;
 using SWLOR.Shared.Domain.Common.Enums;
@@ -7,26 +8,29 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
 {
     public class MonCalaQuestDefinition : IQuestListDefinition
     {
-        private readonly IQuestBuilder _builder;
-        private readonly Achievement _achievement;
+        private readonly IQuestBuilderFactory _questBuilderFactory;
+        private readonly IAchievementService _achievement;
 
-        public MonCalaQuestDefinition(IServiceProvider serviceProvider, IQuestService questService, Achievement achievement)
+        public MonCalaQuestDefinition(
+            IQuestBuilderFactory questBuilderFactory, 
+            IAchievementService achievement)
         {
-            _builder = new QuestBuilder(serviceProvider, questService);
+            _questBuilderFactory = questBuilderFactory;
             _achievement = achievement;
         }
 
-        public Dictionary<string, QuestDetail> BuildQuests()
+        public Dictionary<string, IQuestDetail> BuildQuests()
         {
-            FishingGuildQuests();
-            PartyRoomForPedro();
+            var builder = _questBuilderFactory.Create();
+            FishingGuildQuests(builder);
+            PartyRoomForPedro(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
 
-        private void FishingGuildQuests()
+        private void FishingGuildQuests(IQuestBuilder builder)
         {
-            _builder.Create("fish_rod_1", "The Clothespole Rod")
+            builder.Create("fish_rod_1", "The Clothespole Rod")
 
                 .AddState()
                 .SetStateJournalText("Return to Lu Shang in the Elite Hotel on Mon Cal with the requested fish.")
@@ -44,7 +48,7 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
                 
                 .AddItemReward("clothespole", 1);
 
-            _builder.Create("fish_rod_2", "The Fastwater Rod")
+            builder.Create("fish_rod_2", "The Fastwater Rod")
                 .PrerequisiteQuest("fish_rod_1")
 
                 .AddState()
@@ -65,7 +69,7 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
 
                 .AddItemReward("fastwater_rod", 1);
 
-            _builder.Create("fish_rod_3", "The Judge's Rod")
+            builder.Create("fish_rod_3", "The Judge's Rod")
                 .PrerequisiteQuest("fish_rod_2")
 
                 .AddState()
@@ -84,7 +88,7 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
 
                 .AddItemReward("judge_rod", 1);
 
-            _builder.Create("fish_rod_4", "The Yew Rod")
+            builder.Create("fish_rod_4", "The Yew Rod")
                 .PrerequisiteQuest("fish_rod_3")
 
                 .AddState()
@@ -104,7 +108,7 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
 
                 .AddItemReward("yew_rod", 1);
 
-            _builder.Create("fish_rod_5", "The Legendary Rod")
+            builder.Create("fish_rod_5", "The Legendary Rod")
                 .PrerequisiteQuest("fish_rod_4")
 
                 .AddState()
@@ -121,9 +125,9 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
                 });
         }
 
-        private void PartyRoomForPedro()
+        private void PartyRoomForPedro(IQuestBuilder builder)
         {
-            _builder.Create("partyroom_pedro", "Party Room for P3DR0")
+            builder.Create("partyroom_pedro", "Party Room for P3DR0")
 
                 .AddState()
                 .SetStateJournalText("P3DR0 wants a new place to party where they're not going to get kicked out. Bring them five speakers, a jukebox, and the schematics for a new cantina.")

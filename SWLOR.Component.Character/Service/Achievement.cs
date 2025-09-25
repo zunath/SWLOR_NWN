@@ -11,7 +11,7 @@ using SWLOR.Shared.UI.Model;
 
 namespace SWLOR.Component.Character.Service
 {
-    public class Achievement
+    public class Achievement : IAchievementService
     {
         private readonly IDatabaseService _db;
         private readonly IGuiService _guiService;

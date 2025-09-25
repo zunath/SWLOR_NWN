@@ -2,6 +2,7 @@ using SWLOR.Component.Quest.Service;
 using SWLOR.Shared.Domain.Common.Enums;
 using SWLOR.Shared.Domain.Communication.Enums;
 using SWLOR.Shared.Domain.Inventory.Enums;
+using SWLOR.Shared.Domain.Quest.Contracts;
 using SWLOR.Shared.Domain.Quest.Delegates;
 
 namespace SWLOR.Component.Quest.Contracts
@@ -173,6 +174,6 @@ namespace SWLOR.Component.Quest.Contracts
         /// Builds the configured quest.
         /// </summary>
         /// <returns>The configured QuestDetail.</returns>
-        QuestDetail Build();
+        public Dictionary<string, IQuestDetail> Build();
     }
 }

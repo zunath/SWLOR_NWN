@@ -4,7 +4,9 @@ using SWLOR.Component.Quest.Model;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Domain.Common.Enums;
+using SWLOR.Shared.Domain.Communication.Contracts;
 using SWLOR.Shared.Domain.Communication.Enums;
+using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Inventory.Enums;
 using SWLOR.Shared.Domain.Quest.Contracts;
 

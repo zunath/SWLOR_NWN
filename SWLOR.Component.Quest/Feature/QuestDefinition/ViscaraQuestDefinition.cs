@@ -4,8 +4,10 @@ using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Common.Enums;
 using SWLOR.Shared.Domain.Entities;
+using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Inventory.Enums;
 using SWLOR.Shared.Domain.Quest.Contracts;
+using SWLOR.Shared.Domain.World.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 
@@ -17,50 +19,49 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
         private readonly IKeyItemService _keyItemService;
         private readonly IObjectVisibilityService _objectVisibilityService;
         private readonly IQuestService _questService;
-        private readonly IServiceProvider _serviceProvider;
-        private readonly IQuestBuilder _builder;
+        private readonly IQuestBuilderFactory _questBuilderFactory;
 
-        public ViscaraQuestDefinition(IDatabaseService db, IKeyItemService keyItemService, IObjectVisibilityService objectVisibilityService, IQuestService questService, IServiceProvider serviceProvider)
+        public ViscaraQuestDefinition(IDatabaseService db, IKeyItemService keyItemService, IObjectVisibilityService objectVisibilityService, IQuestService questService, IQuestBuilderFactory questBuilderFactory)
         {
             _db = db;
             _keyItemService = keyItemService;
             _objectVisibilityService = objectVisibilityService;
             _questService = questService;
-            _serviceProvider = serviceProvider;
-            _builder = new QuestBuilder(_serviceProvider, _questService);
+            _questBuilderFactory = questBuilderFactory;
         }
 
-        public Dictionary<string, QuestDetail> BuildQuests()
+        public Dictionary<string, IQuestDetail> BuildQuests()
         {
-            BlastTheMandalorianRangers();
-            CoxxionInitiation();
-            WeaponsForKrystalle();
-            FindCaptainNguth();
-            FirstRites();
-            HelpTheTalyronFamily();
-            KathHoundHunting();
-            LocateTheMandalorianFacility();
-            MandalorianDogTags();
-            RepairingCoxxionEquipment();
-            SlicingTheMandalorianFacility();
-            SmuggleRoyMossPackage();
-            StuffKeepsBreaking();
-            TheMandalorianLeader();
-            VanquishTheVellenRaiders();
-            WarWithTheMandalorianWarriors();
-            KathHoundPartCollection();
-            TaxiTerminalRepairs();
-            JoiningTheRepublic();
-            MedicalEquipmentForShelby();
-            SpiceOneSmallFavour();
-            DantooineHerbs();
+            var builder = _questBuilderFactory.Create();
+            BlastTheMandalorianRangers(builder);
+            CoxxionInitiation(builder);
+            WeaponsForKrystalle(builder);
+            FindCaptainNguth(builder);
+            FirstRites(builder);
+            HelpTheTalyronFamily(builder);
+            KathHoundHunting(builder);
+            LocateTheMandalorianFacility(builder);
+            MandalorianDogTags(builder);
+            RepairingCoxxionEquipment(builder);
+            SlicingTheMandalorianFacility(builder);
+            SmuggleRoyMossPackage(builder);
+            StuffKeepsBreaking(builder);
+            TheMandalorianLeader(builder);
+            VanquishTheVellenRaiders(builder);
+            WarWithTheMandalorianWarriors(builder);
+            KathHoundPartCollection(builder);
+            TaxiTerminalRepairs(builder);
+            JoiningTheRepublic(builder);
+            MedicalEquipmentForShelby(builder);
+            SpiceOneSmallFavour(builder);
+            DantooineHerbs(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
 
-        private void BlastTheMandalorianRangers()
+        private void BlastTheMandalorianRangers(IQuestBuilder builder)
         {
-            _builder.Create("blast_mand_rangers", "Blast the Mandalorian Rangers")
+            builder.Create("blast_mand_rangers", "Blast the Mandalorian Rangers")
                 .PrerequisiteQuest("war_mand_warriors")
 
                 .AddState()
@@ -74,9 +75,9 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
                 .AddXPReward(4000);
         }
 
-        private void CoxxionInitiation()
+        private void CoxxionInitiation(IQuestBuilder builder)
         {
-            _builder.Create("caxx_init", "Coxxion Initiation")
+            builder.Create("caxx_init", "Coxxion Initiation")
 
                 .AddState()
                 .SetStateJournalText("Denam Reyholm has instructed you to locate someone in Veles Colony. He doesn't know the person's real name or what he looks like. All he could tell you is that he goes by \"L\" and he's somewhere in the colony. Speak to him and speak the code phrases.")
@@ -108,9 +109,9 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
                 });
         }
 
-        private void WeaponsForKrystalle()
+        private void WeaponsForKrystalle(IQuestBuilder builder)
         {
-            _builder.Create("daggers_crystal", "Weapons for Krystalle")
+            builder.Create("daggers_crystal", "Weapons for Krystalle")
 
                 .AddState()
                 .SetStateJournalText("Krystalle in Veles Colony needs two basic spears and three basic pistols. Collect them and return them to her.")
@@ -124,9 +125,9 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
                 .AddItemReward("p_crystal_red_qs", 1);
         }
 
-        private void FindCaptainNguth()
+        private void FindCaptainNguth(IQuestBuilder builder)
         {
-            _builder.Create("find_cap_nguth", "Find Captain N'Guth")
+            builder.Create("find_cap_nguth", "Find Captain N'Guth")
                 .PrerequisiteQuest("locate_m_fac") 
 
                 .AddState()
@@ -218,9 +219,9 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
             FloatingTextStringOnCreature("You have unlocked the Lightsaber Blueprints perk.", player, false);
         }
         
-        private void FirstRites()
+        private void FirstRites(IQuestBuilder builder)
         {
-            _builder.Create("first_rites", "First Rites")
+            builder.Create("first_rites", "First Rites")
 
                 // Use object
                 .AddState()
@@ -246,9 +247,9 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
                 });
         }
 
-        private void HelpTheTalyronFamily()
+        private void HelpTheTalyronFamily(IQuestBuilder builder)
         {
-            _builder.Create("help_talyron_family", "Help the Talyron Family")
+            builder.Create("help_talyron_family", "Help the Talyron Family")
 
                 .AddState()
                 .SetStateJournalText("Reid Coxxion needs you to talk to the head of the Talyron family. Their home can be found in the southwestern part of the mountain valley. Find them, help them, and return to Reid.")
@@ -267,9 +268,9 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
                 .AddXPReward(6000);
         }
 
-        private void KathHoundHunting()
+        private void KathHoundHunting(IQuestBuilder builder)
         {
-            _builder.Create("k_hound_hunting", "Kath Hound Hunting")
+            builder.Create("k_hound_hunting", "Kath Hound Hunting")
 
                 .AddState()
                 .SetStateJournalText("You're responsible for culling back the Kath Hound population in the Viscara Wildlands. Slay 7 of them and return to Moira Halaz in the Veles Colony for your reward.")
@@ -283,9 +284,9 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
                 .AddItemReward("map_052", 1);
         }
 
-        private void LocateTheMandalorianFacility()
+        private void LocateTheMandalorianFacility(IQuestBuilder builder)
         {
-            _builder.Create("locate_m_fac", "Locate the Mandalorian Facility")
+            builder.Create("locate_m_fac", "Locate the Mandalorian Facility")
 
                 // Enter trigger
                 .AddState()
@@ -299,9 +300,9 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
                 .AddXPReward(2000);
         }
 
-        private void MandalorianDogTags()
+        private void MandalorianDogTags(IQuestBuilder builder)
         {
-            _builder.Create("mand_dog_tags", "Mandalorian Dog Tags")
+            builder.Create("mand_dog_tags", "Mandalorian Dog Tags")
                 .PrerequisiteQuest("find_cap_nguth") 
 
                 .AddState()
@@ -315,9 +316,9 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
                 .AddGoldReward(1750);
         }
 
-        private void RepairingCoxxionEquipment()
+        private void RepairingCoxxionEquipment(IQuestBuilder builder)
         {
-            _builder.Create("caxx_repair", "Repairing Coxxion Equipment")
+            builder.Create("caxx_repair", "Repairing Coxxion Equipment")
 
                 .AddState()
                 .AddCollectItemObjective("fiberp_ruined", 2)
@@ -329,7 +330,7 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
                 .AddXPReward(6000);
         }
 
-        private void SlicingTheMandalorianFacility()
+        private void SlicingTheMandalorianFacility(IQuestBuilder builder)
         {
             void AdjustVisibility(uint player, VisibilityType type)
             {
@@ -349,7 +350,7 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
                 }
             }
 
-            _builder.Create("mandalorian_slicing", "Slicing the Mandalorian Facility")
+            builder.Create("mandalorian_slicing", "Slicing the Mandalorian Facility")
                 .PrerequisiteQuest("war_mand_warriors")
                 .PrerequisiteQuest("blast_mand_rangers") 
 
@@ -387,9 +388,9 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
                 });
         }
 
-        private void SmuggleRoyMossPackage()
+        private void SmuggleRoyMossPackage(IQuestBuilder builder)
         {
-            _builder.Create("smuggle_roy_moss", "Smuggle Roy Moss's Package")
+            builder.Create("smuggle_roy_moss", "Smuggle Roy Moss's Package")
 
                 .AddState()
                 .SetStateJournalText("Roy Moss gave you a less-than-legal package to deliver to Denam Reyholm. He can be found out in the mountain region of Viscara, near an old refinery.")
@@ -408,9 +409,9 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
                 });
         }
 
-        private void StuffKeepsBreaking()
+        private void StuffKeepsBreaking(IQuestBuilder builder)
         {
-            _builder.Create("caxx_repair_2", "Stuff Keeps Breaking!")
+            builder.Create("caxx_repair_2", "Stuff Keeps Breaking!")
 
                 .AddState()
                 .SetStateJournalText("Farah Oersted needs you to collect the following items: Flawed Leather, Flawed Electronics, and Agate. Gather them and give them to her for your reward.")
@@ -422,9 +423,9 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
                 .AddXPReward(8000);
         }
 
-        private void TheMandalorianLeader()
+        private void TheMandalorianLeader(IQuestBuilder builder)
         {
-            _builder.Create("the_manda_leader", "The Mandalorian Leader")
+            builder.Create("the_manda_leader", "The Mandalorian Leader")
                 .PrerequisiteQuest("find_cap_nguth")
 
                 .AddState()
@@ -461,9 +462,9 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
                 });
         }
 
-        private void VanquishTheVellenRaiders()
+        private void VanquishTheVellenRaiders(IQuestBuilder builder)
         {
-            _builder.Create("vanquish_vellen", "Vanquish the Vellen Raiders")
+            builder.Create("vanquish_vellen", "Vanquish the Vellen Raiders")
                 .PrerequisiteQuest("help_talyron_family")
 
                 .AddState()
@@ -487,9 +488,9 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
                 });
         }
 
-        private void WarWithTheMandalorianWarriors()
+        private void WarWithTheMandalorianWarriors(IQuestBuilder builder)
         {
-            _builder.Create("war_mand_warriors", "War With the Mandalorian Warriors")
+            builder.Create("war_mand_warriors", "War With the Mandalorian Warriors")
                 .PrerequisiteQuest("find_cap_nguth") 
 
                 .AddState()
@@ -503,9 +504,9 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
                 .AddXPReward(8000);
         }
 
-        private void KathHoundPartCollection()
+        private void KathHoundPartCollection(IQuestBuilder builder)
         {
-            _builder.Create("k_hound_parts", "Kath Hound Part Collection")
+            builder.Create("k_hound_parts", "Kath Hound Part Collection")
 
                 .AddState()
                 .SetStateJournalText("Szaan in Veles Colony needs five units of Kath Hound Teeth and five units of Kath Hound Fur. Return to him with these items to collect your reward.")
@@ -519,9 +520,9 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
                 .AddXPReward(4000);
         }
 
-        private void TaxiTerminalRepairs()
+        private void TaxiTerminalRepairs(IQuestBuilder builder)
         {
-            _builder.Create("taxi_term_repairs", "Taxi Terminal Repairs")
+            builder.Create("taxi_term_repairs", "Taxi Terminal Repairs")
 
                 .AddState()
                 .SetStateJournalText(
@@ -535,9 +536,9 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
                 .AddKeyItemReward(KeyItemType.TaxiHailingDevice);
         }
 
-        private void JoiningTheRepublic()
+        private void JoiningTheRepublic(IQuestBuilder builder)
         {
-            _builder.Create("joining_the_republic", "Joining the Republic")
+            builder.Create("joining_the_republic", "Joining the Republic")
 
                 .AddState()
                 .AddKillObjective(NPCGroupType.Viscara_DeepMountainRaivors, 10)
@@ -563,9 +564,9 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
                 .AddItemReward("key_rep_01", 1);
         }
 
-        private void MedicalEquipmentForShelby()
+        private void MedicalEquipmentForShelby(IQuestBuilder builder)
         {
-            _builder.Create("medical_equipget", "Medical Equipment for Shelby")
+            builder.Create("medical_equipget", "Medical Equipment for Shelby")
 
                 .AddState()
                 .SetStateJournalText("Nurse Shelby in Veles Medical Center needs ten new medical beds and the schematics for a new medical center.")
@@ -580,9 +581,9 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
                 .AddItemReward("recipe_fabmedic1", 1);
         }
 
-        private void SpiceOneSmallFavour()
+        private void SpiceOneSmallFavour(IQuestBuilder builder)
         {
-            _builder.Create("spice_onesmallfavour", "Spice: One Small Favour")
+            builder.Create("spice_onesmallfavour", "Spice: One Small Favour")
 
                 .AddState()
                 .SetStateJournalText("Stephen needs you to gather some different fiberplast so he can make some cool new rags he saw in a magazine.")
@@ -665,9 +666,9 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
                 .AddXPReward(25000)
                 .AddItemReward("recipe_fabswoop1", 1);
         }
-        private void DantooineHerbs()
+        private void DantooineHerbs(IQuestBuilder builder)
         {
-            _builder.Create("dantooine_herbs", "Collect Dantooine Starwort Herbs")
+            builder.Create("dantooine_herbs", "Collect Dantooine Starwort Herbs")
 
                 .AddState()
                 .SetStateJournalText("Collect 20 Dantooine Starwort Herbs and bring them to Doc Joe in Veles Colony.")

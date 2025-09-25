@@ -3,36 +3,38 @@ using SWLOR.Component.Quest.Service;
 using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.Shared.Domain.Common.Enums;
 using SWLOR.Shared.Domain.Quest.Contracts;
+using SWLOR.Shared.Domain.World.Contracts;
 
 namespace SWLOR.Component.Quest.Feature.QuestDefinition
 {
     public class HutlarQuestDefinition: IQuestListDefinition
     {
-        private readonly IQuestBuilder _builder;
+        private readonly IQuestBuilderFactory _questBuilderFactory;
         private readonly IObjectVisibilityService _objectVisibilityService;
         private readonly IQuestService _questService;
 
-        public HutlarQuestDefinition(IObjectVisibilityService objectVisibilityService, IQuestService questService, IServiceProvider serviceProvider)
+        public HutlarQuestDefinition(IObjectVisibilityService objectVisibilityService, IQuestService questService, IQuestBuilderFactory questBuilderFactory)
         {
             _objectVisibilityService = objectVisibilityService;
             _questService = questService;
-            _builder = new QuestBuilder(serviceProvider, questService);
+            _questBuilderFactory = questBuilderFactory;
         }
 
-        public Dictionary<string, QuestDetail> BuildQuests()
+        public Dictionary<string, IQuestDetail> BuildQuests()
         {
-            BeatTheByysk();
-            CullTheTundraThreat();
-            HutlarPowerInvestigation();
-            StupendousSlugBile();
-            BreakTheByysk();
+            var builder = _questBuilderFactory.Create();
+            BeatTheByysk(builder);
+            CullTheTundraThreat(builder);
+            HutlarPowerInvestigation(builder);
+            StupendousSlugBile(builder);
+            BreakTheByysk(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
 
-        private void BeatTheByysk()
+        private void BeatTheByysk(IQuestBuilder builder)
         {
-            _builder.Create("beat_byysk", "Beat the Byysk")
+            builder.Create("beat_byysk", "Beat the Byysk")
 
                 .AddState()
                 .SetStateJournalText("You've agreed to kill fifteen Byysk out in the Qion Tundra. Kill them all!")
@@ -45,9 +47,9 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
                 .AddXPReward(800);
         }
 
-        private void CullTheTundraThreat()
+        private void CullTheTundraThreat(IQuestBuilder builder)
         {
-            _builder.Create("tundra_tiger_threat", "Cull the Tundra Tiger Threat")
+            builder.Create("tundra_tiger_threat", "Cull the Tundra Tiger Threat")
 
                 .AddState()
                 .SetStateJournalText("Kieun Xorxca wants you to head to Qion Tundra and kill ten tigers. Report back when this is done.")
@@ -60,9 +62,9 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
                 .AddXPReward(800);
         }
 
-        private void HutlarPowerInvestigation()
+        private void HutlarPowerInvestigation(IQuestBuilder builder)
         {
-            _builder.Create("hut_power_invest", "Hutlar Power Investigation")
+            builder.Create("hut_power_invest", "Hutlar Power Investigation")
                 .PrerequisiteQuest("beat_byysk")
                 .PrerequisiteQuest("tundra_tiger_threat")
                 .PrerequisiteQuest("stup_slug_bile")
@@ -150,9 +152,9 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
                 });
         }
 
-        private void StupendousSlugBile()
+        private void StupendousSlugBile(IQuestBuilder builder)
         {
-            _builder.Create("stup_slug_bile", "Stupendious Slug Bile")
+            builder.Create("stup_slug_bile", "Stupendious Slug Bile")
 
                 .AddState()
                 .SetStateJournalText("Moricho Deine in the Hutlar Outpost has requested you collect five Slug Biles from the Qion Slugs in Qion Tundra. Collect them and give them to him for a reward.")
@@ -165,9 +167,9 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
                 .AddItemReward("slug_shake", 1);
         }
 
-        private void BreakTheByysk()
+        private void BreakTheByysk(IQuestBuilder builder)
         {
-            _builder.Create("break_the_byysk", "Break the Byysk")
+            builder.Create("break_the_byysk", "Break the Byysk")
 
                 .AddState()
                 .SetStateJournalText("Sharene wants you to kill two hundred and fifty Byysk. Off you go!")

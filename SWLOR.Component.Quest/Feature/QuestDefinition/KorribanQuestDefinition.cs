@@ -7,28 +7,29 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
 {
     public class KorribanQuestlineDefinition : IQuestListDefinition
     {
-        private readonly IQuestBuilder _builder;
+        private readonly IQuestBuilderFactory _questBuilderFactory;
 
-        public KorribanQuestlineDefinition(IServiceProvider serviceProvider, IQuestService questService)
+        public KorribanQuestlineDefinition(IQuestBuilderFactory questBuilderFactory)
         {
-            _builder = new QuestBuilder(serviceProvider, questService);
+            _questBuilderFactory = questBuilderFactory;
         }
 
-        public Dictionary<string, QuestDetail> BuildQuests()
+        public Dictionary<string, IQuestDetail> BuildQuests()
         {
-            MeetTheInquisitor();
-            TheArtifactRecovery();
-            TheSithCodeTest();
-            ProvingYourDominance();
-            EliminateKlorSlug();
-            FactoryWorkerParts();
-            return _builder.Build();
+            var builder = _questBuilderFactory.Create();
+            MeetTheInquisitor(builder);
+            TheArtifactRecovery(builder);
+            TheSithCodeTest(builder);
+            ProvingYourDominance(builder);
+            EliminateKlorSlug(builder);
+            FactoryWorkerParts(builder);
+            return builder.Build();
         }
 
         // Quest 1: Meeting the Inquisitor
-        private void MeetTheInquisitor()
+        private void MeetTheInquisitor(IQuestBuilder builder)
         {
-            _builder.Create("meet_inquisitor", "Meeting the Inquisitor")
+            builder.Create("meet_inquisitor", "Meeting the Inquisitor")
 
                 .AddState()
                 .SetStateJournalText("The recruiter has instructed you to meet with Inquisitor Dral'kor Keth in the Sith Academy. Speak with him to begin your training.")
@@ -40,9 +41,9 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
         }
 
         // Quest 2: The Artifact Recovery
-        private void TheArtifactRecovery()
+        private void TheArtifactRecovery(IQuestBuilder builder)
         {
-            _builder.Create("artifact_recovery", "The Artifact Recovery")
+            builder.Create("artifact_recovery", "The Artifact Recovery")
                 .PrerequisiteQuest("meet_inquisitor")
 
                 .AddState()
@@ -58,9 +59,9 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
         }
 
         // Quest 3: The Sith Code Test
-        private void TheSithCodeTest()
+        private void TheSithCodeTest(IQuestBuilder builder)
         {
-            _builder.Create("sith_code_test", "The Sith Code Test")
+            builder.Create("sith_code_test", "The Sith Code Test")
                 .PrerequisiteQuest("artifact_recovery")
 
                 .AddState()
@@ -74,9 +75,9 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
         }
 
         // Quest 4: Proving Your Dominance
-        private void ProvingYourDominance()
+        private void ProvingYourDominance(IQuestBuilder builder)
         {
-            _builder.Create("prove_dominance", "Proving Your Dominance")
+            builder.Create("prove_dominance", "Proving Your Dominance")
                 .PrerequisiteQuest("sith_code_test")
 
                 .AddState()
@@ -89,9 +90,9 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
                 .AddGoldReward(3000)
                 .AddItemReward("apprentice_dark_", 1);
         }
-        private void EliminateKlorSlug()
+        private void EliminateKlorSlug(IQuestBuilder builder)
         {
-            _builder.Create("eliminate_klorslug", "Eliminate the K'lor'slug")
+            builder.Create("eliminate_klorslug", "Eliminate the K'lor'slug")
 
                 .AddState()
                 .SetStateJournalText("A Korriban citizen has requested your help in eliminating dangerous K'lor'slugs threatening the wastes.")
@@ -104,9 +105,9 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
                 .AddItemReward("slug_surprise", 1);
         }
 
-        private void FactoryWorkerParts()
+        private void FactoryWorkerParts(IQuestBuilder builder)
         {
-            _builder.Create("factory_worker_parts", "Factory Worker Needs Parts")
+            builder.Create("factory_worker_parts", "Factory Worker Needs Parts")
 
                 .AddState()
                 .SetStateJournalText("A factory worker has requested your help in gathering electronic parts to repair malfunctioning droids.")

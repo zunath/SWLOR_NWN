@@ -5,6 +5,7 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Common.Contracts;
 using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Quest.Contracts;
+using SWLOR.Shared.Domain.UI.Events;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
@@ -90,7 +91,7 @@ namespace SWLOR.Component.Quest.UI.ViewModel
             }
         }
 
-        private string BuildDescription(QuestDetail questDetail, int currentState)
+        private string BuildDescription(IQuestDetail questDetail, int currentState)
         {
             var sb = new StringBuilder();
             var state = questDetail.States[currentState];

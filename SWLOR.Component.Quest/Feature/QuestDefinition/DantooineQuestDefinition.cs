@@ -1,6 +1,7 @@
 using SWLOR.Component.Quest.Contracts;
 using SWLOR.Component.Quest.Service;
 using SWLOR.Shared.Domain.Common.Enums;
+using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Inventory.Enums;
 using SWLOR.Shared.Domain.Quest.Contracts;
 
@@ -8,30 +9,31 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
 {
     public class DantooineQuestDefinition : IQuestListDefinition
     {
-        private readonly IQuestBuilder _builder;
+        private readonly IQuestBuilderFactory _questBuilderFactory;
         private readonly IKeyItemService _keyItemService;
 
-        public DantooineQuestDefinition(IKeyItemService keyItemService, IServiceProvider serviceProvider, IQuestService questService)
+        public DantooineQuestDefinition(IKeyItemService keyItemService, IQuestBuilderFactory questBuilderFactory)
         {
             _keyItemService = keyItemService;
-            _builder = new QuestBuilder(serviceProvider, questService);
+            _questBuilderFactory = questBuilderFactory;
         }
-        public Dictionary<string, QuestDetail> BuildQuests()
+        public Dictionary<string, IQuestDetail> BuildQuests()
         {
-            DanBundle();
-            DanMedicalSupplies();
-            BlueMilkQuest();
-            CullVoritorLizardThreat();
-            HarvestingHerbs();
-            FetchPetTreat();
-            CollectHerbsForLibrarian();
-            HiddenCave();
-            return _builder.Build();
+            var builder = _questBuilderFactory.Create();
+            DanBundle(builder);
+            DanMedicalSupplies(builder);
+            BlueMilkQuest(builder);
+            CullVoritorLizardThreat(builder);
+            HarvestingHerbs(builder);
+            FetchPetTreat(builder);
+            CollectHerbsForLibrarian(builder);
+            HiddenCave(builder);
+            return builder.Build();
         }
 
-        private void BlueMilkQuest()
+        private void BlueMilkQuest(IQuestBuilder builder)
         {
-            _builder.Create("bantha_milk_quest", "Bantha Milk Quest")
+            builder.Create("bantha_milk_quest", "Bantha Milk Quest")
 
                .AddState()
                .SetStateJournalText("The farmer from Dantooine requires milk that has been taken from the Dantari. Find it and bring back the milk.")
@@ -43,9 +45,9 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
                .AddXPReward(4000)
                .AddGoldReward(2500);
         }
-        private void CullVoritorLizardThreat()
+        private void CullVoritorLizardThreat(IQuestBuilder builder)
         {
-            _builder.Create("voritor_lizard_threat", "Cull the Voritor Lizard Threat")
+            builder.Create("voritor_lizard_threat", "Cull the Voritor Lizard Threat")
 
                 .AddState()
                 .SetStateJournalText("Jason wants you to head to the Janta Caves and kill ten Voritor Lizards. Report back when this is done.")
@@ -58,9 +60,9 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
                 .AddXPReward(5000);
         }
 
-        private void DanMedicalSupplies()
+        private void DanMedicalSupplies(IQuestBuilder builder)
         {
-            _builder.Create("medical_supplies", "Medical Supplies for the Clinic")
+            builder.Create("medical_supplies", "Medical Supplies for the Clinic")
 
                 .AddState()
                 .SetStateJournalText("The clinic in Dantooine Medical Facility needs  kolto injections and  medi syringes. Collect them from the Abandoned Warehouse and return them to the clinic.")
@@ -77,9 +79,9 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
                 .AddItemReward("wild_sandwich", 1);
 
         }
-        private void DanBundle()
+        private void DanBundle(IQuestBuilder builder)
         {
-            _builder.Create("hay_bundles", "Hay bales for Wrrl")
+            builder.Create("hay_bundles", "Hay bales for Wrrl")
 
                 .AddState()
                 .SetStateJournalText("The farmer needs help with his herd. Collect 20 bags of hay bales from the Ruin Farmlands and return them to the farmer.")
@@ -91,9 +93,9 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
                 .AddXPReward(2000)
                 .AddGoldReward(1000);
         }
-        private void HarvestingHerbs()
+        private void HarvestingHerbs(IQuestBuilder builder)
         {
-            _builder.Create("harvest_herbs", "Harvesting Herbs")
+            builder.Create("harvest_herbs", "Harvesting Herbs")
                .IsRepeatable()
 
                .AddState()
@@ -106,9 +108,9 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
                .AddXPReward(600)
                .AddGoldReward(200);
         }
-        private void FetchPetTreat()
+        private void FetchPetTreat(IQuestBuilder builder)
         {
-            _builder.Create("fetch_pet_treat", "Fetch Pet Treat Quest")
+            builder.Create("fetch_pet_treat", "Fetch Pet Treat Quest")
 
                .AddState()
                .SetStateJournalText("The battlegym trainer needs a Yot Beans to make pet treats. Find the Yot Beans and bring it back.")
@@ -122,9 +124,9 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
                .AddItemReward("pf_dryfruit_5", 1)
                .AddItemReward("pf_sourfruit_1", 1);
         }
-        private void CollectHerbsForLibrarian()
+        private void CollectHerbsForLibrarian(IQuestBuilder builder)
         {
-            _builder.Create("collect_herbs_librarian", "Collect Herbs for the Librarian")
+            builder.Create("collect_herbs_librarian", "Collect Herbs for the Librarian")
 
                .AddState()
                .SetStateJournalText("The Jedi librarian needs Yot Beans and Dantooine Starworts for his research. Collect these items and bring them back.")
@@ -138,9 +140,9 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
                .AddXPReward(5000)
                .AddGoldReward(3000);
         }
-        private void HiddenCave()
+        private void HiddenCave(IQuestBuilder builder)
         {
-            _builder.Create("hidden_cave", "Find the hidden cave")
+            builder.Create("hidden_cave", "Find the hidden cave")
 
                 .AddState()
                 .AddKillObjective(NPCGroupType.Dantooine_KinrathQueen, 1)

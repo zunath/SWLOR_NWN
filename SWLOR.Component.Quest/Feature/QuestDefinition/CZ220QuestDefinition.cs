@@ -4,51 +4,53 @@ using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Common.Enums;
 using SWLOR.Shared.Domain.Entities;
+using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Inventory.Enums;
 using SWLOR.Shared.Domain.Quest.Contracts;
+using SWLOR.Shared.Domain.World.Contracts;
 
 namespace SWLOR.Component.Quest.Feature.QuestDefinition
 {
-    public class CZ220QuestDefinition: IQuestListDefinition
+    public class CZ220QuestDefinition : IQuestListDefinition
     {
-        private readonly IDatabaseService _db;
+        private readonly IQuestBuilderFactory _questBuilderFactory;
+        private readonly IDatabaseService _databaseService;
         private readonly IKeyItemService _keyItemService;
         private readonly IObjectVisibilityService _objectVisibilityService;
-        private readonly IQuestBuilderFactory _questBuilderFactory;
-        private readonly IQuestService _questService;
 
-        public CZ220QuestDefinition(IDatabaseService db, IKeyItemService keyItemService, IObjectVisibilityService objectVisibilityService, IQuestBuilderFactory questBuilderFactory, IQuestService questService)
+        public CZ220QuestDefinition(
+            IQuestBuilderFactory questBuilderFactory,
+            IDatabaseService databaseService,
+            IKeyItemService keyItemService,
+            IObjectVisibilityService objectVisibilityService)
         {
-            _db = db;
+            _questBuilderFactory = questBuilderFactory;
+            _databaseService = databaseService;
             _keyItemService = keyItemService;
             _objectVisibilityService = objectVisibilityService;
-            _questBuilderFactory = questBuilderFactory;
-            _questService = questService;
         }
 
-        public Dictionary<string, QuestDetail> BuildQuests()
-        {
-            var quests = new Dictionary<string, QuestDetail>();
-            
-            quests["selans_request"] = SelansRequest();
-            quests["supplies_smithery"] = SuppliesSmithery();
-            quests["supplies_scavenging"] = SuppliesScavenging();
-            quests["supplies_fabrication"] = SuppliesFabrication();
-            quests["datapad_retrieval"] = DatapadRetrieval();
-            quests["mynock_mayhem"] = MynockMayhem();
-            quests["ore_collection"] = OreCollection();
-            quests["refinery_trainee"] = RefineryTrainee();
-            quests["malfunctioning_droids"] = TheMalfunctioningDroids();
-            quests["colicoid_experiment"] = TheColicoidExperiment();
-            quests["scrap_metal_monstrosity"] = ScrapMetalMonstrosity();
-
-            return quests;
-        }
-
-        private QuestDetail SelansRequest()
+        public Dictionary<string, IQuestDetail> BuildQuests()
         {
             var builder = _questBuilderFactory.Create();
-            return builder.Create("selan_request", "Selan's Request")
+            SelansRequest(builder);
+            SuppliesSmithery(builder);
+            SuppliesScavenging(builder);
+            SuppliesFabrication(builder);
+            DatapadRetrieval(builder);
+            MynockMayhem(builder);
+            OreCollection(builder);
+            RefineryTrainee(builder);
+            TheMalfunctioningDroids(builder);
+            TheColicoidExperiment(builder);
+            ScrapMetalMonstrosity(builder);
+
+            return builder.Build();
+        }
+
+        private void SelansRequest(IQuestBuilder builder)
+        {
+            builder.Create("selan_request", "Selan's Request")
 
                 .AddState()
                 .SetStateJournalText("Selan Flembek, receptionist at CZ-220, has requested you complete three tasks around the base. \n\nSpeak to Avix Tatham, the mining coordinator, for information about retrieving ore from the mine.\n\nTalk to security officer Harlon Linth for information about trouble on the maintenance level.\n\nChat with the Crafting Terminal Droid Operator for details about supplies which need to be constructed.\n\nWhen you've obtained receipts from all three employees, return to Selan to collect your reward.")
@@ -64,18 +66,16 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
                     _keyItemService.RemoveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkReceipt);
 
                     var cdKey = GetPCPublicCDKey(player);
-                    var dbAccount = _db.Get<Account>(cdKey) ?? new Account(cdKey);
+                    var dbAccount = _databaseService.Get<Account>(cdKey) ?? new Account(cdKey);
                     dbAccount.HasCompletedTutorial = true;
 
-                    _db.Set(dbAccount);
-                })
-                .Build();
+                    _databaseService.Set(dbAccount);
+                });
         }
 
-        private QuestDetail SuppliesSmithery()
+        private void SuppliesSmithery(IQuestBuilder builder)
         {
-            var builder = _questBuilderFactory.Create();
-            return builder.Create("cz220_smithery", "CZ-220 Supplies - Smithery")
+            builder.Create("cz220_smithery", "CZ-220 Supplies - Smithery")
 
                 .AddState()
                 .SetStateJournalText("The Crafting Terminal Droid operator has requested you create a single Basic Knife. You will need to purchase the \"One-Handed Blueprints\" perk in order to create this item. Once you have the perk you can use any smithery terminal to make the item. You will find the necessary resources down on the maintenance level of CZ-220.")
@@ -99,13 +99,11 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
                 .OnCompleteAction((player, sourceObject) =>
                 {
                     _keyItemService.RemoveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkOrder);
-                })
-                .Build();
+                });
         }
-        private QuestDetail SuppliesScavenging()
+        private void SuppliesScavenging(IQuestBuilder builder)
         {
-            var builder = _questBuilderFactory.Create();
-            return builder.Create("cz220_scavenging", "CZ-220 Supplies - Scavenging")
+            builder.Create("cz220_scavenging", "CZ-220 Supplies - Scavenging")
 
                 .AddState()
                 .SetStateJournalText("The Crafting Terminal Droid operator has requested you gather ten units of scrap metal. You will need to scavenge through junk piles throughout CZ-220. When you have enough, return to the droid to collect your receipt and reward.")
@@ -129,8 +127,7 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
                 .OnCompleteAction((player, sourceObject) =>
                 {
                     _keyItemService.RemoveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkOrder);
-                })
-                .Build();
+                });
         }
         private void SuppliesFabrication(IQuestBuilder builder)
         {
@@ -213,7 +210,7 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText("Avix Tatham needs you to head down to the maintenance level and harvest some ore. When you have four pieces, return to him to collect the work receipt.")
                 .AddCollectItemObjective("raw_veldite", 4)
-                
+
                 .AddState()
                 .SetStateJournalText("Speak to Avix Tatham for your reward.")
 
@@ -264,10 +261,10 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText("You made quick work of the rampaging Colicoid experiment. Return to Halron Linth to let him know the work is done.")
-                
+
                 .AddGoldReward(250, false)
                 .AddXPReward(600)
-                
+
                 .OnAcceptAction((player, sourceObject) =>
                 {
                     _keyItemService.GiveKeyItem(player, KeyItemType.CZ220ExperimentRoomKey);

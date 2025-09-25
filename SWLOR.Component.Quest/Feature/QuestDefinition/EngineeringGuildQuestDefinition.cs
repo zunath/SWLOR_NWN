@@ -10,13 +10,13 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
     {
         private readonly IItemCacheService _itemCache;
         private readonly IQuestService _questService;
-        private readonly IServiceProvider _serviceProvider;
+        private readonly IQuestBuilderFactory _questBuilderFactory;
 
-        public EngineeringGuildQuestDefinition(IItemCacheService itemCache, IQuestService questService, IServiceProvider serviceProvider)
+        public EngineeringGuildQuestDefinition(IItemCacheService itemCache, IQuestService questService, IQuestBuilderFactory questBuilderFactory)
         {
             _itemCache = itemCache;
             _questService = questService;
-            _serviceProvider = serviceProvider;
+            _questBuilderFactory = questBuilderFactory;
         }
         private class RewardDetails
         {
@@ -40,9 +40,9 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
             { 5, new RewardDetails(960, 246)},
         };
 
-        public Dictionary<string, QuestDetail> BuildQuests()
+        public Dictionary<string, IQuestDetail> BuildQuests()
         {
-            var builder = new QuestBuilder(_serviceProvider, _questService);
+            var builder = _questBuilderFactory.Create();
 
             // Tier 1 (Rank 0)
             BuildItemTask(builder, "eng_tsk_001", "cap_boost_b", 1, 0);

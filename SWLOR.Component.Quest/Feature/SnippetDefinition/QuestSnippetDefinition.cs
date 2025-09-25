@@ -13,13 +13,18 @@ namespace SWLOR.Component.Quest.Feature.SnippetDefinition
         private readonly IDatabaseService _db;
         private readonly ILogger _logger;
         private readonly IQuestService _questService;
-        private readonly SnippetBuilder _builder = new();
+        private readonly ISnippetBuilder _builder;
 
-        public QuestSnippetDefinition(IDatabaseService db, ILogger logger, IQuestService questService)
+        public QuestSnippetDefinition(
+            IDatabaseService db, 
+            ILogger logger, 
+            IQuestService questService,
+            ISnippetBuilder builder)
         {
             _db = db;
             _logger = logger;
             _questService = questService;
+            _builder = builder;
         }
 
         public Dictionary<string, SnippetDetail> BuildSnippets()

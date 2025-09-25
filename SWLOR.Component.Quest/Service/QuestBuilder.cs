@@ -1,32 +1,59 @@
-using SWLOR.Component.Quest.Contracts;
 using SWLOR.Component.Quest.Model;
+using SWLOR.Component.Quest.Service;
 using SWLOR.Shared.Domain.Common.Enums;
 using SWLOR.Shared.Domain.Communication.Enums;
 using SWLOR.Shared.Domain.Inventory.Enums;
 using SWLOR.Shared.Domain.Quest.Delegates;
 using SWLOR.Shared.Domain.Quest.ValueObjects;
+using System;
+using System.Collections.Generic;
+using SWLOR.Component.Quest.Contracts;
+using SWLOR.Shared.Domain.Quest.Contracts;
+using SWLOR.Shared.Caching.Contracts;
+using SWLOR.Shared.Domain.Communication.Contracts;
+using SWLOR.Shared.Domain.Inventory.Contracts;
+using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.Domain.Dialog.Contracts;
 
-namespace SWLOR.Component.Quest.Service
+namespace SWLOR.Game.Server.Service.QuestService
 {
-    public class QuestBuilder : IQuestBuilder
+    public class QuestBuilder: IQuestBuilder
     {
+        private readonly Dictionary<string, QuestDetail> _quests = new();
         private QuestDetail _activeQuest;
         private QuestStateDetail _activeState;
-        private readonly IQuestDetailFactory _questDetailFactory;
-        private readonly IQuestRewardFactory _rewardFactory;
-        private readonly IQuestPrerequisiteFactory _prerequisiteFactory;
-        private readonly IQuestObjectiveFactory _objectiveFactory;
+        
+        private readonly IItemCacheService _itemCacheService;
+        private readonly IQuestService _questService;
+        private readonly IKeyItemService _keyItemService;
+        private readonly IFactionService _factionService;
+        private readonly IGuildService _guildService;
+        private readonly IDatabaseService _databaseService;
+        private readonly INPCGroupService _npcGroupService;
+        private readonly IGuiService _guiService;
+        private readonly IDialogService _dialogService;
 
         public QuestBuilder(
-            IQuestDetailFactory questDetailFactory,
-            IQuestRewardFactory rewardFactory,
-            IQuestPrerequisiteFactory prerequisiteFactory,
-            IQuestObjectiveFactory objectiveFactory)
+            IItemCacheService itemCacheService,
+            IQuestService questService,
+            IKeyItemService keyItemService,
+            IFactionService factionService,
+            IGuildService guildService,
+            IDatabaseService databaseService,
+            INPCGroupService npcGroupService,
+            IGuiService guiService,
+            IDialogService dialogService)
         {
-            _questDetailFactory = questDetailFactory;
-            _rewardFactory = rewardFactory;
-            _prerequisiteFactory = prerequisiteFactory;
-            _objectiveFactory = objectiveFactory;
+            _itemCacheService = itemCacheService;
+            _questService = questService;
+            _keyItemService = keyItemService;
+            _factionService = factionService;
+            _guildService = guildService;
+            _databaseService = databaseService;
+            _npcGroupService = npcGroupService;
+            _guiService = guiService;
+            _dialogService = dialogService;
         }
 
         /// <summary>
@@ -43,7 +70,13 @@ namespace SWLOR.Component.Quest.Service
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentException($"{nameof(name)} cannot be null or whitespace.");
 
-            _activeQuest = _questDetailFactory.Create(questId, name);
+            _activeQuest = new QuestDetail(_databaseService, _guiService, _dialogService, _questService)
+            {
+                QuestId = questId,
+                Name = name
+            };
+
+            _quests[questId] = _activeQuest;
             _activeState = null;
 
             return this;
@@ -93,7 +126,7 @@ namespace SWLOR.Component.Quest.Service
         /// <returns>A QuestBuilder with the configured options.</returns>
         public IQuestBuilder AddItemReward(string itemResref, int quantity, bool isSelectable = true)
         {
-            var reward = _rewardFactory.CreateItemReward(itemResref, quantity, isSelectable);
+            var reward = new ItemReward(_itemCacheService, itemResref, quantity, isSelectable);
             _activeQuest.Rewards.Add(reward);
 
             return this;
@@ -108,7 +141,7 @@ namespace SWLOR.Component.Quest.Service
         /// <returns>A QuestBuilder with the configured options.</returns>
         public IQuestBuilder AddGoldReward(int amount, bool isSelectable = true)
         {
-            var reward = _rewardFactory.CreateGoldReward(amount, isSelectable, _activeQuest.GuildType != GuildType.Invalid);
+            var reward = new GoldReward(amount, isSelectable, _activeQuest.GuildType != GuildType.Invalid, _questService);
             _activeQuest.Rewards.Add(reward);
 
             return this;
@@ -123,7 +156,7 @@ namespace SWLOR.Component.Quest.Service
         /// <returns>A QuestBuilder with the configured options.</returns>
         public IQuestBuilder AddXPReward(int amount, bool isSelectable = true)
         {
-            var reward = _rewardFactory.CreateXPReward(amount, isSelectable);
+            var reward = new XPReward(_databaseService, _itemCacheService, amount, isSelectable);
             _activeQuest.Rewards.Add(reward);
 
             return this;
@@ -137,7 +170,7 @@ namespace SWLOR.Component.Quest.Service
         /// <returns>A QuestBuilder with the configured options.</returns>
         public IQuestBuilder AddKeyItemReward(KeyItemType keyItemType, bool isSelectable = true)
         {
-            var reward = _rewardFactory.CreateKeyItemReward(keyItemType, isSelectable);
+            var reward = new KeyItemReward(keyItemType, isSelectable, _keyItemService);
             _activeQuest.Rewards.Add(reward);
 
             return this;
@@ -152,7 +185,7 @@ namespace SWLOR.Component.Quest.Service
         /// <returns>A QuestBuilder with the configured options.</returns>
         public IQuestBuilder AddGPReward(GuildType guild, int amount, bool isSelectable = true)
         {
-            var reward = _rewardFactory.CreateGPReward(guild, amount, isSelectable);
+            var reward = new GPReward(_guildService, guild, amount, isSelectable);
             _activeQuest.Rewards.Add(reward);
 
             return this;
@@ -167,7 +200,7 @@ namespace SWLOR.Component.Quest.Service
         /// <returns>A QuestBuilder with the configured options.</returns>
         public IQuestBuilder AddFactionStandingReward(FactionType faction, int amount, bool isSelectable = true)
         {
-            var reward = _rewardFactory.CreateFactionStandingReward(faction, amount, isSelectable);
+            var reward = new FactionStandingReward(_factionService, faction, amount, isSelectable);
             _activeQuest.Rewards.Add(reward);
 
             return this;
@@ -182,7 +215,7 @@ namespace SWLOR.Component.Quest.Service
         /// <returns>A QuestBuilder with the configured options.</returns>
         public IQuestBuilder AddFactionPointsReward(FactionType faction, int amount, bool isSelectable = true)
         {
-            var reward = _rewardFactory.CreateFactionPointsReward(faction, amount, isSelectable);
+            var reward = new FactionPointsReward(_factionService, faction, amount, isSelectable);
             _activeQuest.Rewards.Add(reward);
 
             return this;
@@ -195,7 +228,7 @@ namespace SWLOR.Component.Quest.Service
         /// <returns>A QuestBuilder with the configured options.</returns>
         public IQuestBuilder PrerequisiteQuest(string prerequisiteQuestId)
         {
-            var prereq = _prerequisiteFactory.CreateRequiredQuestPrerequisite(prerequisiteQuestId);
+            var prereq = new RequiredQuestPrerequisite(_databaseService, prerequisiteQuestId);
             _activeQuest.Prerequisites.Add(prereq);
 
             return this;
@@ -208,7 +241,7 @@ namespace SWLOR.Component.Quest.Service
         /// <returns>A QuestBuilder with the configured options.</returns>
         public IQuestBuilder PrerequisiteKeyItem(KeyItemType keyItemType)
         {
-            var prereq = _prerequisiteFactory.CreateRequiredKeyItemPrerequisite(keyItemType);
+            var prereq = new RequiredKeyItemPrerequisite(keyItemType, _keyItemService);
             _activeQuest.Prerequisites.Add(prereq);
 
             return this;
@@ -294,7 +327,7 @@ namespace SWLOR.Component.Quest.Service
         /// <returns>A QuestBuilder with the configured options.</returns>
         public IQuestBuilder AddKillObjective(NPCGroupType group, int amount)
         {
-            var killObjective = _objectiveFactory.CreateKillTargetObjective(group, amount);
+            var killObjective = new KillTargetObjective(_databaseService, _questService, _npcGroupService, group, amount);
             _activeState.AddObjective(killObjective);
 
             return this;
@@ -308,22 +341,24 @@ namespace SWLOR.Component.Quest.Service
         /// <returns>A QuestBuilder with the configured options.</returns>
         public IQuestBuilder AddCollectItemObjective(string resref, int amount)
         {
-            var collectItemObjective = _objectiveFactory.CreateCollectItemObjective(resref, amount);
+            var collectItemObjective = new CollectItemObjective(_databaseService, _itemCacheService, _questService, resref, amount);
             _activeState.AddObjective(collectItemObjective);
 
             return this;
         }
 
         /// <summary>
-        /// Builds the configured quest.
+        /// Builds all of the configured quests.
         /// </summary>
-        /// <returns>The configured QuestDetail.</returns>
-        public QuestDetail Build()
+        /// <returns>A dictionary containing all of the new quests.</returns>
+        public Dictionary<string, IQuestDetail> Build()
         {
-            if (_activeQuest == null)
-                throw new InvalidOperationException("No quest has been created. Call Create() first.");
-
-            return _activeQuest;
+            var result = new Dictionary<string, IQuestDetail>();
+            foreach (var kvp in _quests)
+            {
+                result[kvp.Key] = kvp.Value;
+            }
+            return result;
         }
     }
 }

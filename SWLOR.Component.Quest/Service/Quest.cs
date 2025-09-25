@@ -12,13 +12,13 @@ using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Common.Contracts;
 using SWLOR.Shared.Domain.Common.Enums;
 using SWLOR.Shared.Domain.Communication.Enums;
+using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Quest.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Creature;
 using SWLOR.Shared.Events.Events.Module;
-using Player = SWLOR.Shared.Core.Data.Entity.Player;
 
 namespace SWLOR.Component.Quest.Service
 {
@@ -34,16 +34,16 @@ namespace SWLOR.Component.Quest.Service
         private readonly IRandomService _randomService;
         
         // Cached data
-        private IInterfaceCache<string, QuestDetail> _questCache;
+        private IInterfaceCache<string, IQuestDetail> _questCache;
         
         // Additional caches for complex data
         private readonly Dictionary<NPCGroupType, List<string>> _npcsWithKillQuests = new();
-        private readonly Dictionary<GuildType, Dictionary<int, List<QuestDetail>>> _questsByGuildType = new();
+        private readonly Dictionary<GuildType, Dictionary<int, List<IQuestDetail>>> _questsByGuildType = new();
         
         // Guild quest management
         public DateTime? DateTasksLoaded { get; private set; }
-        private readonly Dictionary<GuildType, Dictionary<int, List<QuestDetail>>> _activeGuildTasksByRank = new();
-        private readonly Dictionary<GuildType, Dictionary<string, QuestDetail>> _activeGuildTasks = new();
+        private readonly Dictionary<GuildType, Dictionary<int, List<IQuestDetail>>> _activeGuildTasksByRank = new();
+        private readonly Dictionary<GuildType, Dictionary<string, IQuestDetail>> _activeGuildTasks = new();
 
         public Quest(
             IDatabaseService db,
@@ -79,7 +79,7 @@ namespace SWLOR.Component.Quest.Service
         /// </summary>
         public void RegisterQuests()
         {
-            _questCache = _cacheService.BuildInterfaceCache<IQuestListDefinition, string, QuestDetail>()
+            _questCache = _cacheService.BuildInterfaceCache<IQuestListDefinition, string, IQuestDetail>()
                 .WithDataExtractor(instance => instance.BuildQuests())
                 .Build();
 
@@ -107,10 +107,10 @@ namespace SWLOR.Component.Quest.Service
                     questDetail.GuildRank >= 0)
                 {
                     if(!_questsByGuildType.ContainsKey(questDetail.GuildType))
-                        _questsByGuildType[questDetail.GuildType] = new Dictionary<int, List<QuestDetail>>();
+                        _questsByGuildType[questDetail.GuildType] = new Dictionary<int, List<IQuestDetail>>();
 
                     if(!_questsByGuildType[questDetail.GuildType].ContainsKey(questDetail.GuildRank))
-                        _questsByGuildType[questDetail.GuildType][questDetail.GuildRank] = new List<QuestDetail>();
+                        _questsByGuildType[questDetail.GuildType][questDetail.GuildRank] = new List<IQuestDetail>();
 
                     _questsByGuildType[questDetail.GuildType][questDetail.GuildRank].Add(questDetail);
                 }
@@ -126,10 +126,10 @@ namespace SWLOR.Component.Quest.Service
         /// <param name="guild">The guild to search for</param>
         /// <param name="rank">The rank to search for</param>
         /// <returns>A list of quests associated with the guild.</returns>
-        public List<QuestDetail> GetQuestsByGuild(GuildType guild, int rank)
+        public List<IQuestDetail> GetQuestsByGuild(GuildType guild, int rank)
         {
             if(!_questsByGuildType.ContainsKey(guild))
-                return new List<QuestDetail>();
+                return new List<IQuestDetail>();
 
             return _questsByGuildType[guild][rank].ToList();
         }
@@ -178,7 +178,7 @@ namespace SWLOR.Component.Quest.Service
         /// </summary>
         /// <param name="questId">The quest Id to search for.</param>
         /// <returns>The quest detail matching this Id.</returns>
-        public QuestDetail GetQuestById(string questId)
+        public IQuestDetail GetQuestById(string questId)
         {
             return _questCache?.AllItems[questId] ?? throw new KeyNotFoundException($"Quest {questId} not found in cache");
         }
@@ -563,7 +563,7 @@ namespace SWLOR.Component.Quest.Service
                 foreach (var guildType in guildTypes)
                 {
                     var potentialTasks = GetQuestsByGuild(guildType, rank);
-                    List<QuestDetail> tasks;
+                    List<IQuestDetail> tasks;
 
                     // Need at least 11 tasks to randomize. We have ten or less. Simply enable all of these.
                     if (potentialTasks.Count <= 10)
@@ -580,10 +580,10 @@ namespace SWLOR.Component.Quest.Service
                     }
 
                     if (!_activeGuildTasks.ContainsKey(guildType))
-                        _activeGuildTasks[guildType] = new Dictionary<string, QuestDetail>();
+                        _activeGuildTasks[guildType] = new Dictionary<string, IQuestDetail>();
 
                     if (!_activeGuildTasksByRank.ContainsKey(guildType))
-                        _activeGuildTasksByRank[guildType] = new Dictionary<int, List<QuestDetail>>();
+                        _activeGuildTasksByRank[guildType] = new Dictionary<int, List<IQuestDetail>>();
 
                     foreach (var task in tasks)
                     {
@@ -603,10 +603,10 @@ namespace SWLOR.Component.Quest.Service
         /// <param name="guild">The guild type to retrieve for</param>
         /// <param name="rank">The rank to retrieve for</param>
         /// <returns>A list of active guild tasks</returns>
-        public List<QuestDetail> GetActiveGuildTasksByRank(GuildType guild, int rank)
+        public List<IQuestDetail> GetActiveGuildTasksByRank(GuildType guild, int rank)
         {
             if (!_activeGuildTasksByRank.ContainsKey(guild))
-                return new List<QuestDetail>();
+                return new List<IQuestDetail>();
 
             return _activeGuildTasksByRank[guild][rank].ToList();
         }
@@ -616,10 +616,10 @@ namespace SWLOR.Component.Quest.Service
         /// </summary>
         /// <param name="guild">The guild type to retrieve for</param>
         /// <returns>A list of active guild tasks</returns>
-        public Dictionary<string, QuestDetail> GetAllActiveGuildTasks(GuildType guild)
+        public Dictionary<string, IQuestDetail> GetAllActiveGuildTasks(GuildType guild)
         {
             if (!_activeGuildTasks.ContainsKey(guild))
-                return new Dictionary<string, QuestDetail>();
+                return new Dictionary<string, IQuestDetail>();
 
             return _activeGuildTasks[guild].ToDictionary(x => x.Key, y => y.Value);
         }

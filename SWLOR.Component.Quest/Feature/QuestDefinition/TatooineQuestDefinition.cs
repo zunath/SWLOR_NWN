@@ -7,18 +7,16 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
 {
     public class TatooineQuestDefinition : IQuestListDefinition
     {
-        private readonly IServiceProvider _serviceProvider;
-        private readonly IQuestService _questService;
+        private readonly IQuestBuilderFactory _questBuilderFactory;
 
-        public TatooineQuestDefinition(IServiceProvider serviceProvider, IQuestService questService)
+        public TatooineQuestDefinition(IQuestBuilderFactory questBuilderFactory)
         {
-            _serviceProvider = serviceProvider;
-            _questService = questService;
+            _questBuilderFactory = questBuilderFactory;
         }
 
-        public Dictionary<string, QuestDetail> BuildQuests()
+        public Dictionary<string, IQuestDetail> BuildQuests()
         {
-            var builder = new QuestBuilder(_serviceProvider, _questService);
+            var builder = _questBuilderFactory.Create();
             WorkinForTheMan(builder);
             StinkyWomprats(builder);
             TuskenRampage(builder);

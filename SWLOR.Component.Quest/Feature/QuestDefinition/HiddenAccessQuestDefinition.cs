@@ -4,31 +4,33 @@ using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.Shared.Domain.Common.Enums;
 using SWLOR.Shared.Domain.Inventory.Enums;
 using SWLOR.Shared.Domain.Quest.Contracts;
+using SWLOR.Shared.Domain.World.Contracts;
 
 namespace SWLOR.Component.Quest.Feature.QuestDefinition
 {
     public class HiddenAccessQuestDefinition : IQuestListDefinition
     {
-        private readonly IQuestBuilder _builder;
+        private readonly IQuestBuilderFactory _questBuilderFactory;
         private readonly IObjectVisibilityService _objectVisibilityService;
         private readonly IQuestService _questService;
 
-        public HiddenAccessQuestDefinition(IObjectVisibilityService objectVisibilityService, IQuestService questService, IServiceProvider serviceProvider)
+        public HiddenAccessQuestDefinition(IObjectVisibilityService objectVisibilityService, IQuestService questService, IQuestBuilderFactory questBuilderFactory)
         {
             _objectVisibilityService = objectVisibilityService;
             _questService = questService;
-            _builder = new QuestBuilder(serviceProvider, questService);
+            _questBuilderFactory = questBuilderFactory;
         }
 
-        public Dictionary<string, QuestDetail> BuildQuests()
+        public Dictionary<string, IQuestDetail> BuildQuests()
         {
-            SithBasementQuest();
-            return _builder.Build();
+            var builder = _questBuilderFactory.Create();
+            SithBasementQuest(builder);
+            return builder.Build();
         }
 
-        private void SithBasementQuest()
+        private void SithBasementQuest(IQuestBuilder builder)
         {
-            _builder.Create("sith_basement", "Viscara Sith Basement")
+            builder.Create("sith_basement", "Viscara Sith Basement")
 
                 .AddState()
                 .SetStateJournalText("Talk to SithBasementGiver again to complete quest.")

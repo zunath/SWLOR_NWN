@@ -1,14 +1,17 @@
 ﻿using SWLOR.Shared.Dialog.Contracts;
+using SWLOR.Shared.Dialog.Service;
 
 namespace SWLOR.Shared.Dialog.Model
 {
     public abstract class DialogBase : IConversation
     {
         protected readonly IDialogService DialogService;
+        protected readonly IDialogBuilder DialogBuilder;
 
-        protected DialogBase(IDialogService dialogService)
+        protected DialogBase(IDialogService dialogService, IDialogBuilder dialogBuilder)
         {
             DialogService = dialogService ?? throw new ArgumentNullException(nameof(dialogService));
+            DialogBuilder = dialogBuilder ?? throw new ArgumentNullException(nameof(dialogBuilder));
         }
         /// <summary>
         /// Retrieves the speaking player.

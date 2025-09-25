@@ -15,14 +15,19 @@ namespace SWLOR.Component.Inventory.Dialog
 
         private const string MainPageId = "MAIN_PAGE";
         private const string ConfirmPageId = "CONFIRM_PAGE";
+        private readonly IDialogBuilder _builder;
 
-        public DestroyItemDialog(IDialogService dialogService) : base(dialogService)
+        public DestroyItemDialog(
+            IDialogService dialogService,
+            IDialogBuilder builder) 
+            : base(dialogService, builder)
         {
+            _builder = builder;
         }
 
         public override PlayerDialog SetUp(uint player)
         {
-            var builder = new DialogBuilder()
+            var builder = _builder
                 .WithDataModel(new Model())
                 .AddInitializationAction(Initialization)
                 .AddPage(MainPageId, MainPageInit)

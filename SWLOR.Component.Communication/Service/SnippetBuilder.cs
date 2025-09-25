@@ -2,7 +2,7 @@ using SWLOR.Shared.Dialog.Model;
 
 namespace SWLOR.Shared.Dialog.Service
 {
-    public class SnippetBuilder
+    public class SnippetBuilder : ISnippetBuilder
     {
         private readonly Dictionary<string, SnippetDetail> _snippets = new();
         private SnippetDetail _activeSnippet;
@@ -12,7 +12,7 @@ namespace SWLOR.Shared.Dialog.Service
         /// </summary>
         /// <param name="key">The key of the snippet.</param>
         /// <returns>A snippet builder with the configured options.</returns>
-        public SnippetBuilder Create(string key)
+        public ISnippetBuilder Create(string key)
         {
             _activeSnippet = new SnippetDetail();
             _snippets[key] = _activeSnippet;
@@ -25,7 +25,7 @@ namespace SWLOR.Shared.Dialog.Service
         /// </summary>
         /// <param name="description">The description to set.</param>
         /// <returns>A snippet builder with the configured options.</returns>
-        public SnippetBuilder Description(string description)
+        public ISnippetBuilder Description(string description)
         {
             _activeSnippet.Description = description;
 
@@ -37,7 +37,7 @@ namespace SWLOR.Shared.Dialog.Service
         /// </summary>
         /// <param name="condition">The action to run.</param>
         /// <returns>A snippet builder with the configured options.</returns>
-        public SnippetBuilder AppearsWhenAction(SnippetConditionDelegate condition)
+        public ISnippetBuilder AppearsWhenAction(SnippetConditionDelegate condition)
         {
             _activeSnippet.ConditionAction = condition;
 
@@ -49,7 +49,7 @@ namespace SWLOR.Shared.Dialog.Service
         /// </summary>
         /// <param name="action">The action to run.</param>
         /// <returns>A snippet builder with the configured options.</returns>
-        public SnippetBuilder ActionsTakenAction(SnippetActionDelegate action)
+        public ISnippetBuilder ActionsTakenAction(SnippetActionDelegate action)
         {
             _activeSnippet.ActionsTakenAction = action;
 

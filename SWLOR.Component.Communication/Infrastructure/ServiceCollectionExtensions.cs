@@ -22,7 +22,7 @@ namespace SWLOR.Component.Communication.Infrastructure
             services.AddSingleton<IChatCommandService, ChatCommand>();
             services.AddSingleton<ICommunicationService, CommunicationService>();
             services.AddSingleton<ILanguageService, Language>();
-            services.AddSingleton<IHoloComService, HoloCom>();
+            services.AddSingleton<IHoloComService, HoloComService>();
             services.AddSingleton<IRoleplayXPService, RoleplayXPService>();
             
             // Register event handlers as singletons

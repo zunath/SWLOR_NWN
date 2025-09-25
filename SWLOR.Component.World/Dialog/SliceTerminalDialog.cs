@@ -17,8 +17,7 @@ namespace SWLOR.Component.World.Dialog
         public SliceTerminalDialog(
             IKeyItemService keyItemService, 
             IObjectVisibilityService objectVisibilityService, 
-            IDialogService dialogService) 
-            : base(dialogService)
+            IDialogService dialogService, IDialogBuilder dialogBuilder) : base(dialogService, dialogBuilder)
         {
             _keyItemService = keyItemService;
             _objectVisibilityService = objectVisibilityService;
@@ -26,7 +25,7 @@ namespace SWLOR.Component.World.Dialog
 
         public override PlayerDialog SetUp(uint player)
         {
-            var builder = new DialogBuilder()
+            var builder = DialogBuilder
                 .AddPage(MainPageId, MainPageInit);
 
             return builder.Build();

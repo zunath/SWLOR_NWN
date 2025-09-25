@@ -2,9 +2,9 @@ using SWLOR.Shared.Abstractions.Contracts;
 
 namespace SWLOR.Shared.Domain.UI.Events
 {
-    internal class PlayerStatusRefreshEvent: IGuiRefreshEvent
+    public class PlayerStatusRefreshEvent: IGuiRefreshEvent
     {
-        internal enum StatType
+        public enum StatType
         {
             HP = 1,
             FP = 2,

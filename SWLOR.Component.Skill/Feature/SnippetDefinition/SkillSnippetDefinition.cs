@@ -12,12 +12,16 @@ namespace SWLOR.Component.Skill.Feature.SnippetDefinition
     {
         private readonly IDatabaseService _db;
         private readonly ILogger _logger;
-        private readonly SnippetBuilder _builder = new();
+        private readonly ISnippetBuilder _builder;
 
-        public SkillSnippetDefinition(IDatabaseService db, ILogger logger)
+        public SkillSnippetDefinition(
+            IDatabaseService db, 
+            ILogger logger,
+            ISnippetBuilder builder)
         {
             _db = db;
             _logger = logger;
+            _builder = builder;
         }
         public Dictionary<string, SnippetDetail> BuildSnippets()
         {

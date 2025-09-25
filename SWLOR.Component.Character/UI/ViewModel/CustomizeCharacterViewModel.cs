@@ -1,6 +1,9 @@
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Component.Character.UI.Payload;
+using SWLOR.Shared.Domain.Beasts.Contracts;
+using SWLOR.Shared.Domain.Beasts.Entities;
+using SWLOR.Shared.Domain.Droids.Contracts;
 using SWLOR.Shared.Domain.UI.Events;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
@@ -13,14 +16,23 @@ namespace SWLOR.Component.Character.UI.ViewModel
         private readonly IDatabaseService _db;
         private readonly IPortraitCacheService _portraitCache;
         private readonly ISoundSetCacheService _soundSetCache;
-        private readonly BeastMastery _beastMastery;
+        private readonly IBeastMasteryService _beastMastery;
+        private readonly IDroidService _droidService;
 
-        public CustomizeCharacterViewModel(IGuiService guiService, IDatabaseService db, IPortraitCacheService portraitCache, ISoundSetCacheService soundSetCache, BeastMastery beastMastery) : base(guiService)
+        public CustomizeCharacterViewModel(
+            IGuiService guiService, 
+            IDatabaseService db, 
+            IPortraitCacheService portraitCache, 
+            ISoundSetCacheService soundSetCache, 
+            IBeastMasteryService beastMastery,
+            IDroidService droidService) 
+            : base(guiService)
         {
             _db = db;
             _portraitCache = portraitCache;
             _soundSetCache = soundSetCache;
             _beastMastery = beastMastery;
+            _droidService = droidService;
         }
         
         private uint _target;
@@ -216,7 +228,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
 
         public Action OnSavePortraitClick() => () =>
         {
-            var isDroid = Droid.IsDroid(_target);
+            var isDroid = _droidService.IsDroid(_target);
             var isBeast = _beastMastery.IsPlayerBeast(_target);
             var portraitId = _portraitCache.GetPortraitByInternalId(_activePortraitInternalId);
 
@@ -232,12 +244,12 @@ namespace SWLOR.Component.Character.UI.ViewModel
             
             if (isDroid)
             {
-                var controller = Droid.GetControllerItem(_target);
-                var constructedDroid = Droid.LoadConstructedDroid(controller);
+                var controller = _droidService.GetControllerItem(_target);
+                var constructedDroid = _droidService.LoadConstructedDroid(controller);
 
                 constructedDroid.PortraitId = portraitId;
 
-                Droid.SaveConstructedDroid(controller, constructedDroid);
+                _droidService.SaveConstructedDroid(controller, constructedDroid);
             }
             else if (isBeast)
             {
@@ -264,14 +276,14 @@ namespace SWLOR.Component.Character.UI.ViewModel
             var soundSetId = _soundSetIds[_selectedSoundSetIndex];
             SetSoundset(_target, soundSetId);
 
-            if (Droid.IsDroid(_target))
+            if (_droidService.IsDroid(_target))
             {
-                var controller = Droid.GetControllerItem(_target);
-                var constructedDroid = Droid.LoadConstructedDroid(controller);
+                var controller = _droidService.GetControllerItem(_target);
+                var constructedDroid = _droidService.LoadConstructedDroid(controller);
 
                 constructedDroid.SoundSetId = soundSetId;
 
-                Droid.SaveConstructedDroid(controller, constructedDroid);
+                _droidService.SaveConstructedDroid(controller, constructedDroid);
             }
             else if (_beastMastery.IsPlayerBeast(_target))
             {

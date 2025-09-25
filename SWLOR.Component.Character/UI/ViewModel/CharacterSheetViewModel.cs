@@ -2,11 +2,17 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Component.Character.UI.Payload;
+using SWLOR.Component.Communication.Contracts;
+using SWLOR.Component.Crafting.Enums;
+using SWLOR.Component.Crafting.UI.Payload;
 using SWLOR.Shared.Abstractions.Enums;
+using SWLOR.Shared.Dialog.Contracts;
 using SWLOR.Shared.Domain.Beasts.Contracts;
+using SWLOR.Shared.Domain.Beasts.Entities;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Entities;
 using SWLOR.Shared.Domain.Character.Enums;
+using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Common.Contracts;
 using SWLOR.Shared.Domain.Crafting.ValueObjects;
@@ -35,9 +41,23 @@ namespace SWLOR.Component.Character.UI.ViewModel
         private readonly IAbilityService _abilityService;
         private readonly ISpaceService _spaceService;
         private readonly IBeastMasteryService _beastMasteryService;
-        private readonly BeastMastery _beastMastery;
+        private readonly IDialogService _dialogService;
+        private readonly IStatusEffectService _statusEffectService;
+        private readonly IHoloComService _holoComService;
 
-        public CharacterSheetViewModel(IGuiService guiService, IDatabaseService db, IStatService statService, ISkillService skillService, IItemService itemService, ICombatService combatService, IAbilityService abilityService, ISpaceService spaceService, IBeastMasteryService beastMasteryService, BeastMastery beastMastery) : base(guiService)
+        public CharacterSheetViewModel(
+            IGuiService guiService, 
+            IDatabaseService db, 
+            IStatService statService, 
+            ISkillService skillService, 
+            IItemService itemService, 
+            ICombatService combatService, 
+            IAbilityService abilityService, 
+            ISpaceService spaceService, 
+            IBeastMasteryService beastMasteryService,
+            IDialogService dialogService,
+            IStatusEffectService statusEffectService,
+            IHoloComService holoComService) : base(guiService)
         {
             _db = db;
             _statService = statService;
@@ -47,7 +67,9 @@ namespace SWLOR.Component.Character.UI.ViewModel
             _abilityService = abilityService;
             _spaceService = spaceService;
             _beastMasteryService = beastMasteryService;
-            _beastMastery = beastMastery;
+            _dialogService = dialogService;
+            _statusEffectService = statusEffectService;
+            _holoComService = holoComService;
         }
         
         private const int MaxUpgrades = 10;
@@ -328,7 +350,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
                 return;
             }
 
-            Shared.Dialog.Service.Dialog.StartConversation(Player, Player, nameof(HoloComDialog));
+            _holoComService.StartHoloComDialog(Player);
         };
 
         public Action OnClickKeyItems() => () =>
@@ -541,7 +563,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
                 return (dmgText, tooltip);
             }
 
-            var food = StatusEffect.GetEffectData<FoodEffectData>(Player, StatusEffectType.Food) ?? new FoodEffectData();
+            var food = _statusEffectService.GetEffectData<FoodEffectData>(Player, StatusEffectType.Food) ?? new FoodEffectData();
             var mainHand = GetItemInSlot(InventorySlot.RightHand, _target);
             var offHand = GetItemInSlot(InventorySlot.LeftHand, _target);
             var mainHandType = GetBaseItemType(mainHand);
@@ -573,10 +595,10 @@ namespace SWLOR.Component.Character.UI.ViewModel
             AbilityType damageStat;
             AbilityType accuracyStatOverride;
 
-            if (_beastMastery.IsPlayerBeast(_target))
+            if (_beastMasteryService.IsPlayerBeast(_target))
             {
-                var beastType = _beastMastery.GetBeastType(_target);
-                var beastDetails = _beastMastery.GetBeastDetail(beastType);
+                var beastType = _beastMasteryService.GetBeastType(_target);
+                var beastDetails = _beastMasteryService.GetBeastDetail(beastType);
                 damageStat = beastDetails.DamageStat;
                 accuracyStatOverride = beastDetails.AccuracyStat;
                 mainHand = GetItemInSlot(InventorySlot.CreatureArmor, _target);
@@ -665,14 +687,14 @@ namespace SWLOR.Component.Character.UI.ViewModel
                 SP = $"{dbPlayer.TotalSPAcquired} / {_skillService.SkillCap} ({dbPlayer.UnallocatedSP})";
                 APOrLevel = $"{dbPlayer.TotalAPAcquired} / {_skillService.APCap} ({dbPlayer.UnallocatedAP})";
             }
-            else if (_beastMastery.IsPlayerBeast(_target))
+            else if (_beastMasteryService.IsPlayerBeast(_target))
             {
-                var beastId = _beastMastery.GetBeastId(_target);
+                var beastId = _beastMasteryService.GetBeastId(_target);
                 var dbBeast = _db.Get<Beast>(beastId);
 
-                SP = $"{dbBeast.Level} / {_beastMastery.MaxLevel} ({dbBeast.UnallocatedSP})";
-                APOrLevel = $"{dbBeast.Level} / {_beastMastery.MaxLevel}";
-                APOrLevelTooltip = $"XP: {dbBeast.XP} / {_beastMastery.GetRequiredXP(dbBeast.Level, dbBeast.XPPenaltyPercent)}";
+                SP = $"{dbBeast.Level} / {_beastMasteryService.MaxLevel} ({dbBeast.UnallocatedSP})";
+                APOrLevel = $"{dbBeast.Level} / {_beastMasteryService.MaxLevel}";
+                APOrLevelTooltip = $"XP: {dbBeast.XP} / {_beastMasteryService.GetRequiredXP(dbBeast.Level, dbBeast.XPPenaltyPercent)}";
             }
         }
 
@@ -685,7 +707,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
         {
             CharacterType = GetClassByPosition(1, _target) == ClassType.Standard ? "Standard" : "Force Sensitive";
             Race = GetStringByStrRef(Convert.ToInt32(Get2DAString("racialtypes", "Name", (int)GetRacialType(_target))), GetGender(_target));
-            IsHolocomEnabled = !Space.IsPlayerInSpaceMode(_target);
+            IsHolocomEnabled = !_spaceService.IsPlayerInSpaceMode(_target);
 
             if (IsPlayerMode)
             {

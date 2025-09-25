@@ -10,8 +10,7 @@ namespace SWLOR.Component.Character.Dialog
     {
         private readonly IDatabaseService _db;
 
-        public MedicalRegistrationDialog(IDatabaseService db, IDialogService dialogService) 
-            : base(dialogService)
+        public MedicalRegistrationDialog(IDatabaseService db, IDialogService dialogService, IDialogBuilder dialogBuilder) : base(dialogService, dialogBuilder)
         {
             _db = db;
         }
@@ -20,7 +19,7 @@ namespace SWLOR.Component.Character.Dialog
 
         public override PlayerDialog SetUp(uint player)
         {
-            var builder = new DialogBuilder()
+            var builder = DialogBuilder
                 .AddPage(MainPageId, MainPageInit);
 
             return builder.Build();

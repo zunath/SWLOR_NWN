@@ -23,8 +23,7 @@ namespace SWLOR.Component.Market.Dialog
             IGuiService guiService, 
             ILogger logger, 
             IDialogService dialogService,
-            IPlayerMarketService playerMarket) 
-            : base(dialogService)
+            IPlayerMarketService playerMarket, IDialogBuilder dialogBuilder) : base(dialogService, dialogBuilder)
         {
             _guiService = guiService;
             _logger = logger;
@@ -33,7 +32,7 @@ namespace SWLOR.Component.Market.Dialog
 
         public override PlayerDialog SetUp(uint player)
         {
-            var builder = new DialogBuilder()
+            var builder = DialogBuilder
                 .AddPage(MainPageId, MainPageInit);
 
             return builder.Build();

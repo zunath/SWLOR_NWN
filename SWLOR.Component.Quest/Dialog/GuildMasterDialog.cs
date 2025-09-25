@@ -17,8 +17,7 @@ namespace SWLOR.Component.Quest.Dialog
         private readonly IQuestService _questService;
         private readonly IGuildService _guildService;
 
-        public GuildMasterDialog(IDatabaseService db, IQuestService questService, IGuildService guildService, IDialogService dialogService) 
-            : base(dialogService)
+        public GuildMasterDialog(IDatabaseService db, IQuestService questService, IGuildService guildService, IDialogService dialogService, IDialogBuilder dialogBuilder) : base(dialogService, dialogBuilder)
         {
             _db = db;
             _questService = questService;
@@ -40,7 +39,7 @@ namespace SWLOR.Component.Quest.Dialog
 
         public override PlayerDialog SetUp(uint player)
         {
-            var builder = new DialogBuilder()
+            var builder = DialogBuilder
                 .WithDataModel(new Model())
                 .AddInitializationAction(Initialization)
                 .AddPage(MainPageId, MainPageInit)

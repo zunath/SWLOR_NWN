@@ -30,9 +30,10 @@ namespace SWLOR.Component.Space.Dialog
             IDatabaseService db, 
             IPropertyService propertyService, 
             IDialogService dialogService,
+            IDialogBuilder dialogBuilder,
             ISpaceService spaceService,
             IEnmityService enmityService) 
-            : base(dialogService)
+            : base(dialogService, dialogBuilder)
         {
             _logger = logger;
             _db = db;
@@ -51,7 +52,7 @@ namespace SWLOR.Component.Space.Dialog
 
         public override PlayerDialog SetUp(uint player)
         {
-            var builder = new DialogBuilder()
+            var builder = DialogBuilder
                 .WithDataModel(new Model())
                 .AddInitializationAction(Initialize)
                 .AddPage(MainPageId, MainPageInit);

@@ -168,8 +168,9 @@ namespace SWLOR.Game.Server
             services.AddSingleton<IEventRegistrationService, EventRegistrationService>();
             services.AddSingleton<IScheduler, Scheduler>();
 
-            // Dialog Service
+            // Dialog Services
             services.AddSingleton<IDialogService, Dialog>();
+            services.AddTransient<IDialogBuilder, DialogBuilder>();
         }
 
         private static void AddGameServices(IServiceCollection services)

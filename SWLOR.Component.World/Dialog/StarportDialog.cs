@@ -36,8 +36,7 @@ namespace SWLOR.Component.World.Dialog
             IGuiService guiService, 
             IPlanetService planetService, 
             IDialogService dialogService,
-            IAreaService areaService) 
-            : base(dialogService)
+            IAreaService areaService, IDialogBuilder dialogBuilder) : base(dialogService, dialogBuilder)
         {
             _logger = logger;
             _db = db;
@@ -50,7 +49,7 @@ namespace SWLOR.Component.World.Dialog
 
         public override PlayerDialog SetUp(uint player)
         {
-            var builder = new DialogBuilder()
+            var builder = DialogBuilder
                 .AddPage(MainPageId, MainPageInit);
 
             return builder.Build();

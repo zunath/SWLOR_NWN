@@ -10,8 +10,7 @@ namespace SWLOR.Component.Inventory.Dialog
     {
         private readonly ISkillService _skillService;
 
-        public XPTomeDialog(ISkillService skillService, IDialogService dialogService) 
-            : base(dialogService)
+        public XPTomeDialog(ISkillService skillService, IDialogService dialogService, IDialogBuilder dialogBuilder) : base(dialogService, dialogBuilder)
         {
             _skillService = skillService;
         }
@@ -29,7 +28,7 @@ namespace SWLOR.Component.Inventory.Dialog
 
         public override PlayerDialog SetUp(uint player)
         {
-            var builder = new DialogBuilder()
+            var builder = DialogBuilder
                 .WithDataModel(new Model())
                 .AddInitializationAction(Initialize)
                 .AddPage(CategoryPageId, CategoryPageInit)

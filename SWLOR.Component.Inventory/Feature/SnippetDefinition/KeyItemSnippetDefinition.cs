@@ -12,12 +12,16 @@ namespace SWLOR.Component.Inventory.Feature.SnippetDefinition
     {
         private readonly ILogger _logger;
         private readonly IKeyItemService _keyItemService;
-        private readonly SnippetBuilder _builder = new();
+        private readonly ISnippetBuilder _builder;
 
-        public KeyItemSnippetDefinition(ILogger logger, IKeyItemService keyItemService)
+        public KeyItemSnippetDefinition(
+            ILogger logger, 
+            IKeyItemService keyItemService,
+            ISnippetBuilder snippetBuilder)
         {
             _logger = logger;
             _keyItemService = keyItemService;
+            _builder = snippetBuilder;
         }
 
         public Dictionary<string, SnippetDetail> BuildSnippets()

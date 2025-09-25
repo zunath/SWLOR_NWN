@@ -23,8 +23,7 @@ namespace SWLOR.Component.Properties.Dialog
             IPropertyService property, 
             IDialogService dialogService,
             IAreaService areaService,
-            ISpaceService spaceService) 
-            : base(dialogService)
+            ISpaceService spaceService, IDialogBuilder dialogBuilder) : base(dialogService, dialogBuilder)
         {
             _db = db;
             _property = property;
@@ -36,7 +35,7 @@ namespace SWLOR.Component.Properties.Dialog
 
         public override PlayerDialog SetUp(uint player)
         {
-            var builder = new DialogBuilder()
+            var builder = DialogBuilder
                 .AddPage(MainPageId, MainPageInit);
 
 

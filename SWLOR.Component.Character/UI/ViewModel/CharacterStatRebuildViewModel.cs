@@ -1,8 +1,10 @@
+using SWLOR.Component.Character.Contracts;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Domain.Character.Entities;
+using SWLOR.Shared.Domain.Common.Contracts;
 using SWLOR.Shared.Domain.Common.Enums;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
@@ -15,11 +17,18 @@ namespace SWLOR.Component.Character.UI.ViewModel
     {
         private readonly IDatabaseService _db;
         private readonly IRecastService _recastService;
+        private readonly ICurrencyService _currencyService;
 
-        public CharacterStatRebuildViewModel(IGuiService guiService, IDatabaseService db, IRecastService recastService) : base(guiService)
+        public CharacterStatRebuildViewModel(
+            IGuiService guiService, 
+            IDatabaseService db, 
+            IRecastService recastService,
+            ICurrencyService currencyService) 
+            : base(guiService)
         {
             _db = db;
             _recastService = recastService;
+            _currencyService = currencyService;
         }
         
         [ScriptHandler(ScriptName.OnBuyStatRebuild)]
@@ -34,7 +43,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
                 return;
             }
 
-            if (Currency.GetCurrency(player, CurrencyType.StatRefundToken) <= 0)
+            if (_currencyService.GetCurrency(player, CurrencyType.StatRefundToken) <= 0)
             {
                 FloatingTextStringOnCreature(ColorToken.Red("Insufficient stat refund tokens!"), player, false);
                 return;
@@ -295,7 +304,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
 
             ShowModal($"Are you sure you'd like to save these changes?", () =>
             {
-                if (Currency.GetCurrency(Player, CurrencyType.StatRefundToken) <= 0)
+                if (_currencyService.GetCurrency(Player, CurrencyType.StatRefundToken) <= 0)
                 {
                     _guiService.CloseWindow(Player, GuiWindowType.StatRebuild, Player);
                     FloatingTextStringOnCreature(ColorToken.Red("Insufficient stat refund tokens!"), Player, false);
@@ -344,7 +353,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
                 _guiService.CloseWindow(Player, GuiWindowType.StatRebuild, Player);
                 _guiService.CloseWindow(Player, GuiWindowType.CharacterSheet, Player);
 
-                Currency.TakeCurrency(Player, CurrencyType.StatRefundToken, 1);
+                _currencyService.TakeCurrency(Player, CurrencyType.StatRefundToken, 1);
 
                 const int DelaySeconds = CooldownDays * 86400;
                 _recastService.ApplyRecastDelay(Player, RecastGroup.StatRebuild, DelaySeconds, true);

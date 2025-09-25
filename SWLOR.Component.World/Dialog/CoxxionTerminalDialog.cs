@@ -18,8 +18,7 @@ namespace SWLOR.Component.World.Dialog
 
         public CoxxionTerminalDialog(
             IDialogService dialogService,
-            IAreaService areaService) 
-            : base(dialogService)
+            IAreaService areaService, IDialogBuilder dialogBuilder) : base(dialogService, dialogBuilder)
         {
             _areaService = areaService;
         }
@@ -46,7 +45,7 @@ namespace SWLOR.Component.World.Dialog
 
         public override PlayerDialog SetUp(uint player)
         {
-            var builder = new DialogBuilder()
+            var builder = DialogBuilder
                 .AddPage(MainPageId, MainPageInit);
 
 

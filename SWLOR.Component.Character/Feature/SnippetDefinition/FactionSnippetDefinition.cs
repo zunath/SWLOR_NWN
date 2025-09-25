@@ -5,6 +5,7 @@ using SWLOR.Shared.Dialog.Contracts;
 using SWLOR.Shared.Dialog.Model;
 using SWLOR.Shared.Dialog.Service;
 using SWLOR.Shared.Domain.Character.Entities;
+using SWLOR.Shared.Domain.Social.Contracts;
 using SWLOR.Shared.Domain.Social.Enums;
 
 namespace SWLOR.Component.Character.Feature.SnippetDefinition
@@ -13,12 +14,19 @@ namespace SWLOR.Component.Character.Feature.SnippetDefinition
     {
         private readonly IDatabaseService _db;
         private readonly ILogger _logger;
-        private readonly SnippetBuilder _builder = new();
+        private readonly ISnippetBuilder _builder;
+        private readonly IFactionService _faction;
 
-        public FactionSnippetDefinition(IDatabaseService db, ILogger logger)
+        public FactionSnippetDefinition(
+            IDatabaseService db, 
+            ILogger logger,
+            ISnippetBuilder snippetBuilder,
+            IFactionService factionService)
         {
             _db = db;
             _logger = logger;
+            _builder = snippetBuilder;
+            _faction = factionService;
         }
 
         public Dictionary<string, SnippetDetail> BuildSnippets()
@@ -160,7 +168,7 @@ namespace SWLOR.Component.Character.Feature.SnippetDefinition
 
                     var factionType = (FactionType)factionId;
                     amount = Math.Abs(amount);
-                    Faction.AdjustPlayerFactionPoints(player, factionType, amount);
+                    _faction.AdjustPlayerFactionPoints(player, factionType, amount);
 
                 });
         }
@@ -199,7 +207,7 @@ namespace SWLOR.Component.Character.Feature.SnippetDefinition
 
                     var factionType = (FactionType)factionId;
                     amount = Math.Abs(amount);
-                    Faction.AdjustPlayerFactionPoints(player, factionType, -amount);
+                    _faction.AdjustPlayerFactionPoints(player, factionType, -amount);
                 });
         }
 
@@ -237,7 +245,7 @@ namespace SWLOR.Component.Character.Feature.SnippetDefinition
 
                     var factionType = (FactionType)factionId;
                     amount = Math.Abs(amount);
-                    Faction.AdjustPlayerFactionStanding(player, factionType, amount);
+                    _faction.AdjustPlayerFactionStanding(player, factionType, amount);
                 });
         }
 
@@ -275,7 +283,7 @@ namespace SWLOR.Component.Character.Feature.SnippetDefinition
 
                     var factionType = (FactionType)factionId;
                     amount = Math.Abs(amount);
-                    Faction.AdjustPlayerFactionStanding(player, factionType, -amount);
+                    _faction.AdjustPlayerFactionStanding(player, factionType, -amount);
                 });
         }
 

@@ -1,3 +1,4 @@
+using SWLOR.Component.Character.Contracts;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Character.Entities;
 using SWLOR.Shared.Domain.UI.Events;
@@ -11,10 +12,15 @@ namespace SWLOR.Component.Character.UI.ViewModel
         IGuiRefreshable<CurrencyRefreshEvent>
     {
         private readonly IDatabaseService _db;
+        private readonly ICurrencyService _currencyService;
 
-        public CurrenciesViewModel(IGuiService guiService, IDatabaseService db) : base(guiService)
+        public CurrenciesViewModel(
+            IGuiService guiService, 
+            IDatabaseService db,
+            ICurrencyService currencyService) : base(guiService)
         {
             _db = db;
+            _currencyService = currencyService;
         }
 
         public GuiBindingList<string> CurrencyNames
@@ -39,7 +45,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
 
             foreach (var (currency, value) in dbPlayer.Currencies)
             {
-                var detail = Currency.GetCurrencyDetail(currency);
+                var detail = _currencyService.GetCurrencyDetail(currency);
 
                 currencyNames.Add(detail.Name);
                 currencyValues.Add(value);

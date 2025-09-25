@@ -16,8 +16,9 @@ namespace SWLOR.Component.Communication.Dialog
         public HoloComDialog(
             IHoloComService holoComService, 
             IDialogService dialogService,
+            IDialogBuilder dialogBuilder,
             ISpaceService spaceService) 
-            : base(dialogService)
+            : base(dialogService, dialogBuilder)
         {
             _holoComService = holoComService;
             _space = spaceService;
@@ -25,7 +26,7 @@ namespace SWLOR.Component.Communication.Dialog
         
         public override PlayerDialog SetUp(uint player)
         {
-            var builder = new DialogBuilder()
+            var builder = DialogBuilder
                 .AddPage(MainPageId, MainPageInit);
 
             return builder.Build();

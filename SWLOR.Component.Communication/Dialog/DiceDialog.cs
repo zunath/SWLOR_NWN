@@ -16,8 +16,7 @@ namespace SWLOR.Component.Communication.Dialog
         private readonly IRandomService _random;
         private readonly ISkillService _skillService;
 
-        public DiceDialog(IDatabaseService db, IRandomService random, ISkillService skillService, IDialogService dialogService) 
-            : base(dialogService)
+        public DiceDialog(IDatabaseService db, IRandomService random, ISkillService skillService, IDialogService dialogService, IDialogBuilder dialogBuilder) : base(dialogService, dialogBuilder)
         {
             _db = db;
             _random = random;
@@ -56,7 +55,7 @@ namespace SWLOR.Component.Communication.Dialog
 
         public override PlayerDialog SetUp(uint player)
         {
-            var builder = new DialogBuilder()
+            var builder = DialogBuilder
                 .WithDataModel(new Model())
                 .AddPage(MainPageId, MainPageInit)
                 .AddPage(GroupPageId, GroupPageInit)

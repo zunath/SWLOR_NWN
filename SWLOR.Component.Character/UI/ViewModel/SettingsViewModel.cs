@@ -1,3 +1,5 @@
+using SWLOR.Component.Communication.Constants;
+using SWLOR.Component.Communication.Contracts;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Abstractions.Models;

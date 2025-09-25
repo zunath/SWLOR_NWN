@@ -6,6 +6,7 @@ using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Entities;
 using SWLOR.Shared.Domain.Character.Enums;
+using SWLOR.Shared.Domain.Common.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.UI.Contracts;
@@ -26,8 +27,18 @@ namespace SWLOR.Component.Character.UI.ViewModel
         private readonly ISkillService _skillService;
         private readonly IPerkService _perkService;
         private readonly IAbilityService _abilityService;
+        private readonly IAreaService _areaService;
 
-        public CharacterFullRebuildViewModel(IGuiService guiService, ILogger logger, IDatabaseService db, IStatService statService, ISkillService skillService, IPerkService perkService, IAbilityService abilityService) : base(guiService)
+        public CharacterFullRebuildViewModel(
+            IGuiService guiService, 
+            ILogger logger, 
+            IDatabaseService db, 
+            IStatService statService, 
+            ISkillService skillService, 
+            IPerkService perkService, 
+            IAbilityService abilityService,
+            IAreaService areaService) 
+            : base(guiService)
         {
             _logger = logger;
             _db = db;
@@ -35,6 +46,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
             _skillService = skillService;
             _perkService = perkService;
             _abilityService = abilityService;
+            _areaService = areaService;
         }
         [ScriptHandler(ScriptName.OnCharacterRebuild)]
         public void LoadCharacterMigrationWindow()
@@ -54,7 +66,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
         }
 
         [ScriptHandler(ScriptName.OnExitRebuild)]
-        public static void ExitRebuildArea()
+        public void ExitRebuildArea()
         {
             var player = GetLastUsedBy();
 
@@ -82,7 +94,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
         }
 
         [ScriptHandler(ScriptName.OnExitSpending)]
-        public static void ExitSpendingArea()
+        public void ExitSpendingArea()
         {
             var player = GetLastUsedBy();
 
@@ -112,7 +124,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
             }
             else
             {
-                var area = Area.GetAreaByResref(dbPlayer.LocationAreaResref);
+                var area = _areaService.GetAreaByResref(dbPlayer.LocationAreaResref);
                 var position = Vector3(dbPlayer.LocationX, dbPlayer.LocationY, dbPlayer.LocationZ);
                 var location = Location(area, position, dbPlayer.LocationOrientation);
                 AssignCommand(player, () =>

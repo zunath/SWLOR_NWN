@@ -9,11 +9,14 @@ namespace SWLOR.Component.World.Feature.SnippetDefinition
     public class TransportationSnippetDefinition: ISnippetListDefinition
     {
         private readonly ILogger _logger;
-        private readonly SnippetBuilder _builder = new();
+        private readonly ISnippetBuilder _builder;
 
-        public TransportationSnippetDefinition(ILogger logger)
+        public TransportationSnippetDefinition(
+            ILogger logger,
+            ISnippetBuilder builder)
         {
             _logger = logger;
+            _builder = builder;
         }
         public Dictionary<string, SnippetDetail> BuildSnippets()
         {

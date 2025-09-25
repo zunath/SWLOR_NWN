@@ -1,6 +1,7 @@
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Character.Entities;
+using SWLOR.Shared.Domain.Common.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.NWNX;
@@ -10,6 +11,7 @@ namespace SWLOR.Component.Character.Feature
     public class PersistentMapPin
     {
         private readonly IDatabaseService _db;
+        private readonly IAreaService _areaService;
         private struct MapPinDetails
         {
             public string Text { get; set; }
@@ -17,9 +19,12 @@ namespace SWLOR.Component.Character.Feature
             public float PositionY { get; set; }
         }
 
-        public PersistentMapPin(IDatabaseService db)
+        public PersistentMapPin(
+            IDatabaseService db,
+            IAreaService areaService)
         {
             _db = db;
+            _areaService = areaService;
         }
 
         /// <summary>
@@ -149,7 +154,7 @@ namespace SWLOR.Component.Character.Feature
             int pinsAdded = 0;
             foreach (var (areaResref, mapPin) in mapPinTuple)
             {
-                var area = Area.GetAreaByResref(areaResref);
+                var area = _areaService.GetAreaByResref(areaResref);
                 SetMapPin(player, mapPin.Note, mapPin.X, mapPin.Y, area);
 
                 // Increment the count and update the ID.

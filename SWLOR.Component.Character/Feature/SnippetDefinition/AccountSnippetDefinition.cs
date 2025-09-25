@@ -9,11 +9,14 @@ namespace SWLOR.Component.Character.Feature.SnippetDefinition
     public class AccountSnippetDefinition: ISnippetListDefinition
     {
         private readonly IDatabaseService _db;
-        private readonly SnippetBuilder _builder = new();
+        private readonly ISnippetBuilder _builder;
 
-        public AccountSnippetDefinition(IDatabaseService db)
+        public AccountSnippetDefinition(
+            IDatabaseService db,
+            ISnippetBuilder snippetBuilder)
         {
             _db = db;
+            _builder = snippetBuilder;
         }
         
         public Dictionary<string, SnippetDetail> BuildSnippets()

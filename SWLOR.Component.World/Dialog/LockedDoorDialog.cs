@@ -17,8 +17,7 @@ namespace SWLOR.Component.World.Dialog
         public LockedDoorDialog(
             IKeyItemService keyItemService, 
             IDialogService dialogService,
-            IEnmityService enmityService) 
-            : base(dialogService)
+            IEnmityService enmityService, IDialogBuilder dialogBuilder) : base(dialogService, dialogBuilder)
         {
             _keyItemService = keyItemService;
             _enmityService = enmityService;
@@ -26,7 +25,7 @@ namespace SWLOR.Component.World.Dialog
 
         public override PlayerDialog SetUp(uint player)
         {
-            var builder = new DialogBuilder()
+            var builder = DialogBuilder
                 .AddPage(MainPageId, MainPageInit);
 
 

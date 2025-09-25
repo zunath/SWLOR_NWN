@@ -17,6 +17,7 @@ namespace SWLOR.Component.Character.Infrastructure
         public static IServiceCollection AddPlayerServices(this IServiceCollection services)
         {
             services.AddSingleton<IClientVersionCheck, ClientVersionCheck>();
+            services.AddSingleton<PlayerRestService>();
             
             return services;
         }

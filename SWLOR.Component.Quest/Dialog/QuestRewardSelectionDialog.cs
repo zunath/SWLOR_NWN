@@ -9,8 +9,7 @@ namespace SWLOR.Component.Quest.Dialog
     {
         private readonly IQuestService _questService;
 
-        public QuestRewardSelectionDialog(IQuestService questService, IDialogService dialogService) 
-            : base(dialogService)
+        public QuestRewardSelectionDialog(IQuestService questService, IDialogService dialogService, IDialogBuilder dialogBuilder) : base(dialogService, dialogBuilder)
         {
             _questService = questService;
         }
@@ -24,7 +23,7 @@ namespace SWLOR.Component.Quest.Dialog
 
         public override PlayerDialog SetUp(uint player)
         {
-            var builder = new DialogBuilder()
+            var builder = DialogBuilder
                 .WithDataModel(new Model())
                 .AddInitializationAction(Initialize)
                 .AddPage(MainPageId, MainPageInit);

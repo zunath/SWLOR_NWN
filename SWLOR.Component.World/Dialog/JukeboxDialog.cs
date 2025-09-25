@@ -13,15 +13,16 @@ namespace SWLOR.Component.World.Dialog
 
         public JukeboxDialog(
             IDialogService dialogService,
+            IDialogBuilder dialogBuilder,
             IMusicService musicService) 
-            : base(dialogService)
+            : base(dialogService, dialogBuilder)
         {
             _musicService = musicService;
         }
 
         public override PlayerDialog SetUp(uint player)
         {
-            var builder = new DialogBuilder()
+            var builder = DialogBuilder
                 .AddPage(MainPageId, (page) =>
                 {
                     page.Header = "Please select a song.";

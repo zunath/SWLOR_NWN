@@ -11,11 +11,14 @@ namespace SWLOR.Component.Market.Feature.SnippetDefinition
     public class MerchantSnippetDefinition: ISnippetListDefinition
     {
         private readonly ILogger _logger;
-        private readonly SnippetBuilder _builder = new();
+        private readonly ISnippetBuilder _builder;
 
-        public MerchantSnippetDefinition(ILogger logger)
+        public MerchantSnippetDefinition(
+            ILogger logger, 
+            ISnippetBuilder builder)
         {
             _logger = logger;
+            _builder = builder;
         }
 
         public Dictionary<string, SnippetDetail> BuildSnippets()

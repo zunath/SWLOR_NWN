@@ -19,15 +19,14 @@ namespace SWLOR.Component.World.Dialog
         
         private const string MainPageId = "MAIN_PAGE";
 
-        public TaxiTerminalDialog(IKeyItemService keyItemService, IDialogService dialogService) 
-            : base(dialogService)
+        public TaxiTerminalDialog(IKeyItemService keyItemService, IDialogService dialogService, IDialogBuilder dialogBuilder) : base(dialogService, dialogBuilder)
         {
             _keyItemService = keyItemService;
         }
 
         public override PlayerDialog SetUp(uint player)
         {
-            var builder = new DialogBuilder()
+            var builder = DialogBuilder
                 .AddPage(MainPageId, MainPageInit);
 
             return builder.Build();

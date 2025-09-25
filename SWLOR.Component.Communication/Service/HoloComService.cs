@@ -1,11 +1,14 @@
 using SWLOR.Component.Communication.Contracts;
+using SWLOR.Component.Communication.Dialog;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Core.Bioware;
+using SWLOR.Shared.Dialog.Contracts;
+using SWLOR.Shared.Domain.Character.Entities;
 
 namespace SWLOR.Component.Communication.Service
 {
-    public class HoloCom : IHoloComService
+    public class HoloComService : IHoloComService
     {
         // Local variable name constants
         private const string HolocomCallConnected = "HOLOCOM_CALL_CONNECTED";
@@ -18,6 +21,13 @@ namespace SWLOR.Component.Communication.Service
         private const string HolocomHologram = "HOLOCOM_HOLOGRAM";
         private const string HologramOwner = "HOLOGRAM_OWNER";
         private const string HolocomCallImmobilize = "HOLOCOM_CALL_IMMOBILIZE";
+
+        private IDialogService _dialogService;
+
+        public HoloComService(IDialogService dialogService)
+        {
+            _dialogService = dialogService;
+        }
 
         public void OnModuleDeath()
         {
@@ -353,6 +363,11 @@ namespace SWLOR.Component.Communication.Service
                     DeleteLocalObject(player, HolocomHologram);
                 }
             }
+        }
+
+        public void StartHoloComDialog(uint player)
+        {
+            _dialogService.StartConversation(player, player, nameof(HoloComDialog));
         }
     }
 }

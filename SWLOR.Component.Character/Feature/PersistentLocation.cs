@@ -1,6 +1,7 @@
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Character.Entities;
+using SWLOR.Shared.Domain.Common.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Area;
 using SWLOR.Shared.Events.Events.Module;
@@ -10,10 +11,14 @@ namespace SWLOR.Component.Character.Feature
     public class PersistentLocation
     {
         private readonly IDatabaseService _db;
+        private readonly IAreaService _areaService;
 
-        public PersistentLocation(IDatabaseService db)
+        public PersistentLocation(
+            IDatabaseService db,
+            IAreaService areaService)
         {
             _db = db;
+            _areaService = areaService;
         }
         
         /// <summary>
@@ -31,7 +36,7 @@ namespace SWLOR.Component.Character.Feature
                 return;
 
             // If the area isn't in the cache, it must be an instance. Don't save locations inside instances.
-            if (Area.GetAreaByResref(areaResref) == OBJECT_INVALID) return;
+            if (_areaService.GetAreaByResref(areaResref) == OBJECT_INVALID) return;
 
             var position = GetPosition(player);
             var orientation = GetFacing(player);
@@ -115,7 +120,7 @@ namespace SWLOR.Component.Character.Feature
 
             if (string.IsNullOrWhiteSpace(dbPlayer.LocationAreaResref)) return;
 
-            var locationArea = Area.GetAreaByResref(dbPlayer.LocationAreaResref);
+            var locationArea = _areaService.GetAreaByResref(dbPlayer.LocationAreaResref);
             var position = Vector3(dbPlayer.LocationX, dbPlayer.LocationY, dbPlayer.LocationZ);
 
             var location = Location(locationArea, position, dbPlayer.LocationOrientation);

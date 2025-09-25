@@ -20,8 +20,7 @@ namespace SWLOR.Component.World.Dialog
         private readonly IPlanetService _planetService;
         private readonly IPropertyService _propertyService;
 
-        public StarportFlightsDialog(ILogger logger, IDatabaseService db, IPlanetService planetService, IPropertyService propertyService, IDialogService dialogService) 
-            : base(dialogService)
+        public StarportFlightsDialog(ILogger logger, IDatabaseService db, IPlanetService planetService, IPropertyService propertyService, IDialogService dialogService, IDialogBuilder dialogBuilder) : base(dialogService, dialogBuilder)
         {
             _logger = logger;
             _db = db;
@@ -43,7 +42,7 @@ namespace SWLOR.Component.World.Dialog
 
         public override PlayerDialog SetUp(uint player)
         {
-            var builder = new DialogBuilder()
+            var builder = DialogBuilder
                 .WithDataModel(new Model())
                 .AddInitializationAction(Initialize)
                 .AddPage(MainPageId, MainPageInit)

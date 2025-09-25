@@ -17,8 +17,7 @@ namespace SWLOR.Component.Properties.Dialog
         private readonly IPropertyService _propertyService;
         private readonly IPerkService _perkService;
 
-        public PlaceCityHallDialog(IDatabaseService db, IPropertyService propertyService, IPerkService perkService, IDialogService dialogService) 
-            : base(dialogService)
+        public PlaceCityHallDialog(IDatabaseService db, IPropertyService propertyService, IPerkService perkService, IDialogService dialogService, IDialogBuilder dialogBuilder) : base(dialogService, dialogBuilder)
         {
             _db = db;
             _propertyService = propertyService;
@@ -39,7 +38,7 @@ namespace SWLOR.Component.Properties.Dialog
 
         public override PlayerDialog SetUp(uint player)
         {
-            var builder = new DialogBuilder()
+            var builder = DialogBuilder
                 .WithDataModel(new Model())
                 .AddInitializationAction(Initialize)
                 .AddPage(MainPageId, MainPageInit);

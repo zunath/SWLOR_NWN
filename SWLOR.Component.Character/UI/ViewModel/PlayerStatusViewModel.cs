@@ -4,7 +4,9 @@ using SWLOR.Shared.Abstractions.Models;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Entities;
 using SWLOR.Shared.Domain.Character.Enums;
+using SWLOR.Shared.Domain.Space.Contracts;
 using SWLOR.Shared.Domain.Space.ValueObjects;
+using SWLOR.Shared.Domain.UI.Events;
 using SWLOR.Shared.UI.Component;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Service;
@@ -16,11 +18,17 @@ namespace SWLOR.Component.Character.UI.ViewModel
     {
         private readonly IDatabaseService _db;
         private readonly IStatService _statService;
+        private readonly ISpaceService _spaceService;
 
-        public PlayerStatusViewModel(IGuiService guiService, IDatabaseService db, IStatService statService) : base(guiService)
+        public PlayerStatusViewModel(
+            IGuiService guiService, 
+            IDatabaseService db, 
+            IStatService statService,
+            ISpaceService spaceService) : base(guiService)
         {
             _db = db;
             _statService = statService;
+            _spaceService = spaceService;
         }
         
         private int _screenHeight;
@@ -224,14 +232,14 @@ namespace SWLOR.Component.Character.UI.ViewModel
 
         private void UpdateSingleData(PlayerStatusRefreshEvent.StatType type)
         {
-            if (Space.IsPlayerInSpaceMode(Player))
+            if (_spaceService.IsPlayerInSpaceMode(Player))
             {
                 ToggleLabels(false);
                 Bar1Color = _shieldColor;
                 Bar2Color = _hullColor;
                 Bar3Color = _capacitorColor;
 
-                var shipStatus = Space.GetShipStatus(Player);
+                var shipStatus = _spaceService.GetShipStatus(Player);
 
                 if (type == PlayerStatusRefreshEvent.StatType.Shield)
                 {
@@ -270,13 +278,13 @@ namespace SWLOR.Component.Character.UI.ViewModel
 
         private void UpdateAllData()
         {
-            if (Space.IsPlayerInSpaceMode(Player))
+            if (_spaceService.IsPlayerInSpaceMode(Player))
             {
                 ToggleLabels(false);
                 Bar1Color = _shieldColor;
                 Bar2Color = _hullColor;
                 Bar3Color = _capacitorColor;
-                var shipStatus = Space.GetShipStatus(Player);
+                var shipStatus = _spaceService.GetShipStatus(Player);
                 UpdateShield(shipStatus);
                 UpdateHull(shipStatus);
                 UpdateCapacitor(shipStatus);

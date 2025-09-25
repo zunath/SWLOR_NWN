@@ -34,6 +34,8 @@ namespace SWLOR.Component.Communication.Contracts
         /// </summary>
         /// <param name="player">The player to clean up</param>
         void CleanupAllHoloComState(uint player);
+
+        void StartHoloComDialog(uint player);
     }
 
 }

@@ -2,7 +2,7 @@
 
 namespace SWLOR.Shared.Dialog.Service
 {
-    public class DialogBuilder
+    public class DialogBuilder : IDialogBuilder
     {
         private string _defaultPageName;
         private readonly Dictionary<string, DialogPage> _pages = new();
@@ -11,35 +11,35 @@ namespace SWLOR.Shared.Dialog.Service
         private readonly List<Action> _endActions = new();
         private object _dataModel;
 
-        public DialogBuilder AddInitializationAction(Action initializationAction)
+        public IDialogBuilder AddInitializationAction(Action initializationAction)
         {
             _initializationActions.Add(initializationAction);
 
             return this;
         }
 
-        public DialogBuilder WithDataModel(object dataModel)
+        public IDialogBuilder WithDataModel(object dataModel)
         {
             _dataModel = dataModel;
 
             return this;
         }
 
-        public DialogBuilder AddBackAction(Action<string, string> backAction)
+        public IDialogBuilder AddBackAction(Action<string, string> backAction)
         {
             _backActions.Add(backAction);
 
             return this;
         }
 
-        public DialogBuilder AddEndAction(Action endAction)
+        public IDialogBuilder AddEndAction(Action endAction)
         {
             _endActions.Add(endAction);
 
             return this;
         }
 
-        public DialogBuilder AddPage(string pageId, Action<DialogPage> initAction)
+        public IDialogBuilder AddPage(string pageId, Action<DialogPage> initAction)
         {
             var newPage = new DialogPage(initAction);
             _pages.Add(pageId, newPage);

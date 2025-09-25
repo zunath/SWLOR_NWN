@@ -1,4 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
+using SWLOR.Component.Crafting.Contracts;
+using SWLOR.Component.Crafting.Service;
+using System.Reflection;
+using System.Linq;
 
 namespace SWLOR.Component.Crafting.Infrastructure
 {
@@ -14,7 +18,18 @@ namespace SWLOR.Component.Crafting.Infrastructure
         /// <returns>The service collection for chaining</returns>
         public static IServiceCollection AddCraftingServices(this IServiceCollection services)
         {
-            // TODO: Add Crafting services here as they are implemented
+            // Register RecipeBuilder as transient since each recipe definition needs its own instance
+            services.AddTransient<IRecipeBuilder, RecipeBuilder>();
+            
+            // Automatically register all IRecipeListDefinition implementations
+            var assembly = Assembly.GetExecutingAssembly();
+            var recipeDefinitionTypes = assembly.GetTypes()
+                .Where(t => t.IsClass && !t.IsAbstract && typeof(IRecipeListDefinition).IsAssignableFrom(t));
+            
+            foreach (var type in recipeDefinitionTypes)
+            {
+                services.AddTransient(type);
+            }
             
             return services;
         }

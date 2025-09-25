@@ -13,12 +13,14 @@ using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Component.Crafting.UI.Payload;
 using SWLOR.Shared.Abstractions.Enums;
+using SWLOR.Shared.Abstractions.Models;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Common.Contracts;
 using SWLOR.Shared.Domain.Crafting.Contracts;
 using SWLOR.Shared.Domain.Crafting.Enums;
+using SWLOR.Shared.Domain.Crafting.ValueObjects;
 using SWLOR.Shared.Domain.Properties.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
@@ -60,7 +62,7 @@ namespace SWLOR.Component.Crafting.Service
             _propertyService = propertyService;
             _timeService = timeService;
         }
-        public const int MaxResearchLevel = 10;
+        public int MaxResearchLevel => 10;
 
         // Cached data
         private IInterfaceCache<RecipeType, RecipeDetail> _recipeCache;
@@ -401,7 +403,7 @@ namespace SWLOR.Component.Crafting.Service
         /// <param name="player">The player to build for.</param>
         /// <param name="recipe">The recipe to build.</param>
         /// <param name="blueprint">The blueprint details. null if not a blueprint</param>
-        public (GuiBindingList<string>, GuiBindingList<GuiColor>) BuildRecipeDetail(uint player, RecipeType recipe, BlueprintDetail blueprint)
+        public (IGuiBindingList<string>, IGuiBindingList<GuiColor>) BuildRecipeDetail(uint player, RecipeType recipe, BlueprintDetail blueprint)
         {
             var detail = GetRecipe(recipe);
             var recipeDetails = new GuiBindingList<string>();

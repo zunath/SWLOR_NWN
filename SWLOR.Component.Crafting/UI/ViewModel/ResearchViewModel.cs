@@ -14,6 +14,7 @@ using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Common.Contracts;
+using SWLOR.Shared.Domain.Crafting.Contracts;
 using SWLOR.Shared.Domain.Crafting.Enums;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
@@ -29,8 +30,19 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
         private readonly IPerkService _perkService;
         private readonly IItemService _itemService;
         private readonly ISkillService _skillService;
+        private readonly ICraftService _craftService;
+        private readonly ITimeService _timeService;
 
-        public ResearchViewModel(IGuiService guiService, IDatabaseService db, IItemCacheService itemCache, IRandomService random, IPerkService perkService, IItemService itemService, ISkillService skillService) : base(guiService)
+        public ResearchViewModel(
+            IGuiService guiService, 
+            IDatabaseService db, 
+            IItemCacheService itemCache, 
+            IRandomService random, 
+            IPerkService perkService, 
+            IItemService itemService, 
+            ISkillService skillService,
+            ICraftService craftService,
+            ITimeService timeService) : base(guiService)
         {
             _db = db;
             _itemCache = itemCache;
@@ -38,6 +50,10 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
             _perkService = perkService;
             _itemService = itemService;
             _skillService = skillService;
+            _craftService = craftService;
+            _timeService = timeService;
+
+            _blueprintBonuses = new BlueprintBonuses(random);
         }
         
         private class ResearchJobDetails
@@ -57,13 +73,20 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
             public int TimeCost { get; set; }
             public int RequiredPerkLevel { get; set; }
 
+            private readonly ITimeService _timeService;
+
             public string TimeString
             {
                 get
                 {
                     var timeSpan = TimeSpan.FromSeconds(TimeCost);
-                    return Time.GetTimeShortIntervals(timeSpan, false);
+                    return _timeService.GetTimeShortIntervals(timeSpan, false);
                 }
+            }
+
+            public ResearchJobDetails(ITimeService timeService)
+            {
+                _timeService = timeService;
             }
         }
 
@@ -76,7 +99,7 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
         private uint _blueprintItem;
         private RecipeType _recipeType;
 
-        private static readonly BlueprintBonuses _blueprintBonuses = new();
+        private readonly BlueprintBonuses _blueprintBonuses;
 
         public string RecipeName
         {
@@ -168,18 +191,18 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
 
         private ResearchJobDetails BuildResearchJobDetails(RecipeType recipeType, uint blueprintItem)
         {
-            var recipe = Craft.GetRecipe(recipeType);
-            var blueprint = Craft.GetBlueprintDetails(blueprintItem);
+            var recipe = _craftService.GetRecipe(recipeType);
+            var blueprint = _craftService.GetBlueprintDetails(blueprintItem);
             var currentLevel = blueprint.Level <= 0 ? 0 : blueprint.Level;
             var licensedRunsMinimum = 1 + _perkService.GetPerkLevel(Player, PerkType.ScientificNetworking);
             var licensedRunsMaximum = licensedRunsMinimum + 2;
-            var creditCost = Craft.CalculateBlueprintResearchCreditCost(_recipeType, currentLevel + 1, blueprint.CreditReduction);
-            var timeCost = Craft.CalculateBlueprintResearchSeconds(_recipeType, currentLevel + 1, blueprint.TimeReduction);
+            var creditCost = _craftService.CalculateBlueprintResearchCreditCost(_recipeType, currentLevel + 1, blueprint.CreditReduction);
+            var timeCost = _craftService.CalculateBlueprintResearchSeconds(_recipeType, currentLevel + 1, blueprint.TimeReduction);
             var perkLevel = recipe.Level / 10 + 1;
             if (perkLevel > 5)
                 perkLevel = 5;
 
-            return new ResearchJobDetails
+            return new ResearchJobDetails(_timeService)
             {
                 Quantity = recipe.Quantity,
                 RecipeName = _itemCache.GetItemNameByResref(recipe.Resref),
@@ -222,7 +245,7 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
                     : $"Licensed Runs: {researchJob.CurrentLicensedRuns}";
                 TimeReduction = $"Time Reduction: -{researchJob.TimeReduction}%";
                 ItemBonuses = $"Item Bonuses: {researchJob.ItemBonuses}";
-                GuaranteedBonuses = _itemService.BuildItemPropertyList(researchJob.GuaranteedBonuses);
+                GuaranteedBonuses = (GuiBindingList<string>)_itemService.BuildItemPropertyList(researchJob.GuaranteedBonuses);
                 CreditCost = $"Price: {researchJob.CreditCost}cr";
                 TimeCost = $"Time: {researchJob.TimeString}";
                 NextLevelBonus = $"Next Level: {GetUpgradeLevelBonus(researchJob.CurrentLevel + 1)}";
@@ -232,12 +255,12 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
             {
                 ChangePartialView(PartialView, InProgressView);
 
-                var recipe = Craft.GetRecipe(dbJob.Recipe);
+                var recipe = _craftService.GetRecipe(dbJob.Recipe);
                 var delta = dbJob.DateCompleted - dbJob.DateStarted;
                 var currentDelta = now - dbJob.DateStarted;
                 var progressPercentage = (float)currentDelta.Ticks / (float)delta.Ticks;
                 var deltaTime = dbJob.DateCompleted - now;
-                var timeString = Time.GetTimeShortIntervals(deltaTime, false);
+                var timeString = _timeService.GetTimeShortIntervals(deltaTime, false);
 
                 RecipeName = $"Recipe: {recipe.Quantity}x {_itemCache.GetItemNameByResref(recipe.Resref)}";
                 Level = $"Level: {dbJob.Level}";
@@ -249,7 +272,7 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
             {
                 ChangePartialView(PartialView, StageCompleteView);
 
-                var recipe = Craft.GetRecipe(dbJob.Recipe);
+                var recipe = _craftService.GetRecipe(dbJob.Recipe);
 
                 RecipeName = $"Recipe: {recipe.Quantity}x {_itemCache.GetItemNameByResref(recipe.Resref)}";
                 Level = $"Level: {dbJob.Level}";
@@ -312,12 +335,12 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
                 return $"Research level {researchJob.RequiredPerkLevel} required.";
             }
 
-            if (researchJob.CurrentLevel >= Craft.MaxResearchLevel)
+            if (researchJob.CurrentLevel >= _craftService.MaxResearchLevel)
             {
                 return $"Blueprint cannot be researched any further.";
             }
 
-            var recipe = Craft.GetRecipe(_recipeType);
+            var recipe = _craftService.GetRecipe(_recipeType);
             foreach (var req in recipe.Requirements)
             {
                 if (req.GetType() != typeof(RecipeUnlockRequirement))
@@ -407,7 +430,7 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
         public Action ClickCompleteJob() => () =>
         {
             var dbJob = GetJob();
-            var recipe = Craft.GetRecipe(dbJob.Recipe);
+            var recipe = _craftService.GetRecipe(dbJob.Recipe);
 
             bool isNewBlueprint;
             uint item;
@@ -424,12 +447,12 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
                 isNewBlueprint = false;
             }
 
-            var blueprintDetails = Craft.GetBlueprintDetails(item);
+            var blueprintDetails = _craftService.GetBlueprintDetails(item);
 
             void AddBlueprintBonus()
             {
                 var hasEnhancementBonus = blueprintDetails.EnhancementSlots > 0 && 
-                                          blueprintDetails.Level < Craft.MaxResearchLevel;
+                                          blueprintDetails.Level < _craftService.MaxResearchLevel;
 
                 int[] weights;
 
@@ -491,8 +514,8 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
             }
 
             blueprintDetails.Level++;
-            if (blueprintDetails.Level > Craft.MaxResearchLevel)
-                blueprintDetails.Level = Craft.MaxResearchLevel;
+            if (blueprintDetails.Level > _craftService.MaxResearchLevel)
+                blueprintDetails.Level = _craftService.MaxResearchLevel;
 
             switch (blueprintDetails.Level)
             {
@@ -555,7 +578,7 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
                 blueprintDetails.Recipe = dbJob.Recipe;
             }
 
-            Craft.SetBlueprintDetails(item, blueprintDetails);
+            _craftService.SetBlueprintDetails(item, blueprintDetails);
             _guiService.TogglePlayerWindow(Player, GuiWindowType.Research);
 
             _db.Delete<ResearchJob>(dbJob.Id);

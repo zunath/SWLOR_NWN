@@ -1,12 +1,18 @@
 using SWLOR.Component.Crafting.Contracts;
 using SWLOR.Component.Crafting.Enums;
 using SWLOR.Component.Crafting.Model;
+using SWLOR.Shared.Domain.Fishing.Enums;
 
 namespace SWLOR.Component.Crafting.Feature.FishingLocationDefinition
 {
     public class DathomirFishingLocationDefinition : IFishingLocationDefinition
     {
-        private readonly IFishingLocationBuilder _builder = new();
+        private readonly IFishingLocationBuilder _builder;
+
+        public DathomirFishingLocationDefinition(IFishingLocationBuilder builder)
+        {
+            _builder = builder;
+        }
 
         public Dictionary<FishingLocationType, FishingLocationDetail> Build()
         {

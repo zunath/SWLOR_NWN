@@ -1,6 +1,7 @@
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Abstractions.Models;
 using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Domain.Character.Contracts;

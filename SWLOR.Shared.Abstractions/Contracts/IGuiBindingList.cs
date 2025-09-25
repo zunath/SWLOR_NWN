@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace SWLOR.Shared.Abstractions.Contracts
 {
@@ -11,7 +12,7 @@ namespace SWLOR.Shared.Abstractions.Contracts
         public IGuiBindingList<bool> ListItemVisibility { get; set; }
     }
 
-    public interface IGuiBindingList<T>: IGuiBindingList
+    public interface IGuiBindingList<T>: IGuiBindingList, IEnumerable<T>
     {
 
     }

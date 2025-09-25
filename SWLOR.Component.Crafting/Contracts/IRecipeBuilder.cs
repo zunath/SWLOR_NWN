@@ -1,44 +1,18 @@
-using SWLOR.Component.Crafting.Contracts;
-using SWLOR.Component.Crafting.Model;
-using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Crafting.Enums;
 using SWLOR.Shared.Domain.Crafting.ValueObjects;
 
-namespace SWLOR.Component.Crafting.Service
+namespace SWLOR.Component.Crafting.Contracts
 {
-    public class RecipeBuilder : IRecipeBuilder
+    public interface IRecipeBuilder
     {
-        private readonly Dictionary<RecipeType, RecipeDetail> _recipes = new();
-        private RecipeDetail _activeRecipe;
-        private RecipeType _activeType;
-        private readonly IPerkService _perkService;
-        private readonly IDatabaseService _databaseService;
-
-        public RecipeBuilder(IPerkService perkService, IDatabaseService databaseService)
-        {
-            _perkService = perkService;
-            _databaseService = databaseService;
-        }
-
         /// <summary>
         /// Creates a new recipe.
         /// </summary>
         /// <param name="type">The type of recipe to create.</param>
         /// <param name="skill">The skill associated with this recipe.</param>
         /// <returns>A recipe builder with the configured options</returns>
-        public IRecipeBuilder Create(RecipeType type, SkillType skill)
-        {
-            _activeRecipe = new RecipeDetail
-            {
-                Skill = skill
-            };
-            _activeType = type;
-            _recipes.Add(type, _activeRecipe);
-
-            return this;
-        }
+        IRecipeBuilder Create(RecipeType type, SkillType skill);
 
         /// <summary>
         /// Sets the category of the recipe. If no category is set,
@@ -47,22 +21,14 @@ namespace SWLOR.Component.Crafting.Service
         /// </summary>
         /// <param name="category">The category to put the recipe under.</param>
         /// <returns>A recipe builder with the configured options</returns>
-        public IRecipeBuilder Category(RecipeCategoryType category)
-        {
-            _activeRecipe.Category = category;
-            return this;
-        }
+        IRecipeBuilder Category(RecipeCategoryType category);
 
         /// <summary>
         /// Sets the level of the recipe which is used for success calculation.
         /// </summary>
         /// <param name="level">The level of the recipe.</param>
         /// <returns>A recipe builder with the configured options.</returns>
-        public IRecipeBuilder Level(int level)
-        {
-            _activeRecipe.Level = level;
-            return this;
-        }
+        IRecipeBuilder Level(int level);
 
         /// <summary>
         /// Sets the quantity of items the player receives when crafting this recipe.
@@ -71,25 +37,14 @@ namespace SWLOR.Component.Crafting.Service
         /// </summary>
         /// <param name="quantity">The quantity of items to create.</param>
         /// <returns>A recipe builder with the configured options</returns>
-        public IRecipeBuilder Quantity(int quantity)
-        {
-            if (quantity < 1)
-                quantity = 1;
-
-            _activeRecipe.Quantity = quantity;
-            return this;
-        }
+        IRecipeBuilder Quantity(int quantity);
 
         /// <summary>
         /// Sets the resref of the item created when a player crafts this recipe.
         /// </summary>
         /// <param name="resref">The resref of the item to create.</param>
         /// <returns>A recipe builder with the configured options</returns>
-        public IRecipeBuilder Resref(string resref)
-        {
-            _activeRecipe.Resref = resref;
-            return this;
-        }
+        IRecipeBuilder Resref(string resref);
 
         /// <summary>
         /// Sets the number of enhancement slots available to a recipe.
@@ -98,13 +53,7 @@ namespace SWLOR.Component.Crafting.Service
         /// <param name="type">The type of enhancement.</param>
         /// <param name="slots">The number of slots</param>
         /// <returns>A recipe builder with the configured options</returns>
-        public IRecipeBuilder EnhancementSlots(RecipeEnhancementType type, int slots)
-        {
-            _activeRecipe.EnhancementType = type;
-            _activeRecipe.EnhancementSlots = slots;
-
-            return this;
-        }
+        IRecipeBuilder EnhancementSlots(RecipeEnhancementType type, int slots);
 
         /// <summary>
         /// Adjusts the cost of researching this blueprint by a certain percentage.
@@ -112,22 +61,13 @@ namespace SWLOR.Component.Crafting.Service
         /// </summary>
         /// <param name="modifier">The modifier to apply to researching the blueprint.</param>
         /// <returns>A recipe builder with the configured options</returns>
-        public IRecipeBuilder ResearchCostModifier(float modifier)
-        {
-            _activeRecipe.ResearchCostModifier = modifier;
-
-            return this;
-        }
+        IRecipeBuilder ResearchCostModifier(float modifier);
         
         /// <summary>
         /// Deactivates the recipe which will prevent players from learning and crafting the item.
         /// </summary>
         /// <returns>A recipe builder with the configured options</returns>
-        public IRecipeBuilder Inactive()
-        {
-            _activeRecipe.IsActive = false;
-            return this;
-        }
+        IRecipeBuilder Inactive();
 
         /// <summary>
         /// Adds a perk requirement for this recipe.
@@ -135,23 +75,13 @@ namespace SWLOR.Component.Crafting.Service
         /// <param name="perk">The perk which is required.</param>
         /// <param name="requiredLevel">The level required.</param>
         /// <returns>A recipe builder with the configured options</returns>
-        public IRecipeBuilder RequirementPerk(PerkType perk, int requiredLevel)
-        {
-            var requirement = new RecipePerkRequirement(perk, requiredLevel, _perkService);
-            _activeRecipe.Requirements.Add(requirement);
-            return this;
-        }
+        IRecipeBuilder RequirementPerk(PerkType perk, int requiredLevel);
 
         /// <summary>
         /// Adds an unlock requirement for this recipe.
         /// </summary>
         /// <returns>A recipe builder with the configured options</returns>
-        public IRecipeBuilder RequirementUnlocked()
-        {
-            var requirement = new RecipeUnlockRequirement(_databaseService, _activeType);
-            _activeRecipe.Requirements.Add(requirement);
-            return this;
-        }
+        IRecipeBuilder RequirementUnlocked();
 
         /// <summary>
         /// Adds a component requirement to craft this recipe.
@@ -159,19 +89,12 @@ namespace SWLOR.Component.Crafting.Service
         /// <param name="resref">The item resref required.</param>
         /// <param name="quantity">The number of this component required.</param>
         /// <returns>A recipe builder with the configured options</returns>
-        public IRecipeBuilder Component(string resref, int quantity)
-        {
-            _activeRecipe.Components[resref] = quantity;
-            return this;
-        }
+        IRecipeBuilder Component(string resref, int quantity);
 
         /// <summary>
         /// Returns a built list of recipes.
         /// </summary>
         /// <returns>A list of built recipes.</returns>
-        public Dictionary<RecipeType, RecipeDetail> Build()
-        {
-            return _recipes;
-        }
+        Dictionary<RecipeType, RecipeDetail> Build();
     }
 }

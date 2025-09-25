@@ -1,3 +1,5 @@
+using SWLOR.Shared.Domain.Crafting.Enums;
+
 namespace SWLOR.Component.Crafting.Model
 {
     internal class BlueprintBonus

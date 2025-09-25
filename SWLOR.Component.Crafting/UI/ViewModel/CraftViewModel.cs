@@ -11,12 +11,15 @@ using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Component.Crafting.UI.Payload;
+using SWLOR.Shared.Abstractions.Models;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Entities;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Common.Contracts;
 using SWLOR.Shared.Domain.Crafting.Contracts;
 using SWLOR.Shared.Domain.Crafting.Enums;
+using SWLOR.Shared.Domain.Crafting.ValueObjects;
+using SWLOR.Shared.Domain.UI.Events;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
@@ -49,6 +52,8 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
             _perkService = perkService;
             _statService = statService;
             _targetingService = targetingService;
+
+            _blueprintBonuses = new BlueprintBonuses(random);
         }
         public const string ViewName = "CraftView";
         public const string SetUpPartialName = "SetUpPartial";
@@ -60,7 +65,7 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
         private uint _blueprintItem;
         private BlueprintDetail _activeBlueprint;
         private bool _hasBlueprint;
-        private static readonly BlueprintBonuses _blueprintBonuses = new();
+        private BlueprintBonuses _blueprintBonuses;
 
         private PerkType _rapidSynthesisPerk;
         private PerkType _carefulSynthesisPerk;
@@ -439,8 +444,8 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
             RecipeLevel = $"Level: {recipe.Level}";
             
             var (recipeDescription, recipeColors) = _craftService.BuildRecipeDetail(Player, _recipe, blueprint);
-            RecipeDescription = recipeDescription;
-            RecipeColors = recipeColors;
+            RecipeDescription = (GuiBindingList<string>)recipeDescription;
+            RecipeColors = (GuiBindingList<GuiColor>)recipeColors;
 
             IsRapidSynthesisEnabled = false;
             IsCarefulSynthesisEnabled = false;
@@ -1314,8 +1319,8 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
                 SendMessageToPC(Player, $"Remaining licensed runs: {_activeBlueprint.LicensedRuns}");
 
                 var (recipeDescription, recipeColors) = _craftService.BuildRecipeDetail(Player, _recipe, _activeBlueprint);
-                RecipeDescription = recipeDescription;
-                RecipeColors = recipeColors;
+                RecipeDescription = (GuiBindingList<string>)recipeDescription;
+                RecipeColors = (GuiBindingList<GuiColor>)recipeColors;
             }
             
             StatusText = string.Empty;

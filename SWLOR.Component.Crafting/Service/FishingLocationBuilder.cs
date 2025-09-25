@@ -1,6 +1,8 @@
 using SWLOR.Component.Crafting.Contracts;
 using SWLOR.Component.Crafting.Enums;
 using SWLOR.Component.Crafting.Model;
+using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.Domain.Fishing.Enums;
 
 namespace SWLOR.Component.Crafting.Service
 {
@@ -9,6 +11,12 @@ namespace SWLOR.Component.Crafting.Service
         private readonly Dictionary<FishingLocationType, FishingLocationDetail> _locations = new();
         private FishingLocationDetail _activeDetail;
         private FishDetail _activeFishDetail;
+        private readonly IRandomService _randomService;
+
+        public FishingLocationBuilder(IRandomService randomService)
+        {
+            _randomService = randomService;
+        }
 
         /// <summary>
         /// Creates a new fishing location. This should be called first.
@@ -21,7 +29,7 @@ namespace SWLOR.Component.Crafting.Service
                 _activeDetail = _locations[type];
             else
             {
-                _activeDetail = new FishingLocationDetail();
+                _activeDetail = new FishingLocationDetail(_randomService);
                 _locations.Add(type, _activeDetail);
             }
 

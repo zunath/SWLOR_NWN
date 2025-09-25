@@ -1,13 +1,19 @@
 using SWLOR.Component.Crafting.Contracts;
-using SWLOR.Component.Crafting.Service;
+
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Crafting.Enums;
+using SWLOR.Shared.Domain.Crafting.ValueObjects;
 
 namespace SWLOR.Component.Crafting.Feature.RecipeDefinition.SmitheryRecipeDefinition
 {
     public class MartialRecipes : IRecipeListDefinition
     {
-        private readonly RecipeBuilder _builder = new();
+                private readonly IRecipeBuilder _builder;
+
+        public MartialRecipes(IRecipeBuilder builder)
+        {
+            _builder = builder;
+        }
 
         public Dictionary<RecipeType, RecipeDetail> BuildRecipes()
         {

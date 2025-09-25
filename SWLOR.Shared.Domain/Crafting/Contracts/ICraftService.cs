@@ -9,6 +9,8 @@ namespace SWLOR.Shared.Domain.Crafting.Contracts
 {
     public interface ICraftService
     {
+        public int MaxResearchLevel { get; }
+
         /// <summary>
         /// When the skill cache has finished loading, recipe and category data is cached.
         /// </summary>

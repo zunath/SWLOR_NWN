@@ -1,4 +1,5 @@
 using SWLOR.Shared.Domain.Crafting.Enums;
+using SWLOR.Shared.Domain.Crafting.ValueObjects;
 
 namespace SWLOR.Component.Crafting.Contracts
 {

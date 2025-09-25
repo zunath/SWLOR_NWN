@@ -2,17 +2,19 @@ using SWLOR.Component.Crafting.Contracts;
 using SWLOR.Component.Crafting.Enums;
 using SWLOR.Component.Crafting.Model;
 using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.Domain.Fishing.Enums;
 
 namespace SWLOR.Component.Crafting.Feature.FishingLocationDefinition
 {
     public class SpecialFishingLocationDefinition: IFishingLocationDefinition
     {
         private readonly IRandomService _random;
-        private readonly IFishingLocationBuilder _builder = new();
+        private readonly IFishingLocationBuilder _builder;
 
-        public SpecialFishingLocationDefinition(IRandomService random)
+        public SpecialFishingLocationDefinition(IRandomService random, IFishingLocationBuilder builder)
         {
             _random = random;
+            _builder = builder;
         }
 
         public Dictionary<FishingLocationType, FishingLocationDetail> Build()

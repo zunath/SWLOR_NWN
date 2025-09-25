@@ -1,3 +1,5 @@
+using SWLOR.Shared.Domain.Crafting.ValueObjects;
+
 namespace SWLOR.Component.Crafting.Model
 {
     public class RecipeLevelChart

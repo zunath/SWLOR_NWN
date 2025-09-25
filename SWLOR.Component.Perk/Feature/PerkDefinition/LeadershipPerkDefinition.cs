@@ -1,13 +1,12 @@
 using SWLOR.Component.Perk.Contracts;
 using SWLOR.Component.Perk.Service;
-using SWLOR.Component.Properties.Entity;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Domain.Character.Contracts;
-using SWLOR.Shared.Domain.Character.Entities;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Character.ValueObjects;
+using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Properties.Entities;
 
 namespace SWLOR.Component.Perk.Feature.PerkDefinition

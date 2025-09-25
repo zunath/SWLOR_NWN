@@ -1,5 +1,5 @@
 using SWLOR.NWN.API.NWNX;
-using SWLOR.Shared.Domain.Social.Contracts;
+using SWLOR.Shared.Domain.Communication.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.NWNX;

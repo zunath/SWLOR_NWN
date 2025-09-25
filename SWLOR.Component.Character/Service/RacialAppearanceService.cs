@@ -1,6 +1,7 @@
 using SWLOR.Component.Character.Feature.AppearanceDefinition.RacialAppearance;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
+using SWLOR.Shared.Domain.Character.Contracts;
 
 namespace SWLOR.Component.Character.Service
 {

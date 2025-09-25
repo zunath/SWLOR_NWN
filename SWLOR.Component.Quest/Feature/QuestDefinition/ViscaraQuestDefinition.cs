@@ -2,8 +2,10 @@ using SWLOR.Component.Quest.Contracts;
 using SWLOR.Component.Quest.Service;
 using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Domain.Character.Entities;
 using SWLOR.Shared.Domain.Common.Enums;
+using SWLOR.Shared.Domain.Entities;
+using SWLOR.Shared.Domain.Inventory.Enums;
+using SWLOR.Shared.Domain.Quest.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 

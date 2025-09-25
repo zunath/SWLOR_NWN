@@ -1,7 +1,7 @@
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 
-namespace SWLOR.Component.Character.Service;
+namespace SWLOR.Shared.Domain.Character.Contracts;
 
 public interface IRacialAppearanceService
 {

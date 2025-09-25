@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Shared.Dialog.Model
+﻿namespace SWLOR.Shared.Domain.Dialog.ValueObjects
 {
     public class DialogPage
     {

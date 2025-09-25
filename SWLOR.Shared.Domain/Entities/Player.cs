@@ -4,10 +4,11 @@ using SWLOR.Shared.Abstractions;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Common.Enums;
+using SWLOR.Shared.Domain.Communication.Enums;
 using SWLOR.Shared.Domain.Crafting.Enums;
-using SWLOR.Shared.Domain.Social.Enums;
+using SWLOR.Shared.Domain.Inventory.Enums;
 
-namespace SWLOR.Shared.Domain.Character.Entities
+namespace SWLOR.Shared.Domain.Entities
 {
     public class Player : EntityBase
     {

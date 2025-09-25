@@ -1,4 +1,4 @@
-namespace SWLOR.Component.Communication.Contracts
+namespace SWLOR.Shared.Domain.Communication.Contracts
 {
     public interface IHoloComService
     {

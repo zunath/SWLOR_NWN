@@ -1,9 +1,9 @@
-using SWLOR.Component.World.Model;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Domain.AI.ValueObjects;
+using SWLOR.Shared.Domain.World.ValueObjects;
 
-namespace SWLOR.Component.World.Service;
+namespace SWLOR.Shared.Domain.World.Contracts;
 
 public interface ISpawnTableBuilder
 {

@@ -1,7 +1,7 @@
 using SWLOR.Component.Communication.Contracts;
-using SWLOR.Shared.Dialog.Contracts;
-using SWLOR.Shared.Dialog.Model;
-using SWLOR.Shared.Dialog.Service;
+using SWLOR.Shared.Domain.Communication.Contracts;
+using SWLOR.Shared.Domain.Dialog.Contracts;
+using SWLOR.Shared.Domain.Dialog.ValueObjects;
 using SWLOR.Shared.Domain.Space.Contracts;
 using SWLOR.Shared.UI.Service;
 

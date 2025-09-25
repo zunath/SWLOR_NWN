@@ -4,15 +4,14 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Domain.Beasts.Contracts;
-using SWLOR.Shared.Domain.Beasts.Entities;
 using SWLOR.Shared.Domain.Beasts.Enums;
 using SWLOR.Shared.Domain.Character.Contracts;
-using SWLOR.Shared.Domain.Character.Entities;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Character.ValueObjects;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Common.Enums;
+using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beastmaster

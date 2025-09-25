@@ -1,4 +1,4 @@
-namespace SWLOR.Shared.Domain.Common.Contracts
+namespace SWLOR.Shared.Domain.World.Contracts
 {
     public interface IAreaService
     {

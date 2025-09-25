@@ -2,7 +2,7 @@ using System.Globalization;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Caching.Contracts;
-using SWLOR.Shared.Domain.Character.Entities;
+using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Properties.Contracts;
 using SWLOR.Shared.Domain.Properties.Enums;
 using SWLOR.Shared.Domain.UI.Events;

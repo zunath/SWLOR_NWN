@@ -1,7 +1,7 @@
-﻿using SWLOR.Component.Inventory.Contracts;
-using SWLOR.Shared.Abstractions.Contracts;
+﻿using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Infrastructure;
-using SWLOR.Shared.Domain.Character.Entities;
+using SWLOR.Shared.Domain.Entities;
+using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.UI.Events;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;

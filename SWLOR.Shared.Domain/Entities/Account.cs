@@ -1,7 +1,7 @@
 ﻿using SWLOR.Shared.Abstractions;
 using SWLOR.Shared.Domain.Common.Enums;
 
-namespace SWLOR.Shared.Domain.Common.Entities
+namespace SWLOR.Shared.Domain.Entities
 {
     public class Account: EntityBase
     {

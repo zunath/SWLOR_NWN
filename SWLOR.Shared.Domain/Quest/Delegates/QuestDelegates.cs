@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Component.Quest.Delegates
+﻿namespace SWLOR.Shared.Domain.Quest.Delegates
 {
     public delegate void AcceptQuestDelegate(uint player, uint questSourceObject);
     public delegate void AbandonQuestDelegate(uint player);

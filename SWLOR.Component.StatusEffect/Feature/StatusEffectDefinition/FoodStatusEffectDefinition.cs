@@ -3,10 +3,10 @@ using SWLOR.Component.StatusEffect.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Character.Contracts;
-using SWLOR.Shared.Domain.Character.Entities;
 using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Combat.ValueObjects;
 using SWLOR.Shared.Domain.Crafting.ValueObjects;
+using SWLOR.Shared.Domain.Entities;
 
 namespace SWLOR.Component.StatusEffect.Feature.StatusEffectDefinition
 {

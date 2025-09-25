@@ -1,6 +1,6 @@
 using SWLOR.Shared.Domain.Character.Enums;
 
-namespace SWLOR.Component.Communication.Model
+namespace SWLOR.Shared.Domain.Communication.ValueObjects
 {
     public class LanguageCommand
     {

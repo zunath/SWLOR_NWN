@@ -1,6 +1,7 @@
 using SWLOR.Component.Quest.Contracts;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Domain.Character.Entities;
+using SWLOR.Shared.Domain.Entities;
+using SWLOR.Shared.Domain.Quest.Contracts;
 
 namespace SWLOR.Component.Quest.Model
 {

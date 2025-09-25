@@ -1,12 +1,14 @@
 using SWLOR.Component.Quest.Contracts;
-using SWLOR.Component.Quest.Delegates;
 using SWLOR.Component.Quest.Dialog;
 using SWLOR.Component.Quest.Model;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Dialog.Contracts;
-using SWLOR.Shared.Domain.Character.Entities;
-using SWLOR.Shared.Domain.Social.Enums;
+using SWLOR.Shared.Domain.Communication.Enums;
+using SWLOR.Shared.Domain.Dialog.Contracts;
+using SWLOR.Shared.Domain.Entities;
+using SWLOR.Shared.Domain.Quest.Contracts;
+using SWLOR.Shared.Domain.Quest.Delegates;
+using SWLOR.Shared.Domain.Quest.ValueObjects;
 using SWLOR.Shared.Domain.UI.Events;
 using SWLOR.Shared.UI.Contracts;
 

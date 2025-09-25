@@ -1,8 +1,8 @@
 using SWLOR.Component.World.Service;
-using SWLOR.Shared.Dialog.Contracts;
-using SWLOR.Shared.Dialog.Model;
-using SWLOR.Shared.Dialog.Service;
 using SWLOR.Shared.Domain.Common.Contracts;
+using SWLOR.Shared.Domain.Dialog.Contracts;
+using SWLOR.Shared.Domain.Dialog.ValueObjects;
+using SWLOR.Shared.Domain.World.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.UI.Service;

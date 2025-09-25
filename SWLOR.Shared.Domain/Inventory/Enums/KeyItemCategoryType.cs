@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Shared.Domain.Common.Enums
+﻿namespace SWLOR.Shared.Domain.Inventory.Enums
 {
     public enum KeyItemCategoryType
     {

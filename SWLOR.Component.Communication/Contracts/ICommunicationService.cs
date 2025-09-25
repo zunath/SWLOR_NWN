@@ -1,4 +1,4 @@
-using SWLOR.Shared.Domain.Social.Enums;
+using SWLOR.Shared.Domain.Communication.Enums;
 
 namespace SWLOR.Component.Communication.Contracts
 {

@@ -1,7 +1,7 @@
-﻿using SWLOR.Component.Properties.Enums;
-using SWLOR.Shared.Abstractions;
+﻿using SWLOR.Shared.Abstractions;
+using SWLOR.Shared.Domain.Properties.Enums;
 
-namespace SWLOR.Component.Properties.Entity
+namespace SWLOR.Shared.Domain.Properties.Entities
 {
     public class Election: EntityBase
     {

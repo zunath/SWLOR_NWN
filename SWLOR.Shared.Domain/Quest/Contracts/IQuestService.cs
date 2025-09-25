@@ -1,8 +1,7 @@
-using SWLOR.Component.Quest.Service;
 using SWLOR.Shared.Domain.Common.Enums;
-using SWLOR.Shared.Domain.Social.Enums;
+using SWLOR.Shared.Domain.Communication.Enums;
 
-namespace SWLOR.Component.Quest.Contracts
+namespace SWLOR.Shared.Domain.Quest.Contracts
 {
     public interface IQuestService
     {

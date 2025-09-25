@@ -6,7 +6,7 @@ using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Enums;
-using SWLOR.Shared.Domain.Character.Entities;
+using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.UI.Events;
 using SWLOR.Shared.Domain.UI.Payloads;
 using SWLOR.Shared.Events.Attributes;

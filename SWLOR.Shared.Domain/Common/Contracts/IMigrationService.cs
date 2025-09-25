@@ -1,4 +1,4 @@
-namespace SWLOR.Component.Migration.Contracts
+namespace SWLOR.Shared.Domain.Common.Contracts
 {
     public interface IMigrationService
     {

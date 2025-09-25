@@ -4,7 +4,7 @@ using SWLOR.Shared.Domain.Beasts.Enums;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Combat.Enums;
 
-namespace SWLOR.Shared.Domain.Beasts.Entities
+namespace SWLOR.Shared.Domain.Entities
 {
     public class Beast: EntityBase
     {

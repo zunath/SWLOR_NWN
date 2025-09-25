@@ -3,7 +3,7 @@ using SWLOR.Component.Communication.Contracts;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Domain.Character.Entities;
+using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Properties.Contracts;
 using SWLOR.Shared.Domain.Properties.Enums;
 using ChatChannel = SWLOR.NWN.API.NWNX.Enum.ChatChannel;

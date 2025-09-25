@@ -1,13 +1,13 @@
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
-using SWLOR.Shared.Dialog.Contracts;
-using SWLOR.Shared.Dialog.Model;
+using SWLOR.Shared.Domain.Dialog.Contracts;
+using SWLOR.Shared.Domain.Dialog.ValueObjects;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Module;
 
-namespace SWLOR.Shared.Dialog.Service
+namespace SWLOR.Component.Communication.Service
 {
     public class Dialog : IDialogService
     {

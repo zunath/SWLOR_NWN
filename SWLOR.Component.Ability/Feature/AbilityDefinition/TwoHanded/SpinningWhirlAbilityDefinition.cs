@@ -10,6 +10,7 @@ using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Common.Contracts;
 using SWLOR.Shared.Domain.Common.Enums;
+using SWLOR.Shared.Domain.Inventory.Contracts;
 
 namespace SWLOR.Component.Ability.Feature.AbilityDefinition.TwoHanded
 {

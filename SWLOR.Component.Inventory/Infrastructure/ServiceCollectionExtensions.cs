@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
-using SWLOR.Component.Inventory.Contracts;
 using SWLOR.Component.Inventory.EventHandlers;
 using SWLOR.Component.Inventory.Service;
+using SWLOR.Shared.Domain.Inventory.Contracts;
 
 namespace SWLOR.Component.Inventory.Infrastructure
 {

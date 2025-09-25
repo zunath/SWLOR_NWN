@@ -1,10 +1,10 @@
 using SWLOR.Component.Quest.Contracts;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
-using SWLOR.Shared.Dialog.Contracts;
-using SWLOR.Shared.Dialog.Model;
-using SWLOR.Shared.Dialog.Service;
-using SWLOR.Shared.Domain.Character.Entities;
+using SWLOR.Shared.Domain.Dialog.Contracts;
+using SWLOR.Shared.Domain.Dialog.ValueObjects;
+using SWLOR.Shared.Domain.Entities;
+using SWLOR.Shared.Domain.Quest.Contracts;
 
 namespace SWLOR.Component.Quest.Feature.SnippetDefinition
 {

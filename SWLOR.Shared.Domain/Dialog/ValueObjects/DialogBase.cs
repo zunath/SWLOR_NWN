@@ -1,7 +1,6 @@
-﻿using SWLOR.Shared.Dialog.Contracts;
-using SWLOR.Shared.Dialog.Service;
+﻿using SWLOR.Shared.Domain.Dialog.Contracts;
 
-namespace SWLOR.Shared.Dialog.Model
+namespace SWLOR.Shared.Domain.Dialog.ValueObjects
 {
     public abstract class DialogBase : IConversation
     {

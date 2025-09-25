@@ -1,5 +1,4 @@
 using SWLOR.Component.Market.Contracts;
-using SWLOR.Component.Market.Entity;
 using SWLOR.Component.Market.Enums;
 using SWLOR.Component.Market.UI.Payload;
 using SWLOR.NWN.API.NWNX;
@@ -7,8 +6,10 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Log.LogGroup;
-using SWLOR.Shared.Domain.Character.Entities;
 using SWLOR.Shared.Domain.Common.Contracts;
+using SWLOR.Shared.Domain.Entities;
+using SWLOR.Shared.Domain.Inventory.Contracts;
+using SWLOR.Shared.Domain.Market.Enums;
 using SWLOR.Shared.Domain.UI.Payloads;
 using SWLOR.Shared.UI.Component;
 using SWLOR.Shared.UI.Contracts;

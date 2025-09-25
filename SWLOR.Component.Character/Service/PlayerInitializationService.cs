@@ -1,17 +1,16 @@
-using SWLOR.Component.Character.Contracts;
-using SWLOR.Component.Migration.Contracts;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Domain.Character.Contracts;
-using SWLOR.Shared.Domain.Character.Entities;
 using SWLOR.Shared.Domain.Character.Enums;
+using SWLOR.Shared.Domain.Common.Contracts;
+using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Module;
 
-namespace SWLOR.Component.Character.Feature
+namespace SWLOR.Component.Character.Service
 {
     public class PlayerInitializationService : IPlayerInitializationService
     {

@@ -1,10 +1,11 @@
-using SWLOR.Component.Inventory.Contracts;
-using SWLOR.Component.Inventory.Model;
 using SWLOR.Component.Inventory.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Domain.Common.Enums;
+using SWLOR.Shared.Domain.Inventory.Contracts;
+using SWLOR.Shared.Domain.Inventory.Enums;
+using SWLOR.Shared.Domain.Inventory.ValueObjects;
 
 namespace SWLOR.Component.Inventory.Feature.ItemDefinition
 {

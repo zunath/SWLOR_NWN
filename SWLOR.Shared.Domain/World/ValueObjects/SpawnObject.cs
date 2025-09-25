@@ -1,8 +1,8 @@
-using SWLOR.Component.Character.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.AI.Enums;
+using SWLOR.Shared.Domain.Character.Contracts;
 
-namespace SWLOR.Component.World.Model
+namespace SWLOR.Shared.Domain.World.ValueObjects
 {
     public delegate void OnSpawnDelegate(uint spawn);
 

@@ -1,3 +1,4 @@
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Domain.Crafting.Enums;
 

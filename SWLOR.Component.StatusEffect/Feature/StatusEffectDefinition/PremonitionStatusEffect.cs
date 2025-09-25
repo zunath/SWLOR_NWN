@@ -6,7 +6,7 @@ using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Combat.ValueObjects;
-using SWLOR.Shared.Domain.Social.Contracts;
+using SWLOR.Shared.Domain.Communication.Contracts;
 
 namespace SWLOR.Component.StatusEffect.Feature.StatusEffectDefinition
 {

@@ -1,7 +1,7 @@
 
-using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.Abstractions.Contracts;
 
-namespace SWLOR.Component.Inventory.Model
+namespace SWLOR.Shared.Domain.Inventory.ValueObjects
 {
     public class LootTable : List<LootTableItem>
     {

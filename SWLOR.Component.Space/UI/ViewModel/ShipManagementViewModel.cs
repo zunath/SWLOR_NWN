@@ -5,9 +5,10 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Abstractions.Enums;
-using SWLOR.Shared.Domain.Character.Entities;
 using SWLOR.Shared.Domain.Common.Contracts;
 using SWLOR.Shared.Domain.Common.Enums;
+using SWLOR.Shared.Domain.Entities;
+using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Properties.Contracts;
 using SWLOR.Shared.Domain.Properties.Entities;
 using SWLOR.Shared.Domain.Properties.Enums;
@@ -15,10 +16,11 @@ using SWLOR.Shared.Domain.Space.Contracts;
 using SWLOR.Shared.Domain.Space.Enums;
 using SWLOR.Shared.Domain.Space.ValueObjects;
 using SWLOR.Shared.Domain.UI.Payloads;
+using SWLOR.Shared.Domain.World.Contracts;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
-using PlayerShip = SWLOR.Shared.Domain.Space.Entities.PlayerShip;
+using PlayerShip = SWLOR.Shared.Domain.Entities.PlayerShip;
 
 namespace SWLOR.Component.Space.UI.ViewModel
 {

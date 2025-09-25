@@ -1,6 +1,6 @@
 ﻿using SWLOR.Shared.Abstractions;
 
-namespace SWLOR.Shared.Domain.Character.Entities
+namespace SWLOR.Shared.Domain.Entities
 {
     public class InventoryItem : EntityBase
     {

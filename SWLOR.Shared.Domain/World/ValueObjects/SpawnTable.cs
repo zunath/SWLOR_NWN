@@ -1,10 +1,10 @@
-using SWLOR.Component.Character.Contracts;
-using SWLOR.Component.World.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.AI.Enums;
+using SWLOR.Shared.Domain.Character.Contracts;
+using SWLOR.Shared.Domain.World.Contracts;
 
-namespace SWLOR.Component.World.Model
+namespace SWLOR.Shared.Domain.World.ValueObjects
 {
     public class SpawnTable
     {

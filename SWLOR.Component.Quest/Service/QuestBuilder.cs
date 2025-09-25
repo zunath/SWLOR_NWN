@@ -1,8 +1,10 @@
 using SWLOR.Component.Quest.Contracts;
-using SWLOR.Component.Quest.Delegates;
 using SWLOR.Component.Quest.Model;
 using SWLOR.Shared.Domain.Common.Enums;
-using SWLOR.Shared.Domain.Social.Enums;
+using SWLOR.Shared.Domain.Communication.Enums;
+using SWLOR.Shared.Domain.Inventory.Enums;
+using SWLOR.Shared.Domain.Quest.Delegates;
+using SWLOR.Shared.Domain.Quest.ValueObjects;
 
 namespace SWLOR.Component.Quest.Service
 {

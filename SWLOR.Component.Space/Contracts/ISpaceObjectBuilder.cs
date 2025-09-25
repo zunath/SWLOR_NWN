@@ -1,6 +1,7 @@
 using SWLOR.Component.Space.Model;
+using SWLOR.Component.Space.Service;
 
-namespace SWLOR.Component.Space.Service;
+namespace SWLOR.Component.Space.Contracts;
 
 public interface ISpaceObjectBuilder
 {

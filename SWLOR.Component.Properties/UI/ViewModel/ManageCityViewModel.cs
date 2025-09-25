@@ -4,8 +4,8 @@ using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Abstractions.Models;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Log.LogGroup;
-using SWLOR.Shared.Domain.Character.Entities;
 using SWLOR.Shared.Domain.Character.Enums;
+using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Properties.Entities;
 using SWLOR.Shared.Domain.Properties.Enums;
 using SWLOR.Shared.Domain.UI.Payloads;
@@ -276,8 +276,8 @@ namespace SWLOR.Component.Properties.UI.ViewModel
         private void RefreshCitizenList()
         {
             var dbCitizens = _db.Search(new DBQuery<Player>()
-                .AddFieldSearch(nameof(Shared.Domain.Character.Entities.Player.CitizenPropertyId), _cityId, false)
-                .AddFieldSearch(nameof(Shared.Domain.Character.Entities.Player.IsDeleted), false));
+                .AddFieldSearch(nameof(Shared.Domain.Entities.Player.CitizenPropertyId), _cityId, false)
+                .AddFieldSearch(nameof(Shared.Domain.Entities.Player.IsDeleted), false));
 
             var citizenNames = new GuiBindingList<string>();
             var citizenCreditsOwed = new GuiBindingList<string>();

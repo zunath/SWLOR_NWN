@@ -1,10 +1,11 @@
-using SWLOR.Component.Inventory.Contracts;
 using SWLOR.Component.World.Contracts;
 using SWLOR.NWN.API.NWNX.Enum;
-using SWLOR.Shared.Dialog.Contracts;
-using SWLOR.Shared.Dialog.Model;
-using SWLOR.Shared.Dialog.Service;
 using SWLOR.Shared.Domain.Common.Enums;
+using SWLOR.Shared.Domain.Dialog.Contracts;
+using SWLOR.Shared.Domain.Dialog.ValueObjects;
+using SWLOR.Shared.Domain.Inventory.Contracts;
+using SWLOR.Shared.Domain.Inventory.Enums;
+using SWLOR.Shared.Domain.World.Contracts;
 
 namespace SWLOR.Component.World.Dialog
 {

@@ -1,5 +1,7 @@
 using SWLOR.Shared.Domain.Common.Enums;
-using SWLOR.Shared.Domain.Social.Enums;
+using SWLOR.Shared.Domain.Communication.Enums;
+using SWLOR.Shared.Domain.Inventory.Enums;
+using SWLOR.Shared.Domain.Quest.Contracts;
 
 namespace SWLOR.Component.Quest.Contracts
 {

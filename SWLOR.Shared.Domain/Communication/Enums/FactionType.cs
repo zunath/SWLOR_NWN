@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Shared.Domain.Social.Enums
+﻿namespace SWLOR.Shared.Domain.Communication.Enums
 {
     public enum FactionType
     {

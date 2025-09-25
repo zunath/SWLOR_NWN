@@ -13,13 +13,13 @@ using SWLOR.Shared.UI.Service;
 using System.Drawing;
 using SWLOR.Shared.Domain.Beasts.Contracts;
 using SWLOR.Shared.Domain.Character.Contracts;
-using SWLOR.Shared.Domain.Character.Entities;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Common.Enums;
-using SWLOR.Shared.Domain.Social.Contracts;
-using SWLOR.Shared.Domain.Social.Enums;
+using SWLOR.Shared.Domain.Communication.Contracts;
+using SWLOR.Shared.Domain.Communication.Enums;
+using SWLOR.Shared.Domain.Communication.ValueObjects;
+using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Space.Contracts;
-using SWLOR.Shared.Domain.Space.Entities;
 using SWLOR.Shared.Domain.UI.Events;
 using ChatChannel = SWLOR.NWN.API.NWNX.Enum.ChatChannel;
 

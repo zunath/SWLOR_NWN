@@ -1,5 +1,7 @@
-using SWLOR.Component.Inventory.Model;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.Domain.Inventory.Contracts;
+using SWLOR.Shared.Domain.Inventory.ValueObjects;
 
 namespace SWLOR.Component.Inventory.Service
 {

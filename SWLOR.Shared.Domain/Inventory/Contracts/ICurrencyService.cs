@@ -1,6 +1,6 @@
 using SWLOR.Shared.Domain.Common.Enums;
 
-namespace SWLOR.Component.Character.Contracts
+namespace SWLOR.Shared.Domain.Inventory.Contracts
 {
     public interface ICurrencyService
     {

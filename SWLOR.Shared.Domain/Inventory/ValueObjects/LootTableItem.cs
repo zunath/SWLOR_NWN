@@ -1,4 +1,4 @@
-namespace SWLOR.Component.Inventory.Model
+namespace SWLOR.Shared.Domain.Inventory.ValueObjects
 {
     public class LootTableItem
     {

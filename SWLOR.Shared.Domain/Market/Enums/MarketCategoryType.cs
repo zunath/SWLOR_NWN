@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Component.Market.Enums
+﻿namespace SWLOR.Shared.Domain.Market.Enums
 {
     public enum MarketCategoryType
     {

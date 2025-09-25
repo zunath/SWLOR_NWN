@@ -1,4 +1,5 @@
 using SWLOR.Component.Market.Enums;
+using SWLOR.Shared.Domain.Market.Enums;
 
 namespace SWLOR.Component.Market.Contracts
 {

@@ -1,6 +1,6 @@
 using SWLOR.NWN.API.NWNX.Enum;
 
-namespace SWLOR.Component.World.Contracts
+namespace SWLOR.Shared.Domain.World.Contracts
 {
     public interface IObjectVisibilityService
     {

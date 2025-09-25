@@ -1,5 +1,3 @@
-using SWLOR.Component.Character.Feature;
-using SWLOR.Component.Character.Service;
 using SWLOR.Component.Migration.Contracts;
 using SWLOR.Component.Migration.Model;
 using SWLOR.NWN.API.NWNX;
@@ -8,8 +6,9 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Character.Contracts;
-using SWLOR.Shared.Domain.Character.Entities;
 using SWLOR.Shared.Domain.Common.Contracts;
+using SWLOR.Shared.Domain.Entities;
+using SWLOR.Shared.Domain.Inventory.Contracts;
 
 namespace SWLOR.Component.Migration.Feature.PlayerMigration
 {

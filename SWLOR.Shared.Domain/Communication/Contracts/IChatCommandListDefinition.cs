@@ -1,6 +1,6 @@
-using SWLOR.Component.Communication.Model;
+using SWLOR.Shared.Domain.Communication.ValueObjects;
 
-namespace SWLOR.Component.Communication.Contracts
+namespace SWLOR.Shared.Domain.Communication.Contracts
 {
     public interface IChatCommandListDefinition
     {

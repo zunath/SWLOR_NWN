@@ -4,7 +4,7 @@ using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
 
-namespace SWLOR.Shared.Domain.Common.Contracts
+namespace SWLOR.Shared.Domain.Inventory.Contracts
 {
     public interface IItemService
     {

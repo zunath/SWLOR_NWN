@@ -1,8 +1,8 @@
-using SWLOR.Component.Communication.Model;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Common.Enums;
+using SWLOR.Shared.Domain.Communication.ValueObjects;
 
-namespace SWLOR.Component.Communication.Service;
+namespace SWLOR.Shared.Domain.Communication.Contracts;
 
 public interface IChatCommandBuilder
 {

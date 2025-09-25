@@ -1,4 +1,6 @@
-namespace SWLOR.Component.World.Service;
+using SWLOR.Component.World.Service;
+
+namespace SWLOR.Component.World.Contracts;
 
 public interface IMusicService
 {

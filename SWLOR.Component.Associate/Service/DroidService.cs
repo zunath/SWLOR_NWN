@@ -20,6 +20,7 @@ using SWLOR.Shared.Domain.Common.Enums;
 using SWLOR.Shared.Domain.Crafting.ValueObjects;
 using SWLOR.Shared.Domain.Droids.Contracts;
 using SWLOR.Shared.Domain.Droids.Enums;
+using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Service;
 using SWLOR.Shared.Events.Constants;

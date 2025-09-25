@@ -1,4 +1,4 @@
-namespace SWLOR.Component.Quest.Contracts
+namespace SWLOR.Shared.Domain.Quest.Contracts
 {
     public interface IQuestObjective
     {

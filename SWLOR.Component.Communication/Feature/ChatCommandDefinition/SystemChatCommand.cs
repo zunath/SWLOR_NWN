@@ -7,6 +7,8 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Domain.Common.Contracts;
 using SWLOR.Shared.Domain.Common.Enums;
+using SWLOR.Shared.Domain.Communication.Contracts;
+using SWLOR.Shared.Domain.Communication.ValueObjects;
 using SWLOR.Shared.UI.Contracts;
 
 namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition

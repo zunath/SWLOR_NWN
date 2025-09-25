@@ -2,7 +2,7 @@ using SWLOR.Component.Properties.Service;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Abstractions.Models;
-using SWLOR.Shared.Domain.Character.Entities;
+using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Properties.Entities;
 using SWLOR.Shared.Domain.Properties.Enums;
 using SWLOR.Shared.Domain.UI.Payloads;
@@ -307,22 +307,22 @@ namespace SWLOR.Component.Properties.UI.ViewModel
                     .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), PropertyId, false);
                 var playerIds = _db.Search(permissionQuery).Select(s => s.PlayerId);
                 var query = new DBQuery<Player>()
-                    .AddFieldSearch(nameof(Shared.Domain.Character.Entities.Player.Id), playerIds)
-                    .AddFieldSearch(nameof(Shared.Domain.Character.Entities.Player.IsDeleted), false);
+                    .AddFieldSearch(nameof(Shared.Domain.Entities.Player.Id), playerIds)
+                    .AddFieldSearch(nameof(Shared.Domain.Entities.Player.IsDeleted), false);
                 dbPlayers = _db.Search(query);
             }
             // Otherwise look for players by their names.
             else
             {
                 var query = new DBQuery<Player>()
-                    .AddFieldSearch(nameof(Shared.Domain.Character.Entities.Player.Name), SearchText, true)
-                    .AddFieldSearch(nameof(Shared.Domain.Character.Entities.Player.IsDeleted), false)
+                    .AddFieldSearch(nameof(Shared.Domain.Entities.Player.Name), SearchText, true)
+                    .AddFieldSearch(nameof(Shared.Domain.Entities.Player.IsDeleted), false)
                     .AddPaging(25, 0);
 
                 // Searches within City properties require that the players be a citizen.
                 if (!string.IsNullOrWhiteSpace(_cityId))
                 {
-                    query.AddFieldSearch(nameof(Shared.Domain.Character.Entities.Player.CitizenPropertyId), _cityId, false);
+                    query.AddFieldSearch(nameof(Shared.Domain.Entities.Player.CitizenPropertyId), _cityId, false);
                 }
 
                 dbPlayers = _db.Search(query);

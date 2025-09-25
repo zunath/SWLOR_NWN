@@ -1,6 +1,6 @@
-using SWLOR.Component.Inventory.Model;
+using SWLOR.Shared.Domain.Inventory.ValueObjects;
 
-namespace SWLOR.Component.Inventory.Service;
+namespace SWLOR.Shared.Domain.Inventory.Contracts;
 
 public interface ILootTableBuilder
 {

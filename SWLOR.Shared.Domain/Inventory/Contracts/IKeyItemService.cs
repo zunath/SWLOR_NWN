@@ -1,6 +1,6 @@
-using SWLOR.Shared.Domain.Common.Enums;
+using SWLOR.Shared.Domain.Inventory.Enums;
 
-namespace SWLOR.Component.Inventory.Contracts
+namespace SWLOR.Shared.Domain.Inventory.Contracts
 {
     /// <summary>
     /// Service for managing key items

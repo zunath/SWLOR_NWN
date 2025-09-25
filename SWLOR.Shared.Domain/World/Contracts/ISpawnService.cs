@@ -1,4 +1,4 @@
-namespace SWLOR.Component.World.Contracts
+namespace SWLOR.Shared.Domain.World.Contracts
 {
     public interface ISpawnService
     {

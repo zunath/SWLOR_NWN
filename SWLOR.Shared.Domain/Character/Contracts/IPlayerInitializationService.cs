@@ -1,4 +1,4 @@
-namespace SWLOR.Component.Character.Feature;
+namespace SWLOR.Shared.Domain.Character.Contracts;
 
 public interface IPlayerInitializationService
 {

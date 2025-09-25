@@ -1,10 +1,9 @@
-using SWLOR.Component.Character.Contracts;
-using SWLOR.Component.Inventory.Contracts;
 using SWLOR.Component.Inventory.Dialog;
-using SWLOR.Component.Inventory.Model;
 using SWLOR.Component.Inventory.Service;
-using SWLOR.Shared.Dialog.Contracts;
 using SWLOR.Shared.Domain.Common.Enums;
+using SWLOR.Shared.Domain.Dialog.Contracts;
+using SWLOR.Shared.Domain.Inventory.Contracts;
+using SWLOR.Shared.Domain.Inventory.ValueObjects;
 using SWLOR.Shared.Domain.UI.Events;
 using SWLOR.Shared.UI.Contracts;
 

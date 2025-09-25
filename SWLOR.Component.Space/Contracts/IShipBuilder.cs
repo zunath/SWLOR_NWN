@@ -1,9 +1,10 @@
+using SWLOR.Component.Space.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Properties.Enums;
 using SWLOR.Shared.Domain.Space.ValueObjects;
 
-namespace SWLOR.Component.Space.Service;
+namespace SWLOR.Component.Space.Contracts;
 
 public interface IShipBuilder
 {

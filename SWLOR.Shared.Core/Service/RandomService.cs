@@ -1,4 +1,5 @@
-﻿using SWLOR.Shared.Core.Contracts;
+﻿using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 
 namespace SWLOR.Shared.Core.Service
 {

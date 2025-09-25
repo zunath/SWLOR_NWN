@@ -1,6 +1,6 @@
-using SWLOR.Component.Quest.Contracts;
+using SWLOR.Shared.Domain.Quest.Contracts;
 
-namespace SWLOR.Component.Quest.Model
+namespace SWLOR.Shared.Domain.Quest.ValueObjects
 {
     public class QuestStateDetail
     {

@@ -2,11 +2,11 @@ using SWLOR.Component.Quest.Contracts;
 using SWLOR.Component.Quest.Model;
 using SWLOR.NWN.API.NWScript;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Dialog.Contracts;
-using SWLOR.Shared.Dialog.Model;
-using SWLOR.Shared.Dialog.Service;
-using SWLOR.Shared.Domain.Character.Entities;
-using SWLOR.Shared.Domain.Social.Enums;
+using SWLOR.Shared.Domain.Communication.Enums;
+using SWLOR.Shared.Domain.Dialog.Contracts;
+using SWLOR.Shared.Domain.Dialog.ValueObjects;
+using SWLOR.Shared.Domain.Entities;
+using SWLOR.Shared.Domain.Quest.Contracts;
 using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Component.Quest.Dialog

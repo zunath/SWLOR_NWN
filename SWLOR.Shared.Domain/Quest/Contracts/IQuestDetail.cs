@@ -1,9 +1,8 @@
-using SWLOR.Component.Quest.Contracts;
-using SWLOR.Component.Quest.Delegates;
-using SWLOR.Component.Quest.Model;
-using SWLOR.Shared.Domain.Social.Enums;
+using SWLOR.Shared.Domain.Communication.Enums;
+using SWLOR.Shared.Domain.Quest.Delegates;
+using SWLOR.Shared.Domain.Quest.ValueObjects;
 
-namespace SWLOR.Component.Quest.Service;
+namespace SWLOR.Shared.Domain.Quest.Contracts;
 
 public interface IQuestDetail
 {

@@ -1,4 +1,5 @@
 using SWLOR.Component.Associate.Contracts;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 
 namespace SWLOR.Component.Associate.Model

@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Shared.Core.Contracts
+﻿namespace SWLOR.Shared.Abstractions.Contracts
 {
     public interface IRandomService
     {

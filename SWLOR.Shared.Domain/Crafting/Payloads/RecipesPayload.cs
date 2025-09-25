@@ -1,8 +1,8 @@
-using SWLOR.Component.Crafting.Enums;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
+using SWLOR.Shared.Domain.Crafting.Enums;
 
-namespace SWLOR.Component.Crafting.UI.Payload
+namespace SWLOR.Shared.Domain.Crafting.Payloads
 {
     public class RecipesPayload: IGuiPayload
     {

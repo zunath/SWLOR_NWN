@@ -1,7 +1,7 @@
 ﻿using SWLOR.Shared.Abstractions;
 using SWLOR.Shared.Domain.Space.ValueObjects;
 
-namespace SWLOR.Shared.Domain.Space.Entities
+namespace SWLOR.Shared.Domain.Entities
 {
     public class PlayerShip: EntityBase
     {

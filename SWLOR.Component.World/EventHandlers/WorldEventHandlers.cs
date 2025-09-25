@@ -1,6 +1,7 @@
 using SWLOR.Component.World.Contracts;
 using SWLOR.Component.World.Service;
 using SWLOR.Shared.Domain.Common.Contracts;
+using SWLOR.Shared.Domain.World.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Area;

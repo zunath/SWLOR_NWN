@@ -1,6 +1,7 @@
+using SWLOR.Component.World.Contracts;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Domain.Character.Entities;
+using SWLOR.Shared.Domain.Entities;
 
 namespace SWLOR.Component.World.Service
 {

@@ -3,8 +3,8 @@ using SWLOR.Component.Communication.Dialog;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Core.Bioware;
-using SWLOR.Shared.Dialog.Contracts;
-using SWLOR.Shared.Domain.Character.Entities;
+using SWLOR.Shared.Domain.Communication.Contracts;
+using SWLOR.Shared.Domain.Dialog.Contracts;
 
 namespace SWLOR.Component.Communication.Service
 {

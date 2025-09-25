@@ -7,6 +7,7 @@ using SWLOR.Shared.Domain.Properties.Contracts;
 using SWLOR.Shared.Domain.Properties.Entities;
 using SWLOR.Shared.Domain.Properties.Enums;
 using SWLOR.Shared.Domain.Space.Contracts;
+using SWLOR.Shared.Domain.World.Contracts;
 
 namespace SWLOR.Component.Properties.Service
 {

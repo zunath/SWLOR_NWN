@@ -1,9 +1,8 @@
-using SWLOR.Component.Inventory.Delegates;
-using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Domain.Common.Delegates;
 using SWLOR.Shared.Domain.Common.Enums;
 
-namespace SWLOR.Component.Inventory.Model
+namespace SWLOR.Shared.Domain.Inventory.ValueObjects
 {
     public class ItemDetail
     {

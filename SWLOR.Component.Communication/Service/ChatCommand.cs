@@ -7,9 +7,10 @@ using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Domain.Common.Contracts;
 using SWLOR.Shared.Domain.Common.Enums;
+using SWLOR.Shared.Domain.Communication.Contracts;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
-using ChatCommandDetail = SWLOR.Component.Communication.Model.ChatCommandDetail;
+using ChatCommandDetail = SWLOR.Shared.Domain.Communication.ValueObjects.ChatCommandDetail;
 
 namespace SWLOR.Component.Communication.Service
 {

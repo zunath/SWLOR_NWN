@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Component.Properties.Enums
+﻿namespace SWLOR.Shared.Domain.Properties.Enums
 {
     public enum ElectionStageType
     {

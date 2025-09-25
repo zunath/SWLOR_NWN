@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.World.Contracts;
 using SWLOR.Component.World.EventHandlers;
 using SWLOR.Component.World.Service;
+using SWLOR.Shared.Domain.World.Contracts;
 
 namespace SWLOR.Component.World.Infrastructure
 {

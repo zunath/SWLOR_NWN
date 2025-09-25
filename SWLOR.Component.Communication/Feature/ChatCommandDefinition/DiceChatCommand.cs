@@ -2,8 +2,10 @@ using SWLOR.Component.Communication.Contracts;
 using SWLOR.Component.Communication.Dialog;
 using SWLOR.Component.Communication.Model;
 using SWLOR.Component.Communication.Service;
-using SWLOR.Shared.Dialog.Contracts;
 using SWLOR.Shared.Domain.Common.Enums;
+using SWLOR.Shared.Domain.Communication.Contracts;
+using SWLOR.Shared.Domain.Communication.ValueObjects;
+using SWLOR.Shared.Domain.Dialog.Contracts;
 
 namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
 {

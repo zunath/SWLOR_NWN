@@ -1,11 +1,6 @@
 ﻿using SWLOR.NWN.API.Engine;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace SWLOR.Component.Inventory.Delegates
+namespace SWLOR.Shared.Domain.Common.Delegates
 {
     public delegate void ApplyItemEffectsDelegate(uint user, uint item, uint target, Location targetLocation, int itemPropertyIndex);
 

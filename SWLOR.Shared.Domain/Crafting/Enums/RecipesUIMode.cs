@@ -1,4 +1,4 @@
-namespace SWLOR.Component.Crafting.Enums
+namespace SWLOR.Shared.Domain.Crafting.Enums
 {
     public enum RecipesUIMode
     {

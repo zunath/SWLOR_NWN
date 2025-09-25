@@ -1,6 +1,6 @@
-using SWLOR.Component.World.Model;
+using SWLOR.Shared.Domain.World.ValueObjects;
 
-namespace SWLOR.Component.World.Contracts
+namespace SWLOR.Shared.Domain.World.Contracts
 {
     public interface ISpawnListDefinition
     {

@@ -2,7 +2,10 @@ using SWLOR.Component.World.Contracts;
 using SWLOR.Component.World.Model;
 using SWLOR.Component.World.Service;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.Domain.World.Contracts;
+using SWLOR.Shared.Domain.World.ValueObjects;
 
 namespace SWLOR.Component.World.Feature.SpawnDefinition
 {

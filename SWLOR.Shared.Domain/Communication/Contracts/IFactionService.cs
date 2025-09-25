@@ -1,6 +1,6 @@
-using SWLOR.Shared.Domain.Social.Enums;
+using SWLOR.Shared.Domain.Communication.Enums;
 
-namespace SWLOR.Shared.Domain.Social.Contracts
+namespace SWLOR.Shared.Domain.Communication.Contracts
 {
     public interface IFactionService
     {

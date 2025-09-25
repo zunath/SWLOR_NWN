@@ -1,6 +1,7 @@
-using SWLOR.Shared.Dialog.Model;
+using SWLOR.Shared.Domain.Dialog.Contracts;
+using SWLOR.Shared.Domain.Dialog.ValueObjects;
 
-namespace SWLOR.Shared.Dialog.Service
+namespace SWLOR.Component.Communication.Service
 {
     public class SnippetBuilder : ISnippetBuilder
     {

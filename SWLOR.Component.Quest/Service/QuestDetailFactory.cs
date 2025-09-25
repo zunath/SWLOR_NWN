@@ -1,7 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Quest.Contracts;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Dialog.Contracts;
+using SWLOR.Shared.Domain.Dialog.Contracts;
+using SWLOR.Shared.Domain.Quest.Contracts;
 using SWLOR.Shared.UI.Contracts;
 
 namespace SWLOR.Component.Quest.Service

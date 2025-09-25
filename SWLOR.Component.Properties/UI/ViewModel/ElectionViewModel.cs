@@ -1,12 +1,12 @@
-using SWLOR.Component.Properties.Entity;
 using SWLOR.Component.Properties.Enums;
 using SWLOR.Component.Properties.Service;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Abstractions.Models;
 using SWLOR.Shared.Core.Data;
-using SWLOR.Shared.Domain.Character.Entities;
+using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Properties.Entities;
+using SWLOR.Shared.Domain.Properties.Enums;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
@@ -101,7 +101,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
 
             var candidates = election.CandidatePlayerIds.Count > 0
                 ? _db.Search(new DBQuery<Player>()
-                    .AddFieldSearch(nameof(Shared.Domain.Character.Entities.Player.Id), election.CandidatePlayerIds))
+                    .AddFieldSearch(nameof(Shared.Domain.Entities.Player.Id), election.CandidatePlayerIds))
                     .ToList()
                 : new List<Player>();
             var candidateNames = new GuiBindingList<string>();

@@ -1,4 +1,4 @@
-namespace SWLOR.Shared.Dialog.Contracts
+namespace SWLOR.Shared.Domain.Dialog.Contracts
 {
     public interface ISnippetService
     {

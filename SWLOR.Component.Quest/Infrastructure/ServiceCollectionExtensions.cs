@@ -75,16 +75,11 @@ namespace SWLOR.Component.Quest.Infrastructure
                 provider.GetRequiredService<IActivityService>(),
                 provider.GetRequiredService<IRandomService>()));
 
-            // Additional services required by quest definitions
-            // Note: These services should be registered elsewhere in the application
-            // but we're documenting them here for reference:
-            // - IKeyItemService (for key item operations)
-            // - IFactionService (for faction operations) 
-            // - IGuildService (for guild operations)
-            // - INPCGroupService (for NPC group lookups)
-            // - IGuiService (for GUI operations)
-            // - IDialogService (for dialog operations)
-            // - IObjectVisibilityService (for object visibility operations)
+            // Register Guild service
+            services.AddSingleton<IGuildService, GuildService>();
+            
+            // Register NPCGroup service
+            services.AddSingleton<INPCGroupService, NPCGroup>();
 
             return services;
         }

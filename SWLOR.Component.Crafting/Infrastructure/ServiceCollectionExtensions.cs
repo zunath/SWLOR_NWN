@@ -3,6 +3,8 @@ using SWLOR.Component.Crafting.Contracts;
 using SWLOR.Component.Crafting.Service;
 using System.Reflection;
 using System.Linq;
+using SWLOR.Shared.Domain.Crafting.Contracts;
+using SWLOR.Shared.Domain.Fishing.Contracts;
 
 namespace SWLOR.Component.Crafting.Infrastructure
 {
@@ -20,6 +22,10 @@ namespace SWLOR.Component.Crafting.Infrastructure
         {
             // Register RecipeBuilder as transient since each recipe definition needs its own instance
             services.AddTransient<IRecipeBuilder, RecipeBuilder>();
+            
+            // Register Crafting services
+            services.AddSingleton<ICraftService, Craft>();
+            services.AddSingleton<IFishingService, Fishing>();
             
             // Automatically register all IRecipeListDefinition implementations
             var assembly = Assembly.GetExecutingAssembly();

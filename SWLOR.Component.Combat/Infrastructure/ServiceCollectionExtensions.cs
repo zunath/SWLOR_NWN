@@ -1,6 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Combat.Contracts;
 using SWLOR.Component.Combat.Service;
+using SWLOR.Shared.Domain.Character.Contracts;
+using SWLOR.Shared.Domain.Combat.Contracts;
 
 namespace SWLOR.Component.Combat.Infrastructure
 {
@@ -17,6 +19,10 @@ namespace SWLOR.Component.Combat.Infrastructure
         public static IServiceCollection AddCombatServices(this IServiceCollection services)
         {
             services.AddSingleton<IAttackOfOpportunityService, AttackOfOpportunityService>();
+            services.AddSingleton<ICombatService, CombatService>();
+            services.AddSingleton<ICombatPointService, CombatPointService>();
+            services.AddSingleton<IStatService, Stat>();
+            services.AddSingleton<IEnmityService, Enmity>();
             
             return services;
         }

@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Perk.Contracts;
 using SWLOR.Component.Perk.EventHandlers;
 using SWLOR.Component.Perk.Service;
+using SWLOR.Shared.Domain.Character.Contracts;
 
 namespace SWLOR.Component.Perk.Infrastructure
 {
@@ -28,6 +29,9 @@ namespace SWLOR.Component.Perk.Infrastructure
             
             // Register PerkEffectService as singleton
             services.AddSingleton<IPerkEffectService, PerkEffectService>();
+            
+            // Register Perk service as singleton
+            services.AddSingleton<IPerkService, Service.Perk>();
             
             // Register PerkEventHandler as singleton
             services.AddSingleton<PerkEventHandler>();

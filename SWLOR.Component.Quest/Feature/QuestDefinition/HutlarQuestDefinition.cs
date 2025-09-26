@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Quest.Contracts;
 using SWLOR.Component.Quest.Service;
 using SWLOR.NWN.API.NWNX.Enum;
@@ -9,16 +10,17 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
 {
     public class HutlarQuestDefinition: IQuestListDefinition
     {
-        private readonly IQuestBuilderFactory _questBuilderFactory;
-        private readonly IObjectVisibilityService _objectVisibilityService;
-        private readonly IQuestService _questService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public HutlarQuestDefinition(IObjectVisibilityService objectVisibilityService, IQuestService questService, IQuestBuilderFactory questBuilderFactory)
+        public HutlarQuestDefinition(IServiceProvider serviceProvider)
         {
-            _objectVisibilityService = objectVisibilityService;
-            _questService = questService;
-            _questBuilderFactory = questBuilderFactory;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IQuestBuilderFactory QuestBuilderFactory => _serviceProvider.GetRequiredService<IQuestBuilderFactory>();
+        private IObjectVisibilityService ObjectVisibilityService => _serviceProvider.GetRequiredService<IObjectVisibilityService>();
+        private IQuestService QuestService => _serviceProvider.GetRequiredService<IQuestService>();
 
         public Dictionary<string, IQuestDetail> BuildQuests()
         {

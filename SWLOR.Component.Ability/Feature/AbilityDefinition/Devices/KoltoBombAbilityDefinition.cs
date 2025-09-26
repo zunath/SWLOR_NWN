@@ -114,8 +114,8 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                         "grenade_kolt1_hb",
                         20f);
 
-                    _enmityService.ModifyEnmityOnAll(activator, 220);
-                    _combatPointService.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
+                    EnmityService.ModifyEnmityOnAll(activator, 220);
+                    CombatPointService.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
                 });
         }
 
@@ -142,8 +142,8 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                         "grenade_kolt2_hb",
                         40f);
 
-                    _enmityService.ModifyEnmityOnAll(activator, 340);
-                    _combatPointService.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
+                    EnmityService.ModifyEnmityOnAll(activator, 340);
+                    CombatPointService.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
                 });
         }
 
@@ -170,8 +170,8 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                         "grenade_kolt3_hb",
                         60f);
 
-                    _enmityService.ModifyEnmityOnAll(activator, 480);
-                    _combatPointService.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
+                    EnmityService.ModifyEnmityOnAll(activator, 480);
+                    CombatPointService.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
                 });
         }
     }

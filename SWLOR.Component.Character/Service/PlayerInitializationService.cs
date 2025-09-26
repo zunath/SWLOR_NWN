@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -16,26 +17,23 @@ namespace SWLOR.Component.Character.Service
     {
         private readonly ILogger _logger;
         private readonly IDatabaseService _db;
-        private readonly IStatService _statService;
-        private readonly ISkillService _skillService;
-        private readonly IMigrationService _migrationService;
-        private readonly IRaceService _raceService;
+        private readonly IServiceProvider _serviceProvider;
 
         public PlayerInitializationService(
             ILogger logger, 
             IDatabaseService db, 
-            IStatService statService, 
-            ISkillService skillService, 
-            IMigrationService migrationService, 
-            IRaceService raceService)
+            IServiceProvider serviceProvider)
         {
             _logger = logger;
             _db = db;
-            _statService = statService;
-            _skillService = skillService;
-            _migrationService = migrationService;
-            _raceService = raceService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+        private ISkillService SkillService => _serviceProvider.GetRequiredService<ISkillService>();
+        private IMigrationService MigrationService => _serviceProvider.GetRequiredService<IMigrationService>();
+        private IRaceService RaceService => _serviceProvider.GetRequiredService<IRaceService>();
         /// <summary>
         /// Handles 
         /// </summary>
@@ -203,16 +201,16 @@ namespace SWLOR.Component.Character.Service
         private void AdjustStats(uint player, Player dbPlayer)
         {
             dbPlayer.UnallocatedSP = 10;
-            dbPlayer.Version = _migrationService.GetLatestPlayerVersion();
+            dbPlayer.Version = MigrationService.GetLatestPlayerVersion();
             dbPlayer.Name = GetName(player);
             dbPlayer.BAB = 1;
-            _statService.AdjustPlayerMaxHP(dbPlayer, player, _statService.BaseHP);
-            _statService.AdjustPlayerMaxFP(dbPlayer, _statService.BaseFP, player);
-            _statService.AdjustPlayerMaxSTM(dbPlayer, _statService.BaseSTM, player);
+            StatService.AdjustPlayerMaxHP(dbPlayer, player, StatService.BaseHP);
+            StatService.AdjustPlayerMaxFP(dbPlayer, StatService.BaseFP, player);
+            StatService.AdjustPlayerMaxSTM(dbPlayer, StatService.BaseSTM, player);
             CreaturePlugin.SetBaseAttackBonus(player, 1);
             dbPlayer.HP = GetCurrentHitPoints(player);
-            dbPlayer.FP = _statService.GetMaxFP(player, dbPlayer);
-            dbPlayer.Stamina = _statService.GetMaxStamina(player, dbPlayer);
+            dbPlayer.FP = StatService.GetMaxFP(player, dbPlayer);
+            dbPlayer.Stamina = StatService.GetMaxStamina(player, dbPlayer);
 
             dbPlayer.BaseStats[AbilityType.Might] = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Might);
             dbPlayer.BaseStats[AbilityType.Perception] = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Perception);
@@ -304,14 +302,14 @@ namespace SWLOR.Component.Character.Service
             // So it's safe to simply set the player's rank in the skill to max.
             foreach (var language in languages)
             {
-                var skill = _skillService.GetSkillDetails(language);
+                var skill = SkillService.GetSkillDetails(language);
                 if (!dbPlayer.Skills.ContainsKey(language))
                     dbPlayer.Skills[language] = new PlayerSkill();
 
                 var level = skill.MaxRank;
                 dbPlayer.Skills[language].Rank = level;
 
-                dbPlayer.Skills[language].XP = _skillService.GetRequiredXP(level) - 1;
+                dbPlayer.Skills[language].XP = SkillService.GetRequiredXP(level) - 1;
             }
         }
 
@@ -325,7 +323,7 @@ namespace SWLOR.Component.Character.Service
         {
             DelayCommand(0.1f, () =>
             {
-                _raceService.SetDefaultRaceAppearance(player);
+                RaceService.SetDefaultRaceAppearance(player);
             });
             dbPlayer.OriginalAppearanceType = GetAppearanceType(player);
         }

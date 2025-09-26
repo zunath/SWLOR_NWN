@@ -16,21 +16,21 @@ namespace SWLOR.Component.Space.Feature.ShipModuleDefinition
 {
     public class MiningLaserModuleDefinition: IShipModuleListDefinition
     {
-        private readonly IRandomService _random;
         private readonly IDatabaseService _db;
         private readonly IServiceProvider _serviceProvider;
         private readonly IShipModuleBuilder _builder;
         
         // Lazy-loaded services to break circular dependencies
+        private IRandomService Random => _serviceProvider.GetRequiredService<IRandomService>();
         private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
         private ISkillService SkillService => _serviceProvider.GetRequiredService<ISkillService>();
         private ISpaceService SpaceService => _serviceProvider.GetRequiredService<ISpaceService>();
         private ILootService LootService => _serviceProvider.GetRequiredService<ILootService>();
 
-        public MiningLaserModuleDefinition(IRandomService random, IDatabaseService db, IServiceProvider serviceProvider, IShipModuleBuilder builder)
+        public MiningLaserModuleDefinition(IDatabaseService db, IServiceProvider serviceProvider, IShipModuleBuilder builder)
         {
-            _random = random;
             _db = db;
+            _serviceProvider = serviceProvider;
             // Services are now lazy-loaded via IServiceProvider
             _builder = builder;
         }
@@ -92,7 +92,7 @@ namespace SWLOR.Component.Space.Feature.ShipModuleDefinition
                     var remainingUnits = GetLocalInt(target, "ASTEROID_REMAINING_UNITS");
                     if (remainingUnits <= 0)
                     {
-                        remainingUnits = _random.D4(1) + 2;
+                        remainingUnits = Random.D4(1) + 2;
                         SetLocalInt(target, "ASTEROID_REMAINING_UNITS", remainingUnits);
                     }
 

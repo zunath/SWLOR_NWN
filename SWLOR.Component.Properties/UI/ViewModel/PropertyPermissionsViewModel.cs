@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Properties.Service;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
@@ -15,13 +16,16 @@ namespace SWLOR.Component.Properties.UI.ViewModel
     public class PropertyPermissionsViewModel: GuiViewModelBase<PropertyPermissionsViewModel, PropertyPermissionPayload>
     {
         private readonly IDatabaseService _db;
-        private readonly PropertyService _property;
+        private readonly IServiceProvider _serviceProvider;
 
-        public PropertyPermissionsViewModel(IGuiService guiService, IDatabaseService db, PropertyService property) : base(guiService)
+        public PropertyPermissionsViewModel(IGuiService guiService, IDatabaseService db, IServiceProvider serviceProvider) : base(guiService)
         {
             _db = db;
-            _property = property;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded service to break circular dependency
+        private PropertyService Property => _serviceProvider.GetRequiredService<PropertyService>();
         
         private bool _isCategory;
         private PropertyType _propertyType;

@@ -15,11 +15,11 @@ namespace SWLOR.Component.Space.Feature.ShipModuleDefinition
 {
     public class AssaultConcussionMissileModuleDefinition : IShipModuleListDefinition
     {
-        private readonly IRandomService _random;
         private readonly IServiceProvider _serviceProvider;
         private readonly IShipModuleBuilder _builder;
         
         // Lazy-loaded services to break circular dependencies
+        private IRandomService Random => _serviceProvider.GetRequiredService<IRandomService>();
         private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
         private ISpaceService SpaceService => _serviceProvider.GetRequiredService<ISpaceService>();
         private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
@@ -27,11 +27,9 @@ namespace SWLOR.Component.Space.Feature.ShipModuleDefinition
         private IMessagingService MessagingService => _serviceProvider.GetRequiredService<IMessagingService>();
 
         public AssaultConcussionMissileModuleDefinition(
-            IRandomService random, 
             IServiceProvider serviceProvider,
             IShipModuleBuilder builder)
         {
-            _random = random;
             _serviceProvider = serviceProvider;
             // Services are now lazy-loaded via IServiceProvider
             _builder = builder;
@@ -53,7 +51,7 @@ namespace SWLOR.Component.Space.Feature.ShipModuleDefinition
                 return;
 
             var chanceToHit = SpaceService.CalculateChanceToHit(activator, target);
-            var roll = _random.D100(1);
+            var roll = Random.D100(1);
             var isHit = hitOverride ?? roll <= chanceToHit;
 
             var attackerStat = SpaceService.GetAttackStat(activator);
@@ -140,7 +138,7 @@ namespace SWLOR.Component.Space.Feature.ShipModuleDefinition
                     var delay = (float)(targetDistance / (3.0 * log(targetDistance) + 2.0));
 
                     var chanceToHit = SpaceService.CalculateChanceToHit(activator, target);
-                    var roll = _random.D100(1);
+                    var roll = Random.D100(1);
                     var isHit = roll <= chanceToHit;
 
                     var attackBonus = moduleBonus * 2 + activatorShipStatus.ExplosiveDamage;

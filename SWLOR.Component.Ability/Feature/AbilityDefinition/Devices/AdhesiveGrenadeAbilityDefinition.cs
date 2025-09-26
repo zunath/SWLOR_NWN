@@ -16,8 +16,8 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
     public class AdhesiveGrenadeAbilityDefinition : ExplosiveBaseAbilityDefinition
     {
 
-        public AdhesiveGrenadeAbilityDefinition(IRandomService random, IItemService itemService, IPerkService perkService, IStatService statService, ICombatService combatService, ICombatPointService combatPointService, IEnmityService enmityService, IStatusEffectService statusEffectService) 
-            : base(random, itemService, perkService, statService, combatService, combatPointService, enmityService, statusEffectService)
+        public AdhesiveGrenadeAbilityDefinition(IServiceProvider serviceProvider) 
+            : base(serviceProvider)
         {
         }
 
@@ -38,7 +38,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
             var effect = EffectSlow();
             if (immobilizeDC > 0)
             {
-                var dc = _combatService.CalculateSavingThrowDC(activator, SavingThrow.Fortitude, immobilizeDC);
+                var dc = CombatService.CalculateSavingThrowDC(activator, SavingThrow.Fortitude, immobilizeDC);
                 var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
                 if (checkResult == SavingThrowResultType.Failed)
                 {
@@ -48,8 +48,8 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
             
             ApplyEffectToObject(DurationType.Temporary, effect, target, slowLength);
 
-            _combatPointService.AddCombatPoint(activator, target, SkillType.Devices, 3);
-            _enmityService.ModifyEnmity(activator, target, 150);
+            CombatPointService.AddCombatPoint(activator, target, SkillType.Devices, 3);
+            EnmityService.ModifyEnmity(activator, target, 150);
         }
 
         private void AdhesiveGrenade1(IAbilityBuilder builder)

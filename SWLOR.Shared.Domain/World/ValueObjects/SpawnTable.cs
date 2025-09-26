@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.AI.Enums;
@@ -8,20 +9,24 @@ namespace SWLOR.Shared.Domain.World.ValueObjects
 {
     public class SpawnTable
     {
-        private readonly IRandomService _random;
+        private readonly IServiceProvider _serviceProvider;
         public string Name { get; set; }
         public int RespawnDelayMinutes { get; set; }
         public int ResourceDespawnMinutes { get; set; }
         public List<SpawnObject> Spawns { get; set; }
 
-        public SpawnTable(IRandomService random, ISpawnService spawn, string name)
+        public SpawnTable(IServiceProvider serviceProvider, string name)
         {
-            _random = random;
+            _serviceProvider = serviceProvider;
             Name = name;
-            RespawnDelayMinutes = spawn.DefaultRespawnMinutes;
+            RespawnDelayMinutes = Spawn.DefaultRespawnMinutes;
             ResourceDespawnMinutes = 180; // Default: 3 hours for resources
             Spawns = new List<SpawnObject>();
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IRandomService Random => _serviceProvider.GetRequiredService<IRandomService>();
+        private ISpawnService Spawn => _serviceProvider.GetRequiredService<ISpawnService>();
 
         /// <summary>
         /// Retrieves the next spawn resref, object type, and AI flags based on the rules for this specific spawn table.

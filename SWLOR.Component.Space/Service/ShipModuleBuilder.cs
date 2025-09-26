@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Space.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -11,12 +12,14 @@ namespace SWLOR.Component.Space.Service
     public class ShipModuleBuilder : IShipModuleBuilder
     {
         private readonly ILogger _logger;
+        private readonly IServiceProvider _serviceProvider;
         private readonly Dictionary<string, ShipModuleDetail> _shipModules = new();
         private ShipModuleDetail _activeShipModule;
 
-        public ShipModuleBuilder(ILogger logger)
+        public ShipModuleBuilder(ILogger logger, IServiceProvider serviceProvider)
         {
             _logger = logger;
+            _serviceProvider = serviceProvider;
         }
 
         /// <summary>

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Character.Service;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Models;
@@ -15,13 +16,16 @@ namespace SWLOR.Component.Character.UI.ViewModel
         IGuiRefreshable<AchievementUnlockedRefreshEvent>
     {
         private readonly IDatabaseService _db;
-        private readonly Achievement _achievement;
+        private readonly IServiceProvider _serviceProvider;
 
-        public AchievementsViewModel(IGuiService guiService, IDatabaseService db, Achievement achievement) : base(guiService)
+        public AchievementsViewModel(IGuiService guiService, IDatabaseService db, IServiceProvider serviceProvider) : base(guiService)
         {
             _db = db;
-            _achievement = achievement;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded service to break circular dependency
+        private Achievement Achievement => _serviceProvider.GetRequiredService<Achievement>();
         
         private const int EntriesPerPage = 25;
         private int SelectedIndex { get; set; }
@@ -94,7 +98,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
         {
             var cdKey = GetPCPublicCDKey(Player);
             var dbAccount = _db.Get<Account>(cdKey) ?? new Account(cdKey);
-            var achievements = _achievement.GetActiveAchievements()
+            var achievements = Achievement.GetActiveAchievements()
                 .Skip(SelectedPageIndex * EntriesPerPage)
                 .Take(EntriesPerPage);
 
@@ -132,7 +136,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
             }
 
             var type = _types[SelectedIndex];
-            var achievement = _achievement.GetAchievement(type);
+            var achievement = Achievement.GetAchievement(type);
             var cdKey = GetPCPublicCDKey(Player);
             var dbAccount = _db.Get<Account>(cdKey) ?? new Account(cdKey);
 
@@ -145,7 +149,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
 
         private void UpdatePagination()
         {
-            var totalRecordCount = _achievement.GetActiveAchievements().Count;
+            var totalRecordCount = Achievement.GetActiveAchievements().Count;
             var pageNumbers = new GuiBindingList<GuiComboEntry>();
             var pages = (int)(totalRecordCount / EntriesPerPage + (totalRecordCount % EntriesPerPage == 0 ? 0 : 1));
 

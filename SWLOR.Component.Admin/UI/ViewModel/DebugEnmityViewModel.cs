@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Communication.Contracts;
@@ -11,14 +12,16 @@ namespace SWLOR.Component.Admin.UI.ViewModel
     public class DebugEnmityViewModel: GuiViewModelBase<DebugEnmityViewModel, IGuiPayload>,
         IGuiRefreshable<EnmityChangedRefreshEvent>
     {
-        private readonly IPartyService _partyService;
-        private readonly IEnmityService _enmityService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public DebugEnmityViewModel(IGuiService guiService, IPartyService partyService, IEnmityService enmityService) : base(guiService)
+        public DebugEnmityViewModel(IGuiService guiService, IServiceProvider serviceProvider) : base(guiService)
         {
-            _partyService = partyService;
-            _enmityService = enmityService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IPartyService PartyService => _serviceProvider.GetRequiredService<IPartyService>();
+        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
 
         public void OnEnmityChanged()
         {

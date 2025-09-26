@@ -16,8 +16,8 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
     public class FlashbangDefinitionAbilityDefinition : ExplosiveBaseAbilityDefinition
     {
 
-        public FlashbangDefinitionAbilityDefinition(IRandomService random, IItemService itemService, IPerkService perkService, IStatService statService, ICombatService combatService, ICombatPointService combatPointService, IEnmityService enmityService, IStatusEffectService statusEffectService) 
-            : base(random, itemService, perkService, statService, combatService, combatPointService, enmityService, statusEffectService)
+        public FlashbangDefinitionAbilityDefinition(IServiceProvider serviceProvider) 
+            : base(serviceProvider)
         {
         }
 
@@ -37,8 +37,8 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
 
             ApplyEffectToObject(DurationType.Temporary, EffectAccuracyDecrease(abReduce), target, 20f);
 
-            _combatPointService.AddCombatPoint(activator, target, SkillType.Devices, 3);
-            _enmityService.ModifyEnmity(activator, target, 250);
+            CombatPointService.AddCombatPoint(activator, target, SkillType.Devices, 3);
+            EnmityService.ModifyEnmity(activator, target, 250);
         }
 
         private void FlashbangGrenade1(IAbilityBuilder builder)

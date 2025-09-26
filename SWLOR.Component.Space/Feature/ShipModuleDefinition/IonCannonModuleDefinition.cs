@@ -15,20 +15,19 @@ namespace SWLOR.Component.Space.Feature.ShipModuleDefinition
 {
     public class IonCannonModuleDefinition : IShipModuleListDefinition
     {
-        private readonly IRandomService _random;
         private readonly IServiceProvider _serviceProvider;
         private readonly IShipModuleBuilder _builder;
         
         // Lazy-loaded services to break circular dependencies
+        private IRandomService Random => _serviceProvider.GetRequiredService<IRandomService>();
         private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
         private ISpaceService SpaceService => _serviceProvider.GetRequiredService<ISpaceService>();
         private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
         private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
         private IMessagingService MessagingService => _serviceProvider.GetRequiredService<IMessagingService>();
 
-        public IonCannonModuleDefinition(IRandomService random, IServiceProvider serviceProvider, IShipModuleBuilder builder)
+        public IonCannonModuleDefinition(IServiceProvider serviceProvider, IShipModuleBuilder builder)
         {
-            _random = random;
             _serviceProvider = serviceProvider;
             // Services are now lazy-loaded via IServiceProvider
             _builder = builder;
@@ -85,7 +84,7 @@ namespace SWLOR.Component.Space.Feature.ShipModuleDefinition
                         0);
 
                     var chanceToHit = SpaceService.CalculateChanceToHit(activator, target);
-                    var roll = _random.D100(1);
+                    var roll = Random.D100(1);
                     var isHit = roll <= chanceToHit;
 
                     if (isHit)

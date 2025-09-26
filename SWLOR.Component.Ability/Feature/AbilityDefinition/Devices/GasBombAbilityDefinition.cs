@@ -29,9 +29,9 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
             var attack = GetLocalInt(OBJECT_SELF, "DEVICE_ATK");
             dmg += GetLocalInt(OBJECT_SELF, "DEVICE_DMG");
 
-            var defense = _statService.GetDefense(creature, CombatDamageType.Physical, AbilityType.Vitality);
+            var defense = StatService.GetDefense(creature, CombatDamageType.Physical, AbilityType.Vitality);
             var defenderStat = GetAbilityScore(creature, AbilityType.Vitality);
-            var damage = _combatService.CalculateDamage(attack, dmg, attackerStat, defense, defenderStat, 0);
+            var damage = CombatService.CalculateDamage(attack, dmg, attackerStat, defense, defenderStat, 0);
 
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Acid), creature);
         }
@@ -117,8 +117,8 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                         "grenade_gas1_hb",
                         18f);
 
-                    _enmityService.ModifyEnmityOnAll(activator, 250);
-                    _combatPointService.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
+                    EnmityService.ModifyEnmityOnAll(activator, 250);
+                    CombatPointService.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
                 });
         }
 
@@ -146,8 +146,8 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                         "grenade_gas2_hb",
                         30f);
 
-                    _enmityService.ModifyEnmityOnAll(activator, 350);
-                    _combatPointService.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
+                    EnmityService.ModifyEnmityOnAll(activator, 350);
+                    CombatPointService.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
                 });
         }
 
@@ -175,8 +175,8 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                         "grenade_gas3_hb",
                         48f);
 
-                    _enmityService.ModifyEnmityOnAll(activator, 450);
-                    _combatPointService.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
+                    EnmityService.ModifyEnmityOnAll(activator, 450);
+                    CombatPointService.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
                 });
         }
     }

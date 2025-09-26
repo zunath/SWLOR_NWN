@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.StatusEffect.Contracts;
 using SWLOR.Component.StatusEffect.Service;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -13,14 +14,17 @@ namespace SWLOR.Component.StatusEffect.Feature.StatusEffectDefinition
     public class FoodStatusEffectDefinition: IStatusEffectListDefinition
     {
         private readonly IDatabaseService _db;
-        private readonly IStatService _statService;
+        private readonly IServiceProvider _serviceProvider;
         private readonly StatusEffectBuilder _builder = new();
 
-        public FoodStatusEffectDefinition(IDatabaseService db, IStatService statService)
+        public FoodStatusEffectDefinition(IDatabaseService db, IServiceProvider serviceProvider)
         {
             _db = db;
-            _statService = statService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded service to break circular dependency
+        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
 
         public Dictionary<StatusEffectType, StatusEffectDetail> BuildStatusEffects()
         {

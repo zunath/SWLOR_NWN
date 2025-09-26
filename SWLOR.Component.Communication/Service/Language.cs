@@ -18,19 +18,18 @@ namespace SWLOR.Component.Communication.Service
     public class Language : ILanguageService
     {
         private readonly IDatabaseService _db;
-        private readonly IRandomService _random;
         private readonly IServiceProvider _serviceProvider;
         private Dictionary<SkillType, ITranslator> _translators = new();
         private readonly TranslatorGeneric _genericTranslator = new();
 
-        public Language(IDatabaseService db, IRandomService random, IServiceProvider serviceProvider)
+        public Language(IDatabaseService db, IServiceProvider serviceProvider)
         {
             _db = db;
-            _random = random;
             _serviceProvider = serviceProvider;
         }
 
         // Lazy-loaded services to break circular dependencies
+        private IRandomService Random => _serviceProvider.GetRequiredService<IRandomService>();
         private ISkillService SkillService => _serviceProvider.GetRequiredService<ISkillService>();
         private IStatusEffectService StatusEffectService => _serviceProvider.GetRequiredService<IStatusEffectService>();
 
@@ -65,7 +64,7 @@ namespace SWLOR.Component.Communication.Service
         public string TranslateSnippetForListener(uint speaker, uint listener, SkillType language, string snippet)
         {
             var translator = _translators.ContainsKey(language) ? _translators[language] : _genericTranslator;
-            var languageSkill = _skillService.GetSkillDetails(language);
+            var languageSkill = SkillService.GetSkillDetails(language);
 
             if (GetIsPC(speaker))
             {
@@ -83,9 +82,9 @@ namespace SWLOR.Component.Communication.Service
                     var split = snippet.Split(' ');
                     for (var i = 0; i < split.Length; ++i)
                     {
-                        if (_random.Next(100) <= garbledChance)
+                        if (Random.Next(100) <= garbledChance)
                         {
-                            split[i] = new string(split[i].ToCharArray().OrderBy(s => (_random.Next(2) % 2) == 0).ToArray());
+                            split[i] = new string(split[i].ToCharArray().OrderBy(s => (Random.Next(2) % 2) == 0).ToArray());
                         }
                     }
 
@@ -110,13 +109,13 @@ namespace SWLOR.Component.Communication.Service
             // Check for the Comprehend Speech concentration ability.
             var grantSenseXP = false;
             var statusEffectBonus = 0;
-            if (_statusEffectService.HasStatusEffect(listener, StatusEffectType.ComprehendSpeech1))
+            if (StatusEffectService.HasStatusEffect(listener, StatusEffectType.ComprehendSpeech1))
                 statusEffectBonus = 5;
-            else if (_statusEffectService.HasStatusEffect(listener, StatusEffectType.ComprehendSpeech2))
+            else if (StatusEffectService.HasStatusEffect(listener, StatusEffectType.ComprehendSpeech2))
                 statusEffectBonus = 10;
-            else if (_statusEffectService.HasStatusEffect(listener, StatusEffectType.ComprehendSpeech3))
+            else if (StatusEffectService.HasStatusEffect(listener, StatusEffectType.ComprehendSpeech3))
                 statusEffectBonus = 15;
-            else if (_statusEffectService.HasStatusEffect(listener, StatusEffectType.ComprehendSpeech4))
+            else if (StatusEffectService.HasStatusEffect(listener, StatusEffectType.ComprehendSpeech4))
                 statusEffectBonus = 20;
 
             if (statusEffectBonus > 0)
@@ -150,7 +149,7 @@ namespace SWLOR.Component.Communication.Service
                 // If this assumption changes, the below logic needs to change too.
                 for (var i = 0; i < originalSplit.Length; ++i)
                 {
-                    if (_random.Next(100) <= englishChance)
+                    if (Random.Next(100) <= englishChance)
                     {
                         endResult.Append(originalSplit[i]);
                     }
@@ -183,11 +182,11 @@ namespace SWLOR.Component.Communication.Service
                     amount += socialModifier * 10;
                 }
 
-                _skillService.GiveSkillXP(listener, language, amount, false, false);
+                SkillService.GiveSkillXP(listener, language, amount, false, false);
 
                 // Grant Force XP if player is concentrating Comprehend Speech.
                 if (grantSenseXP)
-                    _skillService.GiveSkillXP(listener, SkillType.Force, amount * 10, false, false);
+                    SkillService.GiveSkillXP(listener, SkillType.Force, amount * 10, false, false);
 
                 SetLocalInt(listener, "LAST_LANGUAGE_SKILL_INCREASE_LOW", (int)(now & 0xFFFFFFFF));
                 SetLocalInt(listener, "LAST_LANGUAGE_SKILL_INCREASE_HIGH", (int)((now >> 32) & 0xFFFFFFFF));

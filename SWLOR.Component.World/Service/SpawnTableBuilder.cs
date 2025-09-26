@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.World.Contracts;
 using SWLOR.Component.World.Model;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -14,19 +15,21 @@ namespace SWLOR.Component.World.Service
 {
     public class SpawnTableBuilder : ISpawnTableBuilder
     {
-        private readonly Dictionary<string, SpawnTable> _spawnTables = new();
+        private readonly Dictionary<string, SpawnTable> SpawnTables = new();
 
         private SpawnTable ActiveTable { get; set; }
         private SpawnObject ActiveSpawn { get; set; }
 
-        private readonly IRandomService _random;
-        private readonly ISpawnService _spawn;
+        private readonly IServiceProvider _serviceProvider;
 
-        public SpawnTableBuilder(IRandomService random, ISpawnService spawn)
+        public SpawnTableBuilder(IServiceProvider serviceProvider)
         {
-            _random = random;
-            _spawn = spawn;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IRandomService Random => _serviceProvider.GetRequiredService<IRandomService>();
+        private ISpawnService Spawn => _serviceProvider.GetRequiredService<ISpawnService>();
 
         /// <summary>
         /// Creates a new spawn table with the specified Id
@@ -39,8 +42,8 @@ namespace SWLOR.Component.World.Service
             if (string.IsNullOrWhiteSpace(name))
                 name = $"Spawn Table {spawnTableId}";
 
-            ActiveTable = new SpawnTable(_random, _spawn, name);
-            _spawnTables[spawnTableId] = ActiveTable;
+            ActiveTable = new SpawnTable(Random, Spawn, name);
+            SpawnTables[spawnTableId] = ActiveTable;
 
             return this;
         }
@@ -201,7 +204,7 @@ namespace SWLOR.Component.World.Service
         /// <returns>A dictionary of spawn tables</returns>
         public Dictionary<string, SpawnTable> Build()
         {
-            return _spawnTables;
+            return SpawnTables;
         }
     }
 }

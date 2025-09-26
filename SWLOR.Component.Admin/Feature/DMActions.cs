@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -10,13 +11,16 @@ namespace SWLOR.Component.Admin.Feature
     public class DMActions
     {
         private readonly IDatabaseService _db;
-        private readonly IGuiService _guiService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public DMActions(IDatabaseService db, IGuiService guiService)
+        public DMActions(IDatabaseService db, IServiceProvider serviceProvider)
         {
             _db = db;
-            _guiService = guiService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded service to break circular dependency
+        private IGuiService GuiService => _serviceProvider.GetRequiredService<IGuiService>();
         
         public void OnDMSpawnObject()
         {

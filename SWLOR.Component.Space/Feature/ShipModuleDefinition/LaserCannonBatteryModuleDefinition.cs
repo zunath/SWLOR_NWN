@@ -15,20 +15,20 @@ namespace SWLOR.Component.Space.Feature.ShipModuleDefinition
 {
     public class LaserCannonBatteryModuleDefinition : IShipModuleListDefinition
     {
-        private readonly IRandomService _random;
         private readonly IServiceProvider _serviceProvider;
         private readonly IShipModuleBuilder _builder;
         
         // Lazy-loaded services to break circular dependencies
+        private IRandomService Random => _serviceProvider.GetRequiredService<IRandomService>();
         private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
         private ISpaceService SpaceService => _serviceProvider.GetRequiredService<ISpaceService>();
         private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
         private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
         private IMessagingService MessagingService => _serviceProvider.GetRequiredService<IMessagingService>();
 
-        public LaserCannonBatteryModuleDefinition(IRandomService random, IServiceProvider serviceProvider, IShipModuleBuilder builder)
+        public LaserCannonBatteryModuleDefinition(IServiceProvider serviceProvider, IShipModuleBuilder builder)
         {
-            _random = random;
+            _serviceProvider = serviceProvider;
             // Services are now lazy-loaded via IServiceProvider
             _builder = builder;
         }
@@ -94,7 +94,7 @@ namespace SWLOR.Component.Space.Feature.ShipModuleDefinition
                             while (GetIsObjectValid(nearbyTarget))
                             {
                                 if (nearbyTarget != activator && 
-                                    _random.D4(1) != 1 && 
+                                    Random.D4(1) != 1 && 
                                     GetIsEnemy(nearbyTarget, activator) && 
                                     SpaceService.GetShipStatus(nearbyTarget) != null)
                                 {
@@ -110,7 +110,7 @@ namespace SWLOR.Component.Space.Feature.ShipModuleDefinition
                                         nearbyDefenderStat,
                                         0);
                                     var chanceToHit = SpaceService.CalculateChanceToHit(activator, nearbyTarget);
-                                    var roll = _random.D100(1);
+                                    var roll = Random.D100(1);
                                     var isHit = roll <= chanceToHit;
                                     ApplyEffectToObject(DurationType.Instant, missile, nearbyTarget);
                                     if (isHit)

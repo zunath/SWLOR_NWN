@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -17,13 +18,16 @@ namespace SWLOR.Component.Combat.Feature
     public class EquipmentStats
     {
         private readonly IDatabaseService _db;
-        private readonly IStatService _statService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public EquipmentStats(IDatabaseService db, IStatService statService)
+        public EquipmentStats(IDatabaseService db, IServiceProvider serviceProvider)
         {
             _db = db;
-            _statService = statService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded service to break circular dependency
+        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
         
         private delegate void ApplyStatChangeDelegate(uint player, uint item, ItemProperty ip, bool isAdding);
         private readonly Dictionary<ItemPropertyType, ApplyStatChangeDelegate> _statChangeActions = new();
@@ -172,11 +176,11 @@ namespace SWLOR.Component.Combat.Feature
 
                 if (isAdding)
                 {
-                    _statService.AdjustPlayerMaxHP(dbPlayer, creature, amount);
+                    StatService.AdjustPlayerMaxHP(dbPlayer, creature, amount);
                 }
                 else
                 {
-                    _statService.AdjustPlayerMaxHP(dbPlayer, creature, -amount);
+                    StatService.AdjustPlayerMaxHP(dbPlayer, creature, -amount);
                 }
 
                 _db.Set(dbPlayer);
@@ -239,11 +243,11 @@ namespace SWLOR.Component.Combat.Feature
 
                 if (isAdding)
                 {
-                    _statService.AdjustPlayerMaxFP(dbPlayer, amount, creature);
+                    StatService.AdjustPlayerMaxFP(dbPlayer, amount, creature);
                 }
                 else
                 {
-                    _statService.AdjustPlayerMaxFP(dbPlayer, -amount, creature);
+                    StatService.AdjustPlayerMaxFP(dbPlayer, -amount, creature);
                 }
 
                 _db.Set(dbPlayer);
@@ -275,11 +279,11 @@ namespace SWLOR.Component.Combat.Feature
 
                 if (isAdding)
                 {
-                    _statService.AdjustFPRegen(dbPlayer, amount);
+                    StatService.AdjustFPRegen(dbPlayer, amount);
                 }
                 else
                 {
-                    _statService.AdjustFPRegen(dbPlayer, -amount);
+                    StatService.AdjustFPRegen(dbPlayer, -amount);
                 }
 
                 _db.Set(dbPlayer);
@@ -311,11 +315,11 @@ namespace SWLOR.Component.Combat.Feature
 
                 if (isAdding)
                 {
-                    _statService.AdjustPlayerMaxSTM(dbPlayer, amount, creature);
+                    StatService.AdjustPlayerMaxSTM(dbPlayer, amount, creature);
                 }
                 else
                 {
-                    _statService.AdjustPlayerMaxSTM(dbPlayer, -amount, creature);
+                    StatService.AdjustPlayerMaxSTM(dbPlayer, -amount, creature);
                 }
 
                 _db.Set(dbPlayer);
@@ -347,11 +351,11 @@ namespace SWLOR.Component.Combat.Feature
 
                 if (isAdding)
                 {
-                    _statService.AdjustSTMRegen(dbPlayer, amount);
+                    StatService.AdjustSTMRegen(dbPlayer, amount);
                 }
                 else
                 {
-                    _statService.AdjustSTMRegen(dbPlayer, -amount);
+                    StatService.AdjustSTMRegen(dbPlayer, -amount);
                 }
 
                 _db.Set(dbPlayer);
@@ -383,11 +387,11 @@ namespace SWLOR.Component.Combat.Feature
 
                 if (isAdding)
                 {
-                    _statService.AdjustPlayerRecastReduction(dbPlayer, amount);
+                    StatService.AdjustPlayerRecastReduction(dbPlayer, amount);
                 }
                 else
                 {
-                    _statService.AdjustPlayerRecastReduction(dbPlayer, -amount);
+                    StatService.AdjustPlayerRecastReduction(dbPlayer, -amount);
                 }
 
                 _db.Set(dbPlayer);
@@ -419,11 +423,11 @@ namespace SWLOR.Component.Combat.Feature
 
                 if (isAdding)
                 {
-                    _statService.AdjustAttack(dbPlayer, amount);
+                    StatService.AdjustAttack(dbPlayer, amount);
                 }
                 else
                 {
-                    _statService.AdjustAttack(dbPlayer, -amount);
+                    StatService.AdjustAttack(dbPlayer, -amount);
                 }
 
                 _db.Set(dbPlayer);
@@ -455,11 +459,11 @@ namespace SWLOR.Component.Combat.Feature
 
                 if (isAdding)
                 {
-                    _statService.AdjustForceAttack(dbPlayer, amount);
+                    StatService.AdjustForceAttack(dbPlayer, amount);
                 }
                 else
                 {
-                    _statService.AdjustForceAttack(dbPlayer, -amount);
+                    StatService.AdjustForceAttack(dbPlayer, -amount);
                 }
 
                 _db.Set(dbPlayer);
@@ -492,11 +496,11 @@ namespace SWLOR.Component.Combat.Feature
 
                 if (isAdding)
                 {
-                    _statService.AdjustDefense(dbPlayer, damageType, amount);
+                    StatService.AdjustDefense(dbPlayer, damageType, amount);
                 }
                 else
                 {
-                    _statService.AdjustDefense(dbPlayer, damageType, -amount);
+                    StatService.AdjustDefense(dbPlayer, damageType, -amount);
                 }
 
                 _db.Set(dbPlayer);
@@ -560,11 +564,11 @@ namespace SWLOR.Component.Combat.Feature
 
                 if (isAdding)
                 {
-                    _statService.AdjustEvasion(dbPlayer, amount);
+                    StatService.AdjustEvasion(dbPlayer, amount);
                 }
                 else
                 {
-                    _statService.AdjustEvasion(dbPlayer, -amount);
+                    StatService.AdjustEvasion(dbPlayer, -amount);
                 }
 
                 _db.Set(dbPlayer);
@@ -620,11 +624,11 @@ namespace SWLOR.Component.Combat.Feature
 
                 if (isAdding)
                 {
-                    _statService.AdjustControl(dbPlayer, skillType, amount);
+                    StatService.AdjustControl(dbPlayer, skillType, amount);
                 }
                 else
                 {
-                    _statService.AdjustControl(dbPlayer, skillType, -amount);
+                    StatService.AdjustControl(dbPlayer, skillType, -amount);
                 }
 
                 _db.Set(dbPlayer);
@@ -670,11 +674,11 @@ namespace SWLOR.Component.Combat.Feature
                 }
                 if (isAdding)
                 {
-                    _statService.AdjustCraftsmanship(dbPlayer, skillType, amount);
+                    StatService.AdjustCraftsmanship(dbPlayer, skillType, amount);
                 }
                 else
                 {
-                    _statService.AdjustCraftsmanship(dbPlayer, skillType, -amount);
+                    StatService.AdjustCraftsmanship(dbPlayer, skillType, -amount);
                 }
 
                 _db.Set(dbPlayer);
@@ -719,11 +723,11 @@ namespace SWLOR.Component.Combat.Feature
                 }
                 if (isAdding)
                 {
-                    _statService.AdjustCPBonus(dbPlayer, skillType, amount);
+                    StatService.AdjustCPBonus(dbPlayer, skillType, amount);
                 }
                 else
                 {
-                    _statService.AdjustCPBonus(dbPlayer, skillType, -amount);
+                    StatService.AdjustCPBonus(dbPlayer, skillType, -amount);
                 }
 
                 _db.Set(dbPlayer);

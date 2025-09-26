@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Crafting.Enums;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
@@ -7,15 +8,18 @@ namespace SWLOR.Component.Crafting.Model
 {
     public class FishingLocationDetail
     {
-        private readonly IRandomService _random;
+        private readonly IServiceProvider _serviceProvider;
         public Dictionary<Tuple<FishingRodType, FishingBaitType>, List<FishDetail>> FishMap { get; } = new();
         private FishType _defaultFish;
 
-        public FishingLocationDetail(IRandomService randomService)
+        public FishingLocationDetail(IServiceProvider serviceProvider)
         {
-            _random = randomService;
+            _serviceProvider = serviceProvider;
             _defaultFish = FishType.MoatCarp;
         }
+
+        // Lazy-loaded service to break circular dependency
+        private IRandomService Random => _serviceProvider.GetRequiredService<IRandomService>();
 
         /// <summary>
         /// Retrieves the resref of a random fish given a rod and bait type.
@@ -52,7 +56,7 @@ namespace SWLOR.Component.Crafting.Model
 
             var weights = availableFish
                 .Select(s => s.Frequency).ToArray();
-            var selectedIndex = _random.GetRandomWeightedIndex(weights);
+            var selectedIndex = Random.GetRandomWeightedIndex(weights);
             var selectedFish = availableFish[selectedIndex];
 
             return (selectedFish.Type, false);

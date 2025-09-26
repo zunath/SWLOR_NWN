@@ -16,7 +16,6 @@ namespace SWLOR.Component.Inventory.Service
     public class Loot : ILootService
     {
         private readonly ILogger _logger;
-        private readonly IRandomService _random;
         private readonly IServiceProvider _serviceProvider;
         private readonly Dictionary<string, LootTable> _lootTables = new();
 
@@ -26,15 +25,14 @@ namespace SWLOR.Component.Inventory.Service
 
         public Loot(
             ILogger logger,
-            IRandomService random,
             IServiceProvider serviceProvider)
         {
             _logger = logger;
-            _random = random;
             _serviceProvider = serviceProvider;
         }
 
         // Lazy-loaded services to break circular dependencies
+        private IRandomService Random => _serviceProvider.GetRequiredService<IRandomService>();
         private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
         private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
         private IBeastMasteryService BeastMasteryService => _serviceProvider.GetRequiredService<IBeastMasteryService>();
@@ -161,10 +159,10 @@ namespace SWLOR.Component.Inventory.Service
             }
             for (int x = 1; x <= attempts; x++)
             {
-                if (_random.D100(1) > chance) continue;
+                if (Random.D100(1) > chance) continue;
 
                 var item = table.GetRandomItem(rareBonusChance);
-                var quantity = _random.Next(item.MaxQuantity) + 1;
+                var quantity = Random.Next(item.MaxQuantity) + 1;
 
                 // CreditFinder perk - Increase the quantity of gold found.
                 if (item.Resref == "nw_it_gold001")
@@ -477,7 +475,7 @@ namespace SWLOR.Component.Inventory.Service
 
             if (type == DisturbType.Added)
             {
-                _itemService.ReturnItem(looter, item);
+                ItemService.ReturnItem(looter, item);
                 SendMessageToPC(looter, "You cannot place items inside of corpses.");
             }
             else if (type == DisturbType.Removed)

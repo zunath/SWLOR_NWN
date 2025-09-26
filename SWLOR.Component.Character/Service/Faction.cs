@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Domain.Communication.Contracts;
@@ -11,12 +12,17 @@ namespace SWLOR.Component.Character.Service
     public class FactionService : IFactionService
     {
         private readonly IDatabaseService _db;
+        private readonly IServiceProvider _serviceProvider;
         private readonly Dictionary<FactionType, FactionAttribute> _factions = new();
 
-        public FactionService(IDatabaseService db)
+        public FactionService(IDatabaseService db, IServiceProvider serviceProvider)
         {
             _db = db;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded service to break circular dependency
+        private IMessagingService MessagingService => _serviceProvider.GetRequiredService<IMessagingService>();
         public int MinimumFaction => -5000;
         public int MaximumFaction => 5000;
 

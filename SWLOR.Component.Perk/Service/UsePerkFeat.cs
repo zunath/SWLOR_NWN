@@ -32,26 +32,13 @@ namespace SWLOR.Component.Perk.Service
         private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
         private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
         private IRecastService RecastService => _serviceProvider.GetRequiredService<IRecastService>();
-        private readonly IEnmityService _enmityService;
-        private readonly IActivityService _activityService;
-        private readonly IMessagingService _messagingService;
+        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
+        private IActivityService ActivityService => _serviceProvider.GetRequiredService<IActivityService>();
+        private IMessagingService MessagingService => _serviceProvider.GetRequiredService<IMessagingService>();
 
-        public UsePerkFeat(
-            IAbilityService abilityService, 
-            IPerkService perkService, 
-            IItemService itemService, 
-            IRecastService recastService, 
-            IEnmityService enmityService, 
-            IActivityService activityService, 
-            IMessagingService messagingService)
+        public UsePerkFeat(IServiceProvider serviceProvider)
         {
-            _abilityService = abilityService;
-            _perkService = perkService;
-            _itemService = itemService;
-            _recastService = recastService;
-            _enmityService = enmityService;
-            _activityService = activityService;
-            _messagingService = messagingService;
+            _serviceProvider = serviceProvider;
         }
         private enum ActivationStatus
         {

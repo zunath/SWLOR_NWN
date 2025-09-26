@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
@@ -13,15 +14,17 @@ namespace SWLOR.Component.Properties.Dialog
     public class PlaceCityHallDialog: DialogBase
     {
         private readonly IDatabaseService _db;
-        private readonly IPropertyService _propertyService;
-        private readonly IPerkService _perkService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public PlaceCityHallDialog(IDatabaseService db, IPropertyService propertyService, IPerkService perkService, IDialogService dialogService, IDialogBuilder dialogBuilder) : base(dialogService, dialogBuilder)
+        public PlaceCityHallDialog(IDatabaseService db, IServiceProvider serviceProvider, IDialogService dialogService, IDialogBuilder dialogBuilder) : base(dialogService, dialogBuilder)
         {
             _db = db;
-            _propertyService = propertyService;
-            _perkService = perkService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IPropertyService PropertyService => _serviceProvider.GetRequiredService<IPropertyService>();
+        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
         
         private class Model
         {

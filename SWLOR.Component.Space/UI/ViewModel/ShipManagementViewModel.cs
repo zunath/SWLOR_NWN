@@ -32,19 +32,15 @@ namespace SWLOR.Component.Space.UI.ViewModel
         
         // Lazy-loaded services to break circular dependencies
         private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
-        private readonly IPropertyService _propertyService;
-        private readonly ITargetingService _targetingService;
-        private readonly ISpaceService _spaceService;
-        private readonly IAreaService _areaService;
+        private IPropertyService PropertyService => _serviceProvider.GetRequiredService<IPropertyService>();
+        private ITargetingService TargetingService => _serviceProvider.GetRequiredService<ITargetingService>();
+        private ISpaceService SpaceService => _serviceProvider.GetRequiredService<ISpaceService>();
+        private IAreaService AreaService => _serviceProvider.GetRequiredService<IAreaService>();
 
-        public ShipManagementViewModel(IGuiService guiService, IDatabaseService db, IItemService itemService, IPropertyService propertyService, ITargetingService targetingService, ISpaceService spaceService, IAreaService areaService) : base(guiService)
+        public ShipManagementViewModel(IGuiService guiService, IDatabaseService db, IServiceProvider serviceProvider) : base(guiService)
         {
             _db = db;
-            _itemService = itemService;
-            _propertyService = propertyService;
-            _targetingService = targetingService;
-            _spaceService = spaceService;
-            _areaService = areaService;
+            _serviceProvider = serviceProvider;
         }
         
         private const string _blank = "Blank";
@@ -662,7 +658,7 @@ namespace SWLOR.Component.Space.UI.ViewModel
             var shieldDiff = ship.Status.MaxShield - ship.Status.Shield;
             var hullDiff = ship.Status.MaxHull - ship.Status.Hull;
             var price = shieldDiff * 50 + hullDiff * 100;
-            var starportBonus = _propertyService.GetEffectiveUpgradeLevel(dbPlayer.CitizenPropertyId, PropertyUpgradeType.StarportLevel) * 0.05f;
+            var starportBonus = PropertyService.GetEffectiveUpgradeLevel(dbPlayer.CitizenPropertyId, PropertyUpgradeType.StarportLevel) * 0.05f;
             var socialBonus = (GetAbilityScore(Player, AbilityType.Social) - 10) * 0.02f;
             if (socialBonus > 0.20f)
                 socialBonus = 0.20f;
@@ -696,14 +692,14 @@ namespace SWLOR.Component.Space.UI.ViewModel
 
                 var dbProperty = _db.Get<WorldProperty>(initialPayload.SpecificPropertyId);
                 var spacePropertyLocation = dbProperty.Positions[PropertyLocationType.SpacePosition];
-                var spaceArea = _areaService.GetAreaByResref(spacePropertyLocation.AreaResref);
+                var spaceArea = AreaService.GetAreaByResref(spacePropertyLocation.AreaResref);
                 var spacePosition = Vector3(spacePropertyLocation.X, spacePropertyLocation.Y, spacePropertyLocation.Z);
                 _spaceLocation = Location(spaceArea, spacePosition, spacePropertyLocation.Orientation);
 
                 var landingPropertyLocation = dbProperty.Positions[PropertyLocationType.DockPosition];
                 var landingArea = string.IsNullOrWhiteSpace(landingPropertyLocation.AreaResref)
-                    ? _propertyService.GetRegisteredInstance(landingPropertyLocation.InstancePropertyId).Area
-                    : _areaService.GetAreaByResref(landingPropertyLocation.AreaResref);
+                    ? PropertyService.GetRegisteredInstance(landingPropertyLocation.InstancePropertyId).Area
+                    : AreaService.GetAreaByResref(landingPropertyLocation.AreaResref);
                 var landingPosition = Vector3(landingPropertyLocation.X, landingPropertyLocation.Y, landingPropertyLocation.Z);
                 _landingLocation = Location(landingArea, landingPosition, landingPropertyLocation.Orientation);
 
@@ -720,7 +716,7 @@ namespace SWLOR.Component.Space.UI.ViewModel
 
             LoadShips(dbPlayerShips);
 
-            ShipCountRegistered = $"Ships: {dbPlayerShips.Count} / {_spaceService.MaxRegisteredShips}";
+            ShipCountRegistered = $"Ships: {dbPlayerShips.Count} / {SpaceService.MaxRegisteredShips}";
             LoadShip();
 
             IsMyShipsToggled = true;
@@ -834,7 +830,7 @@ namespace SWLOR.Component.Space.UI.ViewModel
             {
                 var shipId = _shipIds[SelectedShipIndex];
                 var ship = _db.Get<PlayerShip>(shipId);
-                var shipDetail = _spaceService.GetShipDetailByItemTag(ship.Status.ItemTag);
+                var shipDetail = SpaceService.GetShipDetailByItemTag(ship.Status.ItemTag);
                 var property = _db.Get<WorldProperty>(ship.PropertyId);
 
                 var permissionQuery = new DBQuery<WorldPropertyPermission>()
@@ -874,7 +870,7 @@ namespace SWLOR.Component.Space.UI.ViewModel
                     : null;
                 if (module != null)
                 {
-                    var detail = _spaceService.GetShipModuleDetailByItemTag(module.ItemTag);
+                    var detail = SpaceService.GetShipModuleDetailByItemTag(module.ItemTag);
                     HighPower1Resref = detail.Texture;
                     HighPower1Tooltip = detail.Name;
                 }
@@ -889,7 +885,7 @@ namespace SWLOR.Component.Space.UI.ViewModel
                     : null;
                 if (module != null)
                 {
-                    var detail = _spaceService.GetShipModuleDetailByItemTag(module.ItemTag);
+                    var detail = SpaceService.GetShipModuleDetailByItemTag(module.ItemTag);
                     HighPower2Resref = detail.Texture;
                     HighPower2Tooltip = detail.Name;
                 }
@@ -904,7 +900,7 @@ namespace SWLOR.Component.Space.UI.ViewModel
                     : null;
                 if (module != null)
                 {
-                    var detail = _spaceService.GetShipModuleDetailByItemTag(module.ItemTag);
+                    var detail = SpaceService.GetShipModuleDetailByItemTag(module.ItemTag);
                     HighPower3Resref = detail.Texture;
                     HighPower3Tooltip = detail.Name;
                 }
@@ -919,7 +915,7 @@ namespace SWLOR.Component.Space.UI.ViewModel
                     : null;
                 if (module != null)
                 {
-                    var detail = _spaceService.GetShipModuleDetailByItemTag(module.ItemTag);
+                    var detail = SpaceService.GetShipModuleDetailByItemTag(module.ItemTag);
                     HighPower4Resref = detail.Texture;
                     HighPower4Tooltip = detail.Name;
                 }
@@ -934,7 +930,7 @@ namespace SWLOR.Component.Space.UI.ViewModel
                     : null;
                 if (module != null)
                 {
-                    var detail = _spaceService.GetShipModuleDetailByItemTag(module.ItemTag);
+                    var detail = SpaceService.GetShipModuleDetailByItemTag(module.ItemTag);
                     HighPower5Resref = detail.Texture;
                     HighPower5Tooltip = detail.Name;
                 }
@@ -949,7 +945,7 @@ namespace SWLOR.Component.Space.UI.ViewModel
                     : null;
                 if (module != null)
                 {
-                    var detail = _spaceService.GetShipModuleDetailByItemTag(module.ItemTag);
+                    var detail = SpaceService.GetShipModuleDetailByItemTag(module.ItemTag);
                     HighPower6Resref = detail.Texture;
                     HighPower6Tooltip = detail.Name;
                 }
@@ -964,7 +960,7 @@ namespace SWLOR.Component.Space.UI.ViewModel
                     : null;
                 if (module != null)
                 {
-                    var detail = _spaceService.GetShipModuleDetailByItemTag(module.ItemTag);
+                    var detail = SpaceService.GetShipModuleDetailByItemTag(module.ItemTag);
                     HighPower7Resref = detail.Texture;
                     HighPower7Tooltip = detail.Name;
                 }
@@ -979,7 +975,7 @@ namespace SWLOR.Component.Space.UI.ViewModel
                     : null;
                 if (module != null)
                 {
-                    var detail = _spaceService.GetShipModuleDetailByItemTag(module.ItemTag);
+                    var detail = SpaceService.GetShipModuleDetailByItemTag(module.ItemTag);
                     HighPower8Resref = detail.Texture;
                     HighPower8Tooltip = detail.Name;
                 }
@@ -1003,7 +999,7 @@ namespace SWLOR.Component.Space.UI.ViewModel
                     : null;
                 if (module != null)
                 {
-                    var detail = _spaceService.GetShipModuleDetailByItemTag(module.ItemTag);
+                    var detail = SpaceService.GetShipModuleDetailByItemTag(module.ItemTag);
                     LowPower1Resref = detail.Texture;
                     LowPower1Tooltip = detail.Name;
                 }
@@ -1018,7 +1014,7 @@ namespace SWLOR.Component.Space.UI.ViewModel
                     : null;
                 if (module != null)
                 {
-                    var detail = _spaceService.GetShipModuleDetailByItemTag(module.ItemTag);
+                    var detail = SpaceService.GetShipModuleDetailByItemTag(module.ItemTag);
                     LowPower2Resref = detail.Texture;
                     LowPower2Tooltip = detail.Name;
                 }
@@ -1033,7 +1029,7 @@ namespace SWLOR.Component.Space.UI.ViewModel
                     : null;
                 if (module != null)
                 {
-                    var detail = _spaceService.GetShipModuleDetailByItemTag(module.ItemTag);
+                    var detail = SpaceService.GetShipModuleDetailByItemTag(module.ItemTag);
                     LowPower3Resref = detail.Texture;
                     LowPower3Tooltip = detail.Name;
                 }
@@ -1048,7 +1044,7 @@ namespace SWLOR.Component.Space.UI.ViewModel
                     : null;
                 if (module != null)
                 {
-                    var detail = _spaceService.GetShipModuleDetailByItemTag(module.ItemTag);
+                    var detail = SpaceService.GetShipModuleDetailByItemTag(module.ItemTag);
                     LowPower4Resref = detail.Texture;
                     LowPower4Tooltip = detail.Name;
                 }
@@ -1063,7 +1059,7 @@ namespace SWLOR.Component.Space.UI.ViewModel
                     : null;
                 if (module != null)
                 {
-                    var detail = _spaceService.GetShipModuleDetailByItemTag(module.ItemTag);
+                    var detail = SpaceService.GetShipModuleDetailByItemTag(module.ItemTag);
                     LowPower5Resref = detail.Texture;
                     LowPower5Tooltip = detail.Name;
                 }
@@ -1078,7 +1074,7 @@ namespace SWLOR.Component.Space.UI.ViewModel
                     : null;
                 if (module != null)
                 {
-                    var detail = _spaceService.GetShipModuleDetailByItemTag(module.ItemTag);
+                    var detail = SpaceService.GetShipModuleDetailByItemTag(module.ItemTag);
                     LowPower6Resref = detail.Texture;
                     LowPower6Tooltip = detail.Name;
                 }
@@ -1093,7 +1089,7 @@ namespace SWLOR.Component.Space.UI.ViewModel
                     : null;
                 if (module != null)
                 {
-                    var detail = _spaceService.GetShipModuleDetailByItemTag(module.ItemTag);
+                    var detail = SpaceService.GetShipModuleDetailByItemTag(module.ItemTag);
                     LowPower7Resref = detail.Texture;
                     LowPower7Tooltip = detail.Name;
                 }
@@ -1108,7 +1104,7 @@ namespace SWLOR.Component.Space.UI.ViewModel
                     : null;
                 if (module != null)
                 {
-                    var detail = _spaceService.GetShipModuleDetailByItemTag(module.ItemTag);
+                    var detail = SpaceService.GetShipModuleDetailByItemTag(module.ItemTag);
                     LowPower8Resref = detail.Texture;
                     LowPower8Tooltip = detail.Name;
                 }
@@ -1132,7 +1128,7 @@ namespace SWLOR.Component.Space.UI.ViewModel
                     : null;
                 if (module != null)
                 {
-                    var detail = _spaceService.GetShipModuleDetailByItemTag(module.ItemTag);
+                    var detail = SpaceService.GetShipModuleDetailByItemTag(module.ItemTag);
                     Configuration1Resref = detail.Texture;
                     Configuration1Tooltip = detail.Name;
                 }
@@ -1147,7 +1143,7 @@ namespace SWLOR.Component.Space.UI.ViewModel
                     : null;
                 if (module != null)
                 {
-                    var detail = _spaceService.GetShipModuleDetailByItemTag(module.ItemTag);
+                    var detail = SpaceService.GetShipModuleDetailByItemTag(module.ItemTag);
                     Configuration2Resref = detail.Texture;
                     Configuration2Tooltip = detail.Name;
                 }
@@ -1162,7 +1158,7 @@ namespace SWLOR.Component.Space.UI.ViewModel
                     : null;
                 if (module != null)
                 {
-                    var detail = _spaceService.GetShipModuleDetailByItemTag(module.ItemTag);
+                    var detail = SpaceService.GetShipModuleDetailByItemTag(module.ItemTag);
                     Configuration3Resref = detail.Texture;
                     Configuration3Tooltip = detail.Name;
                 }
@@ -1177,7 +1173,7 @@ namespace SWLOR.Component.Space.UI.ViewModel
                     : null;
                 if (module != null)
                 {
-                    var detail = _spaceService.GetShipModuleDetailByItemTag(module.ItemTag);
+                    var detail = SpaceService.GetShipModuleDetailByItemTag(module.ItemTag);
                     Configuration4Resref = detail.Texture;
                     Configuration4Tooltip = detail.Name;
                 }
@@ -1192,7 +1188,7 @@ namespace SWLOR.Component.Space.UI.ViewModel
                     : null;
                 if (module != null)
                 {
-                    var detail = _spaceService.GetShipModuleDetailByItemTag(module.ItemTag);
+                    var detail = SpaceService.GetShipModuleDetailByItemTag(module.ItemTag);
                     Configuration5Resref = detail.Texture;
                     Configuration5Tooltip = detail.Name;
                 }
@@ -1207,7 +1203,7 @@ namespace SWLOR.Component.Space.UI.ViewModel
                     : null;
                 if (module != null)
                 {
-                    var detail = _spaceService.GetShipModuleDetailByItemTag(module.ItemTag);
+                    var detail = SpaceService.GetShipModuleDetailByItemTag(module.ItemTag);
                     Configuration6Resref = detail.Texture;
                     Configuration6Tooltip = detail.Name;
                 }
@@ -1222,7 +1218,7 @@ namespace SWLOR.Component.Space.UI.ViewModel
                     : null;
                 if (module != null)
                 {
-                    var detail = _spaceService.GetShipModuleDetailByItemTag(module.ItemTag);
+                    var detail = SpaceService.GetShipModuleDetailByItemTag(module.ItemTag);
                     Configuration7Resref = detail.Texture;
                     Configuration7Tooltip = detail.Name;
                 }
@@ -1237,7 +1233,7 @@ namespace SWLOR.Component.Space.UI.ViewModel
                     : null;
                 if (module != null)
                 {
-                    var detail = _spaceService.GetShipModuleDetailByItemTag(module.ItemTag);
+                    var detail = SpaceService.GetShipModuleDetailByItemTag(module.ItemTag);
                     Configuration8Resref = detail.Texture;
                     Configuration8Tooltip = detail.Name;
                 }
@@ -1272,8 +1268,8 @@ namespace SWLOR.Component.Space.UI.ViewModel
             {
                 var landingLocation = property.Positions[PropertyLocationType.DockPosition];
                 var area = string.IsNullOrWhiteSpace(landingLocation.AreaResref)
-                    ? _propertyService.GetRegisteredInstance(landingLocation.InstancePropertyId).Area
-                    : _areaService.GetAreaByResref(landingLocation.AreaResref);
+                    ? PropertyService.GetRegisteredInstance(landingLocation.InstancePropertyId).Area
+                    : AreaService.GetAreaByResref(landingLocation.AreaResref);
 
                 return area;
             }
@@ -1281,7 +1277,7 @@ namespace SWLOR.Component.Space.UI.ViewModel
 
         private void ToggleRegisterButtons()
         {
-            IsRegisterEnabled = _shipIds.Count < _spaceService.MaxRegisteredShips && IsMyShipsToggled;
+            IsRegisterEnabled = _shipIds.Count < SpaceService.MaxRegisteredShips && IsMyShipsToggled;
 
             if (SelectedShipIndex > -1)
             {
@@ -1312,7 +1308,7 @@ namespace SWLOR.Component.Space.UI.ViewModel
 
         public Action OnClickRegisterShip() => () =>
         {
-            _targetingService.EnterTargetingMode(Player, ObjectType.Item, "Please click on a ship deed within your inventory.",
+            TargetingService.EnterTargetingMode(Player, ObjectType.Item, "Please click on a ship deed within your inventory.",
                 item =>
             {
                 if (GetItemPossessor(item) != Player)
@@ -1321,13 +1317,13 @@ namespace SWLOR.Component.Space.UI.ViewModel
                     return;
                 }
 
-                if (!_spaceService.IsItemShip(item))
+                if (!SpaceService.IsItemShip(item))
                 {
                     FloatingTextStringOnCreature("Only ship deeds may be targeted.", Player, false);
                     return;
                 }
 
-                if (!_itemService.CanCreatureUseItem(Player, item))
+                if (!ItemService.CanCreatureUseItem(Player, item))
                 {
                     FloatingTextStringOnCreature("You do not meet the requirements necessary to register this ship.", Player, false);
                     return;
@@ -1338,19 +1334,19 @@ namespace SWLOR.Component.Space.UI.ViewModel
                     .AddFieldSearch(nameof(PlayerShip.OwnerPlayerId), playerId, false);
                 var dbPlayerShips = _db.Search(query).ToList();
 
-                if (dbPlayerShips.Count >= _spaceService.MaxRegisteredShips)
+                if (dbPlayerShips.Count >= SpaceService.MaxRegisteredShips)
                 {
-                    FloatingTextStringOnCreature($"You may only have {_spaceService.MaxRegisteredShips} ships registered at a time.", Player, false);
+                    FloatingTextStringOnCreature($"You may only have {SpaceService.MaxRegisteredShips} ships registered at a time.", Player, false);
                     return;
                 }
 
                 // Validation passed. Add the ship and register it under this player.
                 var itemTag = GetTag(item);
-                var shipDetail = _spaceService.GetShipDetailByItemTag(itemTag);
-                var bonuses = _spaceService.GetShipBonuses(item);
+                var shipDetail = SpaceService.GetShipDetailByItemTag(itemTag);
+                var bonuses = SpaceService.GetShipBonuses(item);
 
                 // Spawn the property associated with this ship.
-                var property = _propertyService.CreateStarship(
+                var property = PropertyService.CreateStarship(
                     Player, 
                     shipDetail.Layout, 
                     _planetType,
@@ -1385,11 +1381,11 @@ namespace SWLOR.Component.Space.UI.ViewModel
                 };
                 _db.Set(ship);
 
-                var instance = _propertyService.GetRegisteredInstance(property.Id);
+                var instance = PropertyService.GetRegisteredInstance(property.Id);
                 SetName(instance.Area, "{PC} " + property.CustomName);
 
                 // Update the UI with the new ship details.
-                ShipCountRegistered = $"Ships: {dbPlayerShips.Count + 1} / {_spaceService.MaxRegisteredShips}";
+                ShipCountRegistered = $"Ships: {dbPlayerShips.Count + 1} / {SpaceService.MaxRegisteredShips}";
                 _shipIds.Add(ship.Id);
                 ShipNames.Add(property.CustomName);
                 ShipToggles.Add(false);
@@ -1443,7 +1439,7 @@ namespace SWLOR.Component.Space.UI.ViewModel
                     ShipToggles.RemoveAt(SelectedShipIndex);
                     SelectedShipIndex = -1;
                     ToggleRegisterButtons();
-                    ShipCountRegistered = $"Ships: {_shipIds.Count} / {_spaceService.MaxRegisteredShips}";
+                    ShipCountRegistered = $"Ships: {_shipIds.Count} / {SpaceService.MaxRegisteredShips}";
                     LoadShip();
 
                     FloatingTextStringOnCreature("Ship unregistered!", Player, false);
@@ -1461,7 +1457,7 @@ namespace SWLOR.Component.Space.UI.ViewModel
             var shipId = _shipIds[SelectedShipIndex];
             var dbShip = _db.Get<PlayerShip>(shipId);
             var dbProperty = _db.Get<WorldProperty>(dbShip.PropertyId);
-            var instance = _propertyService.GetRegisteredInstance(dbShip.PropertyId);
+            var instance = PropertyService.GetRegisteredInstance(dbShip.PropertyId);
 
             dbProperty.CustomName = ShipName;
             _db.Set(dbProperty);
@@ -1476,7 +1472,7 @@ namespace SWLOR.Component.Space.UI.ViewModel
             var itemTag = GetTag(item);
 
             // Not a valid module type.
-            if (!_spaceService.IsRegisteredShipModule(itemTag))
+            if (!SpaceService.IsRegisteredShipModule(itemTag))
             {
                 SendMessageToPC(Player, "Only starship modules may be installed.");
                 return false;
@@ -1488,8 +1484,8 @@ namespace SWLOR.Component.Space.UI.ViewModel
                 return false;
             }
 
-            var moduleDetails = _spaceService.GetShipModuleDetailByItemTag(itemTag);
-            var shipDetails = _spaceService.GetShipDetailByItemTag(dbShip.Status.ItemTag);
+            var moduleDetails = SpaceService.GetShipModuleDetailByItemTag(itemTag);
+            var shipDetails = SpaceService.GetShipDetailByItemTag(dbShip.Status.ItemTag);
 
             // No high power nodes available.
             if (moduleDetails.PowerType == ShipModulePowerType.High &&
@@ -1508,7 +1504,7 @@ namespace SWLOR.Component.Space.UI.ViewModel
             }
 
             // Doesn't meet perk requirements.
-            if (!_spaceService.CanPlayerUseShipModule(Player, itemTag))
+            if (!SpaceService.CanPlayerUseShipModule(Player, itemTag))
             {
                 SendMessageToPC(Player, "You do not meet the perk requirements necessary to install this module.");
                 return false;
@@ -1544,18 +1540,18 @@ namespace SWLOR.Component.Space.UI.ViewModel
             // Put player into targeting mode to select a module.
             if (module == null)
             {
-                _targetingService.EnterTargetingMode(Player, ObjectType.Item, "Please click on a ship high-powered module within your inventory.",
+                TargetingService.EnterTargetingMode(Player, ObjectType.Item, "Please click on a ship high-powered module within your inventory.",
                     item => 
                 {
                     dbShip = _db.Get<PlayerShip>(shipId);
                     var itemTag = GetTag(item);
-                    if (!_spaceService.IsRegisteredShipModule(itemTag))
+                    if (!SpaceService.IsRegisteredShipModule(itemTag))
                     {
                         SendMessageToPC(Player, "Only high-powered ship modules may be installed to this slot.");
                         return;
                     }
 
-                    var moduleDetails = _spaceService.GetShipModuleDetailByItemTag(itemTag);
+                    var moduleDetails = SpaceService.GetShipModuleDetailByItemTag(itemTag);
 
                     if (!ValidateModuleEquip(dbShip, item))
                         return;
@@ -1566,7 +1562,7 @@ namespace SWLOR.Component.Space.UI.ViewModel
                         return;
                     }
 
-                    var moduleBonus = _spaceService.GetModuleBonus(item);
+                    var moduleBonus = SpaceService.GetModuleBonus(item);
                     dbShip.Status.HighPowerModules[slot] = new ShipStatus.ShipStatusModule
                     {
                         ItemInstanceId = GetObjectUUID(item),
@@ -1587,13 +1583,13 @@ namespace SWLOR.Component.Space.UI.ViewModel
             // A module exists. Prompt user whether they'd like to uninstall it.
             else
             {
-                var moduleDetail = _spaceService.GetShipModuleDetailByItemTag(module.ItemTag);
+                var moduleDetail = SpaceService.GetShipModuleDetailByItemTag(module.ItemTag);
                 ShowModal($"{moduleDetail.Name} is equipped to high slot #{slot}. Would you like to uninstall it?", () =>
                 {
                     var item = ObjectPlugin.Deserialize(module.SerializedItem);
                     ObjectPlugin.AcquireItem(Player, item);
 
-                    var moduleBonus = _spaceService.GetModuleBonus(item);
+                    var moduleBonus = SpaceService.GetModuleBonus(item);
                     moduleDetail.ModuleUnequippedAction?.Invoke(dbShip.Status, moduleBonus);
                     dbShip.Status.HighPowerModules.Remove(slot);
                     _db.Set(dbShip);
@@ -1614,19 +1610,19 @@ namespace SWLOR.Component.Space.UI.ViewModel
             // Put player into targeting mode to select a module.
             if (module == null)
             {
-                _targetingService.EnterTargetingMode(Player, ObjectType.Item, "Please click on a low-powered ship module within your inventory",
+                TargetingService.EnterTargetingMode(Player, ObjectType.Item, "Please click on a low-powered ship module within your inventory",
                     item =>
                 {
                     dbShip = _db.Get<PlayerShip>(shipId);
                     var itemTag = GetTag(item);
-                    if (!_spaceService.IsRegisteredShipModule(itemTag))
+                    if (!SpaceService.IsRegisteredShipModule(itemTag))
                     {
                         SendMessageToPC(Player, "Only low-powered ship modules may be installed to this slot.");
                         return;
                     }
 
-                    var moduleDetails = _spaceService.GetShipModuleDetailByItemTag(itemTag);
-                    var moduleBonus = _spaceService.GetModuleBonus(item);
+                    var moduleDetails = SpaceService.GetShipModuleDetailByItemTag(itemTag);
+                    var moduleBonus = SpaceService.GetModuleBonus(item);
 
                     if (!ValidateModuleEquip(dbShip, item))
                         return;
@@ -1658,11 +1654,11 @@ namespace SWLOR.Component.Space.UI.ViewModel
             // A module exists. Prompt user whether they'd like to uninstall it.
             else
             {
-                var moduleDetail = _spaceService.GetShipModuleDetailByItemTag(module.ItemTag);
+                var moduleDetail = SpaceService.GetShipModuleDetailByItemTag(module.ItemTag);
                 ShowModal($"{moduleDetail.Name} is equipped to low slot #{slot}. Would you like to uninstall it?", () =>
                 {
                     var item = ObjectPlugin.Deserialize(module.SerializedItem);
-                    var moduleBonus = _spaceService.GetModuleBonus(item);
+                    var moduleBonus = SpaceService.GetModuleBonus(item);
                     ObjectPlugin.AcquireItem(Player, item);
 
                     moduleDetail.ModuleUnequippedAction?.Invoke(dbShip.Status, moduleBonus);
@@ -1685,19 +1681,19 @@ namespace SWLOR.Component.Space.UI.ViewModel
             // Put player into targeting mode to select a module.
             if (module == null)
             {
-                _targetingService.EnterTargetingMode(Player, ObjectType.Item, "Please click on a ship configuration module within your inventory",
+                TargetingService.EnterTargetingMode(Player, ObjectType.Item, "Please click on a ship configuration module within your inventory",
                     item =>
                     {
                         dbShip = _db.Get<PlayerShip>(shipId);
                         var itemTag = GetTag(item);
-                        if (!_spaceService.IsRegisteredShipModule(itemTag))
+                        if (!SpaceService.IsRegisteredShipModule(itemTag))
                         {
                             SendMessageToPC(Player, "Only ship configuration modules may be installed to this slot.");
                             return;
                         }
 
-                        var moduleDetails = _spaceService.GetShipModuleDetailByItemTag(itemTag);
-                        var moduleBonus = _spaceService.GetModuleBonus(item);
+                        var moduleDetails = SpaceService.GetShipModuleDetailByItemTag(itemTag);
+                        var moduleBonus = SpaceService.GetModuleBonus(item);
 
                         if (!ValidateModuleEquip(dbShip, item))
                             return;
@@ -1728,11 +1724,11 @@ namespace SWLOR.Component.Space.UI.ViewModel
             // A module exists. Prompt user whether they'd like to uninstall it.
             else
             {
-                var moduleDetail = _spaceService.GetShipModuleDetailByItemTag(module.ItemTag);
+                var moduleDetail = SpaceService.GetShipModuleDetailByItemTag(module.ItemTag);
                 ShowModal($"{moduleDetail.Name} is equipped to ship configuration slot #{slot}. Would you like to uninstall it?", () =>
                 {
                     var item = ObjectPlugin.Deserialize(module.SerializedItem);
-                    var moduleBonus = _spaceService.GetModuleBonus(item);
+                    var moduleBonus = SpaceService.GetModuleBonus(item);
                     ObjectPlugin.AcquireItem(Player, item);
 
                     moduleDetail.ModuleUnequippedAction?.Invoke(dbShip.Status, moduleBonus);
@@ -1855,9 +1851,9 @@ namespace SWLOR.Component.Space.UI.ViewModel
         {
             var shipId = _shipIds[SelectedShipIndex];
             var dbShip = _db.Get<PlayerShip>(shipId);
-            var shipDetail = _spaceService.GetShipDetailByItemTag(dbShip.Status.ItemTag);
-            var instance = _propertyService.GetRegisteredInstance(dbShip.PropertyId);
-            var entrance = _propertyService.GetEntrancePosition(shipDetail.Layout);
+            var shipDetail = SpaceService.GetShipDetailByItemTag(dbShip.Status.ItemTag);
+            var instance = PropertyService.GetRegisteredInstance(dbShip.PropertyId);
+            var entrance = PropertyService.GetEntrancePosition(shipDetail.Layout);
             var location = Location(instance.Area, Vector3(entrance.X, entrance.Y, entrance.Z), entrance.W);
 
             AssignCommand(Player, () =>

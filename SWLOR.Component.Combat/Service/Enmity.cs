@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Combat.Contracts;
@@ -13,7 +14,7 @@ namespace SWLOR.Component.Combat.Service
 {
     public class Enmity : IEnmityService
     {
-        private readonly IPartyService _partyService;
+        private readonly IServiceProvider _serviceProvider;
         
         // Enemy -> Creature -> EnmityAmount mapping
         private readonly Dictionary<uint, Dictionary<uint, int>> _enemyEnmityTables = new();
@@ -21,10 +22,13 @@ namespace SWLOR.Component.Combat.Service
         // Creature -> EnemyList mapping
         private readonly Dictionary<uint, List<uint>> _creatureToEnemies = new();
 
-        public Enmity(IPartyService partyService)
+        public Enmity(IServiceProvider serviceProvider)
         {
-            _partyService = partyService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded service to break circular dependency
+        private IPartyService PartyService => _serviceProvider.GetRequiredService<IPartyService>();
 
         /// <summary>
         /// When an enemy is damaged, increase enmity toward that creature by the amount of damage dealt.
@@ -156,7 +160,7 @@ namespace SWLOR.Component.Combat.Service
                 return;
 
             // Party members (droids, pets, associates) cannot gain enmity
-            if (_partyService.IsInParty(creature, enemy))
+            if (PartyService.IsInParty(creature, enemy))
                 return;
 
             // Player associates cannot gain enmity towards each other

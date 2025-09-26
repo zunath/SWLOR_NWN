@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -15,15 +16,17 @@ namespace SWLOR.Component.Admin.UI.ViewModel
     public class DMPlayerExamineViewModel: GuiViewModelBase<DMPlayerExamineViewModel, DMPlayerExaminePayload>
     {
         private readonly IDatabaseService _db;
-        private readonly ISkillService _skillService;
-        private readonly IPerkService _perkService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public DMPlayerExamineViewModel(IGuiService guiService, IDatabaseService db, ISkillService skillService, IPerkService perkService) : base(guiService)
+        public DMPlayerExamineViewModel(IGuiService guiService, IDatabaseService db, IServiceProvider serviceProvider) : base(guiService)
         {
             _db = db;
-            _skillService = skillService;
-            _perkService = perkService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private ISkillService SkillService => _serviceProvider.GetRequiredService<ISkillService>();
+        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
         
         private const int MaxNotes = 50;
 

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Properties.Service;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Enums;
@@ -19,14 +20,17 @@ namespace SWLOR.Component.Properties.UI.ViewModel
     {
         private readonly ILogger _logger;
         private readonly IDatabaseService _db;
-        private readonly PropertyService _property;
+        private readonly IServiceProvider _serviceProvider;
 
-        public ManageCityViewModel(IGuiService guiService, ILogger logger, IDatabaseService db, PropertyService property) : base(guiService)
+        public ManageCityViewModel(IGuiService guiService, ILogger logger, IDatabaseService db, IServiceProvider serviceProvider) : base(guiService)
         {
             _logger = logger;
             _db = db;
-            _property = property;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded service to break circular dependency
+        private PropertyService Property => _serviceProvider.GetRequiredService<PropertyService>();
         
         private const int MaxUpgradeLevel = 5;
         private string _cityId;

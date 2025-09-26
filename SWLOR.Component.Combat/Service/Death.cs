@@ -77,7 +77,7 @@ namespace SWLOR.Component.Combat.Service
                 if (dbHostilePlayer != null && dbHostilePlayer.Settings.IsSubdualModeEnabled)
                 {
                     SendMessageToPC(player, "You have been subdued.");
-                    _messagingService.SendMessageNearbyToPlayers(player, $"{GetName(player)} has been subdued by {GetName(hostile)}.");
+                    MessagingService.SendMessageNearbyToPlayers(player, $"{GetName(player)} has been subdued by {GetName(hostile)}.");
                     ApplyEffectToObject(DurationType.Instant, EffectResurrection(), player);
                     ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), player, 60f);
                     ApplyEffectToObject(DurationType.Temporary, EffectSlow(), player, 300f);
@@ -179,7 +179,7 @@ namespace SWLOR.Component.Combat.Service
         {
             var playerId = GetObjectUUID(player);
             var entity = _db.Get<Player>(playerId);
-            var area = _areaService.GetAreaByResref(entity.RespawnAreaResref);
+            var area = AreaService.GetAreaByResref(entity.RespawnAreaResref);
             var position = Vector3(
                 entity.RespawnLocationX,
                 entity.RespawnLocationY,
@@ -223,7 +223,7 @@ namespace SWLOR.Component.Combat.Service
             var social = GetAbilityScore(player, AbilityType.Social);
             var newDebt = dbPlayer.TotalSPAcquired * multiplier;
             var reductionBonus = 0f;
-            reductionBonus += _propertyService.GetEffectiveUpgradeLevel(dbPlayer.CitizenPropertyId, PropertyUpgradeType.MedicalCenterLevel) * 0.05f; // -5% per Medical Center level
+            reductionBonus += PropertyService.GetEffectiveUpgradeLevel(dbPlayer.CitizenPropertyId, PropertyUpgradeType.MedicalCenterLevel) * 0.05f; // -5% per Medical Center level
 
             if (social > 10)
             {

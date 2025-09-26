@@ -79,7 +79,7 @@ namespace SWLOR.Component.Communication.Service
                 SetLocalObject(dm, DMPossessedCreature, target);
                 
                 // Clear busy status of the possessed creature to prevent ability usage issues
-                _activityService.ClearBusy(target);
+                ActivityService.ClearBusy(target);
             }
         }
 
@@ -391,23 +391,23 @@ namespace SWLOR.Component.Communication.Service
 
                 var originalSender = sender;
                 // temp set sender to hologram owner for holocoms
-                if (GetIsObjectValid(_holoComService.GetHoloGramOwner(sender)))
+                if (GetIsObjectValid(HoloComService.GetHoloGramOwner(sender)))
                 {
-                    sender = _holoComService.GetHoloGramOwner(sender);
+                    sender = HoloComService.GetHoloGramOwner(sender);
                 }
 
-                var language = _languageService.GetActiveLanguage(sender);
+                var language = LanguageService.GetActiveLanguage(sender);
 
                 // Wookiees cannot speak any other language (but they can understand them).
                 // Swap their language if they attempt to speak in any other language.
                 var race = GetRacialType(sender);
                 if (race == RacialType.Wookiee && language != SkillType.Shyriiwook)
                 {
-                    _languageService.SetActiveLanguage(sender, SkillType.Shyriiwook);
+                    LanguageService.SetActiveLanguage(sender, SkillType.Shyriiwook);
                     language = SkillType.Shyriiwook;
                 }
 
-                var (r, g, b) = _languageService.GetColor(language);
+                var (r, g, b) = LanguageService.GetColor(language);
 
                 if (dbReceiver != null &&
                     dbReceiver.Settings.LanguageChatColors != null &&
@@ -420,7 +420,7 @@ namespace SWLOR.Component.Communication.Service
 
                 if (language != SkillType.Basic)
                 {
-                    var languageName = _languageService.GetName(language);
+                    var languageName = LanguageService.GetName(language);
                     finalMessage.Append(ColorToken.Custom($"[{languageName}] ", r, g, b));
                 }
 
@@ -430,7 +430,7 @@ namespace SWLOR.Component.Communication.Service
 
                     if (component.IsTranslatable && language != SkillType.Basic)
                     {
-                        text = _languageService.TranslateSnippetForListener(sender, receiver, language, component.Text);
+                        text = LanguageService.TranslateSnippetForListener(sender, receiver, language, component.Text);
                     }
 
                     if (component.IsOOC)

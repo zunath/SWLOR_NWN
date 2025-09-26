@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Properties.Enums;
 using SWLOR.Component.Properties.Service;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -16,13 +17,16 @@ namespace SWLOR.Component.Properties.UI.ViewModel
     public class ElectionViewModel: GuiViewModelBase<ElectionViewModel, IGuiPayload>
     {
         private readonly IDatabaseService _db;
-        private readonly PropertyService _property;
+        private readonly IServiceProvider _serviceProvider;
 
-        public ElectionViewModel(IGuiService guiService, IDatabaseService db, PropertyService property) : base(guiService)
+        public ElectionViewModel(IGuiService guiService, IDatabaseService db, IServiceProvider serviceProvider) : base(guiService)
         {
             _db = db;
-            _property = property;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded service to break circular dependency
+        private PropertyService Property => _serviceProvider.GetRequiredService<PropertyService>();
         
         private readonly List<string> _candidatePlayerIds = new();
         private int _selectedCandidateIndex;

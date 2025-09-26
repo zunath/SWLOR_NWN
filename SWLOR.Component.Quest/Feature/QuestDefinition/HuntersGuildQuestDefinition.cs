@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Quest.Contracts;
 using SWLOR.Component.Quest.Service;
 using SWLOR.Shared.Caching.Contracts;
@@ -10,18 +11,18 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
 {
     public class HuntersGuildQuestDefinition : IQuestListDefinition
     {
-        private readonly IItemCacheService _itemCache;
-        private readonly IQuestService _questService;
-        private readonly IQuestBuilderFactory _questBuilderFactory;
-        private readonly INPCGroupService _npcGroupService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public HuntersGuildQuestDefinition(IItemCacheService itemCache, IQuestService questService, IQuestBuilderFactory questBuilderFactory, INPCGroupService npcGroupService)
+        public HuntersGuildQuestDefinition(IServiceProvider serviceProvider)
         {
-            _itemCache = itemCache;
-            _questService = questService;
-            _questBuilderFactory = questBuilderFactory;
-            _npcGroupService = npcGroupService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IItemCacheService ItemCache => _serviceProvider.GetRequiredService<IItemCacheService>();
+        private IQuestService QuestService => _serviceProvider.GetRequiredService<IQuestService>();
+        private IQuestBuilderFactory QuestBuilderFactory => _serviceProvider.GetRequiredService<IQuestBuilderFactory>();
+        private INPCGroupService NPCGroupService => _serviceProvider.GetRequiredService<INPCGroupService>();
         private class RewardDetails
         {
             public int Gold { get; set; }

@@ -118,11 +118,11 @@ namespace SWLOR.Component.Skill.UI.ViewModel
 
                 if (value == 0)
                 {
-                    LoadSkills(_skillService.GetAllActiveSkills());
+                    LoadSkills(SkillService.GetAllActiveSkills());
                 }
                 else
                 {
-                    var skillsInCategory = _skillService.GetActiveSkillsByCategory((SkillCategoryType)value);
+                    var skillsInCategory = SkillService.GetActiveSkillsByCategory((SkillCategoryType)value);
                     LoadSkills(skillsInCategory);
                 }
             }
@@ -131,7 +131,7 @@ namespace SWLOR.Component.Skill.UI.ViewModel
         protected override void Initialize(IGuiPayload initialPayload)
         {
             SelectedCategoryId = 0;
-            LoadSkills(_skillService.GetAllActiveSkills());
+            LoadSkills(SkillService.GetAllActiveSkills());
             WatchOnClient(model => model.SelectedCategoryId);
         }
 
@@ -222,21 +222,21 @@ namespace SWLOR.Component.Skill.UI.ViewModel
 
         private float CalculateProgress(SkillType type, int rank, int xp)
         {
-            var skill = _skillService.GetSkillDetails(type);
+            var skill = SkillService.GetSkillDetails(type);
             if (rank >= skill.MaxRank)
                 return 1f;
 
-            var nextLevelXP = _skillService.GetRequiredXP(rank);
+            var nextLevelXP = SkillService.GetRequiredXP(rank);
             return (float)xp / nextLevelXP;
         }
 
         private string CalculateRawXPAmounts(SkillType type, int rank, int xp)
         {
-            var skill = _skillService.GetSkillDetails(type);
+            var skill = SkillService.GetSkillDetails(type);
             if (rank >= skill.MaxRank)
                 return "0 / 0";
 
-            var nextLevelXP = _skillService.GetRequiredXP(rank);
+            var nextLevelXP = SkillService.GetRequiredXP(rank);
             return $"{xp} / {nextLevelXP}";
         }
 

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Crafting.Contracts;
 using SWLOR.Component.Crafting.Model;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -13,14 +14,17 @@ namespace SWLOR.Component.Crafting.Service
         private readonly Dictionary<RecipeType, RecipeDetail> _recipes = new();
         private RecipeDetail _activeRecipe;
         private RecipeType _activeType;
-        private readonly IPerkService _perkService;
+        private readonly IServiceProvider _serviceProvider;
         private readonly IDatabaseService _databaseService;
 
-        public RecipeBuilder(IPerkService perkService, IDatabaseService databaseService)
+        public RecipeBuilder(IServiceProvider serviceProvider, IDatabaseService databaseService)
         {
-            _perkService = perkService;
+            _serviceProvider = serviceProvider;
             _databaseService = databaseService;
         }
+
+        // Lazy-loaded service to break circular dependency
+        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
 
         /// <summary>
         /// Creates a new recipe.

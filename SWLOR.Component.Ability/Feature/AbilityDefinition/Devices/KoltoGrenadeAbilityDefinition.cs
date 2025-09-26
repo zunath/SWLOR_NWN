@@ -44,8 +44,8 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
             ApplyEffectToObject(DurationType.Temporary, eKolto, target, 45f);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_G), target);
 
-            _combatPointService.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
-            _enmityService.ModifyEnmityOnAll(activator, 180);
+            CombatPointService.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
+            EnmityService.ModifyEnmityOnAll(activator, 180);
         }
 
         private void KoltoGrenade1(IAbilityBuilder builder)

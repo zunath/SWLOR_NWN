@@ -34,7 +34,7 @@ namespace SWLOR.Component.Crafting.Service
                 _activeDetail = _locations[type];
             else
             {
-                _activeDetail = new FishingLocationDetail(RandomService);
+                _activeDetail = new FishingLocationDetail(_serviceProvider);
                 _locations.Add(type, _activeDetail);
             }
 

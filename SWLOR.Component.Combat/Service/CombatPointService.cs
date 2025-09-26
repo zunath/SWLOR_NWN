@@ -64,7 +64,7 @@ namespace SWLOR.Component.Combat.Service
             var target = GetSpellTargetObject();
             if (GetIsPC(target) || GetIsDM(target)) return;
 
-            var skill = _skillService.GetSkillTypeByBaseItem(baseItemType);
+            var skill = SkillService.GetSkillTypeByBaseItem(baseItemType);
             if (skill == SkillType.Invalid) return;
             var playerId = GetObjectUUID(player);
             var dbPlayer = _db.Get<Player>(playerId);
@@ -74,8 +74,8 @@ namespace SWLOR.Component.Combat.Service
 
             // Lightsabers and Saberstaffs automatically grant combat points toward Force if player has the setting enabled.
             // Additionally, a force combat point is only added if the force skill is not 5 more levels above the one-handed or two-handed skill being used.
-            if ((_itemService.LightsaberBaseItemTypes.Contains(baseItemType) ||
-                _itemService.SaberstaffBaseItemTypes.Contains(baseItemType)) &&
+            if ((ItemService.LightsaberBaseItemTypes.Contains(baseItemType) ||
+                ItemService.SaberstaffBaseItemTypes.Contains(baseItemType)) &&
                 dbPlayer.CharacterType == CharacterType.ForceSensitive &&
                 dbPlayer.Settings.IsLightsaberForceShareEnabled &&
                 levelDelta <= 5)
@@ -85,7 +85,7 @@ namespace SWLOR.Component.Combat.Service
 
             // If player has a beast active, add a combat point for Beast Mastery.
             var associate = GetAssociate(AssociateType.Henchman, player);
-            if (_beastMastery.IsPlayerBeast(associate))
+            if (BeastMastery.IsPlayerBeast(associate))
             {
                 AddCombatPoint(player, target, SkillType.BeastMastery);
             }
@@ -123,7 +123,7 @@ namespace SWLOR.Component.Combat.Service
                 var combatPoints = _creatureCombatPointTracker.ContainsKey(npc) ? _creatureCombatPointTracker[npc] : null;
                 if (combatPoints == null) return;
 
-                var npcStats = _statService.GetNPCStats(npc);
+                var npcStats = StatService.GetNPCStats(npc);
                 var npcLevel = npcStats.Level;
 
                 foreach (var (player, cpList) in combatPoints)
@@ -149,14 +149,14 @@ namespace SWLOR.Component.Combat.Service
                     foreach (CombatPointCategoryType cpCategory in Enum.GetValues(typeof(CombatPointCategoryType)))
                     {
                         var validSkills = skillsWithCP
-                            .Where(x => _skillService.GetSkillDetails(x.Key).CombatPointCategory == cpCategory)
+                            .Where(x => SkillService.GetSkillDetails(x.Key).CombatPointCategory == cpCategory)
                             .ToDictionary(x => x.Key, y => y.Value);
 
                         // Base amount of XP is determined by the player's highest-leveled skill rank in each XP category versus the creature's level.
                         if (cpCategory != CombatPointCategoryType.Exempt)
                         {
                             var validCPs = cpList
-                                .Where(x => _skillService.GetSkillDetails(x.Key).CombatPointCategory == cpCategory)
+                                .Where(x => SkillService.GetSkillDetails(x.Key).CombatPointCategory == cpCategory)
                                 .ToList();
                             if (!validCPs.Any()) continue;
                             if (!validSkills.Any()) continue;
@@ -167,7 +167,7 @@ namespace SWLOR.Component.Combat.Service
                                 .First();
 
                             var xpDelta = npcLevel - highestRank;
-                            var baseXP = _skillService.GetDeltaXP(xpDelta);
+                            var baseXP = SkillService.GetDeltaXP(xpDelta);
                             var totalCatCP = (float)validCPs
                                 .Sum(s => s.Value);
 
@@ -178,21 +178,21 @@ namespace SWLOR.Component.Combat.Service
                             {
                                 var adjXP = baseXP * (cp / totalCatCP);
                                 adjXP += adjXP * areaBonus;
-                                _skillService.GiveSkillXP(player, skillType, (int)adjXP);
+                                SkillService.GiveSkillXP(player, skillType, (int)adjXP);
                             }
                         }
                         else
                         {
                             // Skills that are exempt from CP sharing; XP gain is calculated directly on a rank vs NPC level basis
                             // As long as the player is on the ground, we always try to give them Armor XP
-                            if (!_spaceService.IsPlayerInSpaceMode(player)) validSkills.Add(SkillType.Armor, dbPlayer.Skills[SkillType.Armor]);
+                            if (!SpaceService.IsPlayerInSpaceMode(player)) validSkills.Add(SkillType.Armor, dbPlayer.Skills[SkillType.Armor]);
                             if (!validSkills.Any()) continue;
 
                             foreach (var (skillType, ps) in validSkills)
                             {
-                                float adjXP = _skillService.GetDeltaXP(npcLevel - ps.Rank);
+                                float adjXP = SkillService.GetDeltaXP(npcLevel - ps.Rank);
                                 adjXP += adjXP * areaBonus;
-                                _skillService.GiveSkillXP(player, skillType, (int)adjXP);
+                                SkillService.GiveSkillXP(player, skillType, (int)adjXP);
                             }
                         }
                     }
@@ -253,7 +253,7 @@ namespace SWLOR.Component.Combat.Service
 
             // We track the level of the last creature to add a combat point for two minutes.
             // During this time period, various skills can continue to gain XP even after battle.
-            var npcStats = _statService.GetNPCStats(creature);
+            var npcStats = StatService.GetNPCStats(creature);
             var level = npcStats.Level;
             UpdateLastCreatureLevel(player, level);
         }

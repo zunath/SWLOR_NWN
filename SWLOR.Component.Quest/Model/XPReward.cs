@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Quest.Contracts;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Caching.Contracts;
@@ -9,18 +10,21 @@ namespace SWLOR.Component.Quest.Model
     public class XPReward : IQuestReward
     {
         private readonly IDatabaseService _db;
-        private readonly IItemCacheService _itemCache;
+        private readonly IServiceProvider _serviceProvider;
         public int Amount { get; }
         public bool IsSelectable { get; }
         public string MenuName => Amount + " XP";
 
-        public XPReward(IDatabaseService db, IItemCacheService itemCache, int amount, bool isSelectable)
+        public XPReward(IDatabaseService db, IServiceProvider serviceProvider, int amount, bool isSelectable)
         {
             _db = db;
-            _itemCache = itemCache;
+            _serviceProvider = serviceProvider;
             Amount = amount;
             IsSelectable = isSelectable;
         }
+
+        // Lazy-loaded service to break circular dependency
+        private IItemCacheService ItemCache => _serviceProvider.GetRequiredService<IItemCacheService>();
 
         public void GiveReward(uint player)
         {

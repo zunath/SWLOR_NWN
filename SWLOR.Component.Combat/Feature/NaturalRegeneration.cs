@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Character.Contracts;
@@ -13,15 +14,17 @@ namespace SWLOR.Component.Combat.Feature
     public class NaturalRegeneration
     {
         private readonly IDatabaseService _db;
-        private readonly IStatService _statService;
-        private readonly IStatusEffectService _statusEffectService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public NaturalRegeneration(IDatabaseService db, IStatService statService, IStatusEffectService statusEffectService)
+        public NaturalRegeneration(IDatabaseService db, IServiceProvider serviceProvider)
         {
             _db = db;
-            _statService = statService;
-            _statusEffectService = statusEffectService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+        private IStatusEffectService StatusEffectService => _serviceProvider.GetRequiredService<IStatusEffectService>();
         
         /// <summary>
         /// On module heartbeat, process a player's HP/FP/STM regeneration.
@@ -49,7 +52,7 @@ namespace SWLOR.Component.Combat.Feature
                 var hpRegen = dbPlayer.HPRegen + vitalityBonus * 4;
                 var fpRegen = 1 + dbPlayer.FPRegen + vitalityBonus / 2;
                 var stmRegen = 1 + dbPlayer.STMRegen + vitalityBonus / 2;
-                var foodEffect = _statusEffectService.GetEffectData<FoodEffectData>(player, StatusEffectType.Food);
+                var foodEffect = StatusEffectService.GetEffectData<FoodEffectData>(player, StatusEffectType.Food);
 
                 if (foodEffect != null)
                 {
@@ -65,12 +68,12 @@ namespace SWLOR.Component.Combat.Feature
 
                 if (fpRegen > 0)
                 {
-                    _statService.RestoreFP(player, fpRegen, dbPlayer);
+                    StatService.RestoreFP(player, fpRegen, dbPlayer);
                 }
 
                 if (stmRegen > 0)
                 {
-                    _statService.RestoreStamina(player, stmRegen, dbPlayer);
+                    StatService.RestoreStamina(player, stmRegen, dbPlayer);
                 }
 
                 tick = 0;

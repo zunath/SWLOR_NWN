@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Character.Contracts;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Extension;
@@ -14,14 +15,17 @@ namespace SWLOR.Component.Character.Service
     public class CurrencyService : ICurrencyService
     {
         private readonly IDatabaseService _db;
-        private readonly IGuiService _guiService;
+        private readonly IServiceProvider _serviceProvider;
         private readonly Dictionary<CurrencyType, CurrencyAttribute> _currencies = new();
 
-        public CurrencyService(IDatabaseService db, IGuiService guiService)
+        public CurrencyService(IDatabaseService db, IServiceProvider serviceProvider)
         {
             _db = db;
-            _guiService = guiService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded service to break circular dependency
+        private IGuiService GuiService => _serviceProvider.GetRequiredService<IGuiService>();
 
         /// <summary>
         /// When the module caches, cache all currency details into memory.
@@ -93,7 +97,7 @@ namespace SWLOR.Component.Character.Service
             dbPlayer.Currencies[type] += amount;
 
             _db.Set(dbPlayer);
-            _guiService.PublishRefreshEvent(player, new CurrencyRefreshEvent());
+            GuiService.PublishRefreshEvent(player, new CurrencyRefreshEvent());
         }
 
         /// <summary>
@@ -118,7 +122,7 @@ namespace SWLOR.Component.Character.Service
             dbPlayer.Currencies[type] -= amount;
 
             _db.Set(dbPlayer);
-            _guiService.PublishRefreshEvent(player, new CurrencyRefreshEvent());
+            GuiService.PublishRefreshEvent(player, new CurrencyRefreshEvent());
         }
     }
 }

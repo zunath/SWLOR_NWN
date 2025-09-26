@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Inventory.Service;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
@@ -16,67 +17,69 @@ namespace SWLOR.Component.Inventory.EventHandlers
 {
     public class InventoryServiceEventHandlers
     {
-        private readonly IItemService _itemService;
-        private readonly ILootService _lootService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public InventoryServiceEventHandlers(IItemService itemService, ILootService lootService)
+        public InventoryServiceEventHandlers(IServiceProvider serviceProvider)
         {
-            _itemService = itemService;
-            _lootService = lootService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
+        private ILootService LootService => _serviceProvider.GetRequiredService<ILootService>();
 
         [ScriptHandler<OnModuleCacheBefore>]
         public void CacheItemData()
         {
-            _itemService.CacheData();
+            ItemService.CacheData();
         }
 
         [ScriptHandler<OnItemUseBefore>]
         public void UseItem()
         {
-            _itemService.UseItem();
+            ItemService.UseItem();
         }
 
         [ScriptHandler<OnModuleCacheBefore>]
         public void RegisterLootTables()
         {
-            _lootService.RegisterLootTables();
+            LootService.RegisterLootTables();
         }
 
         [ScriptHandler<OnCreatureSpawnBefore>]
         public void SpawnStealLoot()
         {
-            _lootService.SpawnStealLoot();
+            LootService.SpawnStealLoot();
         }
 
         [ScriptHandler(ScriptName.OnCorpseClosed)]
         public void CloseCorpseContainer()
         {
-            _lootService.CloseCorpseContainer();
+            LootService.CloseCorpseContainer();
         }
 
         [ScriptHandler(ScriptName.OnCorpseDisturbed)]
         public void DisturbCorpseContainer()
         {
-            _lootService.DisturbCorpseContainer();
+            LootService.DisturbCorpseContainer();
         }
 
         [ScriptHandler<OnCreatureDeathBefore>]
         public void SpawnLootOnCreatureDeath()
         {
-            _lootService.SpawnLootOnCreatureDeath();
+            LootService.SpawnLootOnCreatureDeath();
         }
 
         [ScriptHandler(ScriptName.OnItemHit)]
         public void MarkCreditfinderAndTreasureHunterOnTarget()
         {
-            _lootService.MarkCreditfinderAndTreasureHunterOnTarget();
+            LootService.MarkCreditfinderAndTreasureHunterOnTarget();
         }
 
         [ScriptHandler<OnCreatureDeathBefore>]
         public void ProcessCorpse()
         {
-            _lootService.ProcessCorpse();
+            LootService.ProcessCorpse();
         }
     }
 }

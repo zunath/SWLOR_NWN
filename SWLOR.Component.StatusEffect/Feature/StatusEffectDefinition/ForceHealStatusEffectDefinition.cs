@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.StatusEffect.Contracts;
 using SWLOR.Component.StatusEffect.Service;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -13,16 +14,17 @@ namespace SWLOR.Component.StatusEffect.Feature.StatusEffectDefinition
 {
     public class ForceHealStatusEffectDefinition : IStatusEffectListDefinition
     {
-        private readonly IRandomService _random;
-        private readonly ICombatPointService _combatPointService;
-        private readonly IEnmityService _enmityService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public ForceHealStatusEffectDefinition(IRandomService random, ICombatPointService combatPointService, IEnmityService enmityService)
+        public ForceHealStatusEffectDefinition(IServiceProvider serviceProvider)
         {
-            _random = random;
-            _combatPointService = combatPointService;
-            _enmityService = enmityService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IRandomService Random => _serviceProvider.GetRequiredService<IRandomService>();
+        private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
+        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
         public Dictionary<StatusEffectType, StatusEffectDetail> BuildStatusEffects()
         {
             var builder = new StatusEffectBuilder();
@@ -41,7 +43,7 @@ namespace SWLOR.Component.StatusEffect.Feature.StatusEffectDefinition
             if (wilBonus < 0)
                 wilBonus = 0;
 
-            amount += wilBonus + (wilBonus * amount / 15 ) + _random.D10(wilBonus / 5);
+            amount += wilBonus + (wilBonus * amount / 15 ) + Random.D10(wilBonus / 5);
 
             ApplyEffectToObject(DurationType.Instant, GetRacialType(target) == RacialType.Undead
                 ? EffectDamage(amount)
@@ -49,8 +51,8 @@ namespace SWLOR.Component.StatusEffect.Feature.StatusEffectDefinition
 
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_S), target);
 
-            _enmityService.ModifyEnmityOnAll(source, 30 + amount);
-            _combatPointService.AddCombatPointToAllTagged(source, SkillType.Force, 3);
+            EnmityService.ModifyEnmityOnAll(source, 30 + amount);
+            CombatPointService.AddCombatPointToAllTagged(source, SkillType.Force, 3);
         }
 
         private void ForceHeal1(StatusEffectBuilder builder)

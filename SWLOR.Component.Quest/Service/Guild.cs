@@ -31,12 +31,15 @@ namespace SWLOR.Component.Quest.Service
             { 5, 60000 }
         };
 
-        public GuildService(IDatabaseService db, IRandomService random, IPerkService perkService)
+        public GuildService(IDatabaseService db, IRandomService random, IServiceProvider serviceProvider)
         {
             _db = db;
             _random = random;
-            _perkService = perkService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded service to break circular dependency
+        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
 
         public int MaxRank { get; private set; }
 

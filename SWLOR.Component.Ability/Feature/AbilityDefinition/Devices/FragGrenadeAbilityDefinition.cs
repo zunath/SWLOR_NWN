@@ -36,13 +36,13 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
             if (GetFactionEqual(activator, target))
                 return;
 
-            dmg += _combatService.GetAbilityDamageBonus(activator, SkillType.Devices);
+            dmg += CombatService.GetAbilityDamageBonus(activator, SkillType.Devices);
 
             var attackerStat = GetAbilityScore(activator, AbilityType.Perception);
             var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-            var attack = _statService.GetAttack(activator, AbilityType.Perception, SkillType.Devices);
-            var defense = _statService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
-            var damage = _combatService.CalculateDamage(
+            var attack = StatService.GetAttack(activator, AbilityType.Perception, SkillType.Devices);
+            var defense = StatService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+            var damage = CombatService.CalculateDamage(
                 attack,
                 dmg, 
                 attackerStat, 
@@ -52,11 +52,11 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
 
             if (dc > 0)
             {
-                dc = _combatService.CalculateSavingThrowDC(activator, SavingThrow.Reflex, dc);
+                dc = CombatService.CalculateSavingThrowDC(activator, SavingThrow.Reflex, dc);
                 var checkResult = ReflexSave(target, dc, SavingThrowType.None, activator);
                 if (checkResult == SavingThrowResultType.Failed)
                 {
-                    _statusEffectService.Apply(activator, target, StatusEffectType.Bleed, bleedLength);
+                    StatusEffectService.Apply(activator, target, StatusEffectType.Bleed, bleedLength);
                 }
             }
 
@@ -68,8 +68,8 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                 });
             });
 
-            _combatPointService.AddCombatPoint(activator, target, SkillType.Devices, 3);
-            _enmityService.ModifyEnmity(activator, target, 320);
+            CombatPointService.AddCombatPoint(activator, target, SkillType.Devices, 3);
+            EnmityService.ModifyEnmity(activator, target, 320);
         }
 
         private void FragGrenade1(IAbilityBuilder builder)

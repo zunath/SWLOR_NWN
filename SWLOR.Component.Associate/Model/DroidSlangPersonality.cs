@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Associate.Contracts;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
@@ -6,7 +7,15 @@ namespace SWLOR.Component.Associate.Model
 {
     public class DroidSlangPersonality: IDroidPersonality
     {
-        private readonly IRandomService _random;
+        private readonly IServiceProvider _serviceProvider;
+
+        public DroidSlangPersonality(IServiceProvider serviceProvider)
+        {
+            _serviceProvider = serviceProvider;
+        }
+
+        // Lazy-loaded service to break circular dependency
+        private IRandomService Random => _serviceProvider.GetRequiredService<IRandomService>();
         private readonly List<string> _greetingPhrases = new()
         {
             "Good t'see ya!",
@@ -40,24 +49,20 @@ namespace SWLOR.Component.Associate.Model
             "Wuz an honor ter see ya. Honest."
         };
 
-        public DroidSlangPersonality(IRandomService randomService)
-        {
-            _random = randomService;
-        }
 
         public string GreetingPhrase()
         {
-            return _greetingPhrases[_random.Next(_greetingPhrases.Count)];
+            return _greetingPhrases[Random.Next(_greetingPhrases.Count)];
         }
 
         public string DeathPhrase()
         {
-            return _deathPhrases[_random.Next(_deathPhrases.Count)];
+            return _deathPhrases[Random.Next(_deathPhrases.Count)];
         }
 
         public string DismissedPhrase()
         {
-            return _dismissedPhrases[_random.Next(_dismissedPhrases.Count)];
+            return _dismissedPhrases[Random.Next(_dismissedPhrases.Count)];
         }
     }
 }

@@ -19,35 +19,25 @@ namespace SWLOR.Component.World.Service
     public class SpawnService : ISpawnService
     {
         private readonly ILogger _logger;
-        private readonly IRandomService _random;
         private readonly IGenericCacheService _cacheService;
         private readonly Walkmesh _walkmesh;
         private readonly IServiceProvider _serviceProvider;
 
         public SpawnService(
             ILogger logger, 
-            IRandomService random, 
             IGenericCacheService cacheService, 
-            Walkmesh walkmesh,
+            Walkmesh walkmesh, 
             IServiceProvider serviceProvider)
         {
             _logger = logger;
-            _random = random;
             _cacheService = cacheService;
             _walkmesh = walkmesh;
             _serviceProvider = serviceProvider;
         }
 
-        // Lazy-loaded service to break circular dependency
+        // Lazy-loaded services to break circular dependencies
+        private IRandomService Random => _serviceProvider.GetRequiredService<IRandomService>();
         private IAIService AI => _serviceProvider.GetRequiredService<IAIService>();
-            IAIService ai)
-        {
-            _logger = logger;
-            _random = random;
-            _cacheService = cacheService;
-            _walkmesh = walkmesh;
-            _ai = ai;
-        }
         public int DespawnMinutes => 20;
         public int DefaultRespawnMinutes => 5;
 
@@ -368,7 +358,7 @@ namespace SWLOR.Component.World.Service
             var now = DateTime.UtcNow;
             
             // Add random variance of ±25% to stagger despawn times
-            var variancePercent = _random.Next(-25, 26); // -25% to +25%
+            var variancePercent = Random.Next(-25, 26); // -25% to +25%
             var variance = (int)(despawnMinutes * (variancePercent / 100.0f));
             var actualDespawnMinutes = despawnMinutes + variance;
             
@@ -727,10 +717,10 @@ namespace SWLOR.Component.World.Service
                     new Vector3(detail.X, detail.Y, detail.Z);
                 ObjectPlugin.AddToArea(deserialized, detail.Area, position);
 
-                var facing = detail.UseRandomSpawnLocation ? _random.Next(360) : detail.Facing;
+                var facing = detail.UseRandomSpawnLocation ? Random.Next(360) : detail.Facing;
                 AssignCommand(deserialized, () => SetFacing(facing));
                 SetLocalString(deserialized, "SPAWN_ID", spawnId.ToString());
-                _ai.SetAIFlag(deserialized, AIFlag.ReturnHome);
+                AI.SetAIFlag(deserialized, AIFlag.ReturnHome);
                 AdjustScripts(deserialized);
                 AdjustStats(deserialized);
 
@@ -754,13 +744,13 @@ namespace SWLOR.Component.World.Service
                     GetPositionFromLocation(_walkmesh.GetRandomLocation(detail.Area)) :
                     new Vector3(detail.X, detail.Y, detail.Z);
 
-                var facing = detail.UseRandomSpawnLocation ? _random.Next(360) : detail.Facing;
+                var facing = detail.UseRandomSpawnLocation ? Random.Next(360) : detail.Facing;
                 var location = Location(detail.Area, position, facing);
 
                 var spawn = CreateObject(spawnObject.Type, spawnObject.Resref, location);
                 SetLocalString(spawn, "SPAWN_ID", spawnId.ToString());
 
-                _ai.SetAIFlag(spawn, spawnObject.AIFlags);
+                AI.SetAIFlag(spawn, spawnObject.AIFlags);
                 AdjustScripts(spawn);
                 AdjustStats(spawn);
 

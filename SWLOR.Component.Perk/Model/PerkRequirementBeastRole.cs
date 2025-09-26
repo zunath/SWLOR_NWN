@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Beasts.Contracts;
 using SWLOR.Shared.Domain.Beasts.Enums;
@@ -10,14 +11,17 @@ namespace SWLOR.Component.Perk.Model
     {
         private readonly IDatabaseService _db;
         private readonly BeastRoleType _requiredRole;
-        private readonly IBeastMasteryService _beastMastery;
+        private readonly IServiceProvider _serviceProvider;
 
-        public PerkRequirementBeastRole(IDatabaseService db, BeastRoleType requiredRole, IBeastMasteryService beastMastery)
+        public PerkRequirementBeastRole(IDatabaseService db, BeastRoleType requiredRole, IServiceProvider serviceProvider)
         {
             _db = db;
             _requiredRole = requiredRole;
-            _beastMastery = beastMastery;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded service to break circular dependency
+        private IBeastMasteryService BeastMastery => _serviceProvider.GetRequiredService<IBeastMasteryService>();
 
         public string CheckRequirements(uint player)
         {

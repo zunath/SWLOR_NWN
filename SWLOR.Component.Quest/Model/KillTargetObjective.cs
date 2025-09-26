@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Quest.Contracts;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Common.Enums;
@@ -10,16 +11,18 @@ namespace SWLOR.Component.Quest.Model
     public class KillTargetObjective : IQuestObjective
     {
         private readonly IDatabaseService _db;
-        private readonly IQuestService _questService;
-        private readonly INPCGroupService _npcGroupService;
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded services to break circular dependencies
+        private IQuestService QuestService => _serviceProvider.GetRequiredService<IQuestService>();
+        private INPCGroupService NPCGroupService => _serviceProvider.GetRequiredService<INPCGroupService>();
         public NPCGroupType Group { get; }
         private readonly int _amount;
 
-        public KillTargetObjective(IDatabaseService db, IQuestService questService, INPCGroupService npcGroupService, NPCGroupType group, int amount)
+        public KillTargetObjective(IDatabaseService db, IServiceProvider serviceProvider, NPCGroupType group, int amount)
         {
             _db = db;
-            _questService = questService;
-            _npcGroupService = npcGroupService;
+            // Services are now lazy-loaded via IServiceProvider
             Group = group;
             _amount = amount;
         }
@@ -48,8 +51,8 @@ namespace SWLOR.Component.Quest.Model
             quest.KillProgresses[Group]--;
             _db.Set(dbPlayer);
 
-            var npcGroup = _npcGroupService.GetNPCGroup(Group);
-            var questDetail = _questService.GetQuestById(questId);
+            var npcGroup = NPCGroupService.GetNPCGroup(Group);
+            var questDetail = QuestService.GetQuestById(questId);
 
             var statusMessage = $"[{questDetail.Name}] {npcGroup.Name} remaining: {quest.KillProgresses[Group]}";
 
@@ -85,7 +88,7 @@ namespace SWLOR.Component.Quest.Model
             if (!dbPlayer.Quests.ContainsKey(questId))
                 return "N/A";
 
-            var npcGroup = _npcGroupService.GetNPCGroup(Group);
+            var npcGroup = NPCGroupService.GetNPCGroup(Group);
             var numberRemaining = dbPlayer.Quests[questId].KillProgresses[Group];
             
             return $"{_amount - numberRemaining} / {_amount} {npcGroup.Name}";

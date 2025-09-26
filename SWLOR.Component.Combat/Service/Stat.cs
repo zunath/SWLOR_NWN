@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using NWN.Native.API;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -28,32 +29,33 @@ namespace SWLOR.Component.Combat.Service
     {
         private readonly ILogger _logger;
         private readonly IDatabaseService _db;
-        private readonly IPerkService _perkService;
-        private readonly ISkillService _skillService;
-        private readonly IItemService _itemService;
-        private readonly IAbilityService _abilityService;
+        private readonly IServiceProvider _serviceProvider;
         private readonly IStatusEffectService _statusEffectService;
+        
+        // Lazy-loaded services to break circular dependencies
+        private ISkillService SkillService => _serviceProvider.GetRequiredService<ISkillService>();
+        private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
         private readonly Enmity _enmityService;
 
         public Stat(
             ILogger logger, 
             IDatabaseService db, 
-            IPerkService perkService, 
-            ISkillService skillService, 
-            IItemService itemService, 
-            IAbilityService abilityService, 
+            IServiceProvider serviceProvider, 
             IStatusEffectService statusEffectService, 
             Enmity enmityService)
         {
             _logger = logger;
             _db = db;
-            _perkService = perkService;
-            _skillService = skillService;
-            _itemService = itemService;
-            _abilityService = abilityService;
+            // Services are now lazy-loaded via IServiceProvider
+            _serviceProvider = serviceProvider;
             _statusEffectService = statusEffectService;
             _enmityService = enmityService;
         }
+        
+        // Lazy-loaded services to break circular dependencies
+        private IAbilityService AbilityService => _serviceProvider.GetRequiredService<IAbilityService>();
+        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
+        
         public int BaseHP => 70;
         public int BaseFP => 10;
         public int BaseSTM => 10;
@@ -518,9 +520,9 @@ namespace SWLOR.Component.Combat.Service
             }
 
             var movementRate = 1.0f;
-            if (_abilityService.IsAbilityToggled(player, AbilityToggleType.Dash))
+            if (AbilityService.IsAbilityToggled(player, AbilityToggleType.Dash))
             {
-                var level = _perkService.GetPerkLevel(player, PerkType.Dash);
+                var level = PerkService.GetPerkLevel(player, PerkType.Dash);
                 switch (level)
                 {
                     case 1:
@@ -761,7 +763,7 @@ namespace SWLOR.Component.Combat.Service
                     if (GetIsObjectValid(source))
                     {
                         var sourceSOC = GetAbilityScore(source, AbilityType.Social);
-                        var perkLevel = _perkService.GetPerkLevel(source, PerkType.FrenziedShout);
+                        var perkLevel = PerkService.GetPerkLevel(source, PerkType.FrenziedShout);
                         switch (perkLevel)
                         {
                             case 1:
@@ -824,7 +826,7 @@ namespace SWLOR.Component.Combat.Service
                 var source = _statusEffectService.GetEffectData<uint>(creature, StatusEffectType.SoldiersStrike);
                 if (GetIsObjectValid(source))
                 {
-                    var perkLevel = _perkService.GetPerkLevel(source, PerkType.SoldiersStrike);
+                    var perkLevel = PerkService.GetPerkLevel(source, PerkType.SoldiersStrike);
                     var sourceSOC = GetAbilityScore(source, AbilityType.Social);
 
                     switch (perkLevel)
@@ -925,9 +927,9 @@ namespace SWLOR.Component.Combat.Service
         {
             var attackBonus = 0;
             var skillLevel = 0;
-            var statType = _itemService.GetWeaponDamageAbilityType(itemType);
+            var statType = ItemService.GetWeaponDamageAbilityType(itemType);
             var stat = GetStatValueNative(creature, statType);
-            var skillType = _skillService.GetSkillTypeByBaseItem(itemType);
+            var skillType = SkillService.GetSkillTypeByBaseItem(itemType);
 
             if (creature.m_bPlayerCharacter == 1)
             {
@@ -1179,10 +1181,10 @@ namespace SWLOR.Component.Combat.Service
 
             var baseItemType = GetBaseItemType(weapon);
             var statType = statOverride == AbilityType.Invalid ? 
-                _itemService.GetWeaponAccuracyAbilityType(baseItemType) :
+                ItemService.GetWeaponAccuracyAbilityType(baseItemType) :
                 statOverride;
             var stat = statType == AbilityType.Invalid ? 0 : GetAbilityScore(creature, statType);
-            var skillType = skillOverride == SkillType.Invalid ? _skillService.GetSkillTypeByBaseItem(baseItemType) : skillOverride;
+            var skillType = skillOverride == SkillType.Invalid ? SkillService.GetSkillTypeByBaseItem(baseItemType) : skillOverride;
             var skillLevel = 0;
 
 
@@ -1244,9 +1246,9 @@ namespace SWLOR.Component.Combat.Service
 
             var baseItemType = weapon == null ? BaseItem.Invalid : (BaseItem)weapon.m_nBaseItem;
             var statType = statOverride == AbilityType.Invalid ? 
-                _itemService.GetWeaponAccuracyAbilityType(baseItemType) :
+                ItemService.GetWeaponAccuracyAbilityType(baseItemType) :
                 statOverride;
-            var skillType = _skillService.GetSkillTypeByBaseItem(baseItemType);
+            var skillType = SkillService.GetSkillTypeByBaseItem(baseItemType);
             var stat = GetStatValueNative(creature, statType);
             var skillLevel = 0;
 
@@ -1352,7 +1354,7 @@ namespace SWLOR.Component.Combat.Service
                 if (GetIsObjectValid(source))
                 {
                     var sourceSOC = GetAbilityScore(source, AbilityType.Social);
-                    var perkLevel = _perkService.GetPerkLevel(source, PerkType.SoldiersSpeed);
+                    var perkLevel = PerkService.GetPerkLevel(source, PerkType.SoldiersSpeed);
 
                     switch (perkLevel)
                     {
@@ -1404,7 +1406,7 @@ namespace SWLOR.Component.Combat.Service
                 if (GetIsObjectValid(source))
                 {
                     var sourceSOC = GetAbilityScore(source, AbilityType.Social);
-                    var perkLevel = _perkService.GetPerkLevel(source, PerkType.SoldiersPrecision);
+                    var perkLevel = PerkService.GetPerkLevel(source, PerkType.SoldiersPrecision);
 
                     switch (perkLevel)
                     {
@@ -1671,17 +1673,17 @@ namespace SWLOR.Component.Combat.Service
 
             int GetRapidShotBonus(uint pc)
             {
-                return _perkService.GetPerkLevel(pc, PerkType.RapidShot);
+                return PerkService.GetPerkLevel(pc, PerkType.RapidShot);
             }
 
             int GetFlurryBonus(uint pc)
             {
-                return _perkService.GetPerkLevel(pc, PerkType.FlurryStyle);
+                return PerkService.GetPerkLevel(pc, PerkType.FlurryStyle);
             }
 
             int GetShieldBonus(uint pc)
             {
-                return _perkService.GetPerkLevel(pc, PerkType.ShieldMaster);
+                return PerkService.GetPerkLevel(pc, PerkType.ShieldMaster);
             }
 
             if (GetIsDM(creature) || GetIsDMPossessed(creature))
@@ -1693,68 +1695,68 @@ namespace SWLOR.Component.Combat.Service
             var perkType = PerkType.Invalid;
 
             // Martial Arts
-            if (_itemService.KatarBaseItemTypes.Contains(itemType))
+            if (ItemService.KatarBaseItemTypes.Contains(itemType))
             {
                 perkType = PerkType.KatarMastery;
             }
-            else if (_itemService.StaffBaseItemTypes.Contains(itemType))
+            else if (ItemService.StaffBaseItemTypes.Contains(itemType))
             {
                 perkType = PerkType.StaffMastery;
                 numberOfAttacks += GetFlurryBonus(creature);
             }
             // Ranged (Pistol & Rifle only. Throwing is intentionally excluded from Rapid Shot because they get Doublehand)
-            else if (_itemService.PistolBaseItemTypes.Contains(itemType))
+            else if (ItemService.PistolBaseItemTypes.Contains(itemType))
             {
                 perkType = PerkType.PistolMastery;
                 numberOfAttacks += GetRapidShotBonus(creature);
             }
-            else if (_itemService.ThrowingWeaponBaseItemTypes.Contains(itemType))
+            else if (ItemService.ThrowingWeaponBaseItemTypes.Contains(itemType))
             {
                 perkType = PerkType.ThrowingWeaponMastery;
             }
-            else if (_itemService.RifleBaseItemTypes.Contains(itemType))
+            else if (ItemService.RifleBaseItemTypes.Contains(itemType))
             {
                 perkType = PerkType.RifleMastery;
             }
             // One-Handed
-            else if (_itemService.VibrobladeBaseItemTypes.Contains(itemType))
+            else if (ItemService.VibrobladeBaseItemTypes.Contains(itemType))
             {
                 perkType = PerkType.VibrobladeMastery;
             }
-            else if (_itemService.FinesseVibrobladeBaseItemTypes.Contains(itemType))
+            else if (ItemService.FinesseVibrobladeBaseItemTypes.Contains(itemType))
             {
                 perkType = PerkType.FinesseVibrobladeMastery;
             }
-            else if (_itemService.LightsaberBaseItemTypes.Contains(itemType))
+            else if (ItemService.LightsaberBaseItemTypes.Contains(itemType))
             {
                 perkType = PerkType.LightsaberMastery;
             }
             // Two-Handed
-            else if (_itemService.HeavyVibrobladeBaseItemTypes.Contains(itemType))
+            else if (ItemService.HeavyVibrobladeBaseItemTypes.Contains(itemType))
             {
                 perkType = PerkType.HeavyVibrobladeMastery;
             }
-            else if (_itemService.PolearmBaseItemTypes.Contains(itemType))
+            else if (ItemService.PolearmBaseItemTypes.Contains(itemType))
             {
                 perkType = PerkType.PolearmMastery;
             }
-            else if (_itemService.TwinBladeBaseItemTypes.Contains(itemType))
+            else if (ItemService.TwinBladeBaseItemTypes.Contains(itemType))
             {
                 perkType = PerkType.TwinBladeMastery;
             }
-            else if (_itemService.SaberstaffBaseItemTypes.Contains(itemType))
+            else if (ItemService.SaberstaffBaseItemTypes.Contains(itemType))
             {
                 perkType = PerkType.SaberstaffMastery;
             }
 
-            if (_itemService.ShieldBaseItemTypes.Contains(offHandType)) 
+            if (ItemService.ShieldBaseItemTypes.Contains(offHandType)) 
                 numberOfAttacks += GetShieldBonus(creature);
 
-            var effectiveMasteryLevel = _perkService.GetPerkLevel(creature, perkType);
+            var effectiveMasteryLevel = PerkService.GetPerkLevel(creature, perkType);
             numberOfAttacks += effectiveMasteryLevel;
 
             // Beast Speed (1-3)
-            numberOfAttacks += _perkService.GetPerkLevel(creature, PerkType.BeastSpeed);
+            numberOfAttacks += PerkService.GetPerkLevel(creature, PerkType.BeastSpeed);
 
             var bab = GetBABForAttacks(numberOfAttacks);
             CreaturePlugin.SetBaseAttackBonus(creature, bab);
@@ -1768,20 +1770,20 @@ namespace SWLOR.Component.Combat.Service
             var critMod = 0;
             var itemType = GetBaseItemType(rightHandWeapon);
             var offhandType = GetBaseItemType(GetItemInSlot(InventorySlot.LeftHand, player));
-            if (_itemService.OneHandedMeleeItemTypes.Contains(itemType) || _itemService.ThrowingWeaponBaseItemTypes.Contains(itemType))
+            if (ItemService.OneHandedMeleeItemTypes.Contains(itemType) || ItemService.ThrowingWeaponBaseItemTypes.Contains(itemType))
             {
-                if (_itemService.OneHandedMeleeItemTypes.Contains(offhandType))
-                    critMod += _perkService.GetPerkLevel(player, PerkType.WailingBlows) * 3; // 15% for WB
-                else if(offhandType == BaseItem.Invalid || _itemService.ShieldBaseItemTypes.Contains(offhandType))
-                    critMod += _perkService.GetPerkLevel(player, PerkType.Duelist);
+                if (ItemService.OneHandedMeleeItemTypes.Contains(offhandType))
+                    critMod += PerkService.GetPerkLevel(player, PerkType.WailingBlows) * 3; // 15% for WB
+                else if(offhandType == BaseItem.Invalid || ItemService.ShieldBaseItemTypes.Contains(offhandType))
+                    critMod += PerkService.GetPerkLevel(player, PerkType.Duelist);
             }
 
-            if(_itemService.ThrowingWeaponBaseItemTypes.Contains(itemType) || _itemService.PistolBaseItemTypes.Contains(itemType))
+            if(ItemService.ThrowingWeaponBaseItemTypes.Contains(itemType) || ItemService.PistolBaseItemTypes.Contains(itemType))
             {
-                critMod += _perkService.GetPerkLevel(player, PerkType.DirtyBlow) * 2; // 10% for DB
+                critMod += PerkService.GetPerkLevel(player, PerkType.DirtyBlow) * 2; // 10% for DB
             }
 
-            critMod += _perkService.GetPerkLevel(player, PerkType.InnerStrength);
+            critMod += PerkService.GetPerkLevel(player, PerkType.InnerStrength);
 
             CreaturePlugin.SetCriticalRangeModifier(player, -critMod, 0, true);
         }
@@ -1822,7 +1824,7 @@ namespace SWLOR.Component.Combat.Service
         /// <exception cref="ArgumentException">Thrown if a non-crafting skill is passed in.</exception>
         public int CalculateControl(uint player, SkillType craftingSkillType)
         {
-            var skillDetail = _skillService.GetSkillDetails(craftingSkillType);
+            var skillDetail = SkillService.GetSkillDetails(craftingSkillType);
             if (!skillDetail.IsShownInCraftMenu)
                 throw new ArgumentException($"Unable to calculate Control because {craftingSkillType} is not a crafting skill.");
 
@@ -1852,7 +1854,7 @@ namespace SWLOR.Component.Combat.Service
         /// <exception cref="ArgumentException">Thrown if a non-crafting skill is passed in.</exception>
         public int CalculateCraftsmanship(uint player, SkillType craftingSkillType)
         {
-            var skillDetail = _skillService.GetSkillDetails(craftingSkillType);
+            var skillDetail = SkillService.GetSkillDetails(craftingSkillType);
             if (!skillDetail.IsShownInCraftMenu)
                 throw new ArgumentException($"Unable to calculate Craftsmanship because {craftingSkillType} is not a crafting skill.");
 
@@ -1890,9 +1892,9 @@ namespace SWLOR.Component.Combat.Service
             var offHandType = GetBaseItemType(offHandItem);
             var amount = 0;
 
-            if (_itemService.ShieldBaseItemTypes.Contains(offHandType))
+            if (ItemService.ShieldBaseItemTypes.Contains(offHandType))
             {
-                amount += _perkService.GetPerkLevel(player, PerkType.ShieldResistance);
+                amount += PerkService.GetPerkLevel(player, PerkType.ShieldResistance);
             }
 
             return amount;

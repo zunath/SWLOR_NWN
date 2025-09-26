@@ -1,4 +1,5 @@
-﻿using SWLOR.Shared.Abstractions.Contracts;
+﻿using Microsoft.Extensions.DependencyInjection;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Inventory.Contracts;
@@ -12,14 +13,17 @@ namespace SWLOR.Component.Inventory.UI.ViewModel
     public class KeyItemsViewModel: GuiViewModelBase<KeyItemsViewModel, IGuiPayload>,
         IGuiRefreshable<KeyItemReceivedRefreshEvent>
     {
-        private readonly IKeyItemService _keyItemService;
+        private readonly IServiceProvider _serviceProvider;
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
 
-        public KeyItemsViewModel(IGuiService guiService, IKeyItemService keyItemService) : base(guiService)
+        public KeyItemsViewModel(IGuiService guiService, IServiceProvider serviceProvider) : base(guiService)
         {
-            _keyItemService = keyItemService;
+            _serviceProvider = serviceProvider;
         }
-        
+
+        // Lazy-loaded service to break circular dependency
+        private IKeyItemService KeyItemService => _serviceProvider.GetRequiredService<IKeyItemService>();
+
         public GuiBindingList<string> Names
         {
             get => Get<GuiBindingList<string>>();
@@ -66,8 +70,8 @@ namespace SWLOR.Component.Inventory.UI.ViewModel
 
             foreach (var (type, _) in dbPlayer.KeyItems)
             {
-                var detail = _keyItemService.GetKeyItem(type);
-                var categoryDetail = _keyItemService.GetKeyItemCategory(detail.Category);
+                var detail = KeyItemService.GetKeyItem(type);
+                var categoryDetail = KeyItemService.GetKeyItemCategory(detail.Category);
 
                 // If a key item filter is applied and this key item isn't part of this category,
                 // skip it and move to the next.

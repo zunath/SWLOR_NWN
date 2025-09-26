@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -13,19 +14,19 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
 {
     public class BenevolenceAbilityDefinition : IAbilityListDefinition
     {
-        private readonly IRandomService _random;
-        private readonly IStatService _statService;
-        private readonly ICombatPointService _combatPointService;
-        private readonly IEnmityService _enmityService;
+        private readonly IServiceProvider _serviceProvider;
         private const string BeneRegen = "FORCE_BENEVOLENCE";
 
-        public BenevolenceAbilityDefinition(IRandomService random, IStatService statService, ICombatPointService combatPointService, IEnmityService enmityService)
+        public BenevolenceAbilityDefinition(IServiceProvider serviceProvider)
         {
-            _random = random;
-            _statService = statService;
-            _combatPointService = combatPointService;
-            _enmityService = enmityService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IRandomService Random => _serviceProvider.GetRequiredService<IRandomService>();
+        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+        private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
+        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
@@ -40,29 +41,29 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
         {
             var willBonus = GetAbilityModifier(AbilityType.Willpower, activator);
             var targetBonus = willBonus;
-            if (target != activator && _statService.GetCurrentFP(activator) >= 16)
+            if (target != activator && StatService.GetCurrentFP(activator) >= 16)
             {
                 RemoveEffectByTag(target, BeneRegen);
 
                 var willRestore = (willBonus / 2) * 4;
                 var duration = 90f + (willBonus * 60f);
                 var effect = EffectRegenerate(willRestore, 24f);
-                _statService.ReduceFP(activator, 10);
-                _statService.ReduceStamina(activator, willRestore);
-                _statService.RestoreFP(target, willRestore);
-                _statService.RestoreStamina(target, willRestore);
+                StatService.ReduceFP(activator, 10);
+                StatService.ReduceStamina(activator, willRestore);
+                StatService.RestoreFP(target, willRestore);
+                StatService.RestoreStamina(target, willRestore);
                 targetBonus = willBonus * 4;
 
                 effect = TagEffect(effect, BeneRegen);
                 ApplyEffectToObject(DurationType.Temporary, effect, target, duration);
             }
-            var willHeal = baseAmount + (targetBonus * 4) + _random.D4(targetBonus);
+            var willHeal = baseAmount + (targetBonus * 4) + Random.D4(targetBonus);
 
             ApplyEffectToObject(DurationType.Instant, EffectHeal(willHeal), target);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), target);
 
-            _enmityService.ModifyEnmityOnAll(activator, 150 + (willHeal / 4));
-            _combatPointService.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+            EnmityService.ModifyEnmityOnAll(activator, 150 + (willHeal / 4));
+            CombatPointService.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
         }
 
         private void Benevolence1(IAbilityBuilder builder)

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using System.Numerics;
 using SWLOR.Component.World.Contracts;
 using SWLOR.Component.World.Model;
@@ -21,13 +22,24 @@ namespace SWLOR.Component.World.Service
         private readonly IRandomService _random;
         private readonly IGenericCacheService _cacheService;
         private readonly Walkmesh _walkmesh;
-        private readonly IAIService _ai;
+        private readonly IServiceProvider _serviceProvider;
 
         public SpawnService(
             ILogger logger, 
             IRandomService random, 
             IGenericCacheService cacheService, 
             Walkmesh walkmesh,
+            IServiceProvider serviceProvider)
+        {
+            _logger = logger;
+            _random = random;
+            _cacheService = cacheService;
+            _walkmesh = walkmesh;
+            _serviceProvider = serviceProvider;
+        }
+
+        // Lazy-loaded service to break circular dependency
+        private IAIService AI => _serviceProvider.GetRequiredService<IAIService>();
             IAIService ai)
         {
             _logger = logger;

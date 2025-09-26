@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
@@ -16,23 +17,22 @@ namespace SWLOR.Component.Combat.Service
     {
         private readonly ILogger _logger;
         private readonly IDatabaseService _db;
-        private readonly IPropertyService _propertyService;
-        private readonly IAreaService _areaService;
-        private readonly IMessagingService _messagingService;
+        private readonly IServiceProvider _serviceProvider;
 
         public Death(
             ILogger logger, 
             IDatabaseService db, 
-            IPropertyService propertyService, 
-            IAreaService areaService, 
-            IMessagingService messagingService)
+            IServiceProvider serviceProvider)
         {
             _logger = logger;
             _db = db;
-            _propertyService = propertyService;
-            _areaService = areaService;
-            _messagingService = messagingService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IPropertyService PropertyService => _serviceProvider.GetRequiredService<IPropertyService>();
+        private IAreaService AreaService => _serviceProvider.GetRequiredService<IAreaService>();
+        private IMessagingService MessagingService => _serviceProvider.GetRequiredService<IMessagingService>();
         /// <summary>
         /// When a player starts dying, instantly kill them.
         /// </summary>

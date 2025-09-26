@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Domain.Common.Enums;
@@ -11,16 +12,19 @@ namespace SWLOR.Component.Inventory.Feature.SnippetDefinition
     public class KeyItemSnippetDefinition: ISnippetListDefinition
     {
         private readonly ILogger _logger;
-        private readonly IKeyItemService _keyItemService;
+        private readonly IServiceProvider _serviceProvider;
         private readonly ISnippetBuilder _builder;
+        
+        // Lazy-loaded services to break circular dependencies
+        private IKeyItemService KeyItemService => _serviceProvider.GetRequiredService<IKeyItemService>();
 
         public KeyItemSnippetDefinition(
             ILogger logger, 
-            IKeyItemService keyItemService,
+            IServiceProvider serviceProvider,
             ISnippetBuilder snippetBuilder)
         {
             _logger = logger;
-            _keyItemService = keyItemService;
+            // Services are now lazy-loaded via IServiceProvider
             _builder = snippetBuilder;
         }
 
@@ -56,12 +60,12 @@ namespace SWLOR.Component.Inventory.Feature.SnippetDefinition
                         // Try searching by Id first.
                         if (int.TryParse(arg, out var argId))
                         {
-                            type = _keyItemService.GetKeyItemTypeById(argId);
+                            type = KeyItemService.GetKeyItemTypeById(argId);
                         }
                         // Couldn't parse an integer. Look by name.
                         else
                         {
-                            type = _keyItemService.GetKeyItemTypeByName(arg);
+                            type = KeyItemService.GetKeyItemTypeByName(arg);
                         }
 
                         // Type is invalid, log an error and end.
@@ -72,7 +76,7 @@ namespace SWLOR.Component.Inventory.Feature.SnippetDefinition
                         }
 
                         // Player doesn't have the specified key item.
-                        if (!_keyItemService.HasKeyItem(player, type))
+                        if (!KeyItemService.HasKeyItem(player, type))
                         {
                             return false;
                         }
@@ -104,12 +108,12 @@ namespace SWLOR.Component.Inventory.Feature.SnippetDefinition
                         // Try searching by Id first.
                         if (int.TryParse(arg, out var argId))
                         {
-                            type = _keyItemService.GetKeyItemTypeById(argId);
+                            type = KeyItemService.GetKeyItemTypeById(argId);
                         }
                         // Couldn't parse an integer. Look by name.
                         else
                         {
-                            type = _keyItemService.GetKeyItemTypeByName(arg);
+                            type = KeyItemService.GetKeyItemTypeByName(arg);
                         }
 
                         // Type is invalid, log an error and end.
@@ -119,7 +123,7 @@ namespace SWLOR.Component.Inventory.Feature.SnippetDefinition
                             return;
                         }
 
-                        _keyItemService.GiveKeyItem(player, type);
+                        KeyItemService.GiveKeyItem(player, type);
                     }
                 });
         }

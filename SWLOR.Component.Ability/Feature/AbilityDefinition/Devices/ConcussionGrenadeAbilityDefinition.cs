@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -16,17 +17,18 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
 {
     public class ConcussionGrenadeAbilityDefinition : ExplosiveBaseAbilityDefinition
     {
-        private readonly ICombatPointService _combatPointService;
-        private readonly IEnmityService _enmityService;
-        private readonly IAbilityService _abilityService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public ConcussionGrenadeAbilityDefinition(IRandomService random, IItemService itemService, IPerkService perkService, IStatService statService, ICombatService combatService, ICombatPointService combatPointService, IEnmityService enmityService, IStatusEffectService statusEffectService, IAbilityService abilityService) 
-            : base(random, itemService, perkService, statService, combatService, combatPointService, enmityService, statusEffectService)
+        public ConcussionGrenadeAbilityDefinition(IServiceProvider serviceProvider) 
+            : base(serviceProvider)
         {
-            _combatPointService = combatPointService;
-            _enmityService = enmityService;
-            _abilityService = abilityService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
+        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
+        private IAbilityService AbilityService => _serviceProvider.GetRequiredService<IAbilityService>();
 
         public override Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
@@ -65,7 +67,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                     const float Duration = 3f;
                     ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), target, Duration);
 
-                    _abilityService.ApplyTemporaryImmunity(target, Duration, ImmunityType.Knockdown);
+                    AbilityService.ApplyTemporaryImmunity(target, Duration, ImmunityType.Knockdown);
                 }
             }
 
@@ -74,8 +76,8 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Electrical), target);
             });
 
-            _combatPointService.AddCombatPoint(activator, target, SkillType.Devices, 3);
-            _enmityService.ModifyEnmity(activator, target, 180);
+            CombatPointService.AddCombatPoint(activator, target, SkillType.Devices, 3);
+            EnmityService.ModifyEnmity(activator, target, 180);
         }
 
         private void ConcussionGrenade1(IAbilityBuilder builder)

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Space.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -12,18 +13,18 @@ namespace SWLOR.Component.Space.Feature.ShipModuleDefinition
 {
     public class CapitalEwarModuleDefinition : IShipModuleListDefinition
     {
-        private readonly ISpaceService _spaceService;
-        private readonly IEnmityService _enmityService;
-        private readonly ICombatPointService _combatPointService;
-        private readonly IMessagingService _messagingService;
+        private readonly IServiceProvider _serviceProvider;
         private readonly IShipModuleBuilder _builder;
+        
+        // Lazy-loaded services to break circular dependencies
+        private ISpaceService SpaceService => _serviceProvider.GetRequiredService<ISpaceService>();
+        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
+        private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
+        private IMessagingService MessagingService => _serviceProvider.GetRequiredService<IMessagingService>();
 
-        public CapitalEwarModuleDefinition(ISpaceService spaceService, IEnmityService enmityService, ICombatPointService combatPointService, IMessagingService messagingService, IShipModuleBuilder builder)
+        public CapitalEwarModuleDefinition(IServiceProvider serviceProvider, IShipModuleBuilder builder)
         {
-            _spaceService = spaceService;
-            _enmityService = enmityService;
-            _combatPointService = combatPointService;
-            _messagingService = messagingService;
+            // Services are now lazy-loaded via IServiceProvider
             _builder = builder;
         }
 
@@ -67,14 +68,14 @@ namespace SWLOR.Component.Space.Feature.ShipModuleDefinition
                     {
                         if (GetIsEnemy(nearby, activator) &&
                             !GetIsDead(activator) &&
-                            _spaceService.GetShipStatus(nearby) != null &&
+                            SpaceService.GetShipStatus(nearby) != null &&
                             nearby != activator)
                         {
-                            var nearbyStatus = _spaceService.GetShipStatus(nearby);
+                            var nearbyStatus = SpaceService.GetShipStatus(nearby);
 
                             ApplyEffectToObject(DurationType.Temporary, EffectBeam(VisualEffect.Vfx_Beam_Cold, activator, BodyNode.Chest), nearby, 2.0f);
                             ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Blue_White), nearby, 2.0f);
-                            _enmityService.ModifyEnmity(activator, nearby, enmityAmount);
+                            EnmityService.ModifyEnmity(activator, nearby, enmityAmount);
 
                             count++;
                         }
@@ -83,8 +84,8 @@ namespace SWLOR.Component.Space.Feature.ShipModuleDefinition
                         
                     }
 
-                    _combatPointService.AddCombatPointToAllTagged(activator, SkillType.Piloting);
-                    _messagingService.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} activates their E-War device and begins to draw fire.");
+                    CombatPointService.AddCombatPointToAllTagged(activator, SkillType.Piloting);
+                    MessagingService.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} activates their E-War device and begins to draw fire.");
                 });
         }
     }

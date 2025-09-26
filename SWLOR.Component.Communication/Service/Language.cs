@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using System.Text;
 using SWLOR.Component.Communication.Contracts;
 using SWLOR.Component.Communication.Model;
@@ -18,18 +19,20 @@ namespace SWLOR.Component.Communication.Service
     {
         private readonly IDatabaseService _db;
         private readonly IRandomService _random;
-        private readonly ISkillService _skillService;
-        private readonly IStatusEffectService _statusEffectService;
+        private readonly IServiceProvider _serviceProvider;
         private Dictionary<SkillType, ITranslator> _translators = new();
         private readonly TranslatorGeneric _genericTranslator = new();
 
-        public Language(IDatabaseService db, IRandomService random, ISkillService skillService, IStatusEffectService statusEffectService)
+        public Language(IDatabaseService db, IRandomService random, IServiceProvider serviceProvider)
         {
             _db = db;
             _random = random;
-            _skillService = skillService;
-            _statusEffectService = statusEffectService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private ISkillService SkillService => _serviceProvider.GetRequiredService<ISkillService>();
+        private IStatusEffectService StatusEffectService => _serviceProvider.GetRequiredService<IStatusEffectService>();
 
         /// <summary>
         /// When the module loads, create translators for every language and store them into cache.

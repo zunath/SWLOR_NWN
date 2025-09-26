@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Market.Contracts;
 using SWLOR.Component.Market.Enums;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -23,12 +24,11 @@ namespace SWLOR.Component.Market.Service
     {
         private readonly IDatabaseService _db;
         private readonly IGenericCacheService _cacheService;
-        private readonly IItemService _itemService;
+        private readonly IServiceProvider _serviceProvider;
         private readonly ICraftService _craftService;
         private readonly ISpaceService _spaceService;
         private readonly IPropertyService _propertyService;
         private readonly IFishingService _fishingService;
-        private readonly IBeastMasteryService _beastMasteryService;
         
         public const int MaxListingsPerMarket = 25;
         
@@ -45,23 +45,24 @@ namespace SWLOR.Component.Market.Service
         public PlayerMarket(
             IDatabaseService db, 
             IGenericCacheService cacheService,
-            IItemService itemService,
+            IServiceProvider serviceProvider,
             ICraftService craftService,
             ISpaceService spaceService,
             IPropertyService propertyService,
-            IFishingService fishingService,
-            IBeastMasteryService beastMasteryService)
+            IFishingService fishingService)
         {
             _db = db;
             _cacheService = cacheService;
-            _itemService = itemService;
+            _serviceProvider = serviceProvider;
             _craftService = craftService;
             _spaceService = spaceService;
             _propertyService = propertyService;
             _fishingService = fishingService;
-            _beastMasteryService = beastMasteryService;
         }
 
+        // Lazy-loaded services to break circular dependencies
+        private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
+        private IBeastMasteryService BeastMasteryService => _serviceProvider.GetRequiredService<IBeastMasteryService>();
 
         public void RemoveOldListings()
         {
@@ -167,29 +168,29 @@ namespace SWLOR.Component.Market.Service
             var tag = GetTag(item);
 
             // Weapon Classes
-            if (_itemService.VibrobladeBaseItemTypes.Contains(baseItemType))
+            if (ItemService.VibrobladeBaseItemTypes.Contains(baseItemType))
                 return MarketCategoryType.Vibroblade;
-            if (_itemService.FinesseVibrobladeBaseItemTypes.Contains(baseItemType))
+            if (ItemService.FinesseVibrobladeBaseItemTypes.Contains(baseItemType))
                 return MarketCategoryType.FinesseVibroblade;
-            if (_itemService.HeavyVibrobladeBaseItemTypes.Contains(baseItemType))
+            if (ItemService.HeavyVibrobladeBaseItemTypes.Contains(baseItemType))
                 return MarketCategoryType.HeavyVibroblade;
-            if (_itemService.PolearmBaseItemTypes.Contains(baseItemType))
+            if (ItemService.PolearmBaseItemTypes.Contains(baseItemType))
                 return MarketCategoryType.Polearm;
-            if (_itemService.StaffBaseItemTypes.Contains(baseItemType))
+            if (ItemService.StaffBaseItemTypes.Contains(baseItemType))
                 return MarketCategoryType.Staff;
-            if (_itemService.PistolBaseItemTypes.Contains(baseItemType))
+            if (ItemService.PistolBaseItemTypes.Contains(baseItemType))
                 return MarketCategoryType.Pistol;
-            if (_itemService.ThrowingWeaponBaseItemTypes.Contains(baseItemType))
+            if (ItemService.ThrowingWeaponBaseItemTypes.Contains(baseItemType))
                 return MarketCategoryType.Throwing;
-            if (_itemService.RifleBaseItemTypes.Contains(baseItemType))
+            if (ItemService.RifleBaseItemTypes.Contains(baseItemType))
                 return MarketCategoryType.Rifle;
-            if (_itemService.TwinBladeBaseItemTypes.Contains(baseItemType))
+            if (ItemService.TwinBladeBaseItemTypes.Contains(baseItemType))
                 return MarketCategoryType.TwinBlade;
-            if (_itemService.KatarBaseItemTypes.Contains(baseItemType))
+            if (ItemService.KatarBaseItemTypes.Contains(baseItemType))
                 return MarketCategoryType.Katar;
-            if (_itemService.LightsaberBaseItemTypes.Contains(baseItemType))
+            if (ItemService.LightsaberBaseItemTypes.Contains(baseItemType))
                 return MarketCategoryType.Lightsaber;
-            if (_itemService.SaberstaffBaseItemTypes.Contains(baseItemType))
+            if (ItemService.SaberstaffBaseItemTypes.Contains(baseItemType))
                 return MarketCategoryType.Saberstaff;
 
             // Universal armor classes
@@ -211,7 +212,7 @@ namespace SWLOR.Component.Market.Service
             }
 
             // Armor classes
-            var armorType = _itemService.GetArmorType(item);
+            var armorType = ItemService.GetArmorType(item);
             if (armorType == ArmorType.Heavy)
             {
                 switch (baseItemType)
@@ -276,11 +277,11 @@ namespace SWLOR.Component.Market.Service
                 return MarketCategoryType.Fishing;
 
             // Incubation
-            if (_beastMasteryService.IsIncubationCraftingItem(item))
+            if (BeastMasteryService.IsIncubationCraftingItem(item))
                 return MarketCategoryType.Incubation;
 
             // Beast Egg
-            if (_beastMasteryService.IsBeastEgg(item))
+            if (BeastMasteryService.IsBeastEgg(item))
                 return MarketCategoryType.BeastEgg;
 
             // Blueprint

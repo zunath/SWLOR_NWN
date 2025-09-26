@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Character.Contracts;
@@ -10,18 +11,18 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.MartialArts
 {
     public class KnockdownAbilityDefinition : IAbilityListDefinition
     {
-        private readonly ICombatService _combatService;
-        private readonly IAbilityService _abilityService;
-        private readonly ICombatPointService _combatPointService;
-        private readonly IEnmityService _enmityService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public KnockdownAbilityDefinition(ICombatService combatService, IAbilityService abilityService, ICombatPointService combatPointService, IEnmityService enmityService)
+        public KnockdownAbilityDefinition(IServiceProvider serviceProvider)
         {
-            _combatService = combatService;
-            _abilityService = abilityService;
-            _combatPointService = combatPointService;
-            _enmityService = enmityService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
+        private IAbilityService AbilityService => _serviceProvider.GetRequiredService<IAbilityService>();
+        private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
+        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
@@ -41,16 +42,16 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.MartialArts
                 {
                     const float Duration = 4f;
 
-                    var dc = _combatService.CalculateSavingThrowDC(activator, SavingThrow.Fortitude, 12);
+                    var dc = CombatService.CalculateSavingThrowDC(activator, SavingThrow.Fortitude, 12);
                     var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
                     if (checkResult == SavingThrowResultType.Failed)
                     {
                         ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), target, Duration);
-                        _abilityService.ApplyTemporaryImmunity(target, Duration, ImmunityType.Knockdown);
+                        AbilityService.ApplyTemporaryImmunity(target, Duration, ImmunityType.Knockdown);
                     }
 
-                    _combatPointService.AddCombatPoint(activator, target, SkillType.MartialArts, 3);
-                    _enmityService.ModifyEnmity(activator, target, 670);
+                    CombatPointService.AddCombatPoint(activator, target, SkillType.MartialArts, 3);
+                    EnmityService.ModifyEnmity(activator, target, 670);
                 });
         }
     }

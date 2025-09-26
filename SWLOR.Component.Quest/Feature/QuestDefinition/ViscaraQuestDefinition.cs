@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Quest.Contracts;
 using SWLOR.Component.Quest.Service;
 using SWLOR.NWN.API.NWNX.Enum;
@@ -16,23 +17,23 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
     public class ViscaraQuestDefinition : IQuestListDefinition
     {
         private readonly IDatabaseService _db;
-        private readonly IKeyItemService _keyItemService;
-        private readonly IObjectVisibilityService _objectVisibilityService;
-        private readonly IQuestService _questService;
-        private readonly IQuestBuilderFactory _questBuilderFactory;
+        private readonly IServiceProvider _serviceProvider;
 
-        public ViscaraQuestDefinition(IDatabaseService db, IKeyItemService keyItemService, IObjectVisibilityService objectVisibilityService, IQuestService questService, IQuestBuilderFactory questBuilderFactory)
+        public ViscaraQuestDefinition(IDatabaseService db, IServiceProvider serviceProvider)
         {
             _db = db;
-            _keyItemService = keyItemService;
-            _objectVisibilityService = objectVisibilityService;
-            _questService = questService;
-            _questBuilderFactory = questBuilderFactory;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IKeyItemService KeyItemService => _serviceProvider.GetRequiredService<IKeyItemService>();
+        private IObjectVisibilityService ObjectVisibilityService => _serviceProvider.GetRequiredService<IObjectVisibilityService>();
+        private IQuestService QuestService => _serviceProvider.GetRequiredService<IQuestService>();
+        private IQuestBuilderFactory QuestBuilderFactory => _serviceProvider.GetRequiredService<IQuestBuilderFactory>();
 
         public Dictionary<string, IQuestDetail> BuildQuests()
         {
-            var builder = _questBuilderFactory.Create();
+            var builder = QuestBuilderFactory.Create();
             BlastTheMandalorianRangers(builder);
             CoxxionInitiation(builder);
             WeaponsForKrystalle(builder);
@@ -90,22 +91,22 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
                 
                 .OnAcceptAction((player, sourceObject) =>
                 {
-                    _objectVisibilityService.AdjustVisibilityByObjectId(player, "FF65A192706B40A6A97474B935796B82", VisibilityType.Visible);
+                    ObjectVisibilityService.AdjustVisibilityByObjectId(player, "FF65A192706B40A6A97474B935796B82", VisibilityType.Visible);
                 })
 
                 .OnAbandonAction(player =>
                 {
-                    _objectVisibilityService.AdjustVisibilityByObjectId(player, "FF65A192706B40A6A97474B935796B82", VisibilityType.Hidden);
+                    ObjectVisibilityService.AdjustVisibilityByObjectId(player, "FF65A192706B40A6A97474B935796B82", VisibilityType.Hidden);
                 })
 
                 .OnAdvanceAction((player, sourceObject, state) =>
                 {
-                    _objectVisibilityService.AdjustVisibility(player, sourceObject, VisibilityType.Hidden);
+                    ObjectVisibilityService.AdjustVisibility(player, sourceObject, VisibilityType.Hidden);
                 })
                 
                 .OnCompleteAction((player, sourceObject) =>
                 {
-                    _objectVisibilityService.AdjustVisibilityByObjectId(player, "D4C44145731048F1B7DA23D974E59FCE", VisibilityType.Visible);
+                    ObjectVisibilityService.AdjustVisibilityByObjectId(player, "D4C44145731048F1B7DA23D974E59FCE", VisibilityType.Visible);
                 });
         }
 
@@ -141,16 +142,16 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
 
                 .OnAcceptAction((player, sourceObject) =>
                 {
-                    _objectVisibilityService.AdjustVisibilityByObjectId(player, "A61BB617B2D34E2F863C6301A4A04143", VisibilityType.Visible);
+                    ObjectVisibilityService.AdjustVisibilityByObjectId(player, "A61BB617B2D34E2F863C6301A4A04143", VisibilityType.Visible);
                 })
                 .OnAbandonAction(player =>
                 {
-                    _objectVisibilityService.AdjustVisibilityByObjectId(player, "A61BB617B2D34E2F863C6301A4A04143", VisibilityType.Hidden);
+                    ObjectVisibilityService.AdjustVisibilityByObjectId(player, "A61BB617B2D34E2F863C6301A4A04143", VisibilityType.Hidden);
                 })
 
                 .OnCompleteAction((player, sourceObject) =>
                 {
-                    _objectVisibilityService.AdjustVisibilityByObjectId(player, "A61BB617B2D34E2F863C6301A4A04143", VisibilityType.Hidden);
+                    ObjectVisibilityService.AdjustVisibilityByObjectId(player, "A61BB617B2D34E2F863C6301A4A04143", VisibilityType.Hidden);
                 });
         }
 
@@ -190,7 +191,7 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
                 return;
             }
 
-            var quest = _questService.GetQuestById("first_rites");
+            var quest = QuestService.GetQuestById("first_rites");
             var crystal = OBJECT_SELF;
             var type = GetLocalInt(crystal, "CRYSTAL_COLOR_TYPE");
 
@@ -208,7 +209,7 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
             CreateItemOnObject(cluster, player);
             quest.Advance(player, crystal);
 
-            _objectVisibilityService.AdjustVisibilityByObjectId(player, "81533EBB-2084-4C97-B004-8E1D8C395F56", VisibilityType.Hidden);
+            ObjectVisibilityService.AdjustVisibilityByObjectId(player, "81533EBB-2084-4C97-B004-8E1D8C395F56", VisibilityType.Hidden);
 
             var waypoint = GetObjectByTag("FORCE_QUEST_LANDING");
             var location = GetLocation(waypoint);
@@ -233,17 +234,17 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
                 
                 .OnAcceptAction((player, sourceObject) =>
                 {
-                    _objectVisibilityService.AdjustVisibilityByObjectId(player, "81533EBB-2084-4C97-B004-8E1D8C395F56", VisibilityType.Visible);
+                    ObjectVisibilityService.AdjustVisibilityByObjectId(player, "81533EBB-2084-4C97-B004-8E1D8C395F56", VisibilityType.Visible);
                 })
                 
                 .OnAbandonAction(player =>
                 {
-                    _objectVisibilityService.AdjustVisibilityByObjectId(player, "81533EBB-2084-4C97-B004-8E1D8C395F56", VisibilityType.Hidden);
+                    ObjectVisibilityService.AdjustVisibilityByObjectId(player, "81533EBB-2084-4C97-B004-8E1D8C395F56", VisibilityType.Hidden);
                 })
 
                 .OnAdvanceAction((player, sourceObject, state) =>
                 {
-                    _objectVisibilityService.AdjustVisibility(player, sourceObject, VisibilityType.Hidden);
+                    ObjectVisibilityService.AdjustVisibility(player, sourceObject, VisibilityType.Hidden);
                 });
         }
 
@@ -346,7 +347,7 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
 
                 foreach (var objId in visibilityObjectIDs)
                 {
-                    _objectVisibilityService.AdjustVisibilityByObjectId(player, objId, type);
+                    ObjectVisibilityService.AdjustVisibilityByObjectId(player, objId, type);
                 }
             }
 
@@ -369,22 +370,22 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
                 {
                     AdjustVisibility(player, VisibilityType.Hidden);
 
-                    _keyItemService.RemoveKeyItem(player, KeyItemType.DataDisc1);
-                    _keyItemService.RemoveKeyItem(player, KeyItemType.DataDisc2);
-                    _keyItemService.RemoveKeyItem(player, KeyItemType.DataDisc3);
-                    _keyItemService.RemoveKeyItem(player, KeyItemType.DataDisc4);
-                    _keyItemService.RemoveKeyItem(player, KeyItemType.DataDisc5);
-                    _keyItemService.RemoveKeyItem(player, KeyItemType.DataDisc6);
+                    KeyItemService.RemoveKeyItem(player, KeyItemType.DataDisc1);
+                    KeyItemService.RemoveKeyItem(player, KeyItemType.DataDisc2);
+                    KeyItemService.RemoveKeyItem(player, KeyItemType.DataDisc3);
+                    KeyItemService.RemoveKeyItem(player, KeyItemType.DataDisc4);
+                    KeyItemService.RemoveKeyItem(player, KeyItemType.DataDisc5);
+                    KeyItemService.RemoveKeyItem(player, KeyItemType.DataDisc6);
                 })
                 
                 .OnCompleteAction((player, sourceObject) =>
                 {
-                    _keyItemService.RemoveKeyItem(player, KeyItemType.DataDisc1);
-                    _keyItemService.RemoveKeyItem(player, KeyItemType.DataDisc2);
-                    _keyItemService.RemoveKeyItem(player, KeyItemType.DataDisc3);
-                    _keyItemService.RemoveKeyItem(player, KeyItemType.DataDisc4);
-                    _keyItemService.RemoveKeyItem(player, KeyItemType.DataDisc5);
-                    _keyItemService.RemoveKeyItem(player, KeyItemType.DataDisc6);
+                    KeyItemService.RemoveKeyItem(player, KeyItemType.DataDisc1);
+                    KeyItemService.RemoveKeyItem(player, KeyItemType.DataDisc2);
+                    KeyItemService.RemoveKeyItem(player, KeyItemType.DataDisc3);
+                    KeyItemService.RemoveKeyItem(player, KeyItemType.DataDisc4);
+                    KeyItemService.RemoveKeyItem(player, KeyItemType.DataDisc5);
+                    KeyItemService.RemoveKeyItem(player, KeyItemType.DataDisc6);
                 });
         }
 
@@ -397,15 +398,15 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
 
                 .OnAcceptAction((player, sourceObject) =>
                 {
-                    _keyItemService.GiveKeyItem(player, KeyItemType.PackageForDenamReyholm);
+                    KeyItemService.GiveKeyItem(player, KeyItemType.PackageForDenamReyholm);
                 })
                 .OnAbandonAction(player =>
                 {
-                    _keyItemService.RemoveKeyItem(player, KeyItemType.PackageForDenamReyholm);
+                    KeyItemService.RemoveKeyItem(player, KeyItemType.PackageForDenamReyholm);
                 })
                 .OnCompleteAction((player, sourceObject) =>
                 {
-                    _keyItemService.RemoveKeyItem(player, KeyItemType.PackageForDenamReyholm);
+                    KeyItemService.RemoveKeyItem(player, KeyItemType.PackageForDenamReyholm);
                 });
         }
 
@@ -453,12 +454,12 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
 
                 .OnAcceptAction((player, sourceObject) =>
                 {
-                    _keyItemService.GiveKeyItem(player, KeyItemType.MandalorianFacilityKey);
+                    KeyItemService.GiveKeyItem(player, KeyItemType.MandalorianFacilityKey);
                 })
                 
                 .OnAbandonAction(player =>
                 {
-                    _keyItemService.RemoveKeyItem(player, KeyItemType.MandalorianFacilityKey);
+                    KeyItemService.RemoveKeyItem(player, KeyItemType.MandalorianFacilityKey);
                 });
         }
 
@@ -479,12 +480,12 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
 
                 .OnAcceptAction((player, sourceObject) =>
                 {
-                    _keyItemService.GiveKeyItem(player, KeyItemType.CoxxionBaseKey);
+                    KeyItemService.GiveKeyItem(player, KeyItemType.CoxxionBaseKey);
                 })
                 
                 .OnAbandonAction(player =>
                 {
-                    _keyItemService.RemoveKeyItem(player, KeyItemType.CoxxionBaseKey);
+                    KeyItemService.RemoveKeyItem(player, KeyItemType.CoxxionBaseKey);
                 });
         }
 

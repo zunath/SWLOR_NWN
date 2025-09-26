@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
@@ -11,17 +12,20 @@ namespace SWLOR.Component.Perk.Model
     public class PerkRequirementSkill : IPerkRequirement
     {
         private readonly IDatabaseService _db;
-        private readonly ISkillService _skillService;
+        private readonly IServiceProvider _serviceProvider;
         public SkillType Type { get; }
         public int RequiredRank { get; }
 
-        public PerkRequirementSkill(SkillType type, int requiredRank, IDatabaseService db, ISkillService skillService)
+        public PerkRequirementSkill(SkillType type, int requiredRank, IDatabaseService db, IServiceProvider serviceProvider)
         {
             Type = type;
             RequiredRank = requiredRank;
             _db = db;
-            _skillService = skillService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded service to break circular dependency
+        private ISkillService SkillService => _serviceProvider.GetRequiredService<ISkillService>();
 
         public string CheckRequirements(uint player)
         {
@@ -40,7 +44,7 @@ namespace SWLOR.Component.Perk.Model
         {
             get
             {
-                var skillDetails = _skillService.GetSkillDetails(Type);
+                var skillDetails = SkillService.GetSkillDetails(Type);
                 return $"{skillDetails.Name} rank {RequiredRank}";
             }
         }

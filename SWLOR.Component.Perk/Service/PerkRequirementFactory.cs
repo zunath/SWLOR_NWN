@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Perk.Contracts;
 using SWLOR.Component.Perk.Model;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -16,20 +17,20 @@ namespace SWLOR.Component.Perk.Service
     public class PerkRequirementFactory : IPerkRequirementFactory
     {
         private readonly IDatabaseService _db;
-        private readonly ISkillService _skillService;
+        private readonly IServiceProvider _serviceProvider;
         private readonly IQuestService _questService;
         private readonly IPerkService _perkService;
         private readonly IBeastMasteryService _beastMasteryService;
 
         public PerkRequirementFactory(
             IDatabaseService db,
-            ISkillService skillService,
+            IServiceProvider serviceProvider,
             IQuestService questService,
             IPerkService perkService,
             IBeastMasteryService beastMasteryService)
         {
             _db = db;
-            _skillService = skillService;
+            _serviceProvider = serviceProvider;
             _questService = questService;
             _perkService = perkService;
             _beastMasteryService = beastMasteryService;
@@ -37,7 +38,7 @@ namespace SWLOR.Component.Perk.Service
 
         public IPerkRequirement CreateSkillRequirement(SkillType skill, int requiredRank)
         {
-            return new PerkRequirementSkill(skill, requiredRank, _db, _skillService);
+            return new PerkRequirementSkill(skill, requiredRank, _db, _serviceProvider);
         }
 
         public IPerkRequirement CreateQuestRequirement(string questId)

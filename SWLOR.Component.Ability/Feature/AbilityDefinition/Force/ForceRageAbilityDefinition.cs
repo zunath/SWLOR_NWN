@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -11,16 +12,17 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
 {
     public class ForceRageAbilityDefinition : IAbilityListDefinition
     {
-        private readonly ICombatPointService _combatPointService;
-        private readonly IEnmityService _enmityService;
-        private readonly IStatusEffectService _statusEffectService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public ForceRageAbilityDefinition(ICombatPointService combatPointService, IEnmityService enmityService, IStatusEffectService statusEffectService)
+        public ForceRageAbilityDefinition(IServiceProvider serviceProvider)
         {
-            _combatPointService = combatPointService;
-            _enmityService = enmityService;
-            _statusEffectService = statusEffectService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
+        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
+        private IStatusEffectService StatusEffectService => _serviceProvider.GetRequiredService<IStatusEffectService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
@@ -45,9 +47,9 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 {
                     var willpowerBonus = GetAbilityModifier(AbilityType.Willpower, activator) * 30f;
 
-                    var statusEffectService = _statusEffectService;
-                    var combatPointService = _combatPointService;
-                    var enmityService = _enmityService;
+                    var statusEffectService = StatusEffectService;
+                    var combatPointService = CombatPointService;
+                    var enmityService = EnmityService;
 
                     statusEffectService.Apply(activator, target, StatusEffectType.ForceRage1, 60f * 15f + willpowerBonus);
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Negative_Energy), target);
@@ -72,9 +74,9 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 {
                     var willpowerBonus = GetAbilityModifier(AbilityType.Willpower, activator) * 30f;
 
-                    var statusEffectService = _statusEffectService;
-                    var combatPointService = _combatPointService;
-                    var enmityService = _enmityService;
+                    var statusEffectService = StatusEffectService;
+                    var combatPointService = CombatPointService;
+                    var enmityService = EnmityService;
 
                     statusEffectService.Apply(activator, target, StatusEffectType.ForceRage2, 60f * 15f + willpowerBonus);
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Negative_Energy), target);

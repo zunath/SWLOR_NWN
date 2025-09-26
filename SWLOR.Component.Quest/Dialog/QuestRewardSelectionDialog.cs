@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Quest.Contracts;
 using SWLOR.Shared.Domain.Dialog.Contracts;
 using SWLOR.Shared.Domain.Dialog.ValueObjects;
@@ -7,12 +8,15 @@ namespace SWLOR.Component.Quest.Dialog
 {
     public class QuestRewardSelectionDialog: DialogBase
     {
-        private readonly IQuestService _questService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public QuestRewardSelectionDialog(IQuestService questService, IDialogService dialogService, IDialogBuilder dialogBuilder) : base(dialogService, dialogBuilder)
+        public QuestRewardSelectionDialog(IServiceProvider serviceProvider, IDialogService dialogService, IDialogBuilder dialogBuilder) : base(dialogService, dialogBuilder)
         {
-            _questService = questService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded service to break circular dependency
+        private IQuestService QuestService => _serviceProvider.GetRequiredService<IQuestService>();
 
         private class Model
         {

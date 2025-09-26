@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Inventory.Dialog;
 using SWLOR.Component.Inventory.Service;
 using SWLOR.Shared.Domain.Common.Enums;
@@ -11,20 +12,19 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
 {
     public class TomeItemDefinition: IItemListDefinition
     {
-        private readonly ICurrencyService _currencyService;
-        private readonly IDialogService _dialogService;
-        private readonly IGuiService _guiService;
+        private readonly IServiceProvider _serviceProvider;
         private readonly IItemBuilder _builder;
 
         public TomeItemDefinition(
-            ICurrencyService currencyService, 
-            IGuiService guiService,
-            IDialogService dialogService)
+            IServiceProvider serviceProvider)
         {
-            _currencyService = currencyService;
-            _guiService = guiService;
-            _dialogService = dialogService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private ICurrencyService CurrencyService => _serviceProvider.GetRequiredService<ICurrencyService>();
+        private IGuiService GuiService => _serviceProvider.GetRequiredService<IGuiService>();
+        private IDialogService DialogService => _serviceProvider.GetRequiredService<IDialogService>();
 
         public Dictionary<string, ItemDetail> BuildItems()
         {
@@ -43,7 +43,7 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
                     SetLocalObject(user, "XP_TOME_OBJECT", item);
                     AssignCommand(user, () => ClearAllActions());
 
-                    _dialogService.StartConversation(user, user, nameof(XPTomeDialog));
+                    DialogService.StartConversation(user, user, nameof(XPTomeDialog));
                 });
         }
 
@@ -58,7 +58,7 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
                         return "Only players may use this item.";
                     }
                     
-                    if (_currencyService.GetCurrency(user, CurrencyType.PerkRefundToken) >= 99)
+                    if (CurrencyService.GetCurrency(user, CurrencyType.PerkRefundToken) >= 99)
                     {
                         return "You cannot add any more perk refunds to your collection.";
                     }
@@ -67,10 +67,10 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
                 })
                 .ApplyAction((user, item, target, location, itemPropertyIndex) =>
                 {
-                    _currencyService.GiveCurrency(user, CurrencyType.PerkRefundToken, 1);
-                    SendMessageToPC(user, $"You gain a perk refund token. (Total: {_currencyService.GetCurrency(user, CurrencyType.PerkRefundToken)})");
+                    CurrencyService.GiveCurrency(user, CurrencyType.PerkRefundToken, 1);
+                    SendMessageToPC(user, $"You gain a perk refund token. (Total: {CurrencyService.GetCurrency(user, CurrencyType.PerkRefundToken)})");
                     DestroyObject(item);
-                    _guiService.PublishRefreshEvent(user, new PerkResetAcquiredRefreshEvent());
+                    GuiService.PublishRefreshEvent(user, new PerkResetAcquiredRefreshEvent());
                 });
         }
 
@@ -85,7 +85,7 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
                         return "Only players may use this item.";
                     }
 
-                    if (_currencyService.GetCurrency(user, CurrencyType.StatRefundToken) >= 99)
+                    if (CurrencyService.GetCurrency(user, CurrencyType.StatRefundToken) >= 99)
                     {
                         return "You cannot add any more stat refunds to your collection.";
                     }
@@ -94,8 +94,8 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
                 })
                 .ApplyAction((user, item, target, location, itemPropertyIndex) =>
                 {
-                    _currencyService.GiveCurrency(user, CurrencyType.StatRefundToken, 1);
-                    SendMessageToPC(user, $"You gain a stat refund token. (Total: {_currencyService.GetCurrency(user, CurrencyType.StatRefundToken)})");
+                    CurrencyService.GiveCurrency(user, CurrencyType.StatRefundToken, 1);
+                    SendMessageToPC(user, $"You gain a stat refund token. (Total: {CurrencyService.GetCurrency(user, CurrencyType.StatRefundToken)})");
                     DestroyObject(item);
                 });
         }

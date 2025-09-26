@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Migration.Contracts;
 using SWLOR.Component.Migration.Entity;
 using SWLOR.Component.Migration.Enums;
@@ -8,10 +9,7 @@ using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Domain.Common.Contracts;
 using SWLOR.Shared.Domain.Entities;
-using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Events.Infrastructure;
-using SWLOR.Shared.Events.Events.Module;
-using SWLOR.Shared.Events.Events.NWNX;
+using SWLOR.Shared.Domain.Space.Contracts;
 using Exception = System.Exception;
 
 namespace SWLOR.Component.Migration.Service
@@ -20,16 +18,18 @@ namespace SWLOR.Component.Migration.Service
     {
         private readonly ILogger _logger;
         private readonly IDatabaseService _db;
+        private readonly IServiceProvider _serviceProvider;
         private static int _currentMigrationVersion;
         private static int _newMigrationVersion;
         private static readonly Dictionary<int, IServerMigration> _serverMigrationsPostDatabase = new();
         private static readonly Dictionary<int, IServerMigration> _serverMigrationsPostCache = new();
         private static readonly Dictionary<int, IPlayerMigration> _playerMigrations = new();
 
-        public MigrationService(ILogger logger, IDatabaseService db)
+        public MigrationService(ILogger logger, IDatabaseService db, IServiceProvider serviceProvider)
         {
             _logger = logger;
             _db = db;
+            _serviceProvider = serviceProvider;
         }
 
         public void AfterDatabaseLoaded()
@@ -173,32 +173,51 @@ namespace SWLOR.Component.Migration.Service
 
         private void LoadServerMigrations()
         {
-            var types = AppDomain.CurrentDomain.GetAssemblies()
+            // Dynamically discover all migration types that implement IServerMigration
+            var migrationTypes = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
                 .Where(w => typeof(IServerMigration).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
 
-            foreach (var type in types)
+            foreach (var migrationType in migrationTypes)
             {
-                var instance = (IServerMigration)Activator.CreateInstance(type);
+                try
+                {
+                    // Try to resolve from DI container first
+                    var instance = (IServerMigration)_serviceProvider.GetRequiredService(migrationType);
 
-                if(instance.ExecutionType == MigrationExecutionType.PostDatabaseLoad)
-                    _serverMigrationsPostDatabase.Add(instance.Version, instance);
-                else 
-                    _serverMigrationsPostCache.Add(instance.Version, instance);
+                    if(instance.ExecutionType == MigrationExecutionType.PostDatabaseLoad)
+                        _serverMigrationsPostDatabase.Add(instance.Version, instance);
+                    else 
+                        _serverMigrationsPostCache.Add(instance.Version, instance);
+                }
+                catch (Exception ex)
+                {
+                    _logger.Write<MigrationLogGroup>($"Failed to load migration {migrationType.Name}: {ex.Message}");
+                    // Continue loading other migrations even if one fails
+                }
             }
         }
 
         private void LoadPlayerMigrations()
         {
-            var types = AppDomain.CurrentDomain.GetAssemblies()
+            // Dynamically discover all player migration types that implement IPlayerMigration
+            var migrationTypes = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
                 .Where(w => typeof(IPlayerMigration).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
 
-            foreach (var type in types)
+            foreach (var migrationType in migrationTypes)
             {
-                var instance = (IPlayerMigration)Activator.CreateInstance(type);
-
-                _playerMigrations.Add(instance.Version, instance);
+                try
+                {
+                    // Try to resolve from DI container first
+                    var instance = (IPlayerMigration)_serviceProvider.GetRequiredService(migrationType);
+                    _playerMigrations.Add(instance.Version, instance);
+                }
+                catch (Exception ex)
+                {
+                    _logger.Write<MigrationLogGroup>($"Failed to load player migration {migrationType.Name}: {ex.Message}");
+                    // Continue loading other migrations even if one fails
+                }
             }
         }
 

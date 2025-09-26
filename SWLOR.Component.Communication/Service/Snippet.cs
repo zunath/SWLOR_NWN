@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Dialog.Contracts;
@@ -11,6 +12,7 @@ namespace SWLOR.Component.Communication.Service
     public class Snippet : ISnippetService
     {
         private readonly IGenericCacheService _cacheService;
+        private readonly IServiceProvider _serviceProvider;
         
         // Cached data
         private IInterfaceCache<string, SnippetDetail> _snippetCache;
@@ -19,9 +21,10 @@ namespace SWLOR.Component.Communication.Service
         private readonly Dictionary<string, SnippetDetail> _appearsWhenCommands = new();
         private readonly Dictionary<string, SnippetDetail> _actionsTakenCommands = new();
 
-        public Snippet(IGenericCacheService cacheService)
+        public Snippet(IGenericCacheService cacheService, IServiceProvider serviceProvider)
         {
             _cacheService = cacheService;
+            _serviceProvider = serviceProvider;
         }
 
         /// <summary>

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Perk.Contracts;
 using SWLOR.Component.Perk.Service;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -16,21 +17,20 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
     public class BeastBruiserPerkDefinition : IPerkListDefinition
     {
         private readonly IRandomService _random;
-        private readonly IPerkService _perkService;
-        private readonly IStatService _statService;
-                private readonly IBeastMasteryService _beastMastery;
+        private readonly IServiceProvider _serviceProvider;
 
         public BeastBruiserPerkDefinition(
             IRandomService random, 
-            IPerkService perkService, 
-            IStatService statService,
-            IBeastMasteryService beastMastery)
+            IServiceProvider serviceProvider)
         {
             _random = random;
-            _perkService = perkService;
-            _statService = statService;
-            _beastMastery = beastMastery;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
+        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+        private IBeastMasteryService BeastMastery => _serviceProvider.GetRequiredService<IBeastMasteryService>();
 
         public Dictionary<PerkType, PerkDetail> BuildPerks(IPerkBuilder builder)
         {

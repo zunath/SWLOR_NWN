@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.World.Contracts;
 using SWLOR.Component.World.Service;
 using SWLOR.Shared.Domain.Dialog.Contracts;
@@ -9,15 +10,18 @@ namespace SWLOR.Component.World.Dialog
     {
         private const string MainPageId = "MAIN_PAGE";
 
-        private readonly IMusicService _musicService;
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded services to break circular dependencies
+        private IMusicService MusicService => _serviceProvider.GetRequiredService<IMusicService>();
 
         public JukeboxDialog(
             IDialogService dialogService,
             IDialogBuilder dialogBuilder,
-            IMusicService musicService) 
+            IServiceProvider serviceProvider) 
             : base(dialogService, dialogBuilder)
         {
-            _musicService = musicService;
+            // Services are now lazy-loaded via IServiceProvider
         }
 
         public override PlayerDialog SetUp(uint player)
@@ -27,7 +31,7 @@ namespace SWLOR.Component.World.Dialog
                 {
                     page.Header = "Please select a song.";
 
-                    foreach (var song in _musicService.GetAllSongs())
+                    foreach (var song in MusicService.GetAllSongs())
                     {
                         page.AddResponse(song.DisplayName, () =>
                         {

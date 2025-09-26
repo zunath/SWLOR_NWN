@@ -17,8 +17,8 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
     public class KoltoGrenadeAbilityDefinition : ExplosiveBaseAbilityDefinition
     {
 
-        public KoltoGrenadeAbilityDefinition(IRandomService random, IItemService itemService, IPerkService perkService, IStatService statService, ICombatService combatService, ICombatPointService combatPointService, IEnmityService enmityService, IStatusEffectService statusEffectService) 
-            : base(random, itemService, perkService, statService, combatService, combatPointService, enmityService, statusEffectService)
+        public KoltoGrenadeAbilityDefinition(IServiceProvider serviceProvider) 
+            : base(serviceProvider)
         {
         }
 

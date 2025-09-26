@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.World.Service;
 using SWLOR.Shared.Domain.Common.Contracts;
 using SWLOR.Shared.Domain.Dialog.Contracts;
@@ -14,13 +15,16 @@ namespace SWLOR.Component.World.Dialog
         private readonly List<uint> _areaDoors = new();
 
         private const string MainPageId = "MAIN_PAGE";
-        private readonly IAreaService _areaService;
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded services to break circular dependencies
+        private IAreaService AreaService => _serviceProvider.GetRequiredService<IAreaService>();
 
         public CoxxionTerminalDialog(
             IDialogService dialogService,
-            IAreaService areaService, IDialogBuilder dialogBuilder) : base(dialogService, dialogBuilder)
+            IServiceProvider serviceProvider, IDialogBuilder dialogBuilder) : base(dialogService, dialogBuilder)
         {
-            _areaService = areaService;
+            // Services are now lazy-loaded via IServiceProvider
         }
 
         /// <summary>
@@ -29,7 +33,7 @@ namespace SWLOR.Component.World.Dialog
         [ScriptHandler<OnModuleLoad>]
         public void LoadDoors()
         {
-            var area = _areaService.GetAreaByResref("v_cox_base");
+            var area = AreaService.GetAreaByResref("v_cox_base");
             if (!GetIsObjectValid(area)) return;
 
             for (var obj = GetFirstObjectInArea(area); GetIsObjectValid(obj); obj = GetNextObjectInArea(area))
@@ -94,7 +98,7 @@ namespace SWLOR.Component.World.Dialog
                     }
                 }
 
-                foreach (var areaPlayer in _areaService.GetPlayersInArea(area))
+                foreach (var areaPlayer in AreaService.GetPlayersInArea(area))
                 {
                     FloatingTextStringOnCreature($"{terminalColor} doors are now unlocked.", areaPlayer, false);
                 }

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Migration.Contracts;
 using SWLOR.Shared.Domain.Common.Contracts;
 using SWLOR.Shared.Events.Attributes;
@@ -12,11 +13,14 @@ namespace SWLOR.Component.Migration.EventHandlers
     /// </summary>
     public class MigrationEventHandler
     {
-        private readonly IMigrationService _migrationService;
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded services to break circular dependencies
+        private IMigrationService MigrationService => _serviceProvider.GetRequiredService<IMigrationService>();
 
-        public MigrationEventHandler(IMigrationService migrationService)
+        public MigrationEventHandler(IServiceProvider serviceProvider)
         {
-            _migrationService = migrationService;
+            // Services are now lazy-loaded via IServiceProvider
         }
 
         /// <summary>
@@ -25,7 +29,7 @@ namespace SWLOR.Component.Migration.EventHandlers
         [ScriptHandler<OnServerLoaded>]
         public void AfterDatabaseLoaded()
         {
-            _migrationService.AfterDatabaseLoaded();
+            MigrationService.AfterDatabaseLoaded();
         }
 
         /// <summary>
@@ -34,7 +38,7 @@ namespace SWLOR.Component.Migration.EventHandlers
         [ScriptHandler<OnModuleCacheAfter>]
         public void AfterCacheLoaded()
         {
-            _migrationService.AfterCacheLoaded();
+            MigrationService.AfterCacheLoaded();
         }
 
         /// <summary>
@@ -43,7 +47,7 @@ namespace SWLOR.Component.Migration.EventHandlers
         [ScriptHandler<OnCharacterInitAfter>]
         public void RunPlayerMigrations()
         {
-            _migrationService.RunPlayerMigrations();
+            MigrationService.RunPlayerMigrations();
         }
     }
 }

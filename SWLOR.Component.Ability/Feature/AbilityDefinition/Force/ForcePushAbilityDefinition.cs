@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -11,18 +12,18 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
 {
     public class ForcePushAbilityDefinition : IAbilityListDefinition
     {
-        private readonly ICombatService _combatService;
-        private readonly IAbilityService _abilityService;
-        private readonly ICombatPointService _combatPointService;
-        private readonly IEnmityService _enmityService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public ForcePushAbilityDefinition(ICombatService combatService, IAbilityService abilityService, ICombatPointService combatPointService, IEnmityService enmityService)
+        public ForcePushAbilityDefinition(IServiceProvider serviceProvider)
         {
-            _combatService = combatService;
-            _abilityService = abilityService;
-            _combatPointService = combatPointService;
-            _enmityService = enmityService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
+        private IAbilityService AbilityService => _serviceProvider.GetRequiredService<IAbilityService>();
+        private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
+        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
@@ -58,7 +59,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
 
             var willpowerBonus = 0.5f * GetAbilityModifier(AbilityType.Willpower, activator);
 
-            dc = _combatService.CalculateSavingThrowDC(activator, SavingThrow.Will, dc);
+            dc = CombatService.CalculateSavingThrowDC(activator, SavingThrow.Will, dc);
             var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
             var duration = BaseDuration + willpowerBonus;
 
@@ -66,16 +67,16 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
             {
                 ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), target, duration);
 
-                _abilityService.ApplyTemporaryImmunity(target, duration, ImmunityType.Knockdown);
+                AbilityService.ApplyTemporaryImmunity(target, duration, ImmunityType.Knockdown);
             }
             else if (checkResult == SavingThrowResultType.Success)
             {
                 ApplyEffectToObject(DurationType.Temporary, EffectSlow(), target, duration);
             }
 
-            _enmityService.ModifyEnmityOnAll(activator, level * 150);
+            EnmityService.ModifyEnmityOnAll(activator, level * 150);
 
-            _combatPointService.AddCombatPoint(activator, target, SkillType.Force, 3);
+            CombatPointService.AddCombatPoint(activator, target, SkillType.Force, 3);
         }
 
         private void ForcePush1(IAbilityBuilder builder)

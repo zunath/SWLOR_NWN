@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
@@ -8,18 +9,21 @@ namespace SWLOR.Component.Perk.Model
     public class PerkRequirementMustHavePerk: IPerkRequirement
     {
         private readonly IDatabaseService _db;
-        private readonly IPerkService _perkService;
+        private readonly IServiceProvider _serviceProvider;
         private readonly PerkType _mustHavePerkType;
         private readonly int _mustHavePerkLevel;
+        
+        // Lazy-loaded services to break circular dependencies
+        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
 
         public PerkRequirementMustHavePerk(
             IDatabaseService db, 
-            IPerkService perkService,
+            IServiceProvider serviceProvider,
             PerkType mustHavePerkType, 
             int mustHavePerkLevel = 1)
         {
             _db = db;
-            _perkService = perkService;
+            // Services are now lazy-loaded via IServiceProvider
             _mustHavePerkType = mustHavePerkType;
             _mustHavePerkLevel = mustHavePerkLevel;
         }
@@ -29,11 +33,11 @@ namespace SWLOR.Component.Perk.Model
             if (_mustHavePerkType == PerkType.Invalid)
                 return string.Empty;
 
-            var perkDetail = _perkService.GetPerkDetails(_mustHavePerkType);
+            var perkDetail = PerkService.GetPerkDetails(_mustHavePerkType);
             var playerId = GetObjectUUID(player);
             var dbPlayer = _db.Get<Player>(playerId);
 
-            if (!dbPlayer.Perks.ContainsKey(_mustHavePerkType) || _perkService.GetPerkLevel(player, _mustHavePerkType) < _mustHavePerkLevel)
+            if (!dbPlayer.Perks.ContainsKey(_mustHavePerkType) || PerkService.GetPerkLevel(player, _mustHavePerkType) < _mustHavePerkLevel)
                return $"You must have perk {perkDetail.Name} at level {_mustHavePerkLevel}.";
 
             return string.Empty;
@@ -43,7 +47,7 @@ namespace SWLOR.Component.Perk.Model
         {
             get
             {
-                var perkDetail = _perkService.GetPerkDetails(_mustHavePerkType);
+                var perkDetail = PerkService.GetPerkDetails(_mustHavePerkType);
                 return $"Must have perk {perkDetail.Name} at level {_mustHavePerkLevel}.";
             }
         }

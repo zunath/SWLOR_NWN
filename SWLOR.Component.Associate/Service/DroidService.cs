@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using SWLOR.Component.Associate.Contracts;
 using SWLOR.Component.Associate.Enums;
@@ -35,11 +36,9 @@ namespace SWLOR.Component.Associate.Service
         private readonly Dictionary<int, int> _levelsByTier = new();
         private readonly Dictionary<DroidPersonalityType, IDroidPersonality> _droidPersonalities = new();
 
-        private readonly IPerkService _perkService;
         private readonly IGuiService _guiService;
-        private readonly IItemService _itemService;
+        private readonly IServiceProvider _serviceProvider;
         private readonly IRaceService _raceService;
-        private readonly IStatService _statService;
         private readonly IStatusEffectService _statusEffectService;
         private readonly IAIService _aiService;
         private readonly IActivityService _activityService;
@@ -61,11 +60,9 @@ namespace SWLOR.Component.Associate.Service
         private const float RecastDelaySeconds = 1800f;
 
         public DroidService(
-            IPerkService perkService,
             IGuiService guiService,
-            IItemService itemService,
+            IServiceProvider serviceProvider,
             IRaceService raceService,
-            IStatService statService,
             IStatusEffectService statusEffectService,
             IAIService aiService,
             IActivityService activityService,
@@ -77,11 +74,9 @@ namespace SWLOR.Component.Associate.Service
             DroidBlandPersonality blandPersonality,
             DroidWorshipfulPersonality worshipfulPersonality)
         {
-            _perkService = perkService;
             _guiService = guiService;
-            _itemService = itemService;
+            _serviceProvider = serviceProvider;
             _raceService = raceService;
-            _statService = statService;
             _statusEffectService = statusEffectService;
             _aiService = aiService;
             _activityService = activityService;
@@ -93,6 +88,11 @@ namespace SWLOR.Component.Associate.Service
             _blandPersonality = blandPersonality;
             _worshipfulPersonality = worshipfulPersonality;
         }
+        
+        // Lazy-loaded services to break circular dependencies
+        private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
+        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
+        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
 
         /// <summary>
         /// When the module loads, cache all relevant droid data into memory.
@@ -274,7 +274,7 @@ namespace SWLOR.Component.Associate.Service
             if (!GetIsPC(player) || GetIsDM(player))
                 return;
 
-            if (_perkService.GetPerkLevel(player, PerkType.DroidAssembly) <= 0)
+            if (PerkService.GetPerkLevel(player, PerkType.DroidAssembly) <= 0)
             {
                 SendMessageToPC(player, ColorToken.Red("The 'Droid Assembly' perk is required to use this terminal."));
                 return;
@@ -337,7 +337,7 @@ namespace SWLOR.Component.Associate.Service
             {
                 SendMessageToPC(master, giveItemMessage);
                 AssignCommand(droid, () => ClearAllActions());
-                _itemService.ReturnItem(master, item);
+                ItemService.ReturnItem(master, item);
                 return;
             }
 
@@ -351,7 +351,7 @@ namespace SWLOR.Component.Associate.Service
                 {
                     SpeakString("I'm sorry master. I cannot carry any more items.");
                 });
-                _itemService.ReturnItem(master, item);
+                ItemService.ReturnItem(master, item);
                 return;
             }
 
@@ -436,7 +436,7 @@ namespace SWLOR.Component.Associate.Service
             var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
             var itemId = GetDroidItemId(item);
             var controller = GetControllerItem(droid);
-            var slot = _itemService.GetItemSlot(droid, item);
+            var slot = ItemService.GetItemSlot(droid, item);
 
             if (slot == InventorySlot.CreatureArmor ||
                 slot == InventorySlot.CreatureBite ||
@@ -706,7 +706,7 @@ namespace SWLOR.Component.Associate.Service
             // Perks
             foreach (var (perk, level) in details.Perks)
             {
-                var perkDefinition = _perkService.GetPerkDetails(perk);
+                var perkDefinition = PerkService.GetPerkDetails(perk);
                 var perkFeats = perkDefinition.PerkLevels.ContainsKey(level)
                     ? perkDefinition.PerkLevels[level].GrantedFeats
                     : new List<FeatType>();
@@ -1103,7 +1103,7 @@ namespace SWLOR.Component.Associate.Service
         private void DroidOnHeartbeatInternal()
         {
             ExecuteScript("x0_ch_hen_heart", OBJECT_SELF);
-            _statService.RestoreNPCStats(false);
+            StatService.RestoreNPCStats(false);
         }
 
         public void DroidOnPerception()
@@ -1146,7 +1146,7 @@ namespace SWLOR.Component.Associate.Service
             {
                 SetIsDestroyable(true, false, false);
             }); 
-            _statService.LoadNPCStats();
+            StatService.LoadNPCStats();
         }
 
         public void DroidOnSpellCastAt()

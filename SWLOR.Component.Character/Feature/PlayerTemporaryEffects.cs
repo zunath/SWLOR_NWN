@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -11,12 +12,15 @@ namespace SWLOR.Component.Character.Feature
     public class PlayerTemporaryEffects
     {
         private readonly IDatabaseService _db;
-        private readonly IStatService _statService;
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded services to break circular dependencies
+        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
 
-        public PlayerTemporaryEffects(IDatabaseService db, IStatService statService)
+        public PlayerTemporaryEffects(IDatabaseService db, IServiceProvider serviceProvider)
         {
             _db = db;
-            _statService = statService;
+            // Services are now lazy-loaded via IServiceProvider
         }
 
         [ScriptHandler<OnModuleEnter>]
@@ -60,7 +64,7 @@ namespace SWLOR.Component.Character.Feature
 
         private void ReapplyBAB(uint player)
         {
-            _statService.ApplyAttacksPerRound(player, GetItemInSlot(InventorySlot.RightHand, player));
+            StatService.ApplyAttacksPerRound(player, GetItemInSlot(InventorySlot.RightHand, player));
         }
 
         private void ReapplySpeed(uint player)

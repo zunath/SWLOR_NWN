@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Quest.Contracts;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Caching.Contracts;
@@ -11,16 +12,19 @@ namespace SWLOR.Component.Quest.Model
     {
         private readonly IDatabaseService _db;
         private readonly IItemCacheService _itemCache;
-        private readonly IQuestService _questService;
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded services to break circular dependencies
+        private IQuestService QuestService => _serviceProvider.GetRequiredService<IQuestService>();
 
         private readonly string _resref;
         private readonly int _quantity;
 
-        public CollectItemObjective(IDatabaseService db, IItemCacheService itemCache, IQuestService questService, string resref, int quantity)
+        public CollectItemObjective(IDatabaseService db, IItemCacheService itemCache, IServiceProvider serviceProvider, string resref, int quantity)
         {
             _db = db;
             _itemCache = itemCache;
-            _questService = questService;
+            // Services are now lazy-loaded via IServiceProvider
             _resref = resref;
             _quantity = quantity;
         }
@@ -49,7 +53,7 @@ namespace SWLOR.Component.Quest.Model
             quest.ItemProgresses[_resref]--;
             _db.Set(dbPlayer);
 
-            var questDetail = _questService.GetQuestById(questId);
+            var questDetail = QuestService.GetQuestById(questId);
             var itemName = _itemCache.GetItemNameByResref(_resref);
 
             var statusMessage = $"[{questDetail.Name}] {itemName} remaining: {quest.ItemProgresses[_resref]}";

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Space.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -12,16 +13,17 @@ namespace SWLOR.Component.Space.Feature.ShipModuleDefinition
 {
     public class HullRepairerModuleDefinition : IShipModuleListDefinition
     {
-        private readonly ISpaceService _spaceService;
-        private readonly ICombatPointService _combatPointService;
-        private readonly IMessagingService _messagingService;
+        private readonly IServiceProvider _serviceProvider;
         private readonly IShipModuleBuilder _builder;
+        
+        // Lazy-loaded services to break circular dependencies
+        private ISpaceService SpaceService => _serviceProvider.GetRequiredService<ISpaceService>();
+        private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
+        private IMessagingService MessagingService => _serviceProvider.GetRequiredService<IMessagingService>();
 
-        public HullRepairerModuleDefinition(ISpaceService spaceService, ICombatPointService combatPointService, IMessagingService messagingService, IShipModuleBuilder builder)
+        public HullRepairerModuleDefinition(IServiceProvider serviceProvider, IShipModuleBuilder builder)
         {
-            _spaceService = spaceService;
-            _combatPointService = combatPointService;
-            _messagingService = messagingService;
+            // Services are now lazy-loaded via IServiceProvider
             _builder = builder;
         }
 
@@ -76,10 +78,10 @@ namespace SWLOR.Component.Space.Feature.ShipModuleDefinition
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Breach), target);
 
                     var recovery = baseRecovery + (moduleBonus + activatorShipStatus.Industrial) * 2;
-                    _spaceService.RestoreHull(target, targetShipStatus, recovery);
+                    SpaceService.RestoreHull(target, targetShipStatus, recovery);
 
-                    _messagingService.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} restores {recovery} hull HP to {GetName(target)}'s ship.");
-                    _combatPointService.AddCombatPointToAllTagged(activator, SkillType.Piloting);
+                    MessagingService.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} restores {recovery} hull HP to {GetName(target)}'s ship.");
+                    CombatPointService.AddCombatPointToAllTagged(activator, SkillType.Piloting);
                 });
 
         }

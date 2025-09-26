@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Quest.Model;
 using SWLOR.Component.Quest.Service;
 using SWLOR.Shared.Domain.Common.Enums;
@@ -25,9 +26,12 @@ namespace SWLOR.Game.Server.Service.QuestService
         private QuestStateDetail _activeState;
         
         private readonly IItemCacheService _itemCacheService;
-        private readonly IQuestService _questService;
-        private readonly IKeyItemService _keyItemService;
-        private readonly IFactionService _factionService;
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded services to break circular dependencies
+        private IQuestService QuestService => _serviceProvider.GetRequiredService<IQuestService>();
+        private IKeyItemService KeyItemService => _serviceProvider.GetRequiredService<IKeyItemService>();
+        private IFactionService FactionService => _serviceProvider.GetRequiredService<IFactionService>();
         private readonly IGuildService _guildService;
         private readonly IDatabaseService _databaseService;
         private readonly INPCGroupService _npcGroupService;
@@ -46,14 +50,8 @@ namespace SWLOR.Game.Server.Service.QuestService
             IDialogService dialogService)
         {
             _itemCacheService = itemCacheService;
-            _questService = questService;
-            _keyItemService = keyItemService;
-            _factionService = factionService;
-            _guildService = guildService;
             _databaseService = databaseService;
-            _npcGroupService = npcGroupService;
-            _guiService = guiService;
-            _dialogService = dialogService;
+            // Services are now lazy-loaded via IServiceProvider
         }
 
         /// <summary>

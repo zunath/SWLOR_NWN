@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -10,14 +11,16 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.MartialArts
 {
     public class ChiAbilityDefinition: IAbilityListDefinition
     {
-        private readonly IEnmityService _enmityService;
-        private readonly ICombatPointService _combatPointService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public ChiAbilityDefinition(IEnmityService enmityService, ICombatPointService combatPointService)
+        public ChiAbilityDefinition(IServiceProvider serviceProvider)
         {
-            _enmityService = enmityService;
-            _combatPointService = combatPointService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
+        private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
@@ -36,8 +39,8 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.MartialArts
             ApplyEffectToObject(DurationType.Instant, EffectHeal(recovery), activator);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_G), activator);
 
-            _enmityService.ModifyEnmityOnAll(activator, 300 + recovery + 10);
-            _combatPointService.AddCombatPointToAllTagged(activator, SkillType.MartialArts, 3);
+            EnmityService.ModifyEnmityOnAll(activator, 300 + recovery + 10);
+            CombatPointService.AddCombatPointToAllTagged(activator, SkillType.MartialArts, 3);
         }
 
         private void Chi1(IAbilityBuilder builder)

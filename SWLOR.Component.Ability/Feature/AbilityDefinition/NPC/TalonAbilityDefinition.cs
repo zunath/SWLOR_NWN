@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -12,14 +13,16 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.NPC
 {
     public class TalonAbilityDefinition : IAbilityListDefinition
     {
-        private readonly ICombatService _combatService;
-        private readonly IStatService _statService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public TalonAbilityDefinition(ICombatService combatService, IStatService statService)
+        public TalonAbilityDefinition(IServiceProvider serviceProvider)
         {
-            _combatService = combatService;
-            _statService = statService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
+        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
@@ -40,10 +43,10 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.NPC
                 {
                     const int DMG = 1;
                     var attackerStat = GetAbilityScore(activator, AbilityType.Might);
-                    var attack = _statService.GetAttack(activator, AbilityType.Might, SkillType.Invalid);
-                    var defense = _statService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+                    var attack = StatService.GetAttack(activator, AbilityType.Might, SkillType.Invalid);
+                    var defense = StatService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
                     var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-                    var damage = _combatService.CalculateDamage(
+                    var damage = CombatService.CalculateDamage(
                         attack,
                         DMG, 
                         attackerStat, 

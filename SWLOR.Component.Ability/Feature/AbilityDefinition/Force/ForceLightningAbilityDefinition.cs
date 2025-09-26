@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -13,18 +14,18 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
 {
     public class ForceLightningAbilityDefinition : IAbilityListDefinition
     {
-        private readonly ICombatService _combatService;
-        private readonly IStatService _statService;
-        private readonly ICombatPointService _combatPointService;
-        private readonly IEnmityService _enmityService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public ForceLightningAbilityDefinition(ICombatService combatService, IStatService statService, ICombatPointService combatPointService, IEnmityService enmityService)
+        public ForceLightningAbilityDefinition(IServiceProvider serviceProvider)
         {
-            _combatService = combatService;
-            _statService = statService;
-            _combatPointService = combatPointService;
-            _enmityService = enmityService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
+        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+        private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
+        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
@@ -57,7 +58,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                     break;
             }
 
-            dmg += _combatService.GetAbilityDamageBonus(activator, SkillType.Force);
+            dmg += CombatService.GetAbilityDamageBonus(activator, SkillType.Force);
             var count = 0;
             var creature = GetFirstObjectInShape(Shape.Sphere, RadiusSize.Huge, GetLocation(target), true, ObjectType.Creature);
             while (GetIsObjectValid(creature) && count <= 5)
@@ -65,10 +66,10 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 if (GetIsReactionTypeHostile(creature, activator) && GetIsDead(creature) == false)
                 {
                     var attackerStat = GetAbilityScore(activator, AbilityType.Willpower);
-                    var defense = _statService.GetDefense(creature, CombatDamageType.Force, AbilityType.Willpower);
-                    var attack = _statService.GetAttack(activator, AbilityType.Willpower, SkillType.Force);
+                    var defense = StatService.GetDefense(creature, CombatDamageType.Force, AbilityType.Willpower);
+                    var attack = StatService.GetAttack(activator, AbilityType.Willpower, SkillType.Force);
                     var defenderStat = GetAbilityScore(creature, AbilityType.Willpower);
-                    var damage = _combatService.CalculateDamage(
+                    var damage = CombatService.CalculateDamage(
                         attack,
                         dmg,
                         attackerStat,
@@ -89,19 +90,19 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                         ApplyEffectToObject(DurationType.Instant, elecBurst, dTarget);
                     });
 
-                    _combatPointService.AddCombatPoint(activator, creature, SkillType.Force, 3);
-                    _enmityService.ModifyEnmity(activator, creature, 100 * level + damage);
+                    CombatPointService.AddCombatPoint(activator, creature, SkillType.Force, 3);
+                    EnmityService.ModifyEnmity(activator, creature, 100 * level + damage);
                     count++;
                 }
                 creature = GetNextObjectInShape(Shape.Sphere, RadiusSize.Huge, GetLocation(target), true, ObjectType.Creature);
             }
-            if (_statService.GetCurrentFP(activator) < 1 + (level * 2))
+            if (StatService.GetCurrentFP(activator) < 1 + (level * 2))
             {
-                var darkBargain = 7 * ((5 + (level * 2) - _statService.GetCurrentFP(activator)));
-                _statService.ReduceFP(activator, _statService.GetCurrentFP(activator));
+                var darkBargain = 7 * ((5 + (level * 2) - StatService.GetCurrentFP(activator)));
+                StatService.ReduceFP(activator, StatService.GetCurrentFP(activator));
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(darkBargain), activator);
             }
-            else { _statService.ReduceFP(activator, 5 + (level * 2)); }
+            else { StatService.ReduceFP(activator, 5 + (level * 2)); }
         }
 
         private void ForceLightning1(IAbilityBuilder builder)

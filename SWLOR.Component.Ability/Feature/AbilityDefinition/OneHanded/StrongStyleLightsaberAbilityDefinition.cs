@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Character.Contracts;
@@ -9,12 +10,15 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.OneHanded
 {
     public class StrongStyleLightsaberAbilityDefinition : IAbilityListDefinition
     {
-        private readonly IAbilityService _abilityService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public StrongStyleLightsaberAbilityDefinition(IAbilityService abilityService)
+        public StrongStyleLightsaberAbilityDefinition(IServiceProvider serviceProvider)
         {
-            _abilityService = abilityService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IAbilityService AbilityService => _serviceProvider.GetRequiredService<IAbilityService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
@@ -25,8 +29,8 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.OneHanded
 
         private void DoToggle(uint activator, AbilityToggleType type)
         {
-            var isToggled = !_abilityService.IsAbilityToggled(activator, type);
-            _abilityService.ToggleAbility(activator, type, isToggled);
+            var isToggled = !AbilityService.IsAbilityToggled(activator, type);
+            AbilityService.ToggleAbility(activator, type, isToggled);
 
             if (isToggled)
             {

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using System.Text.RegularExpressions;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Enums;
@@ -15,12 +16,15 @@ namespace SWLOR.Component.Character.UI.ViewModel
         IGuiRefreshable<RPXPRefreshEvent>
     {
         private readonly IDatabaseService _db;
-        private readonly ISkillService _skillService;
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded services to break circular dependencies
+        private ISkillService SkillService => _serviceProvider.GetRequiredService<ISkillService>();
 
-        public DistributeRPXPViewModel(IGuiService guiService, IDatabaseService db, ISkillService skillService) : base(guiService)
+        public DistributeRPXPViewModel(IGuiService guiService, IDatabaseService db, IServiceProvider serviceProvider) : base(guiService)
         {
             _db = db;
-            _skillService = skillService;
+            // Services are now lazy-loaded via IServiceProvider
         }
         
         private SkillType _skillType;
@@ -81,7 +85,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
             Distribution = "0";
             _availableRPXP = initialPayload.MaxRPXP;
             _skillType = initialPayload.Skill;
-            _maxDistributableXP = _skillService.GetMaxDistributableXP(Player, _skillType);
+            _maxDistributableXP = SkillService.GetMaxDistributableXP(Player, _skillType);
             SkillName = initialPayload.SkillName;
             AvailableRPXP = $"Available RP XP: {initialPayload.MaxRPXP}";
             
@@ -107,7 +111,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
                     // Some skills are restricted by character type.
                     // Players shouldn't be able to see this pop-up but in case they get to it,
                     // prevent them from depositing XP into a skill they shouldn't have access to.
-                    var skill = _skillService.GetSkillDetails(_skillType);
+                    var skill = SkillService.GetSkillDetails(_skillType);
                     if (skill.CharacterTypeRestriction != CharacterType.Invalid &&
                         skill.CharacterTypeRestriction != dbPlayer.CharacterType)
                     {
@@ -127,7 +131,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
                     dbPlayer.UnallocatedXP -= amount;
                     _db.Set(dbPlayer);
 
-                    _skillService.GiveSkillXP(Player, _skillType, amount, true, false);
+                    SkillService.GiveSkillXP(Player, _skillType, amount, true, false);
 
                     _guiService.TogglePlayerWindow(Player, GuiWindowType.DistributeRPXP);
                     _guiService.PublishRefreshEvent(Player, new RPXPRefreshEvent());
@@ -158,7 +162,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
             var dbPlayer = _db.Get<Player>(playerId);
 
             _availableRPXP = dbPlayer.UnallocatedXP;
-            _maxDistributableXP = _skillService.GetMaxDistributableXP(Player, _skillType);
+            _maxDistributableXP = SkillService.GetMaxDistributableXP(Player, _skillType);
             AvailableRPXP = $"Available RP XP: {dbPlayer.UnallocatedXP}";
             
             UpdateMaxDistributableInfo();

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.World.Contracts;
 using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.Shared.Domain.Common.Enums;
@@ -12,16 +13,17 @@ namespace SWLOR.Component.World.Dialog
     public class SliceTerminalDialog: DialogBase
     {
         private const string MainPageId = "MAIN_PAGE";
-        private readonly IKeyItemService _keyItemService;
-        private readonly IObjectVisibilityService _objectVisibilityService;
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded services to break circular dependencies
+        private IKeyItemService KeyItemService => _serviceProvider.GetRequiredService<IKeyItemService>();
+        private IObjectVisibilityService ObjectVisibilityService => _serviceProvider.GetRequiredService<IObjectVisibilityService>();
 
         public SliceTerminalDialog(
-            IKeyItemService keyItemService, 
-            IObjectVisibilityService objectVisibilityService, 
+            IServiceProvider serviceProvider, 
             IDialogService dialogService, IDialogBuilder dialogBuilder) : base(dialogService, dialogBuilder)
         {
-            _keyItemService = keyItemService;
-            _objectVisibilityService = objectVisibilityService;
+            // Services are now lazy-loaded via IServiceProvider
         }
 
         public override PlayerDialog SetUp(uint player)
@@ -49,8 +51,8 @@ namespace SWLOR.Component.World.Dialog
                 }
 
                 var keyItemType = (KeyItemType) keyItemId;
-                _keyItemService.GiveKeyItem(player, keyItemType);
-                _objectVisibilityService.AdjustVisibility(player, self, VisibilityType.Hidden);
+                KeyItemService.GiveKeyItem(player, keyItemType);
+                ObjectVisibilityService.AdjustVisibility(player, self, VisibilityType.Hidden);
                 
                 EndConversation();
             });

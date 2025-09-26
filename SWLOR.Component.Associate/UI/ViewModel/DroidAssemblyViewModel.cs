@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Associate.Contracts;
 using SWLOR.Component.Associate.Model;
 using SWLOR.Component.Associate.Service;
@@ -21,23 +22,22 @@ namespace SWLOR.Component.Associate.UI.ViewModel
 {
     public class DroidAssemblyViewModel : GuiViewModelBase<DroidAssemblyViewModel, IGuiPayload>
     {
-        private readonly IPerkService _perkService;
-        private readonly IItemService _itemService;
+        private readonly IServiceProvider _serviceProvider;
         private readonly ITargetingService _targetingService;
-        private readonly IDroidService _droid;
+        
+        // Lazy-loaded services to break circular dependencies
+        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
+        private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
+        private IDroidService Droid => _serviceProvider.GetRequiredService<IDroidService>();
 
         public DroidAssemblyViewModel(
             IGuiService guiService, 
-            IPerkService perkService, 
-            IItemService itemService, 
-            ITargetingService targetingService,
-            IDroidService droidService) 
+            IServiceProvider serviceProvider, 
+            ITargetingService targetingService) 
             : base(guiService)
         {
-            _perkService = perkService;
-            _itemService = itemService;
             _targetingService = targetingService;
-            _droid = droidService;
+            // Services are now lazy-loaded via IServiceProvider
         }
 
         private const string BlankTexture = "Blank";
@@ -328,10 +328,10 @@ namespace SWLOR.Component.Associate.UI.ViewModel
 
         private void AddPart(DroidPartItemPropertyDetails part, uint item)
         {
-            var assemblyLevel = _perkService.GetPerkLevel(Player, PerkType.DroidAssembly);
+            var assemblyLevel = PerkService.GetPerkLevel(Player, PerkType.DroidAssembly);
 
             var serialized = ObjectPlugin.Serialize(item);
-            var icon = _itemService.GetIconResref(item);
+            var icon = ItemService.GetIconResref(item);
             switch (part.PartType)
             {
                 case DroidPartItemPropertySubType.CPU:
@@ -475,7 +475,7 @@ namespace SWLOR.Component.Associate.UI.ViewModel
                         var item = ObjectPlugin.Deserialize(_cpuItem);
                         ObjectPlugin.AcquireItem(Player, item);
                         CPUResref = BlankTexture;
-                        var part = _droid.LoadDroidPartItemPropertyDetails(item);
+                        var part = Droid.LoadDroidPartItemPropertyDetails(item);
 
                         RemovePart(part);
                     }
@@ -485,14 +485,14 @@ namespace SWLOR.Component.Associate.UI.ViewModel
             {
                 _targetingService.EnterTargetingMode(Player, ObjectType.Item, "Select a CPU part from your inventory.", item =>
                 {
-                    var error = _itemService.CanBePersistentlyStored(Player, item);
+                    var error = ItemService.CanBePersistentlyStored(Player, item);
                     if (!string.IsNullOrWhiteSpace(error))
                     {
                         ShowError(error);
                         return;
                     }
 
-                    var part = _droid.LoadDroidPartItemPropertyDetails(item);
+                    var part = Droid.LoadDroidPartItemPropertyDetails(item);
 
                     if (part.PartType != DroidPartItemPropertySubType.CPU)
                     {
@@ -516,7 +516,7 @@ namespace SWLOR.Component.Associate.UI.ViewModel
                     var item = ObjectPlugin.Deserialize(_headItem);
                     ObjectPlugin.AcquireItem(Player, item);
                     HeadResref = BlankTexture;
-                    var part = _droid.LoadDroidPartItemPropertyDetails(item);
+                    var part = Droid.LoadDroidPartItemPropertyDetails(item);
 
                     RemovePart(part);
                 });
@@ -525,14 +525,14 @@ namespace SWLOR.Component.Associate.UI.ViewModel
             {
                 _targetingService.EnterTargetingMode(Player, ObjectType.Item, "Select a Head part from your inventory.", item =>
                 {
-                    var error = _itemService.CanBePersistentlyStored(Player, item);
+                    var error = ItemService.CanBePersistentlyStored(Player, item);
                     if (!string.IsNullOrWhiteSpace(error))
                     {
                         ShowError(error);
                         return;
                     }
 
-                    var part = _droid.LoadDroidPartItemPropertyDetails(item);
+                    var part = Droid.LoadDroidPartItemPropertyDetails(item);
 
                     if (part.PartType != DroidPartItemPropertySubType.Head)
                     {
@@ -555,7 +555,7 @@ namespace SWLOR.Component.Associate.UI.ViewModel
                     var item = ObjectPlugin.Deserialize(_bodyItem);
                     ObjectPlugin.AcquireItem(Player, item);
                     BodyResref = BlankTexture;
-                    var part = _droid.LoadDroidPartItemPropertyDetails(item);
+                    var part = Droid.LoadDroidPartItemPropertyDetails(item);
 
                     RemovePart(part);
                 });
@@ -564,14 +564,14 @@ namespace SWLOR.Component.Associate.UI.ViewModel
             {
                 _targetingService.EnterTargetingMode(Player, ObjectType.Item, "Select a Body part from your inventory.", item =>
                 {
-                    var error = _itemService.CanBePersistentlyStored(Player, item);
+                    var error = ItemService.CanBePersistentlyStored(Player, item);
                     if (!string.IsNullOrWhiteSpace(error))
                     {
                         ShowError(error);
                         return;
                     }
 
-                    var part = _droid.LoadDroidPartItemPropertyDetails(item);
+                    var part = Droid.LoadDroidPartItemPropertyDetails(item);
 
                     if (part.PartType != DroidPartItemPropertySubType.Body)
                     {
@@ -594,7 +594,7 @@ namespace SWLOR.Component.Associate.UI.ViewModel
                     var item = ObjectPlugin.Deserialize(_armsItem);
                     ObjectPlugin.AcquireItem(Player, item);
                     ArmsResref = BlankTexture;
-                    var part = _droid.LoadDroidPartItemPropertyDetails(item);
+                    var part = Droid.LoadDroidPartItemPropertyDetails(item);
 
                     RemovePart(part);
                 });
@@ -603,14 +603,14 @@ namespace SWLOR.Component.Associate.UI.ViewModel
             {
                 _targetingService.EnterTargetingMode(Player, ObjectType.Item, "Select an Arms part from your inventory.", item =>
                 {
-                    var error = _itemService.CanBePersistentlyStored(Player, item);
+                    var error = ItemService.CanBePersistentlyStored(Player, item);
                     if (!string.IsNullOrWhiteSpace(error))
                     {
                         ShowError(error);
                         return;
                     }
 
-                    var part = _droid.LoadDroidPartItemPropertyDetails(item);
+                    var part = Droid.LoadDroidPartItemPropertyDetails(item);
 
                     if (part.PartType != DroidPartItemPropertySubType.Arms)
                     {
@@ -633,7 +633,7 @@ namespace SWLOR.Component.Associate.UI.ViewModel
                     var item = ObjectPlugin.Deserialize(_legsItem);
                     ObjectPlugin.AcquireItem(Player, item);
                     LegsResref = BlankTexture;
-                    var part = _droid.LoadDroidPartItemPropertyDetails(item);
+                    var part = Droid.LoadDroidPartItemPropertyDetails(item);
 
                     RemovePart(part);
                 });
@@ -642,14 +642,14 @@ namespace SWLOR.Component.Associate.UI.ViewModel
             {
                 _targetingService.EnterTargetingMode(Player, ObjectType.Item, "Select a Legs part from your inventory.", item =>
                 {
-                    var error = _itemService.CanBePersistentlyStored(Player, item);
+                    var error = ItemService.CanBePersistentlyStored(Player, item);
                     if (!string.IsNullOrWhiteSpace(error))
                     {
                         ShowError(error);
                         return;
                     }
 
-                    var part = _droid.LoadDroidPartItemPropertyDetails(item);
+                    var part = Droid.LoadDroidPartItemPropertyDetails(item);
 
                     if (part.PartType != DroidPartItemPropertySubType.Legs)
                     {
@@ -711,10 +711,10 @@ namespace SWLOR.Component.Associate.UI.ViewModel
 
             ShowModal("You are about to construct the droid. Are you sure you want to continue?", () =>
             {
-                var controller = CreateItemOnObject(_droid.DroidControlItemResref, Player);
+                var controller = CreateItemOnObject(Droid.DroidControlItemResref, Player);
                 SetName(controller, $"Droid Controller: {Name}");
 
-                var constructedDroid = _droid.LoadConstructedDroid(controller);
+                var constructedDroid = Droid.LoadConstructedDroid(controller);
                 constructedDroid.Name = Name;
 
                 var ipPersonality = ItemPropertyCustom(ItemPropertyType.DroidPersonality, PersonalityIndex);
@@ -758,7 +758,7 @@ namespace SWLOR.Component.Associate.UI.ViewModel
                 constructedDroid.SerializedArms = _armsItem;
                 constructedDroid.SerializedLegs = _legsItem;
 
-                _droid.SaveConstructedDroid(controller, constructedDroid);
+                Droid.SaveConstructedDroid(controller, constructedDroid);
 
                 _cpuItem = string.Empty;
                 _headItem = string.Empty;

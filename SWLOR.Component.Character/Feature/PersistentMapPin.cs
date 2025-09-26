@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Common.Contracts;
@@ -12,7 +13,10 @@ namespace SWLOR.Component.Character.Feature
     public class PersistentMapPin
     {
         private readonly IDatabaseService _db;
-        private readonly IAreaService _areaService;
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded services to break circular dependencies
+        private IAreaService AreaService => _serviceProvider.GetRequiredService<IAreaService>();
         private struct MapPinDetails
         {
             public string Text { get; set; }
@@ -22,10 +26,10 @@ namespace SWLOR.Component.Character.Feature
 
         public PersistentMapPin(
             IDatabaseService db,
-            IAreaService areaService)
+            IServiceProvider serviceProvider)
         {
             _db = db;
-            _areaService = areaService;
+            // Services are now lazy-loaded via IServiceProvider
         }
 
         /// <summary>
@@ -155,7 +159,7 @@ namespace SWLOR.Component.Character.Feature
             int pinsAdded = 0;
             foreach (var (areaResref, mapPin) in mapPinTuple)
             {
-                var area = _areaService.GetAreaByResref(areaResref);
+                var area = AreaService.GetAreaByResref(areaResref);
                 SetMapPin(player, mapPin.Note, mapPin.X, mapPin.Y, area);
 
                 // Increment the count and update the ID.

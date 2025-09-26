@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -12,19 +13,17 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beasts
 {
     public class ForceTouchAbilityDefinition : IAbilityListDefinition
     {
-        private readonly ICombatService _combatService;
-        private readonly IStatService _statService;
-        private readonly IEnmityService _enmityService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public ForceTouchAbilityDefinition(
-            ICombatService combatService, 
-            IStatService statService, 
-            IEnmityService enmityService)
+        public ForceTouchAbilityDefinition(IServiceProvider serviceProvider)
         {
-            _combatService = combatService;
-            _statService = statService;
-            _enmityService = enmityService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
+        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
@@ -44,11 +43,11 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beasts
             var beastStat = GetAbilityScore(activator, AbilityType.Willpower) / 2;
 
             var totalStat = beastmasterStat + beastStat;
-            var attack = _statService.GetAttack(activator, AbilityType.Willpower, SkillType.Invalid);
-            var defense = _statService.GetDefense(target, CombatDamageType.Force, AbilityType.Willpower);
+            var attack = StatService.GetAttack(activator, AbilityType.Willpower, SkillType.Invalid);
+            var defense = StatService.GetDefense(target, CombatDamageType.Force, AbilityType.Willpower);
             var defenderStat = GetAbilityScore(target, AbilityType.Willpower);
 
-            var damage = _combatService.CalculateDamage(
+            var damage = CombatService.CalculateDamage(
                 attack,
                 dmg,
                 totalStat,
@@ -63,7 +62,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beasts
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Mind), target);
             });
 
-            _enmityService.ModifyEnmity(activator, target, 250 + damage);
+            EnmityService.ModifyEnmity(activator, target, 250 + damage);
         }
 
         private void ForceTouch1(IAbilityBuilder builder)

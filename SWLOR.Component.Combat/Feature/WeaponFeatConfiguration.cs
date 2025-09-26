@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Common.Contracts;
@@ -9,11 +10,14 @@ namespace SWLOR.Component.Combat.Feature
 {
     public class WeaponFeatConfiguration
     {
-        private readonly IItemService _itemService;
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded services to break circular dependencies
+        private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
 
-        public WeaponFeatConfiguration(IItemService itemService)
+        public WeaponFeatConfiguration(IServiceProvider serviceProvider)
         {
-            _itemService = itemService;
+            // Services are now lazy-loaded via IServiceProvider
         }
 
         /// <summary>
@@ -39,7 +43,7 @@ namespace SWLOR.Component.Combat.Feature
         
         private void ConfigureVibroblades()
         {
-            foreach (var itemType in _itemService.VibrobladeBaseItemTypes)
+            foreach (var itemType in ItemService.VibrobladeBaseItemTypes)
             {
                 WeaponPlugin.SetWeaponFocusFeat(itemType, FeatType.WeaponFocusVibroblades);
                 WeaponPlugin.SetWeaponSpecializationFeat(itemType, FeatType.WeaponSpecializationVibroblades);
@@ -49,7 +53,7 @@ namespace SWLOR.Component.Combat.Feature
 
         private void ConfigureFinesseVibroblades()
         {
-            foreach (var itemType in _itemService.FinesseVibrobladeBaseItemTypes)
+            foreach (var itemType in ItemService.FinesseVibrobladeBaseItemTypes)
             {
                 WeaponPlugin.SetWeaponFocusFeat(itemType, FeatType.WeaponFocusFinesseVibroblades);
                 WeaponPlugin.SetWeaponSpecializationFeat(itemType, FeatType.WeaponSpecializationFinesseVibroblades);
@@ -59,7 +63,7 @@ namespace SWLOR.Component.Combat.Feature
 
         private void ConfigureLightsabers()
         {
-            foreach (var itemType in _itemService.LightsaberBaseItemTypes)
+            foreach (var itemType in ItemService.LightsaberBaseItemTypes)
             {
                 WeaponPlugin.SetWeaponFocusFeat(itemType, FeatType.WeaponFocusLightsabers);
                 WeaponPlugin.SetWeaponSpecializationFeat(itemType, FeatType.WeaponSpecializationLightsabers);
@@ -69,7 +73,7 @@ namespace SWLOR.Component.Combat.Feature
 
         private void ConfigureHeavyVibroblades()
         {
-            foreach (var itemType in _itemService.HeavyVibrobladeBaseItemTypes)
+            foreach (var itemType in ItemService.HeavyVibrobladeBaseItemTypes)
             {
                 WeaponPlugin.SetWeaponFocusFeat(itemType, FeatType.WeaponFocusHeavyVibroblades);
                 WeaponPlugin.SetWeaponSpecializationFeat(itemType, FeatType.WeaponSpecializationHeavyVibroblades);
@@ -79,7 +83,7 @@ namespace SWLOR.Component.Combat.Feature
 
         private void ConfigurePolearms()
         {
-            foreach (var itemType in _itemService.PolearmBaseItemTypes)
+            foreach (var itemType in ItemService.PolearmBaseItemTypes)
             {
                 WeaponPlugin.SetWeaponFocusFeat(itemType, FeatType.WeaponFocusPolearms);
                 WeaponPlugin.SetWeaponSpecializationFeat(itemType, FeatType.WeaponSpecializationPolearms);
@@ -89,7 +93,7 @@ namespace SWLOR.Component.Combat.Feature
 
         private void ConfigureTwinBlades()
         {
-            foreach (var itemType in _itemService.TwinBladeBaseItemTypes)
+            foreach (var itemType in ItemService.TwinBladeBaseItemTypes)
             {
                 WeaponPlugin.SetWeaponFocusFeat(itemType, FeatType.WeaponFocusTwinBlades);
                 WeaponPlugin.SetWeaponSpecializationFeat(itemType, FeatType.WeaponSpecializationTwinBlades);
@@ -99,7 +103,7 @@ namespace SWLOR.Component.Combat.Feature
 
         private void ConfigureSaberstaffs()
         {
-            foreach (var itemType in _itemService.SaberstaffBaseItemTypes)
+            foreach (var itemType in ItemService.SaberstaffBaseItemTypes)
             {
                 WeaponPlugin.SetWeaponFocusFeat(itemType, FeatType.WeaponFocusSaberstaffs);
                 WeaponPlugin.SetWeaponSpecializationFeat(itemType, FeatType.WeaponSpecializationSaberstaffs);
@@ -109,7 +113,7 @@ namespace SWLOR.Component.Combat.Feature
 
         private void ConfigureKatars()
         {
-            foreach (var itemType in _itemService.KatarBaseItemTypes)
+            foreach (var itemType in ItemService.KatarBaseItemTypes)
             {
                 WeaponPlugin.SetWeaponFocusFeat(itemType, FeatType.WeaponFocusKatars);
                 WeaponPlugin.SetWeaponSpecializationFeat(itemType, FeatType.WeaponSpecializationKatars);
@@ -119,7 +123,7 @@ namespace SWLOR.Component.Combat.Feature
 
         private void ConfigureStaves()
         {
-            foreach (var itemType in _itemService.StaffBaseItemTypes)
+            foreach (var itemType in ItemService.StaffBaseItemTypes)
             {
                 WeaponPlugin.SetWeaponFocusFeat(itemType, FeatType.WeaponFocusStaves);
                 WeaponPlugin.SetWeaponSpecializationFeat(itemType, FeatType.WeaponSpecializationStaves);
@@ -128,7 +132,7 @@ namespace SWLOR.Component.Combat.Feature
         }
         private void ConfigurePistols()
         {
-            foreach (var itemType in _itemService.PistolBaseItemTypes)
+            foreach (var itemType in ItemService.PistolBaseItemTypes)
             {
                 WeaponPlugin.SetWeaponFocusFeat(itemType, FeatType.WeaponFocusPistol);
                 WeaponPlugin.SetWeaponSpecializationFeat(itemType, FeatType.WeaponSpecializationPistol);
@@ -138,7 +142,7 @@ namespace SWLOR.Component.Combat.Feature
 
         private void ConfigureThrowingWeapons()
         {
-            foreach (var itemType in _itemService.ThrowingWeaponBaseItemTypes)
+            foreach (var itemType in ItemService.ThrowingWeaponBaseItemTypes)
             {
                 WeaponPlugin.SetWeaponFocusFeat(itemType, FeatType.WeaponFocusThrowingWeapons);
                 WeaponPlugin.SetWeaponSpecializationFeat(itemType, FeatType.WeaponSpecializationThrowingWeapons);
@@ -148,7 +152,7 @@ namespace SWLOR.Component.Combat.Feature
 
         private void ConfigureRifles()
         {
-            foreach (var itemType in _itemService.RifleBaseItemTypes)
+            foreach (var itemType in ItemService.RifleBaseItemTypes)
             {
                 WeaponPlugin.SetWeaponFocusFeat(itemType, FeatType.WeaponFocusRifles);
                 WeaponPlugin.SetWeaponSpecializationFeat(itemType, FeatType.WeaponSpecializationRifles);

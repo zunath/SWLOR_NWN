@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Perk.Contracts;
 using SWLOR.Component.Perk.Model;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -9,15 +10,18 @@ namespace SWLOR.Component.Perk.Service
 {
     public class PerkBuilder : IPerkBuilder
     {
-        private readonly IPerkRequirementFactory _requirementFactory;
+        private readonly IServiceProvider _serviceProvider;
         private readonly Dictionary<PerkType, PerkDetail> _perks = new();
         private PerkDetail _activePerk;
         private PerkLevel _activeLevel;
 
-        public PerkBuilder(IPerkRequirementFactory requirementFactory)
+        public PerkBuilder(IServiceProvider serviceProvider)
         {
-            _requirementFactory = requirementFactory;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded service to break circular dependency
+        private IPerkRequirementFactory RequirementFactory => _serviceProvider.GetRequiredService<IPerkRequirementFactory>();
 
         /// <summary>
         /// Creates a new perk.
@@ -148,7 +152,7 @@ namespace SWLOR.Component.Perk.Service
         /// <returns>A perk builder with the configured options</returns>
         public IPerkBuilder RequirementSkill(SkillType skill, int requiredRank)
         {
-            var requirement = _requirementFactory.CreateSkillRequirement(skill, requiredRank);
+            var requirement = RequirementFactory.CreateSkillRequirement(skill, requiredRank);
             _activeLevel.Requirements.Add(requirement);
 
             return this;
@@ -161,7 +165,7 @@ namespace SWLOR.Component.Perk.Service
         /// <returns>A perk builder with the configured options.</returns>
         public IPerkBuilder RequirementQuest(string questId)
         {
-            var requirement = _requirementFactory.CreateQuestRequirement(questId);
+            var requirement = RequirementFactory.CreateQuestRequirement(questId);
             _activeLevel.Requirements.Add(requirement);
 
             return this;
@@ -174,7 +178,7 @@ namespace SWLOR.Component.Perk.Service
         /// <returns></returns>
         public IPerkBuilder RequirementCharacterType(CharacterType characterType)
         {
-            var requirement = _requirementFactory.CreateCharacterTypeRequirement(characterType);
+            var requirement = RequirementFactory.CreateCharacterTypeRequirement(characterType);
             _activeLevel.Requirements.Add(requirement);
 
             return this;
@@ -186,7 +190,7 @@ namespace SWLOR.Component.Perk.Service
         /// <returns>A perk builder with the configured options.</returns>
         public IPerkBuilder RequirementUnlocked()
         {
-            var requirement = _requirementFactory.CreateUnlockRequirement(_activePerk.Type);
+            var requirement = RequirementFactory.CreateUnlockRequirement(_activePerk.Type);
             _activeLevel.Requirements.Add(requirement);
 
             return this;
@@ -200,7 +204,7 @@ namespace SWLOR.Component.Perk.Service
         /// <returns>A perk builder with the configured options.</returns>
         public IPerkBuilder RequirementMustHavePerk(PerkType mustHavePerkType, int mustHavePerkLevel = 0)
         {
-            var requirement = _requirementFactory.CreateMustHavePerkRequirement(mustHavePerkType, mustHavePerkLevel);
+            var requirement = RequirementFactory.CreateMustHavePerkRequirement(mustHavePerkType, mustHavePerkLevel);
             _activeLevel.Requirements.Add(requirement);
 
             return this;
@@ -213,7 +217,7 @@ namespace SWLOR.Component.Perk.Service
         /// <returns>A perk builder with the configured options.</returns>
         public IPerkBuilder RequirementCannotHavePerk(PerkType cannotHavePerkType)
         {
-            var requirement = _requirementFactory.CreateCannotHavePerkRequirement(cannotHavePerkType);
+            var requirement = RequirementFactory.CreateCannotHavePerkRequirement(cannotHavePerkType);
             _activeLevel.Requirements.Add(requirement);
 
             return this;
@@ -226,7 +230,7 @@ namespace SWLOR.Component.Perk.Service
         /// <returns>A perk builder with the configured options.</returns>
         public IPerkBuilder RequirementBeastLevel(int level)
         {
-            var requirement = _requirementFactory.CreateBeastLevelRequirement(level);
+            var requirement = RequirementFactory.CreateBeastLevelRequirement(level);
             _activeLevel.Requirements.Add(requirement);
 
             return this;
@@ -239,7 +243,7 @@ namespace SWLOR.Component.Perk.Service
         /// <returns>A perk builder with the configured options.</returns>
         public IPerkBuilder RequirementBeastRole(BeastRoleType role)
         {
-            var requirement = _requirementFactory.CreateBeastRoleRequirement(role);
+            var requirement = RequirementFactory.CreateBeastRoleRequirement(role);
             _activeLevel.Requirements.Add(requirement);
 
             return this;

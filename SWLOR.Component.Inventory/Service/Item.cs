@@ -1,5 +1,6 @@
 using System.Numerics;
 using System.Text;
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -21,7 +22,7 @@ namespace SWLOR.Component.Inventory.Service
     {
         private readonly ILogger _logger;
         private readonly IGenericCacheService _cacheService;
-        private readonly IPerkService _perkService;
+        private readonly IServiceProvider _serviceProvider;
         private readonly IActivityService _activityService;
         private readonly IRecastService _recastService;
         private readonly IDroidService _droidService;
@@ -40,18 +41,21 @@ namespace SWLOR.Component.Inventory.Service
         public Item(
             ILogger logger, 
             IGenericCacheService cacheService, 
-            IPerkService perkService, 
+            IServiceProvider serviceProvider, 
             IActivityService activityService, 
             IRecastService recastService,
             IDroidService droidService)
         {
             _logger = logger;
             _cacheService = cacheService;
-            _perkService = perkService;
+            _serviceProvider = serviceProvider;
             _activityService = activityService;
             _recastService = recastService;
             _droidService = droidService;
         }
+        
+        // Lazy-loaded service to break circular dependency
+        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
 
         /// <summary>
         /// When the module loads, all item details are loaded into the cache.
@@ -468,7 +472,7 @@ namespace SWLOR.Component.Inventory.Service
                     var perkType = (PerkType)GetItemPropertySubType(ip);
                     var levelRequired = GetItemPropertyCostTableValue(ip);
 
-                    if (_perkService.GetPerkLevel(creature, perkType) < levelRequired)
+                    if (PerkService.GetPerkLevel(creature, perkType) < levelRequired)
                         return false;
                 }
             }
@@ -533,11 +537,11 @@ namespace SWLOR.Component.Inventory.Service
                 if (GetItemPropertyType(ip) != ItemPropertyType.UseLimitationPerk) continue;
 
                 var perkType = (PerkType) GetItemPropertySubType(ip);
-                if (_perkService.HeavyArmorPerks.Contains(perkType))
+                if (PerkService.HeavyArmorPerks.Contains(perkType))
                 {
                     return ArmorType.Heavy;
                 }
-                else if (_perkService.LightArmorPerks.Contains(perkType))
+                else if (PerkService.LightArmorPerks.Contains(perkType))
                 {
                     return ArmorType.Light;
                 }

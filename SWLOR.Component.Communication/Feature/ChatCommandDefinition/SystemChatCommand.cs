@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using System.Globalization;
 using SWLOR.Component.Communication.Contracts;
 using SWLOR.Component.Communication.Model;
@@ -16,17 +17,18 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
     public class SystemChatCommand: IChatCommandListDefinition
     {
         private readonly IAppSettings _appSettings;
-        private readonly IGuiService _guiService;
-        private readonly IAuthorizationService _authorization;
-        private readonly IChatCommandService _chatCommand;
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded services to break circular dependencies
+        private IGuiService GuiService => _serviceProvider.GetRequiredService<IGuiService>();
+        private IAuthorizationService Authorization => _serviceProvider.GetRequiredService<IAuthorizationService>();
+        private IChatCommandService ChatCommand => _serviceProvider.GetRequiredService<IChatCommandService>();
         private readonly ChatCommandBuilder _builder = new();
 
-        public SystemChatCommand(IAppSettings appSettings, IGuiService guiService, IAuthorizationService authorization, IChatCommandService chatCommand)
+        public SystemChatCommand(IAppSettings appSettings, IServiceProvider serviceProvider)
         {
             _appSettings = appSettings;
-            _guiService = guiService;
-            _authorization = authorization;
-            _chatCommand = chatCommand;
+            // Services are now lazy-loaded via IServiceProvider
         }
 
         public Dictionary<string, ChatCommandDetail> BuildChatCommands()
@@ -63,7 +65,7 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
                 })
                 .Action((user, target, location, args) =>
                 {
-                    _guiService.TogglePlayerWindow(user, GuiWindowType.BugReport);
+                    GuiService.TogglePlayerWindow(user, GuiWindowType.BugReport);
                 });
         }
 
@@ -74,20 +76,20 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
                 .Permissions(AuthorizationLevel.All)
                 .Action((user, target, location, args) =>
                 {
-                    var authorization = _authorization.GetAuthorizationLevel(user);
+                    var authorization = Authorization.GetAuthorizationLevel(user);
 
                     if (_appSettings.ServerEnvironment == ServerEnvironmentType.Test || 
                         authorization == AuthorizationLevel.DM)
                     {
-                        SendMessageToPC(user, _chatCommand.HelpTextDM);
+                        SendMessageToPC(user, ChatCommand.HelpTextDM);
                     }
                     else if (authorization == AuthorizationLevel.Admin)
                     {
-                        SendMessageToPC(user, _chatCommand.HelpTextAdmin);
+                        SendMessageToPC(user, ChatCommand.HelpTextAdmin);
                     }
                     else
                     {
-                        SendMessageToPC(user, _chatCommand.HelpTextPlayer);
+                        SendMessageToPC(user, ChatCommand.HelpTextPlayer);
                     }
                 });
         }
@@ -98,7 +100,7 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
                 .Permissions(AuthorizationLevel.All)
                 .Action((user, target, location, args) =>
                 {
-                    SendMessageToPC(user, _chatCommand.HelpTextEmote);
+                    SendMessageToPC(user, ChatCommand.HelpTextEmote);
                 });
         }
         private void StuckCommand()
@@ -140,7 +142,7 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
                 .Permissions(AuthorizationLevel.All)
                 .Action((user, target, location, args) =>
                 {
-                    _guiService.TogglePlayerWindow(user, GuiWindowType.Emotes);
+                    GuiService.TogglePlayerWindow(user, GuiWindowType.Emotes);
                 });
         }
     }

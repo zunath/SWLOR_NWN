@@ -1,5 +1,6 @@
 //using Random = SWLOR.Game.Server.Service.Random;
 
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -16,28 +17,20 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.TwoHanded
 {
     public class CircleSlashAbilityDefinition : IAbilityListDefinition
     {
-        private readonly IItemService _itemService;
-        private readonly IAbilityService _abilityService;
-        private readonly ICombatService _combatService;
-        private readonly IStatService _statService;
-        private readonly ICombatPointService _combatPointService;
-        private readonly IEnmityService _enmityService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public CircleSlashAbilityDefinition(
-            IItemService itemService, 
-            IAbilityService abilityService, 
-            ICombatService combatService, 
-            IStatService statService, 
-            ICombatPointService combatPointService, 
-            IEnmityService enmityService)
+        public CircleSlashAbilityDefinition(IServiceProvider serviceProvider)
         {
-            _itemService = itemService;
-            _abilityService = abilityService;
-            _combatService = combatService;
-            _statService = statService;
-            _combatPointService = combatPointService;
-            _enmityService = enmityService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
+        private IAbilityService AbilityService => _serviceProvider.GetRequiredService<IAbilityService>();
+        private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
+        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+        private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
+        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
@@ -52,7 +45,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.TwoHanded
         {
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
 
-            if (!_itemService.SaberstaffBaseItemTypes.Contains(GetBaseItemType(weapon)))
+            if (!ItemService.SaberstaffBaseItemTypes.Contains(GetBaseItemType(weapon)))
             {
                 return "This is a saberstaff ability.";
             }
@@ -80,10 +73,10 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.TwoHanded
                     break;
             }
 
-            dmg += _combatService.GetAbilityDamageBonus(activator, SkillType.TwoHanded);
+            dmg += CombatService.GetAbilityDamageBonus(activator, SkillType.TwoHanded);
 
             var stat = AbilityType.Perception;
-            if (_abilityService.IsAbilityToggled(activator, AbilityToggleType.StrongStyleSaberstaff))
+            if (AbilityService.IsAbilityToggled(activator, AbilityToggleType.StrongStyleSaberstaff))
             {
                 stat = AbilityType.Might;
             }
@@ -94,11 +87,11 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.TwoHanded
             {
                 if (GetIsReactionTypeHostile(creature, activator))
                 {
-                    var attackerStat = _combatService.GetPerkAdjustedAbilityScore(activator);
-                    var attack = _statService.GetAttack(activator, stat, SkillType.TwoHanded);
-                    var defense = _statService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+                    var attackerStat = CombatService.GetPerkAdjustedAbilityScore(activator);
+                    var attack = StatService.GetAttack(activator, stat, SkillType.TwoHanded);
+                    var defense = StatService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
                     var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-                    var damage = _combatService.CalculateDamage(
+                    var damage = CombatService.CalculateDamage(
                         attack,
                         dmg,
                         attackerStat,
@@ -111,8 +104,8 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.TwoHanded
                     DelayCommand(0.1f, () =>
                         ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), dTarget));
 
-                    _combatPointService.AddCombatPoint(activator, creature, SkillType.TwoHanded, 3);
-                    _enmityService.ModifyEnmity(activator, creature, 100 * level + damage);
+                    CombatPointService.AddCombatPoint(activator, creature, SkillType.TwoHanded, 3);
+                    EnmityService.ModifyEnmity(activator, creature, 100 * level + damage);
                     count++;
                 }
 

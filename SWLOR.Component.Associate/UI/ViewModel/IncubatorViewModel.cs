@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Associate.Enums;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -28,28 +29,27 @@ namespace SWLOR.Component.Associate.UI.ViewModel
         IGuiRefreshable<PerkRefundedRefreshEvent>
     {
         private readonly ILogger _logger;
-        private readonly IPerkService _perkService;
-        private readonly IItemService _itemService;
-        private readonly IBeastMasteryService _beastMasteryService;
+        private readonly IServiceProvider _serviceProvider;
         private readonly ITargetingService _targetingService;
         private readonly IDatabaseService _db;
         private readonly ITimeService _timeService;
+        
+        // Lazy-loaded services to break circular dependencies
+        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
+        private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
+        private IBeastMasteryService BeastMasteryService => _serviceProvider.GetRequiredService<IBeastMasteryService>();
 
         public IncubatorViewModel(
             IGuiService guiService, 
             ILogger logger, 
-            IPerkService perkService, 
-            IItemService itemService, 
-            IBeastMasteryService beastMasteryService, 
-            ITargetingService targetingService,
-            IDatabaseService db,
+            IServiceProvider serviceProvider, 
+            ITargetingService targetingService, 
+            IDatabaseService db, 
             ITimeService timeService) 
             : base(guiService)
         {
             _logger = logger;
-            _perkService = perkService;
-            _itemService = itemService;
-            _beastMasteryService = beastMasteryService;
+            // Services are now lazy-loaded via IServiceProvider
             _targetingService = targetingService;
             _db = db;
             _timeService = timeService;
@@ -368,20 +368,20 @@ namespace SWLOR.Component.Associate.UI.ViewModel
 
         private string FormatStat(int baseStat, int bonusStat, int additionalBonus)
         {
-            var bonusPercentage = _beastMasteryService.GetIncubationPercentageById(bonusStat);
+            var bonusPercentage = BeastMasteryService.GetIncubationPercentageById(bonusStat);
             if (bonusPercentage > 10f)
                 bonusPercentage = 10f;
 
             bonusPercentage += additionalBonus;
 
-            var baseStatText = _beastMasteryService.GetIncubationPercentageById(baseStat);
+            var baseStatText = BeastMasteryService.GetIncubationPercentageById(baseStat);
 
             return $"{baseStatText}% [+{bonusPercentage:0.0###}%]";
         }
 
         private int GetErraticGeniusBonus()
         {
-            var erraticGenius = _perkService.GetPerkLevel(Player, PerkType.ErraticGenius);
+            var erraticGenius = PerkService.GetPerkLevel(Player, PerkType.ErraticGenius);
             var mutationBonus = 0;
             switch (erraticGenius)
             {
@@ -449,7 +449,7 @@ namespace SWLOR.Component.Associate.UI.ViewModel
 
             DNALabel = _dnaType == BeastType.Invalid
                 ? "DNA [N/A]"
-                : $"DNA [{_beastMasteryService.GetBeastDetail(_dnaType).Name}]";
+                : $"DNA [{BeastMasteryService.GetBeastDetail(_dnaType).Name}]";
 
             AttackPurity = FormatStat(_attack, _stageAttack, 0);
             AccuracyPurity = FormatStat(_accuracy, _stageAccuracy, 0);
@@ -475,7 +475,7 @@ namespace SWLOR.Component.Associate.UI.ViewModel
             if (socialBonus > 10)
                 socialBonus = 10;
 
-            var timeReductionPercentage = 0.01f * (_perkService.GetPerkLevel(Player, PerkType.IncubationProcessing) * 10 + socialBonus);
+            var timeReductionPercentage = 0.01f * (PerkService.GetPerkLevel(Player, PerkType.IncubationProcessing) * 10 + socialBonus);
             var seconds = BaseSecondsBetweenStages - (int)(BaseSecondsBetweenStages * timeReductionPercentage);
 
             return seconds;
@@ -585,13 +585,13 @@ namespace SWLOR.Component.Associate.UI.ViewModel
             {
                 _targetingService.EnterTargetingMode(Player, ObjectType.Item, "Select a DNA item from your inventory.", item =>
                 {
-                    if (GetResRef(item) != _beastMasteryService.DNAResref)
+                    if (GetResRef(item) != BeastMasteryService.DNAResref)
                     {
                         FloatingTextStringOnCreature("Only DNA items may be selected.", Player, false);
                         return;
                     }
 
-                    var error = _itemService.CanBePersistentlyStored(Player, item);
+                    var error = ItemService.CanBePersistentlyStored(Player, item);
                     if (!string.IsNullOrWhiteSpace(error))
                     {
                         FloatingTextStringOnCreature(error, Player, false);
@@ -663,7 +663,7 @@ namespace SWLOR.Component.Associate.UI.ViewModel
                         }
                     }
 
-                    DNAItemResref = _itemService.GetIconResref(item);
+                    DNAItemResref = ItemService.GetIconResref(item);
                     _dnaItem = ObjectPlugin.Serialize(item);
                     DestroyObject(item);
 
@@ -834,20 +834,20 @@ namespace SWLOR.Component.Associate.UI.ViewModel
                 _targetingService.EnterTargetingMode(Player, ObjectType.Item, "Select a Hydrolase item from your inventory.",
                 item =>
                 {
-                    if (!GetResRef(item).StartsWith(_beastMasteryService.HydrolaseResrefPrefix))
+                    if (!GetResRef(item).StartsWith(BeastMasteryService.HydrolaseResrefPrefix))
                     {
                         FloatingTextStringOnCreature("Only Hydrolase items may be selected.", Player, false);
                         return;
                     }
 
-                    var error = _itemService.CanBePersistentlyStored(Player, item);
+                    var error = ItemService.CanBePersistentlyStored(Player, item);
                     if (!string.IsNullOrWhiteSpace(error))
                     {
                         FloatingTextStringOnCreature(error, Player, false);
                         return;
                     }
 
-                    HydrolaseItemResref = _itemService.GetIconResref(item);
+                    HydrolaseItemResref = ItemService.GetIconResref(item);
                     _hydrolaseItem = ObjectPlugin.Serialize(item);
                     _hydrolaseColor = AddItemStats(item);
                     DestroyObject(item);
@@ -880,20 +880,20 @@ namespace SWLOR.Component.Associate.UI.ViewModel
                 _targetingService.EnterTargetingMode(Player, ObjectType.Item, "Select a Lyase item from your inventory.",
                 item =>
                 {
-                    if (!GetResRef(item).StartsWith(_beastMasteryService.LyaseResrefPrefix))
+                    if (!GetResRef(item).StartsWith(BeastMasteryService.LyaseResrefPrefix))
                     {
                         FloatingTextStringOnCreature("Only Lyase items may be selected.", Player, false);
                         return;
                     }
 
-                    var error = _itemService.CanBePersistentlyStored(Player, item);
+                    var error = ItemService.CanBePersistentlyStored(Player, item);
                     if (!string.IsNullOrWhiteSpace(error))
                     {
                         FloatingTextStringOnCreature(error, Player, false);
                         return;
                     }
 
-                    LyaseItemResref = _itemService.GetIconResref(item);
+                    LyaseItemResref = ItemService.GetIconResref(item);
                     _lyaseItem = ObjectPlugin.Serialize(item);
                     _lyaseColor = AddItemStats(item);
                     DestroyObject(item);
@@ -926,20 +926,20 @@ namespace SWLOR.Component.Associate.UI.ViewModel
                 _targetingService.EnterTargetingMode(Player, ObjectType.Item, "Select an Isomerase item from your inventory.",
                 item =>
                 {
-                    if (!GetResRef(item).StartsWith(_beastMasteryService.IsomeraseResrefPrefix))
+                    if (!GetResRef(item).StartsWith(BeastMasteryService.IsomeraseResrefPrefix))
                     {
                         FloatingTextStringOnCreature("Only Isomerase items may be selected.", Player, false);
                         return;
                     }
 
-                    var error = _itemService.CanBePersistentlyStored(Player, item);
+                    var error = ItemService.CanBePersistentlyStored(Player, item);
                     if (!string.IsNullOrWhiteSpace(error))
                     {
                         FloatingTextStringOnCreature(error, Player, false);
                         return;
                     }
 
-                    IsomeraseItemResref = _itemService.GetIconResref(item);
+                    IsomeraseItemResref = ItemService.GetIconResref(item);
                     _isomeraseItem = ObjectPlugin.Serialize(item);
                     _isomeraseColor = AddItemStats(item);
                     DestroyObject(item);
@@ -958,7 +958,7 @@ namespace SWLOR.Component.Associate.UI.ViewModel
         private string ValidateCreateJob()
         {
             var playerId = GetObjectUUID(Player);
-            var maxConcurrentJobs = _perkService.GetPerkLevel(Player, PerkType.IncubationManagement) + 1;
+            var maxConcurrentJobs = PerkService.GetPerkLevel(Player, PerkType.IncubationManagement) + 1;
             var dbQuery = new DBQuery<IncubationJob>()
                 .AddFieldSearch(nameof(IncubationJob.PlayerId), playerId, false);
             var currentJobs = _db.Search(dbQuery).ToList();
@@ -976,7 +976,7 @@ namespace SWLOR.Component.Associate.UI.ViewModel
             if (job.CurrentStage > NumberOfStages)
                 return "Max stage reached.";
 
-            if (IsErraticGeniusChecked && _perkService.GetPerkLevel(Player, PerkType.ErraticGenius) <= 0)
+            if (IsErraticGeniusChecked && PerkService.GetPerkLevel(Player, PerkType.ErraticGenius) <= 0)
             {
                 return "You do not have the Erratic Genius perk purchased and cannot start this job.";
             }
@@ -1113,7 +1113,7 @@ namespace SWLOR.Component.Associate.UI.ViewModel
             ShowModal("Are you sure you want to complete this job?", () =>
             {
                 var job = GetJob();
-                _beastMasteryService.CreateBeastEgg(job, Player);
+                BeastMasteryService.CreateBeastEgg(job, Player);
                 _guiService.CloseWindow(Player, GuiWindowType.Incubator, Player);
 
                 SwitchViews();

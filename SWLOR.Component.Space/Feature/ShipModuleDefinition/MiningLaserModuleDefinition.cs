@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Space.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -17,20 +18,20 @@ namespace SWLOR.Component.Space.Feature.ShipModuleDefinition
     {
         private readonly IRandomService _random;
         private readonly IDatabaseService _db;
-        private readonly IPerkService _perkService;
-        private readonly ISkillService _skillService;
-        private readonly ISpaceService _spaceService;
-        private readonly ILootService _lootService;
+        private readonly IServiceProvider _serviceProvider;
         private readonly IShipModuleBuilder _builder;
+        
+        // Lazy-loaded services to break circular dependencies
+        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
+        private ISkillService SkillService => _serviceProvider.GetRequiredService<ISkillService>();
+        private ISpaceService SpaceService => _serviceProvider.GetRequiredService<ISpaceService>();
+        private ILootService LootService => _serviceProvider.GetRequiredService<ILootService>();
 
-        public MiningLaserModuleDefinition(IRandomService random, IDatabaseService db, IPerkService perkService, ISkillService skillService, ISpaceService spaceService, ILootService lootService, IShipModuleBuilder builder)
+        public MiningLaserModuleDefinition(IRandomService random, IDatabaseService db, IServiceProvider serviceProvider, IShipModuleBuilder builder)
         {
             _random = random;
             _db = db;
-            _perkService = perkService;
-            _skillService = skillService;
-            _spaceService = spaceService;
-            _lootService = lootService;
+            // Services are now lazy-loaded via IServiceProvider
             _builder = builder;
         }
 
@@ -105,9 +106,9 @@ namespace SWLOR.Component.Space.Feature.ShipModuleDefinition
                     DelayCommand(recast + 0.1f, () =>
                     {
                         // Perk & module bonuses. These increase the overall yield of each asteroid.
-                        var industrialBonus = _spaceService.GetShipStatus(activator).Industrial;
+                        var industrialBonus = SpaceService.GetShipStatus(activator).Industrial;
 
-                        var amountToMine = 1 + _perkService.GetPerkLevel(activator, PerkType.StarshipMining) + (int)(industrialBonus / 4) + (int)(moduleBonus)/6f;
+                        var amountToMine = 1 + PerkService.GetPerkLevel(activator, PerkType.StarshipMining) + (int)(industrialBonus / 4) + (int)(moduleBonus)/6f;
 
                         // Refresh remaining units (could have changed since the start)
                         remainingUnits = GetLocalInt(target, "ASTEROID_REMAINING_UNITS");
@@ -137,10 +138,10 @@ namespace SWLOR.Component.Space.Feature.ShipModuleDefinition
                             SetLocalInt(target, "ASTEROID_REMAINING_UNITS", remainingUnits);
                         }
 
-                        _lootService.SpawnLoot(target, activator, "LOOT_TABLE_");
+                        LootService.SpawnLoot(target, activator, "LOOT_TABLE_");
 
                         var lootTableId = GetLocalString(target, "ASTEROID_LOOT_TABLE_ID");
-                        var lootTable = _lootService.GetLootTableByName(lootTableId);
+                        var lootTable = LootService.GetLootTableByName(lootTableId);
 
                         // Spawn the units.
                         for (var count = 1; count <= amountToMine; count++)
@@ -156,9 +157,9 @@ namespace SWLOR.Component.Space.Feature.ShipModuleDefinition
                             var rank = dbPlayer.Skills[SkillType.Piloting].Rank;
                             var asteroidLevel = GetLocalInt(target, "ASTEROID_TIER") * 10;
                             var delta = asteroidLevel - rank;
-                            var xp = _skillService.GetDeltaXP(delta);
+                            var xp = SkillService.GetDeltaXP(delta);
 
-                            _skillService.GiveSkillXP(activator, SkillType.Piloting, xp);
+                            SkillService.GiveSkillXP(activator, SkillType.Piloting, xp);
                         }
                     });
                     SetLocalBool(target, Mined, false);

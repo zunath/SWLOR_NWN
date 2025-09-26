@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Character.Contracts;
@@ -10,12 +11,15 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Leadership
 {
     public class RejuvenationAbilityDefinition : IAbilityListDefinition
     {
-        private readonly IAbilityService _abilityService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public RejuvenationAbilityDefinition(IAbilityService abilityService)
+        public RejuvenationAbilityDefinition(IServiceProvider serviceProvider)
         {
-            _abilityService = abilityService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IAbilityService AbilityService => _serviceProvider.GetRequiredService<IAbilityService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
@@ -36,11 +40,11 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Leadership
                 .UsesAnimation(Animation.FireForgetTaunt)
                 .HasActivationAction((activator, target, level, location) =>
                 {
-                    return _abilityService.ToggleAura(activator, StatusEffectType.Rejuvenation);
+                    return AbilityService.ToggleAura(activator, StatusEffectType.Rejuvenation);
                 })
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    _abilityService.ApplyAura(activator, StatusEffectType.Rejuvenation, false, true, false);
+                    AbilityService.ApplyAura(activator, StatusEffectType.Rejuvenation, false, true, false);
                 });
         }
     }

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Abstractions.Models;
@@ -15,14 +16,16 @@ namespace SWLOR.Component.Character.UI.ViewModel
     public class SettingsViewModel: GuiViewModelBase<SettingsViewModel, IGuiPayload>
     {
         private readonly IDatabaseService _db;
-        private readonly ISkillService _skillService;
-        private readonly ILanguageService _languageService;
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded services to break circular dependencies
+        private ISkillService SkillService => _serviceProvider.GetRequiredService<ISkillService>();
+        private ILanguageService LanguageService => _serviceProvider.GetRequiredService<ILanguageService>();
 
-        public SettingsViewModel(IGuiService guiService, IDatabaseService db, ISkillService skillService, ILanguageService languageService) : base(guiService)
+        public SettingsViewModel(IGuiService guiService, IDatabaseService db, IServiceProvider serviceProvider) : base(guiService)
         {
             _db = db;
-            _skillService = skillService;
-            _languageService = languageService;
+            // Services are now lazy-loaded via IServiceProvider
         }
         
         public const string SettingsView = "SETTINGS_VIEW";
@@ -170,7 +173,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
             var playerId = GetObjectUUID(Player);
             var dbPlayer = _db.Get<Player>(playerId);
             var colorSettings = dbPlayer.Settings.LanguageChatColors;
-            var languages = _skillService.GetActiveSkillsByCategory(SkillCategoryType.Languages);
+            var languages = SkillService.GetActiveSkillsByCategory(SkillCategoryType.Languages);
 
             _languages = new List<SkillType>();
             var chatColorNames = new GuiBindingList<string>();
@@ -231,7 +234,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
                 }
                 else
                 {
-                    var (red, green, blue) = _languageService.GetColor(type);
+                    var (red, green, blue) = LanguageService.GetColor(type);
                     chatColors.Add(new GuiColor(red, green, blue));
                 }
             }
@@ -365,7 +368,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
                 else
                 {
                     var type = _languages[index - NumberOfSystemColors];
-                    var (red, green, blue) = _languageService.GetColor(type);
+                    var (red, green, blue) = LanguageService.GetColor(type);
                     ChatColors[index] = new GuiColor(red, green, blue);
                 }
 

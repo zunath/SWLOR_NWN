@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Quest.Contracts;
 using SWLOR.Component.Quest.Model;
 using SWLOR.NWN.API.NWNX;
@@ -27,11 +28,14 @@ namespace SWLOR.Component.Quest.Service
         private readonly IDatabaseService _db;
         private readonly IItemCacheService _itemCache;
         private readonly IGenericCacheService _cacheService;
-        private readonly IItemService _itemService;
-        private readonly IPerkService _perkService;
+        private readonly IServiceProvider _serviceProvider;
         private readonly IEnmityService _enmityService;
         private readonly IActivityService _activityService;
         private readonly IRandomService _randomService;
+        
+        // Lazy-loaded services to break circular dependencies
+        private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
+        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
         
         // Cached data
         private IInterfaceCache<string, IQuestDetail> _questCache;
@@ -49,8 +53,7 @@ namespace SWLOR.Component.Quest.Service
             IDatabaseService db,
             IItemCacheService itemCache,
             IGenericCacheService cacheService,
-            IItemService itemService,
-            IPerkService perkService,
+            IServiceProvider serviceProvider,
             IEnmityService enmityService,
             IActivityService activityService,
             IRandomService randomService)
@@ -58,8 +61,7 @@ namespace SWLOR.Component.Quest.Service
             _db = db;
             _itemCache = itemCache;
             _cacheService = cacheService;
-            _itemService = itemService;
-            _perkService = perkService;
+            // Services are now lazy-loaded via IServiceProvider
             _enmityService = enmityService;
             _activityService = activityService;
             _randomService = randomService;
@@ -412,7 +414,7 @@ namespace SWLOR.Component.Quest.Service
             if (!quest.ItemProgresses.ContainsKey(resref) ||
                 quest.ItemProgresses[resref] <= 0)
             {
-                _itemService.ReturnItem(player, item);
+                ItemService.ReturnItem(player, item);
                 SendMessageToPC(player, "That item is not required for this quest.");
                 return;
             }
@@ -424,13 +426,13 @@ namespace SWLOR.Component.Quest.Service
             if (stackSize > requiredAmount)
             {
                 dbPlayer.Quests[questId].ItemProgresses[resref] = 0;
-                _itemService.ReduceItemStack(item, requiredAmount);
-                _itemService.ReturnItem(player, item);
+                ItemService.ReduceItemStack(item, requiredAmount);
+                ItemService.ReturnItem(player, item);
             }
             else
             {
                 dbPlayer.Quests[questId].ItemProgresses[resref] -= stackSize;
-                _itemService.ReduceItemStack(item, stackSize);
+                ItemService.ReduceItemStack(item, stackSize);
             }
 
             _db.Set(dbPlayer);
@@ -535,7 +537,7 @@ namespace SWLOR.Component.Quest.Service
             var guildRelations = 0f;
             if (isGuildQuest)
             {
-                var perkLevel = _perkService.GetPerkLevel(player, PerkType.GuildRelations);
+                var perkLevel = PerkService.GetPerkLevel(player, PerkType.GuildRelations);
                 guildRelations = perkLevel * 0.05f;
             }
             var amount = baseAmount +

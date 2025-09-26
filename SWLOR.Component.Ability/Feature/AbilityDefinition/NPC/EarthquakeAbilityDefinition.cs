@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
@@ -15,16 +16,17 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.NPC
 {
     public class EarthquakeAbilityDefinition : IAbilityListDefinition
     {
-        private readonly IRandomService _random;
-        private readonly IStatService _statService;
-        private readonly ICombatService _combatService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public EarthquakeAbilityDefinition(IRandomService random, IStatService statService, ICombatService combatService)
+        public EarthquakeAbilityDefinition(IServiceProvider serviceProvider)
         {
-            _random = random;
-            _statService = statService;
-            _combatService = combatService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IRandomService Random => _serviceProvider.GetRequiredService<IRandomService>();
+        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+        private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
@@ -51,7 +53,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.NPC
                     {
                         if (GetIsEnemy(nearest, activator))
                         {
-                            var duration = 8f + _random.NextFloat(1f, 5f);
+                            var duration = 8f + Random.NextFloat(1f, 5f);
 
                             ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), nearest, duration);
                             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Com_Chunk_Stone_Small), nearest);
@@ -92,10 +94,10 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.NPC
 
                             SendMessageToPC(nearest, "The earthquake knocks you down!");
 
-                            var attack = _statService.GetAttack(activator, AbilityType.Might, SkillType.Invalid);
-                            var defense = _statService.GetDefense(nearest, CombatDamageType.Physical, AbilityType.Vitality);
+                            var attack = StatService.GetAttack(activator, AbilityType.Might, SkillType.Invalid);
+                            var defense = StatService.GetDefense(nearest, CombatDamageType.Physical, AbilityType.Vitality);
                             var defenderStat = GetAbilityScore(nearest, AbilityType.Vitality);
-                            var damage = _combatService.CalculateDamage(
+                            var damage = CombatService.CalculateDamage(
                                 attack,
                                 dmg,
                                 attackerStat,

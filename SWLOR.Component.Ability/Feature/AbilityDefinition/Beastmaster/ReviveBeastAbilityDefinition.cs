@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
@@ -13,22 +14,18 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beastmaster
 {
     public class ReviveBeastAbilityDefinition : IAbilityListDefinition
     {
-        private readonly IDatabaseService _db;
-        private readonly ICombatPointService _combatPointService;
-        private readonly IBeastMasteryService _beastMastery;
-        private readonly IEnmityService _enmityService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public ReviveBeastAbilityDefinition(
-            IDatabaseService db, 
-            ICombatPointService combatPointService, 
-            IBeastMasteryService beastMastery, 
-            IEnmityService enmityService)
+        public ReviveBeastAbilityDefinition(IServiceProvider serviceProvider)
         {
-            _db = db;
-            _combatPointService = combatPointService;
-            _beastMastery = beastMastery;
-            _enmityService = enmityService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IDatabaseService DB => _serviceProvider.GetRequiredService<IDatabaseService>();
+        private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
+        private IBeastMasteryService BeastMastery => _serviceProvider.GetRequiredService<IBeastMasteryService>();
+        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
@@ -52,14 +49,14 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beastmaster
             }
 
             var playerId = GetObjectUUID(activator);
-            var dbPlayer = _db.Get<Player>(playerId);
+            var dbPlayer = DB.Get<Player>(playerId);
 
             if (string.IsNullOrWhiteSpace(dbPlayer.ActiveBeastId))
             {
                 return "You do not have an active beast.";
             }
 
-            var dbBeast = _db.Get<Beast>(dbPlayer.ActiveBeastId);
+            var dbBeast = DB.Get<Beast>(dbPlayer.ActiveBeastId);
 
             if (!dbBeast.IsDead)
             {
@@ -84,16 +81,16 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beastmaster
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {
                     var playerId = GetObjectUUID(activator);
-                    var dbPlayer = _db.Get<Player>(playerId);
-                    var dbBeast = _db.Get<Beast>(dbPlayer.ActiveBeastId);
+                    var dbPlayer = DB.Get<Player>(playerId);
+                    var dbBeast = DB.Get<Beast>(dbPlayer.ActiveBeastId);
 
                     dbBeast.IsDead = false;
 
-                    _db.Set(dbBeast);
+                    DB.Set(dbBeast);
 
-                    _beastMastery.SpawnBeast(activator, dbBeast.Id, 0);
-                    _enmityService.ModifyEnmityOnAll(activator, 500);
-                    _combatPointService.AddCombatPointToAllTagged(activator, SkillType.BeastMastery);
+                    BeastMastery.SpawnBeast(activator, dbBeast.Id, 0);
+                    EnmityService.ModifyEnmityOnAll(activator, 500);
+                    CombatPointService.AddCombatPointToAllTagged(activator, SkillType.BeastMastery);
                 });
         }
 
@@ -112,17 +109,17 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beastmaster
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {
                     var playerId = GetObjectUUID(activator);
-                    var dbPlayer = _db.Get<Player>(playerId);
-                    var dbBeast = _db.Get<Beast>(dbPlayer.ActiveBeastId);
+                    var dbPlayer = DB.Get<Player>(playerId);
+                    var dbBeast = DB.Get<Beast>(dbPlayer.ActiveBeastId);
 
                     dbBeast.IsDead = false;
 
-                    _db.Set(dbBeast);
+                    DB.Set(dbBeast);
 
                     var hpPercentage = 10 + GetAbilityScore(activator, AbilityType.Social);
-                    _beastMastery.SpawnBeast(activator, dbBeast.Id, hpPercentage);
-                    _enmityService.ModifyEnmityOnAll(activator, 500);
-                    _combatPointService.AddCombatPointToAllTagged(activator, SkillType.BeastMastery);
+                    BeastMastery.SpawnBeast(activator, dbBeast.Id, hpPercentage);
+                    EnmityService.ModifyEnmityOnAll(activator, 500);
+                    CombatPointService.AddCombatPointToAllTagged(activator, SkillType.BeastMastery);
                 });
         }
 
@@ -141,17 +138,17 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beastmaster
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {
                     var playerId = GetObjectUUID(activator);
-                    var dbPlayer = _db.Get<Player>(playerId);
-                    var dbBeast = _db.Get<Beast>(dbPlayer.ActiveBeastId);
+                    var dbPlayer = DB.Get<Player>(playerId);
+                    var dbBeast = DB.Get<Beast>(dbPlayer.ActiveBeastId);
 
                     dbBeast.IsDead = false;
 
-                    _db.Set(dbBeast);
+                    DB.Set(dbBeast);
 
                     var hpPercentage = 30 + GetAbilityScore(activator, AbilityType.Social) * 2;
-                    _beastMastery.SpawnBeast(activator, dbBeast.Id, hpPercentage);
-                    _enmityService.ModifyEnmityOnAll(activator, 500);
-                    _combatPointService.AddCombatPointToAllTagged(activator, SkillType.BeastMastery);
+                    BeastMastery.SpawnBeast(activator, dbBeast.Id, hpPercentage);
+                    EnmityService.ModifyEnmityOnAll(activator, 500);
+                    CombatPointService.AddCombatPointToAllTagged(activator, SkillType.BeastMastery);
                 });
         }
     }

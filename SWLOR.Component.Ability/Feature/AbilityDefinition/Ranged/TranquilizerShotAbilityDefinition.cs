@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -14,18 +15,18 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Ranged
 {
     public class TranquilizerShotAbilityDefinition : IAbilityListDefinition
     {
-        private readonly IItemService _itemService;
-        private readonly IAbilityService _abilityService;
-        private readonly IEnmityService _enmityService;
-        private readonly ICombatPointService _combatPointService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public TranquilizerShotAbilityDefinition(IItemService itemService, IAbilityService abilityService, IEnmityService enmityService, ICombatPointService combatPointService)
+        public TranquilizerShotAbilityDefinition(IServiceProvider serviceProvider)
         {
-            _itemService = itemService;
-            _abilityService = abilityService;
-            _enmityService = enmityService;
-            _combatPointService = combatPointService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
+        private IAbilityService AbilityService => _serviceProvider.GetRequiredService<IAbilityService>();
+        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
+        private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
@@ -40,7 +41,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Ranged
         {
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
 
-            if (!_itemService.RifleBaseItemTypes.Contains(GetBaseItemType(weapon)))
+            if (!ItemService.RifleBaseItemTypes.Contains(GetBaseItemType(weapon)))
             {
                 return "This is a rifle ability.";
             }
@@ -59,10 +60,10 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Ranged
 
             ApplyEffectToObject(DurationType.Temporary, sleep, target, duration);
             ApplyEffectToObject(DurationType.Temporary, vfx, target, duration);
-            _abilityService.ApplyTemporaryImmunity(target, duration, ImmunityType.Sleep);
+            AbilityService.ApplyTemporaryImmunity(target, duration, ImmunityType.Sleep);
 
-            _enmityService.ModifyEnmity(activator, target, enmity);
-            _combatPointService.AddCombatPoint(activator, target, SkillType.Ranged, 3);
+            EnmityService.ModifyEnmity(activator, target, enmity);
+            CombatPointService.AddCombatPoint(activator, target, SkillType.Ranged, 3);
         }
 
         private void ImpactAction(uint activator, uint target, int level, Location targetLocation)

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
@@ -16,10 +17,7 @@ namespace SWLOR.Component.Inventory.Service
     {
         private readonly ILogger _logger;
         private readonly IRandomService _random;
-        private readonly IPerkService _perkService;
-        private readonly IStatService _statService;
-        private readonly IBeastMasteryService _beastMasteryService;
-        private readonly IItemService _itemService;
+        private readonly IServiceProvider _serviceProvider;
         private readonly Dictionary<string, LootTable> _lootTables = new();
 
         private const float CorpseLifespanSeconds = 360f;
@@ -29,18 +27,18 @@ namespace SWLOR.Component.Inventory.Service
         public Loot(
             ILogger logger,
             IRandomService random,
-            IPerkService perkService,
-            IStatService statService,
-            IBeastMasteryService beastMasteryService,
-            IItemService itemService)
+            IServiceProvider serviceProvider)
         {
             _logger = logger;
             _random = random;
-            _perkService = perkService;
-            _statService = statService;
-            _beastMasteryService = beastMasteryService;
-            _itemService = itemService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
+        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+        private IBeastMasteryService BeastMasteryService => _serviceProvider.GetRequiredService<IBeastMasteryService>();
+        private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
 
         public void RegisterLootTables()
         {
@@ -281,9 +279,9 @@ namespace SWLOR.Component.Inventory.Service
             var currentCreditFinder = GetLocalInt(target, "CREDITFINDER_LEVEL");
             var currentTreasureHunter = GetLocalInt(target, "RARE_BONUS_CHANCE");
 
-            var creditFinderLevel = _perkService.GetPerkLevel(attacker, PerkType.CreditFinder);
-            var treasureHunterLevel = _perkService.GetPerkLevel(attacker, PerkType.TreasureHunter) * 10;
-            var sniffLevel = _perkService.GetPerkLevel(attacker, PerkType.Sniff);
+            var creditFinderLevel = PerkService.GetPerkLevel(attacker, PerkType.CreditFinder);
+            var treasureHunterLevel = PerkService.GetPerkLevel(attacker, PerkType.TreasureHunter) * 10;
+            var sniffLevel = PerkService.GetPerkLevel(attacker, PerkType.Sniff);
             switch (sniffLevel)
             {
                 case 1:
@@ -335,13 +333,13 @@ namespace SWLOR.Component.Inventory.Service
             var facing = GetFacing(self);
             var lootPosition = Vector3(position.X, position.Y, position.Z - 0.11f);
             var spawnLocation = Location(area, lootPosition, facing);
-            var npcStats = _statService.GetNPCStats(self);
+            var npcStats = StatService.GetNPCStats(self);
 
             var container = CreateObject(ObjectType.Placeable, "corpse", spawnLocation);
             SetLocalObject(container, CorpseBodyVariable, self);
             SetName(container, $"{GetName(self)}'s Corpse");
-            SetLocalInt(container, _beastMasteryService.BeastTypeVariable, GetLocalInt(self, _beastMasteryService.BeastTypeVariable));
-            SetLocalInt(container, _beastMasteryService.BeastLevelVariable, npcStats.Level);
+            SetLocalInt(container, BeastMasteryService.BeastTypeVariable, GetLocalInt(self, BeastMasteryService.BeastTypeVariable));
+            SetLocalInt(container, BeastMasteryService.BeastLevelVariable, npcStats.Level);
 
             AssignCommand(container, () =>
             {
@@ -425,8 +423,8 @@ namespace SWLOR.Component.Inventory.Service
             var container = OBJECT_SELF;
             var firstItem = GetFirstItemInInventory(container);
             var corpseOwner = GetLocalObject(container, CorpseBodyVariable);
-            var beastTypeId = GetLocalInt(container, _beastMasteryService.BeastTypeVariable);
-            var level = GetLocalInt(container, _beastMasteryService.BeastLevelVariable);
+            var beastTypeId = GetLocalInt(container, BeastMasteryService.BeastTypeVariable);
+            var level = GetLocalInt(container, BeastMasteryService.BeastLevelVariable);
 
             if (!GetIsObjectValid(firstItem))
             {
@@ -442,11 +440,11 @@ namespace SWLOR.Component.Inventory.Service
                 else
                 {
                     var beastType = (BeastType)beastTypeId;
-                    var beastDetail = _beastMasteryService.GetBeastDetail(beastType);
-                    var extractCorpse = CreateObject(ObjectType.Placeable, _beastMasteryService.ExtractCorpseObjectResref, GetLocation(container));
+                    var beastDetail = BeastMasteryService.GetBeastDetail(beastType);
+                    var extractCorpse = CreateObject(ObjectType.Placeable, BeastMasteryService.ExtractCorpseObjectResref, GetLocation(container));
                     SetLocalObject(extractCorpse, CorpseBodyVariable, corpseOwner);
-                    SetLocalInt(extractCorpse, _beastMasteryService.BeastTypeVariable, beastTypeId);
-                    SetLocalInt(extractCorpse, _beastMasteryService.BeastLevelVariable, level);
+                    SetLocalInt(extractCorpse, BeastMasteryService.BeastTypeVariable, beastTypeId);
+                    SetLocalInt(extractCorpse, BeastMasteryService.BeastLevelVariable, level);
                     
                     AssignCommand(extractCorpse, () =>
                     {

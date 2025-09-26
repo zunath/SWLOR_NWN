@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
@@ -13,23 +14,18 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beastmaster
 {
     public class SoothePetAbilityDefinition : IAbilityListDefinition
     {
-        private readonly IAbilityBuilder builder;
-        private readonly ICombatPointService _combatPointService;
-        private readonly IBeastMasteryService _beastMastery;
-        private readonly IEnmityService _enmityService;
-        private readonly IStatusEffectService _statusEffectService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public SoothePetAbilityDefinition(
-            ICombatPointService combatPointService, 
-            IBeastMasteryService beastMastery, 
-            IEnmityService enmityService, 
-            IStatusEffectService statusEffectService)
+        public SoothePetAbilityDefinition(IServiceProvider serviceProvider) 
         {
-            _combatPointService = combatPointService;
-            _beastMastery = beastMastery;
-            _enmityService = enmityService;
-            _statusEffectService = statusEffectService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
+        private IBeastMasteryService BeastMastery => _serviceProvider.GetRequiredService<IBeastMasteryService>();
+        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
+        private IStatusEffectService StatusEffectService => _serviceProvider.GetRequiredService<IStatusEffectService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
@@ -57,7 +53,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beastmaster
                     }
 
                     var beast = GetAssociate(AssociateType.Henchman, activator);
-                    if (!_beastMastery.IsPlayerBeast(beast))
+                    if (!BeastMastery.IsPlayerBeast(beast))
                     {
                         return "You do not have an active beast.";
                     }
@@ -73,11 +69,11 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beastmaster
                 {
                     var beast = GetAssociate(AssociateType.Henchman, activator);
 
-                    _statusEffectService.Remove(beast, StatusEffectType.Bleed);
-                    _statusEffectService.Remove(beast, StatusEffectType.Poison);
-                    _statusEffectService.Remove(beast, StatusEffectType.Shock);
-                    _statusEffectService.Remove(beast, StatusEffectType.Burn);
-                    _statusEffectService.Remove(beast, StatusEffectType.Disease);
+                    StatusEffectService.Remove(beast, StatusEffectType.Bleed);
+                    StatusEffectService.Remove(beast, StatusEffectType.Poison);
+                    StatusEffectService.Remove(beast, StatusEffectType.Shock);
+                    StatusEffectService.Remove(beast, StatusEffectType.Burn);
+                    StatusEffectService.Remove(beast, StatusEffectType.Disease);
 
                     RemoveEffect(beast, 
                         EffectTypeScript.Disease, 
@@ -89,8 +85,8 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beastmaster
                         EffectTypeScript.Slow);
 
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_G), beast);
-                    _enmityService.ModifyEnmityOnAll(activator, 500);
-                    _combatPointService.AddCombatPointToAllTagged(activator, SkillType.BeastMastery);
+                    EnmityService.ModifyEnmityOnAll(activator, 500);
+                    CombatPointService.AddCombatPointToAllTagged(activator, SkillType.BeastMastery);
                 });
         }
     }

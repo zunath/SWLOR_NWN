@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -14,22 +15,20 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.OneHanded
 {
     public class ForceLeapAbilityDefinition : IAbilityListDefinition
     {
-        private readonly IItemService _itemService;
-        private readonly IAbilityService _abilityService;
-        private readonly ICombatService _combatService;
-        private readonly IStatService _statService;
-        private readonly ICombatPointService _combatPointService;
-        private readonly IEnmityService _enmityService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public ForceLeapAbilityDefinition(IItemService itemService, IAbilityService abilityService, ICombatService combatService, IStatService statService, ICombatPointService combatPointService, IEnmityService enmityService)
+        public ForceLeapAbilityDefinition(IServiceProvider serviceProvider)
         {
-            _itemService = itemService;
-            _abilityService = abilityService;
-            _combatService = combatService;
-            _statService = statService;
-            _combatPointService = combatPointService;
-            _enmityService = enmityService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
+        private IAbilityService AbilityService => _serviceProvider.GetRequiredService<IAbilityService>();
+        private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
+        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+        private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
+        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
@@ -45,7 +44,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.OneHanded
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
             var rightHandType = GetBaseItemType(weapon);
 
-            if (!_itemService.LightsaberBaseItemTypes.Contains(rightHandType))
+            if (!ItemService.LightsaberBaseItemTypes.Contains(rightHandType))
             {
                 return "A lightsaber must be equipped in your right hand to use this ability.";
             }
@@ -78,7 +77,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.OneHanded
                     break;
             }
 
-            dmg += _combatService.GetAbilityDamageBonus(activator, SkillType.OneHanded);
+            dmg += CombatService.GetAbilityDamageBonus(activator, SkillType.OneHanded);
 
             const float Delay = 1.2f;
             ClearAllActions();
@@ -89,19 +88,19 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.OneHanded
                 SetCommandable(false, activator);
             });
             
-            _combatPointService.AddCombatPoint(activator, target, SkillType.OneHanded, 3);
+            CombatPointService.AddCombatPoint(activator, target, SkillType.OneHanded, 3);
 
             var stat = AbilityType.Perception;
-            if (_abilityService.IsAbilityToggled(activator, AbilityToggleType.StrongStyleLightsaber))
+            if (AbilityService.IsAbilityToggled(activator, AbilityToggleType.StrongStyleLightsaber))
             {
                 stat = AbilityType.Might;
             }
 
-            var attackerStat = _combatService.GetPerkAdjustedAbilityScore(activator);
-            var attack = _statService.GetAttack(activator, stat, SkillType.OneHanded);
-            var defense = _statService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+            var attackerStat = CombatService.GetPerkAdjustedAbilityScore(activator);
+            var attack = StatService.GetAttack(activator, stat, SkillType.OneHanded);
+            var defense = StatService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
             var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-            var damage = _combatService.CalculateDamage(
+            var damage = CombatService.CalculateDamage(
                 attack,
                 dmg, 
                 attackerStat, 
@@ -117,10 +116,10 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.OneHanded
                 SetCommandable(true, activator);
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), target);
                 ApplyEffectToObject(DurationType.Temporary, EffectStunned(), target, Duration);
-                _abilityService.ApplyTemporaryImmunity(target, Duration, ImmunityType.Stun);
+                AbilityService.ApplyTemporaryImmunity(target, Duration, ImmunityType.Stun);
                 AssignCommand(activator, () =>
                 {
-                    if (_itemService.LightsaberBaseItemTypes.Contains(rightHandBaseItemType))
+                    if (ItemService.LightsaberBaseItemTypes.Contains(rightHandBaseItemType))
                     {
                         PlaySound("cb_ht_saberchan1");
                     }
@@ -131,7 +130,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.OneHanded
                     ActionJumpToObject(target);
                 });
             });
-            _enmityService.ModifyEnmity(activator, target, 250 * level + damage);
+            EnmityService.ModifyEnmity(activator, target, 250 * level + damage);
         }
 
         private void ForceLeap1(IAbilityBuilder builder)

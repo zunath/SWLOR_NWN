@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -10,17 +11,19 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
 {
     public class DeflectorShieldAbilityDefinition : IAbilityListDefinition
     {
-        private readonly ICombatPointService _combatPointService;
-        private readonly IEnmityService _enmityService;
+        private readonly IServiceProvider _serviceProvider;
         private const string Tier1Tag = "ABILITY_DEFLECTOR_SHIELD_1";
         private const string Tier2Tag = "ABILITY_DEFLECTOR_SHIELD_2";
         private const string Tier3Tag = "ABILITY_DEFLECTOR_SHIELD_3";
 
-        public DeflectorShieldAbilityDefinition(ICombatPointService combatPointService, IEnmityService enmityService)
+        public DeflectorShieldAbilityDefinition(IServiceProvider serviceProvider)
         {
-            _combatPointService = combatPointService;
-            _enmityService = enmityService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
+        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
@@ -62,8 +65,8 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                 }
             }
 
-            _enmityService.ModifyEnmityOnAll(activator, 220);
-            _combatPointService.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
+            EnmityService.ModifyEnmityOnAll(activator, 220);
+            CombatPointService.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
         }
 
         private void ApplyEffect(uint target, float percent, float duration, string tag)

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Space.Contracts;
 using SWLOR.Component.Space.Model;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -10,17 +11,20 @@ namespace SWLOR.Component.Space.Service
     public class SpaceObjectBuilder : ISpaceObjectBuilder
     {
         private readonly ILogger _logger;
-        private readonly ISpaceService _spaceService;
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded services to break circular dependencies
+        private ISpaceService SpaceService => _serviceProvider.GetRequiredService<ISpaceService>();
         private readonly Dictionary<string, SpaceObjectDetail> _spaceObjects = new();
         private SpaceObjectDetail _activeSpaceObject;
         private string _creatureTag;
 
         public SpaceObjectBuilder(
             ILogger logger,
-            ISpaceService spaceService)
+            IServiceProvider serviceProvider)
         {
             _logger = logger;
-            _spaceService = spaceService;
+            // Services are now lazy-loaded via IServiceProvider
         }
 
         /// <summary>
@@ -56,13 +60,13 @@ namespace SWLOR.Component.Space.Service
         /// <returns>A ship enemy builder with the configured options.</returns>
         public SpaceObjectBuilder ShipModule(string shipModuleItemTag)
         {
-            if (!_spaceService.IsRegisteredShipModule(shipModuleItemTag))
+            if (!SpaceService.IsRegisteredShipModule(shipModuleItemTag))
             {
                 _logger.Write<ErrorLogGroup>($"Failed to add {shipModuleItemTag} to ship enemy with tag {_creatureTag} as this module is not registered. Please ensure you entered the correct module tag.");
                 return this;
             }
 
-            var shipModule = _spaceService.GetShipModuleDetailByItemTag(shipModuleItemTag);
+            var shipModule = SpaceService.GetShipModuleDetailByItemTag(shipModuleItemTag);
             if (shipModule.PowerType == ShipModulePowerType.High)
             {
                 _activeSpaceObject.HighPoweredModules.Add(shipModuleItemTag);

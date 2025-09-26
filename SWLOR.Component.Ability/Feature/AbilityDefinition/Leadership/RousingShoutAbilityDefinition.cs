@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Character.Contracts;
@@ -10,18 +11,18 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Leadership
 {
     public class RousingShoutAbilityDefinition : IAbilityListDefinition
     {
-        private readonly IPerkService _perkService;
-        private readonly IAbilityService _abilityService;
-        private readonly ICombatPointService _combatPointService;
-        private readonly IEnmityService _enmityService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public RousingShoutAbilityDefinition(IPerkService perkService, IAbilityService abilityService, ICombatPointService combatPointService, IEnmityService enmityService)
+        public RousingShoutAbilityDefinition(IServiceProvider serviceProvider)
         {
-            _perkService = perkService;
-            _abilityService = abilityService;
-            _combatPointService = combatPointService;
-            _enmityService = enmityService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
+        private IAbilityService AbilityService => _serviceProvider.GetRequiredService<IAbilityService>();
+        private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
+        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
@@ -59,7 +60,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Leadership
                     var social = GetAbilityScore(activator, AbilityType.Social);
                     var targetMaxHP = GetMaxHitPoints(target);
                     int hp;
-                    var perkLevel = _perkService.GetPerkLevel(activator, PerkType.RousingShout);
+                    var perkLevel = PerkService.GetPerkLevel(activator, PerkType.RousingShout);
 
                     switch (perkLevel)
                     {
@@ -76,15 +77,15 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Leadership
                     }
 
                     ApplyEffectToObject(DurationType.Instant, EffectResurrection(), target);
-                    _abilityService.ReapplyPlayerAuraAOE(target);
+                    AbilityService.ReapplyPlayerAuraAOE(target);
 
                     if (hp > 0)
                     {
                         ApplyEffectToObject(DurationType.Instant, EffectHeal(hp), target);
                     }
 
-                    _combatPointService.AddCombatPointToAllTagged(activator, SkillType.Leadership, 3);
-                    _enmityService.ModifyEnmityOnAll(activator, 850);
+                    CombatPointService.AddCombatPointToAllTagged(activator, SkillType.Leadership, 3);
+                    EnmityService.ModifyEnmityOnAll(activator, 850);
                 });
         }
     }

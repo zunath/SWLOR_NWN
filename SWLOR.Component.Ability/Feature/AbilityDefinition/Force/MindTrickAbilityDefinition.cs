@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -11,16 +12,17 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
 {
     public class MindTrickAbilityDefinition : IAbilityListDefinition
     {
-        private readonly ICombatService _combatService;
-        private readonly ICombatPointService _combatPointService;
-        private readonly IEnmityService _enmityService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public MindTrickAbilityDefinition(ICombatService combatService, ICombatPointService combatPointService, IEnmityService enmityService)
+        public MindTrickAbilityDefinition(IServiceProvider serviceProvider)
         {
-            _combatService = combatService;
-            _combatPointService = combatPointService;
-            _enmityService = enmityService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
+        private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
+        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
@@ -54,7 +56,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 return;
             }
 
-            var dc = _combatService.CalculateSavingThrowDC(activator, SavingThrow.Will, 12);
+            var dc = CombatService.CalculateSavingThrowDC(activator, SavingThrow.Will, 12);
             const string EffectTag = "StatusEffectType.MindTrick";
             var checkResult = WillSave(target, dc, SavingThrowType.None, activator);
 
@@ -65,8 +67,8 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 effect = TagEffect(effect, EffectTag);
                 ApplyEffectToObject(DurationType.Temporary, effect, target, 6f);
             }
-            _combatPointService.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
-            _enmityService.ModifyEnmity(activator, target, 400);
+            CombatPointService.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+            EnmityService.ModifyEnmity(activator, target, 400);
         }
 
         private void MindTrick1(IAbilityBuilder builder)
@@ -114,7 +116,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                         }
                         targetCreature = GetNextObjectInShape(Shape.Sphere, Radius, GetLocation(target), true);
                     }
-                    _combatPointService.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+                    CombatPointService.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
                 });
         }
     }

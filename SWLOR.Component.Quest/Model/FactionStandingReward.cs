@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Quest.Contracts;
 using SWLOR.Shared.Domain.Communication.Contracts;
 using SWLOR.Shared.Domain.Communication.Enums;
@@ -7,26 +8,29 @@ namespace SWLOR.Component.Quest.Model
 {
     public class FactionStandingReward : IQuestReward
     {
-        private readonly IFactionService _factionService;
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded services to break circular dependencies
+        private IFactionService FactionService => _serviceProvider.GetRequiredService<IFactionService>();
         public bool IsSelectable { get; }
         public string MenuName { get; }
         public FactionType Faction { get; }
         public int Amount { get; }
 
-        public FactionStandingReward(IFactionService factionService, FactionType faction, int amount, bool isSelectable)
+        public FactionStandingReward(IServiceProvider serviceProvider, FactionType faction, int amount, bool isSelectable)
         {
-            _factionService = factionService;
+            // Services are now lazy-loaded via IServiceProvider
             IsSelectable = isSelectable;
             Faction = faction;
             Amount = amount;
 
-            var factionDetail = _factionService.GetFactionDetail(Faction);
+            var factionDetail = FactionService.GetFactionDetail(Faction);
             MenuName = $"{factionDetail.Name} standing";
         }
 
         public void GiveReward(uint player)
         {
-            _factionService.AdjustPlayerFactionStanding(player, Faction, Amount);
+            FactionService.AdjustPlayerFactionStanding(player, Faction, Amount);
         }
     }
 }

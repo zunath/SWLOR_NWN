@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Common.Contracts;
@@ -12,14 +13,17 @@ namespace SWLOR.Component.Character.Feature
     public class PersistentLocation
     {
         private readonly IDatabaseService _db;
-        private readonly IAreaService _areaService;
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded services to break circular dependencies
+        private IAreaService AreaService => _serviceProvider.GetRequiredService<IAreaService>();
 
         public PersistentLocation(
             IDatabaseService db,
-            IAreaService areaService)
+            IServiceProvider serviceProvider)
         {
             _db = db;
-            _areaService = areaService;
+            // Services are now lazy-loaded via IServiceProvider
         }
         
         /// <summary>
@@ -37,7 +41,7 @@ namespace SWLOR.Component.Character.Feature
                 return;
 
             // If the area isn't in the cache, it must be an instance. Don't save locations inside instances.
-            if (_areaService.GetAreaByResref(areaResref) == OBJECT_INVALID) return;
+            if (AreaService.GetAreaByResref(areaResref) == OBJECT_INVALID) return;
 
             var position = GetPosition(player);
             var orientation = GetFacing(player);
@@ -121,7 +125,7 @@ namespace SWLOR.Component.Character.Feature
 
             if (string.IsNullOrWhiteSpace(dbPlayer.LocationAreaResref)) return;
 
-            var locationArea = _areaService.GetAreaByResref(dbPlayer.LocationAreaResref);
+            var locationArea = AreaService.GetAreaByResref(dbPlayer.LocationAreaResref);
             var position = Vector3(dbPlayer.LocationX, dbPlayer.LocationY, dbPlayer.LocationZ);
 
             var location = Location(locationArea, position, dbPlayer.LocationOrientation);

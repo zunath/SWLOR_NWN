@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Communication.Contracts;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWNX.Enum;
@@ -21,22 +22,23 @@ namespace SWLOR.Component.Communication.Service
     public class CommunicationService : ICommunicationService
     {
         private readonly IDatabaseService _db;
-        private readonly IActivityService _activityService;
-        private readonly IHoloComService _holoComService;
-        private readonly ILanguageService _languageService;
+        private readonly IServiceProvider _serviceProvider;
         private const string DMPossessedCreature = "COMMUNICATION_DM_POSSESSED_CREATURE";
         private const int HolonetDelayMinutes = 5;
 
         public (byte, byte, byte) OOCChatColor => CommunicationConstants.OOCChatColor;
         public (byte, byte, byte) EmoteChatColor => CommunicationConstants.EmoteChatColor;
 
-        public CommunicationService(IDatabaseService db, IActivityService activityService, IHoloComService holoComService, ILanguageService languageService)
+        public CommunicationService(IDatabaseService db, IServiceProvider serviceProvider)
         {
             _db = db;
-            _activityService = activityService;
-            _holoComService = holoComService;
-            _languageService = languageService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IActivityService ActivityService => _serviceProvider.GetRequiredService<IActivityService>();
+        private IHoloComService HoloComService => _serviceProvider.GetRequiredService<IHoloComService>();
+        private ILanguageService LanguageService => _serviceProvider.GetRequiredService<ILanguageService>();
 
         private class CommunicationComponent
         {

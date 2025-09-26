@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Common.Enums;
 using SWLOR.Shared.Domain.Inventory.Contracts;
@@ -12,11 +13,14 @@ namespace SWLOR.Component.World.Feature
     public class MiniMaps
     {
         private const string AreaMiniMapVariable = "MINI_MAP_DISABLED";
-        private readonly IKeyItemService _keyItemService;
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded services to break circular dependencies
+        private IKeyItemService KeyItemService => _serviceProvider.GetRequiredService<IKeyItemService>();
 
-        public MiniMaps(IKeyItemService keyItemService)
+        public MiniMaps(IServiceProvider serviceProvider)
         {
-            _keyItemService = keyItemService;
+            // Services are now lazy-loaded via IServiceProvider
         }
 
         /// <summary>
@@ -40,7 +44,7 @@ namespace SWLOR.Component.World.Feature
             if (keyItemId > 0)
             {
                 var keyItemType = (KeyItemType)keyItemId;
-                var hasKeyItem = _keyItemService.HasKeyItem(player, keyItemType);
+                var hasKeyItem = KeyItemService.HasKeyItem(player, keyItemType);
 
                 if (hasKeyItem)
                 {

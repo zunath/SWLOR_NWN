@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
@@ -8,13 +9,16 @@ namespace SWLOR.Component.Perk.Model
     public class PerkRequirementCharacterType: IPerkRequirement
     {
         private readonly IDatabaseService _db;
-        private readonly IPerkService _perkService;
+        private readonly IServiceProvider _serviceProvider;
         private readonly CharacterType _requiredCharacterType;
+        
+        // Lazy-loaded services to break circular dependencies
+        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
 
-        public PerkRequirementCharacterType(IDatabaseService db, IPerkService perkService, CharacterType type)
+        public PerkRequirementCharacterType(IDatabaseService db, IServiceProvider serviceProvider, CharacterType type)
         {
             _db = db;
-            _perkService = perkService;
+            // Services are now lazy-loaded via IServiceProvider
             _requiredCharacterType = type;
         }
 
@@ -35,7 +39,7 @@ namespace SWLOR.Component.Perk.Model
         {
             get
             {
-                return $"Character Type: {_perkService.GetCharacterType(_requiredCharacterType).Name}";
+                return $"Character Type: {PerkService.GetCharacterType(_requiredCharacterType).Name}";
             }
         }
     }

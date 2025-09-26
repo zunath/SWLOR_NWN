@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -12,14 +13,16 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.NPC
 {
     public class FireBreathAbilityDefinition : IAbilityListDefinition
     {
-        private readonly ICombatService _combatService;
-        private readonly IStatService _statService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public FireBreathAbilityDefinition(ICombatService combatService, IStatService statService)
+        public FireBreathAbilityDefinition(IServiceProvider serviceProvider)
         {
-            _combatService = combatService;
-            _statService = statService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
+        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
@@ -47,10 +50,10 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.NPC
                     {
                         if (GetIsEnemy(coneTarget, activator))
                         {
-                            var attack = _statService.GetAttack(activator, AbilityType.Might, SkillType.Invalid);
-                            var defense = _statService.GetDefense(coneTarget, CombatDamageType.Fire, AbilityType.Vitality);
+                            var attack = StatService.GetAttack(activator, AbilityType.Might, SkillType.Invalid);
+                            var defense = StatService.GetDefense(coneTarget, CombatDamageType.Fire, AbilityType.Vitality);
                             var defenderStat = GetAbilityScore(coneTarget, AbilityType.Vitality);
-                            var damage = _combatService.CalculateDamage(
+                            var damage = CombatService.CalculateDamage(
                                 attack, 
                                 dmg, 
                                 attackerStat, 
@@ -85,10 +88,10 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.NPC
                     {
                         if (GetIsEnemy(coneTarget, activator))
                         {
-                            var attack = _statService.GetAttack(activator, AbilityType.Might, SkillType.Invalid);
-                            var defense = _statService.GetDefense(coneTarget, CombatDamageType.Fire, AbilityType.Vitality);
+                            var attack = StatService.GetAttack(activator, AbilityType.Might, SkillType.Invalid);
+                            var defense = StatService.GetDefense(coneTarget, CombatDamageType.Fire, AbilityType.Vitality);
                             var defenderStat = GetAbilityScore(coneTarget, AbilityType.Vitality);
-                            var damage = _combatService.CalculateDamage(
+                            var damage = CombatService.CalculateDamage(
                                 attack,
                                 dmg,
                                 attackerStat,

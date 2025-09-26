@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
@@ -12,15 +13,15 @@ namespace SWLOR.Component.Character.Service
 {
     public class PlayerRestService
     {
-        private readonly IStatusEffectService _statusEffectService;
-        private readonly IPartyService _partyService;
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded services to break circular dependencies
+        private IStatusEffectService StatusEffectService => _serviceProvider.GetRequiredService<IStatusEffectService>();
+        private IPartyService PartyService => _serviceProvider.GetRequiredService<IPartyService>();
 
-        public PlayerRestService(
-            IStatusEffectService statusEffectService,
-            IPartyService partyService)
+        public PlayerRestService(IServiceProvider serviceProvider)
         {
-            _statusEffectService = statusEffectService;
-            _partyService = partyService;
+            // Services are now lazy-loaded via IServiceProvider
         }
 
         /// <summary>
@@ -59,7 +60,7 @@ namespace SWLOR.Component.Character.Service
                 }
 
                 // Are any of their party members in combat?
-                foreach (var member in _partyService.GetAllPartyMembersWithinRange(player, 20f))
+                foreach (var member in PartyService.GetAllPartyMembersWithinRange(player, 20f))
                 {
                     if (GetIsInCombat(member))
                     {
@@ -84,12 +85,12 @@ namespace SWLOR.Component.Character.Service
                 return;
             }
 
-            _statusEffectService.Apply(player, player, StatusEffectType.Rest, 0f);
+            StatusEffectService.Apply(player, player, StatusEffectType.Rest, 0f);
 
             var henchman = GetAssociate(AssociateType.Henchman, player);
             if (GetIsObjectValid(henchman))
             {
-                _statusEffectService.Apply(henchman, henchman, StatusEffectType.Rest, 0f);
+                StatusEffectService.Apply(henchman, henchman, StatusEffectType.Rest, 0f);
             }
 
             ExecuteScript(ScriptName.OnRestStarted, player);

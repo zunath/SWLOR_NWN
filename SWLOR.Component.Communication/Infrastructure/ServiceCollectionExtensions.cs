@@ -29,6 +29,9 @@ namespace SWLOR.Component.Communication.Infrastructure
             services.AddSingleton<ISnippetService, Snippet>();
             services.AddSingleton<IMessagingService, Messaging>();
             services.AddSingleton<IDialogService, Service.Dialog>();
+            
+            // Register dialog classes
+            services.AddTransient<Dialog.DiceDialog>();
 
             // Register event handlers as singletons
             services.AddSingleton<CommunicationEventHandlers>();

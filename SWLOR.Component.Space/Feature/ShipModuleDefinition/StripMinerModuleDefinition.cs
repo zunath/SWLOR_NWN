@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Space.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -15,19 +16,19 @@ namespace SWLOR.Component.Space.Feature.ShipModuleDefinition
     public class StripMinerModuleDefinition : IShipModuleListDefinition
     {
         private readonly IDatabaseService _db;
-        private readonly IPerkService _perkService;
-        private readonly ISpaceService _spaceService;
-        private readonly ILootService _lootService;
-        private readonly ISkillService _skillService;
+        private readonly IServiceProvider _serviceProvider;
         private readonly IShipModuleBuilder _builder;
+        
+        // Lazy-loaded services to break circular dependencies
+        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
+        private ISpaceService SpaceService => _serviceProvider.GetRequiredService<ISpaceService>();
+        private ILootService LootService => _serviceProvider.GetRequiredService<ILootService>();
+        private ISkillService SkillService => _serviceProvider.GetRequiredService<ISkillService>();
 
-        public StripMinerModuleDefinition(IDatabaseService db, IPerkService perkService, ISpaceService spaceService, ILootService lootService, ISkillService skillService, IShipModuleBuilder builder)
+        public StripMinerModuleDefinition(IDatabaseService db, IServiceProvider serviceProvider, IShipModuleBuilder builder)
         {
             _db = db;
-            _perkService = perkService;
-            _spaceService = spaceService;
-            _lootService = lootService;
-            _skillService = skillService;
+            // Services are now lazy-loaded via IServiceProvider
             _builder = builder;
         }
 
@@ -84,19 +85,19 @@ namespace SWLOR.Component.Space.Feature.ShipModuleDefinition
 
                     DelayCommand(18f, () =>
                     {
-                        var industrialBonus = _spaceService.GetShipStatus(activator).Industrial;
+                        var industrialBonus = SpaceService.GetShipStatus(activator).Industrial;
 
-                        var amountToMine = 1 + _perkService.GetPerkLevel(activator, PerkType.StarshipMining) + (int)(industrialBonus / 6) + (moduleBonus / 6);
+                        var amountToMine = 1 + PerkService.GetPerkLevel(activator, PerkType.StarshipMining) + (int)(industrialBonus / 6) + (moduleBonus / 6);
 
                         SetPlotFlag(target, false);
                         ApplyEffectToObject(DurationType.Instant, EffectDeath(), target);
 
                         SendMessageToPC(activator, $"{GetName(target)} has been depleted by your strip miner.");
 
-                        _lootService.SpawnLoot(target, activator, "LOOT_TABLE_");
+                        LootService.SpawnLoot(target, activator, "LOOT_TABLE_");
 
                         var lootTableId = GetLocalString(target, "STRIPMINE_LOOT_TABLE_ID");
-                        var lootTable = _lootService.GetLootTableByName(lootTableId);
+                        var lootTable = LootService.GetLootTableByName(lootTableId);
 
                         for (var count = 1; count <= amountToMine; count++)
                         {
@@ -111,9 +112,9 @@ namespace SWLOR.Component.Space.Feature.ShipModuleDefinition
                             var rank = dbPlayer.Skills[SkillType.Piloting].Rank;
                             var asteroidLevel = GetLocalInt(target, "ASTEROID_TIER") * 10;
                             var delta = asteroidLevel - rank;
-                            var xp = _skillService.GetDeltaXP(delta);
+                            var xp = SkillService.GetDeltaXP(delta);
 
-                            _skillService.GiveSkillXP(activator, SkillType.Piloting, xp);
+                            SkillService.GiveSkillXP(activator, SkillType.Piloting, xp);
                         }
                     });
                     SetLocalBool(target, Mined, false);

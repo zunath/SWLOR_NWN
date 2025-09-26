@@ -1,4 +1,5 @@
 using System.Globalization;
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Extension;
@@ -16,19 +17,22 @@ namespace SWLOR.Component.Ability.Service
     public class Recast : IRecastService
     {
         private readonly IDatabaseService _db;
-        private readonly IStatusEffectService _statusEffectService;
+        private readonly IServiceProvider _serviceProvider;
         private readonly ITimeService _time;
         private static readonly Dictionary<RecastGroup, string> _recastDescriptions = new();
 
         public Recast(
             IDatabaseService db, 
-            IStatusEffectService statusEffectService,
+            IServiceProvider serviceProvider,
             ITimeService time)
         {
             _db = db;
-            _statusEffectService = statusEffectService;
+            _serviceProvider = serviceProvider;
             _time = time;
         }
+        
+        // Lazy-loaded service to break circular dependency
+        private IStatusEffectService StatusEffectService => _serviceProvider.GetRequiredService<IStatusEffectService>();
 
         public void CacheRecastGroups()
         {
@@ -128,7 +132,7 @@ namespace SWLOR.Component.Ability.Service
 
                 if (!ignoreRecastReduction)
                 {
-                    var foodEffect = _statusEffectService.GetEffectData<FoodEffectData>(activator, StatusEffectType.Food);
+                    var foodEffect = StatusEffectService.GetEffectData<FoodEffectData>(activator, StatusEffectType.Food);
                     var recastReduction = dbPlayer.AbilityRecastReduction;
                     if (foodEffect != null)
                     {

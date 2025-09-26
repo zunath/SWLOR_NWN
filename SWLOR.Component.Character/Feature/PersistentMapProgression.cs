@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
@@ -15,13 +16,16 @@ namespace SWLOR.Component.Character.Feature
     {
         private readonly ILogger _logger;
         private readonly IDatabaseService _db;
-        private readonly IKeyItemService _keyItemService;
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded services to break circular dependencies
+        private IKeyItemService KeyItemService => _serviceProvider.GetRequiredService<IKeyItemService>();
 
-        public PersistentMapProgression(ILogger logger, IDatabaseService db, IKeyItemService keyItemService)
+        public PersistentMapProgression(ILogger logger, IDatabaseService db, IServiceProvider serviceProvider)
         {
             _logger = logger;
             _db = db;
-            _keyItemService = keyItemService;
+            // Services are now lazy-loaded via IServiceProvider
         }
         /// <summary>
         /// Saves a player's area map progression when exiting an area.
@@ -69,7 +73,7 @@ namespace SWLOR.Component.Character.Feature
                 try
                 {
                     var keyItemType = (KeyItemType)mapKeyItemId;
-                    if (_keyItemService.HasKeyItem(player, keyItemType))
+                    if (KeyItemService.HasKeyItem(player, keyItemType))
                         return;
                 }
                 catch

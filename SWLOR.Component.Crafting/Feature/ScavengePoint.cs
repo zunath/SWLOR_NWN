@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
@@ -16,19 +17,19 @@ namespace SWLOR.Component.Crafting.Feature
     {
         private readonly IDatabaseService _db;
         private readonly IRandomService _random;
-        private readonly IPerkService _perkService;
-        private readonly ISkillService _skillService;
-        private readonly IItemService _itemService;
-        private readonly ILootService _lootService;
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded services to break circular dependencies
+        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
+        private ISkillService SkillService => _serviceProvider.GetRequiredService<ISkillService>();
+        private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
+        private ILootService LootService => _serviceProvider.GetRequiredService<ILootService>();
 
-        public ScavengePoint(IDatabaseService db, IRandomService random, IPerkService perkService, ISkillService skillService, IItemService itemService, ILootService lootService)
+        public ScavengePoint(IDatabaseService db, IRandomService random, IServiceProvider serviceProvider)
         {
             _db = db;
             _random = random;
-            _perkService = perkService;
-            _skillService = skillService;
-            _itemService = itemService;
-            _lootService = lootService;
+            // Services are now lazy-loaded via IServiceProvider
         }
         /// <summary>
         /// 
@@ -51,13 +52,13 @@ namespace SWLOR.Component.Crafting.Feature
                 return;
             }
             
-            var scavengingLevel = _perkService.GetPerkLevel(user, PerkType.Scavenging);
-            var hardLookLevel = _perkService.GetPerkLevel(user, PerkType.HardLook);
+            var scavengingLevel = PerkService.GetPerkLevel(user, PerkType.Scavenging);
+            var hardLookLevel = PerkService.GetPerkLevel(user, PerkType.HardLook);
             var requiredLevel = GetLocalInt(placeable, "SCAVENGE_POINT_LEVEL");
             var lootTableName = GetLocalString(placeable, "SCAVENGE_POINT_LOOT_TABLE_NAME");
 
             // Loot table doesn't exist.
-            if (!_lootService.LootTableExists(lootTableName))
+            if (!LootService.LootTableExists(lootTableName))
             {
                 SendMessageToPC(user, $"The assigned loot table '{lootTableName}' does not exist. Please inform an admin that this scavenge site is broken.");
                 AssignCommand(user, () => ActionInteractObject(placeable));
@@ -83,7 +84,7 @@ namespace SWLOR.Component.Crafting.Feature
 
             AssignCommand(user, () => ActionPlayAnimation(Animation.LoopingGetLow, 1.0f, 2.0f));
 
-            var lootTable = _lootService.GetLootTableByName(lootTableName);
+            var lootTable = LootService.GetLootTableByName(lootTableName);
             var dc = 6;
             var xp = 0;
 
@@ -92,9 +93,9 @@ namespace SWLOR.Component.Crafting.Feature
             var dbSkill = dbPlayer.Skills[SkillType.Gathering];
             var scavLevel = 10 * requiredLevel;            
             var delta = scavLevel - dbSkill.Rank;
-            var deltaXP = _skillService.GetDeltaXP(delta);
-            var treasureHunterLevel = _perkService.GetPerkLevel(user, PerkType.TreasureHunter);
-            var creditFinderLevel = _perkService.GetPerkLevel(user, PerkType.CreditFinder);
+            var deltaXP = SkillService.GetDeltaXP(delta);
+            var treasureHunterLevel = PerkService.GetPerkLevel(user, PerkType.TreasureHunter);
+            var creditFinderLevel = PerkService.GetPerkLevel(user, PerkType.CreditFinder);
             var creditPercentIncrease = creditFinderLevel * 0.2f;
 
             for (var attempt = 1; attempt <= attempts; attempt++)
@@ -116,7 +117,7 @@ namespace SWLOR.Component.Crafting.Feature
                     CreateItemOnObject(item.Resref, placeable, quantity);
                     xp = deltaXP;
 
-                    _lootService.SpawnLoot(placeable, user, "LOOT_TABLE_");
+                    LootService.SpawnLoot(placeable, user, "LOOT_TABLE_");
                 }
                 else
                 {
@@ -125,7 +126,7 @@ namespace SWLOR.Component.Crafting.Feature
                 }
 
                 dc += _random.D3(1);
-                _skillService.GiveSkillXP(user, SkillType.Gathering, xp, false, false);
+                SkillService.GiveSkillXP(user, SkillType.Gathering, xp, false, false);
             }
 
             SetLocalBool(placeable, "FULLY_HARVESTED", true);
@@ -152,7 +153,7 @@ namespace SWLOR.Component.Crafting.Feature
 
             if (type == DisturbType.Added)
             {
-                _itemService.ReturnItem(user, item);
+                ItemService.ReturnItem(user, item);
             }
             else
             {

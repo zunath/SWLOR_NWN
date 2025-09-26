@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.World.Contracts;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Infrastructure;
@@ -15,13 +16,16 @@ namespace SWLOR.Component.World.Dialog
     {
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private static readonly ITaxiService _taxiService = ServiceContainer.GetService<ITaxiService>();
-        private readonly IKeyItemService _keyItemService;
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded services to break circular dependencies
+        private IKeyItemService KeyItemService => _serviceProvider.GetRequiredService<IKeyItemService>();
         
         private const string MainPageId = "MAIN_PAGE";
 
-        public TaxiTerminalDialog(IKeyItemService keyItemService, IDialogService dialogService, IDialogBuilder dialogBuilder) : base(dialogService, dialogBuilder)
+        public TaxiTerminalDialog(IServiceProvider serviceProvider, IDialogService dialogService, IDialogBuilder dialogBuilder) : base(dialogService, dialogBuilder)
         {
-            _keyItemService = keyItemService;
+            // Services are now lazy-loaded via IServiceProvider
         }
 
         public override PlayerDialog SetUp(uint player)
@@ -62,7 +66,7 @@ namespace SWLOR.Component.World.Dialog
             else
             {
                 // Player must have the 'Taxi Hailing Device' key item.
-                if (!_keyItemService.HasKeyItem(player, KeyItemType.TaxiHailingDevice))
+                if (!KeyItemService.HasKeyItem(player, KeyItemType.TaxiHailingDevice))
                 {
                     return;
                 }
@@ -124,7 +128,7 @@ namespace SWLOR.Component.World.Dialog
         {
             var player = GetPC();
 
-            if (_keyItemService.HasKeyItem(player, KeyItemType.TaxiHailingDevice))
+            if (KeyItemService.HasKeyItem(player, KeyItemType.TaxiHailingDevice))
             {
                 return $"Your 'Taxi Hailing Device' may be used to summon a taxi to transport you throughout the region. Only destinations you have registered are available for transportation.\n\n" +
                        "Where would you like to go?";

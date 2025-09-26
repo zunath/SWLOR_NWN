@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -12,18 +13,18 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
     public class ForceStunAbilityDefinition : IAbilityListDefinition
     {
         private const float AOESize = RadiusSize.Medium;
-        private readonly ICombatService _combatService;
-        private readonly IAbilityService _abilityService;
-        private readonly ICombatPointService _combatPointService;
-        private readonly IEnmityService _enmityService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public ForceStunAbilityDefinition(ICombatService combatService, IAbilityService abilityService, ICombatPointService combatPointService, IEnmityService enmityService)
+        public ForceStunAbilityDefinition(IServiceProvider serviceProvider)
         {
-            _combatService = combatService;
-            _abilityService = abilityService;
-            _combatPointService = combatPointService;
-            _enmityService = enmityService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
+        private IAbilityService AbilityService => _serviceProvider.GetRequiredService<IAbilityService>();
+        private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
+        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
@@ -36,7 +37,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
 
         private void Impact(uint source, uint target)
         {
-            var dc = _combatService.CalculateSavingThrowDC(source, SavingThrow.Will, 12);
+            var dc = CombatService.CalculateSavingThrowDC(source, SavingThrow.Will, 12);
             const string EffectTag = "StatusEffectType.ForceStun";
             var checkResult = WillSave(target, dc, SavingThrowType.None, source);
             const float Duration = 6.1f;
@@ -48,7 +49,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 effect = TagEffect(effect, EffectTag);
                 ApplyEffectToObject(DurationType.Temporary, effect, target, 6.1f);
 
-                _abilityService.ApplyTemporaryImmunity(target, Duration, ImmunityType.Dazed);
+                AbilityService.ApplyTemporaryImmunity(target, Duration, ImmunityType.Dazed);
             }
             else if(checkResult == SavingThrowResultType.Success)
             {
@@ -58,9 +59,9 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 ApplyEffectToObject(DurationType.Temporary, effect, target, 6.1f);
             }
 
-            _combatPointService.AddCombatPoint(source, target, SkillType.Force, 3);
+            CombatPointService.AddCombatPoint(source, target, SkillType.Force, 3);
 
-            _enmityService.ModifyEnmity(source, target, 850);
+            EnmityService.ModifyEnmity(source, target, 850);
         }
         
         private void ForceStun1(IAbilityBuilder builder)

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -19,17 +20,18 @@ namespace SWLOR.Component.Inventory.UI.ViewModel
     internal class BankViewModel: GuiViewModelBase<BankViewModel, IGuiPayload>
     {
         private readonly IDatabaseService _db;
-        private readonly IItemService _itemService;
-        private readonly IPerkService _perkService;
-        private readonly ITargetingService _targetingService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public BankViewModel(IGuiService guiService, IDatabaseService db, IItemService itemService, IPerkService perkService, ITargetingService targetingService) : base(guiService)
+        public BankViewModel(IGuiService guiService, IDatabaseService db, IServiceProvider serviceProvider) : base(guiService)
         {
             _db = db;
-            _itemService = itemService;
-            _perkService = perkService;
-            _targetingService = targetingService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
+        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
+        private ITargetingService TargetingService => _serviceProvider.GetRequiredService<ITargetingService>();
         
         /// <summary>
         /// When a bank placeable is used, display this UI view.
@@ -178,7 +180,7 @@ namespace SWLOR.Component.Inventory.UI.ViewModel
             ItemNames.RemoveAt(index);
             ItemResrefs.RemoveAt(index);
 
-            if (_itemService.IsLegacyItem(item))
+            if (ItemService.IsLegacyItem(item))
             {
                 for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
                 {
@@ -191,10 +193,10 @@ namespace SWLOR.Component.Inventory.UI.ViewModel
 
         public Action OnClickDeposit() => () =>
         {
-            _targetingService.EnterTargetingMode(Player, ObjectType.Item, "Please click on an item within your inventory.",
+            TargetingService.EnterTargetingMode(Player, ObjectType.Item, "Please click on an item within your inventory.",
                 item =>
             {
-                var canStore = _itemService.CanBePersistentlyStored(Player, item);
+                var canStore = ItemService.CanBePersistentlyStored(Player, item);
                 if (!string.IsNullOrWhiteSpace(canStore))
                 {
                     SendMessageToPC(Player, ColorToken.Red(canStore));
@@ -220,7 +222,7 @@ namespace SWLOR.Component.Inventory.UI.ViewModel
                     Resref = GetResRef(item),
                     Quantity = GetItemStackSize(item),
                     Data = ObjectPlugin.Serialize(item),
-                    IconResref = _itemService.GetIconResref(item)
+                    IconResref = ItemService.GetIconResref(item)
                 };
 
                 _db.Set(dbItem);

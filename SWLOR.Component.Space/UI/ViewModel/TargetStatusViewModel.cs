@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Space.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -13,15 +14,18 @@ namespace SWLOR.Component.Space.UI.ViewModel
     internal class TargetStatusViewModel : GuiViewModelBase<TargetStatusViewModel, IGuiPayload>,
         IGuiRefreshable<TargetStatusRefreshEvent>
     {
-        private readonly ISpaceService _space;
+        private readonly IServiceProvider _serviceProvider;
 
         public TargetStatusViewModel(
             IGuiService guiService,
-            ISpaceService space) 
+            IServiceProvider serviceProvider) 
             : base(guiService)
         {
-            _space = space;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded service to break circular dependency
+        private ISpaceService Space => _serviceProvider.GetRequiredService<ISpaceService>();
 
         private int _screenHeight;
         private int _screenWidth;
@@ -155,7 +159,7 @@ namespace SWLOR.Component.Space.UI.ViewModel
 
         private void UpdateData()
         {
-            var (target, targetStatus) = _space.GetCurrentTarget(Player);
+            var (target, targetStatus) = Space.GetCurrentTarget(Player);
 
             if (!GetIsObjectValid(target) || targetStatus == null)
                 return;
@@ -184,7 +188,7 @@ namespace SWLOR.Component.Space.UI.ViewModel
 
         public void Refresh(TargetStatusRefreshEvent payload)
         {
-            if (!_space.IsPlayerInSpaceMode(Player))
+            if (!Space.IsPlayerInSpaceMode(Player))
                 return;
 
             UpdateWidget();

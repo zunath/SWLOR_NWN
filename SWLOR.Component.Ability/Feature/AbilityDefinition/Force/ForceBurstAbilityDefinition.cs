@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -13,18 +14,18 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
 {
     public class ForceBurstAbilityDefinition : IAbilityListDefinition
     {
-        private readonly ICombatService _combatService;
-        private readonly IStatService _statService;
-        private readonly ICombatPointService _combatPointService;
-        private readonly IEnmityService _enmityService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public ForceBurstAbilityDefinition(ICombatService combatService, IStatService statService, ICombatPointService combatPointService, IEnmityService enmityService)
+        public ForceBurstAbilityDefinition(IServiceProvider serviceProvider)
         {
-            _combatService = combatService;
-            _statService = statService;
-            _combatPointService = combatPointService;
-            _enmityService = enmityService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
+        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+        private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
+        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
@@ -57,17 +58,17 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                     break;
             }
 
-            dmg += _combatService.GetAbilityDamageBonus(activator, SkillType.Force);
+            dmg += CombatService.GetAbilityDamageBonus(activator, SkillType.Force);
             var creature = GetFirstObjectInShape(Shape.Sphere, RadiusSize.Medium, GetLocation(target), true, ObjectType.Creature);
             while (GetIsObjectValid(creature))
             {
                 if (GetDistanceBetween(target, creature) <= 4f && GetIsReactionTypeHostile(creature, activator))
                 {
                     var attackerStat = GetAbilityScore(activator, AbilityType.Willpower);
-                    var defense = _statService.GetDefense(target, CombatDamageType.Force, AbilityType.Willpower);
+                    var defense = StatService.GetDefense(target, CombatDamageType.Force, AbilityType.Willpower);
                     var defenderStat = GetAbilityScore(target, AbilityType.Willpower);
-                    var attack = _statService.GetAttack(activator, AbilityType.Willpower, SkillType.Force);
-                    var damage = _combatService.CalculateDamage(
+                    var attack = StatService.GetAttack(activator, AbilityType.Willpower, SkillType.Force);
+                    var damage = CombatService.CalculateDamage(
                         attack,
                         dmg,
                         attackerStat,
@@ -101,8 +102,8 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                         ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Pulse_Wind), target);
                     });
 
-                    _combatPointService.AddCombatPoint(activator, creature, SkillType.Force, 3);
-                    _enmityService.ModifyEnmity(activator, creature, 250 * level + damage);
+                    CombatPointService.AddCombatPoint(activator, creature, SkillType.Force, 3);
+                    EnmityService.ModifyEnmity(activator, creature, 250 * level + damage);
                 }
                 creature = GetNextObjectInShape(Shape.Sphere, RadiusSize.Medium, GetLocation(target), true , ObjectType.Creature);
             }

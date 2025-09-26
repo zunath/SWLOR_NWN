@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -14,20 +15,23 @@ namespace SWLOR.Component.Character.Service
     public class Achievement : IAchievementService
     {
         private readonly IDatabaseService _db;
-        private readonly IGuiService _guiService;
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded services to break circular dependencies
+        private IGuiService GuiService => _serviceProvider.GetRequiredService<IGuiService>();
         private static IdReservation _idReservation;
         private static readonly Dictionary<AchievementType, AchievementAttribute> _activeAchievements = new();
 
-        public Achievement(IDatabaseService db, IGuiService guiService)
+        public Achievement(IDatabaseService db, IServiceProvider serviceProvider)
         {
             _db = db;
-            _guiService = guiService;
+            // Services are now lazy-loaded via IServiceProvider
         }
 
         [ScriptHandler<OnModuleLoad>]
         public void ReserveGuiIds()
         {
-            _idReservation = _guiService.ReserveIds(nameof(Achievement), 6);
+            _idReservation = GuiService.ReserveIds(nameof(Achievement), 6);
         }
 
         /// <summary>
@@ -85,10 +89,10 @@ namespace SWLOR.Component.Character.Service
             const int WindowY = 4;
             const int WindowWidth = 26;
 
-            var centerWindowX = _guiService.CenterStringInWindow(name, WindowX, WindowWidth);
+            var centerWindowX = GuiService.CenterStringInWindow(name, WindowX, WindowWidth);
             PostString(player, "Achievement Unlocked", centerWindowX + 2, WindowY+1, ScreenAnchor.TopRight, 10.0f, GuiStandardColor.ColorWhite, GuiStandardColor.ColorYellow, _idReservation.StartId, GuiTextTexture.TextName);
             PostString(player, " " + name, centerWindowX + 4, WindowY+3, ScreenAnchor.TopRight, 10.0f, GuiStandardColor.ColorWhite, GuiStandardColor.ColorYellow, _idReservation.StartId + 1, GuiTextTexture.TextName);
-            _guiService.DrawWindow(player, _idReservation.StartId + 2, ScreenAnchor.TopRight, WindowX, WindowY, WindowWidth, 4);
+            GuiService.DrawWindow(player, _idReservation.StartId + 2, ScreenAnchor.TopRight, WindowX, WindowY, WindowWidth, 4);
         }
 
         /// <summary>

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
@@ -12,19 +13,17 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beastmaster
 {
     public class SnarlGrowlAbilityDefinition : IAbilityListDefinition
     {
-        private readonly ICombatPointService _combatPointService;
-        private readonly IEnmityService _enmityService;
-        private readonly IBeastMasteryService _beastMastery;
+        private readonly IServiceProvider _serviceProvider;
 
-        public SnarlGrowlAbilityDefinition(
-            ICombatPointService combatPointService, 
-            IEnmityService enmityService, 
-            IBeastMasteryService beastMastery)
+        public SnarlGrowlAbilityDefinition(IServiceProvider serviceProvider)
         {
-            _combatPointService = combatPointService;
-            _enmityService = enmityService;
-            _beastMastery = beastMastery;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
+        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
+        private IBeastMasteryService BeastMastery => _serviceProvider.GetRequiredService<IBeastMasteryService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
@@ -42,7 +41,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beastmaster
             }
             
             var beast = GetAssociate(AssociateType.Henchman, activator);
-            if (!_beastMastery.IsPlayerBeast(beast))
+            if (!BeastMastery.IsPlayerBeast(beast))
             {
                 return "You do not have an active beast.";
             }
@@ -70,18 +69,18 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beastmaster
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {
                     var beast = GetAssociate(AssociateType.Henchman, activator);
-                    var masterEnmity = _enmityService.GetEnmityTowardsAllEnemies(activator);
+                    var masterEnmity = EnmityService.GetEnmityTowardsAllEnemies(activator);
 
                     foreach (var (enemy, amount) in masterEnmity)
                     {
                         var halfAmount = amount / 2;
-                        _enmityService.ModifyEnmity(activator, enemy, -halfAmount);
-                        _enmityService.ModifyEnmity(beast, enemy, halfAmount);
+                        EnmityService.ModifyEnmity(activator, enemy, -halfAmount);
+                        EnmityService.ModifyEnmity(beast, enemy, halfAmount);
                     }
 
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Com_Blood_Crt_Red), activator);
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Com_Blood_Crt_Yellow), beast);
-                    _combatPointService.AddCombatPointToAllTagged(activator, SkillType.BeastMastery);
+                    CombatPointService.AddCombatPointToAllTagged(activator, SkillType.BeastMastery);
                 });
         }
 
@@ -100,18 +99,18 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beastmaster
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {
                     var beast = GetAssociate(AssociateType.Henchman, activator);
-                    var beastEnmity = _enmityService.GetEnmityTowardsAllEnemies(beast);
+                    var beastEnmity = EnmityService.GetEnmityTowardsAllEnemies(beast);
 
                     foreach (var (enemy, amount) in beastEnmity)
                     {
                         var halfAmount = amount / 2;
-                        _enmityService.ModifyEnmity(activator, enemy, halfAmount);
-                        _enmityService.ModifyEnmity(beast, enemy, -halfAmount);
+                        EnmityService.ModifyEnmity(activator, enemy, halfAmount);
+                        EnmityService.ModifyEnmity(beast, enemy, -halfAmount);
                     }
 
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Com_Blood_Crt_Red), beast);
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Com_Blood_Crt_Yellow), activator);
-                    _combatPointService.AddCombatPointToAllTagged(activator, SkillType.BeastMastery);
+                    CombatPointService.AddCombatPointToAllTagged(activator, SkillType.BeastMastery);
                 });
         }
     }

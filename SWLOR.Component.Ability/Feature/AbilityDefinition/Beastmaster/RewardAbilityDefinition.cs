@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -16,27 +17,20 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beastmaster
 {
     public class RewardAbilityDefinition : IAbilityListDefinition
     {
-        private readonly IRandomService _random;
+        private readonly IServiceProvider _serviceProvider;
         private const string PetTreatTag = "pet_treat";
 
-        private readonly IItemService _itemService;
-        private readonly ICombatPointService _combatPointService;
-        private readonly IBeastMasteryService _beastMastery;
-        private readonly IEnmityService _enmityService;
-
-        public RewardAbilityDefinition(
-            IRandomService random, 
-            IItemService itemService, 
-            ICombatPointService combatPointService, 
-            IBeastMasteryService beastMastery, 
-            IEnmityService enmityService)
+        public RewardAbilityDefinition(IServiceProvider serviceProvider)
         {
-            _random = random;
-            _itemService = itemService;
-            _combatPointService = combatPointService;
-            _beastMastery = beastMastery;
-            _enmityService = enmityService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IRandomService Random => _serviceProvider.GetRequiredService<IRandomService>();
+        private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
+        private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
+        private IBeastMasteryService BeastMastery => _serviceProvider.GetRequiredService<IBeastMasteryService>();
+        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
 
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
@@ -66,7 +60,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beastmaster
                 return;
             
             var item = GetItemPossessedBy(activator, PetTreatTag);
-            _itemService.ReduceItemStack(item, 1);
+            ItemService.ReduceItemStack(item, 1);
         }
 
 
@@ -83,7 +77,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beastmaster
             }
 
             var beast = GetAssociate(AssociateType.Henchman, activator);
-            if (!_beastMastery.IsPlayerBeast(beast))
+            if (!BeastMastery.IsPlayerBeast(beast))
             {
                 return "You do not have an active beast.";
             }
@@ -101,14 +95,14 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beastmaster
             var willBonus = GetAbilityModifier(AbilityType.Social, activator);
             var beast = GetAssociate(AssociateType.Henchman, activator);
             var maxHP = GetMaxHitPoints(beast);
-            var amount = baseHealingAmount + willBonus * 10 + (maxHP / 5) + _random.D10(1);
+            var amount = baseHealingAmount + willBonus * 10 + (maxHP / 5) + Random.D10(1);
 
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), beast);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), beast);
 
             TakePetTreat(activator);
-            _enmityService.ModifyEnmityOnAll(activator, 300 + amount);
-            _combatPointService.AddCombatPointToAllTagged(activator, SkillType.BeastMastery);
+            EnmityService.ModifyEnmityOnAll(activator, 300 + amount);
+            CombatPointService.AddCombatPointToAllTagged(activator, SkillType.BeastMastery);
         }
 
         private void Reward1(IAbilityBuilder builder)

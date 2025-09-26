@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Component.Character.UI.Payload;
@@ -16,23 +17,24 @@ namespace SWLOR.Component.Character.UI.ViewModel
         private readonly IDatabaseService _db;
         private readonly IPortraitCacheService _portraitCache;
         private readonly ISoundSetCacheService _soundSetCache;
-        private readonly IBeastMasteryService _beastMastery;
-        private readonly IDroidService _droidService;
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded services to break circular dependencies
+        private IBeastMasteryService BeastMastery => _serviceProvider.GetRequiredService<IBeastMasteryService>();
+        private IDroidService DroidService => _serviceProvider.GetRequiredService<IDroidService>();
 
         public CustomizeCharacterViewModel(
             IGuiService guiService, 
             IDatabaseService db, 
             IPortraitCacheService portraitCache, 
             ISoundSetCacheService soundSetCache, 
-            IBeastMasteryService beastMastery,
-            IDroidService droidService) 
+            IServiceProvider serviceProvider) 
             : base(guiService)
         {
             _db = db;
             _portraitCache = portraitCache;
             _soundSetCache = soundSetCache;
-            _beastMastery = beastMastery;
-            _droidService = droidService;
+            // Services are now lazy-loaded via IServiceProvider
         }
         
         private uint _target;
@@ -228,8 +230,8 @@ namespace SWLOR.Component.Character.UI.ViewModel
 
         public Action OnSavePortraitClick() => () =>
         {
-            var isDroid = _droidService.IsDroid(_target);
-            var isBeast = _beastMastery.IsPlayerBeast(_target);
+            var isDroid = DroidService.IsDroid(_target);
+            var isBeast = BeastMastery.IsPlayerBeast(_target);
             var portraitId = _portraitCache.GetPortraitByInternalId(_activePortraitInternalId);
 
             if (isDroid || isBeast || string.IsNullOrWhiteSpace(CustomPortraitFile))
@@ -244,16 +246,16 @@ namespace SWLOR.Component.Character.UI.ViewModel
             
             if (isDroid)
             {
-                var controller = _droidService.GetControllerItem(_target);
-                var constructedDroid = _droidService.LoadConstructedDroid(controller);
+                var controller = DroidService.GetControllerItem(_target);
+                var constructedDroid = DroidService.LoadConstructedDroid(controller);
 
                 constructedDroid.PortraitId = portraitId;
 
-                _droidService.SaveConstructedDroid(controller, constructedDroid);
+                DroidService.SaveConstructedDroid(controller, constructedDroid);
             }
             else if (isBeast)
             {
-                var beastId = _beastMastery.GetBeastId(_target);
+                var beastId = BeastMastery.GetBeastId(_target);
                 var dbBeast = _db.Get<Beast>(beastId);
 
                 dbBeast.PortraitId = portraitId;
@@ -276,18 +278,18 @@ namespace SWLOR.Component.Character.UI.ViewModel
             var soundSetId = _soundSetIds[_selectedSoundSetIndex];
             SetSoundset(_target, soundSetId);
 
-            if (_droidService.IsDroid(_target))
+            if (DroidService.IsDroid(_target))
             {
-                var controller = _droidService.GetControllerItem(_target);
-                var constructedDroid = _droidService.LoadConstructedDroid(controller);
+                var controller = DroidService.GetControllerItem(_target);
+                var constructedDroid = DroidService.LoadConstructedDroid(controller);
 
                 constructedDroid.SoundSetId = soundSetId;
 
-                _droidService.SaveConstructedDroid(controller, constructedDroid);
+                DroidService.SaveConstructedDroid(controller, constructedDroid);
             }
-            else if (_beastMastery.IsPlayerBeast(_target))
+            else if (BeastMastery.IsPlayerBeast(_target))
             {
-                var beastId = _beastMastery.GetBeastId(_target);
+                var beastId = BeastMastery.GetBeastId(_target);
                 var dbBeast = _db.Get<Beast>(beastId);
 
                 dbBeast.SoundSetId = soundSetId;

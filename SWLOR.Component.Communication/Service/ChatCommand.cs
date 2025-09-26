@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Communication.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
@@ -17,8 +18,11 @@ namespace SWLOR.Component.Communication.Service
     public class ChatCommand : IChatCommandService
     {
         private readonly IAppSettings _appSettings;
-        private readonly IAuthorizationService _authorization;
-        private readonly ITargetingService _targetingService;
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded services to break circular dependencies
+        private IAuthorizationService Authorization => _serviceProvider.GetRequiredService<IAuthorizationService>();
+        private ITargetingService TargetingService => _serviceProvider.GetRequiredService<ITargetingService>();
 
         private readonly Dictionary<string, ChatCommandDetail> _chatCommands = new();
         private readonly Dictionary<string, ChatCommandDetail> _emoteCommands = new();
@@ -32,11 +36,10 @@ namespace SWLOR.Component.Communication.Service
         public List<Animation> EmoteAnimations { get; } = new();
         public GuiBindingList<bool> EmoteIsLooping { get; } = new();
 
-        public ChatCommand(IAppSettings appSettings, IAuthorizationService authorization, ITargetingService targetingService)
+        public ChatCommand(IAppSettings appSettings, IServiceProvider serviceProvider)
         {
             _appSettings = appSettings;
-            _authorization = authorization;
-            _targetingService = targetingService;
+            // Services are now lazy-loaded via IServiceProvider
         }
 
         private const string InvalidChatCommandMessage = "Invalid chat command. Use '/help' to get a list of available commands.";
@@ -91,12 +94,12 @@ namespace SWLOR.Component.Communication.Service
                 }
 
 
-                var authorization = _authorization.GetAuthorizationLevel(sender);
+                var authorization = Authorization.GetAuthorizationLevel(sender);
 
                 if ((_appSettings.ServerEnvironment == ServerEnvironmentType.Test && chatCommand.AvailableToAllOnTestEnvironment) ||
                     chatCommand.Authorization.HasFlag(authorization))
                 {
-                    _targetingService.EnterTargetingMode(sender, chatCommand.ValidTargetTypes, "Please click on a target for this chat command.",
+                    TargetingService.EnterTargetingMode(sender, chatCommand.ValidTargetTypes, "Please click on a target for this chat command.",
                     target =>
                     {
                         var location = GetIsObjectValid(target)
@@ -143,7 +146,7 @@ namespace SWLOR.Component.Communication.Service
                 targetLocation = new Location(IntPtr.Zero);
             }
 
-            var authorization = _authorization.GetAuthorizationLevel(sender);
+            var authorization = Authorization.GetAuthorizationLevel(sender);
 
             if ((_appSettings.ServerEnvironment == ServerEnvironmentType.Test && command.AvailableToAllOnTestEnvironment) ||
                 command.Authorization.HasFlag(authorization))

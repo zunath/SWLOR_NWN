@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Communication.Contracts;
 using SWLOR.Component.Communication.Model;
 using SWLOR.Component.Communication.Service;
@@ -13,11 +14,14 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
 {
     public class RenameChatCommand : IChatCommandListDefinition
     {
-        private readonly IGuiService _guiService;
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded services to break circular dependencies
+        private IGuiService GuiService => _serviceProvider.GetRequiredService<IGuiService>();
 
-        public RenameChatCommand(IGuiService guiService)
+        public RenameChatCommand(IServiceProvider serviceProvider)
         {
-            _guiService = guiService;
+            // Services are now lazy-loaded via IServiceProvider
         }
 
         public Dictionary<string, ChatCommandDetail> BuildChatCommands()
@@ -48,7 +52,7 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
                     }
 
                     var payload = new RenameItemPayload(target);
-                    _guiService.TogglePlayerWindow(user, GuiWindowType.RenameItem, payload);
+                    GuiService.TogglePlayerWindow(user, GuiWindowType.RenameItem, payload);
                 });
 
             return builder.Build();

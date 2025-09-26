@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Crafting.Enums;
 using SWLOR.Component.Crafting.Service;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -26,8 +27,11 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
         IGuiRefreshable<PerkRefundedRefreshEvent>
     {
         private readonly IItemCacheService _itemCache;
-        private readonly ISkillService _skillService;
-        private readonly IPerkService _perkService;
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded services to break circular dependencies
+        private ISkillService SkillService => _serviceProvider.GetRequiredService<ISkillService>();
+        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
         private readonly IPropertyService _propertyService;
         private readonly ITargetingService _targetingService;
         private readonly ICraftService _craftService;
@@ -43,11 +47,8 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
             : base(guiService)
         {
             _itemCache = itemCache;
-            _skillService = skillService;
-            _perkService = perkService;
-            _propertyService = propertyService;
             _targetingService = targetingService;
-            _craftService = craftService;
+            // Services are now lazy-loaded via IServiceProvider
         }
 
         private int _currentRecipeIndex;

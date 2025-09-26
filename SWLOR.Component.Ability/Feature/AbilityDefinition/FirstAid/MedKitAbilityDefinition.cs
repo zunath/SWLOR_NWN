@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -16,34 +17,25 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.FirstAid
 {
     public class MedKitAbilityDefinition: FirstAidBaseAbilityDefinition
     {
-        private readonly IRandomService _random;
-        private readonly IDatabaseService _db;
-        private readonly ISkillService _skillService;
-        private readonly IBeastMasteryService _beastMastery;
+        private readonly IServiceProvider _serviceProvider;
 
         public MedKitAbilityDefinition(
-            IRandomService random, 
-            IDatabaseService db, 
-            ISkillService skillService, 
+            IServiceProvider serviceProvider,
             ICombatPointService combatPointService, 
             IEnmityService enmityService, 
-            IBeastMasteryService beastMastery, 
             IAbilityService abilityService, 
             IPerkService perkService,
             IStatusEffectService statusEffect) 
-            : base(
-                random, 
-                perkService, 
-                combatPointService, 
-                enmityService, 
-                abilityService,
-                statusEffect)
+            : base(serviceProvider)
         {
-            _random = random;
-            _db = db;
-            _skillService = skillService;
-            _beastMastery = beastMastery;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IRandomService Random => _serviceProvider.GetRequiredService<IRandomService>();
+        private IDatabaseService DB => _serviceProvider.GetRequiredService<IDatabaseService>();
+        private ISkillService SkillService => _serviceProvider.GetRequiredService<ISkillService>();
+        private IBeastMasteryService BeastMastery => _serviceProvider.GetRequiredService<IBeastMasteryService>();
         
         public override Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
@@ -73,7 +65,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.FirstAid
                 return "You have no medical supplies.";
             }
 
-            if (_beastMastery.IsPlayerBeast(target))
+            if (BeastMastery.IsPlayerBeast(target))
             {
                 return "That ability cannot be used on beasts.";
             }
@@ -84,7 +76,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.FirstAid
         private void Impact(uint activator, uint target, int baseAmount)
         {
             var willpowerMod = GetAbilityModifier(AbilityType.Willpower, activator);
-            var amount = baseAmount + willpowerMod * 20 + _random.D10(1);
+            var amount = baseAmount + willpowerMod * 20 + Random.D10(1);
 
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), target);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Heal), target);
@@ -100,10 +92,10 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.FirstAid
                 // If Add_combatPoint... returns 0, but GetRecentEnemyLevel returns > -1, then we are out of combat but recently were in combat.
                 var enemyLevel = CombatPointService.GetRecentEnemyLevel(activator);
                 var playerId = GetObjectUUID(activator);
-                var dbPlayer = _db.Get<Player>(playerId);
+                var dbPlayer = DB.Get<Player>(playerId);
                 var firstAidLevel = dbPlayer.Skills[SkillType.FirstAid].Rank;
-                var nXP = enemyLevel != -1 ? _skillService.GetDeltaXP(enemyLevel - firstAidLevel) : 0;
-                _skillService.GiveSkillXP(activator, SkillType.FirstAid, nXP);
+                var nXP = enemyLevel != -1 ? SkillService.GetDeltaXP(enemyLevel - firstAidLevel) : 0;
+                SkillService.GiveSkillXP(activator, SkillType.FirstAid, nXP);
                 CombatPointService.ClearRecentEnemyLevel(activator);
             }
         }

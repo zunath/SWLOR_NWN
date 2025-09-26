@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Inventory.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
@@ -23,27 +24,24 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
     {
         private readonly IRandomService _random;
         private readonly IDatabaseService _db;
-        private readonly IStatusEffectService _statusEffectService;
-        private readonly IBeastMasteryService _beastMasteryService;
-        private readonly IItemService _itemService;
-        private readonly ICurrencyService _currencyService;
+        private readonly IServiceProvider _serviceProvider;
         private readonly ItemBuilder _builder = new();
 
         public ConsumableItemDefinition(
             IRandomService random, 
             IDatabaseService db, 
-            IStatusEffectService statusEffectService, 
-            IBeastMasteryService beastMasteryService, 
-            IItemService itemService, 
-            ICurrencyService currencyService)
+            IServiceProvider serviceProvider)
         {
             _random = random;
             _db = db;
-            _statusEffectService = statusEffectService;
-            _beastMasteryService = beastMasteryService;
-            _itemService = itemService;
-            _currencyService = currencyService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IStatusEffectService StatusEffectService => _serviceProvider.GetRequiredService<IStatusEffectService>();
+        private IBeastMasteryService BeastMasteryService => _serviceProvider.GetRequiredService<IBeastMasteryService>();
+        private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
+        private ICurrencyService CurrencyService => _serviceProvider.GetRequiredService<ICurrencyService>();
         public Dictionary<string, ItemDetail> BuildItems()
         {
             SlugShake();
@@ -98,7 +96,7 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
                 .ReducesItemCharge()
                 .ValidationAction((user, item, target, location, itemPropertyIndex) =>
                 {
-                    if (_statusEffectService.HasStatusEffect(user, StatusEffectType.Food))
+                    if (StatusEffectService.HasStatusEffect(user, StatusEffectType.Food))
                     {
                         return "You are not hungry.";
                     }
@@ -224,7 +222,7 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
                         }
                     }
 
-                    _statusEffectService.Apply(user, user, StatusEffectType.Food, duration, foodEffect);
+                    StatusEffectService.Apply(user, user, StatusEffectType.Food, duration, foodEffect);
                 });
         }
 
@@ -238,17 +236,17 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
                     var minimumLevel = (GetLocalInt(item, "BEAST_FOOD_TIER") - 1) * 10;
                     var beast = GetAssociate(AssociateType.Henchman, user);
 
-                    if (!_beastMasteryService.IsPlayerBeast(beast))
+                    if (!BeastMasteryService.IsPlayerBeast(beast))
                     {
                         return "You do not have a beast active.";
                     }
 
-                    if (_statusEffectService.HasStatusEffect(beast, StatusEffectType.PetFood))
+                    if (StatusEffectService.HasStatusEffect(beast, StatusEffectType.PetFood))
                     {
                         return "Your beast is not hungry.";
                     }
 
-                    var beastId = _beastMasteryService.GetBeastId(beast);
+                    var beastId = BeastMasteryService.GetBeastId(beast);
                     var dbBeast = _db.Get<Beast>(beastId);
 
                     if (dbBeast.Level < minimumLevel)
@@ -263,7 +261,7 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
                     var foodType = (BeastFoodType)GetLocalInt(item, "BEAST_FOOD_TYPE_ID");
                     var foodTier = GetLocalInt(item, "BEAST_FOOD_TIER");
                     var beast = GetAssociate(AssociateType.Henchman, user);
-                    var beastId = _beastMasteryService.GetBeastId(beast);
+                    var beastId = BeastMasteryService.GetBeastId(beast);
                     var dbBeast = _db.Get<Beast>(beastId);
 
                     var xpBonus = foodTier * 10;
@@ -279,9 +277,9 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
                         SendMessageToPC(user, "Your beast doesn't like this food very much...");
                     }
 
-                    _statusEffectService.Apply(user, beast, StatusEffectType.PetFood, 1800f, xpBonus);
+                    StatusEffectService.Apply(user, beast, StatusEffectType.PetFood, 1800f, xpBonus);
 
-                    _itemService.ReduceItemStack(item, 1);
+                    ItemService.ReduceItemStack(item, 1);
                 });
         }
 
@@ -300,9 +298,9 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
                 })
                 .ApplyAction((user, item, target, location, itemPropertyIndex) =>
                 {
-                    _currencyService.GiveCurrency(user, CurrencyType.RebuildToken, 1);
-                    _itemService.ReduceItemStack(item, 1);
-                    SendMessageToPC(user, $"Total Rebuild Tokens: {_currencyService.GetCurrency(user, CurrencyType.RebuildToken)}");
+                    CurrencyService.GiveCurrency(user, CurrencyType.RebuildToken, 1);
+                    ItemService.ReduceItemStack(item, 1);
+                    SendMessageToPC(user, $"Total Rebuild Tokens: {CurrencyService.GetCurrency(user, CurrencyType.RebuildToken)}");
                 });
         }
     }

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
@@ -9,15 +10,18 @@ namespace SWLOR.Component.Perk.Model
     {
         private readonly IDatabaseService _db;
         private readonly PerkType _cannotHavePerkType;
-        private readonly IPerkService _perkService;
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded services to break circular dependencies
+        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
 
         public PerkRequirementCannotHavePerk(
             IDatabaseService db, 
-            IPerkService perkService,
+            IServiceProvider serviceProvider,
             PerkType cannotHavePerkType)
         {
             _db = db;
-            _perkService = perkService;
+            // Services are now lazy-loaded via IServiceProvider
             _cannotHavePerkType = cannotHavePerkType;
         }
 
@@ -26,7 +30,7 @@ namespace SWLOR.Component.Perk.Model
             if (_cannotHavePerkType == PerkType.Invalid)
                 return string.Empty;
 
-            var perkDetail = _perkService.GetPerkDetails(_cannotHavePerkType);
+            var perkDetail = PerkService.GetPerkDetails(_cannotHavePerkType);
             var playerId = GetObjectUUID(player);
             var dbPlayer = _db.Get<Player>(playerId);
 
@@ -41,7 +45,7 @@ namespace SWLOR.Component.Perk.Model
         {
             get
             {
-                var perkDetail = _perkService.GetPerkDetails(_cannotHavePerkType);
+                var perkDetail = PerkService.GetPerkDetails(_cannotHavePerkType);
                 return $"Cannot have perk: {perkDetail.Name}";
             }
         }

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using NWN.Native.API;
 using SWLOR.Component.Combat.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -28,22 +29,24 @@ namespace SWLOR.Component.Combat.Service
         private readonly ILogger _logger;
         private readonly IDatabaseService _db;
         private readonly IRandomService _random;
-        private readonly IItemService _itemService;
-        private readonly IAbilityService _abilityService;
-        private readonly IPerkService _perkService;
-        private readonly IStatService _statService;
+        private readonly IServiceProvider _serviceProvider;
         private readonly List<CombatDamageType> _allValidDamageTypes = new();
 
-        public CombatService(ILogger logger, IDatabaseService db, IRandomService random, IItemService itemService, IAbilityService abilityService, IPerkService perkService, IStatService statService)
+        public CombatService(ILogger logger, IDatabaseService db, IRandomService random, IServiceProvider serviceProvider)
         {
             _logger = logger;
             _db = db;
             _random = random;
-            _itemService = itemService;
-            _abilityService = abilityService;
-            _perkService = perkService;
-            _statService = statService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IAbilityService AbilityService => _serviceProvider.GetRequiredService<IAbilityService>();
+        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+
+        // Lazy-loaded services to break circular dependencies
+        private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
+        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
 
         /// <summary>
         /// When the module loads, add all valid damage types to the cache.
@@ -251,7 +254,7 @@ namespace SWLOR.Component.Combat.Service
             var level = 0;
             if (!GetIsPC(creature))
             {
-                var npcStats = _statService.GetNPCStats(creature);
+                var npcStats = StatService.GetNPCStats(creature);
                 level = npcStats.Level;
             }
             else
@@ -371,7 +374,7 @@ namespace SWLOR.Component.Combat.Service
             var weaponType = GetBaseItemType(weapon);
 
             // Pistol and Rifle - Zen Marksmanship
-            if (_itemService.PistolBaseItemTypes.Contains(weaponType) || _itemService.RifleBaseItemTypes.Contains(weaponType))
+            if (ItemService.PistolBaseItemTypes.Contains(weaponType) || ItemService.RifleBaseItemTypes.Contains(weaponType))
             {
                 var willpower = GetAbilityScore(attacker, AbilityType.Willpower);
                 var perception = GetAbilityScore(attacker, AbilityType.Perception);
@@ -379,7 +382,7 @@ namespace SWLOR.Component.Combat.Service
             }
 
             // Throwing - Zen Marksmanship
-            if (_itemService.ThrowingWeaponBaseItemTypes.Contains(weaponType))
+            if (ItemService.ThrowingWeaponBaseItemTypes.Contains(weaponType))
             {
                 var willpower = GetAbilityScore(attacker, AbilityType.Willpower);
                 var might = GetAbilityScore(attacker, AbilityType.Might);
@@ -387,15 +390,15 @@ namespace SWLOR.Component.Combat.Service
             }
 
             // Lightsaber - Strong Style
-            if (_itemService.LightsaberBaseItemTypes.Contains(weaponType))
-                return _abilityService.IsAbilityToggled(attacker, AbilityToggleType.StrongStyleLightsaber) ? GetAbilityScore(attacker, AbilityType.Might) : GetAbilityScore(attacker, AbilityType.Perception);
+            if (ItemService.LightsaberBaseItemTypes.Contains(weaponType))
+                return AbilityService.IsAbilityToggled(attacker, AbilityToggleType.StrongStyleLightsaber) ? GetAbilityScore(attacker, AbilityType.Might) : GetAbilityScore(attacker, AbilityType.Perception);
 
             // Saberstaff - Strong Style
-            if (_itemService.SaberstaffBaseItemTypes.Contains(weaponType))
-                return _abilityService.IsAbilityToggled(attacker, AbilityToggleType.StrongStyleSaberstaff) ? GetAbilityScore(attacker, AbilityType.Might) : GetAbilityScore(attacker, AbilityType.Perception);
+            if (ItemService.SaberstaffBaseItemTypes.Contains(weaponType))
+                return AbilityService.IsAbilityToggled(attacker, AbilityToggleType.StrongStyleSaberstaff) ? GetAbilityScore(attacker, AbilityType.Might) : GetAbilityScore(attacker, AbilityType.Perception);
 
             // Staff: there are 3 style perks for staff so it has to be handled slightly differently.
-            if (_itemService.StaffBaseItemTypes.Contains(weaponType))
+            if (ItemService.StaffBaseItemTypes.Contains(weaponType))
             {
                 if (GetHasFeat(FeatType.FlurryStyle)) return GetAbilityScore(attacker, AbilityType.Perception);
                 if (GetHasFeat(FeatType.CrushingMastery)) return 3 * GetAbilityScore(attacker, AbilityType.Might);
@@ -404,7 +407,7 @@ namespace SWLOR.Component.Combat.Service
             }
 
             //Handle weapon types without ability adjustment perks as well for consistency.
-            return GetAbilityScore(attacker, _itemService.GetWeaponDamageAbilityType(weaponType));
+            return GetAbilityScore(attacker, ItemService.GetWeaponDamageAbilityType(weaponType));
         }
 
         /// <summary>
@@ -437,11 +440,11 @@ namespace SWLOR.Component.Combat.Service
         {
             var mgtMod = GetAbilityModifier(AbilityType.Might, attacker);
 
-            if (_itemService.StaffBaseItemTypes.Contains(weaponType))
-                return mgtMod * _perkService.GetPerkLevel(attacker, PerkType.CrushingStyle);
-            else if (_itemService.LightsaberBaseItemTypes.Contains(weaponType) && _abilityService.IsAbilityToggled(attacker, AbilityToggleType.StrongStyleLightsaber))
+            if (ItemService.StaffBaseItemTypes.Contains(weaponType))
+                return mgtMod * PerkService.GetPerkLevel(attacker, PerkType.CrushingStyle);
+            else if (ItemService.LightsaberBaseItemTypes.Contains(weaponType) && AbilityService.IsAbilityToggled(attacker, AbilityToggleType.StrongStyleLightsaber))
                 return mgtMod / 2;
-            else if (_itemService.SaberstaffBaseItemTypes.Contains(weaponType) && _abilityService.IsAbilityToggled(attacker, AbilityToggleType.StrongStyleSaberstaff))
+            else if (ItemService.SaberstaffBaseItemTypes.Contains(weaponType) && AbilityService.IsAbilityToggled(attacker, AbilityToggleType.StrongStyleSaberstaff))
                 return mgtMod / 2;
 
             return 0;
@@ -464,8 +467,8 @@ namespace SWLOR.Component.Combat.Service
                 return 0;
 
             var rightHandType = GetBaseItemType(rightHand);
-            if (!_itemService.OneHandedMeleeItemTypes.Contains(rightHandType) && 
-                !_itemService.ThrowingWeaponBaseItemTypes.Contains(rightHandType))
+            if (!ItemService.OneHandedMeleeItemTypes.Contains(rightHandType) && 
+                !ItemService.ThrowingWeaponBaseItemTypes.Contains(rightHandType))
                 return 0;
 
             if (GetHasFeat(FeatType.Doublehand5, attacker))

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Space.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -16,19 +17,19 @@ namespace SWLOR.Component.Space.Feature.ShipModuleDefinition
     public class RepairFieldGeneratorModuleDefinition : IShipModuleListDefinition
     {
         private readonly IDatabaseService _db;
-        private readonly ISpaceService _spaceService;
-        private readonly IEnmityService _enmityService;
-        private readonly ICombatPointService _combatPointService;
-        private readonly IMessagingService _messagingService;
+        private readonly IServiceProvider _serviceProvider;
         private readonly IShipModuleBuilder _builder;
+        
+        // Lazy-loaded services to break circular dependencies
+        private ISpaceService SpaceService => _serviceProvider.GetRequiredService<ISpaceService>();
+        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
+        private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
+        private IMessagingService MessagingService => _serviceProvider.GetRequiredService<IMessagingService>();
 
-        public RepairFieldGeneratorModuleDefinition(IDatabaseService db, ISpaceService spaceService, IEnmityService enmityService, ICombatPointService combatPointService, IMessagingService messagingService, IShipModuleBuilder builder)
+        public RepairFieldGeneratorModuleDefinition(IDatabaseService db, IServiceProvider serviceProvider, IShipModuleBuilder builder)
         {
             _db = db;
-            _spaceService = spaceService;
-            _enmityService = enmityService;
-            _combatPointService = combatPointService;
-            _messagingService = messagingService;
+            // Services are now lazy-loaded via IServiceProvider
             _builder = builder;
         }
 
@@ -72,12 +73,12 @@ namespace SWLOR.Component.Space.Feature.ShipModuleDefinition
                     {
                         if (!GetIsEnemy(nearby, activator) && 
                             !GetIsDead(activator) && 
-                            _spaceService.GetShipStatus(nearby) != null &&
+                            SpaceService.GetShipStatus(nearby) != null &&
                             nearby != activator)
                         {
-                            var nearbyStatus = _spaceService.GetShipStatus(nearby);
+                            var nearbyStatus = SpaceService.GetShipStatus(nearby);
                             ApplyEffectToObject(DurationType.Temporary, EffectBeam(VisualEffect.Vfx_Beam_Disintegrate, activator, BodyNode.Chest), nearby, 1.0f);
-                            _spaceService.RestoreHull(nearby, nearbyStatus, recovery);
+                            SpaceService.RestoreHull(nearby, nearbyStatus, recovery);
 
                             if (GetIsPC(nearby) && !GetIsDM(nearby) && !GetIsDMPossessed(nearby))
                             {
@@ -101,9 +102,9 @@ namespace SWLOR.Component.Space.Feature.ShipModuleDefinition
                         nearby = GetNextObjectInShape(Shape.Sphere, Distance, GetLocation(activator), true, ObjectType.Creature);
                     }
 
-                    _enmityService.ModifyEnmityOnAll(activator, 100 + repairAmount);
-                    _messagingService.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} begins restoring {recovery} armor HP to nearby ships.");
-                    _combatPointService.AddCombatPointToAllTagged(activator, SkillType.Piloting);
+                    EnmityService.ModifyEnmityOnAll(activator, 100 + repairAmount);
+                    MessagingService.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} begins restoring {recovery} armor HP to nearby ships.");
+                    CombatPointService.AddCombatPointToAllTagged(activator, SkillType.Piloting);
                 });
         }
     }

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Quest.Contracts;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
@@ -12,18 +13,21 @@ namespace SWLOR.Component.Quest.Feature.SnippetDefinition
     {
         private readonly IDatabaseService _db;
         private readonly ILogger _logger;
-        private readonly IQuestService _questService;
+        private readonly IServiceProvider _serviceProvider;
         private readonly ISnippetBuilder _builder;
+        
+        // Lazy-loaded services to break circular dependencies
+        private IQuestService QuestService => _serviceProvider.GetRequiredService<IQuestService>();
 
         public QuestSnippetDefinition(
             IDatabaseService db, 
             ILogger logger, 
-            IQuestService questService,
+            IServiceProvider serviceProvider,
             ISnippetBuilder builder)
         {
             _db = db;
             _logger = logger;
-            _questService = questService;
+            // Services are now lazy-loaded via IServiceProvider
             _builder = builder;
         }
 
@@ -157,7 +161,7 @@ namespace SWLOR.Component.Quest.Feature.SnippetDefinition
                     }
 
                     var questId = args[0];
-                    _questService.AcceptQuest(player, questId);
+                    QuestService.AcceptQuest(player, questId);
                 });
         }
 
@@ -176,7 +180,7 @@ namespace SWLOR.Component.Quest.Feature.SnippetDefinition
                     }
 
                     var questId = args[0];
-                    _questService.AdvanceQuest(player, OBJECT_SELF, questId);
+                    QuestService.AdvanceQuest(player, OBJECT_SELF, questId);
                 });
         }
 
@@ -197,7 +201,7 @@ namespace SWLOR.Component.Quest.Feature.SnippetDefinition
                     }
 
                     var questId = args[0];
-                    _questService.RequestItemsFromPlayer(player, questId);
+                    QuestService.RequestItemsFromPlayer(player, questId);
                 });
         }
 

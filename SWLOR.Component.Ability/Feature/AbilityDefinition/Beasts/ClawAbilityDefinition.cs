@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -12,22 +13,18 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beasts
 {
     public class ClawAbilityDefinition : IAbilityListDefinition
     {
-        private readonly ICombatService _combatService;
-        private readonly IStatService _statService;
-        private readonly IStatusEffectService _statusEffectService;
-        private readonly IEnmityService _enmityService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public ClawAbilityDefinition(
-            ICombatService combatService, 
-            IStatService statService, 
-            IStatusEffectService statusEffectService, 
-            IEnmityService enmityService)
+        public ClawAbilityDefinition(IServiceProvider serviceProvider)
         {
-            _combatService = combatService;
-            _statService = statService;
-            _statusEffectService = statusEffectService;
-            _enmityService = enmityService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
+        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+        private IStatusEffectService StatusEffectService => _serviceProvider.GetRequiredService<IStatusEffectService>();
+        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
@@ -47,11 +44,11 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beasts
             var beastStat = GetAbilityScore(activator, AbilityType.Might) / 2;
 
             var totalStat = beastmasterStat + beastStat;
-            var attack = _statService.GetAttack(activator, AbilityType.Might, SkillType.Invalid);
-            var defense = _statService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+            var attack = StatService.GetAttack(activator, AbilityType.Might, SkillType.Invalid);
+            var defense = StatService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
             var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
 
-            var damage = _combatService.CalculateDamage(
+            var damage = CombatService.CalculateDamage(
                 attack,
                 dmg,
                 totalStat,
@@ -66,14 +63,14 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beasts
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Com_Blood_Spark_Small), target);
             });
             
-            dc = _combatService.CalculateSavingThrowDC(activator, SavingThrow.Fortitude, dc);
+            dc = CombatService.CalculateSavingThrowDC(activator, SavingThrow.Fortitude, dc);
             var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
             if (checkResult == SavingThrowResultType.Failed)
             {
-                _statusEffectService.Apply(activator, target, StatusEffectType.Bleed, 30f, level);
+                StatusEffectService.Apply(activator, target, StatusEffectType.Bleed, 30f, level);
             }
 
-            _enmityService.ModifyEnmity(activator, target, 250 + damage);
+            EnmityService.ModifyEnmity(activator, target, 250 + damage);
         }
 
         private void Claw1(IAbilityBuilder builder)

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.World.Contracts;
 using SWLOR.Component.World.Entity;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -13,15 +14,18 @@ namespace SWLOR.Component.World.Service
     public class Area : IAreaService
     {
         private readonly IDatabaseService _db;
-        private readonly IPropertyService _property;
+        private readonly IServiceProvider _serviceProvider;
         private Dictionary<string, uint> AreasByResref { get; } = new();
         private Dictionary<uint, List<uint>> PlayersByArea { get; } = new();
 
-        public Area(IDatabaseService db, IPropertyService property)
+        public Area(IDatabaseService db, IServiceProvider serviceProvider)
         {
             _db = db;
-            _property = property;
+            _serviceProvider = serviceProvider;
         }
+        
+        // Lazy-loaded service to break circular dependency
+        private IPropertyService PropertyService => _serviceProvider.GetRequiredService<IPropertyService>();
 
         public void CacheData()
         {
@@ -48,10 +52,10 @@ namespace SWLOR.Component.World.Service
         /// </summary>
         public void RemoveInstancesFromCache()
         {
-            var propertyLayouts = _property.GetAllLayoutsByPropertyType(PropertyType.Apartment);
+            var propertyLayouts = PropertyService.GetAllLayoutsByPropertyType(PropertyType.Apartment);
             foreach (var type in propertyLayouts)
             {
-                var layout = _property.GetLayoutByType(type);
+                var layout = PropertyService.GetLayoutByType(type);
                 if (AreasByResref.ContainsKey(layout.AreaInstanceResref))
                     AreasByResref.Remove(layout.AreaInstanceResref);
             }

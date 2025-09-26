@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Common.Enums;
@@ -11,16 +12,17 @@ namespace SWLOR.Component.World.Dialog
     public class LockedDoorDialog: DialogBase
     {
         private const string MainPageId = "MAIN_PAGE";
-        private readonly IKeyItemService _keyItemService;
-        private readonly IEnmityService _enmityService;
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded services to break circular dependencies
+        private IKeyItemService KeyItemService => _serviceProvider.GetRequiredService<IKeyItemService>();
+        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
 
         public LockedDoorDialog(
-            IKeyItemService keyItemService, 
-            IDialogService dialogService,
-            IEnmityService enmityService, IDialogBuilder dialogBuilder) : base(dialogService, dialogBuilder)
+            IServiceProvider serviceProvider, 
+            IDialogService dialogService, IDialogBuilder dialogBuilder) : base(dialogService, dialogBuilder)
         {
-            _keyItemService = keyItemService;
-            _enmityService = enmityService;
+            // Services are now lazy-loaded via IServiceProvider
         }
 
         public override PlayerDialog SetUp(uint player)
@@ -56,11 +58,11 @@ namespace SWLOR.Component.World.Dialog
                 page.Header = doorDialogue;
             }
 
-            if (_keyItemService.HasAllKeyItems(player, keyItemIds))
+            if (KeyItemService.HasAllKeyItems(player, keyItemIds))
             {
                 page.AddResponse("Use Key", () =>
                 {
-                    if (_enmityService.HasEnmity(player))
+                    if (EnmityService.HasEnmity(player))
                     {
                         FloatingTextStringOnCreature("An enemy is targeting you. Defeat them before entering!", player, false);
                     }

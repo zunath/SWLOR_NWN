@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -12,22 +13,18 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beasts
 {
     public class ClipAbilityDefinition: IAbilityListDefinition
     {
-        private readonly ICombatService _combatService;
-        private readonly IStatService _statService;
-        private readonly IAbilityService _abilityService;
-        private readonly IEnmityService _enmityService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public ClipAbilityDefinition(
-            ICombatService combatService, 
-            IStatService statService, 
-            IAbilityService abilityService, 
-            IEnmityService enmityService)
+        public ClipAbilityDefinition(IServiceProvider serviceProvider)
         {
-            _combatService = combatService;
-            _statService = statService;
-            _abilityService = abilityService;
-            _enmityService = enmityService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
+        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+        private IAbilityService AbilityService => _serviceProvider.GetRequiredService<IAbilityService>();
+        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
@@ -47,11 +44,11 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beasts
             var beastStat = GetAbilityScore(activator, AbilityType.Perception) / 2;
 
             var totalStat = beastmasterStat + beastStat;
-            var attack = _statService.GetAttack(activator, AbilityType.Perception, SkillType.Invalid);
-            var defense = _statService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+            var attack = StatService.GetAttack(activator, AbilityType.Perception, SkillType.Invalid);
+            var defense = StatService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
             var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
 
-            var damage = _combatService.CalculateDamage(
+            var damage = CombatService.CalculateDamage(
                 attack,
                 dmg,
                 totalStat,
@@ -67,15 +64,15 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beasts
             });
 
             const float Duration = 3f;
-            dc = _combatService.CalculateSavingThrowDC(activator, SavingThrow.Fortitude, dc);
+            dc = CombatService.CalculateSavingThrowDC(activator, SavingThrow.Fortitude, dc);
             var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
             if (checkResult == SavingThrowResultType.Failed)
             {
                 ApplyEffectToObject(DurationType.Temporary, EffectStunned(), target, Duration);
-                _abilityService.ApplyTemporaryImmunity(target, Duration, ImmunityType.Stun);
+                AbilityService.ApplyTemporaryImmunity(target, Duration, ImmunityType.Stun);
             }
 
-            _enmityService.ModifyEnmity(activator, target, 250 + damage);
+            EnmityService.ModifyEnmity(activator, target, 250 + damage);
         }
 
         private void Clip1(IAbilityBuilder builder)

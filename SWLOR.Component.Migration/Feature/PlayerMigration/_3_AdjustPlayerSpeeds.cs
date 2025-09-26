@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Migration.Contracts;
 using SWLOR.Component.Migration.Model;
 using SWLOR.NWN.API.NWNX;
@@ -13,7 +14,10 @@ namespace SWLOR.Component.Migration.Feature.PlayerMigration
 {
     public class _3_AdjustPlayerSpeeds: PlayerMigrationBase
     {
-        private readonly IAbilityService _abilityService;
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded services to break circular dependencies
+        private IAbilityService AbilityService => _serviceProvider.GetRequiredService<IAbilityService>();
 
         public _3_AdjustPlayerSpeeds(
             ILogger logger, 
@@ -23,16 +27,16 @@ namespace SWLOR.Component.Migration.Feature.PlayerMigration
             ICombatService combatService, 
             IPerkService perkService, 
             IItemService itemService,
-            IAbilityService abilityService) 
+            IServiceProvider serviceProvider) 
             : base(logger, database, statService, skillService, combatService, perkService, itemService)
         {
-            _abilityService = abilityService;
+            // Services are now lazy-loaded via IServiceProvider
         }
 
         public override int Version => 3;
         public override void Migrate(uint player)
         {
-            _abilityService.ToggleAbility(player, AbilityToggleType.Dash, false);
+            AbilityService.ToggleAbility(player, AbilityToggleType.Dash, false);
 
             CreaturePlugin.SetMovementRate(player, MovementRate.PC);
             CreaturePlugin.SetMovementRateFactor(player, 1.0f);

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
@@ -11,12 +12,15 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Armor
 {
     public class ProvokeAbilityDefinition: IAbilityListDefinition
     {
-        private readonly IEnmityService _enmityService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public ProvokeAbilityDefinition(IEnmityService enmityService)
+        public ProvokeAbilityDefinition(IServiceProvider serviceProvider)
         {
-            _enmityService = enmityService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
@@ -41,7 +45,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Armor
             if (!LineOfSightObject(activator, target))
                 return;
 
-            _enmityService.ModifyEnmity(activator, target, enmity);
+            EnmityService.ModifyEnmity(activator, target, enmity);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Howl_Odd), target);
         }
 

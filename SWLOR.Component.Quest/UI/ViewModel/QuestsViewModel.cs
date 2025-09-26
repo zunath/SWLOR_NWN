@@ -1,4 +1,5 @@
 using System.Text;
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Quest.Contracts;
 using SWLOR.Component.Quest.Service;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -18,15 +19,17 @@ namespace SWLOR.Component.Quest.UI.ViewModel
         IGuiRefreshable<QuestCompletedRefreshEvent>
     {
         private readonly IDatabaseService _db;
-        private readonly IQuestService _questService;
-        private readonly IActivityService _activityService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public QuestsViewModel(IGuiService guiService, IDatabaseService db, IQuestService questService, IActivityService activityService) : base(guiService)
+        public QuestsViewModel(IGuiService guiService, IDatabaseService db, IServiceProvider serviceProvider) : base(guiService)
         {
             _db = db;
-            _questService = questService;
-            _activityService = activityService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IQuestService QuestService => _serviceProvider.GetRequiredService<IQuestService>();
+        private IActivityService ActivityService => _serviceProvider.GetRequiredService<IActivityService>();
         
         public string SearchText
         {
@@ -77,7 +80,7 @@ namespace SWLOR.Component.Quest.UI.ViewModel
 
 
                 var dbPlayerQuest = dbPlayer.Quests[questId];
-                var questDetail = _questService.GetQuestById(questId);
+                var questDetail = QuestService.GetQuestById(questId);
 
                 ActiveQuestName = questDetail.Name;
                 ActiveQuestDescription = BuildDescription(questDetail, dbPlayerQuest.CurrentState);
@@ -129,7 +132,7 @@ namespace SWLOR.Component.Quest.UI.ViewModel
                 if (quest.DateLastCompleted != null)
                     continue;
 
-                var questDetail = _questService.GetQuestById(questId);
+                var questDetail = QuestService.GetQuestById(questId);
                 if (!string.IsNullOrWhiteSpace(SearchText))
                 {
                     if (!questDetail.Name.ToLower().Contains(SearchText))
@@ -183,13 +186,13 @@ namespace SWLOR.Component.Quest.UI.ViewModel
 
             ShowModal("Are you sure you wish to abandon this quest?", () =>
             {
-                if (_activityService.IsBusy(Player))
+                if (ActivityService.IsBusy(Player))
                 {
                     SendMessageToPC(Player, "You are busy.");
                     return;
                 }
 
-                _questService.AbandonQuest(Player, questId);
+                QuestService.AbandonQuest(Player, questId);
 
                 _questIds.RemoveAt(SelectedQuestIndex);
                 QuestNames.RemoveAt(SelectedQuestIndex);

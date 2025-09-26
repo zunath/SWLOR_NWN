@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Quest.Contracts;
 using SWLOR.Shared.Domain.Common.Enums;
 using SWLOR.Shared.Domain.Inventory.Contracts;
@@ -8,30 +9,33 @@ namespace SWLOR.Component.Quest.Model
 {
     public class KeyItemReward : IQuestReward
     {
-        private readonly IKeyItemService _keyItemService;
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded services to break circular dependencies
+        private IKeyItemService KeyItemService => _serviceProvider.GetRequiredService<IKeyItemService>();
         public bool IsSelectable { get; }
 
         public string MenuName
         {
             get
             {
-                var detail = _keyItemService.GetKeyItem(KeyItemType);
+                var detail = KeyItemService.GetKeyItem(KeyItemType);
                 return detail.Name;
             }
         }
 
         public KeyItemType KeyItemType { get; }
 
-        public KeyItemReward(KeyItemType keyItemType, bool isSelectable, IKeyItemService keyItemService)
+        public KeyItemReward(KeyItemType keyItemType, bool isSelectable, IServiceProvider serviceProvider)
         {
             KeyItemType = keyItemType;
             IsSelectable = isSelectable;
-            _keyItemService = keyItemService;
+            // Services are now lazy-loaded via IServiceProvider
         }
 
         public void GiveReward(uint player)
         {
-            _keyItemService.GiveKeyItem(player, KeyItemType);
+            KeyItemService.GiveKeyItem(player, KeyItemType);
         }
     }
 }

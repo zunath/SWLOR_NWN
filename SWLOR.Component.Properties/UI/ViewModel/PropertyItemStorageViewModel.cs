@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -21,16 +22,17 @@ namespace SWLOR.Component.Properties.UI.ViewModel
     public class PropertyItemStorageViewModel: GuiViewModelBase<PropertyItemStorageViewModel, IGuiPayload>
     {
         private readonly IDatabaseService _db;
-        private readonly IItemService _itemService;
-        private readonly IPropertyService _propertyService;
-        private readonly ITargetingService _targetingService;
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded services to break circular dependencies
+        private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
+        private IPropertyService PropertyService => _serviceProvider.GetRequiredService<IPropertyService>();
+        private ITargetingService TargetingService => _serviceProvider.GetRequiredService<ITargetingService>();
 
-        public PropertyItemStorageViewModel(IGuiService guiService, IDatabaseService db, IItemService itemService, IPropertyService propertyService, ITargetingService targetingService) : base(guiService)
+        public PropertyItemStorageViewModel(IGuiService guiService, IDatabaseService db, IServiceProvider serviceProvider) : base(guiService)
         {
             _db = db;
-            _itemService = itemService;
-            _propertyService = propertyService;
-            _targetingService = targetingService;
+            // Services are now lazy-loaded via IServiceProvider
         }
         
         private const int MaxNumberOfCategories = 20;
@@ -154,7 +156,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
         private int GetItemCount()
         {
             var area = GetArea(Player);
-            var propertyId = _propertyService.GetPropertyId(area);
+            var propertyId = PropertyService.GetPropertyId(area);
             var query = new DBQuery<WorldPropertyCategory>()
                 .AddFieldSearch(nameof(WorldPropertyCategory.ParentPropertyId), propertyId, false);
             var categories = _db.Search(query).ToList();
@@ -173,8 +175,8 @@ namespace SWLOR.Component.Properties.UI.ViewModel
             {
                 PropertyId = propertyId,
                 PlayerId = playerId,
-                Permissions = _propertyService.GetPermissionsByPropertyType(property.PropertyType).ToDictionary(x => x, _ => false),
-                GrantPermissions = _propertyService.GetPermissionsByPropertyType(property.PropertyType).ToDictionary(x => x, _ => false)
+                Permissions = PropertyService.GetPermissionsByPropertyType(property.PropertyType).ToDictionary(x => x, _ => false),
+                GrantPermissions = PropertyService.GetPermissionsByPropertyType(property.PropertyType).ToDictionary(x => x, _ => false)
             };
         }
 
@@ -187,8 +189,8 @@ namespace SWLOR.Component.Properties.UI.ViewModel
             {
                 PropertyId = categoryId,
                 PlayerId = playerId,
-                Permissions = _propertyService.GetPermissionsByPropertyType(PropertyType.Category).ToDictionary(x => x, _ => false),
-                GrantPermissions = _propertyService.GetPermissionsByPropertyType(PropertyType.Category).ToDictionary(x => x, _ => false)
+                Permissions = PropertyService.GetPermissionsByPropertyType(PropertyType.Category).ToDictionary(x => x, _ => false),
+                GrantPermissions = PropertyService.GetPermissionsByPropertyType(PropertyType.Category).ToDictionary(x => x, _ => false)
             };
         }
 
@@ -208,7 +210,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
 
             var area = GetArea(Player);
             var playerId = GetObjectUUID(Player);
-            var propertyId = _propertyService.GetPropertyId(area);
+            var propertyId = PropertyService.GetPropertyId(area);
             var property = _db.Get<WorldProperty>(propertyId);
             var propertyPermission = GetPropertyPermission(playerId, propertyId);
 
@@ -260,7 +262,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
             if (SelectedCategoryIndex > -1)
             {
                 var area = GetArea(Player);
-                var propertyId = _propertyService.GetPropertyId(area);
+                var propertyId = PropertyService.GetPropertyId(area);
                 var propertyPermission = GetPropertyPermission(playerId, propertyId);
                 var categoryId = _categoryIds[SelectedCategoryIndex];
                 var category = _db.Get<WorldPropertyCategory>(categoryId);
@@ -299,7 +301,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
             ClearInstructions();
 
             var area = GetArea(Player);
-            var propertyId = _propertyService.GetPropertyId(area);
+            var propertyId = PropertyService.GetPropertyId(area);
             var property = _db.Get<WorldProperty>(propertyId);
             var playerId = GetObjectUUID(Player);
 
@@ -324,7 +326,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
                 Name = $"Category {CategoryNames.Count+1}"
             };
 
-            var defaultPermissions = _propertyService.GetPermissionsByPropertyType(PropertyType.Category);
+            var defaultPermissions = PropertyService.GetPermissionsByPropertyType(PropertyType.Category);
             var ownerPermission = new WorldPropertyPermission
             {
                 PropertyId = category.Id,
@@ -365,7 +367,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
                 () =>
                 {
                     var area = GetArea(Player);
-                    var propertyId = _propertyService.GetPropertyId(area);
+                    var propertyId = PropertyService.GetPropertyId(area);
                     var playerId = GetObjectUUID(Player);
                     var categoryId = _categoryIds[SelectedCategoryIndex];
                     var category = _db.Get<WorldPropertyCategory>(categoryId);
@@ -444,7 +446,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
 
             var playerId = GetObjectUUID(Player);
             var area = GetArea(Player);
-            var propertyId = _propertyService.GetPropertyId(area);
+            var propertyId = PropertyService.GetPropertyId(area);
             var categoryId = _categoryIds[SelectedCategoryIndex];
             var propertyPermission = GetPropertyPermission(playerId, propertyId);
             if (!propertyPermission.Permissions[PropertyPermissionType.EditCategories])
@@ -466,9 +468,9 @@ namespace SWLOR.Component.Properties.UI.ViewModel
         {
             ClearInstructions();
 
-            _targetingService.EnterTargetingMode(Player, ObjectType.Item, "Please click on an item within your inventory.", item =>
+            TargetingService.EnterTargetingMode(Player, ObjectType.Item, "Please click on an item within your inventory.", item =>
             {
-                var canBeStored = _itemService.CanBePersistentlyStored(Player, item);
+                var canBeStored = ItemService.CanBePersistentlyStored(Player, item);
                 if (!string.IsNullOrWhiteSpace(canBeStored))
                 {
                     Instructions = canBeStored;
@@ -478,7 +480,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
 
                 var playerId = GetObjectUUID(Player);
                 var area = GetArea(Player);
-                var propertyId = _propertyService.GetPropertyId(area);
+                var propertyId = PropertyService.GetPropertyId(area);
                 var categoryId = _categoryIds[SelectedCategoryIndex];
                 var categoryPermission = GetCategoryPermission(playerId, categoryId);
 
@@ -502,7 +504,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
                     Name = GetName(item),
                     Tag = GetTag(item),
                     Resref = GetResRef(item),
-                    IconResref = _itemService.GetIconResref(item),
+                    IconResref = ItemService.GetIconResref(item),
                     Quantity = GetItemStackSize(item),
 
                     Data = ObjectPlugin.Serialize(item)
@@ -532,7 +534,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
 
             var area = GetArea(Player);
             var playerId = GetObjectUUID(Player);
-            var propertyId = _propertyService.GetPropertyId(area);
+            var propertyId = PropertyService.GetPropertyId(area);
             var categoryId = _categoryIds[SelectedCategoryIndex];
             var categoryPermission = GetCategoryPermission(playerId, categoryId);
 
@@ -589,7 +591,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
 
             var dbItem = category.Items[itemId];
             var item = ObjectPlugin.Deserialize(dbItem.Data);
-            var payload = new ExamineItemPayload(GetName(item), GetDescription(item), _itemService.BuildItemPropertyString(item));
+            var payload = new ExamineItemPayload(GetName(item), GetDescription(item), ItemService.BuildItemPropertyString(item));
             _guiService.TogglePlayerWindow(Player, GuiWindowType.ExamineItem, payload);
             DestroyObject(item);
         };

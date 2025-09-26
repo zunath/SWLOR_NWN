@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using System.Numerics;
 using SWLOR.Component.Perk.Contracts;
 using SWLOR.NWN.API.Engine;
@@ -24,10 +25,13 @@ namespace SWLOR.Component.Perk.Service
 {
     public class UsePerkFeat : IUsePerkFeat
     {
-        private readonly IAbilityService _abilityService;
-        private readonly IPerkService _perkService;
-        private readonly IItemService _itemService;
-        private readonly IRecastService _recastService;
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded services to break circular dependencies
+        private IAbilityService AbilityService => _serviceProvider.GetRequiredService<IAbilityService>();
+        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
+        private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
+        private IRecastService RecastService => _serviceProvider.GetRequiredService<IRecastService>();
         private readonly IEnmityService _enmityService;
         private readonly IActivityService _activityService;
         private readonly IMessagingService _messagingService;

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -13,22 +14,18 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beasts
 {
     public class ShockingSlashAbilityDefinition : IAbilityListDefinition
     {
-        private readonly ICombatService _combatService;
-        private readonly IStatService _statService;
-        private readonly IStatusEffectService _statusEffectService;
-        private readonly IEnmityService _enmityService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public ShockingSlashAbilityDefinition(
-            ICombatService combatService, 
-            IStatService statService, 
-            IStatusEffectService statusEffectService, 
-            IEnmityService enmityService)
+        public ShockingSlashAbilityDefinition(IServiceProvider serviceProvider)
         {
-            _combatService = combatService;
-            _statService = statService;
-            _statusEffectService = statusEffectService;
-            _enmityService = enmityService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
+        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+        private IStatusEffectService StatusEffectService => _serviceProvider.GetRequiredService<IStatusEffectService>();
+        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
@@ -56,7 +53,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beasts
             var beastStat = GetAbilityScore(activator, AbilityType.Might) / 2;
             var totalStat = beastStat + beastmasterStat;
 
-            var attack = _statService.GetAttack(activator, AbilityType.Might, SkillType.Invalid);
+            var attack = StatService.GetAttack(activator, AbilityType.Might, SkillType.Invalid);
             var eVFX = EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Electricity);
 
             var target = GetFirstObjectInShape(Shape.SpellCone, ConeSize, targetLocation, true, ObjectType.Creature);
@@ -64,9 +61,9 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beasts
             {
                 if (target != activator)
                 {
-                    var defense = _statService.GetDefense(target, CombatDamageType.Electrical, AbilityType.Vitality);
+                    var defense = StatService.GetDefense(target, CombatDamageType.Electrical, AbilityType.Vitality);
                     var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-                    var damage = _combatService.CalculateDamage(
+                    var damage = CombatService.CalculateDamage(
                         attack,
                         dmg,
                         totalStat,
@@ -75,7 +72,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beasts
                         0);
 
                     var eDMG = EffectDamage(damage, DamageType.Electrical);
-                    _enmityService.ModifyEnmity(activator, target, 220);
+                    EnmityService.ModifyEnmity(activator, target, 220);
 
                     // Copying the target is needed because the variable gets adjusted outside the scope of the internal lambda.
                     var targetCopy = target;
@@ -87,11 +84,11 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beasts
                             ApplyEffectToObject(DurationType.Instant, eVFX, targetCopy);
                         });
 
-                        dc = _combatService.CalculateSavingThrowDC(activator, SavingThrow.Reflex, baseDC);
+                        dc = CombatService.CalculateSavingThrowDC(activator, SavingThrow.Reflex, baseDC);
                         var checkResult = ReflexSave(targetCopy, dc, SavingThrowType.None, activator);
                         if (checkResult == SavingThrowResultType.Failed)
                         {
-                            _statusEffectService.Apply(activator, targetCopy, StatusEffectType.Shock, 30f, level);
+                            StatusEffectService.Apply(activator, targetCopy, StatusEffectType.Shock, 30f, level);
                         }
                     });
                 }

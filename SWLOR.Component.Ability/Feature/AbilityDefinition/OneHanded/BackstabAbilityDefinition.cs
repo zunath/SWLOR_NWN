@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -14,20 +15,19 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.OneHanded
 {
     public class BackstabAbilityDefinition : IAbilityListDefinition
     {
-        private readonly IItemService _itemService;
-        private readonly ICombatService _combatService;
-        private readonly IStatService _statService;
-        private readonly ICombatPointService _combatPointService;
-        private readonly IEnmityService _enmityService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public BackstabAbilityDefinition(IItemService itemService, ICombatService combatService, IStatService statService, ICombatPointService combatPointService, IEnmityService enmityService)
+        public BackstabAbilityDefinition(IServiceProvider serviceProvider)
         {
-            _itemService = itemService;
-            _combatService = combatService;
-            _statService = statService;
-            _combatPointService = combatPointService;
-            _enmityService = enmityService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
+        private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
+        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+        private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
+        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
@@ -43,7 +43,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.OneHanded
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
             var rightHandType = GetBaseItemType(weapon);
 
-            if (_itemService.FinesseVibrobladeBaseItemTypes.Contains(rightHandType))
+            if (ItemService.FinesseVibrobladeBaseItemTypes.Contains(rightHandType))
             {
                 return string.Empty;
             }
@@ -72,7 +72,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.OneHanded
                     break;
             }
 
-            dmg += _combatService.GetAbilityDamageBonus(activator, SkillType.OneHanded);
+            dmg += CombatService.GetAbilityDamageBonus(activator, SkillType.OneHanded);
 
             if (abs((int)(GetFacing(activator) - GetFacing(target))) > 200f ||
                 abs((int)(GetFacing(activator) - GetFacing(target))) < 160f ||
@@ -81,13 +81,13 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.OneHanded
                 dmg /= 2;
             }
 
-            _combatPointService.AddCombatPoint(activator, target, SkillType.OneHanded, 3);
+            CombatPointService.AddCombatPoint(activator, target, SkillType.OneHanded, 3);
 
             var attackerStat = GetAbilityScore(activator, AbilityType.Perception);
-            var attack = _statService.GetAttack(activator, AbilityType.Perception, SkillType.OneHanded);
-            var defense = _statService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+            var attack = StatService.GetAttack(activator, AbilityType.Perception, SkillType.OneHanded);
+            var defense = StatService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
             var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-            var damage = _combatService.CalculateDamage(
+            var damage = CombatService.CalculateDamage(
                 attack,
                 dmg, 
                 attackerStat, 
@@ -97,7 +97,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.OneHanded
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
 
             AssignCommand(activator, () => ActionPlayAnimation(Animation.Backstab));
-            _enmityService.ModifyEnmity(activator, target, 100 * level + damage);
+            EnmityService.ModifyEnmity(activator, target, 100 * level + damage);
         }
 
         private void Backstab1(IAbilityBuilder builder)

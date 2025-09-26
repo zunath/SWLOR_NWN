@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.StatusEffect.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Character.Contracts;
@@ -14,15 +15,18 @@ namespace SWLOR.Component.StatusEffect.Service
     public class StatusEffect : IStatusEffectService
     {
         private readonly IGuiService _guiService;
-        private readonly IAbilityService _abilityService;
+        private readonly IServiceProvider _serviceProvider;
         private readonly IMessagingService _messagingService;
 
-        public StatusEffect(IGuiService guiService, IAbilityService abilityService, IMessagingService messagingService)
+        public StatusEffect(IGuiService guiService, IServiceProvider serviceProvider, IMessagingService messagingService)
         {
             _guiService = guiService;
-            _abilityService = abilityService;
+            _serviceProvider = serviceProvider;
             _messagingService = messagingService;
         }
+        
+        // Lazy-loaded service to break circular dependency
+        private IAbilityService AbilityService => _serviceProvider.GetRequiredService<IAbilityService>();
         private class StatusEffectGroup
         {
             public uint Source { get; set; }
@@ -362,7 +366,7 @@ namespace SWLOR.Component.StatusEffect.Service
                 // Iterate over each status effect, cleaning them up if they've expired or executing their tick if applicable.
                 foreach (var (statusEffect, group) in statusEffects)
                 {
-                    var activeConcentration = _abilityService.GetActiveConcentration(group.Source);
+                    var activeConcentration = AbilityService.GetActiveConcentration(group.Source);
 
                     // Concentration check - If caster is no longer channeling this feat, remove the status effect.
                     if (group.ConcentrationFeatType != FeatType.Invalid)
@@ -385,7 +389,7 @@ namespace SWLOR.Component.StatusEffect.Service
                             activeConcentration.Feat == group.ConcentrationFeatType &&
                             activeConcentration.Target == creature)
                         {
-                            _abilityService.EndConcentrationAbility(group.Source);
+                            AbilityService.EndConcentrationAbility(group.Source);
                         }
 
                     }

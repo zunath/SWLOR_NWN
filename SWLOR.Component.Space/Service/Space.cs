@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Space.Contracts;
 using SWLOR.Component.Space.Model;
 using SWLOR.NWN.API.NWNX;
@@ -43,51 +44,36 @@ namespace SWLOR.Component.Space.Service
         private readonly IDatabaseService _db;
         private readonly IScheduler _scheduler;
         private readonly IRandomService _random;
-        private readonly ICombatService _combatService;
-        private readonly IPerkService _perkService;
-        private readonly IAbilityService _abilityService;
-        private readonly IStatService _statService;
-        private readonly IGuiService _guiService;
-        private readonly IPropertyService _propertyService;
-        private readonly IPlanetService _planetService;
-        private readonly IAreaService _areaService;
-        private readonly IMessagingService _messagingService;
-        private readonly IStatusEffectService _statusEffectService;
-        private readonly IEnmityService _enmityService;
+        private readonly IServiceProvider _serviceProvider;
+        // Lazy-loaded services to break circular dependencies
+        private IAbilityService AbilityService => _serviceProvider.GetRequiredService<IAbilityService>();
+        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+        private IGuiService GuiService => _serviceProvider.GetRequiredService<IGuiService>();
+        private IPropertyService PropertyService => _serviceProvider.GetRequiredService<IPropertyService>();
+        private IPlanetService PlanetService => _serviceProvider.GetRequiredService<IPlanetService>();
+        private IAreaService AreaService => _serviceProvider.GetRequiredService<IAreaService>();
+        private IMessagingService MessagingService => _serviceProvider.GetRequiredService<IMessagingService>();
+        private IStatusEffectService StatusEffectService => _serviceProvider.GetRequiredService<IStatusEffectService>();
+        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
 
         public Space(
             ILogger logger,
             IDatabaseService db,
             IScheduler scheduler,
             IRandomService random,
-            ICombatService combatService,
-            IPerkService perkService,
-            IAbilityService abilityService,
-            IStatService statService,
-            IGuiService guiService,
-            IPropertyService propertyService,
-            IPlanetService planetService,
-            IAreaService areaService,
-            IMessagingService messagingService,
-            IStatusEffectService statusEffectService,
-            IEnmityService enmityService)
+            IServiceProvider serviceProvider)
         {
             _logger = logger;
             _db = db;
             _scheduler = scheduler;
             _random = random;
-            _combatService = combatService;
-            _perkService = perkService;
-            _abilityService = abilityService;
-            _statService = statService;
-            _guiService = guiService;
-            _propertyService = propertyService;
-            _planetService = planetService;
-            _areaService = areaService;
-            _messagingService = messagingService;
-            _statusEffectService = statusEffectService;
-            _enmityService = enmityService;
+            _serviceProvider = serviceProvider;
+            // Services are now lazy-loaded via IServiceProvider
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
+        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
 
         public int MaxRegisteredShips => 10;
 
@@ -179,7 +165,7 @@ namespace SWLOR.Component.Space.Service
                 return;
             }
 
-            var planet = _planetService.GetPlanetType(area);
+            var planet = PlanetService.GetPlanetType(area);
 
             // Only waypoints in recognized planets are tracked.
             if (planet == PlanetType.Invalid)
@@ -210,7 +196,7 @@ namespace SWLOR.Component.Space.Service
         /// <param name="cityArea">The area to remove from.</param>
         public void RemoveLandingPoint(uint waypoint, uint cityArea)
         {
-            var planet = _planetService.GetPlanetType(cityArea);
+            var planet = PlanetService.GetPlanetType(cityArea);
 
             // Only waypoints in recognized planets are tracked.
             if (planet == PlanetType.Invalid)
@@ -406,9 +392,9 @@ namespace SWLOR.Component.Space.Service
             }
             SetLocalObject(creature, "SPACE_TARGET", target);
 
-            if(GetIsPC(creature) && !_guiService.IsWindowOpen(creature, GuiWindowType.TargetStatus) && GetShipStatus(target) != null)
+            if(GetIsPC(creature) && !GuiService.IsWindowOpen(creature, GuiWindowType.TargetStatus) && GetShipStatus(target) != null)
             {
-                _guiService.TogglePlayerWindow(creature, GuiWindowType.TargetStatus);
+                GuiService.TogglePlayerWindow(creature, GuiWindowType.TargetStatus);
             }
         }
 
@@ -439,9 +425,9 @@ namespace SWLOR.Component.Space.Service
 
             DeleteLocalObject(creature, "SPACE_TARGET");
 
-            if(GetIsPC(creature) && _guiService.IsWindowOpen(creature, GuiWindowType.TargetStatus))
+            if(GetIsPC(creature) && GuiService.IsWindowOpen(creature, GuiWindowType.TargetStatus))
             {
-                _guiService.TogglePlayerWindow(creature, GuiWindowType.TargetStatus);
+                GuiService.TogglePlayerWindow(creature, GuiWindowType.TargetStatus);
             }
         }
 
@@ -529,7 +515,7 @@ namespace SWLOR.Component.Space.Service
             var area = GetArea(OBJECT_SELF);
             var player = GetLastUsedBy();
             var playerId = GetObjectUUID(player);
-            var propertyId = _propertyService.GetPropertyId(area);
+            var propertyId = PropertyService.GetPropertyId(area);
             var permissionQuery = new DBQuery<WorldPropertyPermission>()
                 .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), propertyId, false)
                 .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false);
@@ -577,7 +563,7 @@ namespace SWLOR.Component.Space.Service
                 ? dbProperty.Positions[PropertyLocationType.CurrentPosition]
                 : dbProperty.Positions[PropertyLocationType.SpacePosition];
 
-            var spaceArea = _areaService.GetAreaByResref(propertyLocation.AreaResref);
+            var spaceArea = AreaService.GetAreaByResref(propertyLocation.AreaResref);
             var spacePosition = Vector3(propertyLocation.X, propertyLocation.Y, propertyLocation.Z);
             var location = Location(spaceArea, spacePosition, propertyLocation.Orientation);
 
@@ -693,7 +679,7 @@ namespace SWLOR.Component.Space.Service
         {
             // Ground effects must be removed when entering space mode.
             // Otherwise players could buff on the ground, then get those same bonuses while in space.
-            _statusEffectService.RemoveAll(player);
+            StatusEffectService.RemoveAll(player);
             for (var effect = GetFirstEffect(player); GetIsEffectValid(effect); effect = GetNextEffect(player))
             {
                 RemoveEffect(player, effect);
@@ -816,7 +802,7 @@ namespace SWLOR.Component.Space.Service
         public void WarpPlayerInsideShip(uint player)
         {
             ExitSpaceMode(player);
-            _abilityService.ReapplyPlayerAuraAOE(player);
+            AbilityService.ReapplyPlayerAuraAOE(player);
 
             if (!GetLocalBool(player, "SPACE_INSTANCE_LOCATION_SET"))
                 return;
@@ -902,7 +888,7 @@ namespace SWLOR.Component.Space.Service
             ClearCurrentTarget(player);
             SetCreatureAppearanceType(player, dbPlayer.OriginalAppearanceType);
             CreaturePlugin.SetMovementRate(player, MovementRate.PC);
-            _enmityService.RemoveCreatureEnmity(player);
+            EnmityService.RemoveCreatureEnmity(player);
 
             // Save the ship's hot bar and unassign the active ship Id.
             dbShip.PlayerHotBars[playerId] = CreaturePlugin.SerializeQuickbar(player);
@@ -1144,7 +1130,7 @@ namespace SWLOR.Component.Space.Service
             var requiredCapacitor = shipModuleDetails.CalculateCapacitorAction?.Invoke(activator, activatorShipStatus, shipModule.ModuleBonus) ?? 0;
 
             // Perk bonuses
-            var capacitorReduction = 1.0f - _perkService.GetPerkLevel(activator, PerkType.EnergyManagement) * 0.2f;
+            var capacitorReduction = 1.0f - PerkService.GetPerkLevel(activator, PerkType.EnergyManagement) * 0.2f;
             requiredCapacitor = (int)(requiredCapacitor * capacitorReduction);
 
             if (activatorShipStatus.Capacitor < requiredCapacitor)
@@ -1490,7 +1476,7 @@ namespace SWLOR.Component.Space.Service
             var attackerAccuracy = GetShipAccuracy(attacker);
             var defenderEvasion = GetShipEvasion(defender);
 
-            return _combatService.CalculateHitRate(attackerAccuracy, defenderEvasion, 0);
+            return CombatService.CalculateHitRate(attackerAccuracy, defenderEvasion, 0);
         }
 
         /// <summary>
@@ -1514,7 +1500,7 @@ namespace SWLOR.Component.Space.Service
             }
             else
             {
-                var npcStats = _statService.GetNPCStats(attacker);
+                var npcStats = StatService.GetNPCStats(attacker);
                 level = npcStats.Level;
             }
 
@@ -1542,7 +1528,7 @@ namespace SWLOR.Component.Space.Service
             }
             else
             {
-                var npcStats = _statService.GetNPCStats(defender);
+                var npcStats = StatService.GetNPCStats(defender);
                 level = npcStats.Level;
             }
 
@@ -1570,7 +1556,7 @@ namespace SWLOR.Component.Space.Service
             }
             else
             {
-                var npcStats = _statService.GetNPCStats(attacker);
+                var npcStats = StatService.GetNPCStats(attacker);
                 level = npcStats.Level;
             }
 
@@ -1598,7 +1584,7 @@ namespace SWLOR.Component.Space.Service
             }
             else
             {
-                var npcStats = _statService.GetNPCStats(defender);
+                var npcStats = StatService.GetNPCStats(defender);
                 level = npcStats.Level;
             }
 
@@ -1694,7 +1680,7 @@ namespace SWLOR.Component.Space.Service
                     var targetPlayerId = GetObjectUUID(target);
                     var dbTargetPlayer = _db.Get<Player>(targetPlayerId);
                     var dbPlayerShip = _db.Get<PlayerShip>(dbTargetPlayer.ActiveShipId);
-                    var instance = _propertyService.GetRegisteredInstance(dbPlayerShip.PropertyId);
+                    var instance = PropertyService.GetRegisteredInstance(dbPlayerShip.PropertyId);
                     var location = Location(instance.Area, Vector3.Zero, 0.0f);
 
                     ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_ShakeScreen), location);
@@ -1714,7 +1700,7 @@ namespace SWLOR.Component.Space.Service
             }
 
             // Notify nearby players of damage taken by target.
-            _messagingService.SendMessageNearbyToPlayers(attacker, $"{GetName(attacker)} deals {amount} damage to {GetName(target)}.");
+            MessagingService.SendMessageNearbyToPlayers(attacker, $"{GetName(attacker)} deals {amount} damage to {GetName(target)}.");
             
             if(GetIsPC(attacker))
                 ExecuteScript("pc_target_upd", attacker);
@@ -1761,7 +1747,7 @@ namespace SWLOR.Component.Space.Service
                     var targetPlayerId = GetObjectUUID(target);
                     var dbTargetPlayer = _db.Get<Player>(targetPlayerId);
                     var dbPlayerShip = _db.Get<PlayerShip>(dbTargetPlayer.ActiveShipId);
-                    var instance = _propertyService.GetRegisteredInstance(dbPlayerShip.PropertyId);
+                    var instance = PropertyService.GetRegisteredInstance(dbPlayerShip.PropertyId);
                     var location = Location(instance.Area, Vector3.Zero, 0.0f);
 
                     ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_ShakeScreen), location);
@@ -1781,7 +1767,7 @@ namespace SWLOR.Component.Space.Service
             }
 
             // Notify nearby players of damage taken by target.
-            _messagingService.SendMessageNearbyToPlayers(attacker, $"{GetName(attacker)} deals {amount} damage directly to hull of {GetName(target)}.");
+            MessagingService.SendMessageNearbyToPlayers(attacker, $"{GetName(attacker)} deals {amount} damage directly to hull of {GetName(target)}.");
 
             if (GetIsPC(attacker))
                 ExecuteScript("pc_target_upd", attacker);
@@ -1817,7 +1803,7 @@ namespace SWLOR.Component.Space.Service
                 var dbPlayer = _db.Get<Player>(playerId);
                 var dbPlayerShip = _db.Get<PlayerShip>(dbPlayer.ActiveShipId);
                 var dbProperty = _db.Get<WorldProperty>(dbPlayerShip.PropertyId);
-                var instance = _propertyService.GetRegisteredInstance(dbPlayerShip.PropertyId);
+                var instance = PropertyService.GetRegisteredInstance(dbPlayerShip.PropertyId);
 
                 // Give a chance to drop each installed module.
                 foreach (var (_, shipModule) in dbPlayerShip.Status.HighPowerModules)
@@ -1858,7 +1844,7 @@ namespace SWLOR.Component.Space.Service
                 ClearCurrentTarget(creature);
                 SetCreatureAppearanceType(creature, dbPlayer.OriginalAppearanceType);
                 CreaturePlugin.SetMovementRate(creature, MovementRate.PC);
-                _enmityService.RemoveCreatureEnmity(creature);
+                EnmityService.RemoveCreatureEnmity(creature);
                 
                 // Remove all module feats from the player.
                 foreach (var (feat, _) in ShipModuleFeats)
@@ -1918,7 +1904,7 @@ namespace SWLOR.Component.Space.Service
                 ApplyAutoShipRecovery(creature, shipStatus);
 
                 // Determine target
-                var target = _enmityService.GetHighestEnmityTarget(creature);
+                var target = EnmityService.GetHighestEnmityTarget(creature);
                 if (!GetIsObjectValid(target)) continue;
 
                 // Determine which modules are available.
@@ -2041,7 +2027,7 @@ namespace SWLOR.Component.Space.Service
         /// <param name="instance">The area instance</param>
         public void PerformEmergencyExit(uint instance)
         {
-            var propertyId = _propertyService.GetPropertyId(instance);
+            var propertyId = PropertyService.GetPropertyId(instance);
             var shipQuery = new DBQuery<PlayerShip>()
                 .AddFieldSearch(nameof(PlayerShip.PropertyId), propertyId, false);
             var dbShip = _db.Search(shipQuery).FirstOrDefault();

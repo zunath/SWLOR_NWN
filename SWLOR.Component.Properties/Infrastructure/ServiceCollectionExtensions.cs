@@ -19,6 +19,7 @@ namespace SWLOR.Component.Properties.Infrastructure
         {
             // Register services as singletons
             services.AddSingleton<IPropertyService, PropertyService>();
+            services.AddSingleton<StructureChangedAction>();
 
             // Register event handlers as singletons
             services.AddSingleton<PropertiesEventHandlers>();

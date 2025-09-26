@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Inventory.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -17,21 +18,21 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
     {
         private readonly IDatabaseService _db;
         private readonly IItemCacheService _itemCache;
-        private readonly IPerkService _perkService;
-        private readonly ICraftService _craftService;
-        private readonly ISkillService _skillService;
-        private readonly IItemService _itemService;
+        private readonly IServiceProvider _serviceProvider;
         private readonly ItemBuilder _builder = new();
 
-        public RecipeItemDefinition(IDatabaseService db, IItemCacheService itemCache, IPerkService perkService, ICraftService craftService, ISkillService skillService, IItemService itemService)
+        public RecipeItemDefinition(IDatabaseService db, IItemCacheService itemCache, IServiceProvider serviceProvider)
         {
             _db = db;
             _itemCache = itemCache;
-            _perkService = perkService;
-            _craftService = craftService;
-            _skillService = skillService;
-            _itemService = itemService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
+        private ICraftService CraftService => _serviceProvider.GetRequiredService<ICraftService>();
+        private ISkillService SkillService => _serviceProvider.GetRequiredService<ISkillService>();
+        private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
 
         public Dictionary<string, ItemDetail> BuildItems()
         {
@@ -59,7 +60,7 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
                     if (characterTypeRestriction != CharacterType.Invalid &&
                         characterTypeRestriction != dbPlayer.CharacterType)
                     {
-                        var characterType = _perkService.GetCharacterType(characterTypeRestriction);
+                        var characterType = PerkService.GetCharacterType(characterTypeRestriction);
                         return $"This recipe can only be learned by {characterType.Name} characters.";
                     }
 
@@ -92,7 +93,7 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
                         var recipeType = (RecipeType)convertedId;
 
                         // Ensure this type of recipe has been registered.
-                        if (!_craftService.RecipeExists(recipeType))
+                        if (!CraftService.RecipeExists(recipeType))
                         {
                             SendMessageToPC(user, "This recipe has not been registered. Please inform a DM.");
                             return;
@@ -105,8 +106,8 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
                         recipesLearned++;
                         dbPlayer.UnlockedRecipes[recipeType] = DateTime.UtcNow;
 
-                        var recipeDetail = _craftService.GetRecipe(recipeType);
-                        var skillDetail = _skillService.GetSkillDetails(recipeDetail.Skill);
+                        var recipeDetail = CraftService.GetRecipe(recipeType);
+                        var skillDetail = SkillService.GetSkillDetails(recipeDetail.Skill);
                         var itemName = _itemCache.GetItemNameByResref(recipeDetail.Resref);
                         SendMessageToPC(user, $"You learn the {skillDetail.Name} recipe: {itemName}.");
                     }
@@ -120,7 +121,7 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
 
                     _db.Set(dbPlayer);
 
-                    _itemService.ReduceItemStack(item, 1);
+                    ItemService.ReduceItemStack(item, 1);
                 });
         }
     }

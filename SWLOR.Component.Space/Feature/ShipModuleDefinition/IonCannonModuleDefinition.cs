@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Space.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -15,21 +16,21 @@ namespace SWLOR.Component.Space.Feature.ShipModuleDefinition
     public class IonCannonModuleDefinition : IShipModuleListDefinition
     {
         private readonly IRandomService _random;
-        private readonly ICombatService _combatService;
-        private readonly ISpaceService _spaceService;
-        private readonly IEnmityService _enmityService;
-        private readonly ICombatPointService _combatPointService;
-        private readonly IMessagingService _messagingService;
+        private readonly IServiceProvider _serviceProvider;
         private readonly IShipModuleBuilder _builder;
+        
+        // Lazy-loaded services to break circular dependencies
+        private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
+        private ISpaceService SpaceService => _serviceProvider.GetRequiredService<ISpaceService>();
+        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
+        private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
+        private IMessagingService MessagingService => _serviceProvider.GetRequiredService<IMessagingService>();
 
-        public IonCannonModuleDefinition(IRandomService random, ICombatService combatService, ISpaceService spaceService, IEnmityService enmityService, ICombatPointService combatPointService, IMessagingService messagingService, IShipModuleBuilder builder)
+        public IonCannonModuleDefinition(IRandomService random, IServiceProvider serviceProvider, IShipModuleBuilder builder)
         {
             _random = random;
-            _combatService = combatService;
-            _spaceService = spaceService;
-            _enmityService = enmityService;
-            _combatPointService = combatPointService;
-            _messagingService = messagingService;
+            _serviceProvider = serviceProvider;
+            // Services are now lazy-loaded via IServiceProvider
             _builder = builder;
         }
 
@@ -68,14 +69,14 @@ namespace SWLOR.Component.Space.Feature.ShipModuleDefinition
                 .ActivatedAction((activator, activatorShipStatus, target, targetShipStatus, moduleBonus) =>
                 {
                     var attackBonus = activatorShipStatus.EMDamage;
-                    var attackerStat = _spaceService.GetAttackStat(activator);
-                    var attack = _spaceService.GetShipAttack(activator, attackBonus);
+                    var attackerStat = SpaceService.GetAttackStat(activator);
+                    var attack = SpaceService.GetShipAttack(activator, attackBonus);
                     var moduleDamage = dmg + moduleBonus / 2;
 
                     var defenseBonus = targetShipStatus.EMDefense * 2;
-                    var defense = _spaceService.GetShipDefense(target, defenseBonus);
+                    var defense = SpaceService.GetShipDefense(target, defenseBonus);
                     var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-                    var damage = _combatService.CalculateDamage(
+                    var damage = CombatService.CalculateDamage(
                         attack,
                         moduleDamage,
                         attackerStat,
@@ -83,7 +84,7 @@ namespace SWLOR.Component.Space.Feature.ShipModuleDefinition
                         defenderStat,
                         0);
 
-                    var chanceToHit = _spaceService.CalculateChanceToHit(activator, target);
+                    var chanceToHit = SpaceService.CalculateChanceToHit(activator, target);
                     var roll = _random.D100(1);
                     var isHit = roll <= chanceToHit;
 
@@ -108,8 +109,8 @@ namespace SWLOR.Component.Space.Feature.ShipModuleDefinition
                                 }
                                 var effect = EffectVisualEffect(VisualEffect.Vfx_Imp_Dispel, false, 0.5f);
                                 ApplyEffectToObject(DurationType.Instant, effect, target);
-                                _spaceService.ApplyShipDamage(activator, target, shieldDamage);
-                                _spaceService.ApplyShipDamage(activator, target, armorDamage);
+                                SpaceService.ApplyShipDamage(activator, target, shieldDamage);
+                                SpaceService.ApplyShipDamage(activator, target, armorDamage);
                                 if (armorDamage > 0)
                                 {
                                     ApplyEffectToObject(DurationType.Temporary, EffectMovementSpeedDecrease(50), target, 6f);
@@ -137,11 +138,11 @@ namespace SWLOR.Component.Space.Feature.ShipModuleDefinition
                     }
 
                     var attackId = isHit ? 1 : 4;
-                    var combatLogMessage = _combatService.BuildCombatLogMessage(activator, target, attackId, chanceToHit);
-                    _messagingService.SendMessageNearbyToPlayers(target, combatLogMessage, 60f);
+                    var combatLogMessage = CombatService.BuildCombatLogMessage(activator, target, attackId, chanceToHit);
+                    MessagingService.SendMessageNearbyToPlayers(target, combatLogMessage, 60f);
 
-                    _enmityService.ModifyEnmity(activator, target, damage);
-                    _combatPointService.AddCombatPoint(activator, target, SkillType.Piloting);
+                    EnmityService.ModifyEnmity(activator, target, damage);
+                    CombatPointService.AddCombatPoint(activator, target, SkillType.Piloting);
                 });
         }
     }

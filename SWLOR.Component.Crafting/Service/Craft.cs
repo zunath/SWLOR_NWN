@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Crafting.Contracts;
 using SWLOR.Component.Crafting.Enums;
 using SWLOR.Component.Crafting.Model;
@@ -37,31 +38,28 @@ namespace SWLOR.Component.Crafting.Service
         private readonly ILogger _logger;
         private readonly IDatabaseService _db;
         private readonly IGenericCacheService _cacheService;
-        private readonly IGuiService _guiService;
-        private readonly IPerkService _perkService;
-        private readonly IItemService _itemService;
-        private readonly IPropertyService _propertyService;
+        private readonly IServiceProvider _serviceProvider;
         private readonly ITimeService _timeService;
+        
+        // Lazy-loaded services to break circular dependencies
+        private IGuiService GuiService => _serviceProvider.GetRequiredService<IGuiService>();
+        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
+        private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
+        private IPropertyService PropertyService => _serviceProvider.GetRequiredService<IPropertyService>();
 
         public Craft(
             ILogger logger, 
             IDatabaseService db, 
             IGenericCacheService cacheService, 
             IItemCacheService itemCache, 
-            IGuiService guiService, 
-            IPerkService perkService, 
-            IItemService itemService, 
-            IPropertyService propertyService,
+            IServiceProvider serviceProvider,
             ITimeService timeService)
         {
             _logger = logger;
             _db = db;
             _cacheService = cacheService;
             _itemCache = itemCache;
-            _guiService = guiService;
-            _perkService = perkService;
-            _itemService = itemService;
-            _propertyService = propertyService;
+            // Services are now lazy-loaded via IServiceProvider
             _timeService = timeService;
         }
         public int MaxResearchLevel => 10;
@@ -396,7 +394,7 @@ namespace SWLOR.Component.Crafting.Service
             var player = GetLastUsedBy();
             var skillType = (SkillType)GetLocalInt(OBJECT_SELF, "CRAFTING_SKILL_TYPE_ID");
             var payload = new RecipesPayload(RecipesUIMode.Crafting, skillType);
-            _guiService.TogglePlayerWindow(player, GuiWindowType.Recipes, payload, OBJECT_SELF);
+            GuiService.TogglePlayerWindow(player, GuiWindowType.Recipes, payload, OBJECT_SELF);
         }
 
         /// <summary>
@@ -441,7 +439,7 @@ namespace SWLOR.Component.Crafting.Service
             var tempStorage = GetObjectByTag("TEMP_ITEM_STORAGE");
             var item = CreateItemOnObject(detail.Resref, tempStorage);
             
-            foreach (var ip in _itemService.BuildItemPropertyList(item))
+            foreach (var ip in ItemService.BuildItemPropertyList(item))
             {
                 recipeDetails.Add(ip);
                 recipeDetailColors.Add(GuiColor.White);
@@ -529,7 +527,7 @@ namespace SWLOR.Component.Crafting.Service
             if (tier > 5)
                 tier = 5;
 
-            return _perkService.GetPerkLevel(player, PerkType.Research) >= tier;
+            return PerkService.GetPerkLevel(player, PerkType.Research) >= tier;
         }
         
         /// <summary>
@@ -758,7 +756,7 @@ namespace SWLOR.Component.Crafting.Service
         public void UseRefinery()
         {
             var player = GetLastUsedBy();
-            _guiService.TogglePlayerWindow(player, GuiWindowType.Refinery, null, OBJECT_SELF);
+            GuiService.TogglePlayerWindow(player, GuiWindowType.Refinery, null, OBJECT_SELF);
         }
 
         [ScriptHandler(ScriptName.OnResearchTerminal)]
@@ -767,7 +765,7 @@ namespace SWLOR.Component.Crafting.Service
             var player = GetLastUsedBy();
             var playerId = GetObjectUUID(player);
             var terminal = OBJECT_SELF;
-            var researchLevel = _perkService.GetPerkLevel(player, PerkType.Research);
+            var researchLevel = PerkService.GetPerkLevel(player, PerkType.Research);
 
             if (researchLevel <= 0)
             {
@@ -775,7 +773,7 @@ namespace SWLOR.Component.Crafting.Service
                 return;
             }
             
-            var propertyId = _propertyService.GetPropertyId(terminal);
+            var propertyId = PropertyService.GetPropertyId(terminal);
 
             if (string.IsNullOrWhiteSpace(propertyId))
             {
@@ -791,7 +789,7 @@ namespace SWLOR.Component.Crafting.Service
             if (dbJob == null)
             {
                 var payload = new RecipesPayload(RecipesUIMode.Research, SkillType.Invalid);
-                _guiService.TogglePlayerWindow(player, GuiWindowType.Recipes, payload, terminal);
+                GuiService.TogglePlayerWindow(player, GuiWindowType.Recipes, payload, terminal);
             }
             else
             {
@@ -812,7 +810,7 @@ namespace SWLOR.Component.Crafting.Service
                 else
                 {
                     var payload = new ResearchPayload(propertyId, OBJECT_INVALID, RecipeType.Invalid);
-                    _guiService.TogglePlayerWindow(player, GuiWindowType.Research, payload, terminal);
+                    GuiService.TogglePlayerWindow(player, GuiWindowType.Research, payload, terminal);
                 }
             }
         }

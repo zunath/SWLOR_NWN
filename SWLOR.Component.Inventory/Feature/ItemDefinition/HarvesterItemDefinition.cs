@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Inventory.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -19,20 +20,21 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
         private readonly IRandomService _random;
         private readonly ILogger _logger;
         private readonly IDatabaseService _db;
-        private readonly IPerkService _perkService;
-        private readonly ILootService _lootService;
-        private readonly ISkillService _skillService;
+        private readonly IServiceProvider _serviceProvider;
         private readonly ItemBuilder _builder = new();
 
-        public HarvesterItemDefinition(IRandomService random, ILogger logger, IDatabaseService db, IPerkService perkService, ILootService lootService, ISkillService skillService)
+        public HarvesterItemDefinition(IRandomService random, ILogger logger, IDatabaseService db, IServiceProvider serviceProvider)
         {
             _random = random;
             _logger = logger;
             _db = db;
-            _perkService = perkService;
-            _lootService = lootService;
-            _skillService = skillService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
+        private ILootService LootService => _serviceProvider.GetRequiredService<ILootService>();
+        private ISkillService SkillService => _serviceProvider.GetRequiredService<ISkillService>();
 
         public Dictionary<string, ItemDetail> BuildItems()
         {
@@ -76,7 +78,7 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
                 .ReducesItemCharge()
                 .ValidationAction((user, item, target, location, itemPropertyIndex) =>
                 {
-                    var perkLevel = _perkService.GetPerkLevel(user, PerkType.Harvesting);
+                    var perkLevel = PerkService.GetPerkLevel(user, PerkType.Harvesting);
 
                     if (perkLevel < requiredLevel)
                     {
@@ -89,7 +91,7 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
                         return "This harvester cannot be used on that target.";
                     }
 
-                    if (!_lootService.LootTableExists(lootTableName))
+                    if (!LootService.LootTableExists(lootTableName))
                     {
                         _logger.Write<ErrorLogGroup>($"Loot table '{lootTableName}' assigned to harvesting object '{GetName(target)}' does not exist.");
                         return $"ERROR: Harvesting loot table misconfigured. Please use /bug to report this issue.";
@@ -113,7 +115,7 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
                     }
 
                     var lootTableName = GetLocalString(target, "HARVESTING_LOOT_TABLE");
-                    var lootTable = _lootService.GetLootTableByName(lootTableName);
+                    var lootTable = LootService.GetLootTableByName(lootTableName);
                     var loot = lootTable.GetRandomItem();
                     var resourceLevel = GetLocalInt(target, "HARVESTER_REQUIRED_LEVEL");
 
@@ -130,7 +132,7 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
                     CreateItemOnObject(loot.Resref, user);
 
                     // Additional loot tables - these adhere to standard loot table rules.
-                    _lootService.SpawnLoot(target, user, "LOOT_TABLE_");
+                    LootService.SpawnLoot(target, user, "LOOT_TABLE_");
 
                     // Check against the user's Might; create a second item if they are 
                     // strong.  This is 'free' and does not count towards the limit in the resource point.
@@ -164,10 +166,10 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
                         var dbSkill = dbPlayer.Skills[SkillType.Gathering];
                         var veinLevel = 10 * (resourceLevel - 1) + 5;
                         var delta = veinLevel - dbSkill.Rank;
-                        var deltaXP = _skillService.GetDeltaXP(delta);
+                        var deltaXP = SkillService.GetDeltaXP(delta);
 
                         // Give XP for each item gathered
-                        _skillService.GiveSkillXP(user, SkillType.Gathering, deltaXP * itemsGathered, false, false);
+                        SkillService.GiveSkillXP(user, SkillType.Gathering, deltaXP * itemsGathered, false, false);
                     }
 
                     ExecuteScript(ScriptName.OnHarvesterUsed, user);

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Quest.Contracts;
 using SWLOR.Shared.Domain.Quest.Contracts;
 
@@ -5,23 +6,26 @@ namespace SWLOR.Component.Quest.Model
 {
     public class GoldReward : IQuestReward
     {
-        private readonly IQuestService _questService;
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded services to break circular dependencies
+        private IQuestService QuestService => _serviceProvider.GetRequiredService<IQuestService>();
         public int Amount { get; }
         public bool IsSelectable { get; }
         public string MenuName => Amount + " Credits";
         public bool IsGuildQuest { get; }
 
-        public GoldReward(int amount, bool isSelectable, bool isGuildQuest, IQuestService questService)
+        public GoldReward(int amount, bool isSelectable, bool isGuildQuest, IServiceProvider serviceProvider)
         {
             Amount = amount;
             IsSelectable = isSelectable;
             IsGuildQuest = isGuildQuest;
-            _questService = questService;
+            // Services are now lazy-loaded via IServiceProvider
         }
 
         public void GiveReward(uint player)
         {
-            var amount = _questService.CalculateQuestGoldReward(player, IsGuildQuest, Amount);
+            var amount = QuestService.CalculateQuestGoldReward(player, IsGuildQuest, Amount);
             GiveGoldToCreature(player, amount);
         }
     }

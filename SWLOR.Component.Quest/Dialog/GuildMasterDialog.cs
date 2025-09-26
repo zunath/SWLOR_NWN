@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Quest.Contracts;
 using SWLOR.Component.Quest.Model;
 using SWLOR.NWN.API.NWScript;
@@ -14,15 +15,17 @@ namespace SWLOR.Component.Quest.Dialog
     public class GuildMasterDialog: DialogBase
     {
         private readonly IDatabaseService _db;
-        private readonly IQuestService _questService;
-        private readonly IGuildService _guildService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public GuildMasterDialog(IDatabaseService db, IQuestService questService, IGuildService guildService, IDialogService dialogService, IDialogBuilder dialogBuilder) : base(dialogService, dialogBuilder)
+        public GuildMasterDialog(IDatabaseService db, IServiceProvider serviceProvider, IDialogService dialogService, IDialogBuilder dialogBuilder) : base(dialogService, dialogBuilder)
         {
             _db = db;
-            _questService = questService;
-            _guildService = guildService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IQuestService QuestService => _serviceProvider.GetRequiredService<IQuestService>();
+        private IGuildService GuildService => _serviceProvider.GetRequiredService<IGuildService>();
         
         private class Model
         {

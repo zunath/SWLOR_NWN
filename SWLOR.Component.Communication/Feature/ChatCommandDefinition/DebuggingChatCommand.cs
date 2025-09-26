@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Communication.Contracts;
 using SWLOR.Component.Communication.Model;
 using SWLOR.Component.Communication.Service;
@@ -16,12 +17,15 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
     {
         private readonly ChatCommandBuilder _builder = new();
         private readonly IDatabaseService _db;
-        private readonly IGuiService _guiService;
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded services to break circular dependencies
+        private IGuiService GuiService => _serviceProvider.GetRequiredService<IGuiService>();
 
-        public DebuggingChatCommand(IDatabaseService db, IGuiService guiService)
+        public DebuggingChatCommand(IDatabaseService db, IServiceProvider serviceProvider)
         {
             _db = db;
-            _guiService = guiService;
+            // Services are now lazy-loaded via IServiceProvider
         }
 
         public Dictionary<string, ChatCommandDetail> BuildChatCommands()
@@ -93,7 +97,7 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
                 .Permissions(AuthorizationLevel.Admin)
                 .Action((user, target, location, args) =>
                 {
-                    _guiService.TogglePlayerWindow(user, GuiWindowType.DebugEnmity);
+                    GuiService.TogglePlayerWindow(user, GuiWindowType.DebugEnmity);
                 });
         }
 

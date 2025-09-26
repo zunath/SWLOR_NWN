@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Dialog.Contracts;
@@ -7,12 +8,15 @@ namespace SWLOR.Component.Inventory.Dialog
 {
     public class XPTomeDialog: DialogBase
     {
-        private readonly ISkillService _skillService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public XPTomeDialog(ISkillService skillService, IDialogService dialogService, IDialogBuilder dialogBuilder) : base(dialogService, dialogBuilder)
+        public XPTomeDialog(IServiceProvider serviceProvider, IDialogService dialogService, IDialogBuilder dialogBuilder) : base(dialogService, dialogBuilder)
         {
-            _skillService = skillService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded service to break circular dependency
+        private ISkillService SkillService => _serviceProvider.GetRequiredService<ISkillService>();
 
         private class Model
         {
@@ -49,7 +53,7 @@ namespace SWLOR.Component.Inventory.Dialog
         {
             page.Header = "This tome holds techniques lost to the ages. Select a skill to earn experience in that art.";
 
-            foreach (var (type, detail) in _skillService.GetAllActiveSkillCategories())
+            foreach (var (type, detail) in SkillService.GetAllActiveSkillCategories())
             {
                 page.AddResponse(detail.Name, () =>
                 {
@@ -66,7 +70,7 @@ namespace SWLOR.Component.Inventory.Dialog
             var model = GetDataModel<Model>();
             page.Header = "This tome holds techniques lost to the ages. Select a skill to earn experience in that art.";
 
-            foreach (var (type, detail) in _skillService.GetAllSkillsByCategory(model.Category))
+            foreach (var (type, detail) in SkillService.GetAllSkillsByCategory(model.Category))
             {
                 page.AddResponse(detail.Name, () =>
                 {
@@ -80,13 +84,13 @@ namespace SWLOR.Component.Inventory.Dialog
         {
             var player = GetPC();
             var model = GetDataModel<Model>();
-            var skillDetail = _skillService.GetSkillDetails(model.Skill);
+            var skillDetail = SkillService.GetSkillDetails(model.Skill);
             page.Header = $"Are you sure you want to improve your {skillDetail.Name} skill?";
 
             page.AddResponse("Select this skill.", () =>
             {
                 var amount = GetLocalInt(model.Item, "XP_TOME_AMOUNT");
-                _skillService.GiveSkillXP(player, model.Skill, amount, false, false);
+                SkillService.GiveSkillXP(player, model.Skill, amount, false, false);
                 DestroyObject(model.Item);
 
                 EndConversation();

@@ -1,5 +1,6 @@
 //using Random = SWLOR.Game.Server.Service.Random;
 
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -16,20 +17,19 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.OneHanded
 {
     public class RiotBladeAbilityDefinition : IAbilityListDefinition
     {
-        private readonly IItemService _itemService;
-        private readonly ICombatService _combatService;
-        private readonly IStatService _statService;
-        private readonly ICombatPointService _combatPointService;
-        private readonly IEnmityService _enmityService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public RiotBladeAbilityDefinition(IItemService itemService, ICombatService combatService, IStatService statService, ICombatPointService combatPointService, IEnmityService enmityService)
+        public RiotBladeAbilityDefinition(IServiceProvider serviceProvider)
         {
-            _itemService = itemService;
-            _combatService = combatService;
-            _statService = statService;
-            _combatPointService = combatPointService;
-            _enmityService = enmityService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
+        private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
+        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+        private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
+        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
@@ -45,7 +45,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.OneHanded
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
             var rightHandType = GetBaseItemType(weapon);
             
-            if (_itemService.VibrobladeBaseItemTypes.Contains(rightHandType))
+            if (ItemService.VibrobladeBaseItemTypes.Contains(rightHandType))
             {
                 return string.Empty;
             }
@@ -74,20 +74,20 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.OneHanded
                     break;
             }
 
-            dmg += _combatService.GetAbilityDamageBonus(activator, SkillType.OneHanded);
+            dmg += CombatService.GetAbilityDamageBonus(activator, SkillType.OneHanded);
 
-            _combatPointService.AddCombatPoint(activator, target, SkillType.OneHanded, 3);
+            CombatPointService.AddCombatPoint(activator, target, SkillType.OneHanded, 3);
 
             var might = GetAbilityScore(activator, AbilityType.Might);
-            var attack = _statService.GetAttack(activator, AbilityType.Might, SkillType.OneHanded);
-            var defense = _statService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+            var attack = StatService.GetAttack(activator, AbilityType.Might, SkillType.OneHanded);
+            var defense = StatService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
             var vitality = GetAbilityModifier(AbilityType.Vitality, target);
-            var damage = _combatService.CalculateDamage(attack, dmg, might, defense, vitality, 0);
+            var damage = CombatService.CalculateDamage(attack, dmg, might, defense, vitality, 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
 
             AssignCommand(activator, () => ActionPlayAnimation(Animation.RiotBlade));
 
-            _enmityService.ModifyEnmity(activator, target, 100 * level + damage);
+            EnmityService.ModifyEnmity(activator, target, 100 * level + damage);
         }
 
         private void RiotBlade1(IAbilityBuilder builder)

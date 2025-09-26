@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.AI.Contracts;
 using SWLOR.Component.AI.Model;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -17,10 +18,8 @@ namespace SWLOR.Component.AI.Service
     public class AIService : IAIService
     {
         private readonly IRandomService _random;
-        private readonly IStatService _statService;
+        private readonly IServiceProvider _serviceProvider;
         private readonly IEnmityService _enmity;
-        private readonly IAbilityService _abilityService;
-        private readonly IPerkService _perkService;
         private readonly IStatusEffectService _statusEffectService;
         private readonly IPartyService _partyService;
         private readonly IActivityService _activityService;
@@ -30,31 +29,32 @@ namespace SWLOR.Component.AI.Service
 
         public AIService(
             IRandomService random, 
-            IStatService statService,
+            IServiceProvider serviceProvider,
             IEnmityService enmity, 
-            IAbilityService abilityService, 
-            IPerkService perkService, 
             IStatusEffectService statusEffectService, 
             IPartyService partyService, 
             IActivityService activityService,
             IDialogService dialogService)
         {
             _random = random;
-            _statService = statService;
+            _serviceProvider = serviceProvider;
             _enmity = enmity;
-            _abilityService = abilityService;
-            _perkService = perkService;
             _statusEffectService = statusEffectService;
             _partyService = partyService;
             _activityService = activityService;
             _dialogService = dialogService;
         }
+        
+        // Lazy-loaded services to break circular dependencies
+        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+        private IAbilityService AbilityService => _serviceProvider.GetRequiredService<IAbilityService>();
+        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
 
         public void CacheAIData()
         {
-            _aiDefinitions[AIDefinitionType.Generic] = new GenericAIDefinition(_abilityService, _perkService, _statusEffectService);
-            _aiDefinitions[AIDefinitionType.Droid] = new DroidAIDefinition(_abilityService, _perkService, _statusEffectService);
-            _aiDefinitions[AIDefinitionType.Beast] = new BeastAIDefinition(_abilityService, _perkService, _statusEffectService);
+            _aiDefinitions[AIDefinitionType.Generic] = new GenericAIDefinition(AbilityService, PerkService, _statusEffectService);
+            _aiDefinitions[AIDefinitionType.Droid] = new DroidAIDefinition(AbilityService, PerkService, _statusEffectService);
+            _aiDefinitions[AIDefinitionType.Beast] = new BeastAIDefinition(AbilityService, PerkService, _statusEffectService);
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace SWLOR.Component.AI.Service
             if (GetAILevel(creature) == AILevel.VeryLow)
                 return;
 
-            _statService.RestoreNPCStats(true);
+            StatService.RestoreNPCStats(true);
             ProcessFlags(creature);
             _enmity.AttackHighestEnmityTarget(creature);
         }
@@ -154,7 +154,7 @@ namespace SWLOR.Component.AI.Service
         {
             SetLocalString(creature, "X2_SPECIAL_COMBAT_AI_SCRIPT", "xxx");
 
-            _statService.LoadNPCStats();
+            StatService.LoadNPCStats();
             LoadAggroEffect(creature);
             DoVFX(creature);
             SetLocalLocation(creature, "HOME_LOCATION", GetLocation(creature));

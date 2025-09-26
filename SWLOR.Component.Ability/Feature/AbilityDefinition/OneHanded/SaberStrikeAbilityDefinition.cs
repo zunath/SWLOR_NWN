@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -14,22 +15,20 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.OneHanded
 {
     public class SaberStrikeAbilityDefinition : IAbilityListDefinition
     {
-        private readonly IItemService _itemService;
-        private readonly IAbilityService _abilityService;
-        private readonly ICombatService _combatService;
-        private readonly IStatService _statService;
-        private readonly ICombatPointService _combatPointService;
-        private readonly IEnmityService _enmityService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public SaberStrikeAbilityDefinition(IItemService itemService, IAbilityService abilityService, ICombatService combatService, IStatService statService, ICombatPointService combatPointService, IEnmityService enmityService)
+        public SaberStrikeAbilityDefinition(IServiceProvider serviceProvider)
         {
-            _itemService = itemService;
-            _abilityService = abilityService;
-            _combatService = combatService;
-            _statService = statService;
-            _combatPointService = combatPointService;
-            _enmityService = enmityService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
+        private IAbilityService AbilityService => _serviceProvider.GetRequiredService<IAbilityService>();
+        private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
+        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+        private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
+        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
@@ -45,7 +44,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.OneHanded
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
             var rightHandType = GetBaseItemType(weapon);
 
-            if (_itemService.LightsaberBaseItemTypes.Contains(rightHandType))
+            if (ItemService.LightsaberBaseItemTypes.Contains(rightHandType))
             {
                 return string.Empty;
             }
@@ -82,22 +81,22 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.OneHanded
                     break;
             }
 
-            _combatPointService.AddCombatPoint(activator, target, SkillType.OneHanded, 3);
-            _enmityService.ModifyEnmity(activator, target, 650);
+            CombatPointService.AddCombatPoint(activator, target, SkillType.OneHanded, 3);
+            EnmityService.ModifyEnmity(activator, target, 650);
 
-            dmg += _combatService.GetAbilityDamageBonus(activator, SkillType.OneHanded);
+            dmg += CombatService.GetAbilityDamageBonus(activator, SkillType.OneHanded);
 
             var stat = AbilityType.Perception;
-            if (_abilityService.IsAbilityToggled(activator, AbilityToggleType.StrongStyleLightsaber))
+            if (AbilityService.IsAbilityToggled(activator, AbilityToggleType.StrongStyleLightsaber))
             {
                 stat = AbilityType.Might;
             }
 
-            var attackerStat = _combatService.GetPerkAdjustedAbilityScore(activator);
-            var attack = _statService.GetAttack(activator, stat, SkillType.OneHanded);
-            var defense = _statService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+            var attackerStat = CombatService.GetPerkAdjustedAbilityScore(activator);
+            var attack = StatService.GetAttack(activator, stat, SkillType.OneHanded);
+            var defense = StatService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
             var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-            var damage = _combatService.CalculateDamage(
+            var damage = CombatService.CalculateDamage(
                 attack,
                 dmg, 
                 attackerStat, 
@@ -106,7 +105,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.OneHanded
                 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
 
-            dc = _combatService.CalculateSavingThrowDC(activator, SavingThrow.Fortitude, dc);
+            dc = CombatService.CalculateSavingThrowDC(activator, SavingThrow.Fortitude, dc);
             var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
             if (checkResult == SavingThrowResultType.Failed)
             {
@@ -115,11 +114,11 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.OneHanded
                 ApplyEffectToObject(DurationType.Temporary, eBreach, target, breachTime);
             }
             
-            _combatPointService.AddCombatPoint(activator, target, SkillType.OneHanded, 3);
+            CombatPointService.AddCombatPoint(activator, target, SkillType.OneHanded, 3);
 
             AssignCommand(activator, () => ActionPlayAnimation(Animation.RiotBlade));
 
-            _enmityService.ModifyEnmity(activator, target, 100 * level + damage);
+            EnmityService.ModifyEnmity(activator, target, 100 * level + damage);
         }
 
         private void SaberStrike1(IAbilityBuilder builder)

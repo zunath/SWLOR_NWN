@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -12,19 +13,17 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beasts
 {
     public class InnervateAbilityDefinition : IAbilityListDefinition
     {
-        private readonly IRandomService _random;
-        private readonly ICombatPointService _combatPointService;
-        private readonly IEnmityService _enmityService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public InnervateAbilityDefinition(
-            IRandomService random, 
-            ICombatPointService combatPointService, 
-            IEnmityService enmityService)
+        public InnervateAbilityDefinition(IServiceProvider serviceProvider)
         {
-            _random = random;
-            _combatPointService = combatPointService;
-            _enmityService = enmityService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IRandomService Random => _serviceProvider.GetRequiredService<IRandomService>();
+        private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
+        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
@@ -43,13 +42,13 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beasts
 
             var beastmasterWillBonus = GetAbilityModifier(AbilityType.Willpower, beastmaster) * 4;
             var beastWillBonus = GetAbilityModifier(AbilityType.Willpower, activator) * 4;
-            var amount = baseAmount + beastWillBonus + beastmasterWillBonus + _random.D10(1);
+            var amount = baseAmount + beastWillBonus + beastmasterWillBonus + Random.D10(1);
 
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), target);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), target);
 
-            _enmityService.ModifyEnmityOnAll(activator, 200 + amount);
-            _combatPointService.AddCombatPointToAllTagged(beastmaster, SkillType.BeastMastery, 3);
+            EnmityService.ModifyEnmityOnAll(activator, 200 + amount);
+            CombatPointService.AddCombatPointToAllTagged(beastmaster, SkillType.BeastMastery, 3);
         }
 
         private void Innervate1(IAbilityBuilder builder)

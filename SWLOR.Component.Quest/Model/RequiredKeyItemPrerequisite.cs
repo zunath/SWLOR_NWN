@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Quest.Contracts;
 using SWLOR.Shared.Domain.Common.Enums;
 using SWLOR.Shared.Domain.Inventory.Contracts;
@@ -9,17 +10,20 @@ namespace SWLOR.Component.Quest.Model
     public class RequiredKeyItemPrerequisite : IQuestPrerequisite
     {
         private readonly KeyItemType _keyItemType;
-        private readonly IKeyItemService _keyItemService;
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded services to break circular dependencies
+        private IKeyItemService KeyItemService => _serviceProvider.GetRequiredService<IKeyItemService>();
 
-        public RequiredKeyItemPrerequisite(KeyItemType keyItemType, IKeyItemService keyItemService)
+        public RequiredKeyItemPrerequisite(KeyItemType keyItemType, IServiceProvider serviceProvider)
         {
             _keyItemType = keyItemType;
-            _keyItemService = keyItemService;
+            // Services are now lazy-loaded via IServiceProvider
         }
 
         public bool MeetsPrerequisite(uint player)
         {
-            return _keyItemService.HasKeyItem(player, _keyItemType);
+            return KeyItemService.HasKeyItem(player, _keyItemType);
         }
     }
 }

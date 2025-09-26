@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Associate.Contracts;
 using SWLOR.Component.Associate.Enums;
 using SWLOR.NWN.API.Engine;
@@ -35,11 +36,9 @@ namespace SWLOR.Component.Associate.Service
         private readonly IDatabaseService _db;
         private readonly IRandomService _random;
         private readonly IGenericCacheService _cacheService;
-        private readonly IPerkService _perkService;
+        private readonly IServiceProvider _serviceProvider;
         private readonly IGuiService _guiService;
         private readonly IStatusEffectService _statusEffectService;
-        private readonly IItemService _itemService;
-        private readonly IStatService _statService;
         private readonly IPropertyService _propertyService;
         private readonly IActivityService _activityService;
         private readonly ITimeService _timeService;
@@ -48,11 +47,9 @@ namespace SWLOR.Component.Associate.Service
             IDatabaseService db,
             IRandomService random,
             IGenericCacheService cacheService,
-            IPerkService perkService,
+            IServiceProvider serviceProvider,
             IGuiService guiService,
             IStatusEffectService statusEffectService,
-            IItemService itemService,
-            IStatService statService,
             IPropertyService propertyService,
             IActivityService activityService,
             ITimeService timeService)
@@ -60,11 +57,9 @@ namespace SWLOR.Component.Associate.Service
             _db = db;
             _random = random;
             _cacheService = cacheService;
-            _perkService = perkService;
+            _serviceProvider = serviceProvider;
             _guiService = guiService;
             _statusEffectService = statusEffectService;
-            _itemService = itemService;
-            _statService = statService;
             _propertyService = propertyService;
             _activityService = activityService;
             _timeService = timeService;
@@ -73,6 +68,11 @@ namespace SWLOR.Component.Associate.Service
         // Cached data
         private IInterfaceCache<BeastType, BeastDetail> _beastCache;
         private IEnumCache<BeastRoleType, BeastRoleAttribute> _beastRoleCache;
+        
+        // Lazy-loaded services to break circular dependencies
+        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
+        private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
+        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
         
         // Additional caches for complex data
         private List<BeastFoodType> _beastFoods = new();
@@ -87,7 +87,6 @@ namespace SWLOR.Component.Associate.Service
             IDatabaseService db,
             IRandomService random,
             IGenericCacheService cacheService,
-            IPerkService perkService,
             IGuiService guiService,
             IStatusEffectService statusEffectService,
             IItemService itemService,
@@ -97,11 +96,8 @@ namespace SWLOR.Component.Associate.Service
             _db = db;
             _random = random;
             _cacheService = cacheService;
-            _perkService = perkService;
             _guiService = guiService;
             _statusEffectService = statusEffectService;
-            _itemService = itemService;
-            _statService = statService;
             _propertyService = propertyService;
         }
 
@@ -214,7 +210,7 @@ namespace SWLOR.Component.Associate.Service
             var player = GetMaster(beast);
             var beastId = GetBeastId(beast);
             var dbBeast = _db.Get<Beast>(beastId);
-            var maxBeastLevel = _perkService.GetPerkLevel(player, PerkType.Tame) * 10;
+            var maxBeastLevel = PerkService.GetPerkLevel(player, PerkType.Tame) * 10;
             var bonusPercentage = 0f;
             var social = GetAbilityScore(beast, AbilityType.Social);
 
@@ -235,7 +231,7 @@ namespace SWLOR.Component.Associate.Service
 
                     if (GetIsObjectValid(source))
                     {
-                        var effectiveLevel = _perkService.GetPerkLevel(source, PerkType.Dedication);
+                        var effectiveLevel = PerkService.GetPerkLevel(source, PerkType.Dedication);
                         var sourceSocial = GetAbilityScore(source, AbilityType.Social);
                         bonusPercentage += (10 + effectiveLevel * sourceSocial) * 0.01f;
                     }
@@ -333,7 +329,7 @@ namespace SWLOR.Component.Associate.Service
             // Perks
             foreach (var (perk, level) in dbBeast.Perks)
             {
-                var perkDefinition = _perkService.GetPerkDetails(perk);
+                var perkDefinition = PerkService.GetPerkDetails(perk);
                 var perkFeats = perkDefinition.PerkLevels.ContainsKey(level)
                     ? perkDefinition.PerkLevels[level].GrantedFeats
                     : new List<FeatType>();
@@ -456,7 +452,7 @@ namespace SWLOR.Component.Associate.Service
                 return;
 
             var npc = StringToObject(EventsPlugin.GetEventData("NPC"));
-            var npcStats = _statService.GetNPCStats(npc);
+            var npcStats = StatService.GetNPCStats(npc);
             var beastId = GetBeastId(beast);
             var dbBeast = _db.Get<Beast>(beastId);
 
@@ -504,7 +500,7 @@ namespace SWLOR.Component.Associate.Service
 
             SendMessageToPC(master, "Beasts cannot hold items.");
             AssignCommand(beast, () => ClearAllActions());
-            _itemService.ReturnItem(master, item);
+            ItemService.ReturnItem(master, item);
         }
 
         public void BeastOnBlocked()
@@ -556,7 +552,7 @@ namespace SWLOR.Component.Associate.Service
         public void BeastOnHeartbeat()
         {
             ExecuteScript("x0_ch_hen_heart", OBJECT_SELF);
-            _statService.RestoreNPCStats(false);
+            StatService.RestoreNPCStats(false);
         }
 
         public void BeastOnPerception()
@@ -589,8 +585,8 @@ namespace SWLOR.Component.Associate.Service
             {
                 SetIsDestroyable(true, false, false);
             });
-            _statService.LoadNPCStats();
-            _statService.ApplyAttacksPerRound(beast, GetItemInSlot(InventorySlot.CreatureLeft));
+            StatService.LoadNPCStats();
+            StatService.ApplyAttacksPerRound(beast, GetItemInSlot(InventorySlot.CreatureLeft));
         }
 
         public void BeastOnSpellCastAt()
@@ -754,7 +750,7 @@ namespace SWLOR.Component.Associate.Service
             var player = GetLastUsedBy();
             var playerId = GetObjectUUID(player);
             var incubator = OBJECT_SELF;
-            var dnaManipulationLevel = _perkService.GetPerkLevel(player, PerkType.DNAManipulation);
+            var dnaManipulationLevel = PerkService.GetPerkLevel(player, PerkType.DNAManipulation);
 
             if (dnaManipulationLevel <= 0)
             {

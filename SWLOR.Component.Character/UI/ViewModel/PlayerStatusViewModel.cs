@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Models;
@@ -17,18 +18,19 @@ namespace SWLOR.Component.Character.UI.ViewModel
         IGuiRefreshable<PlayerStatusRefreshEvent>
     {
         private readonly IDatabaseService _db;
-        private readonly IStatService _statService;
-        private readonly ISpaceService _spaceService;
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded services to break circular dependencies
+        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+        private ISpaceService SpaceService => _serviceProvider.GetRequiredService<ISpaceService>();
 
         public PlayerStatusViewModel(
             IGuiService guiService, 
             IDatabaseService db, 
-            IStatService statService,
-            ISpaceService spaceService) : base(guiService)
+            IServiceProvider serviceProvider) : base(guiService)
         {
             _db = db;
-            _statService = statService;
-            _spaceService = spaceService;
+            // Services are now lazy-loaded via IServiceProvider
         }
         
         private int _screenHeight;
@@ -213,7 +215,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
             var playerId = GetObjectUUID(Player);
             var dbPlayer = _db.Get<Player>(playerId);
             var currentFP = dbPlayer.FP;
-            var maxFP = _statService.GetMaxFP(Player, dbPlayer);
+            var maxFP = StatService.GetMaxFP(Player, dbPlayer);
             var isStandard = dbPlayer.CharacterType == CharacterType.Standard;
             Bar3Value = isStandard ? "0 / 0" : $"{currentFP} / {maxFP}";
             Bar3Progress = maxFP <= 0 || isStandard ? 0 : (float)currentFP / (float)maxFP > 1.0f ? 1.0f : (float)currentFP / (float)maxFP;
@@ -224,7 +226,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
             var playerId = GetObjectUUID(Player);
             var dbPlayer = _db.Get<Player>(playerId);
             var currentSTM = dbPlayer.Stamina;
-            var maxSTM = _statService.GetMaxStamina(Player, dbPlayer);
+            var maxSTM = StatService.GetMaxStamina(Player, dbPlayer);
 
             Bar2Value = $"{currentSTM} / {maxSTM}";
             Bar2Progress = maxSTM <= 0 ? 0 : (float)currentSTM / (float)maxSTM > 1.0f ? 1.0f : (float)currentSTM / (float)maxSTM;
@@ -232,14 +234,14 @@ namespace SWLOR.Component.Character.UI.ViewModel
 
         private void UpdateSingleData(PlayerStatusRefreshEvent.StatType type)
         {
-            if (_spaceService.IsPlayerInSpaceMode(Player))
+            if (SpaceService.IsPlayerInSpaceMode(Player))
             {
                 ToggleLabels(false);
                 Bar1Color = _shieldColor;
                 Bar2Color = _hullColor;
                 Bar3Color = _capacitorColor;
 
-                var shipStatus = _spaceService.GetShipStatus(Player);
+                var shipStatus = SpaceService.GetShipStatus(Player);
 
                 if (type == PlayerStatusRefreshEvent.StatType.Shield)
                 {
@@ -278,13 +280,13 @@ namespace SWLOR.Component.Character.UI.ViewModel
 
         private void UpdateAllData()
         {
-            if (_spaceService.IsPlayerInSpaceMode(Player))
+            if (SpaceService.IsPlayerInSpaceMode(Player))
             {
                 ToggleLabels(false);
                 Bar1Color = _shieldColor;
                 Bar2Color = _hullColor;
                 Bar3Color = _capacitorColor;
-                var shipStatus = _spaceService.GetShipStatus(Player);
+                var shipStatus = SpaceService.GetShipStatus(Player);
                 UpdateShield(shipStatus);
                 UpdateHull(shipStatus);
                 UpdateCapacitor(shipStatus);

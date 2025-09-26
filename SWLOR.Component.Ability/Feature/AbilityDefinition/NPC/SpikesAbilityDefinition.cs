@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -12,16 +13,17 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.NPC
 {
     public class SpikesAbilityDefinition : IAbilityListDefinition
     {
-        private readonly IStatService _statService;
-        private readonly ICombatService _combatService;
-        private readonly IStatusEffectService _statusEffectService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public SpikesAbilityDefinition(IStatService statService, ICombatService combatService, IStatusEffectService statusEffectService)
+        public SpikesAbilityDefinition(IServiceProvider serviceProvider)
         {
-            _statService = statService;
-            _combatService = combatService;
-            _statusEffectService = statusEffectService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+        private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
+        private IStatusEffectService StatusEffectService => _serviceProvider.GetRequiredService<IStatusEffectService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
@@ -42,10 +44,10 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.NPC
                 {
                     const int DMG = 3;
                     var attackerStat = GetAbilityScore(activator, AbilityType.Might);
-                    var attack = _statService.GetAttack(activator, AbilityType.Might, SkillType.Invalid);
-                    var defense = _statService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+                    var attack = StatService.GetAttack(activator, AbilityType.Might, SkillType.Invalid);
+                    var defense = StatService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
                     var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-                    var damage = _combatService.CalculateDamage(
+                    var damage = CombatService.CalculateDamage(
                         attack,
                         DMG, 
                         attackerStat, 
@@ -55,7 +57,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.NPC
 
                     ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Piercing), target);
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Wallspike), target);
-                    _statusEffectService.Apply(activator, target, StatusEffectType.Bleed, 45f);
+                    StatusEffectService.Apply(activator, target, StatusEffectType.Bleed, 45f);
                 });
         }
 

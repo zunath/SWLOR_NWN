@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Inventory.Dialog;
 using SWLOR.Component.Inventory.Service;
 using SWLOR.Shared.Domain.Dialog.Contracts;
@@ -8,17 +9,20 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
 {
     public class DestroyItemDefinition: IItemListDefinition
     {
-        private readonly IDialogService _dialog;
+        private readonly IServiceProvider _serviceProvider;
         private readonly IItemBuilder _builder;
 
 
         public DestroyItemDefinition(
-            IDialogService dialogService,
+            IServiceProvider serviceProvider,
             IItemBuilder itemBuilder)
         {
-            _dialog = dialogService;
+            _serviceProvider = serviceProvider;
             _builder = itemBuilder;
         }
+
+        // Lazy-loaded service to break circular dependency
+        private IDialogService DialogService => _serviceProvider.GetRequiredService<IDialogService>();
 
         public Dictionary<string, ItemDetail> BuildItems()
         {
@@ -26,7 +30,7 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
                 .ApplyAction((user, item, target, location, itemPropertyIndex) =>
                 {
                     SetLocalObject(user, "DESTROY_ITEM", item);
-                    _dialog.StartConversation(user, user, nameof(DestroyItemDialog));
+                    DialogService.StartConversation(user, user, nameof(DestroyItemDialog));
                 });
 
             return _builder.Build();

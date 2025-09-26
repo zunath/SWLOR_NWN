@@ -1,5 +1,6 @@
 //using Random = SWLOR.Game.Server.Service.Random;
 
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -17,22 +18,20 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.TwoHanded
 {
     public class SkewerAbilityDefinition : IAbilityListDefinition
     {
-        private readonly IItemService _itemService;
-        private readonly ICombatService _combatService;
-        private readonly IStatService _statService;
-        private readonly IAbilityService _abilityService;
-        private readonly ICombatPointService _combatPointService;
-        private readonly IEnmityService _enmityService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public SkewerAbilityDefinition(IItemService itemService, ICombatService combatService, IStatService statService, IAbilityService abilityService, ICombatPointService combatPointService, IEnmityService enmityService)
+        public SkewerAbilityDefinition(IServiceProvider serviceProvider)
         {
-            _itemService = itemService;
-            _combatService = combatService;
-            _statService = statService;
-            _abilityService = abilityService;
-            _combatPointService = combatPointService;
-            _enmityService = enmityService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
+        private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
+        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+        private IAbilityService AbilityService => _serviceProvider.GetRequiredService<IAbilityService>();
+        private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
+        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
@@ -47,7 +46,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.TwoHanded
         {
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
 
-            if (!_itemService.PolearmBaseItemTypes.Contains(GetBaseItemType(weapon)))
+            if (!ItemService.PolearmBaseItemTypes.Contains(GetBaseItemType(weapon)))
             {
                 return "This is a polearm ability.";
             }
@@ -78,13 +77,13 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.TwoHanded
                     break;
             }
 
-            dmg += _combatService.GetAbilityDamageBonus(activator, SkillType.TwoHanded);
+            dmg += CombatService.GetAbilityDamageBonus(activator, SkillType.TwoHanded);
             
             var attackerStat = GetAbilityModifier(AbilityType.Might, activator);
-            var attack = _statService.GetAttack(activator, AbilityType.Might, SkillType.TwoHanded);
-            var defense = _statService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+            var attack = StatService.GetAttack(activator, AbilityType.Might, SkillType.TwoHanded);
+            var defense = StatService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
             var defenderStat = GetAbilityModifier(AbilityType.Vitality, target);
-            var damage = _combatService.CalculateDamage(
+            var damage = CombatService.CalculateDamage(
                 attack, 
                 dmg, 
                 attackerStat, 
@@ -93,19 +92,19 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.TwoHanded
                 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Piercing), target);
 
-            dc = _combatService.CalculateSavingThrowDC(activator, SavingThrow.Will, dc);
+            dc = CombatService.CalculateSavingThrowDC(activator, SavingThrow.Will, dc);
             var checkResult = WillSave(target, dc, SavingThrowType.None, activator);
             if (checkResult == SavingThrowResultType.Failed)
             {
                 // TODO: Implement DequeueWeaponAbility method
-                // _abilityService.DequeueWeaponAbility(target);
-                _abilityService.EndConcentrationAbility(target);
+                // AbilityService.DequeueWeaponAbility(target);
+                AbilityService.EndConcentrationAbility(target);
                 SendMessageToPC(activator, ColorToken.Gray(GetName(target)) + "'s  concentration has been broken.");
                 SendMessageToPC(target, ColorToken.Gray(GetName(activator)) + " broke your concentration.");
             }
 
-            _combatPointService.AddCombatPoint(activator, target, SkillType.TwoHanded, 3);
-            _enmityService.ModifyEnmity(activator, target, 100 * level + damage);
+            CombatPointService.AddCombatPoint(activator, target, SkillType.TwoHanded, 3);
+            EnmityService.ModifyEnmity(activator, target, 100 * level + damage);
         }
 
         private void Skewer1(IAbilityBuilder builder)

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Perk.Contracts;
 using SWLOR.Component.Perk.Model;
 using SWLOR.NWN.API.NWNX;
@@ -19,8 +20,7 @@ namespace SWLOR.Component.Perk.Service
         private readonly ILogger _logger;
         private readonly IDatabaseService _db;
         private readonly IGenericCacheService _cacheService;
-        private readonly IBeastMasteryService _beastMasteryService;
-        private readonly IPerkBuilder _perkBuilder;
+        private readonly IServiceProvider _serviceProvider;
         
         // Cached data
         private IEnumCache<PerkCategoryType, PerkCategoryAttribute> _categoryCache;
@@ -38,14 +38,17 @@ namespace SWLOR.Component.Perk.Service
         private readonly Dictionary<PerkType, Dictionary<int, int>> _perkLevelTiers = new();
         private readonly Dictionary<SkillType, List<PerkType>> _perksWithSkillRequirement = new();
 
-        public Perk(ILogger logger, IDatabaseService db, IGenericCacheService cacheService, IBeastMasteryService beastMasteryService, IPerkBuilder perkBuilder)
+        public Perk(ILogger logger, IDatabaseService db, IGenericCacheService cacheService, IServiceProvider serviceProvider)
         {
             _logger = logger;
             _db = db;
             _cacheService = cacheService;
-            _beastMasteryService = beastMasteryService;
-            _perkBuilder = perkBuilder;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IBeastMasteryService BeastMasteryService => _serviceProvider.GetRequiredService<IBeastMasteryService>();
+        private IPerkBuilder PerkBuilder => _serviceProvider.GetRequiredService<IPerkBuilder>();
 
         /// <summary>
         /// Gets the list of heavy armor perks
@@ -97,7 +100,7 @@ namespace SWLOR.Component.Perk.Service
 
             // Cache perks using interface discovery
             _perkCache = _cacheService.BuildInterfaceCache<IPerkListDefinition, PerkType, PerkDetail>()
-                .WithDataExtractor(instance => instance.BuildPerks(_perkBuilder))
+                .WithDataExtractor(instance => instance.BuildPerks(PerkBuilder))
                 .WithFilteredCache("Active", p => p.IsActive)
                 .WithGroupedCache<PerkGroupType>("ByGroup", p => p.GroupType)
                 .WithFilteredGroupedCache<PerkGroupType>("ActiveByGroup", p => p.IsActive, p => p.GroupType)
@@ -502,7 +505,7 @@ namespace SWLOR.Component.Perk.Service
                 return GetPlayerPerkLevel(creature, perkType);
             }
             // Beasts
-            else if (_beastMasteryService.IsPlayerBeast(creature))
+            else if (BeastMasteryService.IsPlayerBeast(creature))
             {
                 return GetBeastPerkLevel(creature, perkType);
             }
@@ -608,7 +611,7 @@ namespace SWLOR.Component.Perk.Service
         {
 
             // todo: merge with player branch
-            var beastId = _beastMasteryService.GetBeastId(beast);
+            var beastId = BeastMasteryService.GetBeastId(beast);
             var dbBeast = _db.Get<Beast>(beastId);
 
             if (dbBeast == null)

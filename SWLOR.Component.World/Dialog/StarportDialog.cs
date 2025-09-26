@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.World.Contracts;
 using SWLOR.Component.World.Service;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -22,11 +23,14 @@ namespace SWLOR.Component.World.Dialog
     {
         private readonly ILogger _logger;
         private readonly IDatabaseService _db;
-        private readonly IKeyItemService _keyItemService;
-        private readonly IPropertyService _propertyService;
-        private readonly IGuiService _guiService;
-        private readonly IPlanetService _planetService;
-        private readonly IAreaService _areaService;
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded services to break circular dependencies
+        private IKeyItemService KeyItemService => _serviceProvider.GetRequiredService<IKeyItemService>();
+        private IPropertyService PropertyService => _serviceProvider.GetRequiredService<IPropertyService>();
+        private IGuiService GuiService => _serviceProvider.GetRequiredService<IGuiService>();
+        private IPlanetService PlanetService => _serviceProvider.GetRequiredService<IPlanetService>();
+        private IAreaService AreaService => _serviceProvider.GetRequiredService<IAreaService>();
         private const string MainPageId = "MAIN_PAGE";
 
         public StarportDialog(

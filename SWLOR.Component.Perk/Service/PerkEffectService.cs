@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Perk.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -15,24 +16,18 @@ namespace SWLOR.Component.Perk.Service
     /// </summary>
     public class PerkEffectService : IPerkEffectService
     {
-        private readonly IPerkService _perkService;
-        private readonly IStatService _statService;
-        private readonly IItemService _itemService;
-        private readonly IRandomService _random;
-        private readonly IBeastMasteryService _beastMastery;
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded services to break circular dependencies
+        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
+        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+        private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
+        private IRandomService Random => _serviceProvider.GetRequiredService<IRandomService>();
+        private IBeastMasteryService BeastMastery => _serviceProvider.GetRequiredService<IBeastMasteryService>();
 
-        public PerkEffectService(
-            IPerkService perkService,
-            IStatService statService,
-            IItemService itemService,
-            IRandomService random,
-            IBeastMasteryService beastMastery)
+        public PerkEffectService(IServiceProvider serviceProvider)
         {
-            _perkService = perkService;
-            _statService = statService;
-            _itemService = itemService;
-            _random = random;
-            _beastMastery = beastMastery;
+            // Services are now lazy-loaded via IServiceProvider
         }
 
         /// <summary>
@@ -44,17 +39,17 @@ namespace SWLOR.Component.Perk.Service
             var item = GetSpellCastItem();
             var itemType = GetBaseItemType(item);
 
-            if (_itemService.ShieldBaseItemTypes.Contains(itemType))
+            if (ItemService.ShieldBaseItemTypes.Contains(itemType))
             {
-                if (_random.D100(1) <= 10)
+                if (Random.D100(1) <= 10)
                 {
-                    if (_perkService.GetPerkLevel(defender, PerkType.Alacrity) > 0)
+                    if (PerkService.GetPerkLevel(defender, PerkType.Alacrity) > 0)
                     {
-                        _statService.RestoreStamina(defender, 4);
+                        StatService.RestoreStamina(defender, 4);
                     }
-                    else if (_perkService.GetPerkLevel(defender, PerkType.Clarity) > 0)
+                    else if (PerkService.GetPerkLevel(defender, PerkType.Clarity) > 0)
                     {
-                        _statService.RestoreFP(defender, 4);
+                        StatService.RestoreFP(defender, 4);
                     }
                 }
             }
@@ -68,7 +63,7 @@ namespace SWLOR.Component.Perk.Service
             var beast = OBJECT_SELF;
             var item = GetSpellCastItem();
 
-            if (!_beastMastery.IsPlayerBeast(beast) || GetResRef(item) != _beastMastery.BeastClawResref)
+            if (!BeastMastery.IsPlayerBeast(beast) || GetResRef(item) != BeastMastery.BeastClawResref)
             {
                 return;
             }
@@ -76,11 +71,11 @@ namespace SWLOR.Component.Perk.Service
             var player = GetMaster(beast);
             if (GetIsPC(player) && !GetIsDead(player))
             {
-                var chance = _perkService.GetPerkLevel(beast, PerkType.ForceLink) * 10;
+                var chance = PerkService.GetPerkLevel(beast, PerkType.ForceLink) * 10;
 
-                if (_random.D100(1) <= chance)
+                if (Random.D100(1) <= chance)
                 {
-                    _statService.RestoreFP(player, 1);
+                    StatService.RestoreFP(player, 1);
                 }
             }
         }
@@ -93,7 +88,7 @@ namespace SWLOR.Component.Perk.Service
             var beast = OBJECT_SELF;
             var item = GetSpellCastItem();
 
-            if (!_beastMastery.IsPlayerBeast(beast) || GetResRef(item) != _beastMastery.BeastClawResref)
+            if (!BeastMastery.IsPlayerBeast(beast) || GetResRef(item) != BeastMastery.BeastClawResref)
             {
                 return;
             }
@@ -101,11 +96,11 @@ namespace SWLOR.Component.Perk.Service
             var player = GetMaster(beast);
             if (GetIsPC(player) && !GetIsDead(player))
             {
-                var chance = _perkService.GetPerkLevel(beast, PerkType.EnduranceLink) * 10;
+                var chance = PerkService.GetPerkLevel(beast, PerkType.EnduranceLink) * 10;
 
-                if (_random.D100(1) <= chance)
+                if (Random.D100(1) <= chance)
                 {
-                    _statService.RestoreStamina(player, 1);
+                    StatService.RestoreStamina(player, 1);
                 }
             }
         }

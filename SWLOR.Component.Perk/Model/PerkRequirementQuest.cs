@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Entities;
@@ -8,19 +9,22 @@ namespace SWLOR.Component.Perk.Model
     public class PerkRequirementQuest : IPerkRequirement
     {
         private readonly IDatabaseService _db;
-        private readonly IQuestService _questService;
+        private readonly IServiceProvider _serviceProvider;
         private readonly string _questId;
+        
+        // Lazy-loaded services to break circular dependencies
+        private IQuestService QuestService => _serviceProvider.GetRequiredService<IQuestService>();
 
-        public PerkRequirementQuest(IDatabaseService db, IQuestService questService, string questId)
+        public PerkRequirementQuest(IDatabaseService db, IServiceProvider serviceProvider, string questId)
         {
             _db = db;
-            _questService = questService;
+            // Services are now lazy-loaded via IServiceProvider
             _questId = questId;
         }
 
         public string CheckRequirements(uint player)
         {
-            var quest = _questService.GetQuestById(_questId);
+            var quest = QuestService.GetQuestById(_questId);
             var playerId = GetObjectUUID(player);
             var dbPlayer = _db.Get<Player>(playerId);
             var error = $"You have not completed the quest '{quest.Name}'.";
@@ -37,7 +41,7 @@ namespace SWLOR.Component.Perk.Model
         {
             get
             {
-                var quest = _questService.GetQuestById(_questId);
+                var quest = QuestService.GetQuestById(_questId);
                 return $"Quest: {quest.Name} Completed";
             }
         }

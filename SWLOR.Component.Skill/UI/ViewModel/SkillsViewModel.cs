@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Abstractions.Models;
@@ -17,13 +18,16 @@ namespace SWLOR.Component.Skill.UI.ViewModel
         IGuiRefreshable<RPXPRefreshEvent>
     {
         private readonly IDatabaseService _db;
-        private readonly ISkillService _skillService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public SkillsViewModel(IGuiService guiService, IDatabaseService db, ISkillService skillService) : base(guiService)
+        public SkillsViewModel(IGuiService guiService, IDatabaseService db, IServiceProvider serviceProvider) : base(guiService)
         {
             _db = db;
-            _skillService = skillService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded service to break circular dependency
+        private ISkillService SkillService => _serviceProvider.GetRequiredService<ISkillService>();
         
         private readonly List<SkillType> _viewableSkills = new();
 

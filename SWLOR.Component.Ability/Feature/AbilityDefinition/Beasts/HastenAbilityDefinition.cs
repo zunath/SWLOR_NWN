@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -11,13 +12,15 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beasts
     public class HastenAbilityDefinition: IAbilityListDefinition
     {
         public const string HastenEffectTag = "BEAST_HASTEN";
+        private readonly IServiceProvider _serviceProvider;
 
-        private readonly IEnmityService _enmityService;
-
-        public HastenAbilityDefinition(IEnmityService enmityService)
+        public HastenAbilityDefinition(IServiceProvider serviceProvider)
         {
-            _enmityService = enmityService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
@@ -50,7 +53,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beasts
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Haste), beastmaster);
             }
 
-            _enmityService.ModifyEnmityOnAll(activator, 300 * numAttacks);
+            EnmityService.ModifyEnmityOnAll(activator, 300 * numAttacks);
         }
 
         private void Hasten1(IAbilityBuilder builder)

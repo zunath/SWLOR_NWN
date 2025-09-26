@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -11,12 +12,15 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beasts
 {
     public class BolsterAttackAbilityDefinition : IAbilityListDefinition
     {
-        private readonly IStatusEffectService _statusEffectService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public BolsterAttackAbilityDefinition(IStatusEffectService statusEffectService)
+        public BolsterAttackAbilityDefinition(IServiceProvider serviceProvider)
         {
-            _statusEffectService = statusEffectService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IStatusEffectService StatusEffectService => _serviceProvider.GetRequiredService<IStatusEffectService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
@@ -37,7 +41,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beasts
             var totalStat = beastmasterStat + beastStat;
 
             var duration = 5 * 60f + totalStat * 10;
-            _statusEffectService.Apply(activator, activator, statusEffect, duration);
+            StatusEffectService.Apply(activator, activator, statusEffect, duration);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Flame_S), activator);
         }
 

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Space.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -16,26 +17,23 @@ namespace SWLOR.Component.Space.Feature.ShipModuleDefinition
     public class BulwarkShieldGeneratorModuleDefinition : IShipModuleListDefinition
     {
         private readonly IDatabaseService _db;
-        private readonly ISpaceService _spaceService;
-        private readonly IEnmityService _enmityService;
-        private readonly ICombatPointService _combatPointService;
+        private readonly IServiceProvider _serviceProvider;
         private readonly IShipModuleBuilder _builder;
-        private readonly IMessagingService _messaging;
+        
+        // Lazy-loaded services to break circular dependencies
+        private ISpaceService SpaceService => _serviceProvider.GetRequiredService<ISpaceService>();
+        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
+        private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
+        private IMessagingService Messaging => _serviceProvider.GetRequiredService<IMessagingService>();
 
         public BulwarkShieldGeneratorModuleDefinition(
             IDatabaseService db, 
-            ISpaceService spaceService, 
-            IEnmityService enmityService, 
-            ICombatPointService combatPointService,
-            IShipModuleBuilder builder,
-            IMessagingService messaging)
+            IServiceProvider serviceProvider,
+            IShipModuleBuilder builder)
         {
             _db = db;
-            _spaceService = spaceService;
-            _enmityService = enmityService;
-            _combatPointService = combatPointService;
             _builder = builder;
-            _messaging = messaging;
+            // Services are now lazy-loaded via IServiceProvider
         }
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
@@ -78,16 +76,16 @@ namespace SWLOR.Component.Space.Feature.ShipModuleDefinition
                     {
                         if (!GetIsEnemy(nearby, activator) && 
                             !GetIsDead(activator) && 
-                            _spaceService.GetShipStatus(nearby) != null &&
+                            SpaceService.GetShipStatus(nearby) != null &&
                             nearby != activator)
                         {
-                            var nearbyStatus = _spaceService.GetShipStatus(nearby);
+                            var nearbyStatus = SpaceService.GetShipStatus(nearby);
                             
                             ApplyEffectToObject(DurationType.Temporary, EffectBeam(VisualEffect.Vfx_Beam_Cold, activator, BodyNode.Chest), nearby, 2.0f);
                             ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Blue_White), nearby, 2.0f);
                             ApplyEffectToObject(DurationType.Temporary, EffectAbilityIncrease(AbilityType.Vitality, 4), nearby, 10.0f);
                         
-                            _spaceService.RestoreShield(nearby, nearbyStatus, recovery);
+                            SpaceService.RestoreShield(nearby, nearbyStatus, recovery);
 
                             if (GetIsPC(nearby) && !GetIsDM(nearby) && !GetIsDMPossessed(nearby))
                             {
@@ -111,9 +109,9 @@ namespace SWLOR.Component.Space.Feature.ShipModuleDefinition
                         nearby = GetNextObjectInShape(Shape.Sphere, Distance, GetLocation(activator), true, ObjectType.Creature);
                     }
 
-                    _enmityService.ModifyEnmityOnAll(activator, 100 + repairAmount);
-                    _messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} begins restoring {recovery} shield HP to nearby ships reinforcing their shield integrity.");
-                    _combatPointService.AddCombatPointToAllTagged(activator, SkillType.Piloting);
+                    EnmityService.ModifyEnmityOnAll(activator, 100 + repairAmount);
+                    Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} begins restoring {recovery} shield HP to nearby ships reinforcing their shield integrity.");
+                    CombatPointService.AddCombatPointToAllTagged(activator, SkillType.Piloting);
                 });
         }
     }

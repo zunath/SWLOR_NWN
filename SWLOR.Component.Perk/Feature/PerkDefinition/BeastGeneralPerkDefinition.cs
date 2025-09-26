@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Perk.Contracts;
 using SWLOR.Component.Perk.Service;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -11,14 +12,16 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
 {
     public class BeastGeneralPerkDefinition : IPerkListDefinition
     {
-                private readonly IStatService _statService;
-        private readonly IBeastMasteryService _beastMastery;
+        private readonly IServiceProvider _serviceProvider;
 
-        public BeastGeneralPerkDefinition(IStatService statService, IBeastMasteryService beastMastery)
+        public BeastGeneralPerkDefinition(IServiceProvider serviceProvider)
         {
-            _statService = statService;
-            _beastMastery = beastMastery;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+        private IBeastMasteryService BeastMastery => _serviceProvider.GetRequiredService<IBeastMasteryService>();
 
         public Dictionary<PerkType, PerkDetail> BuildPerks(IPerkBuilder builder)
         {
@@ -149,18 +152,18 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .TriggerPurchase((player) =>
                 {
                     var beast = GetAssociate(AssociateType.Henchman, player);
-                    if (!_beastMastery.IsPlayerBeast(beast))
+                    if (!BeastMastery.IsPlayerBeast(beast))
                         return;
 
-                    _statService.ApplyAttacksPerRound(beast, GetItemInSlot(InventorySlot.CreatureLeft));
+                    StatService.ApplyAttacksPerRound(beast, GetItemInSlot(InventorySlot.CreatureLeft));
                 })
                 .TriggerRefund((player) =>
                 {
                     var beast = GetAssociate(AssociateType.Henchman, player);
-                    if (!_beastMastery.IsPlayerBeast(beast))
+                    if (!BeastMastery.IsPlayerBeast(beast))
                         return;
 
-                    _statService.ApplyAttacksPerRound(beast, GetItemInSlot(InventorySlot.CreatureLeft));
+                    StatService.ApplyAttacksPerRound(beast, GetItemInSlot(InventorySlot.CreatureLeft));
                 })
 
                 .AddPerkLevel()

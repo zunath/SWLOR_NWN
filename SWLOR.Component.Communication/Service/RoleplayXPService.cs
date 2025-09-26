@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using System.Globalization;
 using SWLOR.Component.Communication.Contracts;
 using SWLOR.NWN.API.NWNX;
@@ -13,14 +14,17 @@ namespace SWLOR.Component.Communication.Service
     public class RoleplayXPService : IRoleplayXPService
     {
         private readonly IDatabaseService _db;
-        private readonly IPropertyService _property;
+        private readonly IServiceProvider _serviceProvider;
         private const string RPTimestampVariable = "RP_SYSTEM_LAST_MESSAGE_TIMESTAMP";
 
-        public RoleplayXPService(IDatabaseService db, IPropertyService property)
+        public RoleplayXPService(IDatabaseService db, IServiceProvider serviceProvider)
         {
             _db = db;
-            _property = property;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded service to break circular dependency
+        private IPropertyService PropertyService => _serviceProvider.GetRequiredService<IPropertyService>();
 
         /// <summary>
         /// Once every 30 minutes, the RP system will check all players and distribute RP XP if applicable.

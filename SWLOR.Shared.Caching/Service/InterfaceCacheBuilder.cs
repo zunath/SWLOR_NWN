@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Shared.Abstractions.Contracts;
 
 namespace SWLOR.Shared.Caching.Service
@@ -15,7 +16,13 @@ namespace SWLOR.Shared.Caching.Service
         private readonly Dictionary<string, Dictionary<TKey, TValue>> _filteredCaches = new();
         private readonly Dictionary<string, object> _groupedCaches = new();
         private readonly Dictionary<string, object> _filteredGroupedCaches = new();
+        private readonly IServiceProvider? _serviceProvider;
         private Func<TInterface, Dictionary<TKey, TValue>>? _dataExtractor;
+
+        public InterfaceCacheBuilder(IServiceProvider? serviceProvider = null)
+        {
+            _serviceProvider = serviceProvider;
+        }
 
         /// <summary>
         /// Sets the function to extract data from discovered interface implementations
@@ -33,7 +40,26 @@ namespace SWLOR.Shared.Caching.Service
 
             foreach (var type in types)
             {
-                var instance = (TInterface)Activator.CreateInstance(type);
+                TInterface instance;
+                
+                // Try to resolve from DI container first, fallback to Activator
+                if (_serviceProvider != null)
+                {
+                    try
+                    {
+                        instance = (TInterface)_serviceProvider.GetRequiredService(type);
+                    }
+                    catch
+                    {
+                        // Fallback to Activator if not registered in DI
+                        instance = (TInterface)Activator.CreateInstance(type);
+                    }
+                }
+                else
+                {
+                    instance = (TInterface)Activator.CreateInstance(type);
+                }
+                
                 var data = dataExtractor(instance);
                 
                 foreach (var kvp in data)

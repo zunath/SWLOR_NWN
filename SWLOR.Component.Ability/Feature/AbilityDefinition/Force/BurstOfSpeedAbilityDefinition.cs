@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Infrastructure;
@@ -15,16 +16,17 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
     {
         private const string Tier1Tag = "EFFECT_BURST_OF_SPEED_1";
         private const string Tier2Tag = "EFFECT_BURST_OF_SPEED_2";
-        private readonly IStatService _statService;
-        private readonly ICombatPointService _combatPointService;
-        private readonly IEnmityService _enmityService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public BurstOfSpeedAbilityDefinition(IStatService statService, ICombatPointService combatPointService, IEnmityService enmityService)
+        public BurstOfSpeedAbilityDefinition(IServiceProvider serviceProvider)
         {
-            _statService = statService;
-            _combatPointService = combatPointService;
-            _enmityService = enmityService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+        private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
+        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
@@ -95,8 +97,8 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
             effect = TagEffect(effect, effectTag);
             ApplyEffectToObject(DurationType.Temporary, effect, target, 600f);
 
-            _combatPointService.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
-            _enmityService.ModifyEnmityOnAll(activator, 250);
+            CombatPointService.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+            EnmityService.ModifyEnmityOnAll(activator, 250);
         }
 
         private void BurstOfSpeed1(IAbilityBuilder builder)

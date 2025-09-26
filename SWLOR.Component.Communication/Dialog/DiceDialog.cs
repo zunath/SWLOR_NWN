@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Domain.Character.Contracts;
@@ -13,14 +14,17 @@ namespace SWLOR.Component.Communication.Dialog
     {
         private readonly IDatabaseService _db;
         private readonly IRandomService _random;
-        private readonly ISkillService _skillService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public DiceDialog(IDatabaseService db, IRandomService random, ISkillService skillService, IDialogService dialogService, IDialogBuilder dialogBuilder) : base(dialogService, dialogBuilder)
+        public DiceDialog(IDatabaseService db, IRandomService random, IServiceProvider serviceProvider, IDialogService dialogService, IDialogBuilder dialogBuilder) : base(dialogService, dialogBuilder)
         {
             _db = db;
             _random = random;
-            _skillService = skillService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded service to break circular dependency
+        private ISkillService SkillService => _serviceProvider.GetRequiredService<ISkillService>();
         
         private enum DiceGroup
         {
@@ -72,7 +76,7 @@ namespace SWLOR.Component.Communication.Dialog
             if (model.Skill == SkillType.Invalid)
                 header += "None\n";
             else
-                header += _skillService.GetSkillDetails(model.Skill).Name + "\n";
+                header += SkillService.GetSkillDetails(model.Skill).Name + "\n";
 
             header += ColorToken.Green("Group: ");
 
@@ -160,7 +164,7 @@ namespace SWLOR.Component.Communication.Dialog
             var model = GetDataModel<Model>();
             page.Header = BuildHeader();
 
-            foreach (var (skill, detail) in _skillService.GetAllActiveSkills())
+            foreach (var (skill, detail) in SkillService.GetAllActiveSkills())
             {
                 page.AddResponse(detail.Name, () =>
                 {
@@ -221,7 +225,7 @@ namespace SWLOR.Component.Communication.Dialog
                 // Skills
                  if (model.Skill != SkillType.Invalid)
                 {
-                    var skillDetail = _skillService.GetSkillDetails(model.Skill);
+                    var skillDetail = SkillService.GetSkillDetails(model.Skill);
                     var totalSkill = dbPlayer.Skills[model.Skill].Rank;
                     var modifier = totalSkill / 2;
                     message = ColorToken.SkillCheck($"Dice Roll [{skillDetail.Name}]: ") + dieRoll + "+" + modifier + ": " + (value + modifier);

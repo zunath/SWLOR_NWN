@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -12,19 +13,17 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beasts
 {
     public class BiteAbilityDefinition : IAbilityListDefinition
     {
-        private readonly ICombatService _combatService;
-        private readonly IStatService _statService;
-        private readonly IEnmityService _enmityService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public BiteAbilityDefinition(
-            ICombatService combatService, 
-            IStatService statService, 
-            IEnmityService enmityService)
+        public BiteAbilityDefinition(IServiceProvider serviceProvider)
         {
-            _combatService = combatService;
-            _statService = statService;
-            _enmityService = enmityService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
+        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
@@ -44,11 +43,11 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beasts
             var beastStat = GetAbilityModifier(AbilityType.Might, activator) / 2;
 
             var totalStat = beastmasterStat + beastStat;
-            var attack = _statService.GetAttack(activator, AbilityType.Might, SkillType.Invalid);
-            var defense = _statService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+            var attack = StatService.GetAttack(activator, AbilityType.Might, SkillType.Invalid);
+            var defense = StatService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
             var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
 
-            var damage = _combatService.CalculateDamage(
+            var damage = CombatService.CalculateDamage(
                 attack,
                 dmg,
                 totalStat,
@@ -63,7 +62,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beasts
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Sonic), target);
             });
 
-            _enmityService.ModifyEnmity(activator, target, 250 + damage);
+            EnmityService.ModifyEnmity(activator, target, 250 + damage);
         }
 
         private void Bite1(IAbilityBuilder builder)

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Communication.Contracts;
 using SWLOR.Component.Communication.Model;
 using SWLOR.Component.Communication.Service;
@@ -11,12 +12,15 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
 {
     public class AdminChatCommand: IChatCommandListDefinition
     {
-        private readonly IGuiService _guiService;
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded services to break circular dependencies
+        private IGuiService GuiService => _serviceProvider.GetRequiredService<IGuiService>();
         private readonly ChatCommandBuilder _builder = new ();
 
-        public AdminChatCommand(IGuiService guiService)
+        public AdminChatCommand(IServiceProvider serviceProvider)
         {
-            _guiService = guiService;
+            // Services are now lazy-loaded via IServiceProvider
         }
 
         public Dictionary<string, ChatCommandDetail> BuildChatCommands()
@@ -34,7 +38,7 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
                 .Permissions(AuthorizationLevel.Admin)
                 .Action((user, target, location, args) =>
                 {
-                    _guiService.TogglePlayerWindow(user, GuiWindowType.ManageStaff);
+                    GuiService.TogglePlayerWindow(user, GuiWindowType.ManageStaff);
                 });
         }
 
@@ -45,7 +49,7 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
                 .Permissions(AuthorizationLevel.Admin)
                 .Action((user, target, location, args) =>
                 {
-                    _guiService.TogglePlayerWindow(user, GuiWindowType.ManageBans);
+                    GuiService.TogglePlayerWindow(user, GuiWindowType.ManageBans);
                 });
         }
 

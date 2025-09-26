@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -18,28 +19,20 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beastmaster
 {
     public class TameAbilityDefinition: IAbilityListDefinition
     {
-        private readonly IRandomService _random;
-        private readonly IDatabaseService _db;
-        private readonly IPerkService _perkService;
-        private readonly IStatService _statService;
-        private readonly IBeastMasteryService _beastMastery;
-        private readonly IEnmityService _enmityService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public TameAbilityDefinition(
-            IRandomService random, 
-            IDatabaseService db, 
-            IPerkService perkService, 
-            IStatService statService, 
-            IBeastMasteryService beastMastery, 
-            IEnmityService enmityService)
+        public TameAbilityDefinition(IServiceProvider serviceProvider)
         {
-            _random = random;
-            _db = db;
-            _perkService = perkService;
-            _statService = statService;
-            _beastMastery = beastMastery;
-            _enmityService = enmityService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IRandomService Random => _serviceProvider.GetRequiredService<IRandomService>();
+        private IDatabaseService DB => _serviceProvider.GetRequiredService<IDatabaseService>();
+        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
+        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+        private IBeastMasteryService BeastMastery => _serviceProvider.GetRequiredService<IBeastMasteryService>();
+        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
@@ -67,7 +60,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beastmaster
                     }
 
                     var playerId = GetObjectUUID(activator);
-                    var dbPlayer = _db.Get<Player>(playerId);
+                    var dbPlayer = DB.Get<Player>(playerId);
 
                     if (!string.IsNullOrWhiteSpace(dbPlayer.ActiveBeastId))
                     {
@@ -84,24 +77,24 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beastmaster
                         return "That target cannot be tamed.";
                     }
 
-                    var type = _beastMastery.GetBeastType(target);
+                    var type = BeastMastery.GetBeastType(target);
                     if (type == BeastType.Invalid)
                     {
                         return "That target cannot be tamed.";
                     }
 
-                    var tameLevel = _perkService.GetPerkLevel(activator, PerkType.Tame) * 10;
-                    var npcStats = _statService.GetNPCStats(target);
+                    var tameLevel = PerkService.GetPerkLevel(activator, PerkType.Tame) * 10;
+                    var npcStats = StatService.GetNPCStats(target);
 
                     if (tameLevel < npcStats.Level)
                     {
                         return $"You may only tame creatures between levels 0-{tameLevel}. Your target is level {npcStats.Level}.";
                     }
 
-                    var maxBeasts = 1 + _perkService.GetPerkLevel(activator, PerkType.Stabling);
+                    var maxBeasts = 1 + PerkService.GetPerkLevel(activator, PerkType.Stabling);
                     var dbQuery = new DBQuery<Beast>()
                         .AddFieldSearch(nameof(Beast.OwnerPlayerId), playerId, false);
-                    var beastCount = (int)_db.SearchCount(dbQuery);
+                    var beastCount = (int)DB.SearchCount(dbQuery);
                     if (beastCount >= maxBeasts)
                     {
                         return $"You have already tamed the maximum number of beasts your perks support.";
@@ -112,24 +105,24 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beastmaster
                 .HasImpactAction((activator, target, _, targetLocation) =>
                 {
                     var playerId = GetObjectUUID(activator);
-                    var dbPlayer = _db.Get<Player>(playerId);
-                    var type = _beastMastery.GetBeastType(target);
+                    var dbPlayer = DB.Get<Player>(playerId);
+                    var type = BeastMastery.GetBeastType(target);
                     var skill = dbPlayer.Skills[SkillType.BeastMastery].Rank;
-                    var npcStats = _statService.GetNPCStats(target);
+                    var npcStats = StatService.GetNPCStats(target);
                     var socialMod = GetAbilityModifier(AbilityType.Social, activator);
                     var chance = 40 + (skill - npcStats.Level) * 3 + socialMod * 4;
 
                     if (chance > 95)
                         chance = 95;
 
-                    if (_random.D100(1) > chance)
+                    if (Random.D100(1) > chance)
                     {
                         SendMessageToPC(activator, ColorToken.Red($"Failed to tame {GetName(target)}..."));
-                        _enmityService.ModifyEnmity(activator, target, 600);
+                        EnmityService.ModifyEnmity(activator, target, 600);
                         return;
                     }
 
-                    var (likedFood, hatedFood) = _beastMastery.GetLikedAndHatedFood();
+                    var (likedFood, hatedFood) = BeastMastery.GetLikedAndHatedFood();
 
                     var dbBeast = new Beast
                     {
@@ -142,33 +135,33 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beastmaster
                         FavoriteFood = likedFood,
                         HatedFood = hatedFood,
 
-                        AttackPurity = _random.Next(0, 10),
-                        AccuracyPurity = _random.Next(0, 10),
-                        EvasionPurity = _random.Next(0, 10),
-                        LearningPurity = _random.Next(0, 10),
+                        AttackPurity = Random.Next(0, 10),
+                        AccuracyPurity = Random.Next(0, 10),
+                        EvasionPurity = Random.Next(0, 10),
+                        LearningPurity = Random.Next(0, 10),
 
                         DefensePurities = new Dictionary<CombatDamageType, int>
                         {
-                            { CombatDamageType.Physical, _random.Next(0, 10) },
-                            { CombatDamageType.Force, _random.Next(0, 10) },
-                            { CombatDamageType.Fire, _random.Next(0, 10) },
-                            { CombatDamageType.Ice, _random.Next(0, 10) },
-                            { CombatDamageType.Poison, _random.Next(0, 10) },
-                            { CombatDamageType.Electrical, _random.Next(0, 10) },
+                            { CombatDamageType.Physical, Random.Next(0, 10) },
+                            { CombatDamageType.Force, Random.Next(0, 10) },
+                            { CombatDamageType.Fire, Random.Next(0, 10) },
+                            { CombatDamageType.Ice, Random.Next(0, 10) },
+                            { CombatDamageType.Poison, Random.Next(0, 10) },
+                            { CombatDamageType.Electrical, Random.Next(0, 10) },
                         },
 
                         SavingThrowPurities = new Dictionary<SavingThrow, int>
                         {
-                            { SavingThrow.Fortitude, _random.Next(0, 10)},
-                            { SavingThrow.Will, _random.Next(0, 10)},
-                            { SavingThrow.Reflex, _random.Next(0, 10)},
+                            { SavingThrow.Fortitude, Random.Next(0, 10)},
+                            { SavingThrow.Will, Random.Next(0, 10)},
+                            { SavingThrow.Reflex, Random.Next(0, 10)},
                         }
                     };
 
-                    _db.Set(dbBeast);
+                    DB.Set(dbBeast);
 
                     dbPlayer.ActiveBeastId = dbBeast.Id;
-                    _db.Set(dbPlayer);
+                    DB.Set(dbPlayer);
 
                     SendMessageToPC(activator, ColorToken.Green($"Successfully tamed {GetName(target)}!"));
                     DestroyObject(target);

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.World.Contracts;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
@@ -16,15 +17,17 @@ namespace SWLOR.Component.World.Dialog
     {
         private readonly ILogger _logger;
         private readonly IDatabaseService _db;
-        private readonly IPlanetService _planetService;
-        private readonly IPropertyService _propertyService;
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded services to break circular dependencies
+        private IPlanetService PlanetService => _serviceProvider.GetRequiredService<IPlanetService>();
+        private IPropertyService PropertyService => _serviceProvider.GetRequiredService<IPropertyService>();
 
-        public StarportFlightsDialog(ILogger logger, IDatabaseService db, IPlanetService planetService, IPropertyService propertyService, IDialogService dialogService, IDialogBuilder dialogBuilder) : base(dialogService, dialogBuilder)
+        public StarportFlightsDialog(ILogger logger, IDatabaseService db, IServiceProvider serviceProvider, IDialogService dialogService, IDialogBuilder dialogBuilder) : base(dialogService, dialogBuilder)
         {
             _logger = logger;
             _db = db;
-            _planetService = planetService;
-            _propertyService = propertyService;
+            // Services are now lazy-loaded via IServiceProvider
         }
         
         private class Model
@@ -54,7 +57,7 @@ namespace SWLOR.Component.World.Dialog
         {
             var terminal = GetDialogTarget();
             var area = GetArea(terminal);
-            var propertyId = _propertyService.GetPropertyId(area);
+            var propertyId = PropertyService.GetPropertyId(area);
             var model = GetDataModel<Model>();
 
             if (string.IsNullOrWhiteSpace(propertyId))
@@ -77,7 +80,7 @@ namespace SWLOR.Component.World.Dialog
 
             page.Header = "Charter flights leave hourly. Please select one our available destinations below.";
 
-            var planets = _planetService.GetAllPlanets();
+            var planets = PlanetService.GetAllPlanets();
 
             foreach (var (type, planet) in planets)
             {

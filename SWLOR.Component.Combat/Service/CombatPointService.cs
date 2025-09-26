@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using System.Globalization;
 using SWLOR.Component.Combat.Contracts;
 using SWLOR.NWN.API.NWNX;
@@ -23,11 +24,7 @@ namespace SWLOR.Component.Combat.Service
     public class CombatPointService : ICombatPointService
     {
         private readonly IDatabaseService _db;
-        private readonly ISkillService _skillService;
-        private readonly IItemService _itemService;
-        private readonly IStatService _statService;
-        private readonly IBeastMasteryService _beastMastery;
-        private readonly ISpaceService _spaceService;
+        private readonly IServiceProvider _serviceProvider;
         
         /// <summary>
         /// Tracks the combat points earned by players during combat.
@@ -41,19 +38,18 @@ namespace SWLOR.Component.Combat.Service
 
         public CombatPointService(
             IDatabaseService db,
-            ISkillService skillService,
-            IItemService itemService,
-            IStatService statService,
-            IBeastMasteryService beastMastery,
-            ISpaceService spaceService)
+            IServiceProvider serviceProvider)
         {
             _db = db;
-            _skillService = skillService;
-            _itemService = itemService;
-            _statService = statService;
-            _beastMastery = beastMastery;
-            _spaceService = spaceService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private ISkillService SkillService => _serviceProvider.GetRequiredService<ISkillService>();
+        private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
+        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+        private IBeastMasteryService BeastMastery => _serviceProvider.GetRequiredService<IBeastMasteryService>();
+        private ISpaceService SpaceService => _serviceProvider.GetRequiredService<ISpaceService>();
 
         /// <summary>
         /// Adds a combat point to a given NPC creature for a given player and skill type.

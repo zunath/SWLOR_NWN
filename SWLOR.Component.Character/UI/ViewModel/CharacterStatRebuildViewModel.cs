@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Character.Contracts;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -17,19 +18,20 @@ namespace SWLOR.Component.Character.UI.ViewModel
     public class CharacterStatRebuildViewModel: GuiViewModelBase<CharacterStatRebuildViewModel, IGuiPayload>
     {
         private readonly IDatabaseService _db;
-        private readonly IRecastService _recastService;
-        private readonly ICurrencyService _currencyService;
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded services to break circular dependencies
+        private IRecastService RecastService => _serviceProvider.GetRequiredService<IRecastService>();
+        private ICurrencyService CurrencyService => _serviceProvider.GetRequiredService<ICurrencyService>();
 
         public CharacterStatRebuildViewModel(
             IGuiService guiService, 
             IDatabaseService db, 
-            IRecastService recastService,
-            ICurrencyService currencyService) 
+            IServiceProvider serviceProvider) 
             : base(guiService)
         {
             _db = db;
-            _recastService = recastService;
-            _currencyService = currencyService;
+            // Services are now lazy-loaded via IServiceProvider
         }
         
         [ScriptHandler(ScriptName.OnBuyStatRebuild)]
@@ -44,13 +46,13 @@ namespace SWLOR.Component.Character.UI.ViewModel
                 return;
             }
 
-            if (_currencyService.GetCurrency(player, CurrencyType.StatRefundToken) <= 0)
+            if (CurrencyService.GetCurrency(player, CurrencyType.StatRefundToken) <= 0)
             {
                 FloatingTextStringOnCreature(ColorToken.Red("Insufficient stat refund tokens!"), player, false);
                 return;
             }
 
-            var (isOnDelay, timeToWait) = _recastService.IsOnRecastDelay(player, RecastGroup.StatRebuild);
+            var (isOnDelay, timeToWait) = RecastService.IsOnRecastDelay(player, RecastGroup.StatRebuild);
             if (isOnDelay)
             {
                 FloatingTextStringOnCreature(ColorToken.Red($"Another stat rebuild can be performed in {timeToWait}."), player, false);
@@ -305,14 +307,14 @@ namespace SWLOR.Component.Character.UI.ViewModel
 
             ShowModal($"Are you sure you'd like to save these changes?", () =>
             {
-                if (_currencyService.GetCurrency(Player, CurrencyType.StatRefundToken) <= 0)
+                if (CurrencyService.GetCurrency(Player, CurrencyType.StatRefundToken) <= 0)
                 {
                     _guiService.CloseWindow(Player, GuiWindowType.StatRebuild, Player);
                     FloatingTextStringOnCreature(ColorToken.Red("Insufficient stat refund tokens!"), Player, false);
                     return;
                 }
 
-                var (isOnDelay, timeToWait) = _recastService.IsOnRecastDelay(Player, RecastGroup.StatRebuild);
+                var (isOnDelay, timeToWait) = RecastService.IsOnRecastDelay(Player, RecastGroup.StatRebuild);
                 if (isOnDelay)
                 {
                     FloatingTextStringOnCreature(ColorToken.Red($"Another stat rebuild can be performed in {timeToWait}."), Player, false);
@@ -354,10 +356,10 @@ namespace SWLOR.Component.Character.UI.ViewModel
                 _guiService.CloseWindow(Player, GuiWindowType.StatRebuild, Player);
                 _guiService.CloseWindow(Player, GuiWindowType.CharacterSheet, Player);
 
-                _currencyService.TakeCurrency(Player, CurrencyType.StatRefundToken, 1);
+                CurrencyService.TakeCurrency(Player, CurrencyType.StatRefundToken, 1);
 
                 const int DelaySeconds = CooldownDays * 86400;
-                _recastService.ApplyRecastDelay(Player, RecastGroup.StatRebuild, DelaySeconds, true);
+                RecastService.ApplyRecastDelay(Player, RecastGroup.StatRebuild, DelaySeconds, true);
             });
         };
     }

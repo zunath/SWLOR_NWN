@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Inventory.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -12,14 +13,18 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
     public class KeyItemDefinition: IItemListDefinition
     {
         private readonly ILogger _logger;
-        private readonly IKeyItemService _keyItemService;
+        private readonly IServiceProvider _serviceProvider;
         private readonly ItemBuilder _builder = new();
 
-        public KeyItemDefinition(ILogger logger, IKeyItemService keyItemService)
+        public KeyItemDefinition(ILogger logger, IServiceProvider serviceProvider)
         {
             _logger = logger;
-            _keyItemService = keyItemService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded service to break circular dependency
+        private IKeyItemService KeyItemService => _serviceProvider.GetRequiredService<IKeyItemService>();
+
         public Dictionary<string, ItemDetail> BuildItems()
         {
             KeyItem();
@@ -46,7 +51,7 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
                     {
                         var keyItemType = (KeyItemType)keyItemId;
 
-                        if (_keyItemService.HasKeyItem(user, keyItemType))
+                        if (KeyItemService.HasKeyItem(user, keyItemType))
                         {
                             return $"You have already acquired this key item.";
                         }
@@ -65,7 +70,7 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
                     var area = GetArea(user);
                     var keyItemId = GetLocalInt(item, "KEY_ITEM_ID");
                     var keyItemType = (KeyItemType)keyItemId;
-                    _keyItemService.GiveKeyItem(user, keyItemType);
+                    KeyItemService.GiveKeyItem(user, keyItemType);
 
                     // If the player is within an area associated with this map, instantly explore it and ensure the minimap can be toggled.
                     if (GetLocalInt(area, "MAP_KEY_ITEM_ID") == keyItemId)

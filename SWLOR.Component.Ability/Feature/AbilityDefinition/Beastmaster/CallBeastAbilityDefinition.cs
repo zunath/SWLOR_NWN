@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
@@ -14,25 +15,19 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beastmaster
 {
     public class CallBeastAbilityDefinition: IAbilityListDefinition
     {
-        private readonly IDatabaseService _db;
-        private readonly ICombatPointService _combatPointService;
-        private readonly IBeastMasteryService _beastMastery;
-        private readonly IEnmityService _enmityService;
-        private readonly IPerkService _perkService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public CallBeastAbilityDefinition(
-            IDatabaseService db, 
-            ICombatPointService combatPointService,
-            IBeastMasteryService beastMastery, 
-            IEnmityService enmityService, 
-            IPerkService perkService)
+        public CallBeastAbilityDefinition(IServiceProvider serviceProvider)
         {
-            _db = db;
-            _combatPointService = combatPointService;
-            _beastMastery = beastMastery;
-            _enmityService = enmityService;
-            _perkService = perkService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IDatabaseService DB => _serviceProvider.GetRequiredService<IDatabaseService>();
+        private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
+        private IBeastMasteryService BeastMastery => _serviceProvider.GetRequiredService<IBeastMasteryService>();
+        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
+        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
@@ -53,12 +48,12 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beastmaster
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation((activator, target, level, location) =>
                 {
-                    if (GetIsInCombat(activator) || _enmityService.HasEnmity(activator))
+                    if (GetIsInCombat(activator) || EnmityService.HasEnmity(activator))
                     {
                         return "You are in combat and cannot call your beast.";
                     }
 
-                    var maxBeastLevel = _perkService.GetPerkLevel(activator, PerkType.Tame) * 10;
+                    var maxBeastLevel = PerkService.GetPerkLevel(activator, PerkType.Tame) * 10;
 
                     if (!GetIsPC(activator) || GetIsDM(activator) || GetIsDMPossessed(activator))
                     {
@@ -71,14 +66,14 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beastmaster
                     }
 
                     var playerId = GetObjectUUID(activator);
-                    var dbPlayer = _db.Get<Player>(playerId);
+                    var dbPlayer = DB.Get<Player>(playerId);
 
                     if (string.IsNullOrWhiteSpace(dbPlayer.ActiveBeastId))
                     {
                         return "You do not have an active beast.";
                     }
 
-                    var dbBeast = _db.Get<Beast>(dbPlayer.ActiveBeastId);
+                    var dbBeast = DB.Get<Beast>(dbPlayer.ActiveBeastId);
 
                     if (dbBeast.IsDead)
                     {
@@ -95,12 +90,12 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beastmaster
                 .HasImpactAction((activator, target, level, location) =>
                 {
                     var playerId = GetObjectUUID(activator);
-                    var dbPlayer = _db.Get<Player>(playerId);
+                    var dbPlayer = DB.Get<Player>(playerId);
                     
-                    _beastMastery.SpawnBeast(activator, dbPlayer.ActiveBeastId, 50);
+                    BeastMastery.SpawnBeast(activator, dbPlayer.ActiveBeastId, 50);
 
-                    _enmityService.ModifyEnmityOnAll(activator, 230);
-                    _combatPointService.AddCombatPointToAllTagged(activator, SkillType.BeastMastery);
+                    EnmityService.ModifyEnmityOnAll(activator, 230);
+                    CombatPointService.AddCombatPointToAllTagged(activator, SkillType.BeastMastery);
                 });
         }
     }

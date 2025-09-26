@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -11,28 +12,20 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.FirstAid
 {
     public abstract class FirstAidBaseAbilityDefinition: IAbilityListDefinition
     {
-        private readonly IRandomService _random;
-        private readonly IPerkService _perkService;
-        protected readonly ICombatPointService CombatPointService;
-        protected readonly IEnmityService EnmityService;
-        protected readonly IAbilityService AbilityService;
-        protected readonly IStatusEffectService StatusEffectService;
+        private readonly IServiceProvider _serviceProvider;
 
-        protected FirstAidBaseAbilityDefinition(
-            IRandomService random, 
-            IPerkService perkService, 
-            ICombatPointService combatPointService, 
-            IEnmityService enmityService, 
-            IAbilityService abilityService, 
-            IStatusEffectService statusEffectService)
+        protected FirstAidBaseAbilityDefinition(IServiceProvider serviceProvider)
         {
-            _random = random;
-            _perkService = perkService;
-            CombatPointService = combatPointService;
-            EnmityService = enmityService;
-            AbilityService = abilityService;
-            StatusEffectService = statusEffectService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IRandomService Random => _serviceProvider.GetRequiredService<IRandomService>();
+        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
+        protected ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
+        protected IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
+        protected IAbilityService AbilityService => _serviceProvider.GetRequiredService<IAbilityService>();
+        protected IStatusEffectService StatusEffectService => _serviceProvider.GetRequiredService<IStatusEffectService>();
         private const string MedicalSuppliesItemTag = "med_supplies";
         private const string StimPackItemTag = "stim_pack";
 
@@ -43,8 +36,8 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.FirstAid
             if (!GetIsPC(activator))
                 return;
 
-            var chanceToNotConsume = 10 * _perkService.GetPerkLevel(activator, PerkType.FrugalMedic);
-            if (_random.D100(1) <= chanceToNotConsume)
+            var chanceToNotConsume = 10 * PerkService.GetPerkLevel(activator, PerkType.FrugalMedic);
+            if (Random.D100(1) <= chanceToNotConsume)
                 return;
 
             var item = GetItemPossessedBy(activator, resref);
@@ -132,7 +125,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.FirstAid
         protected bool IsWithinRange(uint activator, uint target)
         {
             const float BaseDistance = 6f;
-            var distance = BaseDistance + _perkService.GetPerkLevel(activator, PerkType.RangedHealing);
+            var distance = BaseDistance + PerkService.GetPerkLevel(activator, PerkType.RangedHealing);
 
             return !(GetDistanceBetween(activator, target) > distance);
         }

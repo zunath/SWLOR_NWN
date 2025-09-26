@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Migration.Contracts;
 using SWLOR.Component.Migration.EventHandlers;
+using SWLOR.Component.Migration.Feature.ServerMigration;
 using SWLOR.Component.Migration.Service;
 using SWLOR.Shared.Domain.Common.Contracts;
 
@@ -24,7 +25,35 @@ namespace SWLOR.Component.Migration.Infrastructure
             // Register MigrationEventHandler as singleton
             services.AddSingleton<MigrationEventHandler>();
             
+            // Dynamically register all migration classes
+            RegisterMigrationClasses(services);
+            
             return services;
+        }
+
+        private static void RegisterMigrationClasses(IServiceCollection services)
+        {
+            // Find all types that implement IServerMigration
+            var serverMigrationTypes = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(s => s.GetTypes())
+                .Where(w => typeof(IServerMigration).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
+
+            foreach (var migrationType in serverMigrationTypes)
+            {
+                // Register each server migration as transient
+                services.AddTransient(migrationType);
+            }
+
+            // Find all types that implement IPlayerMigration
+            var playerMigrationTypes = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(s => s.GetTypes())
+                .Where(w => typeof(IPlayerMigration).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
+
+            foreach (var migrationType in playerMigrationTypes)
+            {
+                // Register each player migration as transient
+                services.AddTransient(migrationType);
+            }
         }
     }
 }

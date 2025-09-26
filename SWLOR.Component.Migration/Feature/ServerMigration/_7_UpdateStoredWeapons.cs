@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Migration.Contracts;
 using SWLOR.Component.Migration.Enums;
 using SWLOR.Component.Migration.Model;
@@ -16,16 +17,18 @@ namespace SWLOR.Component.Migration.Feature.ServerMigration
 {
     public class _7_UpdateStoredWeapons: ServerMigrationBase, IServerMigration
     {
-        private readonly IItemService _itemService;
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded services to break circular dependencies
+        private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
 
         public _7_UpdateStoredWeapons(
             ILogger logger,
             IDatabaseService db, 
-            IItemService itemService,
-            ISpaceService spaceService)
-            : base(logger, db, spaceService)
+            IServiceProvider serviceProvider)
+            : base(logger, db, serviceProvider)
         {
-            _itemService = itemService;
+            // Services are now lazy-loaded via IServiceProvider
         }
         
         public int Version => 7;
@@ -108,7 +111,7 @@ namespace SWLOR.Component.Migration.Feature.ServerMigration
         private void UpdateWeapon(uint item)
         {
             var baseItem = GetBaseItemType(item);
-            if (!_itemService.RifleBaseItemTypes.Contains(baseItem) && !_itemService.SaberstaffBaseItemTypes.Contains(baseItem) && !_itemService.TwinBladeBaseItemTypes.Contains(baseItem))
+            if (!ItemService.RifleBaseItemTypes.Contains(baseItem) && !ItemService.SaberstaffBaseItemTypes.Contains(baseItem) && !ItemService.TwinBladeBaseItemTypes.Contains(baseItem))
                 return;
 
             var itemResRef = GetResRef(item);

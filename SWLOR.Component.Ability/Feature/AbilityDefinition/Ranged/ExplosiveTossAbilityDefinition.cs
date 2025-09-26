@@ -1,5 +1,6 @@
 //using Random = SWLOR.Game.Server.Service.Random;
 
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -16,25 +17,19 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Ranged
 {
     public class ExplosiveTossAbilityDefinition : IAbilityListDefinition
     {
-        private readonly IItemService _itemService;
-        private readonly ICombatService _combatService;
-        private readonly IStatService _statService;
-        private readonly ICombatPointService _combatPointService;
-        private readonly IEnmityService _enmityService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public ExplosiveTossAbilityDefinition(
-            IItemService itemService, 
-            ICombatService combatService, 
-            IStatService statService, 
-            ICombatPointService combatPointService,
-            IEnmityService enmityService)
+        public ExplosiveTossAbilityDefinition(IServiceProvider serviceProvider)
         {
-            _itemService = itemService;
-            _combatService = combatService;
-            _statService = statService;
-            _combatPointService = combatPointService;
-            _enmityService = enmityService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
+        private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
+        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+        private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
+        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
@@ -49,7 +44,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Ranged
         {
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
 
-            if (!_itemService.ThrowingWeaponBaseItemTypes.Contains(GetBaseItemType(weapon)))
+            if (!ItemService.ThrowingWeaponBaseItemTypes.Contains(GetBaseItemType(weapon)))
             {
                 return "This is a throwing ability.";
             }
@@ -77,10 +72,10 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Ranged
                     break;
             }
 
-            dmg += _combatService.GetAbilityDamageBonus(activator, SkillType.Ranged);
+            dmg += CombatService.GetAbilityDamageBonus(activator, SkillType.Ranged);
 
-            var attack = _statService.GetAttack(activator, AbilityType.Might, SkillType.Ranged);
-            var attackerStat = _combatService.GetPerkAdjustedAbilityScore(activator);
+            var attack = StatService.GetAttack(activator, AbilityType.Might, SkillType.Ranged);
+            var attackerStat = CombatService.GetPerkAdjustedAbilityScore(activator);
             var count = 0;
             var creature = GetFirstObjectInShape(Shape.Sphere, RadiusSize.Medium, GetLocation(target), true, ObjectType.Creature);
             while (GetIsObjectValid(creature) && count < 3)
@@ -88,9 +83,9 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Ranged
                 if (GetDistanceBetween(target, creature) <= 3f)
                 {
 
-                    var defense = _statService.GetDefense(creature, CombatDamageType.Physical, AbilityType.Vitality);
+                    var defense = StatService.GetDefense(creature, CombatDamageType.Physical, AbilityType.Vitality);
                     var defenderStat = GetAbilityScore(creature, AbilityType.Vitality);
-                    var damage = _combatService.CalculateDamage(
+                    var damage = CombatService.CalculateDamage(
                         attack,
                         dmg, 
                         attackerStat, 
@@ -104,8 +99,8 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Ranged
                         ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), dTarget);
                     });
 
-                    _combatPointService.AddCombatPoint(activator, creature, SkillType.Ranged, 3);
-                    _enmityService.ModifyEnmity(activator, creature, 250 * level + damage);
+                    CombatPointService.AddCombatPoint(activator, creature, SkillType.Ranged, 3);
+                    EnmityService.ModifyEnmity(activator, creature, 250 * level + damage);
 
                     count++;
                 }

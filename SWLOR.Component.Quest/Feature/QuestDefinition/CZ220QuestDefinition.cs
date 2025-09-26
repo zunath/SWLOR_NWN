@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Quest.Contracts;
 using SWLOR.Component.Quest.Service;
 using SWLOR.NWN.API.NWNX.Enum;
@@ -13,26 +14,25 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
 {
     public class CZ220QuestDefinition : IQuestListDefinition
     {
-        private readonly IQuestBuilderFactory _questBuilderFactory;
         private readonly IDatabaseService _databaseService;
-        private readonly IKeyItemService _keyItemService;
-        private readonly IObjectVisibilityService _objectVisibilityService;
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded services to break circular dependencies
+        private IQuestBuilderFactory QuestBuilderFactory => _serviceProvider.GetRequiredService<IQuestBuilderFactory>();
+        private IKeyItemService KeyItemService => _serviceProvider.GetRequiredService<IKeyItemService>();
+        private IObjectVisibilityService ObjectVisibilityService => _serviceProvider.GetRequiredService<IObjectVisibilityService>();
 
         public CZ220QuestDefinition(
-            IQuestBuilderFactory questBuilderFactory,
             IDatabaseService databaseService,
-            IKeyItemService keyItemService,
-            IObjectVisibilityService objectVisibilityService)
+            IServiceProvider serviceProvider)
         {
-            _questBuilderFactory = questBuilderFactory;
             _databaseService = databaseService;
-            _keyItemService = keyItemService;
-            _objectVisibilityService = objectVisibilityService;
+            // Services are now lazy-loaded via IServiceProvider
         }
 
         public Dictionary<string, IQuestDetail> BuildQuests()
         {
-            var builder = _questBuilderFactory.Create();
+            var builder = QuestBuilderFactory.Create();
             SelansRequest(builder);
             SuppliesSmithery(builder);
             SuppliesScavenging(builder);
@@ -61,9 +61,9 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
 
                 .OnCompleteAction((player, sourceObject) =>
                 {
-                    _keyItemService.RemoveKeyItem(player, KeyItemType.AvixTathamsWorkReceipt);
-                    _keyItemService.RemoveKeyItem(player, KeyItemType.HalronLinthsWorkReceipt);
-                    _keyItemService.RemoveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkReceipt);
+                    KeyItemService.RemoveKeyItem(player, KeyItemType.AvixTathamsWorkReceipt);
+                    KeyItemService.RemoveKeyItem(player, KeyItemType.HalronLinthsWorkReceipt);
+                    KeyItemService.RemoveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkReceipt);
 
                     var cdKey = GetPCPublicCDKey(player);
                     var dbAccount = _databaseService.Get<Account>(cdKey) ?? new Account(cdKey);
@@ -90,15 +90,15 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
 
                 .OnAcceptAction((player, sourceObject) =>
                 {
-                    _keyItemService.GiveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkOrder);
+                    KeyItemService.GiveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkOrder);
                 })
                 .OnAbandonAction(player =>
                 {
-                    _keyItemService.RemoveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkOrder);
+                    KeyItemService.RemoveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkOrder);
                 })
                 .OnCompleteAction((player, sourceObject) =>
                 {
-                    _keyItemService.RemoveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkOrder);
+                    KeyItemService.RemoveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkOrder);
                 });
         }
         private void SuppliesScavenging(IQuestBuilder builder)
@@ -118,15 +118,15 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
 
                 .OnAcceptAction((player, sourceObject) =>
                 {
-                    _keyItemService.GiveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkOrder);
+                    KeyItemService.GiveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkOrder);
                 })
                 .OnAbandonAction(player =>
                 {
-                    _keyItemService.RemoveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkOrder);
+                    KeyItemService.RemoveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkOrder);
                 })
                 .OnCompleteAction((player, sourceObject) =>
                 {
-                    _keyItemService.RemoveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkOrder);
+                    KeyItemService.RemoveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkOrder);
                 });
         }
         private void SuppliesFabrication(IQuestBuilder builder)
@@ -146,15 +146,15 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
 
                 .OnAcceptAction((player, sourceObject) =>
                 {
-                    _keyItemService.GiveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkOrder);
+                    KeyItemService.GiveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkOrder);
                 })
                 .OnAbandonAction(player =>
                 {
-                    _keyItemService.RemoveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkOrder);
+                    KeyItemService.RemoveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkOrder);
                 })
                 .OnCompleteAction((player, sourceObject) =>
                 {
-                    _keyItemService.RemoveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkOrder);
+                    KeyItemService.RemoveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkOrder);
                 });
         }
 
@@ -170,11 +170,11 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
 
                 .OnAcceptAction((player, sourceObject) =>
                 {
-                    _objectVisibilityService.AdjustVisibility(player, sourceObject, VisibilityType.Hidden);
+                    ObjectVisibilityService.AdjustVisibility(player, sourceObject, VisibilityType.Hidden);
                 })
                 .OnAbandonAction(player =>
                 {
-                    _objectVisibilityService.AdjustVisibilityByObjectId(player, "3BA0FF2E61C34FB783905E8A78236A30", VisibilityType.Visible);
+                    ObjectVisibilityService.AdjustVisibilityByObjectId(player, "3BA0FF2E61C34FB783905E8A78236A30", VisibilityType.Visible);
                 });
         }
 
@@ -267,11 +267,11 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
 
                 .OnAcceptAction((player, sourceObject) =>
                 {
-                    _keyItemService.GiveKeyItem(player, KeyItemType.CZ220ExperimentRoomKey);
+                    KeyItemService.GiveKeyItem(player, KeyItemType.CZ220ExperimentRoomKey);
                 })
                 .OnAbandonAction(player =>
                 {
-                    _keyItemService.RemoveKeyItem(player, KeyItemType.CZ220ExperimentRoomKey);
+                    KeyItemService.RemoveKeyItem(player, KeyItemType.CZ220ExperimentRoomKey);
                 });
         }
 

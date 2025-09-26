@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Communication.Contracts;
 using SWLOR.Component.Communication.Dialog;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -22,12 +23,15 @@ namespace SWLOR.Component.Communication.Service
         private const string HologramOwner = "HOLOGRAM_OWNER";
         private const string HolocomCallImmobilize = "HOLOCOM_CALL_IMMOBILIZE";
 
-        private IDialogService _dialogService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public HoloComService(IDialogService dialogService)
+        public HoloComService(IServiceProvider serviceProvider)
         {
-            _dialogService = dialogService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded service to break circular dependency
+        private IDialogService DialogService => _serviceProvider.GetRequiredService<IDialogService>();
 
         public void OnModuleDeath()
         {

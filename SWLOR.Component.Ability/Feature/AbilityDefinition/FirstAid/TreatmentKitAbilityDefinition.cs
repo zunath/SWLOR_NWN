@@ -14,7 +14,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.FirstAid
 {
     public class TreatmentKitAbilityDefinition: FirstAidBaseAbilityDefinition
     {
-        public TreatmentKitAbilityDefinition(IRandomService random, IPerkService perkService, ICombatPointService combatPointService, IEnmityService enmityService, IAbilityService abilityService, IStatusEffectService statusEffectService) : base(random, perkService, combatPointService, enmityService, abilityService, statusEffectService)
+        public TreatmentKitAbilityDefinition(IServiceProvider serviceProvider) : base(serviceProvider)
         {
         }
 

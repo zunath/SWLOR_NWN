@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -14,26 +15,22 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
 {
     public abstract class ExplosiveBaseAbilityDefinition: IAbilityListDefinition
     {
-        protected readonly IRandomService _random;
-        protected readonly IItemService _itemService;
-        protected readonly IPerkService _perkService;
-        protected readonly IStatService _statService;
-        protected readonly ICombatService _combatService;
-        protected readonly ICombatPointService _combatPointService;
-        protected readonly IEnmityService _enmityService;
-        protected readonly IStatusEffectService _statusEffectService;
+        private readonly IServiceProvider _serviceProvider;
 
-        protected ExplosiveBaseAbilityDefinition(IRandomService random, IItemService itemService, IPerkService perkService, IStatService statService, ICombatService combatService, ICombatPointService combatPointService, IEnmityService enmityService, IStatusEffectService statusEffectService)
+        protected ExplosiveBaseAbilityDefinition(IServiceProvider serviceProvider)
         {
-            _random = random;
-            _itemService = itemService;
-            _perkService = perkService;
-            _statService = statService;
-            _combatService = combatService;
-            _combatPointService = combatPointService;
-            _enmityService = enmityService;
-            _statusEffectService = statusEffectService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        protected IRandomService Random => _serviceProvider.GetRequiredService<IRandomService>();
+        protected IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
+        protected IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
+        protected IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+        protected ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
+        protected ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
+        protected IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
+        protected IStatusEffectService StatusEffectService => _serviceProvider.GetRequiredService<IStatusEffectService>();
         private const string ExplosiveItemResref = "explosives";
 
         public abstract Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder);
@@ -59,8 +56,8 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
             if (!GetIsPC(activator))
                 return;
 
-            var chanceToNotConsume = 10 * _perkService.GetPerkLevel(activator, PerkType.DemolitionExpert);
-            if (_random.D100(1) <= chanceToNotConsume)
+            var chanceToNotConsume = 10 * PerkService.GetPerkLevel(activator, PerkType.DemolitionExpert);
+            if (Random.D100(1) <= chanceToNotConsume)
                 return;
 
             var item = GetItemPossessedBy(activator, ExplosiveItemResref);
@@ -136,8 +133,8 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
             var delay = GetDistanceBetweenLocations(activatorLocation, targetLocation) / 18f;
 
             var attackerStat = GetAbilityScore(activator, AbilityType.Perception);
-            var attack = _statService.GetAttack(activator, AbilityType.Perception, SkillType.Devices);
-            var dmgBonus = _combatService.GetAbilityDamageBonus(activator, SkillType.Devices);
+            var attack = StatService.GetAttack(activator, AbilityType.Perception, SkillType.Devices);
+            var dmgBonus = CombatService.GetAbilityDamageBonus(activator, SkillType.Devices);
             dmgBonus += attackerStat / 2;
 
             DelayCommand(delay, () =>

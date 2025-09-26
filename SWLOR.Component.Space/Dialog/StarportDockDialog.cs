@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Space.Service;
 using SWLOR.NWN.API.Engine;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -19,25 +20,24 @@ namespace SWLOR.Component.Space.Dialog
     {
         private readonly ILogger _logger;
         private readonly IDatabaseService _db;
-        private readonly IPropertyService _propertyService;
-        private readonly ISpaceService _spaceService;
-        private readonly IEnmityService _enmityService;
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded services to break circular dependencies
+        private IPropertyService PropertyService => _serviceProvider.GetRequiredService<IPropertyService>();
+        private ISpaceService SpaceService => _serviceProvider.GetRequiredService<ISpaceService>();
+        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
 
         public StarportDockDialog(
             ILogger logger, 
             IDatabaseService db, 
-            IPropertyService propertyService, 
             IDialogService dialogService,
             IDialogBuilder dialogBuilder,
-            ISpaceService spaceService,
-            IEnmityService enmityService) 
+            IServiceProvider serviceProvider) 
             : base(dialogService, dialogBuilder)
         {
             _logger = logger;
             _db = db;
-            _propertyService = propertyService;
-            _spaceService = spaceService;
-            _enmityService = enmityService;
+            // Services are now lazy-loaded via IServiceProvider
         }
         
         private class Model
@@ -102,7 +102,7 @@ namespace SWLOR.Component.Space.Dialog
             var player = GetPC();
             var playerId = GetObjectUUID(player);
             var model = GetDataModel<Model>();
-            var dockPoints = _spaceService.GetDockPointsByPlanet(model.Planet);
+            var dockPoints = SpaceService.GetDockPointsByPlanet(model.Planet);
 
             page.Header = "Please select a location.";
 
@@ -110,11 +110,11 @@ namespace SWLOR.Component.Space.Dialog
             {
                 var dockName = dockPoint.IsNPC
                     ? $"[NPC] {dockPoint.Name}"
-                    : $"[PC] {GetName(_propertyService.GetRegisteredInstance(dockPoint.PropertyId).Area)}";
+                    : $"[PC] {GetName(PropertyService.GetRegisteredInstance(dockPoint.PropertyId).Area)}";
 
                 page.AddResponse(dockName, () =>
                 {
-                    if (_enmityService.HasEnmity(player))
+                    if (EnmityService.HasEnmity(player))
                     {
                         SendMessageToPC(player, ColorToken.Red("You cannot dock while being targeted."));
                         return;
@@ -204,7 +204,7 @@ namespace SWLOR.Component.Space.Dialog
                     dbProperty.Positions[PropertyLocationType.DockPosition] = new PropertyLocation
                     {
                         AreaResref = dockPoint.IsNPC ? landingAreaResref : string.Empty,
-                        InstancePropertyId = dockPoint.IsNPC ? string.Empty : _propertyService.GetPropertyId(landingArea),
+                        InstancePropertyId = dockPoint.IsNPC ? string.Empty : PropertyService.GetPropertyId(landingArea),
                         X = landingPosition.X,
                         Y = landingPosition.Y,
                         Z = landingPosition.Z,
@@ -222,7 +222,7 @@ namespace SWLOR.Component.Space.Dialog
 
                     _db.Set(dbProperty);
 
-                    _spaceService.WarpPlayerInsideShip(player);
+                    SpaceService.WarpPlayerInsideShip(player);
                 });
             }
         }

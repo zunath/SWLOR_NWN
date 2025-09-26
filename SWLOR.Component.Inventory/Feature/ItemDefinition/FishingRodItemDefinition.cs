@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Inventory.Service;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Caching.Contracts;
@@ -10,14 +11,17 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
     public class FishingRodItemDefinition: IItemListDefinition
     {
         private readonly IItemCacheService _itemCache;
-        private readonly IFishingService _fishingService;
+        private readonly IServiceProvider _serviceProvider;
         private readonly ItemBuilder _builder = new();
 
-        public FishingRodItemDefinition(IItemCacheService itemCache, IFishingService fishingService)
+        public FishingRodItemDefinition(IItemCacheService itemCache, IServiceProvider serviceProvider)
         {
             _itemCache = itemCache;
-            _fishingService = fishingService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded service to break circular dependency
+        private IFishingService FishingService => _serviceProvider.GetRequiredService<IFishingService>();
 
         public Dictionary<string, ItemDetail> BuildItems()
         {
@@ -28,11 +32,11 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
 
         private void FishingRod()
         {
-            _builder.Create(_fishingService.FishingRodTag)
+            _builder.Create(FishingService.FishingRodTag)
                 .ValidationAction((user, item, target, location, itemPropertyIndex) =>
                 {
                     if (item != target && 
-                        !_fishingService.IsItemBait(target))
+                        !FishingService.IsItemBait(target))
                         return "Only bait may be selected.";
 
                     if (GetItemPossessor(target) != user)
@@ -42,8 +46,8 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
                 })
                 .ApplyAction((user, item, target, location, itemPropertyIndex) =>
                 {
-                    var existingBait = GetLocalString(item, _fishingService.ActiveBaitVariable);
-                    var remainingBait = GetLocalInt(item, _fishingService.RemainingBaitVariable);
+                    var existingBait = GetLocalString(item, FishingService.ActiveBaitVariable);
+                    var remainingBait = GetLocalInt(item, FishingService.RemainingBaitVariable);
 
                     if (!string.IsNullOrWhiteSpace(existingBait))
                     {
@@ -56,19 +60,19 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
                             SendMessageToPC(user, $"Unloaded bait.");
                         }
 
-                        DeleteLocalString(item, _fishingService.ActiveBaitVariable);
-                        DeleteLocalInt(item, _fishingService.RemainingBaitVariable);
+                        DeleteLocalString(item, FishingService.ActiveBaitVariable);
+                        DeleteLocalInt(item, FishingService.RemainingBaitVariable);
                     }
 
-                    if (_fishingService.IsItemBait(target))
+                    if (FishingService.IsItemBait(target))
                     {
                         var resref = GetResRef(target);
-                        var baitType = _fishingService.GetBaitByResref(resref);
+                        var baitType = FishingService.GetBaitByResref(resref);
                         var stackSize = GetItemStackSize(target);
                         var serialized = ObjectPlugin.Serialize(target);
-                        SetLocalString(item, _fishingService.ActiveBaitVariable, serialized);
-                        SetLocalInt(item, _fishingService.RemainingBaitVariable, stackSize);
-                        SetLocalInt(item, _fishingService.LoadedBaitTypeVariable, (int)baitType);
+                        SetLocalString(item, FishingService.ActiveBaitVariable, serialized);
+                        SetLocalInt(item, FishingService.RemainingBaitVariable, stackSize);
+                        SetLocalInt(item, FishingService.LoadedBaitTypeVariable, (int)baitType);
 
                         DestroyObject(target);
 

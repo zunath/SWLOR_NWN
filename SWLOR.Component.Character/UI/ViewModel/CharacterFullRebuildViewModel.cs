@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -24,30 +25,25 @@ namespace SWLOR.Component.Character.UI.ViewModel
     {
         private readonly ILogger _logger;
         private readonly IDatabaseService _db;
-        private readonly IStatService _statService;
-        private readonly ISkillService _skillService;
-        private readonly IPerkService _perkService;
-        private readonly IAbilityService _abilityService;
-        private readonly IAreaService _areaService;
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded services to break circular dependencies
+        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+        private ISkillService SkillService => _serviceProvider.GetRequiredService<ISkillService>();
+        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
+        private IAbilityService AbilityService => _serviceProvider.GetRequiredService<IAbilityService>();
+        private IAreaService AreaService => _serviceProvider.GetRequiredService<IAreaService>();
 
         public CharacterFullRebuildViewModel(
             IGuiService guiService, 
             ILogger logger, 
             IDatabaseService db, 
-            IStatService statService, 
-            ISkillService skillService, 
-            IPerkService perkService, 
-            IAbilityService abilityService,
-            IAreaService areaService) 
+            IServiceProvider serviceProvider) 
             : base(guiService)
         {
             _logger = logger;
             _db = db;
-            _statService = statService;
-            _skillService = skillService;
-            _perkService = perkService;
-            _abilityService = abilityService;
-            _areaService = areaService;
+            // Services are now lazy-loaded via IServiceProvider
         }
         [ScriptHandler(ScriptName.OnCharacterRebuild)]
         public void LoadCharacterMigrationWindow()
@@ -61,8 +57,8 @@ namespace SWLOR.Component.Character.UI.ViewModel
             }
 
             ApplyEffectToObject(DurationType.Instant, EffectHeal(GetMaxHitPoints(player)), player);
-            _statService.RestoreFP(player, _statService.GetMaxFP(player));
-            _statService.RestoreStamina(player, _statService.GetMaxStamina(player));
+            StatService.RestoreFP(player, StatService.GetMaxFP(player));
+            StatService.RestoreStamina(player, StatService.GetMaxStamina(player));
             _guiService.TogglePlayerWindow(player, GuiWindowType.CharacterMigration, null, OBJECT_SELF);
         }
 
@@ -125,7 +121,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
             }
             else
             {
-                var area = _areaService.GetAreaByResref(dbPlayer.LocationAreaResref);
+                var area = AreaService.GetAreaByResref(dbPlayer.LocationAreaResref);
                 var position = Vector3(dbPlayer.LocationX, dbPlayer.LocationY, dbPlayer.LocationZ);
                 var location = Location(area, position, dbPlayer.LocationOrientation);
                 AssignCommand(player, () =>
@@ -254,7 +250,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
                             && dbPlayer.Skills
                                 .Where(x =>
                                 {
-                                    var detail = _skillService.GetSkillDetails(x.Key);
+                                    var detail = SkillService.GetSkillDetails(x.Key);
                                     return detail.ContributesToSkillCap;
                                 })
                                 .Sum(s => s.Value.Rank) == 0
@@ -278,7 +274,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
 
         private void LoadSkills()
         {
-            var availableSkills = _skillService.GetActiveContributingSkills();
+            var availableSkills = SkillService.GetActiveContributingSkills();
             var skills = new GuiBindingList<string>();
             var tooltips = new GuiBindingList<string>();
 
@@ -342,7 +338,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
 
                 foreach (var (type, level) in pcPerks)
                 {
-                    var perkDetail = _perkService.GetPerkDetails(type);
+                    var perkDetail = PerkService.GetPerkDetails(type);
                     var refundAmount = perkDetail.PerkLevels
                         .Where(x => x.Key <= level)
                         .Sum(x => x.Value.Price);
@@ -375,7 +371,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
                 
                 foreach (var (type, _) in dbPlayer.Skills)
                 {
-                    var detail = _skillService.GetSkillDetails(type);
+                    var detail = SkillService.GetSkillDetails(type);
                     if (!detail.ContributesToSkillCap)
                         continue;
 
@@ -431,7 +427,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
 
             ShowModal($"WARNING: Your perks and skill points will be refunded. Your stats will be reinitialized to 10 (before racial bonuses are applied). You will be required to distribute all of these points before leaving this area. Partial XP towards the next skill rank will be LOST. Are you sure you'd like to proceed?", () =>
             {
-                if (_abilityService.IsAnyAbilityToggled(Player))
+                if (AbilityService.IsAnyAbilityToggled(Player))
                 {
                     FloatingTextStringOnCreature(ColorToken.Red("Please toggle all abilities OFF and try again."), Player, false);
                     return;
@@ -593,7 +589,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
         {
             var index = NuiGetEventArrayIndex();
             var skillType = _skills[index];
-            var skill = _skillService.GetSkillDetails(skillType);
+            var skill = SkillService.GetSkillDetails(skillType);
             var currentValue = _skillDistributionPoints[index] - 10;
             if (currentValue < 0)
                 currentValue = 0;
@@ -608,7 +604,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
         {
             var index = NuiGetEventArrayIndex();
             var skillType = _skills[index];
-            var skill = _skillService.GetSkillDetails(skillType);
+            var skill = SkillService.GetSkillDetails(skillType);
             var currentValue = _skillDistributionPoints[index] - 1;
             if (currentValue < 0)
                 currentValue = 0;
@@ -623,7 +619,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
         {
             var index = NuiGetEventArrayIndex();
             var skillType = _skills[index];
-            var skill = _skillService.GetSkillDetails(skillType);
+            var skill = SkillService.GetSkillDetails(skillType);
             var amount = _remainingSkillPoints >= 1 ? 1 : 0;
             var currentValue = _skillDistributionPoints[index] + amount;
             if (currentValue > skill.MaxRank)
@@ -639,7 +635,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
         {
             var index = NuiGetEventArrayIndex();
             var skillType = _skills[index];
-            var skill = _skillService.GetSkillDetails(skillType);
+            var skill = SkillService.GetSkillDetails(skillType);
             var amount = _remainingSkillPoints >= 10 ? 10 : _remainingSkillPoints;
             var currentValue = _skillDistributionPoints[index] + amount;
             if (currentValue > skill.MaxRank)

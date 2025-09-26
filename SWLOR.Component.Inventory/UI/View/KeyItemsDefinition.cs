@@ -1,4 +1,5 @@
-﻿using SWLOR.Component.Inventory.UI.ViewModel;
+﻿using Microsoft.Extensions.DependencyInjection;
+using SWLOR.Component.Inventory.UI.ViewModel;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Domain.Inventory.Contracts;
@@ -11,15 +12,18 @@ namespace SWLOR.Component.Inventory.UI.View
     public class KeyItemsDefinition : IGuiWindowDefinition
     {
         private readonly IGuiService _guiService;
-        private readonly IKeyItemService _keyItemService;
+        private readonly IServiceProvider _serviceProvider;
         private readonly GuiWindowBuilder<KeyItemsViewModel> _builder;
 
-        public KeyItemsDefinition(IGuiService guiService, IKeyItemService keyItemService)
+        public KeyItemsDefinition(IGuiService guiService, IServiceProvider serviceProvider)
         {
             _guiService = guiService;
-            _keyItemService = keyItemService;
+            _serviceProvider = serviceProvider;
             _builder = new GuiWindowBuilder<KeyItemsViewModel>(_guiService);
         }
+
+        // Lazy-loaded service to break circular dependency
+        private IKeyItemService KeyItemService => _serviceProvider.GetRequiredService<IKeyItemService>();
 
         public GuiConstructedWindow BuildWindow()
         {
@@ -37,7 +41,7 @@ namespace SWLOR.Component.Inventory.UI.View
                             .BindSelectedIndex(model => model.SelectedCategoryId);
 
                         comboBox.AddOption("<All Types>", 0);
-                        foreach (var (type, detail) in _keyItemService.GetActiveCategories())
+                        foreach (var (type, detail) in KeyItemService.GetActiveCategories())
                         {
                             comboBox.AddOption(detail.Name, (int)type);
                         }

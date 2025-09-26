@@ -1,5 +1,6 @@
 //using Random = SWLOR.Game.Server.Service.Random;
 
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -16,22 +17,20 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.OneHanded
 {
     public class ShieldBashAbilityDefinition : IAbilityListDefinition
     {
-        private readonly IItemService _itemService;
-        private readonly ICombatService _combatService;
-        private readonly IStatService _statService;
-        private readonly IAbilityService _abilityService;
-        private readonly ICombatPointService _combatPointService;
-        private readonly IEnmityService _enmityService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public ShieldBashAbilityDefinition(IItemService itemService, ICombatService combatService, IStatService statService, IAbilityService abilityService, ICombatPointService combatPointService, IEnmityService enmityService)
+        public ShieldBashAbilityDefinition(IServiceProvider serviceProvider)
         {
-            _itemService = itemService;
-            _combatService = combatService;
-            _statService = statService;
-            _abilityService = abilityService;
-            _combatPointService = combatPointService;
-            _enmityService = enmityService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
+        private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
+        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+        private IAbilityService AbilityService => _serviceProvider.GetRequiredService<IAbilityService>();
+        private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
+        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
@@ -47,7 +46,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.OneHanded
             var weapon = GetItemInSlot(InventorySlot.LeftHand, activator);
             var leftHandType = GetBaseItemType(weapon);
             
-            if (_itemService.ShieldBaseItemTypes.Contains(leftHandType))
+            if (ItemService.ShieldBaseItemTypes.Contains(leftHandType))
             {
                 return string.Empty;
             }
@@ -81,29 +80,29 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.OneHanded
             }
 
 
-            dmg += _combatService.GetAbilityDamageBonus(activator, SkillType.OneHanded);
+            dmg += CombatService.GetAbilityDamageBonus(activator, SkillType.OneHanded);
 
-            _combatPointService.AddCombatPoint(activator, target, SkillType.OneHanded, 3);
+            CombatPointService.AddCombatPoint(activator, target, SkillType.OneHanded, 3);
 
             var might = GetAbilityScore(activator, AbilityType.Might);
-            var attack = _statService.GetAttack(activator, AbilityType.Might, SkillType.OneHanded);
-            var defense = _statService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+            var attack = StatService.GetAttack(activator, AbilityType.Might, SkillType.OneHanded);
+            var defense = StatService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
             var vitality = GetAbilityModifier(AbilityType.Vitality, target);
-            var damage = _combatService.CalculateDamage(attack, dmg, might, defense, vitality, 0);
+            var damage = CombatService.CalculateDamage(attack, dmg, might, defense, vitality, 0);
 
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
 
-            dc = _combatService.CalculateSavingThrowDC(activator, SavingThrow.Will, dc, AbilityType.Might);
+            dc = CombatService.CalculateSavingThrowDC(activator, SavingThrow.Will, dc, AbilityType.Might);
             var checkResult = WillSave(target, dc, SavingThrowType.None, activator);
             if (checkResult == SavingThrowResultType.Failed)
             {
                 ApplyEffectToObject(DurationType.Temporary, EffectDazed(), target, Duration);
-                _abilityService.ApplyTemporaryImmunity(target, Duration, ImmunityType.Dazed);
+                AbilityService.ApplyTemporaryImmunity(target, Duration, ImmunityType.Dazed);
             }
 
             AssignCommand(activator, () => ActionPlayAnimation(Animation.ShieldWall));
 
-            _enmityService.ModifyEnmity(activator, target, 400 * level + damage);
+            EnmityService.ModifyEnmity(activator, target, 400 * level + damage);
         }
 
         private void ShieldBash1(IAbilityBuilder builder)

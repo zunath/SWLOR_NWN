@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -15,23 +16,22 @@ namespace SWLOR.Component.Properties.Service
     {
         private readonly ILogger _logger;
         private readonly IDatabaseService _db;
-        private readonly IAreaService _areaService;
-        private readonly ISpaceService _spaceService;
-        private readonly IPropertyService _property;
+        private readonly IServiceProvider _serviceProvider;
         private readonly Dictionary<StructureType, Dictionary<StructureChangeType, Action<WorldProperty, uint>>> _actions = new();
+        
+        // Lazy-loaded services to break circular dependencies
+        private IAreaService AreaService => _serviceProvider.GetRequiredService<IAreaService>();
+        private ISpaceService SpaceService => _serviceProvider.GetRequiredService<ISpaceService>();
+        private IPropertyService PropertyService => _serviceProvider.GetRequiredService<IPropertyService>();
 
         public StructureChangedAction(
             ILogger logger, 
             IDatabaseService db, 
-            IPropertyService property,
-            IAreaService areaService,
-            ISpaceService spaceService)
+            IServiceProvider serviceProvider)
         {
             _logger = logger;
             _db = db;
-            _property = property;
-            _areaService = areaService;
-            _spaceService = spaceService;
+            // Services are now lazy-loaded via IServiceProvider
         }
 
         /// <summary>
@@ -118,21 +118,21 @@ namespace SWLOR.Component.Properties.Service
             var door = CreateObject(ObjectType.Placeable, "building_ent1", location);
             SetLocalObject(building, "PROPERTY_DOOR", door);
 
-            _property.AssignPropertyId(door, _property.GetPropertyId(building));
+            PropertyService.AssignPropertyId(door, PropertyService.GetPropertyId(building));
             SetName(door, name);
             AssignExitLocationToInstance(building, GetLocation(door));
         }
 
         private void AssignExitLocationToInstance(uint building, Location location)
         {
-            var propertyId = _property.GetPropertyId(building);
+            var propertyId = PropertyService.GetPropertyId(building);
             var dbBuilding = _db.Get<WorldProperty>(propertyId);
 
             if (!dbBuilding.ChildPropertyIds.ContainsKey(PropertyChildType.Interior))
                 return;
 
             var instancePropertyId = dbBuilding.ChildPropertyIds[PropertyChildType.Interior].Single();
-            var instance = _property.GetRegisteredInstance(instancePropertyId);
+            var instance = PropertyService.GetRegisteredInstance(instancePropertyId);
 
             SetLocalLocation(instance.Area, "BUILDING_EXIT_LOCATION", location);
             SetLocalBool(instance.Area, "BUILDING_EXIT_SET", true);
@@ -157,7 +157,7 @@ namespace SWLOR.Component.Properties.Service
                 interior.CustomName = property.CustomName;
                 _db.Set(interior);
 
-                var instance = _property.GetRegisteredInstance(interiorId);
+                var instance = PropertyService.GetRegisteredInstance(interiorId);
                 SetName(instance.Area, "{PC} " + property.CustomName);
             }
         }
@@ -212,11 +212,11 @@ namespace SWLOR.Component.Properties.Service
                 // The dock point needs to be unregistered from the space service so it no longer displays in the list
                 // of docking points.
                 var dbCity = _db.Get<WorldProperty>(property.ParentPropertyId);
-                var cityArea = _areaService.GetAreaByResref(dbCity.ParentPropertyId);
-                var instance = _property.GetRegisteredInstance(interiorId);
+                var cityArea = AreaService.GetAreaByResref(dbCity.ParentPropertyId);
+                var instance = PropertyService.GetRegisteredInstance(interiorId);
                 var dockPoint = GetLandingWaypoint(instance.Area);
 
-                _spaceService.RemoveLandingPoint(dockPoint, cityArea);
+                SpaceService.RemoveLandingPoint(dockPoint, cityArea);
             };
         }
 

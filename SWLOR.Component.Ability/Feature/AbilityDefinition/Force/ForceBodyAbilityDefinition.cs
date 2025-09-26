@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Character.Enums;
@@ -10,12 +11,15 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
 {
     public class ForceBodyAbilityDefinition : IAbilityListDefinition
     {
-        private readonly IStatusEffectService _statusEffectService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public ForceBodyAbilityDefinition(IStatusEffectService statusEffectService)
+        public ForceBodyAbilityDefinition(IServiceProvider serviceProvider)
         {
-            _statusEffectService = statusEffectService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IStatusEffectService StatusEffectService => _serviceProvider.GetRequiredService<IStatusEffectService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
@@ -36,7 +40,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    _statusEffectService.Apply(activator, activator, StatusEffectType.ForceBody1, 60f);
+                    StatusEffectService.Apply(activator, activator, StatusEffectType.ForceBody1, 60f);
                     ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Vitality, 2), activator, 60f);
                 });
         }
@@ -51,7 +55,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    _statusEffectService.Apply(activator, activator, StatusEffectType.ForceBody2, 60f);
+                    StatusEffectService.Apply(activator, activator, StatusEffectType.ForceBody2, 60f);
                     ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Vitality, 4), activator, 60f);
                 });
         }

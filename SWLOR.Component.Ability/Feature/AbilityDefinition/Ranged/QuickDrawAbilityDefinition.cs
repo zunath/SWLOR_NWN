@@ -1,5 +1,6 @@
 //using Random = SWLOR.Game.Server.Service.Random;
 
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -16,20 +17,19 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Ranged
 {
     public class QuickDrawAbilityDefinition : IAbilityListDefinition
     {
-        private readonly IItemService _itemService;
-        private readonly ICombatService _combatService;
-        private readonly IStatService _statService;
-        private readonly ICombatPointService _combatPointService;
-        private readonly IEnmityService _enmityService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public QuickDrawAbilityDefinition(IItemService itemService, ICombatService combatService, IStatService statService, ICombatPointService combatPointService, IEnmityService enmityService)
+        public QuickDrawAbilityDefinition(IServiceProvider serviceProvider)
         {
-            _itemService = itemService;
-            _combatService = combatService;
-            _statService = statService;
-            _combatPointService = combatPointService;
-            _enmityService = enmityService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
+        private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
+        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+        private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
+        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
@@ -44,7 +44,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Ranged
         {
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
 
-            if (!_itemService.PistolBaseItemTypes.Contains(GetBaseItemType(weapon)))
+            if (!ItemService.PistolBaseItemTypes.Contains(GetBaseItemType(weapon)))
             {
                 return "This is a pistol ability.";
             }
@@ -73,14 +73,14 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Ranged
                     break;
             }
 
-            dmg += _combatService.GetAbilityDamageBonus(activator, SkillType.Ranged);
+            dmg += CombatService.GetAbilityDamageBonus(activator, SkillType.Ranged);
 
 
-            var attackerStat = _combatService.GetPerkAdjustedAbilityScore(activator);
-            var attack = _statService.GetAttack(activator, AbilityType.Perception, SkillType.Ranged);
-            var defense = _statService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+            var attackerStat = CombatService.GetPerkAdjustedAbilityScore(activator);
+            var attack = StatService.GetAttack(activator, AbilityType.Perception, SkillType.Ranged);
+            var defense = StatService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
             var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-            var damage = _combatService.CalculateDamage(
+            var damage = CombatService.CalculateDamage(
                 attack,
                 dmg, 
                 attackerStat, 
@@ -90,8 +90,8 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Ranged
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Piercing), target);
             AssignCommand(activator, () => ActionPlayAnimation(Animation.QuickDraw));
 
-            _combatPointService.AddCombatPoint(activator, target, SkillType.Ranged, 3);
-            _enmityService.ModifyEnmity(activator, target, 100 * level + damage);
+            CombatPointService.AddCombatPoint(activator, target, SkillType.Ranged, 3);
+            EnmityService.ModifyEnmity(activator, target, 100 * level + damage);
         }
 
         private void QuickDraw1(IAbilityBuilder builder)

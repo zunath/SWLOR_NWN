@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Migration.Contracts;
 using SWLOR.Component.Migration.Enums;
 using SWLOR.Component.Migration.Model;
@@ -13,12 +14,15 @@ namespace SWLOR.Component.Migration.Feature.ServerMigration
     public class _2_LegacyServerMigration: LegacyMigrationBase, IServerMigration
     {
         private readonly IDatabaseService _db;
-        private readonly IItemService _itemService;
+        private readonly IServiceProvider _serviceProvider;
         
-        public _2_LegacyServerMigration(IDatabaseService db, IItemService itemService)
+        // Lazy-loaded services to break circular dependencies
+        private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
+        
+        public _2_LegacyServerMigration(IDatabaseService db, IServiceProvider serviceProvider)
         {
             _db = db;
-            _itemService = itemService;
+            // Services are now lazy-loaded via IServiceProvider
         }
         
         public int Version => 2;
@@ -50,7 +54,7 @@ namespace SWLOR.Component.Migration.Feature.ServerMigration
                 ObjectPlugin.AcquireItem(tempStorage, deserialized);
 
                 WipeItemProperties(deserialized);
-                _itemService.MarkLegacyItem(deserialized);
+                ItemService.MarkLegacyItem(deserialized);
                 WipeDescription(deserialized);
                 WipeVariables(deserialized);
                 CleanItemName(deserialized);

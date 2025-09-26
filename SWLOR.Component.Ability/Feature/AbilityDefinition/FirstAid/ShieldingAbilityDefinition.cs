@@ -15,7 +15,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.FirstAid
 {
     public class ShieldingAbilityDefinition: FirstAidBaseAbilityDefinition
     {
-        public ShieldingAbilityDefinition(IRandomService random, IPerkService perkService, ICombatPointService combatPointService, IEnmityService enmityService, IAbilityService abilityService, IStatusEffectService statusEffectService) : base(random, perkService, combatPointService, enmityService, abilityService, statusEffectService)
+        public ShieldingAbilityDefinition(IServiceProvider serviceProvider) : base(serviceProvider)
         {
         }
 

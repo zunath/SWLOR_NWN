@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Character.Contracts;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Entities;
@@ -13,15 +14,18 @@ namespace SWLOR.Component.Character.UI.ViewModel
         IGuiRefreshable<CurrencyRefreshEvent>
     {
         private readonly IDatabaseService _db;
-        private readonly ICurrencyService _currencyService;
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded services to break circular dependencies
+        private ICurrencyService CurrencyService => _serviceProvider.GetRequiredService<ICurrencyService>();
 
         public CurrenciesViewModel(
             IGuiService guiService, 
             IDatabaseService db,
-            ICurrencyService currencyService) : base(guiService)
+            IServiceProvider serviceProvider) : base(guiService)
         {
             _db = db;
-            _currencyService = currencyService;
+            // Services are now lazy-loaded via IServiceProvider
         }
 
         public GuiBindingList<string> CurrencyNames
@@ -46,7 +50,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
 
             foreach (var (currency, value) in dbPlayer.Currencies)
             {
-                var detail = _currencyService.GetCurrencyDetail(currency);
+                var detail = CurrencyService.GetCurrencyDetail(currency);
 
                 currencyNames.Add(detail.Name);
                 currencyValues.Add(value);

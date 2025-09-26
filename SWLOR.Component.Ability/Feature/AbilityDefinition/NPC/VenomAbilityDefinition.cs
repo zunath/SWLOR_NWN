@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -11,12 +12,15 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.NPC
 {
     public class VenomAbilityDefinition : IAbilityListDefinition
     {
-        private readonly IStatusEffectService _statusEffectService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public VenomAbilityDefinition(IStatusEffectService statusEffectService)
+        public VenomAbilityDefinition(IServiceProvider serviceProvider)
         {
-            _statusEffectService = statusEffectService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IStatusEffectService StatusEffectService => _serviceProvider.GetRequiredService<IStatusEffectService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
@@ -36,7 +40,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.NPC
                 .HasImpactAction((activator, target, level, location) =>
                 {
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Disease_S), target);
-                    _statusEffectService.Apply(activator, target, StatusEffectType.Poison, 120f);
+                    StatusEffectService.Apply(activator, target, StatusEffectType.Poison, 120f);
                 });
         }
 

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Crafting.Contracts;
 using SWLOR.Component.Crafting.Enums;
 using SWLOR.Component.Crafting.Model;
@@ -12,11 +13,14 @@ namespace SWLOR.Component.Crafting.Service
         private readonly Dictionary<FishingLocationType, FishingLocationDetail> _locations = new();
         private FishingLocationDetail _activeDetail;
         private FishDetail _activeFishDetail;
-        private readonly IRandomService _randomService;
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded services to break circular dependencies
+        private IRandomService RandomService => _serviceProvider.GetRequiredService<IRandomService>();
 
-        public FishingLocationBuilder(IRandomService randomService)
+        public FishingLocationBuilder(IServiceProvider serviceProvider)
         {
-            _randomService = randomService;
+            // Services are now lazy-loaded via IServiceProvider
         }
 
         /// <summary>
@@ -30,7 +34,7 @@ namespace SWLOR.Component.Crafting.Service
                 _activeDetail = _locations[type];
             else
             {
-                _activeDetail = new FishingLocationDetail(_randomService);
+                _activeDetail = new FishingLocationDetail(RandomService);
                 _locations.Add(type, _activeDetail);
             }
 

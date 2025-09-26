@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Quest.Contracts;
 using SWLOR.Component.Quest.Service;
 using SWLOR.Shared.Domain.Common.Enums;
@@ -9,17 +10,19 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
 {
     public class DantooineQuestDefinition : IQuestListDefinition
     {
-        private readonly IQuestBuilderFactory _questBuilderFactory;
-        private readonly IKeyItemService _keyItemService;
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded services to break circular dependencies
+        private IQuestBuilderFactory QuestBuilderFactory => _serviceProvider.GetRequiredService<IQuestBuilderFactory>();
+        private IKeyItemService KeyItemService => _serviceProvider.GetRequiredService<IKeyItemService>();
 
-        public DantooineQuestDefinition(IKeyItemService keyItemService, IQuestBuilderFactory questBuilderFactory)
+        public DantooineQuestDefinition(IServiceProvider serviceProvider)
         {
-            _keyItemService = keyItemService;
-            _questBuilderFactory = questBuilderFactory;
+            // Services are now lazy-loaded via IServiceProvider
         }
         public Dictionary<string, IQuestDetail> BuildQuests()
         {
-            var builder = _questBuilderFactory.Create();
+            var builder = QuestBuilderFactory.Create();
             DanBundle(builder);
             DanMedicalSupplies(builder);
             BlueMilkQuest(builder);
@@ -156,7 +159,7 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
 
                 .OnCompleteAction((player, sourceObject) =>
                 {
-                    _keyItemService.GiveKeyItem(player, KeyItemType.DantooineShovel);
+                    KeyItemService.GiveKeyItem(player, KeyItemType.DantooineShovel);
                 }); 
 
         }

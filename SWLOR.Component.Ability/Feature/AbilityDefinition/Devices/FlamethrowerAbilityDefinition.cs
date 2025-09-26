@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -13,20 +14,19 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
 {
     public class FlamethrowerAbilityDefinition : IAbilityListDefinition
     {
-        private readonly ICombatService _combatService;
-        private readonly IStatService _statService;
-        private readonly ICombatPointService _combatPointService;
-        private readonly IEnmityService _enmityService;
-        private readonly IStatusEffectService _statusEffectService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public FlamethrowerAbilityDefinition(ICombatService combatService, IStatService statService, ICombatPointService combatPointService, IEnmityService enmityService, IStatusEffectService statusEffectService)
+        public FlamethrowerAbilityDefinition(IServiceProvider serviceProvider)
         {
-            _combatService = combatService;
-            _statService = statService;
-            _combatPointService = combatPointService;
-            _enmityService = enmityService;
-            _statusEffectService = statusEffectService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
+        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+        private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
+        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
+        private IStatusEffectService StatusEffectService => _serviceProvider.GetRequiredService<IStatusEffectService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
@@ -49,7 +49,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
             });
 
             var attackerStat = GetAbilityScore( activator, AbilityType.Perception);
-            var attack = _statService.GetAttack(activator, AbilityType.Perception, SkillType.Devices);
+            var attack = StatService.GetAttack(activator, AbilityType.Perception, SkillType.Devices);
             var eVFX = EffectVisualEffect(VisualEffect.Vfx_Imp_Flame_S);
 
             var target = GetFirstObjectInShape(Shape.SpellCone, ConeSize, targetLocation, true, ObjectType.Creature);
@@ -57,9 +57,9 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
             {
                 if (target != activator)
                 {
-                    var defense = _statService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+                    var defense = StatService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
                     var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-                    var damage = _combatService.CalculateDamage(
+                    var damage = CombatService.CalculateDamage(
                         attack,
                         dmg,
                         attackerStat,
@@ -68,8 +68,8 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                         0);
 
                     var eDMG = EffectDamage(damage, DamageType.Fire);
-                    _enmityService.ModifyEnmity(activator, target, 280);
-                    _combatPointService.AddCombatPoint(activator, target, SkillType.Devices, 3);
+                    EnmityService.ModifyEnmity(activator, target, 280);
+                    CombatPointService.AddCombatPoint(activator, target, SkillType.Devices, 3);
                     
                     // Copying the target is needed because the variable gets adjusted outside the scope of the internal lambda.
                     var targetCopy = target;
@@ -78,11 +78,11 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                         ApplyEffectToObject(DurationType.Instant, eDMG, targetCopy);
                         ApplyEffectToObject(DurationType.Instant, eVFX, targetCopy);
 
-                        dc = _combatService.CalculateSavingThrowDC(activator, SavingThrow.Reflex, baseDC);
+                        dc = CombatService.CalculateSavingThrowDC(activator, SavingThrow.Reflex, baseDC);
                         var checkResult = ReflexSave(targetCopy, dc, SavingThrowType.None, activator);
                         if (checkResult == SavingThrowResultType.Failed)
                         {
-                            _statusEffectService.Apply(activator, targetCopy, StatusEffectType.Burn, 30f);
+                            StatusEffectService.Apply(activator, targetCopy, StatusEffectType.Burn, 30f);
                         }
                     });
                 }

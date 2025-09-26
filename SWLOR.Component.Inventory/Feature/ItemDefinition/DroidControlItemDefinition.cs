@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Inventory.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -19,28 +20,23 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
     public class DroidControlItemDefinition: IItemListDefinition
     {
         private readonly IDatabaseService _db;
-        private readonly IDroidService _droidService;
-        private readonly ISpaceService _spaceService;
-        private readonly IRecastService _recastService;
-        private readonly IPerkService _perkService;
-        private readonly IGuiService _guiService;
+        private readonly IServiceProvider _serviceProvider;
         private readonly ItemBuilder _builder = new();
 
         public DroidControlItemDefinition(
             IDatabaseService db, 
-            IDroidService droidService, 
-            ISpaceService spaceService, 
-            IRecastService recastService, 
-            IPerkService perkService, 
-            IGuiService guiService)
+            IServiceProvider serviceProvider)
         {
             _db = db;
-            _droidService = droidService;
-            _spaceService = spaceService;
-            _recastService = recastService;
-            _perkService = perkService;
-            _guiService = guiService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IDroidService DroidService => _serviceProvider.GetRequiredService<IDroidService>();
+        private ISpaceService SpaceService => _serviceProvider.GetRequiredService<ISpaceService>();
+        private IRecastService RecastService => _serviceProvider.GetRequiredService<IRecastService>();
+        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
+        private IGuiService GuiService => _serviceProvider.GetRequiredService<IGuiService>();
 
         public Dictionary<string, ItemDetail> BuildItems()
         {
@@ -88,9 +84,9 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
                 .PlaysAnimation(Animation.LoopingGetMid)
                 .ValidationAction((user, item, target, location, itemPropertyIndex) =>
                 {
-                    var droid = _droidService.GetDroid(user);
-                    var droidDetails = _droidService.LoadDroidItemPropertyDetails(item);
-                    if (_spaceService.IsPlayerInSpaceMode(user))
+                    var droid = DroidService.GetDroid(user);
+                    var droidDetails = DroidService.LoadDroidItemPropertyDetails(item);
+                    if (SpaceService.IsPlayerInSpaceMode(user))
                     {
                         return "Droids cannot be activated or adjusted while in space.";
                     }
@@ -98,7 +94,7 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
                     // Droid Activation
                     if (itemPropertyIndex == 0)
                     {
-                        var (onDelay, timeToWait) = _recastService.IsOnRecastDelay(user, RecastGroup.DroidController);
+                        var (onDelay, timeToWait) = RecastService.IsOnRecastDelay(user, RecastGroup.DroidController);
 
                         if (onDelay)
                         {
@@ -134,7 +130,7 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
                             return "Droid AI cannot be adjusted while active. Please dismiss your droid and try again.";
                         }
 
-                        var perkLevel = _perkService.GetPerkLevel(user, PerkType.DroidAssembly);
+                        var perkLevel = PerkService.GetPerkLevel(user, PerkType.DroidAssembly);
 
                         if (perkLevel < droidDetails.Tier)
                         {
@@ -149,23 +145,23 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
                     // Droid Activation
                     if (itemPropertyIndex == 0)
                     {
-                        _droidService.SpawnDroid(user, item);
+                        DroidService.SpawnDroid(user, item);
                         SetItemCursedFlag(item, true);
 
                     }
                     // Modify Appearance
                     else if (itemPropertyIndex == 1)
                     {
-                        var droid = _droidService.GetDroid(user);
+                        var droid = DroidService.GetDroid(user);
                         var payload = new AppearanceEditorPayload(droid);
-                        _guiService.TogglePlayerWindow(user, GuiWindowType.AppearanceEditor, payload);
+                        GuiService.TogglePlayerWindow(user, GuiWindowType.AppearanceEditor, payload);
                     }
                     // Reprogramming
                     else if (itemPropertyIndex == 2)
                     {
                         SetItemCursedFlag(item, true);
                         var payload = new DroidAIPayload(item);
-                        _guiService.TogglePlayerWindow(user, GuiWindowType.DroidAI, payload);
+                        GuiService.TogglePlayerWindow(user, GuiWindowType.DroidAI, payload);
                     }
                 });
         }

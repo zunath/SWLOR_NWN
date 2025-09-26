@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -13,23 +14,22 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
 {
     public class DisturbanceAbilityDefinition : IAbilityListDefinition
     {
-        private readonly ICombatService _combatService;
-        private readonly IStatService _statService;
-        private readonly ICombatPointService _combatPointService;
-        private readonly IEnmityService _enmityService;
-        private readonly IMessagingService _messagingService;
+        private readonly IServiceProvider _serviceProvider;
         private const string Tier1Tag = "EFFECT_DISTURBANCE_1";
         private const string Tier2Tag = "EFFECT_DISTURBANCE_2";
         private const string Tier3Tag = "EFFECT_DISTURBANCE_3";
 
-        public DisturbanceAbilityDefinition(ICombatService combatService, IStatService statService, ICombatPointService combatPointService, IEnmityService enmityService, IMessagingService messagingService)
+        public DisturbanceAbilityDefinition(IServiceProvider serviceProvider)
         {
-            _combatService = combatService;
-            _statService = statService;
-            _combatPointService = combatPointService;
-            _enmityService = enmityService;
-            _messagingService = messagingService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
+        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+        private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
+        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
+        private IMessagingService MessagingService => _serviceProvider.GetRequiredService<IMessagingService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
@@ -44,11 +44,11 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
         {
             var attackerStat = GetAbilityScore(activator, AbilityType.Willpower);
             var defenderStat = GetAbilityScore(target, AbilityType.Willpower);
-            var statService = _statService;
-            var combatService = _combatService;
-            var messagingService = _messagingService;
-            var enmityService = _enmityService;
-            var combatPointService = _combatPointService;
+            var statService = StatService;
+            var combatService = CombatService;
+            var messagingService = MessagingService;
+            var enmityService = EnmityService;
+            var combatPointService = CombatPointService;
 
             var attack = statService.GetAttack(activator, AbilityType.Willpower, SkillType.Force);
             var defense = statService.GetDefense(target, CombatDamageType.Force, AbilityType.Willpower);

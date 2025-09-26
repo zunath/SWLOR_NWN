@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -27,7 +28,10 @@ namespace SWLOR.Component.Space.UI.ViewModel
     public class ShipManagementViewModel : GuiViewModelBase<ShipManagementViewModel, ShipManagementPayload>
     {
         private readonly IDatabaseService _db;
-        private readonly IItemService _itemService;
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded services to break circular dependencies
+        private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
         private readonly IPropertyService _propertyService;
         private readonly ITargetingService _targetingService;
         private readonly ISpaceService _spaceService;

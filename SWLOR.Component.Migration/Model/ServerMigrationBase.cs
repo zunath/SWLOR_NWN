@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -15,17 +16,20 @@ namespace SWLOR.Component.Migration.Model
     {
         protected readonly ILogger Logger;
         protected readonly IDatabaseService DB;
-        protected readonly ISpaceService SpaceService;
+        protected readonly IServiceProvider ServiceProvider;
 
         protected ServerMigrationBase(
             ILogger logger, 
             IDatabaseService db,
-            ISpaceService spaceService)
+            IServiceProvider serviceProvider)
         {
             Logger = logger;
             DB = db;
-            SpaceService = spaceService;
+            ServiceProvider = serviceProvider;
         }
+
+        // Lazy-loaded service to break circular dependency
+        protected ISpaceService SpaceService => ServiceProvider.GetRequiredService<ISpaceService>();
         protected void GrantRebuildTokenToAllPlayers()
         {
             var query = new DBQuery<Player>();

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Perk.Contracts;
 using SWLOR.Component.Perk.Service;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -14,11 +15,14 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
     public class LeadershipPerkDefinition: IPerkListDefinition
     {
         private readonly IDatabaseService _db;
-        private readonly IAbilityService _abilityService;
-                public LeadershipPerkDefinition(IDatabaseService db, IAbilityService abilityService)
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded services to break circular dependencies
+        private IAbilityService AbilityService => _serviceProvider.GetRequiredService<IAbilityService>();
+                public LeadershipPerkDefinition(IDatabaseService db, IServiceProvider serviceProvider)
         {
             _db = db;
-            _abilityService = abilityService;
+            // Services are now lazy-loaded via IServiceProvider
         }
 
         public Dictionary<PerkType, PerkDetail> BuildPerks(IPerkBuilder builder)
@@ -163,8 +167,8 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .Price(2)
                 .RequirementSkill(SkillType.Leadership, 50)
                 
-                .TriggerPurchase(_abilityService.ReapplyPlayerAuraAOE)
-                .TriggerRefund(_abilityService.ReapplyPlayerAuraAOE);
+                .TriggerPurchase(AbilityService.ReapplyPlayerAuraAOE)
+                .TriggerRefund(AbilityService.ReapplyPlayerAuraAOE);
         }
 
         private void RousingShout(IPerkBuilder builder)

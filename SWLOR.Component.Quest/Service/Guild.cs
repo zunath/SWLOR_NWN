@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Quest.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -17,7 +18,7 @@ namespace SWLOR.Component.Quest.Service
     {
         private readonly IDatabaseService _db;
         private readonly IRandomService _random;
-        private readonly IPerkService _perkService;
+        private readonly IServiceProvider _serviceProvider;
         private readonly Dictionary<GuildType, GuildAttribute> _activeGuilds = new();
         private readonly Dictionary<int, int> _rankProgression = new()
         {

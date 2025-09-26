@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -18,26 +19,31 @@ namespace SWLOR.Component.Skill.Service
     {
         private readonly IDatabaseService _db;
         private readonly IRandomService _random;
-        private readonly IPerkService _perkService;
-        private readonly IGuiService _guiService;
+        private readonly IServiceProvider _serviceProvider;
         private readonly IGenericCacheService _cacheService;
         private readonly IStatusEffectService _statusEffectService;
+        
+        // Lazy-loaded services to break circular dependencies
+        private IGuiService GuiService => _serviceProvider.GetRequiredService<IGuiService>();
 
         public SkillService(
             IDatabaseService db, 
             IRandomService random, 
-            IPerkService perkService, 
-            IGuiService guiService, 
+            IServiceProvider serviceProvider, 
             IGenericCacheService cacheService,
             IStatusEffectService statusEffectService)
         {
             _db = db;
             _random = random;
-            _perkService = perkService;
-            _guiService = guiService;
+            _serviceProvider = serviceProvider;
+            // Services are now lazy-loaded via IServiceProvider
             _cacheService = cacheService;
             _statusEffectService = statusEffectService;
         }
+
+        // Lazy-loaded service to break circular dependency
+        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
+
         /// <summary>
         /// This is the maximum number of skill points a single character can have at any time.
         /// </summary>
@@ -100,7 +106,7 @@ namespace SWLOR.Component.Skill.Service
 
                     if (GetIsObjectValid(source))
                     {
-                        var effectiveLevel = _perkService.GetPerkLevel(source, PerkType.Dedication);
+                        var effectiveLevel = PerkService.GetPerkLevel(source, PerkType.Dedication);
                         social = GetAbilityScore(source, AbilityType.Social);
                         bonusPercentage += (10 + effectiveLevel * social) * 0.01f;
                     }
@@ -252,7 +258,7 @@ namespace SWLOR.Component.Skill.Service
             _db.Set(dbPlayer);
 
             modifiedSkills.Add(skill);
-            _guiService.PublishRefreshEvent(player, new SkillXPRefreshEvent(modifiedSkills));
+            GuiService.PublishRefreshEvent(player, new SkillXPRefreshEvent(modifiedSkills));
 
             // Send out an event signifying that a player has received a skill rank increase.
             if(receivedRankUp)

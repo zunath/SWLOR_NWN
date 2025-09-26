@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using System.Globalization;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Enums;
@@ -19,19 +20,22 @@ namespace SWLOR.Component.Inventory.UI.ViewModel
     {
         private readonly IDatabaseService _db;
         private readonly IItemCacheService _itemCache;
-        private readonly IPropertyService _property;
+        private readonly IServiceProvider _serviceProvider;
 
         public TrainingStoreViewModel(
             IGuiService guiService, 
             IDatabaseService db, 
             IItemCacheService itemCache, 
-            IPropertyService property) 
+            IServiceProvider serviceProvider) 
             : base(guiService)
         {
             _db = db;
             _itemCache = itemCache;
-            _property = property;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded service to break circular dependency
+        private IPropertyService PropertyService => _serviceProvider.GetRequiredService<IPropertyService>();
         
         [ScriptHandler(ScriptName.OnOpenTrainingStore)]
         public void OpenTrainingStore()
@@ -98,7 +102,7 @@ namespace SWLOR.Component.Inventory.UI.ViewModel
         {
             var playerId = GetObjectUUID(Player);
             var dbPlayer = _db.Get<Player>(playerId);
-            var cantinaBonus = _property.GetEffectiveUpgradeLevel(dbPlayer.CitizenPropertyId, PropertyUpgradeType.CantinaLevel) * 0.1f;
+            var cantinaBonus = PropertyService.GetEffectiveUpgradeLevel(dbPlayer.CitizenPropertyId, PropertyUpgradeType.CantinaLevel) * 0.1f;
 
             AvailableXP = $"Available XP: {dbPlayer.UnallocatedXP}";
 

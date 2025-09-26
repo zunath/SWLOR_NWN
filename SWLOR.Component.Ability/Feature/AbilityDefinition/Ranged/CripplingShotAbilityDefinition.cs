@@ -1,5 +1,6 @@
 //using Random = SWLOR.Game.Server.Service.Random;
 
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -16,25 +17,19 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Ranged
 {
     public class CripplingShotAbilityDefinition : IAbilityListDefinition
     {
-        private readonly IItemService _itemService;
-        private readonly ICombatService _combatService;
-        private readonly IStatService _statService;
-        private readonly ICombatPointService _combatPointService;
-        private readonly IEnmityService _enmityService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public CripplingShotAbilityDefinition(
-            IItemService itemService, 
-            ICombatService combatService, 
-            IStatService statService, 
-            ICombatPointService combatPointService,
-            IEnmityService enmityService)
+        public CripplingShotAbilityDefinition(IServiceProvider serviceProvider)
         {
-            _itemService = itemService;
-            _combatService = combatService;
-            _statService = statService;
-            _combatPointService = combatPointService;
-            _enmityService = enmityService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
+        private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
+        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+        private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
+        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
@@ -49,7 +44,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Ranged
         {
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
 
-            if (!_itemService.RifleBaseItemTypes.Contains(GetBaseItemType(weapon)))
+            if (!ItemService.RifleBaseItemTypes.Contains(GetBaseItemType(weapon)))
             {
                 return "This is a rifle ability.";
             }
@@ -82,15 +77,15 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Ranged
                     break;
             }
 
-            dmg += _combatService.GetAbilityDamageBonus(activator, SkillType.Ranged);
+            dmg += CombatService.GetAbilityDamageBonus(activator, SkillType.Ranged);
 
-            _combatPointService.AddCombatPoint(activator, target, SkillType.Ranged, 3);
+            CombatPointService.AddCombatPoint(activator, target, SkillType.Ranged, 3);
 
-            var attackerStat = _combatService.GetPerkAdjustedAbilityScore(activator);
-            var attack = _statService.GetAttack(activator, AbilityType.Perception, SkillType.Ranged);
-            var defense = _statService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+            var attackerStat = CombatService.GetPerkAdjustedAbilityScore(activator);
+            var attack = StatService.GetAttack(activator, AbilityType.Perception, SkillType.Ranged);
+            var defense = StatService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
             var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-            var damage = _combatService.CalculateDamage(
+            var damage = CombatService.CalculateDamage(
                 attack,
                 dmg, 
                 attackerStat, 
@@ -99,14 +94,14 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Ranged
                 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Piercing), target);
 
-            dc = _combatService.CalculateSavingThrowDC(activator, SavingThrow.Reflex, dc);
+            dc = CombatService.CalculateSavingThrowDC(activator, SavingThrow.Reflex, dc);
             var checkResult = ReflexSave(target, dc, SavingThrowType.None, activator);
             if (checkResult == SavingThrowResultType.Failed)
             {
                 ApplyEffectToObject(DurationType.Temporary, EffectMovementSpeedDecrease(99), target, Duration);
             }
 
-            _enmityService.ModifyEnmity(activator, target, 250 * level + damage);
+            EnmityService.ModifyEnmity(activator, target, 250 * level + damage);
         }
 
         private void CripplingShot1(IAbilityBuilder builder)

@@ -14,7 +14,7 @@ namespace SWLOR.Component.Migration.Feature.ServerMigration
 {
     public class _10_SPAdjustmentsMigration : ServerMigrationBase, IServerMigration
     {
-        public _10_SPAdjustmentsMigration(ILogger logger, IDatabaseService db, ISpaceService spaceService) : base(logger, db, spaceService)
+        public _10_SPAdjustmentsMigration(ILogger logger, IDatabaseService db, IServiceProvider serviceProvider) : base(logger, db, serviceProvider)
         {
         }
         private readonly Dictionary<(PerkType, int), int> _refundMap = new()

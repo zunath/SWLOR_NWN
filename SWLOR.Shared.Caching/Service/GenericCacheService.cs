@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Shared.Abstractions.Contracts;
 
 namespace SWLOR.Shared.Caching.Service
@@ -7,6 +8,13 @@ namespace SWLOR.Shared.Caching.Service
     /// </summary>
     public class GenericCacheService : IGenericCacheService
     {
+        private readonly IServiceProvider? _serviceProvider;
+
+        public GenericCacheService(IServiceProvider? serviceProvider = null)
+        {
+            _serviceProvider = serviceProvider;
+        }
+
         /// <summary>
         /// Creates a builder for enum-based caching
         /// </summary>
@@ -30,7 +38,7 @@ namespace SWLOR.Shared.Caching.Service
         public IInterfaceCacheBuilder<TInterface, TKey, TValue> BuildInterfaceCache<TInterface, TKey, TValue>()
             where TInterface : class
         {
-            return new InterfaceCacheBuilder<TInterface, TKey, TValue>();
+            return new InterfaceCacheBuilder<TInterface, TKey, TValue>(_serviceProvider);
         }
     }
 }

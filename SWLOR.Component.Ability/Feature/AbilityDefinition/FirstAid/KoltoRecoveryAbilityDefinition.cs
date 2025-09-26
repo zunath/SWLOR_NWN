@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -15,30 +16,23 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.FirstAid
 {
     public class KoltoRecoveryAbilityDefinition: FirstAidBaseAbilityDefinition
     {
-        private readonly IRandomService _random;
-        private readonly IPerkService _perkService;
-        private readonly IPartyService _partyService;
+        private readonly IServiceProvider _serviceProvider;
 
         public KoltoRecoveryAbilityDefinition(
-            IRandomService random, 
-            IPerkService perkService, 
-            IPartyService partyService, 
+            IServiceProvider serviceProvider,
             ICombatPointService combatPointService, 
             IEnmityService enmityService, 
             IAbilityService abilityService,
             IStatusEffectService statusEffect) 
-            : base(
-                random, 
-                perkService, 
-                combatPointService, 
-                enmityService, 
-                abilityService,
-                statusEffect)
+            : base(serviceProvider)
         {
-            _random = random;
-            _perkService = perkService;
-            _partyService = partyService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IRandomService Random => _serviceProvider.GetRequiredService<IRandomService>();
+        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
+        private IPartyService PartyService => _serviceProvider.GetRequiredService<IPartyService>();
 
         public override Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
@@ -62,12 +56,12 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.FirstAid
         private void Impact(uint activator, int baseAmount)
         {
             var willpowerMod = GetAbilityModifier(AbilityType.Willpower, activator);
-            var distance = 6f + _perkService.GetPerkLevel(activator, PerkType.RangedHealing);
-            var party = _partyService.GetAllPartyMembersWithinRange(activator, distance);
+            var distance = 6f + PerkService.GetPerkLevel(activator, PerkType.RangedHealing);
+            var party = PartyService.GetAllPartyMembersWithinRange(activator, distance);
 
             foreach (var member in party)
             {
-                var amount = baseAmount + willpowerMod * 5 + _random.D10(1);
+                var amount = baseAmount + willpowerMod * 5 + Random.D10(1);
 
                 ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), member);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Heal), member);

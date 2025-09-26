@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -12,12 +13,15 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beasts
 {
     public class AngerAbilityDefinition : IAbilityListDefinition
     {
-        private readonly IEnmityService _enmityService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public AngerAbilityDefinition(IEnmityService enmityService)
+        public AngerAbilityDefinition(IServiceProvider serviceProvider)
         {
-            _enmityService = enmityService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
@@ -45,7 +49,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beasts
             if (!LineOfSightObject(activator, target))
                 return;
 
-            _enmityService.ModifyEnmity(activator, target, baseEnmity);
+            EnmityService.ModifyEnmity(activator, target, baseEnmity);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Howl_Odd), target);
         }
 

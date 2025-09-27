@@ -1,4 +1,3 @@
-using NUnit.Framework;
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Shared.Events.Infrastructure;
 

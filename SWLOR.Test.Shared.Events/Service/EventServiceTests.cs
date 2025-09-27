@@ -1,4 +1,3 @@
-using NUnit.Framework;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Events.Service;
 using SWLOR.Shared.Events.Events.Infrastructure;

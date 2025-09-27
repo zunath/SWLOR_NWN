@@ -1,6 +1,3 @@
-using SWLOR.Shared.Domain.Character.Contracts;
-using SWLOR.Shared.Domain.Character.Enums;
-using SWLOR.Shared.Domain.Character.ValueObjects;
 using SWLOR.Shared.Domain.Crafting.Contracts;
 using SWLOR.Shared.Domain.Perk.Contracts;
 using SWLOR.Shared.Domain.Perk.Enums;

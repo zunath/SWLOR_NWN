@@ -2,9 +2,6 @@ using SWLOR.Component.Perk.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Ability.Contracts;
 using SWLOR.Shared.Domain.Ability.Enums;
-using SWLOR.Shared.Domain.Character.Contracts;
-using SWLOR.Shared.Domain.Character.Enums;
-using SWLOR.Shared.Domain.Character.ValueObjects;
 using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Perk.ValueObjects;
 

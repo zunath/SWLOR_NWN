@@ -2,8 +2,6 @@ using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Ability.Contracts;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
-using SWLOR.Shared.Domain.Character.Contracts;
-using SWLOR.Shared.Domain.Character.ValueObjects;
 using SWLOR.Shared.Domain.Perk.Contracts;
 
 namespace SWLOR.Component.Admin.Feature

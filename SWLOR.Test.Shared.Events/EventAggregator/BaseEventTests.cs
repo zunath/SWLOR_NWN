@@ -1,4 +1,3 @@
-using NUnit.Framework;
 using SWLOR.Shared.Events.EventAggregator;
 
 namespace SWLOR.Test.Shared.Events.EventAggregator

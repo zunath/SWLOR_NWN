@@ -1,4 +1,3 @@
-using NUnit.Framework;
 using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Test.Shared.Events.Events.Module

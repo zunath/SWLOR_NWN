@@ -1,4 +1,3 @@
-using SWLOR.Shared.Domain.Communication.Enums;
 using SWLOR.Shared.Domain.Quest.Enums;
 
 namespace SWLOR.Shared.Domain.Quest.Contracts

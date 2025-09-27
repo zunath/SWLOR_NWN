@@ -1,5 +1,4 @@
 using SWLOR.Component.Perk.Contracts;
-using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Perk.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;

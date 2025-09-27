@@ -3,7 +3,6 @@ using SWLOR.Component.Combat.Contracts;
 using SWLOR.Component.Combat.EventHandlers;
 using SWLOR.Component.Combat.Feature;
 using SWLOR.Component.Combat.Service;
-using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
 
 namespace SWLOR.Component.Combat.Infrastructure

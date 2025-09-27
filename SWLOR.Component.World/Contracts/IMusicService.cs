@@ -1,4 +1,4 @@
-using SWLOR.Component.World.Service;
+using SWLOR.Shared.Domain.World.ValueObjects;
 
 namespace SWLOR.Component.World.Contracts;
 
@@ -20,12 +20,12 @@ public interface IMusicService
     /// Retrieves all of the songs loaded from the 2DA file.
     /// </summary>
     /// <returns>A list of available songs.</returns>
-    List<MusicService.Song> GetAllSongs();
+    List<Song> GetAllSongs();
 
     /// <summary>
     /// Retrieves all battle songs loaded from the 2DA file.
     /// These battle songs are able to be selected by players.
     /// </summary>
     /// <returns>A list of available battle songs players can pick from.</returns>
-    Dictionary<int, MusicService.Song> GetBattleSongs();
+    Dictionary<int, Song> GetBattleSongs();
 }

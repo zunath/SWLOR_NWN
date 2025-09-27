@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Reflection;
-using NUnit.Framework;
 using SWLOR.Shared.UI.Model;
 
 namespace SWLOR.Test.Shared.UI.Model

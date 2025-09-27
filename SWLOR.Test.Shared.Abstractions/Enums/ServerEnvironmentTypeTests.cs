@@ -1,4 +1,3 @@
-using NUnit.Framework;
 using SWLOR.Shared.Abstractions.Enums;
 
 namespace SWLOR.Test.Shared.Abstractions.Enums

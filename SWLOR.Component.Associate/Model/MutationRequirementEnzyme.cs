@@ -1,9 +1,6 @@
 using SWLOR.Shared.Domain.Associate.Contracts;
 using SWLOR.Shared.Domain.Associate.Enums;
 using SWLOR.Shared.Domain.Associate.ValueObjects;
-using SWLOR.Shared.Domain.Crafting.Contracts;
-using SWLOR.Shared.Domain.Crafting.Enums;
-using SWLOR.Shared.Domain.Crafting.ValueObjects;
 
 namespace SWLOR.Component.Associate.Model
 {

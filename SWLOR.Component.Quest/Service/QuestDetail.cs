@@ -1,7 +1,6 @@
 using SWLOR.Component.Quest.Dialog;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Domain.Communication.Enums;
 using SWLOR.Shared.Domain.Dialog.Contracts;
 using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Quest.Contracts;

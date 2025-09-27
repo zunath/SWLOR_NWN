@@ -1,47 +1,20 @@
-using Microsoft.Extensions.DependencyInjection;
-using SWLOR.Component.World.Entity;
-using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Data;
-using SWLOR.Shared.Domain.Properties.Contracts;
-using SWLOR.Shared.Domain.Properties.Enums;
+using SWLOR.Component.World.Contracts;
+using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Domain.World.Contracts;
-using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Component.World.Service
 {
     public class AreaService : IAreaService
     {
-        private readonly IDatabaseService _db;
-        private readonly IServiceProvider _serviceProvider;
-        private Dictionary<string, uint> AreasByResref { get; } = new();
-        private Dictionary<uint, List<uint>> PlayersByArea { get; } = new();
+        private readonly IAreaNoteService _areaNoteService;
+        private readonly IAreaCacheService _areaCacheService;
 
-        public AreaService(IDatabaseService db, IServiceProvider serviceProvider)
+        public AreaService(
+            IAreaNoteService areaNoteService,
+            IAreaCacheService areaCacheService)
         {
-            _db = db;
-            _serviceProvider = serviceProvider;
-        }
-        
-        // Lazy-loaded service to break circular dependency
-        private IPropertyService PropertyService => _serviceProvider.GetRequiredService<IPropertyService>();
-
-        public void CacheData()
-        {
-            CacheAreasByResref();
-
-            Console.WriteLine($"Loaded {AreasByResref.Count} areas by resref.");
-        }
-
-        /// <summary>
-        /// Caches all areas by their resref.
-        /// </summary>
-        private void CacheAreasByResref()
-        {
-            for (var area = GetFirstArea(); GetIsObjectValid(area); area = GetNextArea())
-            {
-                var resref = GetResRef(area);
-                AreasByResref[resref] = area;
-            }
+            _areaNoteService = areaNoteService;
+            _areaCacheService = areaCacheService;
         }
 
         /// <summary>
@@ -50,13 +23,7 @@ namespace SWLOR.Component.World.Service
         /// </summary>
         public void RemoveInstancesFromCache()
         {
-            var propertyLayouts = PropertyService.GetAllLayoutsByPropertyType(PropertyType.Apartment);
-            foreach (var type in propertyLayouts)
-            {
-                var layout = PropertyService.GetLayoutByType(type);
-                if (AreasByResref.ContainsKey(layout.AreaInstanceResref))
-                    AreasByResref.Remove(layout.AreaInstanceResref);
-            }
+            _areaCacheService.RemoveInstancesFromCache();
         }
 
         /// <summary>
@@ -66,10 +33,7 @@ namespace SWLOR.Component.World.Service
         /// <returns>The area ID or OBJECT_INVALID if area does not exist.</returns>
         public uint GetAreaByResref(string resref)
         {
-            if (!AreasByResref.ContainsKey(resref))
-                return OBJECT_INVALID;
-
-            return AreasByResref[resref];
+            return _areaCacheService.GetAreaByResref(resref);
         }
 
         /// <summary>
@@ -79,7 +43,7 @@ namespace SWLOR.Component.World.Service
         /// <returns>AreasByResref cache.</returns>
         public Dictionary<string, uint> GetAreas()
         {
-            return AreasByResref;
+            return _areaCacheService.GetAreas();
         }
 
         /// <summary>
@@ -90,10 +54,7 @@ namespace SWLOR.Component.World.Service
         /// <returns>A list of player objects</returns>
         public List<uint> GetPlayersInArea(uint area)
         {
-            if (!PlayersByArea.ContainsKey(area))
-                return new List<uint>();
-
-            return PlayersByArea[area].ToList();
+            return _areaCacheService.GetPlayersInArea(area);
         }
 
         /// <summary>
@@ -106,33 +67,10 @@ namespace SWLOR.Component.World.Service
                 return;
 
             var area = OBJECT_SELF;
-            if (!PlayersByArea.ContainsKey(area))
-                PlayersByArea[area] = new List<uint>();
-
-            if(!PlayersByArea[area].Contains(player))
-                PlayersByArea[area].Add(player);
+            _areaCacheService.EnterArea(player, area);
 
             // Handle DM created Area Notes
-            var query = new DBQuery<AreaNote>()
-                .AddFieldSearch(nameof(AreaNote.AreaResref), GetResRef(area), false)
-                .OrderBy(nameof(AreaNote.AreaResref));
-            var notes = _db.Search(query)
-                .ToList();
-
-            if (notes.Count > 0)
-            {
-                var prefix = GetName(area) + ": ";
-                var message = string.Empty;
-                foreach (var note in notes)
-                {
-                    message += note.PublicText;
-                }
-
-                if (!string.IsNullOrWhiteSpace(message.Trim()))
-                {
-                    SendMessageToPC(player, ColorToken.Purple(prefix + message));
-                }
-            }
+            _areaNoteService.DisplayAreaNotes(player, area);
         }
 
         /// <summary>
@@ -145,11 +83,7 @@ namespace SWLOR.Component.World.Service
                 return;
 
             var area = OBJECT_SELF;
-            if (!PlayersByArea.ContainsKey(area))
-                PlayersByArea[area] = new List<uint>();
-
-            if (PlayersByArea[area].Contains(player))
-                PlayersByArea[area].Remove(player);
+            _areaCacheService.ExitArea(player, area);
         }
 
     }

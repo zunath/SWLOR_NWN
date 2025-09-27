@@ -1,7 +1,4 @@
-using NUnit.Framework;
 using SWLOR.Shared.Abstractions;
-using System;
-using System.Linq;
 
 namespace SWLOR.Test.Shared.Abstractions
 {

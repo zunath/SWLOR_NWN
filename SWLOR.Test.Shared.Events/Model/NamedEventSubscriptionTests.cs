@@ -1,5 +1,3 @@
-using NUnit.Framework;
-using SWLOR.Shared.Events.Model;
 using SWLOR.Shared.Events.Service;
 using SWLOR.Shared.Events.EventAggregator;
 using SWLOR.Shared.Abstractions.Contracts;

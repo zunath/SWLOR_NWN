@@ -8,7 +8,6 @@ using SWLOR.Shared.Domain.AI.Contracts;
 using SWLOR.Shared.Domain.AI.Enums;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
-using SWLOR.Shared.Domain.Communication.Contracts;
 using SWLOR.Shared.Domain.Dialog.Contracts;
 using SWLOR.Shared.Domain.Perk.Contracts;
 using SWLOR.Shared.Domain.StatusEffect.Contracts;

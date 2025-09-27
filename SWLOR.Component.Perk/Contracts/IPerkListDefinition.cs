@@ -1,5 +1,3 @@
-using SWLOR.Shared.Domain.Character.Enums;
-using SWLOR.Shared.Domain.Character.ValueObjects;
 using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Perk.ValueObjects;
 

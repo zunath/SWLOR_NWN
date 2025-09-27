@@ -2,8 +2,6 @@ using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Crafting.Contracts;
 using SWLOR.Component.Crafting.Model;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Domain.Character.Contracts;
-using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Crafting.Enums;
 using SWLOR.Shared.Domain.Crafting.ValueObjects;
 using SWLOR.Shared.Domain.Perk.Contracts;

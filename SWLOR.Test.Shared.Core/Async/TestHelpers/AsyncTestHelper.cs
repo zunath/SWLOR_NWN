@@ -1,6 +1,3 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using SWLOR.Shared.Core.Async;
 
 namespace SWLOR.Test.Shared.Core.Async.TestHelpers

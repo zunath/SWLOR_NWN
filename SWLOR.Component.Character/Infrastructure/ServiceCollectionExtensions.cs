@@ -5,7 +5,6 @@ using SWLOR.Component.Character.Feature;
 using SWLOR.Component.Character.Service;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Domain.Character.Contracts;
-using SWLOR.Shared.Domain.Communication.Contracts;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 
 namespace SWLOR.Component.Character.Infrastructure

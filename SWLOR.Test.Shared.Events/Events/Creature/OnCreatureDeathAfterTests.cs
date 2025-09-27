@@ -1,4 +1,3 @@
-using NUnit.Framework;
 using SWLOR.Shared.Events.Events.Creature;
 
 namespace SWLOR.Test.Shared.Events.Events.Creature

@@ -1,7 +1,5 @@
-using NUnit.Framework;
 using SWLOR.Shared.Core.Configuration;
 using SWLOR.Shared.Abstractions.Enums;
-using System;
 
 namespace SWLOR.Test.Shared.Core.Configuration
 {

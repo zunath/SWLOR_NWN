@@ -1,7 +1,4 @@
-using NUnit.Framework;
 using SWLOR.Shared.Core.Async;
-using System;
-using System.Threading;
 
 namespace SWLOR.Test.Shared.Core.Async
 {

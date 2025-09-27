@@ -1,4 +1,3 @@
-using NUnit.Framework;
 using SWLOR.Shared.Abstractions;
 using Newtonsoft.Json;
 

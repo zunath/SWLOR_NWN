@@ -5,7 +5,6 @@ using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Abstractions.Models;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Log.LogGroup;
-using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Properties.Entities;

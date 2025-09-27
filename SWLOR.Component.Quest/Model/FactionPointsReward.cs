@@ -1,8 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
-using SWLOR.Shared.Domain.Communication.Contracts;
-using SWLOR.Shared.Domain.Communication.Enums;
 using SWLOR.Shared.Domain.Quest.Contracts;
 
 namespace SWLOR.Component.Quest.Model

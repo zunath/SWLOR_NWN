@@ -1,6 +1,4 @@
-using NUnit.Framework;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Events.EventAggregator;
 using SWLOR.Shared.Events.Events.Infrastructure;
 using NSubstitute;
 

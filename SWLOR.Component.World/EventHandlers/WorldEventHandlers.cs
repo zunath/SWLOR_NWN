@@ -1,4 +1,3 @@
-using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.World.Contracts;
 using SWLOR.Shared.Domain.World.Contracts;
 using SWLOR.Shared.Events.Attributes;
@@ -13,83 +12,89 @@ namespace SWLOR.Component.World.EventHandlers
 {
     internal class WorldEventHandlers
     {
-        private readonly IServiceProvider _serviceProvider;
-
-        // Lazy-loaded services to break circular dependencies
-        private ISpawnService SpawnService => _serviceProvider.GetRequiredService<ISpawnService>();
-        private IAreaService AreaService => _serviceProvider.GetRequiredService<IAreaService>();
-        private IMusicService MusicService => _serviceProvider.GetRequiredService<IMusicService>();
-        private IPlanetService PlanetService => _serviceProvider.GetRequiredService<IPlanetService>();
-        private IWeatherService WeatherService => _serviceProvider.GetRequiredService<IWeatherService>();
-        private IObjectVisibilityService ObjectVisibilityService => _serviceProvider.GetRequiredService<IObjectVisibilityService>();
-        private ITaxiService TaxiService => _serviceProvider.GetRequiredService<ITaxiService>();
-        private ITileMagicService TileMagicService => _serviceProvider.GetRequiredService<ITileMagicService>();
-        private IGuiService Gui => _serviceProvider.GetRequiredService<IGuiService>();
+        private readonly ISpawnService _spawnService;
+        private readonly IAreaService _areaService;
+        private readonly IMusicService _musicService;
+        private readonly IPlanetService _planetService;
+        private readonly IWeatherService _weatherService;
+        private readonly IObjectVisibilityService _objectVisibilityService;
+        private readonly ITaxiService _taxiService;
 
         public WorldEventHandlers(
-            IServiceProvider serviceProvider)
+            ISpawnService spawnService,
+            IAreaService areaService,
+            IMusicService musicService,
+            IPlanetService planetService,
+            IWeatherService weatherService,
+            IObjectVisibilityService objectVisibilityService,
+            ITaxiService taxiService)
         {
-            _serviceProvider = serviceProvider;
+            _spawnService = spawnService;
+            _areaService = areaService;
+            _musicService = musicService;
+            _planetService = planetService;
+            _weatherService = weatherService;
+            _objectVisibilityService = objectVisibilityService;
+            _taxiService = taxiService;
         }
 
         [ScriptHandler<OnModuleCacheBefore>]
         public void OnModuleCacheBefore()
         {
-            SpawnService.CacheData();
-            AreaService.CacheData();
-            MusicService.LoadSongList();
-            PlanetService.CacheData();
-            WeatherService.LoadData();
-            ObjectVisibilityService.LoadVisibilityObjects();
-            TaxiService.LoadTaxiDestinations();
+            _spawnService.CacheData();
+            _musicService.LoadSongList();
+            _planetService.CacheData();
+            _weatherService.LoadData();
+            _objectVisibilityService.LoadVisibilityObjects();
+            _taxiService.LoadTaxiDestinations();
         }
 
         [ScriptHandler<OnModuleCacheAfter>]
         public void OnModuleCacheAfter()
         {
-            AreaService.RemoveInstancesFromCache();
+            _areaService.RemoveInstancesFromCache();
         }
 
         [ScriptHandler<OnModuleEnter>]
         public void OnModuleEnter()
         {
-            ObjectVisibilityService.LoadPlayerVisibilityObjects();
+            _objectVisibilityService.LoadPlayerVisibilityObjects();
         }
 
         [ScriptHandler<OnAreaEnter>]
         public void OnAreaEnter()
         {
-            SpawnService.SpawnArea();
-            AreaService.EnterArea();
-            MusicService.ApplyBattleThemeToPlayer();
-            WeatherService.OnAreaEnter();
+            _spawnService.SpawnArea();
+            _areaService.EnterArea();
+            _musicService.ApplyBattleThemeToPlayer();
+            _weatherService.OnAreaEnter();
         }
 
         [ScriptHandler<OnAreaExit>]
         public void OnAreaExit()
         {
-            SpawnService.QueueDespawnArea();
-            AreaService.ExitArea();
+            _spawnService.QueueDespawnArea();
+            _areaService.ExitArea();
         }
 
         [ScriptHandler<OnCreatureDeathAfter>]
         [ScriptHandler(ScriptName.OnPlaceableDeath)]
         public void OnCreatureDeathAfter()
         {
-            SpawnService.QueueRespawn();
+            _spawnService.QueueRespawn();
         }
 
         [ScriptHandler(ScriptName.OnSwlorHeartbeat)]
         public void OnSwlorHeartbeat()
         {
-            SpawnService.ProcessSpawnSystem();
-            WeatherService.OnModuleHeartbeat();
+            _spawnService.ProcessSpawnSystem();
+            _weatherService.OnModuleHeartbeat();
         }
 
         [ScriptHandler<OnDMSpawnObjectAfter>]
         public void OnDMSpawnObjectAfter()
         {
-            SpawnService.DMSpawnCreature();
+            _spawnService.DMSpawnCreature();
         }
     }
 }

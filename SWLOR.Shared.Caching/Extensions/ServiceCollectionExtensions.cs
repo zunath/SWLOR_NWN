@@ -22,6 +22,8 @@ namespace SWLOR.Shared.Caching.Extensions
             services.AddSingleton<IPortraitCacheService, PortraitCacheService>();
             services.AddSingleton<ISoundSetCacheService, SoundSetCacheService>();
             services.AddSingleton<IModuleCacheService, ModuleCacheService>();
+            services.AddSingleton<IAreaCacheService, AreaCacheService>();
+            services.AddSingleton<ISongCacheService, SongCacheService>();
 
             return services;
         }

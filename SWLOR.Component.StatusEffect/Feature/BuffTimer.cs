@@ -1,6 +1,4 @@
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Domain.Combat.Contracts;
-using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.StatusEffect.Contracts;
 using SWLOR.Shared.Domain.StatusEffect.Enums;
 using SWLOR.Shared.Events.Attributes;

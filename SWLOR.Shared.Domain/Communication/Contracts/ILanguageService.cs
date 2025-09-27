@@ -1,4 +1,3 @@
-using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Communication.ValueObjects;
 using SWLOR.Shared.Domain.Skill.Enums;
 

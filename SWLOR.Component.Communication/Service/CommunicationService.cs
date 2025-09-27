@@ -8,7 +8,6 @@ using SWLOR.Shared.UI.Service;
 using System.Globalization;
 using System.Text;
 using SWLOR.Shared.Domain.Character.Contracts;
-using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Communication.Constants;
 using SWLOR.Shared.Domain.Communication.Contracts;
 using SWLOR.Shared.Domain.Communication.Enums;

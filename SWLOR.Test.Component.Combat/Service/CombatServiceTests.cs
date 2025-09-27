@@ -1,23 +1,12 @@
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using SWLOR.Component.Combat.Service;
-using SWLOR.NWN.API.Contracts;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Domain.Combat.Enums;
-using SWLOR.Shared.Domain.Skill.Enums;
-using SWLOR.Shared.Domain.Ability.Enums;
-using SWLOR.Shared.Domain.Character.Enums;
-using SWLOR.Shared.Domain.Perk.Enums;
-using SWLOR.Shared.Domain.Inventory.Enums;
 using SWLOR.Shared.Domain.Ability.Contracts;
-using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
-using SWLOR.Shared.Domain.Combat.ValueObjects;
-using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Perk.Contracts;
-using SWLOR.Test.Shared.Core.TestHelpers;
 
 namespace SWLOR.Test.Component.Combat.Service
 {

@@ -1,6 +1,3 @@
-using SWLOR.Shared.Core.Log.LogGroup;
-using SWLOR.Shared.Abstractions.Contracts;
-
 namespace SWLOR.Test.Shared.Core.Service
 {
     [TestFixture]

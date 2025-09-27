@@ -1,4 +1,3 @@
-using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.Service;
 using SWLOR.Shared.Core.Contracts;

@@ -1,14 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using SWLOR.Component.Character.Service;
-using SWLOR.NWN.API.Contracts;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Domain.Entities;
-using SWLOR.Shared.Domain.Character.Enums;
-using SWLOR.Shared.Domain.Inventory.Enums;
-using SWLOR.Shared.Domain.UI.Events;
 using SWLOR.Shared.UI.Contracts;
-using SWLOR.Test.Shared.Core.TestHelpers;
 
 namespace SWLOR.Test.Component.Character.Service
 {

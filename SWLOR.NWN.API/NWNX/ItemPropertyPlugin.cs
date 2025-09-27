@@ -1,5 +1,4 @@
 using SWLOR.NWN.API.Engine;
-using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.NWN.API.NWNX.Model;
 
 namespace SWLOR.NWN.API.NWNX

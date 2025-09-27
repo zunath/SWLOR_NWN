@@ -1,7 +1,6 @@
 using SWLOR.NWN.API.Engine;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Models;
-using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Crafting.Enums;
 using SWLOR.Shared.Domain.Crafting.ValueObjects;
 using SWLOR.Shared.Domain.Skill.Enums;

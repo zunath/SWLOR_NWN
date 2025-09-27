@@ -1,7 +1,4 @@
-using NUnit.Framework;
 using SWLOR.Shared.Core.Bioware;
-using System;
-using System.Numerics;
 
 namespace SWLOR.Test.Shared.Core.Bioware
 {

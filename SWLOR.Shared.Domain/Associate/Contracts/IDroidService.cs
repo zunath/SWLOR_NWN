@@ -1,5 +1,4 @@
 using SWLOR.Shared.Domain.Associate.ValueObjects;
-using SWLOR.Shared.Domain.Crafting.ValueObjects;
 
 namespace SWLOR.Shared.Domain.Associate.Contracts
 {

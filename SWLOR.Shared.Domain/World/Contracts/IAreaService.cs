@@ -2,8 +2,6 @@ namespace SWLOR.Shared.Domain.World.Contracts
 {
     public interface IAreaService
     {
-        void CacheData();
-
         /// <summary>
         /// Remove instance templates from the area cache on module load.
         /// This ensures player locations are not updated in places they shouldn't be.

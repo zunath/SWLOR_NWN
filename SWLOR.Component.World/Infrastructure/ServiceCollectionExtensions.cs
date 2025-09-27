@@ -4,6 +4,7 @@ using SWLOR.Component.World.Contracts;
 using SWLOR.Component.World.EventHandlers;
 using SWLOR.Component.World.Feature;
 using SWLOR.Component.World.Service;
+using SWLOR.Shared.Domain.Contracts;
 using SWLOR.Shared.Domain.World.Contracts;
 
 namespace SWLOR.Component.World.Infrastructure
@@ -25,8 +26,10 @@ namespace SWLOR.Component.World.Infrastructure
             services.AddSingleton<ISpawnTableBuilder, SpawnTableBuilder>();
             services.AddSingleton<ISpawnService, SpawnService>();
             services.AddSingleton<IObjectVisibilityService, ObjectVisibilityService>();
+            services.AddSingleton<IData2DAService, Data2DAService>();
             services.AddSingleton<IMusicService, MusicService>();
             services.AddSingleton<IAreaService, AreaService>();
+            services.AddSingleton<IAreaNoteService, AreaNoteService>();
             services.AddSingleton<IWeatherService, WeatherService>();
             services.AddSingleton<IPlanetService, PlanetService>();
             services.AddSingleton<IWalkmeshService, WalkmeshService>();

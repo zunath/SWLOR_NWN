@@ -3,7 +3,6 @@ using SWLOR.Component.Ability.Contracts;
 using SWLOR.Component.Ability.EventHandlers;
 using SWLOR.Component.Ability.Service;
 using SWLOR.Shared.Domain.Ability.Contracts;
-using SWLOR.Shared.Domain.Character.Contracts;
 
 namespace SWLOR.Component.Ability.Infrastructure
 {

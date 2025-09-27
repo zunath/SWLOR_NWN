@@ -1,6 +1,5 @@
 using NWN.Native.API;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Skill.Enums;
 

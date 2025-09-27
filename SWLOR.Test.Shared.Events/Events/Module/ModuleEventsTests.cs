@@ -1,4 +1,3 @@
-using NUnit.Framework;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Constants;
 

@@ -1,6 +1,5 @@
 using SWLOR.Component.Migration.Model;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Perk.Contracts;

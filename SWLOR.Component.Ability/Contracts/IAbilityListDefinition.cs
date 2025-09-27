@@ -1,6 +1,5 @@
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
-using SWLOR.Shared.Domain.Character.ValueObjects;
 
 namespace SWLOR.Component.Ability.Contracts
 {

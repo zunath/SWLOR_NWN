@@ -7,7 +7,6 @@ using SWLOR.Shared.Domain.Skill.Enums;
 using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Communication.Enums;
-using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Crafting.Enums;
 using SWLOR.Shared.Domain.Inventory.Enums;
 using SWLOR.Shared.Domain.Quest.Enums;

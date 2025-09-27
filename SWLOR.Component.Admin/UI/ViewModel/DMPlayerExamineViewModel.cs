@@ -5,7 +5,6 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Component.Admin.UI.Payload;
 using SWLOR.Shared.Abstractions.Enums;
-using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Perk.Contracts;
 using SWLOR.Shared.Domain.Skill.Contracts;

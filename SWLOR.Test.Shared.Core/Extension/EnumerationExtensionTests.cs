@@ -1,4 +1,3 @@
-using System.ComponentModel;
 using SWLOR.Shared.Core.Extension;
 
 namespace SWLOR.Test.Shared.Core.Extension

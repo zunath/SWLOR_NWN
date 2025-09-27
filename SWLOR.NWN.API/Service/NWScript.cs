@@ -10,10 +10,18 @@ namespace SWLOR.NWN.API.Service
     public static class NWScript
     {
         private static INWScriptService _service = new NWScriptService();
-        public static void SetService(INWScriptService service) => _service = service;
-
+        
+        /// <summary>
+        /// Sets the service implementation to use. This is primarily for testing.
+        /// </summary>
+        /// <param name="service">The service implementation to use</param>
+        internal static void SetService(INWScriptService service)
+        {
+            _service = service ?? throw new ArgumentNullException(nameof(service));
+        }
+        
         // ReSharper disable once InconsistentNaming
-        public static uint OBJECT_SELF = _service.OBJECT_SELF;
+        public static uint OBJECT_SELF => _service.OBJECT_SELF;
 
         // ReSharper disable once InconsistentNaming
         public const uint OBJECT_INVALID = NWScriptService.OBJECT_INVALID;
@@ -9587,5 +9595,6 @@ namespace SWLOR.NWN.API.Service
         /// <param name="effectLevels">The tag/level mapping of all levels.</param>
         /// <returns>true if a more powerful effect is in place, false otherwise</returns>
         public static bool HasMorePowerfulEffect(uint creature, int tier, params (string, int)[] effectLevels) => _service.HasMorePowerfulEffect(creature, tier, effectLevels);
+
     }
 }

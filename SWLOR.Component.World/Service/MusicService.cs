@@ -1,31 +1,21 @@
 using SWLOR.Component.World.Contracts;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Domain.Entities;
+using SWLOR.Shared.Domain.World.ValueObjects;
 
 namespace SWLOR.Component.World.Service
 {
     public class MusicService : IMusicService
     {
         private readonly IDatabaseService _db;
-        private static readonly Dictionary<int, Song> _songs = new();
-        private static readonly Dictionary<int, Song> _playerBattleSongs = new();
+        private readonly ISongCacheService _songCache;
 
-        public MusicService(IDatabaseService db)
+        public MusicService(IDatabaseService db, ISongCacheService songCache)
         {
             _db = db;
-        }
-
-        public class Song
-        {
-            public int ID { get; }
-            public string DisplayName { get; }
-
-            public Song(int id, string displayName)
-            {
-                ID = id;
-                DisplayName = displayName;
-            }
+            _songCache = songCache;
         }
 
         /// <summary>
@@ -34,31 +24,7 @@ namespace SWLOR.Component.World.Service
         /// </summary>
         public void LoadSongList()
         {
-            const string File = "ambientmusic";
-            var rowCount = Get2DARowCount(File);
-
-            for (var row = 0; row < rowCount; row++)
-            {
-                var description = Get2DAString(File, "Description", row);
-                var displayName = Get2DAString(File, "DisplayName", row);
-                var isAvailableAsBattleSong = Get2DAString(File, "PlayerBattleSong", row) == "1";
-
-                // Skip record if a name cannot be determined.
-                if (string.IsNullOrWhiteSpace(description) &&
-                    string.IsNullOrWhiteSpace(displayName)) continue;
-
-                string name = string.IsNullOrWhiteSpace(description) ?
-                    displayName :
-                    GetStringByStrRef(Convert.ToInt32(description));
-
-                var song = new Song(row, name);
-                _songs[row] = song;
-
-                if (isAvailableAsBattleSong)
-                {
-                    _playerBattleSongs[row] = song;
-                }
-            }
+            _songCache.LoadSongList();
         }
 
         /// <summary>
@@ -91,7 +57,7 @@ namespace SWLOR.Component.World.Service
         /// <returns>A list of available songs.</returns>
         public List<Song> GetAllSongs()
         {
-            return _songs.Values.ToList();
+            return _songCache.GetAllSongs();
         }
 
         /// <summary>
@@ -101,7 +67,7 @@ namespace SWLOR.Component.World.Service
         /// <returns>A list of available battle songs players can pick from.</returns>
         public Dictionary<int, Song> GetBattleSongs()
         {
-            return _playerBattleSongs.ToDictionary(x => x.Key, y => y.Value);
+            return _songCache.GetBattleSongs();
         }
     }
 }

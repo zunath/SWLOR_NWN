@@ -85,8 +85,6 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="PC">The player character to apply the override to. If OBJECT_SELF, applies to all active players</param>
         public static void SetTextureOverride(string OldName, string NewName = "", uint PC = OBJECT_INVALID)
         {
-            if (PC == OBJECT_INVALID)
-                PC = OBJECT_SELF;
             global::NWN.Core.NWScript.SetTextureOverride(OldName, NewName, PC);
         }
 

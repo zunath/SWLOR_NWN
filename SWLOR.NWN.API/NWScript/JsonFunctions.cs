@@ -314,8 +314,6 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The created object, or OBJECT_INVALID on error</returns>
         public static uint JsonToObject(Json jObject, Location locLocation, uint oOwner = OBJECT_INVALID, bool bLoadObjectState = false)
         {
-            if (oOwner == OBJECT_INVALID)
-                oOwner = OBJECT_SELF;
             return global::NWN.Core.NWScript.JsonToObject(jObject, locLocation, oOwner, bLoadObjectState ? 1 : 0);
         }
 

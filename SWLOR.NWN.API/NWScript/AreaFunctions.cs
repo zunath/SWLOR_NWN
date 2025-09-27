@@ -229,8 +229,6 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>True if the area is interior or underground</returns>
         public static bool GetIsAreaInterior(uint oArea = OBJECT_INVALID)
         {
-            if (oArea == OBJECT_INVALID)
-                oArea = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetIsAreaInterior(oArea) != 0;
         }
 
@@ -272,8 +270,6 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oArea">The area to change the sky for. If no valid area is specified, uses the area of caller. If an object other than an area is specified, uses the area that the object is currently in (default: OBJECT_SELF)</param>
         public static void SetSkyBox(Skybox nSkyBox, uint oArea = OBJECT_INVALID)
         {
-            if (oArea == OBJECT_INVALID)
-                oArea = OBJECT_SELF;
             global::NWN.Core.NWScript.SetSkyBox((int)nSkyBox, oArea);
         }
 
@@ -285,8 +281,6 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oArea">The area to set fog color for. If no valid area is specified, uses the area of caller. If an object other than an area is specified, uses the area that the object is currently in (default: OBJECT_SELF)</param>
         public static void SetFogColor(FogType nFogType, FogColor nFogColor, uint oArea = OBJECT_INVALID)
         {
-            if (oArea == OBJECT_INVALID)
-                oArea = OBJECT_SELF;
             global::NWN.Core.NWScript.SetFogColor((int)nFogType, (int)nFogColor, oArea);
         }
 
@@ -297,8 +291,6 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The skybox constant (SKYBOX_*)</returns>
         public static Skybox GetSkyBox(uint oArea = OBJECT_INVALID)
         {
-            if (oArea == OBJECT_INVALID)
-                oArea = OBJECT_SELF;
             return (Skybox)global::NWN.Core.NWScript.GetSkyBox(oArea);
         }
 
@@ -310,8 +302,6 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The fog color constant (FOG_COLOR_*)</returns>
         public static FogColor GetFogColor(FogType nFogType, uint oArea = OBJECT_INVALID)
         {
-            if (oArea == OBJECT_INVALID)
-                oArea = OBJECT_SELF;
             return (FogColor)global::NWN.Core.NWScript.GetFogColor((int)nFogType, oArea);
         }
 
@@ -323,8 +313,6 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oArea">The area to set fog amount for. If no valid area is specified, uses the area of caller. If an object other than an area is specified, uses the area that the object is currently in (default: OBJECT_SELF)</param>
         public static void SetFogAmount(FogType nFogType, int nFogAmount, uint oArea = OBJECT_INVALID)
         {
-            if (oArea == OBJECT_INVALID)
-                oArea = OBJECT_SELF;
             global::NWN.Core.NWScript.SetFogAmount((int)nFogType, nFogAmount, oArea);
         }
 
@@ -336,8 +324,6 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The fog amount</returns>
         public static int GetFogAmount(FogType nFogType, uint oArea = OBJECT_INVALID)
         {
-            if (oArea == OBJECT_INVALID)
-                oArea = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetFogAmount((int)nFogType, oArea);
         }
 
@@ -360,8 +346,6 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The number of tiles that the area is wide/high, or zero on error</returns>
         public static int GetAreaSize(Dimension nAreaDimension, uint oArea = OBJECT_INVALID)
         {
-            if (oArea == OBJECT_INVALID)
-                oArea = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetAreaSize((int)nAreaDimension, oArea);
         }
 
@@ -730,8 +714,6 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The light color</returns>
         public static int GetAreaLightColor(AreaLightColorType nColorType, uint oArea = OBJECT_INVALID)
         {
-            if (oArea == OBJECT_INVALID)
-                oArea = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetAreaLightColor((int)nColorType, oArea);
         }
 
@@ -748,8 +730,6 @@ namespace SWLOR.NWN.API.NWScript
             uint oArea = OBJECT_INVALID,
             float fFadeTime = 0.0f)
         {
-            if (oArea == OBJECT_INVALID)
-                oArea = OBJECT_SELF;
             global::NWN.Core.NWScript.SetAreaLightColor((int)nColorType, (int)nColor, oArea, fFadeTime);
         }
 
@@ -761,8 +741,6 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The light direction vector</returns>
         public static Vector3 GetAreaLightDirection(AreaLightDirectionType nLightType, uint oArea = OBJECT_INVALID)
         {
-            if (oArea == OBJECT_INVALID)
-                oArea = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetAreaLightDirection((int)nLightType, oArea);
         }
 
@@ -779,8 +757,6 @@ namespace SWLOR.NWN.API.NWScript
             uint oArea = OBJECT_INVALID,
             float fFadeTime = 0.0f)
         {
-            if (oArea == OBJECT_INVALID)
-                oArea = OBJECT_SELF;
             global::NWN.Core.NWScript.SetAreaLightDirection((int)nLightType, vDirection, oArea, fFadeTime);
         }
 

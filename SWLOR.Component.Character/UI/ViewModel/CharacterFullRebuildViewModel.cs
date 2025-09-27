@@ -43,6 +43,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
         {
             _logger = logger;
             _db = db;
+            _serviceProvider = serviceProvider;
             // Services are now lazy-loaded via IServiceProvider
         }
         [ScriptHandler(ScriptName.OnCharacterRebuild)]

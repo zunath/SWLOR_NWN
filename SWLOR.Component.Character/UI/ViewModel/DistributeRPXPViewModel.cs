@@ -24,6 +24,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
         public DistributeRPXPViewModel(IGuiService guiService, IDatabaseService db, IServiceProvider serviceProvider) : base(guiService)
         {
             _db = db;
+            _serviceProvider = serviceProvider;
             // Services are now lazy-loaded via IServiceProvider
         }
         

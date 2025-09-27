@@ -31,6 +31,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
             : base(guiService)
         {
             _db = db;
+            _serviceProvider = serviceProvider;
             // Services are now lazy-loaded via IServiceProvider
         }
         

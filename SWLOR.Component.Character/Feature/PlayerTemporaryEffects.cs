@@ -20,7 +20,7 @@ namespace SWLOR.Component.Character.Feature
         public PlayerTemporaryEffects(IDatabaseService db, IServiceProvider serviceProvider)
         {
             _db = db;
-            // Services are now lazy-loaded via IServiceProvider
+            _serviceProvider = serviceProvider;
         }
 
         [ScriptHandler<OnModuleEnter>]

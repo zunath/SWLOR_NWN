@@ -42,6 +42,7 @@ namespace SWLOR.Component.Perk.UI.ViewModel
             _logger = logger;
             _db = db;
             _serviceProvider = serviceProvider;
+            _filteredPerks = new List<PerkType>();
         }
 
         // Lazy-loaded services to break circular dependencies

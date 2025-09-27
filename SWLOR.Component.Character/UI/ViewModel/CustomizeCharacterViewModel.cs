@@ -34,6 +34,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
             _db = db;
             _portraitCache = portraitCache;
             _soundSetCache = soundSetCache;
+            _serviceProvider = serviceProvider;
             // Services are now lazy-loaded via IServiceProvider
         }
         

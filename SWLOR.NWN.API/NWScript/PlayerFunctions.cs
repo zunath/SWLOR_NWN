@@ -1,5 +1,6 @@
 using System.Numerics;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Constants;
 
 namespace SWLOR.NWN.API.NWScript
 {

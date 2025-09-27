@@ -1,6 +1,7 @@
 using SWLOR.Component.Character.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.Component.Character.Feature.AppearanceDefinition.RacialAppearance;
 using SWLOR.NWN.API.NWNX;
+using SWLOR.NWN.API.NWScript.Constants;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.Item;

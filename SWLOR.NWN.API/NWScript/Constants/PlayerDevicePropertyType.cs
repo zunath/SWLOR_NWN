@@ -1,4 +1,4 @@
-﻿namespace SWLOR.NWN.API.NWScript.Enum
+namespace SWLOR.NWN.API.NWScript.Constants
 {
     public static class PlayerDevicePropertyType
     {

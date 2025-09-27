@@ -196,5 +196,73 @@ namespace SWLOR.Test.Shared.Abstractions.Models
             // The actual execution will still throw due to NWN.API dependency
             Assert.That(() => method.Invoke(color, null), Throws.TypeOf<System.Reflection.TargetInvocationException>());
         }
+
+        [Test]
+        public void StaticColors_ShouldHaveCorrectValues()
+        {
+            // Assert
+            Assert.That(GuiColor.Green.R, Is.EqualTo(0));
+            Assert.That(GuiColor.Green.G, Is.EqualTo(255));
+            Assert.That(GuiColor.Green.B, Is.EqualTo(0));
+            Assert.That(GuiColor.Green.Alpha, Is.EqualTo(255));
+
+            Assert.That(GuiColor.Red.R, Is.EqualTo(255));
+            Assert.That(GuiColor.Red.G, Is.EqualTo(0));
+            Assert.That(GuiColor.Red.B, Is.EqualTo(0));
+            Assert.That(GuiColor.Red.Alpha, Is.EqualTo(255));
+
+            Assert.That(GuiColor.Cyan.R, Is.EqualTo(0));
+            Assert.That(GuiColor.Cyan.G, Is.EqualTo(255));
+            Assert.That(GuiColor.Cyan.B, Is.EqualTo(255));
+            Assert.That(GuiColor.Cyan.Alpha, Is.EqualTo(255));
+
+            Assert.That(GuiColor.White.R, Is.EqualTo(255));
+            Assert.That(GuiColor.White.G, Is.EqualTo(255));
+            Assert.That(GuiColor.White.B, Is.EqualTo(255));
+            Assert.That(GuiColor.White.Alpha, Is.EqualTo(255));
+
+            Assert.That(GuiColor.Grey.R, Is.EqualTo(169));
+            Assert.That(GuiColor.Grey.G, Is.EqualTo(169));
+            Assert.That(GuiColor.Grey.B, Is.EqualTo(169));
+            Assert.That(GuiColor.Grey.Alpha, Is.EqualTo(255));
+        }
+
+        [Test]
+        public void Constructor_ShouldValidateByteRange()
+        {
+            // Arrange & Act
+            var minColor = new GuiColor(0, 0, 0, 0);
+            var maxColor = new GuiColor(255, 255, 255, 255);
+
+            // Assert
+            Assert.That(minColor.R, Is.EqualTo(0));
+            Assert.That(minColor.G, Is.EqualTo(0));
+            Assert.That(minColor.B, Is.EqualTo(0));
+            Assert.That(minColor.Alpha, Is.EqualTo(0));
+
+            Assert.That(maxColor.R, Is.EqualTo(255));
+            Assert.That(maxColor.G, Is.EqualTo(255));
+            Assert.That(maxColor.B, Is.EqualTo(255));
+            Assert.That(maxColor.Alpha, Is.EqualTo(255));
+        }
+
+        [Test]
+        public void Properties_ShouldBeSettableAfterConstruction()
+        {
+            // Arrange
+            var color = new GuiColor(0, 0, 0, 0);
+
+            // Act
+            color.R = 100;
+            color.G = 150;
+            color.B = 200;
+            color.Alpha = 128;
+
+            // Assert
+            Assert.That(color.R, Is.EqualTo(100));
+            Assert.That(color.G, Is.EqualTo(150));
+            Assert.That(color.B, Is.EqualTo(200));
+            Assert.That(color.Alpha, Is.EqualTo(128));
+        }
     }
 }

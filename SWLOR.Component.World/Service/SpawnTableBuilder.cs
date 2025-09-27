@@ -154,7 +154,7 @@ namespace SWLOR.Component.World.Service
         /// <returns>A spawn table builder with the configured settings.</returns>
         public ISpawnTableBuilder RandomlyWalks()
         {
-            ActiveSpawn.AIFlags |= AIFlag.RandomWalk;
+            ActiveSpawn.AIFlags |= AIFlagType.RandomWalk;
 
             return this;
         }
@@ -165,7 +165,7 @@ namespace SWLOR.Component.World.Service
         /// <returns>A spawn table builder with the configured settings.</returns>
         public ISpawnTableBuilder ReturnsHome()
         {
-            ActiveSpawn.AIFlags |= AIFlag.ReturnHome;
+            ActiveSpawn.AIFlags |= AIFlagType.ReturnHome;
 
             return this;
         }

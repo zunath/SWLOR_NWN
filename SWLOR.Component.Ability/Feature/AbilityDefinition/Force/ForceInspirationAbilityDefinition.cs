@@ -45,7 +45,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ForceInspiration1, PerkType.ForceInspiration)
                 .Name("Force Inspiration I")
-                .HasRecastDelay(RecastGroup.ForceInspiration, 30f)
+                .HasRecastDelay(RecastGroupType.ForceInspiration, 30f)
                 .HasActivationDelay(2f)
                 .RequirementFP(5)
                 .UsesAnimation(AnimationType.LoopingGetMid)
@@ -60,7 +60,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ForceInspiration2, PerkType.ForceInspiration)
                 .Name("Force Inspiration II")
-                .HasRecastDelay(RecastGroup.ForceInspiration, 30f)
+                .HasRecastDelay(RecastGroupType.ForceInspiration, 30f)
                 .HasActivationDelay(2f)
                 .RequirementFP(6)
                 .UsesAnimation(AnimationType.LoopingGetMid)
@@ -75,7 +75,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ForceInspiration3, PerkType.ForceInspiration)
                 .Name("Force Inspiration III")
-                .HasRecastDelay(RecastGroup.ForceInspiration, 30f)
+                .HasRecastDelay(RecastGroupType.ForceInspiration, 30f)
                 .HasActivationDelay(2f)
                 .RequirementFP(7)
                 .UsesAnimation(AnimationType.LoopingGetMid)

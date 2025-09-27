@@ -52,7 +52,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
                 return;
             }
 
-            var (isOnDelay, timeToWait) = RecastService.IsOnRecastDelay(player, RecastGroup.StatRebuild);
+            var (isOnDelay, timeToWait) = RecastService.IsOnRecastDelay(player, RecastGroupType.StatRebuild);
             if (isOnDelay)
             {
                 FloatingTextStringOnCreature(ColorToken.Red($"Another stat rebuild can be performed in {timeToWait}."), player, false);
@@ -314,7 +314,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
                     return;
                 }
 
-                var (isOnDelay, timeToWait) = RecastService.IsOnRecastDelay(Player, RecastGroup.StatRebuild);
+                var (isOnDelay, timeToWait) = RecastService.IsOnRecastDelay(Player, RecastGroupType.StatRebuild);
                 if (isOnDelay)
                 {
                     FloatingTextStringOnCreature(ColorToken.Red($"Another stat rebuild can be performed in {timeToWait}."), Player, false);
@@ -359,7 +359,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
                 CurrencyService.TakeCurrency(Player, CurrencyType.StatRefundToken, 1);
 
                 const int DelaySeconds = CooldownDays * 86400;
-                RecastService.ApplyRecastDelay(Player, RecastGroup.StatRebuild, DelaySeconds, true);
+                RecastService.ApplyRecastDelay(Player, RecastGroupType.StatRebuild, DelaySeconds, true);
             });
         };
     }

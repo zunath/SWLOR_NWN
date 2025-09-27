@@ -33,7 +33,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Leadership
             builder.Create(FeatType.SoldiersPrecision, PerkType.SoldiersPrecision)
                 .Name("Soldier's Precision")
                 .Level(1)
-                .HasRecastDelay(RecastGroup.SoldiersPrecision, 60f)
+                .HasRecastDelay(RecastGroupType.SoldiersPrecision, 60f)
                 .HasActivationDelay(4f)
                 .UnaffectedByHeavyArmor()
                 .IsCastedAbility()

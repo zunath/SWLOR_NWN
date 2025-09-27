@@ -39,7 +39,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.NPC
                 .Name("Earthquake")
                 .HasActivationDelay(4.0f)
                 .DisplaysVisualEffectWhenActivating(VisualEffectType.Vfx_Dur_Aura_Blue)
-                .HasRecastDelay(RecastGroup.Earthquake, 60f)
+                .HasRecastDelay(RecastGroupType.Earthquake, 60f)
                 .IsCastedAbility()
                 .RequirementStamina(10)
                 .HasImpactAction((activator, target, level, location) =>
@@ -70,7 +70,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.NPC
                 .Name("Greater Earthquake")
                 .HasActivationDelay(6.0f)
                 .DisplaysVisualEffectWhenActivating(VisualEffectType.Vfx_Dur_Aura_Blue)
-                .HasRecastDelay(RecastGroup.GreaterEarthquake, 180f)
+                .HasRecastDelay(RecastGroupType.GreaterEarthquake, 180f)
                 .IsCastedAbility()
                 .RequirementStamina(10)
                 .HasImpactAction((activator, target, level, location) =>

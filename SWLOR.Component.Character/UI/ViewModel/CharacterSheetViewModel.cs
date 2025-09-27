@@ -323,7 +323,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
 
         public Action OnClickRecipes() => () =>
         {
-            var payload = new RecipesPayload(RecipesUIMode.Recipes, SkillType.Invalid);
+            var payload = new RecipesPayload(RecipesUIModeType.Recipes, SkillType.Invalid);
             GuiService.TogglePlayerWindow(Player, GuiWindowType.Recipes, payload);
         };
 

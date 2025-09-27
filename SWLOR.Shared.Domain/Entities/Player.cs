@@ -62,14 +62,14 @@ namespace SWLOR.Shared.Domain.Entities
 
             ActiveShipId = Guid.Empty.ToString();
             IsUsingDualPistolMode = false;
-            EmoteStyle = EmoteStyle.Regular;
+            EmoteStyle = EmoteStyleType.Regular;
             MovementRate = 1.0f;
             MapPins = new Dictionary<string, List<MapPin>>();
             MapProgressions = new Dictionary<string, string>();
             RoleplayProgress = new RoleplayProgress();
             Skills = new Dictionary<SkillType, PlayerSkill>();
             Perks = new Dictionary<PerkType, int>();
-            RecastTimes = new Dictionary<RecastGroup, DateTime>();
+            RecastTimes = new Dictionary<RecastGroupType, DateTime>();
             Quests = new Dictionary<string, PlayerQuest>();
             UnlockedPerks = new Dictionary<PerkType, DateTime>();
             UnlockedRecipes = new Dictionary<RecipeType, DateTime>();
@@ -131,7 +131,7 @@ namespace SWLOR.Shared.Domain.Entities
         public DateTime? DatePerkRefundAvailable { get; set; }
         [Indexed]
         public CharacterType CharacterType { get; set; }
-        public EmoteStyle EmoteStyle { get; set; }
+        public EmoteStyleType EmoteStyle { get; set; }
         public string SerializedHotBar { get; set; }
         public string ActiveShipId { get; set; }
         public AppearanceType OriginalAppearanceType { get; set; }
@@ -159,7 +159,7 @@ namespace SWLOR.Shared.Domain.Entities
         public Dictionary<string, string> MapProgressions { get; set; }
         public Dictionary<SkillType, PlayerSkill> Skills { get; set; }
         public Dictionary<PerkType, int> Perks { get; set; }
-        public Dictionary<RecastGroup, DateTime> RecastTimes { get; set; }
+        public Dictionary<RecastGroupType, DateTime> RecastTimes { get; set; }
         public Dictionary<string, PlayerQuest> Quests { get; set; }
         public Dictionary<PerkType, DateTime> UnlockedPerks { get; set; }
         public Dictionary<RecipeType, DateTime> UnlockedRecipes { get; set; }

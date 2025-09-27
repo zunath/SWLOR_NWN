@@ -33,7 +33,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Leadership
             builder.Create(FeatType.Dedication, PerkType.Dedication)
                 .Name("Dedication")
                 .Level(1)
-                .HasRecastDelay(RecastGroup.Dedication, 60f)
+                .HasRecastDelay(RecastGroupType.Dedication, 60f)
                 .HasActivationDelay(4f)
                 .UnaffectedByHeavyArmor()
                 .IsCastedAbility()

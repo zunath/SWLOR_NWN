@@ -32,7 +32,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.MartialArts
         {
             builder.Create(FeatType.Furor, PerkType.Furor)
                 .Name("Furor")
-                .HasRecastDelay(RecastGroup.Furor, 180f)
+                .HasRecastDelay(RecastGroupType.Furor, 180f)
                 .HasActivationDelay(3f)
                 .RequirementStamina(8)
                 .IsCastedAbility()

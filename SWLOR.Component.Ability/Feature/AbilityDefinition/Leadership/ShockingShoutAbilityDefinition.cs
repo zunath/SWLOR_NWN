@@ -36,7 +36,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Leadership
             builder.Create(FeatType.ShockingShout, PerkType.ShockingShout)
                 .Name("Shocking Shout")
                 .Level(1)
-                .HasRecastDelay(RecastGroup.ShockingShout, 180f)
+                .HasRecastDelay(RecastGroupType.ShockingShout, 180f)
                 .HasActivationDelay(4f)
                 .UnaffectedByHeavyArmor()
                 .IsCastedAbility()

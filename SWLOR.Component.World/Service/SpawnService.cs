@@ -717,7 +717,7 @@ namespace SWLOR.Component.World.Service
                 var facing = detail.UseRandomSpawnLocation ? Random.Next(360) : detail.Facing;
                 AssignCommand(deserialized, () => SetFacing(facing));
                 SetLocalString(deserialized, "SPAWN_ID", spawnId.ToString());
-                AI.SetAIFlag(deserialized, AIFlag.ReturnHome);
+                AI.SetAIFlag(deserialized, AIFlagType.ReturnHome);
                 AdjustScripts(deserialized);
                 AdjustStats(deserialized);
 

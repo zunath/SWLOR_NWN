@@ -6,10 +6,10 @@ namespace SWLOR.Shared.Domain.Crafting.Payloads
 {
     public class RecipesPayload: IGuiPayload
     {
-        public RecipesUIMode Mode { get; set; }
+        public RecipesUIModeType Mode { get; set; }
         public SkillType Skill { get; set; }
 
-        public RecipesPayload(RecipesUIMode mode, SkillType skill)
+        public RecipesPayload(RecipesUIModeType mode, SkillType skill)
         {
             Mode = mode;
             Skill = skill;

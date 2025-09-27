@@ -15,7 +15,7 @@ namespace SWLOR.Shared.Domain.Inventory.ValueObjects
         public AnimationType ActivationAnimation { get; set; }
         public ReducesItemChargeDelegate ReducesItemChargeAction { get; set; }
         public bool CanTargetLocation { get; set; }
-        public RecastGroup? RecastGroup { get; set; }
+        public RecastGroupType? RecastGroup { get; set; }
         public float? RecastCooldown { get; set; }
 
         public ItemDetail()

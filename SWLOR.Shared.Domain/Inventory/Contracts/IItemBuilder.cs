@@ -111,7 +111,7 @@ public interface IItemBuilder
     /// <param name="type">The recast group type</param>
     /// <param name="delaySeconds">The delay in seconds</param>
     /// <returns>An item builder with the configured options.</returns>
-    IItemBuilder HasRecastDelay(RecastGroup type, float delaySeconds);
+    IItemBuilder HasRecastDelay(RecastGroupType type, float delaySeconds);
 
     /// <summary>
     /// Returns a built dictionary of item details.

@@ -33,7 +33,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Leadership
             builder.Create(FeatType.SoldiersStrike, PerkType.SoldiersStrike)
                 .Name("Soldier's Strike")
                 .Level(1)
-                .HasRecastDelay(RecastGroup.SoldiersStrike, 60f)
+                .HasRecastDelay(RecastGroupType.SoldiersStrike, 60f)
                 .HasActivationDelay(4f)
                 .UnaffectedByHeavyArmor()
                 .IsCastedAbility()

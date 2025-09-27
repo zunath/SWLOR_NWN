@@ -37,7 +37,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beastmaster
             builder.Create(FeatType.SoothePet, PerkType.SoothePet)
                 .Name("Soothe Pet")
                 .Level(1)
-                .HasRecastDelay(RecastGroup.Tame, 60f * 3)
+                .HasRecastDelay(RecastGroupType.Tame, 60f * 3)
                 .UsesAnimation(AnimationType.LoopingGetMid)
                 .HasActivationDelay(1f)
                 .RequirementStamina(2)

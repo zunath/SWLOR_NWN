@@ -21,7 +21,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.NPC
                 .Name("Screech")
                 .HasActivationDelay(4.0f)
                 .DisplaysVisualEffectWhenActivating(VisualEffectType.Vfx_Dur_Aura_Blue)
-                .HasRecastDelay(RecastGroup.Screech, 120f)
+                .HasRecastDelay(RecastGroupType.Screech, 120f)
                 .IsCastedAbility()
                 .RequirementStamina(10)
                 .HasImpactAction((activator, target, level, location) =>

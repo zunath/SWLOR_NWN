@@ -235,7 +235,7 @@ namespace SWLOR.Component.Inventory.Service
         /// <param name="type">The recast group type</param>
         /// <param name="delaySeconds">The delay in seconds</param>
         /// <returns>An item builder with the configured options.</returns>
-        public IItemBuilder HasRecastDelay(RecastGroup type, float delaySeconds)
+        public IItemBuilder HasRecastDelay(RecastGroupType type, float delaySeconds)
         {
             foreach (var item in _activeItems)
             {

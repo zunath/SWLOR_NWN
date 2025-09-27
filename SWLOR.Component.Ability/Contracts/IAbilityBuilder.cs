@@ -129,7 +129,7 @@ namespace SWLOR.Component.Ability.Contracts
         /// <param name="recastGroup">The recast group this delay will fall under.</param>
         /// <param name="delay">An action which determines the recast delay.</param>
         /// <returns>An ability builder with the configured options.</returns>
-        IAbilityBuilder HasRecastDelay(RecastGroup recastGroup, AbilityRecastDelayAction delay);
+        IAbilityBuilder HasRecastDelay(RecastGroupType recastGroup, AbilityRecastDelayAction delay);
 
         /// <summary>
         /// Assigns a recast delay on the active ability we're building.
@@ -139,7 +139,7 @@ namespace SWLOR.Component.Ability.Contracts
         /// <param name="recastGroup">The recast group this delay will fall under.</param>
         /// <param name="seconds">The number of seconds to delay.</param>
         /// <returns>An ability builder with the configured options.</returns>
-        IAbilityBuilder HasRecastDelay(RecastGroup recastGroup, float seconds);
+        IAbilityBuilder HasRecastDelay(RecastGroupType recastGroup, float seconds);
 
         /// <summary>
         /// Adds an FP requirement to use the ability at this level.

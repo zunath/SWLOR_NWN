@@ -17,7 +17,7 @@ namespace SWLOR.Component.Ability.Service
         private readonly IDatabaseService _db;
         private readonly IServiceProvider _serviceProvider;
         private readonly ITimeService _time;
-        private static readonly Dictionary<RecastGroup, string> _recastDescriptions = new();
+        private static readonly Dictionary<RecastGroupType, string> _recastDescriptions = new();
 
         public RecastService(
             IDatabaseService db, 
@@ -42,9 +42,9 @@ namespace SWLOR.Component.Ability.Service
         /// </summary>
         private void CacheRecastGroupNames()
         {
-            foreach (var recast in Enum.GetValues(typeof(RecastGroup)).Cast<RecastGroup>())
+            foreach (var recast in Enum.GetValues(typeof(RecastGroupType)).Cast<RecastGroupType>())
             {
-                var attr = recast.GetAttribute<RecastGroup, RecastGroupAttribute>();
+                var attr = recast.GetAttribute<RecastGroupType, RecastGroupAttribute>();
                 _recastDescriptions[recast] = attr.ShortName;
             }
         }
@@ -54,7 +54,7 @@ namespace SWLOR.Component.Ability.Service
         /// </summary>
         /// <param name="recastGroup">The recast group to retrieve.</param>
         /// <returns>The name of a recast group.</returns>
-        public string GetRecastGroupName(RecastGroup recastGroup)
+        public string GetRecastGroupName(RecastGroupType recastGroup)
         {
             if (!_recastDescriptions.ContainsKey(recastGroup))
                 throw new KeyNotFoundException($"Recast group {recastGroup} has not been registered. Did you forget the Description attribute?");
@@ -70,7 +70,7 @@ namespace SWLOR.Component.Ability.Service
         /// <param name="creature">The creature to check</param>
         /// <param name="recastGroup">The recast group to check</param>
         /// <returns>true if recast delay hasn't passed. false otherwise. If true, also returns a string containing a user-readable amount of time they need to wait. Otherwise it will be an empty string.</returns>
-        public (bool, string) IsOnRecastDelay(uint creature, RecastGroup recastGroup)
+        public (bool, string) IsOnRecastDelay(uint creature, RecastGroupType recastGroup)
         {
             if (GetIsDM(creature)) return (false, string.Empty);
             var now = DateTime.UtcNow;
@@ -111,9 +111,9 @@ namespace SWLOR.Component.Ability.Service
         /// <param name="group">The recast group to put this delay under.</param>
         /// <param name="delaySeconds">The number of seconds to delay.</param>
         /// <param name="ignoreRecastReduction">If true, recast reduction bonuses are ignored.</param>
-        public void ApplyRecastDelay(uint activator, RecastGroup group, float delaySeconds, bool ignoreRecastReduction)
+        public void ApplyRecastDelay(uint activator, RecastGroupType group, float delaySeconds, bool ignoreRecastReduction)
         {
-            if (!GetIsObjectValid(activator) || group == RecastGroup.Invalid || delaySeconds <= 0.0f) return;
+            if (!GetIsObjectValid(activator) || group == RecastGroupType.Invalid || delaySeconds <= 0.0f) return;
 
             // NPCs and DM-possessed NPCs
             if (!GetIsPC(activator) || GetIsDMPossessed(activator))

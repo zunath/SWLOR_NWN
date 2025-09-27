@@ -33,7 +33,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Leadership
             builder.Create(FeatType.FrenziedShout, PerkType.FrenziedShout)
                 .Name("Frenzied Shout")
                 .Level(1)
-                .HasRecastDelay(RecastGroup.FrenziedShout, 120f)
+                .HasRecastDelay(RecastGroupType.FrenziedShout, 120f)
                 .HasActivationDelay(4f)
                 .UnaffectedByHeavyArmor()
                 .IsCastedAbility()

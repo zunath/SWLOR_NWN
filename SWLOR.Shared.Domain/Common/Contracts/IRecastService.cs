@@ -9,7 +9,7 @@ namespace SWLOR.Shared.Domain.Common.Contracts
         /// </summary>
         /// <param name="recastGroup">The recast group to retrieve.</param>
         /// <returns>The name of a recast group.</returns>
-        string GetRecastGroupName(RecastGroup recastGroup);
+        string GetRecastGroupName(RecastGroupType recastGroup);
 
         /// <summary>
         /// Returns true if a recast delay has not expired yet.
@@ -18,7 +18,7 @@ namespace SWLOR.Shared.Domain.Common.Contracts
         /// <param name="creature">The creature to check</param>
         /// <param name="recastGroup">The recast group to check</param>
         /// <returns>true if recast delay hasn't passed. false otherwise. If true, also returns a string containing a user-readable amount of time they need to wait. Otherwise it will be an empty string.</returns>
-        (bool, string) IsOnRecastDelay(uint creature, RecastGroup recastGroup);
+        (bool, string) IsOnRecastDelay(uint creature, RecastGroupType recastGroup);
 
         /// <summary>
         /// Applies a recast delay on a specific recast group.
@@ -28,7 +28,7 @@ namespace SWLOR.Shared.Domain.Common.Contracts
         /// <param name="group">The recast group to put this delay under.</param>
         /// <param name="delaySeconds">The number of seconds to delay.</param>
         /// <param name="ignoreRecastReduction">If true, recast reduction bonuses are ignored.</param>
-        void ApplyRecastDelay(uint activator, RecastGroup group, float delaySeconds, bool ignoreRecastReduction);
+        void ApplyRecastDelay(uint activator, RecastGroupType group, float delaySeconds, bool ignoreRecastReduction);
 
         /// <summary>
         /// Caches recast group data on module load.

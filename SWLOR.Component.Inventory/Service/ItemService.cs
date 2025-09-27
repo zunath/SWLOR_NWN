@@ -323,7 +323,7 @@ namespace SWLOR.Component.Inventory.Service
             // Check recast cooldown
             if (itemDetail.RecastGroup != null && itemDetail.RecastCooldown != null)
             {
-                var (isOnRecast, timeToWait) = RecastService.IsOnRecastDelay(user, (RecastGroup)itemDetail.RecastGroup);
+                var (isOnRecast, timeToWait) = RecastService.IsOnRecastDelay(user, (RecastGroupType)itemDetail.RecastGroup);
                 if (isOnRecast)
                 {
                     SendMessageToPC(user, $"This item can be used in {timeToWait}.");
@@ -426,7 +426,7 @@ namespace SWLOR.Component.Inventory.Service
 
                     if (itemDetail.RecastGroup != null && itemDetail.RecastCooldown != null)
                     {
-                        RecastService.ApplyRecastDelay(user, (RecastGroup)itemDetail.RecastGroup, (float)itemDetail.RecastCooldown, true);
+                        RecastService.ApplyRecastDelay(user, (RecastGroupType)itemDetail.RecastGroup, (float)itemDetail.RecastCooldown, true);
                     }
 
                     // Reduce item charge if specified.

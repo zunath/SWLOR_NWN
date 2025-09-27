@@ -1,6 +1,6 @@
 ﻿namespace SWLOR.Shared.Domain.Communication.Enums
 {
-    public enum EmoteStyle
+    public enum EmoteStyleType
     {
         Regular = 1,
         Novel = 2

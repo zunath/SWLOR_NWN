@@ -33,7 +33,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Leadership
             builder.Create(FeatType.Rejuvenation, PerkType.Rejuvenation)
                 .Name("Rejuvenation")
                 .Level(1)
-                .HasRecastDelay(RecastGroup.Rejuvenation, 180f)
+                .HasRecastDelay(RecastGroupType.Rejuvenation, 180f)
                 .HasActivationDelay(4f)
                 .UnaffectedByHeavyArmor()
                 .IsCastedAbility()

@@ -208,7 +208,7 @@ namespace SWLOR.Component.Communication.Service
             }
             else
             {
-                chatComponents = GetEmoteStyle(sender) == EmoteStyle.Regular 
+                chatComponents = GetEmoteStyle(sender) == EmoteStyleType.Regular 
                     ? SplitMessageIntoComponents_Regular(message) 
                     : SplitMessageIntoComponents_Novel(message);
 
@@ -748,7 +748,7 @@ namespace SWLOR.Component.Communication.Service
             return components;
         }
 
-        public EmoteStyle GetEmoteStyle(uint player)
+        public EmoteStyleType GetEmoteStyle(uint player)
         {
             if (GetIsPC(player) && !GetIsDM(player) && !GetIsDMPossessed(player))
             {
@@ -758,10 +758,10 @@ namespace SWLOR.Component.Communication.Service
                 return dbPlayer.EmoteStyle;
             }
 
-            return EmoteStyle.Regular;
+            return EmoteStyleType.Regular;
         }
 
-        public void SetEmoteStyle(uint player, EmoteStyle style)
+        public void SetEmoteStyle(uint player, EmoteStyleType style)
         {
             if (GetIsPC(player) && !GetIsDM(player))
             {

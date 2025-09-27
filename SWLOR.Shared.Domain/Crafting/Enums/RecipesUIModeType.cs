@@ -1,6 +1,6 @@
 namespace SWLOR.Shared.Domain.Crafting.Enums
 {
-    public enum RecipesUIMode
+    public enum RecipesUIModeType
     {
         Recipes = 1,
         Crafting = 2,

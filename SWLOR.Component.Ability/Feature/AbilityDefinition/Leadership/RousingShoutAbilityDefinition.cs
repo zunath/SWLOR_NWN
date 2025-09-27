@@ -36,7 +36,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Leadership
             builder.Create(FeatType.RousingShout, PerkType.RousingShout)
                 .Name("Rousing Shout")
                 .Level(1)
-                .HasRecastDelay(RecastGroup.RousingShout, 300f)
+                .HasRecastDelay(RecastGroupType.RousingShout, 300f)
                 .HasActivationDelay(8f)
                 .UnaffectedByHeavyArmor()
                 .IsCastedAbility()

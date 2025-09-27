@@ -33,7 +33,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.NPC
             builder.Create(FeatType.IronShell, PerkType.Invalid)
                 .Name("Iron Shell")
                 .HasActivationDelay(2.0f)
-                .HasRecastDelay(RecastGroup.IronShell, 60f)
+                .HasRecastDelay(RecastGroupType.IronShell, 60f)
                 .IsCastedAbility()
                 .RequirementStamina(5)
                 .HasImpactAction((activator, target, level, location) =>

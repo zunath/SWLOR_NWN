@@ -23,7 +23,7 @@ namespace SWLOR.Shared.Domain.Character.ValueObjects
         public AbilityCustomValidationAction CustomValidation { get; set; }
         public List<IAbilityActivationRequirement> Requirements { get; set; }
         public VisualEffectType ActivationVisualEffect { get; set; }
-        public RecastGroup RecastGroup { get; set; }
+        public RecastGroupType RecastGroup { get; set; }
         public AbilityActivationType ActivationType { get; set; }
         public PerkType EffectiveLevelPerkType { get; set; }
         public AnimationType AnimationType { get; set; }

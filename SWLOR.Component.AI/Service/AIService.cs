@@ -382,14 +382,14 @@ namespace SWLOR.Component.AI.Service
 
             // Return Home flag
             var homeLocation = GetLocalLocation(creature, "HOME_LOCATION");
-            if (aiFlags.HasFlag(AIFlag.ReturnHome) &&
+            if (aiFlags.HasFlag(AIFlagType.ReturnHome) &&
                 (GetAreaFromLocation(homeLocation) != GetArea(creature) ||
                  GetDistanceBetweenLocations(GetLocation(creature), homeLocation) > 15f))
             {
                 AssignCommand(creature, () => ActionForceMoveToLocation(homeLocation));
             }
             // Randomly walk flag
-            else if(aiFlags.HasFlag(AIFlag.RandomWalk) &&
+            else if(aiFlags.HasFlag(AIFlagType.RandomWalk) &&
                 Random.D100(1) <= 40)
             {
                 AssignCommand(creature, ActionRandomWalk);
@@ -455,7 +455,7 @@ namespace SWLOR.Component.AI.Service
         /// </summary>
         /// <param name="creature">The creature to set the flags onto.</param>
         /// <param name="flags">The flags to set.</param>
-        public void SetAIFlag(uint creature, AIFlag flags)
+        public void SetAIFlag(uint creature, AIFlagType flags)
         {
             var flagValue = (int) flags;
             SetLocalInt(creature, "AI_FLAGS", flagValue);
@@ -466,10 +466,10 @@ namespace SWLOR.Component.AI.Service
         /// </summary>
         /// <param name="creature">The creature to retrieve from.</param>
         /// <returns>A set of AIFlags specified on a creature.</returns>
-        public AIFlag GetAIFlag(uint creature)
+        public AIFlagType GetAIFlag(uint creature)
         {
             var flagValue = GetLocalInt(creature, "AI_FLAGS");
-            return (AIFlag) flagValue;
+            return (AIFlagType) flagValue;
         }
     }
 }

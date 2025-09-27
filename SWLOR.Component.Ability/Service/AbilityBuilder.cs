@@ -219,7 +219,7 @@ namespace SWLOR.Component.Ability.Service
         /// <param name="recastGroup">The recast group this delay will fall under.</param>
         /// <param name="delay">An action which determines the recast delay.</param>
         /// <returns>An ability builder with the configured options.</returns>
-        public IAbilityBuilder HasRecastDelay(RecastGroup recastGroup, AbilityRecastDelayAction delay)
+        public IAbilityBuilder HasRecastDelay(RecastGroupType recastGroup, AbilityRecastDelayAction delay)
         {
             _activeAbility.RecastGroup = recastGroup;
             _activeAbility.RecastDelay = delay;
@@ -235,7 +235,7 @@ namespace SWLOR.Component.Ability.Service
         /// <param name="recastGroup">The recast group this delay will fall under.</param>
         /// <param name="seconds">The number of seconds to delay.</param>
         /// <returns>An ability builder with the configured options.</returns>
-        public IAbilityBuilder HasRecastDelay(RecastGroup recastGroup, float seconds)
+        public IAbilityBuilder HasRecastDelay(RecastGroupType recastGroup, float seconds)
         {
             _activeAbility.RecastGroup = recastGroup;
             _activeAbility.RecastDelay = activator => seconds;

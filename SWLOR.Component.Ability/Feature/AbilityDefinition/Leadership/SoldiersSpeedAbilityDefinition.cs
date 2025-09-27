@@ -33,7 +33,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Leadership
             builder.Create(FeatType.SoldiersSpeed, PerkType.SoldiersSpeed)
                 .Name("Soldier's Speed")
                 .Level(1)
-                .HasRecastDelay(RecastGroup.SoldiersSpeed, 60f)
+                .HasRecastDelay(RecastGroupType.SoldiersSpeed, 60f)
                 .HasActivationDelay(4f)
                 .UnaffectedByHeavyArmor()
                 .IsCastedAbility()

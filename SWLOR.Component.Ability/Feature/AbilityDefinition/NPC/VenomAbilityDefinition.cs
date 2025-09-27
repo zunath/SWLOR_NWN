@@ -33,7 +33,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.NPC
             builder.Create(FeatType.Venom, PerkType.Invalid)
                 .Name("Venom")
                 .HasActivationDelay(1.5f)
-                .HasRecastDelay(RecastGroup.Venom, 35f)
+                .HasRecastDelay(RecastGroupType.Venom, 35f)
                 .IsCastedAbility()
                 .RequirementStamina(3)
                 .HasImpactAction((activator, target, level, location) =>

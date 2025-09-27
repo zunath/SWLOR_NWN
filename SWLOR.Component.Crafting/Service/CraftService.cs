@@ -390,7 +390,7 @@ namespace SWLOR.Component.Crafting.Service
         {
             var player = GetLastUsedBy();
             var skillType = (SkillType)GetLocalInt(OBJECT_SELF, "CRAFTING_SKILL_TYPE_ID");
-            var payload = new RecipesPayload(RecipesUIMode.Crafting, skillType);
+            var payload = new RecipesPayload(RecipesUIModeType.Crafting, skillType);
             GuiService.TogglePlayerWindow(player, GuiWindowType.Recipes, payload, OBJECT_SELF);
         }
 
@@ -785,7 +785,7 @@ namespace SWLOR.Component.Crafting.Service
 
             if (dbJob == null)
             {
-                var payload = new RecipesPayload(RecipesUIMode.Research, SkillType.Invalid);
+                var payload = new RecipesPayload(RecipesUIModeType.Research, SkillType.Invalid);
                 GuiService.TogglePlayerWindow(player, GuiWindowType.Recipes, payload, terminal);
             }
             else

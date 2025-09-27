@@ -11,7 +11,7 @@ namespace SWLOR.Shared.Domain.World.ValueObjects
         public ObjectType Type { get; set; }
         public string Resref { get; set; }
         public int Weight { get; set; }
-        public AIFlag AIFlags { get; set; }
+        public AIFlagType AIFlags { get; set; }
         
         public List<DayOfWeek> RealWorldDayOfWeekRestriction { get; set; }
         public TimeSpan? RealWorldStartRestriction { get; set; }
@@ -26,7 +26,7 @@ namespace SWLOR.Shared.Domain.World.ValueObjects
 
         public SpawnObject()
         {
-            AIFlags = AIFlag.None;
+            AIFlags = AIFlagType.None;
             RealWorldDayOfWeekRestriction = new List<DayOfWeek>();
             GameHourStartRestriction = -1;
             GameHourEndRestriction = -1;

@@ -35,7 +35,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.NPC
             builder.Create(FeatType.Talon, PerkType.Invalid)
                 .Name("Talon")
                 .HasActivationDelay(2.0f)
-                .HasRecastDelay(RecastGroup.Talon, 40f)
+                .HasRecastDelay(RecastGroupType.Talon, 40f)
                 .IsCastedAbility()
                 .RequirementStamina(3)
                 .HasImpactAction((activator, target, level, location) =>

@@ -23,7 +23,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.NPC
                 .IsCastedAbility()
                 .RequirementStamina(6)
                 .UnaffectedByHeavyArmor()
-                .HasRecastDelay(RecastGroup.Roar, 60f)
+                .HasRecastDelay(RecastGroupType.Roar, 60f)
                 .HasImpactAction((activator, target, level, location) =>
                 {
                     const float Distance = 2.5f;

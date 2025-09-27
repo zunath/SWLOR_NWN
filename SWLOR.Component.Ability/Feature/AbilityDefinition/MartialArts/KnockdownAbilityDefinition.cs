@@ -35,7 +35,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.MartialArts
         {
             builder.Create(FeatType.Knockdown, PerkType.Knockdown)
                 .Name("Knockdown")
-                .HasRecastDelay(RecastGroup.Knockdown, 60f)
+                .HasRecastDelay(RecastGroupType.Knockdown, 60f)
                 .IsWeaponAbility()
                 .RequirementStamina(6)
                 .HasImpactAction((activator, target, level, targetLocation) =>

@@ -93,7 +93,7 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
                     // Droid Activation
                     if (itemPropertyIndex == 0)
                     {
-                        var (onDelay, timeToWait) = RecastService.IsOnRecastDelay(user, RecastGroup.DroidController);
+                        var (onDelay, timeToWait) = RecastService.IsOnRecastDelay(user, RecastGroupType.DroidController);
 
                         if (onDelay)
                         {

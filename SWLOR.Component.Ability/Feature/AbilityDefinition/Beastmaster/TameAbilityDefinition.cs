@@ -45,7 +45,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beastmaster
             builder.Create(FeatType.Tame, PerkType.Tame)
                 .Name("Tame")
                 .Level(1)
-                .HasRecastDelay(RecastGroup.Tame, 60f * 2f)
+                .HasRecastDelay(RecastGroupType.Tame, 60f * 2f)
                 .UsesAnimation(AnimationType.LoopingGetMid)
                 .HasActivationDelay(18f)
                 .RequirementStamina(10)

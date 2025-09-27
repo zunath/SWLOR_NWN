@@ -33,7 +33,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Leadership
             builder.Create(FeatType.Charge, PerkType.Charge)
                 .Name("Charge")
                 .Level(1)
-                .HasRecastDelay(RecastGroup.Charge, 60f)
+                .HasRecastDelay(RecastGroupType.Charge, 60f)
                 .HasActivationDelay(4f)
                 .UnaffectedByHeavyArmor()
                 .IsCastedAbility()

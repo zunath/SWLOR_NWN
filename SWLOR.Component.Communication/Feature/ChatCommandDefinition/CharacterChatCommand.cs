@@ -97,7 +97,7 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
                     var daysOldMessage = daysOld == 1 ? "day old" : "days old";
                     var statRebuild = "Now";
 
-                    var (isOnDelay, timeToWait) = _recastService.IsOnRecastDelay(user, RecastGroup.StatRebuild);
+                    var (isOnDelay, timeToWait) = _recastService.IsOnRecastDelay(user, RecastGroupType.StatRebuild);
                     if (isOnDelay)
                     {
                         statRebuild = timeToWait;
@@ -347,7 +347,7 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
                 .Action((user, target, location, args) =>
                 {
                     var curStyle = _communication.GetEmoteStyle(user);
-                    var newStyle = curStyle == EmoteStyle.Novel ? EmoteStyle.Regular : EmoteStyle.Novel;
+                    var newStyle = curStyle == EmoteStyleType.Novel ? EmoteStyleType.Regular : EmoteStyleType.Novel;
                     _communication.SetEmoteStyle(user, newStyle);
                     SendMessageToPC(user, $"Toggled emote style to {newStyle}.");
                 });

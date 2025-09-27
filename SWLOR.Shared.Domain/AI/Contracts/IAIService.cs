@@ -117,13 +117,13 @@ namespace SWLOR.Shared.Domain.AI.Contracts
         /// </summary>
         /// <param name="creature">The creature to set the flags onto.</param>
         /// <param name="flags">The flags to set.</param>
-        void SetAIFlag(uint creature, AIFlag flags);
+        void SetAIFlag(uint creature, AIFlagType flags);
 
         /// <summary>
         /// Retrieves a set of AI flags from a particular creature. If <see cref="SetAIFlag"/> has not been called, this will return no flags.
         /// </summary>
         /// <param name="creature">The creature to retrieve from.</param>
         /// <returns>A set of AIFlags specified on a creature.</returns>
-        AIFlag GetAIFlag(uint creature);
+        AIFlagType GetAIFlag(uint creature);
     }
 }

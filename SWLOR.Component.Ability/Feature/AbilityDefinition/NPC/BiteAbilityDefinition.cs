@@ -35,7 +35,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.NPC
                 .IsCastedAbility()
                 .RequirementStamina(6)
                 .UnaffectedByHeavyArmor()
-                .HasRecastDelay(RecastGroup.Bite, 60f)
+                .HasRecastDelay(RecastGroupType.Bite, 60f)
                 .HasImpactAction((activator, target, level, location) =>
                 {
                     StatusEffectService.Apply(activator, target, StatusEffectType.Bleed, 60f);

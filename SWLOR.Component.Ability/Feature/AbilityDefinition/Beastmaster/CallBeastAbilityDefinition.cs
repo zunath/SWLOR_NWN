@@ -40,7 +40,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beastmaster
             builder.Create(FeatType.CallBeast, PerkType.Tame) // Intentionally tied to Tame
                 .Name("Call Beast")
                 .Level(1)
-                .HasRecastDelay(RecastGroup.CallBeast, 60f * 10f)
+                .HasRecastDelay(RecastGroupType.CallBeast, 60f * 10f)
                 .UsesAnimation(AnimationType.LoopingGetMid)
                 .HasActivationDelay(6f)
                 .IsCastedAbility()

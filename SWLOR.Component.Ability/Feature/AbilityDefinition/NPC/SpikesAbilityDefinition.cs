@@ -36,7 +36,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.NPC
             builder.Create(FeatType.Spikes, PerkType.Invalid)
                 .Name("Spikes")
                 .HasActivationDelay(3.5f)
-                .HasRecastDelay(RecastGroup.Spikes, 20f)
+                .HasRecastDelay(RecastGroupType.Spikes, 20f)
                 .IsCastedAbility()
                 .RequirementStamina(8)
                 .HasImpactAction((activator, target, level, location) =>

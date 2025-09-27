@@ -33,7 +33,7 @@ namespace SWLOR.Shared.Domain.World.ValueObjects
                 {
                     Type = ObjectType.All,
                     Resref = string.Empty,
-                    AIFlags = AIFlag.None,
+                    AIFlags = AIFlagType.None,
                     Animators = new List<IAnimator>()
                 };
 

@@ -1,7 +1,7 @@
 namespace SWLOR.Shared.Domain.AI.Enums
 {
     [Flags]
-    public enum AIFlag
+    public enum AIFlagType
     {
         None = 0,
         RandomWalk = 1,

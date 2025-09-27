@@ -36,7 +36,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.NPC
             builder.Create(FeatType.FireBreath, PerkType.Invalid)
                 .Name("Fire Breath")
                 .HasActivationDelay(2.0f)
-                .HasRecastDelay(RecastGroup.FireBreath, 60f)
+                .HasRecastDelay(RecastGroupType.FireBreath, 60f)
                 .IsCastedAbility()
                 .RequirementStamina(6)
                 .HasImpactAction((activator, target, level, location) =>
@@ -74,7 +74,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.NPC
             builder.Create(FeatType.FlameBlast, PerkType.Invalid)
                 .Name("Flame Blast")
                 .HasActivationDelay(4.0f)
-                .HasRecastDelay(RecastGroup.FlameBlast, 30f)
+                .HasRecastDelay(RecastGroupType.FlameBlast, 30f)
                 .IsCastedAbility()
                 .RequirementStamina(3)
                 .HasImpactAction((activator, target, level, location) =>

@@ -27,8 +27,8 @@ namespace SWLOR.Component.Communication.Contracts
 
         void ProcessNativeChatMessage();
         void ProcessChatMessage();
-        EmoteStyle GetEmoteStyle(uint player);
-        void SetEmoteStyle(uint player, EmoteStyle style);
+        EmoteStyleType GetEmoteStyle(uint player);
+        void SetEmoteStyle(uint player, EmoteStyleType style);
         void ConfigureFeedbackMessages();
     }
 

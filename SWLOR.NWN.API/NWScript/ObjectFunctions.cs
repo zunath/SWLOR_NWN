@@ -213,7 +213,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oObject">The object from which you are obtaining the color</param>
         /// <param name="nColorChannel">The color channel that you want to get the color value of (COLOR_CHANNEL_SKIN, COLOR_CHANNEL_HAIR, COLOR_CHANNEL_TATTOO_1, COLOR_CHANNEL_TATTOO_2)</param>
         /// <returns>The color value, or -1 on error</returns>
-        public static int GetColor(uint oObject, ColorChannel nColorChannel)
+        public static int GetColor(uint oObject, ColorChannelType nColorChannel)
         {
             return global::NWN.Core.NWScript.GetColor(oObject, (int)nColorChannel);
         }
@@ -225,7 +225,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oObject">The object for which you are changing the color</param>
         /// <param name="nColorChannel">The color channel that you want to set the color value of (COLOR_CHANNEL_SKIN, COLOR_CHANNEL_HAIR, COLOR_CHANNEL_TATTOO_1, COLOR_CHANNEL_TATTOO_2)</param>
         /// <param name="nColorValue">The color you want to set (0-175)</param>
-        public static void SetColor(uint oObject, ColorChannel nColorChannel, int nColorValue)
+        public static void SetColor(uint oObject, ColorChannelType nColorChannel, int nColorValue)
         {
             global::NWN.Core.NWScript.SetColor(oObject, (int)nColorChannel, nColorValue);
         }
@@ -427,7 +427,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nStrRef">Reference of the string in the talk table</param>
         /// <param name="nTalkVolume">TALKVOLUME_* constant (defaults to TalkVolume.Talk)</param>
-        public static void SpeakStringByStrRef(int nStrRef, TalkVolume nTalkVolume = TalkVolume.Talk)
+        public static void SpeakStringByStrRef(int nStrRef, TalkVolumeType nTalkVolume = TalkVolumeType.Talk)
         {
             global::NWN.Core.NWScript.SpeakStringByStrRef(nStrRef, (int)nTalkVolume);
         }
@@ -581,7 +581,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nVoiceChatID">VOICE_CHAT_* constant</param>
         /// <param name="oTarget">The target (defaults to OBJECT_INVALID)</param>
-        public static void PlayVoiceChat(VoiceChat nVoiceChatID, uint oTarget = OBJECT_INVALID)
+        public static void PlayVoiceChat(VoiceChatType nVoiceChatID, uint oTarget = OBJECT_INVALID)
         {
             global::NWN.Core.NWScript.PlayVoiceChat((int)nVoiceChatID, oTarget);
         }
@@ -852,7 +852,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nObjectFilter">Allows you to filter out undesired object types using bitwise "or" (defaults to ObjectType.Creature)</param>
         /// <param name="vOrigin">Only used for cylinders and cones, specifies the origin of the effect (normally the spell-caster's position) (defaults to default)</param>
         /// <returns>The first object in the shape, or OBJECT_INVALID on error</returns>
-        public static uint GetFirstObjectInShape(Shape nShape, float fSize, Location lTarget, bool bLineOfSight = false,
+        public static uint GetFirstObjectInShape(ShapeType nShape, float fSize, Location lTarget, bool bLineOfSight = false,
             ObjectType nObjectFilter = ObjectType.Creature, Vector3 vOrigin = default)
         {
             return global::NWN.Core.NWScript.GetFirstObjectInShape((int)nShape, fSize, lTarget, bLineOfSight ? 1 : 0, (int)nObjectFilter, vOrigin);
@@ -875,7 +875,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nObjectFilter">Allows you to filter out undesired object types using bitwise "or" (defaults to ObjectType.Creature)</param>
         /// <param name="vOrigin">Only used for cylinders and cones, specifies the origin of the effect (normally the spell-caster's position) (defaults to default)</param>
         /// <returns>The next object in the shape, or OBJECT_INVALID on error</returns>
-        public static uint GetNextObjectInShape(Shape nShape, float fSize, Location lTarget, bool bLineOfSight = false,
+        public static uint GetNextObjectInShape(ShapeType nShape, float fSize, Location lTarget, bool bLineOfSight = false,
             ObjectType nObjectFilter = ObjectType.Creature, Vector3 vOrigin = default)
         {
             return global::NWN.Core.NWScript.GetNextObjectInShape((int)nShape, fSize, lTarget, bLineOfSight ? 1 : 0, (int)nObjectFilter, vOrigin);
@@ -1031,7 +1031,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="sStringToSpeak">The string to speak</param>
         /// <param name="nTalkVolume">TALKVOLUME_* constant (defaults to TalkVolume.Talk)</param>
-        public static void SpeakString(string sStringToSpeak, TalkVolume nTalkVolume = TalkVolume.Talk)
+        public static void SpeakString(string sStringToSpeak, TalkVolumeType nTalkVolume = TalkVolumeType.Talk)
         {
             global::NWN.Core.NWScript.SpeakString(sStringToSpeak, (int)nTalkVolume);
         }

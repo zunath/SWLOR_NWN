@@ -4,8 +4,6 @@ using SWLOR.Component.Space.Model;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Item;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Core.Bioware;
@@ -375,7 +373,7 @@ namespace SWLOR.Component.Space.Service
             if (GetIsObjectValid(target) &&
                 GetIsPC(creature))
             {
-                PlayerPlugin.ApplyLoopingVisualEffectToObject(creature, target, VisualEffect.Vfx_Target_Marker);
+                PlayerPlugin.ApplyLoopingVisualEffectToObject(creature, target, VisualEffectType.Vfx_Target_Marker);
             }
             SetLocalObject(creature, "SPACE_TARGET", target);
 
@@ -407,7 +405,7 @@ namespace SWLOR.Component.Space.Service
             if (GetIsObjectValid(target) &&
                 GetIsPC(creature))
             {
-                PlayerPlugin.ApplyLoopingVisualEffectToObject(creature, target, VisualEffect.None);
+                PlayerPlugin.ApplyLoopingVisualEffectToObject(creature, target, VisualEffectType.None);
             }
 
             DeleteLocalObject(creature, "SPACE_TARGET");
@@ -440,7 +438,7 @@ namespace SWLOR.Component.Space.Service
             // Targeted the same object - remove it.
             if (currentTarget == target)
             {
-                PlayerPlugin.ShowVisualEffect(player, (int)VisualEffect.Vfx_UI_Cancel, 1f, position, Vector3.Zero, Vector3.Zero);
+                PlayerPlugin.ShowVisualEffect(player, (int)VisualEffectType.Vfx_UI_Cancel, 1f, position, Vector3.Zero, Vector3.Zero);
                 ClearCurrentTarget(player);
             }
             // Targeted something new. Remove existing target and pick the new one.
@@ -448,7 +446,7 @@ namespace SWLOR.Component.Space.Service
             {
                 ClearCurrentTarget(player);
                 SetCurrentTarget(player, target);
-                PlayerPlugin.ShowVisualEffect(player, (int)VisualEffect.Vfx_UI_Select, 1f, position, Vector3.Zero, Vector3.Zero);
+                PlayerPlugin.ShowVisualEffect(player, (int)VisualEffectType.Vfx_UI_Select, 1f, position, Vector3.Zero, Vector3.Zero);
             }
         }
 
@@ -681,7 +679,7 @@ namespace SWLOR.Component.Space.Service
 
             // Update player appearance to match that of the ship.
             SetCreatureAppearanceType(player, shipDetail.Appearance);
-            CreaturePlugin.SetMovementRate(player, MovementRate.PC);
+            CreaturePlugin.SetMovementRate(player, MovementRateType.PC);
 
             // Set active ship Id and serialize the player's hot bar.
             dbPlayer.SerializedHotBar = CreaturePlugin.SerializeQuickbar(player);
@@ -808,7 +806,7 @@ namespace SWLOR.Component.Space.Service
             var chair = GetNearestObjectByTag("pilot_chair", player);
             var location = GetLocation(player);
             var copy = CopyObject(player, location, OBJECT_INVALID, "spaceship_copy");
-            ChangeToStandardFaction(copy, StandardFaction.Defender);
+            ChangeToStandardFaction(copy, StandardFactionType.Defender);
             TakeGoldFromCreature(GetGold(copy), copy, true);
 
             ApplyEffectToObject(DurationType.Instant, EffectHeal(GetMaxHitPoints(copy)), copy);
@@ -874,7 +872,7 @@ namespace SWLOR.Component.Space.Service
 
             ClearCurrentTarget(player);
             SetCreatureAppearanceType(player, dbPlayer.OriginalAppearanceType);
-            CreaturePlugin.SetMovementRate(player, MovementRate.PC);
+            CreaturePlugin.SetMovementRate(player, MovementRateType.PC);
             EnmityService.RemoveCreatureEnmity(player);
 
             // Save the ship's hot bar and unassign the active ship Id.
@@ -1622,8 +1620,8 @@ namespace SWLOR.Component.Space.Service
                 // Shields have enough to cover the attack.
                 targetShipStatus.Shield -= remainingDamage;
                 remainingDamage = 0;
-                ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Cyan_Blue), target, 1.0f);
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Ship_Deflect), target);
+                ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffectType.Vfx_Dur_Aura_Pulse_Cyan_Blue), target, 1.0f);
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Ship_Deflect), target);
             }
             else
             {
@@ -1636,7 +1634,7 @@ namespace SWLOR.Component.Space.Service
             if (remainingDamage > 0)
             {
                 targetShipStatus.Hull -= remainingDamage;
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Ship_Explosion), target);
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Ship_Explosion), target);
             }
 
             // Safety clamping
@@ -1670,7 +1668,7 @@ namespace SWLOR.Component.Space.Service
                     var instance = PropertyService.GetRegisteredInstance(dbPlayerShip.PropertyId);
                     var location = Location(instance.Area, Vector3.Zero, 0.0f);
 
-                    ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_ShakeScreen), location);
+                    ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_ShakeScreen), location);
 
                     dbPlayerShip.Status.Shield = targetShipStatus.Shield;
                     dbPlayerShip.Status.Hull = targetShipStatus.Hull;
@@ -1713,7 +1711,7 @@ namespace SWLOR.Component.Space.Service
             if (targetShipStatus.Hull > 0)
             {
                 targetShipStatus.Hull -= amount;
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Ship_Explosion), target);
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Ship_Explosion), target);
             }
 
             // Safety clamping
@@ -1737,7 +1735,7 @@ namespace SWLOR.Component.Space.Service
                     var instance = PropertyService.GetRegisteredInstance(dbPlayerShip.PropertyId);
                     var location = Location(instance.Area, Vector3.Zero, 0.0f);
 
-                    ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_ShakeScreen), location);
+                    ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_ShakeScreen), location);
 
                     dbPlayerShip.Status.Shield = targetShipStatus.Shield;
                     dbPlayerShip.Status.Hull = targetShipStatus.Hull;
@@ -1779,7 +1777,7 @@ namespace SWLOR.Component.Space.Service
             if (!IsPlayerInSpaceMode(creature))
                 return;
 
-            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Fnf_Fireball), creature);
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Fnf_Fireball), creature);
 
             // When a player dies, they have a chance to drop every module installed on their ship.
             if (GetIsPC(creature))
@@ -1830,7 +1828,7 @@ namespace SWLOR.Component.Space.Service
                 // Exit space mode
                 ClearCurrentTarget(creature);
                 SetCreatureAppearanceType(creature, dbPlayer.OriginalAppearanceType);
-                CreaturePlugin.SetMovementRate(creature, MovementRate.PC);
+                CreaturePlugin.SetMovementRate(creature, MovementRateType.PC);
                 EnmityService.RemoveCreatureEnmity(creature);
                 
                 // Remove all module feats from the player.
@@ -1869,7 +1867,7 @@ namespace SWLOR.Component.Space.Service
                 // Murder everyone inside the ship's instance.
                 foreach (var player in instance.Players)
                 {
-                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Fnf_Fireball), player);
+                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Fnf_Fireball), player);
                     ApplyEffectToObject(DurationType.Instant, EffectDeath(), player);
 
                     FloatingTextStringOnCreature(ColorToken.Red("The ship has exploded!"), player, false);
@@ -2149,7 +2147,7 @@ namespace SWLOR.Component.Space.Service
 
             AssignCommand(creature, () =>
             {
-                SetActionMode(creature, ActionMode.Stealth, false);
+                SetActionMode(creature, ActionModeType.Stealth, false);
             });
 
             SendMessageToPC(creature, ColorToken.Red($"You cannot enter stealth mode in space."));

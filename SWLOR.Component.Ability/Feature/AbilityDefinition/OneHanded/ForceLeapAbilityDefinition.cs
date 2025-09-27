@@ -40,7 +40,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.OneHanded
 
         private string Validation(uint activator, uint target, int level, Location targetLocation)
         {
-            var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
+            var weapon = GetItemInSlot(InventorySlotType.RightHand, activator);
             var rightHandType = GetBaseItemType(weapon);
 
             if (!ItemService.LightsaberBaseItemTypes.Contains(rightHandType))
@@ -83,7 +83,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.OneHanded
             AssignCommand(activator, () =>
             {
                 PlaySound("plr_force_flip");
-                ActionPlayAnimation(Animation.ForceLeap, 2.0f, 1.0f);
+                ActionPlayAnimation(AnimationType.ForceLeap, 2.0f, 1.0f);
                 SetCommandable(false, activator);
             });
             
@@ -106,7 +106,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.OneHanded
                 defense, 
                 defenderStat, 
                 0);
-            var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
+            var weapon = GetItemInSlot(InventorySlotType.RightHand, activator);
             var rightHandBaseItemType = GetBaseItemType(weapon);
             
             DelayCommand(Delay, () =>

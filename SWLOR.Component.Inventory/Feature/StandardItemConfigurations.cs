@@ -1,6 +1,4 @@
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Item;
-using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
@@ -13,65 +11,65 @@ namespace SWLOR.Component.Inventory.Feature
         /// These are valid item types which will receive the OnHitCastSpell item property.
         /// Anything outside this set will not have this item property added automatically.
         /// </summary>
-        private static readonly BaseItem[] _validItemTypes = {
-                    BaseItem.Armor,
-                    BaseItem.Arrow,
-                    BaseItem.BastardSword,
-                    BaseItem.BattleAxe,
-                    BaseItem.Belt,
-                    BaseItem.Bolt,
-                    BaseItem.Boots,
-                    BaseItem.Bracer,
-                    BaseItem.Bullet,
-                    BaseItem.Cloak,
-                    BaseItem.Club,
-                    BaseItem.Dagger,
-                    BaseItem.Dart,
-                    BaseItem.DireMace,
-                    BaseItem.DoubleAxe,
-                    BaseItem.DwarvenWarAxe,
-                    BaseItem.Gloves,
-                    BaseItem.GreatAxe,
-                    BaseItem.GreatSword,
-                    BaseItem.Grenade,
-                    BaseItem.Halberd,
-                    BaseItem.HandAxe,
-                    BaseItem.Cannon,
-                    BaseItem.HeavyFlail,
-                    BaseItem.Helmet,
-                    BaseItem.Kama,
-                    BaseItem.Katana,
-                    BaseItem.Kukri,
-                    BaseItem.LargeShield,
-                    BaseItem.Rifle,
-                    BaseItem.LightFlail,
-                    BaseItem.LightHammer,
-                    BaseItem.LightMace,
-                    BaseItem.Longbow,
-                    BaseItem.Longsword,
-                    BaseItem.MorningStar,
-                    BaseItem.QuarterStaff,
-                    BaseItem.Rapier,
-                    BaseItem.Scimitar,
-                    BaseItem.Scythe,
-                    BaseItem.Pistol,
-                    BaseItem.ShortSpear,
-                    BaseItem.ShortSword,
-                    BaseItem.Shuriken,
-                    BaseItem.Sickle,
-                    BaseItem.Sling,
-                    BaseItem.SmallShield,
-                    BaseItem.ThrowingAxe,
-                    BaseItem.TowerShield,
-                    BaseItem.Trident,
-                    BaseItem.TwoBladedSword,
-                    BaseItem.WarHammer,
-                    BaseItem.Whip,
-                    BaseItem.Katar,
-                    BaseItem.Lightsaber,
-                    BaseItem.Saberstaff,
-                    BaseItem.Electroblade,
-                    BaseItem.TwinElectroBlade
+        private static readonly BaseItemType[] _validItemTypes = {
+                    BaseItemType.Armor,
+                    BaseItemType.Arrow,
+                    BaseItemType.BastardSword,
+                    BaseItemType.BattleAxe,
+                    BaseItemType.Belt,
+                    BaseItemType.Bolt,
+                    BaseItemType.Boots,
+                    BaseItemType.Bracer,
+                    BaseItemType.Bullet,
+                    BaseItemType.Cloak,
+                    BaseItemType.Club,
+                    BaseItemType.Dagger,
+                    BaseItemType.Dart,
+                    BaseItemType.DireMace,
+                    BaseItemType.DoubleAxe,
+                    BaseItemType.DwarvenWarAxe,
+                    BaseItemType.Gloves,
+                    BaseItemType.GreatAxe,
+                    BaseItemType.GreatSword,
+                    BaseItemType.Grenade,
+                    BaseItemType.Halberd,
+                    BaseItemType.HandAxe,
+                    BaseItemType.Cannon,
+                    BaseItemType.HeavyFlail,
+                    BaseItemType.Helmet,
+                    BaseItemType.Kama,
+                    BaseItemType.Katana,
+                    BaseItemType.Kukri,
+                    BaseItemType.LargeShield,
+                    BaseItemType.Rifle,
+                    BaseItemType.LightFlail,
+                    BaseItemType.LightHammer,
+                    BaseItemType.LightMace,
+                    BaseItemType.Longbow,
+                    BaseItemType.Longsword,
+                    BaseItemType.MorningStar,
+                    BaseItemType.QuarterStaff,
+                    BaseItemType.Rapier,
+                    BaseItemType.Scimitar,
+                    BaseItemType.Scythe,
+                    BaseItemType.Pistol,
+                    BaseItemType.ShortSpear,
+                    BaseItemType.ShortSword,
+                    BaseItemType.Shuriken,
+                    BaseItemType.Sickle,
+                    BaseItemType.Sling,
+                    BaseItemType.SmallShield,
+                    BaseItemType.ThrowingAxe,
+                    BaseItemType.TowerShield,
+                    BaseItemType.Trident,
+                    BaseItemType.TwoBladedSword,
+                    BaseItemType.WarHammer,
+                    BaseItemType.Whip,
+                    BaseItemType.Katar,
+                    BaseItemType.Lightsaber,
+                    BaseItemType.Saberstaff,
+                    BaseItemType.Electroblade,
+                    BaseItemType.TwinElectroBlade
         };
 
         /// <summary>
@@ -88,9 +86,9 @@ namespace SWLOR.Component.Inventory.Feature
             var baseItemType = GetBaseItemType(item);
             if (!_validItemTypes.Contains(baseItemType)) return;
 
-            var arrows = GetItemInSlot(InventorySlot.Arrows, player);
-            var bolts = GetItemInSlot(InventorySlot.Bolts, player);
-            var bullets = GetItemInSlot(InventorySlot.Bullets, player);
+            var arrows = GetItemInSlot(InventorySlotType.Arrows, player);
+            var bolts = GetItemInSlot(InventorySlotType.Bolts, player);
+            var bullets = GetItemInSlot(InventorySlotType.Bullets, player);
 
             ApplyOnHitProperty(item);
             ApplyOnHitProperty(arrows);
@@ -108,7 +106,7 @@ namespace SWLOR.Component.Inventory.Feature
             {
                 if (GetItemPropertyType(ip) == ItemPropertyType.OnHitCastSpell)
                 {
-                    if (GetItemPropertySubType(ip) == (int)OnHitCastSpell.ONHIT_UNIQUEPOWER)
+                    if (GetItemPropertySubType(ip) == (int)ItemPropertyOnHitCastSpellType.ONHIT_UNIQUEPOWER)
                     {
                         return;
                     }
@@ -116,7 +114,7 @@ namespace SWLOR.Component.Inventory.Feature
             }
 
             // No item property found. Add it to the item.
-            BiowareXP2.IPSafeAddItemProperty(item, ItemPropertyOnHitCastSpell(OnHitCastSpellType.ONHIT_UNIQUEPOWER, 40), 0.0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            BiowareXP2.IPSafeAddItemProperty(item, ItemPropertyOnHitCastSpell(ItemPropertyOnHitCastSpellType.ONHIT_UNIQUEPOWER, 40), 0.0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
         }
     }
 }

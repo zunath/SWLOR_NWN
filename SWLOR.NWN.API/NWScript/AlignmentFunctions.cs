@@ -15,7 +15,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nShift">The desired shift in alignment. The shift will at most take the alignment value to 50 and not beyond</param>
         /// <param name="bAllPartyMembers">When true, the alignment shift also has a diminished effect on all members of the subject's party (if subject is a Player). When false, the shift only affects the subject (default: true)</param>
         /// <remarks>No return value. For example, if subject has a law/chaos value of 10 (chaotic) and a good/evil value of 80 (good), then if nShift is 15, the law/chaos value will become 25 and the good/evil value will become 55.</remarks>
-        public static void AdjustAlignment(uint oSubject, Alignment nAlignment, int nShift,
+        public static void AdjustAlignment(uint oSubject, AlignmentType nAlignment, int nShift,
             bool bAllPartyMembers = true)
         {
             global::NWN.Core.NWScript.AdjustAlignment(oSubject, (int)nAlignment, nShift, bAllPartyMembers ? 1 : 0);
@@ -46,9 +46,9 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oCreature">The creature to get the alignment for</param>
         /// <returns>An ALIGNMENT_* constant. Returns -1 if the creature is not valid</returns>
-        public static Alignment GetAlignmentLawChaos(uint oCreature)
+        public static AlignmentType GetAlignmentLawChaos(uint oCreature)
         {
-            return (Alignment)global::NWN.Core.NWScript.GetAlignmentLawChaos(oCreature);
+            return (AlignmentType)global::NWN.Core.NWScript.GetAlignmentLawChaos(oCreature);
         }
 
         /// <summary>
@@ -56,9 +56,9 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oCreature">The creature to get the alignment for</param>
         /// <returns>An ALIGNMENT_* constant. Returns -1 if the creature is not valid</returns>
-        public static Alignment GetAlignmentGoodEvil(uint oCreature)
+        public static AlignmentType GetAlignmentGoodEvil(uint oCreature)
         {
-            return (Alignment)global::NWN.Core.NWScript.GetAlignmentGoodEvil(oCreature);
+            return (AlignmentType)global::NWN.Core.NWScript.GetAlignmentGoodEvil(oCreature);
         }
 
         /// <summary>

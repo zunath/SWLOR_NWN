@@ -3,7 +3,7 @@ using SWLOR.Component.Migration.Contracts;
 using SWLOR.Component.Migration.Enums;
 using SWLOR.Component.Migration.Model;
 using SWLOR.NWN.API.NWNX;
-using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Data;
@@ -121,7 +121,7 @@ namespace SWLOR.Component.Migration.Feature.ServerMigration
                 oldDmg = _itemReplace[itemResRef].Item1;
                 newDmg = _itemReplace[itemResRef].Item2;
             }
-            else if (baseItem == BaseItem.Saberstaff) { newDmg = 3; } // Actual saberstaves won't be in the list, so we're just bumping their DMG directly
+            else if (baseItem == BaseItemType.Saberstaff) { newDmg = 3; } // Actual saberstaves won't be in the list, so we're just bumping their DMG directly
 
             var wpnDmg = newDmg - oldDmg;
             if (wpnDmg <= 0) { return; }

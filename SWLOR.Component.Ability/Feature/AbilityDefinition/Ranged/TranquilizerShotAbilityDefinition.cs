@@ -3,7 +3,6 @@ using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Constants;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Character.ValueObjects;
@@ -39,7 +38,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Ranged
 
         private string Validation(uint activator, uint target, int level, Location targetLocation)
         {
-            var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
+            var weapon = GetItemInSlot(InventorySlotType.RightHand, activator);
 
             if (!ItemService.RifleBaseItemTypes.Contains(GetBaseItemType(weapon)))
             {
@@ -54,7 +53,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Ranged
             var effectTag = $"StatusEffectType.Tranquilize";
             var enmity = level * 500;
 
-            var vfx = EffectVisualEffect(VisualEffect.Vfx_Dur_Iounstone_Blue);
+            var vfx = EffectVisualEffect(VisualEffectType.Vfx_Dur_Iounstone_Blue);
             vfx = TagEffect(vfx, effectTag);
             var sleep = TagEffect(EffectSleep(), effectTag);
 
@@ -81,7 +80,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Ranged
                     break;
                 case 3:
                     var count = 0;
-                    var creature = GetFirstObjectInShape(Shape.SpellCone, RadiusSize.Colossal, GetLocation(target), true);
+                    var creature = GetFirstObjectInShape(ShapeType.SpellCone, RadiusSize.Colossal, GetLocation(target), true);
                     while (GetIsObjectValid(creature) && count < 3)
                     {
                         if(creature != activator) 
@@ -90,7 +89,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Ranged
 
                             count++;
                         }
-                        creature = GetNextObjectInShape(Shape.SpellCone, RadiusSize.Colossal, GetLocation(target), true);
+                        creature = GetNextObjectInShape(ShapeType.SpellCone, RadiusSize.Colossal, GetLocation(target), true);
                     }
                     break;
             }

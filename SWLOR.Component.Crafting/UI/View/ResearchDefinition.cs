@@ -34,56 +34,56 @@ namespace SWLOR.Component.Crafting.UI.View
                         {
                             row.AddLabel()
                                 .BindText(model => model.RecipeName)
-                                .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                .SetHorizontalAlign(NuiHorizontalAlignType.Left)
                                 .SetHeight(20f);
                         });
                         col.AddRow(row =>
                         {
                             row.AddLabel()
                                 .BindText(model => model.Level)
-                                .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                .SetHorizontalAlign(NuiHorizontalAlignType.Left)
                                 .SetHeight(20f);
                         });
                         col.AddRow(row =>
                         {
                             row.AddLabel()
                                 .BindText(model => model.CreditReduction)
-                                .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                .SetHorizontalAlign(NuiHorizontalAlignType.Left)
                                 .SetHeight(20f);
                         });
                         col.AddRow(row =>
                         {
                             row.AddLabel()
                                 .BindText(model => model.EnhancementSlots)
-                                .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                .SetHorizontalAlign(NuiHorizontalAlignType.Left)
                                 .SetHeight(20f);
                         });
                         col.AddRow(row =>
                         {
                             row.AddLabel()
                                 .BindText(model => model.LicensedRuns)
-                                .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                .SetHorizontalAlign(NuiHorizontalAlignType.Left)
                                 .SetHeight(20f);
                         });
                         col.AddRow(row =>
                         {
                             row.AddLabel()
                                 .BindText(model => model.TimeReduction)
-                                .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                .SetHorizontalAlign(NuiHorizontalAlignType.Left)
                                 .SetHeight(20f);
                         });
                         col.AddRow(row =>
                         {
                             row.AddLabel()
                                 .BindText(model => model.ItemBonuses)
-                                .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                .SetHorizontalAlign(NuiHorizontalAlignType.Left)
                                 .SetHeight(20f);
                         });
                         col.AddRow(row =>
                         {
                             row.AddLabel()
                                 .SetText("Guaranteed Bonuses:")
-                                .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                .SetHorizontalAlign(NuiHorizontalAlignType.Left)
                                 .SetHeight(20f);
                         });
                         col.AddRow(row =>
@@ -105,7 +105,7 @@ namespace SWLOR.Component.Crafting.UI.View
                         {
                             row.AddLabel()
                                 .BindText(model => model.CreditCost)
-                                .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                .SetHorizontalAlign(NuiHorizontalAlignType.Left)
                                 .SetHeight(20f);
                         });
 
@@ -113,7 +113,7 @@ namespace SWLOR.Component.Crafting.UI.View
                         {
                             row.AddLabel()
                                 .BindText(model => model.TimeCost)
-                                .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                .SetHorizontalAlign(NuiHorizontalAlignType.Left)
                                 .SetHeight(20f);
                         });
 
@@ -121,7 +121,7 @@ namespace SWLOR.Component.Crafting.UI.View
                         {
                             row.AddLabel()
                                 .BindText(model => model.NextLevelBonus)
-                                .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                .SetHorizontalAlign(NuiHorizontalAlignType.Left)
                                 .SetHeight(20f);
                         });
 
@@ -149,14 +149,14 @@ namespace SWLOR.Component.Crafting.UI.View
                         {
                             row.AddLabel()
                                 .BindText(model => model.RecipeName)
-                                .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                .SetHorizontalAlign(NuiHorizontalAlignType.Left)
                                 .SetHeight(20f);
                         });
                         col.AddRow(row =>
                         {
                             row.AddLabel()
                                 .BindText(model => model.Level)
-                                .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                .SetHorizontalAlign(NuiHorizontalAlignType.Left)
                                 .SetHeight(20f);
                         });
                         col.AddRow(row =>
@@ -196,14 +196,14 @@ namespace SWLOR.Component.Crafting.UI.View
                         {
                             row.AddLabel()
                                 .BindText(model => model.RecipeName)
-                                .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                .SetHorizontalAlign(NuiHorizontalAlignType.Left)
                                 .SetHeight(20f);
                         });
                         col.AddRow(row =>
                         {
                             row.AddLabel()
                                 .BindText(model => model.Level)
-                                .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                .SetHorizontalAlign(NuiHorizontalAlignType.Left)
                                 .SetHeight(20f);
                         });
                         col.AddRow(row =>

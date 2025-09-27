@@ -549,8 +549,8 @@ namespace SWLOR.Component.Character.UI.ViewModel
             }
 
             var food = StatusEffectService.GetEffectData<FoodEffectData>(Player, StatusEffectType.Food) ?? new FoodEffectData();
-            var mainHand = GetItemInSlot(InventorySlot.RightHand, _target);
-            var offHand = GetItemInSlot(InventorySlot.LeftHand, _target);
+            var mainHand = GetItemInSlot(InventorySlotType.RightHand, _target);
+            var offHand = GetItemInSlot(InventorySlotType.LeftHand, _target);
             var mainHandType = GetBaseItemType(mainHand);
 
             if (GetIsObjectValid(mainHand))
@@ -586,7 +586,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
                 var beastDetails = BeastMasteryService.GetBeastDetail(beastType);
                 damageStat = beastDetails.DamageStat;
                 accuracyStatOverride = beastDetails.AccuracyStat;
-                mainHand = GetItemInSlot(InventorySlot.CreatureArmor, _target);
+                mainHand = GetItemInSlot(InventorySlotType.CreatureArmor, _target);
             }
             else
             {

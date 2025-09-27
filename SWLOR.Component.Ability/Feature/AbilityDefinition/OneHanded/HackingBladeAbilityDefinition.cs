@@ -40,7 +40,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.OneHanded
 
         private string Validation(uint activator, uint target, int level, Location targetLocation)
         {
-            var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
+            var weapon = GetItemInSlot(InventorySlotType.RightHand, activator);
             var rightHandType = GetBaseItemType(weapon);
 
             if (ItemService.VibrobladeBaseItemTypes.Contains(rightHandType))
@@ -93,7 +93,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.OneHanded
                 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
 
-            dc = CombatService.CalculateSavingThrowDC(activator, SavingThrow.Will, dc);
+            dc = CombatService.CalculateSavingThrowDC(activator, SavingThrowCategoryType.Will, dc);
             var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
 
             if (checkResult == SavingThrowResultType.Failed)

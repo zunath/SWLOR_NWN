@@ -22,7 +22,7 @@ namespace SWLOR.NWN.API.NWNX
         /// Different channels have different visibility rules and target eligibility.
         /// The sender must be a valid object that can send messages on the specified channel.
         /// </remarks>
-        public static int SendMessage(ChatChannel channel, string message, uint sender, uint target)
+        public static int SendMessage(ChatChannelType channel, string message, uint sender, uint target)
         {
             return global::NWN.Core.NWNX.ChatPlugin.SendMessage((int)channel, message, sender, target);
         }
@@ -65,10 +65,10 @@ namespace SWLOR.NWN.API.NWNX
         /// It returns the channel type of the message currently being processed.
         /// This is useful for implementing channel-specific logic or filtering.
         /// </remarks>
-        public static ChatChannel GetChannel()
+        public static ChatChannelType GetChannel()
         {
             int result = global::NWN.Core.NWNX.ChatPlugin.GetChannel();
-            return (ChatChannel)result;
+            return (ChatChannelType)result;
         }
 
         /// <summary>
@@ -128,7 +128,7 @@ namespace SWLOR.NWN.API.NWNX
         public static void SetChatHearingDistance(
             float distance, 
             uint? listener = null,
-            ChatChannel channel = ChatChannel.PlayerTalk)
+            ChatChannelType channel = ChatChannelType.PlayerTalk)
         {
             uint listenerValue = listener ?? OBJECT_INVALID;
             global::NWN.Core.NWNX.ChatPlugin.SetChatHearingDistance(distance, listenerValue, (int)channel);
@@ -147,7 +147,7 @@ namespace SWLOR.NWN.API.NWNX
         /// Use SetChatHearingDistance() to modify these values.
         /// </remarks>
         public static float GetChatHearingDistance(uint? listener = null,
-            ChatChannel channel = ChatChannel.PlayerTalk)
+            ChatChannelType channel = ChatChannelType.PlayerTalk)
         {
             uint listenerValue = listener ?? OBJECT_INVALID;
             return global::NWN.Core.NWNX.ChatPlugin.GetChatHearingDistance(listenerValue, (int)channel);

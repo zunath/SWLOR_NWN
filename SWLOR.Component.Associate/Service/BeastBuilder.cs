@@ -244,7 +244,7 @@ namespace SWLOR.Component.Associate.Service
         /// <param name="type">The saving throw type.</param>
         /// <param name="max">The max amount of Saving Throw Bonus to assign for this level.</param>
         /// <returns>A configured BeastBuilder object</returns>
-        public BeastBuilder MaxSavingThrowBonus(SavingThrow type, int max)
+        public BeastBuilder MaxSavingThrowBonus(SavingThrowCategoryType type, int max)
         {
             _activeLevel.MaxSavingThrowBonuses[type] = max;
 

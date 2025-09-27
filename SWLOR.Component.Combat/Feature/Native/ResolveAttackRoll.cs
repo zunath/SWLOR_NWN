@@ -14,7 +14,7 @@ using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.UI.Service;
-using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
+using EquipmentSlot = NWN.Native.API.EquipmentSlot;
 using FeatType = SWLOR.NWN.API.NWScript.Enum.FeatType;
 using ILogger = SWLOR.Shared.Abstractions.Contracts.ILogger;
 using ImmunityType = NWN.Native.API.ImmunityType;
@@ -88,20 +88,20 @@ namespace SWLOR.Component.Combat.Feature.Native
         private const int DefaultToHitRoll = 1;
 
         // Optimized weapon feat lookups
-        private static readonly Dictionary<BaseItem, FeatType> _weaponFocusLookup = CreateWeaponFocusLookup();
-        private static readonly Dictionary<BaseItem, FeatType> _improvedCriticalLookup = CreateImprovedCriticalLookup();
+        private static readonly Dictionary<BaseItemType, FeatType> _weaponFocusLookup = CreateWeaponFocusLookup();
+        private static readonly Dictionary<BaseItemType, FeatType> _improvedCriticalLookup = CreateImprovedCriticalLookup();
 
-        private static Dictionary<BaseItem, FeatType> CreateWeaponFocusLookup()
+        private static Dictionary<BaseItemType, FeatType> CreateWeaponFocusLookup()
         {
-            var lookup = new Dictionary<BaseItem, FeatType>();
+            var lookup = new Dictionary<BaseItemType, FeatType>();
 
-            void AddItems(IEnumerable<BaseItem> items, FeatType feat)
+            void AddItems(IEnumerable<BaseItemType> items, FeatType feat)
             {
                 foreach (var item in items)
                     lookup[item] = feat;
             }
 
-            lookup[BaseItem.Gloves] = FeatType.WeaponFocus_UnarmedStrike;
+            lookup[BaseItemType.Gloves] = FeatType.WeaponFocus_UnarmedStrike;
             AddItems(_itemService.CreatureBaseItemTypes, FeatType.WeaponFocus_Creature);
             AddItems(_itemService.VibrobladeBaseItemTypes, FeatType.WeaponFocusVibroblades);
             AddItems(_itemService.FinesseVibrobladeBaseItemTypes, FeatType.WeaponFocusFinesseVibroblades);
@@ -119,17 +119,17 @@ namespace SWLOR.Component.Combat.Feature.Native
             return lookup;
         }
 
-        private static Dictionary<BaseItem, FeatType> CreateImprovedCriticalLookup()
+        private static Dictionary<BaseItemType, FeatType> CreateImprovedCriticalLookup()
         {
-            var lookup = new Dictionary<BaseItem, FeatType>();
+            var lookup = new Dictionary<BaseItemType, FeatType>();
 
-            void AddItems(IEnumerable<BaseItem> items, FeatType feat)
+            void AddItems(IEnumerable<BaseItemType> items, FeatType feat)
             {
                 foreach (var item in items)
                     lookup[item] = feat;
             }
 
-            lookup[BaseItem.Gloves] = FeatType.ImprovedCritical_UnarmedStrike;
+            lookup[BaseItemType.Gloves] = FeatType.ImprovedCritical_UnarmedStrike;
             AddItems(_itemService.CreatureBaseItemTypes, FeatType.ImprovedCritical_Creature);
             AddItems(_itemService.VibrobladeBaseItemTypes, FeatType.ImprovedCriticalVibroblades);
             AddItems(_itemService.FinesseVibrobladeBaseItemTypes, FeatType.ImprovedCriticalFinesseVibroblades);
@@ -397,7 +397,7 @@ namespace SWLOR.Component.Combat.Feature.Native
                 return attacker.m_pStats.HasFeat((ushort)FeatType.WeaponFocus_UnarmedStrike);
             }
 
-            var baseItemType = (BaseItem)weapon.m_nBaseItem;
+            var baseItemType = (BaseItemType)weapon.m_nBaseItem;
             if (_weaponFocusLookup.TryGetValue(baseItemType, out var feat))
             {
                 return attacker.m_pStats.HasFeat((ushort)feat);
@@ -414,7 +414,7 @@ namespace SWLOR.Component.Combat.Feature.Native
                 return attacker.m_pStats.HasFeat((ushort)FeatType.ImprovedCritical_UnarmedStrike);
             }
 
-            var baseItemType = (BaseItem)weapon.m_nBaseItem;
+            var baseItemType = (BaseItemType)weapon.m_nBaseItem;
             if (_improvedCriticalLookup.TryGetValue(baseItemType, out var feat))
             {
                 return attacker.m_pStats.HasFeat((ushort)feat);
@@ -429,7 +429,7 @@ namespace SWLOR.Component.Combat.Feature.Native
             if (weapon == null) return 0;
             if (attacker.m_pStats.HasFeat((ushort)FeatType.SuperiorWeaponFocus) == 0) return 0;
 
-            var baseItemType = (BaseItem)weapon.m_nBaseItem;
+            var baseItemType = (BaseItemType)weapon.m_nBaseItem;
 
             if (_itemService.StaffBaseItemTypes.Contains(baseItemType)) return 1;
             if (_itemService.PolearmBaseItemTypes.Contains(baseItemType)) return 1;
@@ -462,7 +462,7 @@ namespace SWLOR.Component.Combat.Feature.Native
             // Long range (over 40.0)
             else if (range > LongRange)
             {
-                if (weapon != null && !_itemService.RifleBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
+                if (weapon != null && !_itemService.RifleBaseItemTypes.Contains((BaseItemType)weapon.m_nBaseItem))
                     return LongRangePenalty;
                 else
                     return MediumRangePenalty;
@@ -470,13 +470,13 @@ namespace SWLOR.Component.Combat.Feature.Native
             // Medium range (30.0 - 40.0)
             else if (range > MediumRange)
             {
-                if (weapon != null && !_itemService.RifleBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
+                if (weapon != null && !_itemService.RifleBaseItemTypes.Contains((BaseItemType)weapon.m_nBaseItem))
                     return MediumRangePenalty;
                 else
                     return ShortRangePenalty;
             }
             // Short range (20.0 - 30.0)
-            else if (weapon != null && range > ShortRange && !_itemService.RifleBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
+            else if (weapon != null && range > ShortRange && !_itemService.RifleBaseItemTypes.Contains((BaseItemType)weapon.m_nBaseItem))
             {
                 return ShortRangePenalty;
             }
@@ -529,12 +529,12 @@ namespace SWLOR.Component.Combat.Feature.Native
 
             if (weapon == null) return percentageModifier;
 
-            var bDoubleWeapon = _itemService.TwinBladeBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem) ||
-                               _itemService.SaberstaffBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem);
+            var bDoubleWeapon = _itemService.TwinBladeBaseItemTypes.Contains((BaseItemType)weapon.m_nBaseItem) ||
+                               _itemService.SaberstaffBaseItemTypes.Contains((BaseItemType)weapon.m_nBaseItem);
             var hasImprovedTwoWeaponFighting = attacker.m_pStats.HasFeat((ushort)FeatType.ImprovedTwoWeaponFighting) == 1;
-            var isShieldEquipped = offhand != null && _itemService.ShieldBaseItemTypes.Contains((BaseItem)offhand.m_nBaseItem);
-            var isDualKatarsEquipped = _itemService.KatarBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem) &&
-                                      offhand != null && _itemService.KatarBaseItemTypes.Contains((BaseItem)offhand.m_nBaseItem);
+            var isShieldEquipped = offhand != null && _itemService.ShieldBaseItemTypes.Contains((BaseItemType)offhand.m_nBaseItem);
+            var isDualKatarsEquipped = _itemService.KatarBaseItemTypes.Contains((BaseItemType)weapon.m_nBaseItem) &&
+                                      offhand != null && _itemService.KatarBaseItemTypes.Contains((BaseItemType)offhand.m_nBaseItem);
 
             // Apply dual wield penalty
             if (bDoubleWeapon || !isShieldEquipped || !isDualKatarsEquipped)
@@ -547,7 +547,7 @@ namespace SWLOR.Component.Combat.Feature.Native
             }
 
             // Staff Flurry penalty
-            if (_itemService.StaffBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem) &&
+            if (_itemService.StaffBaseItemTypes.Contains((BaseItemType)weapon.m_nBaseItem) &&
                 attacker.m_pStats.HasFeat((ushort)FeatType.FlurryStyle) == 1 &&
                 attacker.m_pStats.HasFeat((ushort)FeatType.FlurryMastery) == 0)
             {
@@ -557,10 +557,10 @@ namespace SWLOR.Component.Combat.Feature.Native
 
             // Duelist bonus
             if (attacker.m_pStats.HasFeat((ushort)FeatType.Duelist) == 1 &&
-                (_itemService.OneHandedMeleeItemTypes.Contains((BaseItem)weapon.m_nBaseItem) ||
-                 _itemService.ThrowingWeaponBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem)))
+                (_itemService.OneHandedMeleeItemTypes.Contains((BaseItemType)weapon.m_nBaseItem) ||
+                 _itemService.ThrowingWeaponBaseItemTypes.Contains((BaseItemType)weapon.m_nBaseItem)))
             {
-                var isDuelistValid = offhand == null || _itemService.ShieldBaseItemTypes.Contains((BaseItem)offhand.m_nBaseItem);
+                var isDuelistValid = offhand == null || _itemService.ShieldBaseItemTypes.Contains((BaseItemType)offhand.m_nBaseItem);
                 if (isDuelistValid)
                 {
                     percentageModifier += DuelistBonus;
@@ -580,10 +580,10 @@ namespace SWLOR.Component.Combat.Feature.Native
 
             var defenderWeapon = defender.m_pInventory.GetItemInSlot((uint)EquipmentSlot.RightHand);
             var defenderOffhand = defender.m_pInventory.GetItemInSlot((uint)EquipmentSlot.LeftHand);
-            var saberBlock = defenderWeapon != null && _itemService.LightsaberBaseItemTypes.Contains((BaseItem)defenderWeapon.m_nBaseItem);
+            var saberBlock = defenderWeapon != null && _itemService.LightsaberBaseItemTypes.Contains((BaseItemType)defenderWeapon.m_nBaseItem);
             var shieldBlock = defenderOffhand != null &&
                              defender.m_pStats.HasFeat((ushort)FeatType.Bulwark) == 1 &&
-                             _itemService.ShieldBaseItemTypes.Contains((BaseItem)defenderOffhand.m_nBaseItem);
+                             _itemService.ShieldBaseItemTypes.Contains((BaseItemType)defenderOffhand.m_nBaseItem);
 
             if (!saberBlock && !shieldBlock)
                 return false;
@@ -623,7 +623,7 @@ namespace SWLOR.Component.Combat.Feature.Native
                 criticalBonus += PrecisionAim1Bonus;
 
             // Staff crushing bonuses
-            if (weapon != null && _itemService.StaffBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
+            if (weapon != null && _itemService.StaffBaseItemTypes.Contains((BaseItemType)weapon.m_nBaseItem))
             {
                 if (attacker.m_pStats.HasFeat((ushort)FeatType.CrushingMastery) == 1)
                     criticalBonus += CrushingMasteryBonus;
@@ -643,17 +643,17 @@ namespace SWLOR.Component.Combat.Feature.Native
                 return AbilityType.Invalid;
 
             var playerId = attacker.m_pUUID.GetOrAssignRandom().ToString();
-            if (_itemService.LightsaberBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
+            if (_itemService.LightsaberBaseItemTypes.Contains((BaseItemType)weapon.m_nBaseItem))
             {
                 if (_abilityService.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleLightsaber))
                     return AbilityType.Perception;
             }
-            else if (_itemService.SaberstaffBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
+            else if (_itemService.SaberstaffBaseItemTypes.Contains((BaseItemType)weapon.m_nBaseItem))
             {
                 if (_abilityService.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleSaberstaff))
                     return AbilityType.Perception;
             }
-            else if (_itemService.StaffBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
+            else if (_itemService.StaffBaseItemTypes.Contains((BaseItemType)weapon.m_nBaseItem))
             {
                 if (attacker.m_pStats.HasFeat((ushort)FeatType.FlurryStyle) == 1)
                     return AbilityType.Agility;

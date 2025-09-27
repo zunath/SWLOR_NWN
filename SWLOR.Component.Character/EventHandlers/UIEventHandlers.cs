@@ -28,8 +28,8 @@ namespace SWLOR.Component.Character.EventHandlers
             if (type != GuiEventType.DisabledPanelAttemptOpen) return;
             var target = GetLastGuiEventObject();
 
-            var panelType = (GuiPanel)GetLastGuiEventInteger();
-            if (panelType == GuiPanel.CharacterSheet)
+            var panelType = (GuiPanelType)GetLastGuiEventInteger();
+            if (panelType == GuiPanelType.CharacterSheet)
             {
                 // Player character sheet
                 if (target == player)
@@ -44,7 +44,7 @@ namespace SWLOR.Component.Character.EventHandlers
                     _gui.TogglePlayerWindow(player, GuiWindowType.CharacterSheet, payload);
                 }
             }
-            else if (panelType == GuiPanel.Journal)
+            else if (panelType == GuiPanelType.Journal)
             {
                 _gui.TogglePlayerWindow(player, GuiWindowType.Quests);
             }

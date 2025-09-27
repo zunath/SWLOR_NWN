@@ -90,7 +90,7 @@ namespace SWLOR.Component.Properties.Feature.PropertyLayoutDefinition
                 SetLocalInt(placeable, "STORAGE_ITEM_LIMIT", storageCap);
                 SetLocalString(placeable, "STORAGE_ID", bankId);
 
-                SetEventScript(placeable, EventScript.Placeable_OnUsed, ScriptName.OnOpenPropertyBank);
+                SetEventScript(placeable, EventScriptType.Placeable_OnUsed, ScriptName.OnOpenPropertyBank);
             }
         }
 

@@ -1,7 +1,6 @@
 using SWLOR.Component.StatusEffect.Contracts;
 using SWLOR.Component.StatusEffect.Service;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Combat.ValueObjects;
@@ -65,7 +64,7 @@ namespace SWLOR.Component.StatusEffect.Feature.StatusEffectDefinition
                     var perception = GetAbilityModifier(AbilityType.Perception, source);
                     var damage = EffectDamage(d2() + perception * level);
                     ApplyEffectToObject(DurationType.Instant, damage, target);
-                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Disease_S), target);
+                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Imp_Disease_S), target);
                     ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Vitality, 2), target, 5.9f);
                 });
         }
@@ -142,7 +141,7 @@ namespace SWLOR.Component.StatusEffect.Feature.StatusEffectDefinition
                     var perception = GetAbilityModifier(AbilityType.Perception, source);
                     var damage = EffectDamage(d2() + perception * level);
                     ApplyEffectToObject(DurationType.Instant, damage, target);
-                    ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Cyan_Blue), target, 5.9f);
+                    ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffectType.Vfx_Dur_Aura_Pulse_Cyan_Blue), target, 5.9f);
                     ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Might, 2), target, 5.9f);
                 });
         }

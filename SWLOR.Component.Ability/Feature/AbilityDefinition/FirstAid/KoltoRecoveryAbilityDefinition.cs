@@ -2,7 +2,6 @@ using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
@@ -63,7 +62,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.FirstAid
                 var amount = baseAmount + willpowerMod * 5 + Random.D10(1);
 
                 ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), member);
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Heal), member);
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Imp_Head_Heal), member);
             }
 
             TakeMedicalSupplies(activator);
@@ -77,7 +76,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.FirstAid
                 .HasRecastDelay(RecastGroup.KoltoRecovery, 30f)
                 .HasActivationDelay(2f)
                 .RequirementStamina(5)
-                .UsesAnimation(Animation.LoopingGetMid)
+                .UsesAnimation(AnimationType.LoopingGetMid)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
@@ -97,7 +96,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.FirstAid
                 .HasRecastDelay(RecastGroup.KoltoRecovery, 30f)
                 .HasActivationDelay(2f)
                 .RequirementStamina(6)
-                .UsesAnimation(Animation.LoopingGetMid)
+                .UsesAnimation(AnimationType.LoopingGetMid)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
@@ -117,7 +116,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.FirstAid
                 .HasRecastDelay(RecastGroup.KoltoRecovery, 30f)
                 .HasActivationDelay(2f)
                 .RequirementStamina(7)
-                .UsesAnimation(Animation.LoopingGetMid)
+                .UsesAnimation(AnimationType.LoopingGetMid)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)

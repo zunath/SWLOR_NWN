@@ -1,5 +1,4 @@
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 
@@ -32,7 +31,7 @@ namespace SWLOR.Component.Combat.Feature.TrapDefinition
                 AssignCommand(player, () => JumpToLocation(location));
             });
 
-            var vfx = EffectVisualEffect(VisualEffect.Vfx_Imp_Dust_Explosion);
+            var vfx = EffectVisualEffect(VisualEffectType.Vfx_Imp_Dust_Explosion);
             DelayCommand(3f, () => ApplyEffectToObject(DurationType.Instant, vfx, player));
             DelayCommand(1.0f, () => ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), player, 3.0f));
         }

@@ -18,7 +18,7 @@ namespace SWLOR.Shared.UI.Component
 
         private float RowHeight { get; set; }
         private bool ShowBorder { get; set; }
-        private NuiScrollbars Scrollbars { get; set; }
+        private NuiScrollbarType Scrollbars { get; set; }
 
         /// <summary>
         /// Sets a static value for the row count.
@@ -73,7 +73,7 @@ namespace SWLOR.Shared.UI.Component
         /// Sets a static value for the scrollbars to display.
         /// </summary>
         /// <param name="scrollbars">The type of scrollbars to display, if any.</param>
-        public GuiList<T> SetScrollbars(NuiScrollbars scrollbars)
+        public GuiList<T> SetScrollbars(NuiScrollbarType scrollbars)
         {
             Scrollbars = scrollbars;
             return this;
@@ -84,7 +84,7 @@ namespace SWLOR.Shared.UI.Component
             Template = template;
             RowHeight = NuiStyle.RowHeight;
             ShowBorder = true;
-            Scrollbars = NuiScrollbars.Y;
+            Scrollbars = NuiScrollbarType.Y;
 
             Elements.Add(Template);
         }

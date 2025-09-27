@@ -210,7 +210,7 @@ namespace SWLOR.Shared.UI.Component
         {
             var newGroup = new GuiGroup<T>();
             newGroup.SetId(partialName);
-            newGroup.SetScrollbars(NuiScrollbars.None);
+            newGroup.SetScrollbars(NuiScrollbarType.None);
             newGroup.SetShowBorder(false);
             Elements.Add(newGroup);
 

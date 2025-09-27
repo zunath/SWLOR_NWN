@@ -42,7 +42,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Ranged
 
         private string Validation(uint activator, uint target, int level, Location targetLocation)
         {
-            var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
+            var weapon = GetItemInSlot(InventorySlotType.RightHand, activator);
 
             if (!ItemService.ThrowingWeaponBaseItemTypes.Contains(GetBaseItemType(weapon)))
             {
@@ -77,7 +77,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Ranged
             var attack = StatService.GetAttack(activator, AbilityType.Might, SkillType.Ranged);
             var attackerStat = CombatService.GetPerkAdjustedAbilityScore(activator);
             var count = 0;
-            var creature = GetFirstObjectInShape(Shape.Sphere, RadiusSize.Medium, GetLocation(target), true, ObjectType.Creature);
+            var creature = GetFirstObjectInShape(ShapeType.Sphere, RadiusSize.Medium, GetLocation(target), true, ObjectType.Creature);
             while (GetIsObjectValid(creature) && count < 3)
             {
                 if (GetDistanceBetween(target, creature) <= 3f)
@@ -104,7 +104,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Ranged
 
                     count++;
                 }
-                creature = GetNextObjectInShape(Shape.Sphere, RadiusSize.Medium, GetLocation(target), true, ObjectType.Creature);
+                creature = GetNextObjectInShape(ShapeType.Sphere, RadiusSize.Medium, GetLocation(target), true, ObjectType.Creature);
             }
         }
 
@@ -121,7 +121,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Ranged
                 .IsHostileAbility()
                 .UnaffectedByHeavyArmor()
                 .BreaksStealth()
-                .UsesAnimation(Animation.ThrowGrenade)
+                .UsesAnimation(AnimationType.ThrowGrenade)
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
@@ -138,7 +138,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Ranged
                 .IsHostileAbility()
                 .UnaffectedByHeavyArmor()
                 .BreaksStealth()
-                .UsesAnimation(Animation.ThrowGrenade)
+                .UsesAnimation(AnimationType.ThrowGrenade)
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
@@ -155,7 +155,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Ranged
                 .IsHostileAbility()
                 .UnaffectedByHeavyArmor()
                 .BreaksStealth()
-                .UsesAnimation(Animation.ThrowGrenade)
+                .UsesAnimation(AnimationType.ThrowGrenade)
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }

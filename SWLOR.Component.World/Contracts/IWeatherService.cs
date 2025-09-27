@@ -23,14 +23,14 @@ namespace SWLOR.Component.World.Contracts
         /// Gets the current weather for the current area.
         /// </summary>
         /// <returns>The current weather type.</returns>
-        NWN.API.NWScript.Enum.Weather GetWeather();
+        NWN.API.NWScript.Enum.WeatherType GetWeather();
 
         /// <summary>
         /// Gets the weather for a specific area.
         /// </summary>
         /// <param name="oArea">The area to get weather for.</param>
         /// <returns>The weather type for the area.</returns>
-        NWN.API.NWScript.Enum.Weather GetWeather(uint oArea);
+        NWN.API.NWScript.Enum.WeatherType GetWeather(uint oArea);
 
         /// <summary>
         /// Applies weather effects to a creature.

@@ -7,6 +7,7 @@ using SWLOR.Shared.Domain.Common.Enums;
 using SWLOR.Shared.Domain.Communication.Enums;
 using SWLOR.Shared.Domain.Crafting.Enums;
 using SWLOR.Shared.Domain.Inventory.Enums;
+using FactionType = SWLOR.Shared.Domain.Communication.Enums.FactionType;
 
 namespace SWLOR.Shared.Domain.Entities
 {

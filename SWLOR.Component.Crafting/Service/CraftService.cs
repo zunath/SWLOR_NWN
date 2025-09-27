@@ -5,8 +5,6 @@ using SWLOR.Component.Crafting.Model;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Item;
-using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Core.Bioware;
@@ -605,25 +603,25 @@ namespace SWLOR.Component.Crafting.Service
                 case EnhancementSubType.StructureBonus: // Structure Bonus
                     return ItemPropertyCustom(ItemPropertyType.StructureBonus, -1, amount);
                 case EnhancementSubType.FoodBonusHPRegen: // Food Bonus - HP Regen
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.HPRegen, amount);
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)ItemPropertyFoodSubType.HPRegen, amount);
                 case EnhancementSubType.FoodBonusFPRegen: // Food Bonus - FP Regen
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.FPRegen, amount);
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)ItemPropertyFoodSubType.FPRegen, amount);
                 case EnhancementSubType.FoodBonusSTMRegen: // Food Bonus - STM Regen
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.STMRegen, amount);
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)ItemPropertyFoodSubType.STMRegen, amount);
                 case EnhancementSubType.FoodBonusRestRegen: // Food Bonus - Rest Regen
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.RestRegen, amount);
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)ItemPropertyFoodSubType.RestRegen, amount);
                 case EnhancementSubType.FoodBonusXPBonus: // Food Bonus - XP Bonus
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.XPBonus, amount);
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)ItemPropertyFoodSubType.XPBonus, amount);
                 case EnhancementSubType.FoodBonusRecastReduction: // Food Bonus - Recast Reduction
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.RecastReduction, amount);
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)ItemPropertyFoodSubType.RecastReduction, amount);
                 case EnhancementSubType.FoodBonusDuration: // Food Bonus - Duration
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.Duration, amount);
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)ItemPropertyFoodSubType.Duration, amount);
                 case EnhancementSubType.FoodBonusHP: // Food Bonus - HP
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.HP, amount);
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)ItemPropertyFoodSubType.HP, amount);
                 case EnhancementSubType.FoodBonusFP: // Food Bonus - FP
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.FP, amount);
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)ItemPropertyFoodSubType.FP, amount);
                 case EnhancementSubType.FoodBonusSTM: // Food Bonus - STM
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.STM, amount);
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)ItemPropertyFoodSubType.STM, amount);
                 case EnhancementSubType.ControlEngineering: // Control - Engineering
                     return ItemPropertyCustom(ItemPropertyType.Control, 2, amount);
                 case EnhancementSubType.CraftsmanshipEngineering: // Craftsmanship - Engineering
@@ -668,51 +666,51 @@ namespace SWLOR.Component.Crafting.Service
                 // 59 is free
                 
                 case EnhancementSubType.FoodBonusAttack: // Food Bonus - Attack
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.Attack, amount);
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)ItemPropertyFoodSubType.Attack, amount);
                 case EnhancementSubType.FoodBonusAccuracy: // Food Bonus - Accuracy
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.Accuracy, amount);
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)ItemPropertyFoodSubType.Accuracy, amount);
                 case EnhancementSubType.FoodBonusPhysicalDefense: // Food Bonus - Physical Defense
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.DefensePhysical, amount);
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)ItemPropertyFoodSubType.DefensePhysical, amount);
                 case EnhancementSubType.FoodBonusForceDefense: // Food Bonus - Force Defense
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.DefenseForce, amount);
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)ItemPropertyFoodSubType.DefenseForce, amount);
                 case EnhancementSubType.FoodBonusPoisonDefense: // Food Bonus - Poison Defense
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.DefensePoison, amount);
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)ItemPropertyFoodSubType.DefensePoison, amount);
                 case EnhancementSubType.FoodBonusFireDefense: // Food Bonus - Fire Defense
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.DefenseFire, amount);
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)ItemPropertyFoodSubType.DefenseFire, amount);
                 case EnhancementSubType.FoodBonusIceDefense: // Food Bonus - Ice Defense
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.DefenseIce, amount);
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)ItemPropertyFoodSubType.DefenseIce, amount);
                 case EnhancementSubType.FoodBonusElectricalDefense: // Food Bonus - Electrical Defense
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.DefenseElectrical, amount);
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)ItemPropertyFoodSubType.DefenseElectrical, amount);
                 case EnhancementSubType.FoodBonusEvasion: // Food Bonus - Evasion
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.Evasion, amount);
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)ItemPropertyFoodSubType.Evasion, amount);
                 case EnhancementSubType.FoodBonusControlSmithery: // Food Bonus - Control Smithery
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.ControlSmithery, amount);
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)ItemPropertyFoodSubType.ControlSmithery, amount);
                 case EnhancementSubType.FoodBonusCraftsmanshipSmithery: // Food Bonus - Craftsmanship Smithery
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.CraftsmanshipSmithery, amount);
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)ItemPropertyFoodSubType.CraftsmanshipSmithery, amount);
                 case EnhancementSubType.FoodBonusControlFabrication: // Food Bonus - Control Fabrication
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.ControlFabrication, amount);
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)ItemPropertyFoodSubType.ControlFabrication, amount);
                 case EnhancementSubType.FoodBonusCraftsmanshipFabrication: // Food Bonus - Craftsmanship Fabrication
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.CraftsmanshipFabrication, amount);
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)ItemPropertyFoodSubType.CraftsmanshipFabrication, amount);
                 case EnhancementSubType.FoodBonusControlEngineering: // Food Bonus - Control Engineering
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.ControlEngineering, amount);
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)ItemPropertyFoodSubType.ControlEngineering, amount);
                 case EnhancementSubType.FoodBonusCraftsmanshipEngineering: // Food Bonus - Craftsmanship Engineering
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.CraftsmanshipEngineering, amount);
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)ItemPropertyFoodSubType.CraftsmanshipEngineering, amount);
                 case EnhancementSubType.FoodBonusControlAgriculture: // Food Bonus - Control Agriculture
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.ControlAgriculture, amount);
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)ItemPropertyFoodSubType.ControlAgriculture, amount);
                 case EnhancementSubType.FoodBonusCraftsmanshipAgriculture: // Food Bonus - Craftsmanship Agriculture
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.CraftsmanshipAgriculture, amount);
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)ItemPropertyFoodSubType.CraftsmanshipAgriculture, amount);
                 case EnhancementSubType.FoodBonusMight: // Food Bonus - Might
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.Might, amount);
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)ItemPropertyFoodSubType.Might, amount);
                 case EnhancementSubType.FoodBonusPerception: // Food Bonus - Perception
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.Perception, amount);
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)ItemPropertyFoodSubType.Perception, amount);
                 case EnhancementSubType.FoodBonusVitality: // Food Bonus - Vitality
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.Vitality, amount);
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)ItemPropertyFoodSubType.Vitality, amount);
                 case EnhancementSubType.FoodBonusWillpower: // Food Bonus - Willpower
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.Willpower, amount);
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)ItemPropertyFoodSubType.Willpower, amount);
                 case EnhancementSubType.FoodBonusAgility: // Food Bonus - Agility
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.Agility, amount);
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)ItemPropertyFoodSubType.Agility, amount);
                 case EnhancementSubType.FoodBonusSocial: // Food Bonus - Social
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.Social, amount);
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)ItemPropertyFoodSubType.Social, amount);
                 case EnhancementSubType.Attack: // Attack
                     return ItemPropertyCustom(ItemPropertyType.Attack, -1, amount);
                 case EnhancementSubType.ForceAttack: // Force Attack

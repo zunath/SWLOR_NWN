@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Character.ValueObjects;
 using SWLOR.Shared.Domain.Combat.Contracts;
@@ -41,7 +40,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.NPC
                 {
                     StatusEffectService.Apply(activator, target, StatusEffectType.Bleed, 60f);
 
-                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Com_Chunk_Red_Small), target);
+                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Com_Chunk_Red_Small), target);
                 });
         }
 

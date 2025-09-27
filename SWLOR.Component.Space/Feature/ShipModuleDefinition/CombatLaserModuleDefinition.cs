@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Space.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Combat.Contracts;
@@ -84,8 +83,8 @@ namespace SWLOR.Component.Space.Feature.ShipModuleDefinition
                     var chanceToHit = SpaceService.CalculateChanceToHit(activator, target);
                     var roll = Random.D100(1);
                     var isHit = roll <= chanceToHit;
-                    var sound = EffectVisualEffect(VisualEffect.Vfx_Ship_Blast);
-                    var missile = EffectVisualEffect(VisualEffect.Mirv_StarWars_Bolt2);
+                    var sound = EffectVisualEffect(VisualEffectType.Vfx_Ship_Blast);
+                    var missile = EffectVisualEffect(VisualEffectType.Mirv_StarWars_Bolt2);
 
                     if (isHit)
                     {

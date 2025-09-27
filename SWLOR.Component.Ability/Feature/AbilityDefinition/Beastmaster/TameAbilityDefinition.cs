@@ -46,7 +46,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beastmaster
                 .Name("Tame")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.Tame, 60f * 2f)
-                .UsesAnimation(Animation.LoopingGetMid)
+                .UsesAnimation(AnimationType.LoopingGetMid)
                 .HasActivationDelay(18f)
                 .RequirementStamina(10)
                 .IsCastedAbility()
@@ -149,11 +149,11 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beastmaster
                             { CombatDamageType.Electrical, Random.Next(0, 10) },
                         },
 
-                        SavingThrowPurities = new Dictionary<SavingThrow, int>
+                        SavingThrowPurities = new Dictionary<SavingThrowCategoryType, int>
                         {
-                            { SavingThrow.Fortitude, Random.Next(0, 10)},
-                            { SavingThrow.Will, Random.Next(0, 10)},
-                            { SavingThrow.Reflex, Random.Next(0, 10)},
+                            { SavingThrowCategoryType.Fortitude, Random.Next(0, 10)},
+                            { SavingThrowCategoryType.Will, Random.Next(0, 10)},
+                            { SavingThrowCategoryType.Reflex, Random.Next(0, 10)},
                         }
                     };
 

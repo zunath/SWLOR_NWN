@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Beasts.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
@@ -72,7 +71,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beastmaster
                 .Name("Revive Beast I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.ReviveBeast, 60f * 5)
-                .UsesAnimation(Animation.LoopingGetMid)
+                .UsesAnimation(AnimationType.LoopingGetMid)
                 .HasActivationDelay(4f)
                 .RequirementStamina(15)
                 .IsCastedAbility()
@@ -100,7 +99,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beastmaster
                 .Name("Revive Beast II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.ReviveBeast, 60f * 5)
-                .UsesAnimation(Animation.LoopingGetMid)
+                .UsesAnimation(AnimationType.LoopingGetMid)
                 .HasActivationDelay(4f)
                 .RequirementStamina(17)
                 .IsCastedAbility()
@@ -129,7 +128,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beastmaster
                 .Name("Revive Beast III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.ReviveBeast, 60f * 5)
-                .UsesAnimation(Animation.LoopingGetMid)
+                .UsesAnimation(AnimationType.LoopingGetMid)
                 .HasActivationDelay(4f)
                 .RequirementStamina(18)
                 .IsCastedAbility()

@@ -2,8 +2,6 @@
 using SWLOR.Component.World.Contracts;
 using SWLOR.Component.World.Enums;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Area;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Core.Log.LogGroup;
@@ -54,7 +52,7 @@ namespace SWLOR.Component.World.Service
 
                     var tile = CreateObject(ObjectType.Placeable, "plc_invisobj", location, false, "x2_tmp_tile");
                     SetPlotFlag(tile, true);
-                    ApplyEffectToObject(DurationType.Permanent, EffectVisualEffect((VisualEffect)tileType), tile);
+                    ApplyEffectToObject(DurationType.Permanent, EffectVisualEffect((VisualEffectType)tileType), tile);
                 }
 
                 x += 10f;
@@ -69,7 +67,7 @@ namespace SWLOR.Component.World.Service
         /// <param name="zOffset">The Z-Offset to draw at</param>
         private void ChangeAreaGroundTiles(uint area, TileMagicType tileType, float zOffset = -0.4f)
         {
-            ChangeAreaGroundTiles(area, tileType, GetAreaSize(Dimension.Width, area), GetAreaSize(Dimension.Height, area), zOffset);
+            ChangeAreaGroundTiles(area, tileType, GetAreaSize(AreaDimensionType.Width, area), GetAreaSize(AreaDimensionType.Height, area), zOffset);
         }
 
         /// <summary>

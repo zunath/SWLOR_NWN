@@ -100,7 +100,7 @@ namespace SWLOR.Component.Properties.Feature.PropertyLayoutDefinition
                 SetName(terminal, $"{planet.Name} Starport Flights Terminal");
 
                 SetLocalInt(terminal, "CURRENT_LOCATION", (int)planetType);
-                SetEventScript(terminal, EventScript.Placeable_OnUsed, ScriptName.OnPropertyStarportTerminal);
+                SetEventScript(terminal, EventScriptType.Placeable_OnUsed, ScriptName.OnPropertyStarportTerminal);
             }
 
             const string WaypointTag = "STARPORT_FLIGHTS_TERMINAL";

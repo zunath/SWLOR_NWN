@@ -53,13 +53,13 @@ namespace SWLOR.Component.Inventory.UI.View
                     {
                         row.AddLabel()
                             .SetText("Name")
-                            .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                            .SetVerticalAlign(NuiVerticalAlign.Top);
+                            .SetHorizontalAlign(NuiHorizontalAlignType.Center)
+                            .SetVerticalAlign(NuiVerticalAlignType.Top);
 
                         row.AddLabel()
                             .SetText("Type")
-                            .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                            .SetVerticalAlign(NuiVerticalAlign.Top);
+                            .SetHorizontalAlign(NuiHorizontalAlignType.Center)
+                            .SetVerticalAlign(NuiVerticalAlignType.Top);
 
                         row.SetHeight(20f);
                     });

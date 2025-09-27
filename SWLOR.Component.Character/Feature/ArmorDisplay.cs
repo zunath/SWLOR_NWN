@@ -1,4 +1,4 @@
-using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Events.Attributes;
@@ -29,11 +29,11 @@ namespace SWLOR.Component.Character.Feature
 
             var playerId = GetObjectUUID(player);
             var dbPlayer = _db.Get<Player>(playerId) ?? new Player(playerId);
-            if (itemType == BaseItem.Helmet)
+            if (itemType == BaseItemType.Helmet)
             {
                 SetHiddenWhenEquipped(item, !dbPlayer.Settings.ShowHelmet);
             }
-            else if (itemType == BaseItem.Cloak)
+            else if (itemType == BaseItemType.Cloak)
             {
                 SetHiddenWhenEquipped(item, !dbPlayer.Settings.ShowCloak);
             }

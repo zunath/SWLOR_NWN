@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Space.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Combat.Contracts;
@@ -86,8 +85,8 @@ namespace SWLOR.Component.Space.Feature.ShipModuleDefinition
                 var defense = SpaceService.GetShipDefense(target, defenseBonus);
                 var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
 
-                var sound = EffectVisualEffect(VisualEffect.Vfx_Ship_Blast);
-                var missile = EffectVisualEffect(VisualEffect.Mirv_StarWars_Bolt2);
+                var sound = EffectVisualEffect(VisualEffectType.Vfx_Ship_Blast);
+                var missile = EffectVisualEffect(VisualEffectType.Mirv_StarWars_Bolt2);
                 
                 for (var i = 0; i < totalAttacks; i++)
                 {

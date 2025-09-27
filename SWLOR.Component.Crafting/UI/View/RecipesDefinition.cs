@@ -141,8 +141,8 @@ namespace SWLOR.Component.Crafting.UI.View
                                 row2.AddSpacer();
                                 row2.AddLabel()
                                     .BindText(model => model.RecipeName)
-                                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                                    .SetVerticalAlign(NuiVerticalAlign.Top)
+                                    .SetHorizontalAlign(NuiHorizontalAlignType.Left)
+                                    .SetVerticalAlign(NuiVerticalAlignType.Top)
                                     .SetHeight(26f);
                                 row2.AddSpacer();
                             });
@@ -152,8 +152,8 @@ namespace SWLOR.Component.Crafting.UI.View
                                 row2.AddSpacer();
                                 row2.AddLabel()
                                     .BindText(model => model.RecipeLevel)
-                                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                                    .SetVerticalAlign(NuiVerticalAlign.Top)
+                                    .SetHorizontalAlign(NuiHorizontalAlignType.Left)
+                                    .SetVerticalAlign(NuiVerticalAlignType.Top)
                                     .SetHeight(26f);
                                 row2.AddSpacer();
                             });
@@ -163,8 +163,8 @@ namespace SWLOR.Component.Crafting.UI.View
                                 row2.AddSpacer();
                                 row2.AddLabel()
                                     .BindText(model => model.RecipeEnhancementSlots)
-                                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                                    .SetVerticalAlign(NuiVerticalAlign.Top)
+                                    .SetHorizontalAlign(NuiHorizontalAlignType.Left)
+                                    .SetVerticalAlign(NuiVerticalAlignType.Top)
                                     .SetHeight(26f);
                                 row2.AddSpacer();
                             });
@@ -178,8 +178,8 @@ namespace SWLOR.Component.Crafting.UI.View
                                         cell.AddLabel()
                                             .BindText(model => model.RecipeDetails)
                                             .BindColor(model => model.RecipeDetailColors)
-                                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                                            .SetVerticalAlign(NuiVerticalAlign.Middle);
+                                            .SetHorizontalAlign(NuiHorizontalAlignType.Left)
+                                            .SetVerticalAlign(NuiVerticalAlignType.Middle);
                                     });
                                 })
                                     .BindRowCount(model => model.RecipeDetails);

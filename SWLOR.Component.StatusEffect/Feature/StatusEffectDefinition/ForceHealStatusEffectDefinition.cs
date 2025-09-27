@@ -2,7 +2,6 @@ using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.StatusEffect.Contracts;
 using SWLOR.Component.StatusEffect.Service;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Combat.Contracts;
@@ -48,7 +47,7 @@ namespace SWLOR.Component.StatusEffect.Feature.StatusEffectDefinition
                 ? EffectDamage(amount)
                 : EffectHeal(amount), target);
 
-            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_S), target);
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Imp_Healing_S), target);
 
             EnmityService.ModifyEnmityOnAll(source, 30 + amount);
             CombatPointService.AddCombatPointToAllTagged(source, SkillType.Force, 3);

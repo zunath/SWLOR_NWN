@@ -41,7 +41,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.TwoHanded
 
         private string Validation(uint activator, uint target, int level, Location targetLocation)
         {
-            var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
+            var weapon = GetItemInSlot(InventorySlotType.RightHand, activator);
 
             if (!ItemService.PolearmBaseItemTypes.Contains(GetBaseItemType(weapon)))
             {
@@ -85,7 +85,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.TwoHanded
                 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Piercing), target);
 
-            AssignCommand(activator, () => ActionPlayAnimation(Animation.DoubleThrust));
+            AssignCommand(activator, () => ActionPlayAnimation(AnimationType.DoubleThrust));
 
             CombatPointService.AddCombatPoint(activator, target, SkillType.TwoHanded, 3);
             EnmityService.ModifyEnmity(activator, target, 100 * level + damage);

@@ -1,6 +1,4 @@
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Creature;
-using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.NWN.API.NWNX
 {
@@ -11,7 +9,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </summary>
         /// <param name="baseItem">The base item id.</param>
         /// <param name="feat">The feat to set.</param>
-        public static void SetWeaponFocusFeat(BaseItem baseItem, FeatType feat)
+        public static void SetWeaponFocusFeat(BaseItemType baseItem, FeatType feat)
         {
             global::NWN.Core.NWNX.WeaponPlugin.SetWeaponFocusFeat((int)baseItem, (int)feat);
         }
@@ -21,7 +19,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </summary>
         /// <param name="baseItem">The base item id.</param>
         /// <param name="feat">The feat to set.</param>
-        public static void SetEpicWeaponFocusFeat(BaseItem baseItem, FeatType feat)
+        public static void SetEpicWeaponFocusFeat(BaseItemType baseItem, FeatType feat)
         {
             global::NWN.Core.NWNX.WeaponPlugin.SetEpicWeaponFocusFeat((int)baseItem, (int)feat);
         }
@@ -31,7 +29,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </summary>
         /// <param name="baseItem">The base item id.</param>
         /// <param name="feat">The feat to set.</param>
-        public static void SetGreaterWeaponFocusFeat(BaseItem baseItem, FeatType feat)
+        public static void SetGreaterWeaponFocusFeat(BaseItemType baseItem, FeatType feat)
         {
             global::NWN.Core.NWNX.WeaponPlugin.SetGreaterWeaponFocusFeat((int)baseItem, (int)feat);
         }
@@ -41,7 +39,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </summary>
         /// <param name="baseItem">The base item id.</param>
         /// <param name="nCreatureSize">The creature size minimum to consider this weapon finessable.</param>
-        public static void SetWeaponFinesseSize(BaseItem baseItem, CreatureSize nCreatureSize)
+        public static void SetWeaponFinesseSize(BaseItemType baseItem, CreatureSizeType nCreatureSize)
         {
             global::NWN.Core.NWNX.WeaponPlugin.SetWeaponFinesseSize((int)baseItem, (int)nCreatureSize);
         }
@@ -50,7 +48,7 @@ namespace SWLOR.NWN.API.NWNX
         /// Set weapon base item to be considered as unarmed for weapon finesse feat.
         /// </summary>
         /// <param name="baseItem">The base item id.</param>
-        public static void SetWeaponUnarmed(BaseItem baseItem)
+        public static void SetWeaponUnarmed(BaseItemType baseItem)
         {
             global::NWN.Core.NWNX.WeaponPlugin.SetWeaponUnarmed((int)baseItem);
         }
@@ -60,7 +58,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </summary>
         /// <param name="baseItem">The base item id.</param>
         /// <remarks>This method is deprecated. Use baseitems.2da instead.</remarks>
-        public static void SetWeaponIsMonkWeapon(BaseItem baseItem)
+        public static void SetWeaponIsMonkWeapon(BaseItemType baseItem)
         {
             global::NWN.Core.NWNX.WeaponPlugin.SetWeaponIsMonkWeapon((int)baseItem);
         }
@@ -70,7 +68,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </summary>
         /// <param name="baseItem">The base item id.</param>
         /// <param name="feat">The feat to set.</param>
-        public static void SetWeaponImprovedCriticalFeat(BaseItem baseItem, FeatType feat)
+        public static void SetWeaponImprovedCriticalFeat(BaseItemType baseItem, FeatType feat)
         {
             global::NWN.Core.NWNX.WeaponPlugin.SetWeaponImprovedCriticalFeat((int)baseItem, (int)feat);
         }
@@ -80,7 +78,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </summary>
         /// <param name="baseItem">The base item id.</param>
         /// <param name="feat">The feat to set.</param>
-        public static void SetWeaponSpecializationFeat(BaseItem baseItem, FeatType feat)
+        public static void SetWeaponSpecializationFeat(BaseItemType baseItem, FeatType feat)
         {
             global::NWN.Core.NWNX.WeaponPlugin.SetWeaponSpecializationFeat((int)baseItem, (int)feat);
         }
@@ -90,7 +88,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </summary>
         /// <param name="baseItem">The base item id.</param>
         /// <param name="feat">The feat to set.</param>
-        public static void SetGreaterWeaponSpecializationFeat(BaseItem baseItem, FeatType feat)
+        public static void SetGreaterWeaponSpecializationFeat(BaseItemType baseItem, FeatType feat)
         {
             global::NWN.Core.NWNX.WeaponPlugin.SetGreaterWeaponSpecializationFeat((int)baseItem, (int)feat);
         }
@@ -100,7 +98,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </summary>
         /// <param name="baseItem">The base item id.</param>
         /// <param name="feat">The feat to set.</param>
-        public static void SetEpicWeaponSpecializationFeat(BaseItem baseItem, FeatType feat)
+        public static void SetEpicWeaponSpecializationFeat(BaseItemType baseItem, FeatType feat)
         {
             global::NWN.Core.NWNX.WeaponPlugin.SetEpicWeaponSpecializationFeat((int)baseItem, (int)feat);
         }
@@ -110,7 +108,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </summary>
         /// <param name="baseItem">The base item id.</param>
         /// <param name="feat">The feat to set.</param>
-        public static void SetEpicWeaponOverwhelmingCriticalFeat(BaseItem baseItem, FeatType feat)
+        public static void SetEpicWeaponOverwhelmingCriticalFeat(BaseItemType baseItem, FeatType feat)
         {
             global::NWN.Core.NWNX.WeaponPlugin.SetEpicWeaponOverwhelmingCriticalFeat((int)baseItem, (int)feat);
         }
@@ -120,7 +118,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </summary>
         /// <param name="baseItem">The base item id.</param>
         /// <param name="feat">The feat to set.</param>
-        public static void SetEpicWeaponDevastatingCriticalFeat(BaseItem baseItem, FeatType feat)
+        public static void SetEpicWeaponDevastatingCriticalFeat(BaseItemType baseItem, FeatType feat)
         {
             global::NWN.Core.NWNX.WeaponPlugin.SetEpicWeaponDevastatingCriticalFeat((int)baseItem, (int)feat);
         }
@@ -130,7 +128,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </summary>
         /// <param name="baseItem">The base item id.</param>
         /// <param name="feat">The feat to set.</param>
-        public static void SetWeaponOfChoiceFeat(BaseItem baseItem, FeatType feat)
+        public static void SetWeaponOfChoiceFeat(BaseItemType baseItem, FeatType feat)
         {
             global::NWN.Core.NWNX.WeaponPlugin.SetWeaponOfChoiceFeat((int)baseItem, (int)feat);
         }
@@ -209,7 +207,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="fMaxPassive">The maximum passive attack distance. Default is 20.0f. Seems to be used by the engine to determine a new nearby target when needed.</param>
         /// <param name="fPreferred">The preferred attack distance. See the PrefAttackDist column in baseitems.2da, default seems to be 30.0f for ranged weapons.</param>
         /// <remarks>fMaxPassive should probably be lower than fMax, half of fMax seems to be a good start. fPreferred should be at least ~0.5f lower than fMax.</remarks>
-        public static void SetMaxRangedAttackDistanceOverride(BaseItem nBaseItem, float fMax, float fMaxPassive, float fPreferred)
+        public static void SetMaxRangedAttackDistanceOverride(BaseItemType nBaseItem, float fMax, float fMaxPassive, float fPreferred)
         {
             global::NWN.Core.NWNX.WeaponPlugin.SetMaxRangedAttackDistanceOverride((int)nBaseItem, fMax, fMaxPassive, fPreferred);
         }

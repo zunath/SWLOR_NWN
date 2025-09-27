@@ -36,8 +36,8 @@ namespace SWLOR.Component.Properties.UI.View
                             row.AddLabel()
                                 .BindText(model => model.Instruction)
                                 .BindColor(model => model.InstructionColor)
-                                .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                                .SetVerticalAlign(NuiVerticalAlign.Middle)
+                                .SetHorizontalAlign(NuiHorizontalAlignType.Left)
+                                .SetVerticalAlign(NuiVerticalAlignType.Middle)
                                 .SetHeight(20f);
                         });
 
@@ -76,8 +76,8 @@ namespace SWLOR.Component.Properties.UI.View
                             row.AddLabel()
                                 .BindText(model => model.LayoutName)
                                 .SetHeight(20f)
-                                .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                                .SetVerticalAlign(NuiVerticalAlign.Middle);
+                                .SetHorizontalAlign(NuiHorizontalAlignType.Left)
+                                .SetVerticalAlign(NuiVerticalAlignType.Middle);
                         });
 
                         col.AddRow(row =>
@@ -85,8 +85,8 @@ namespace SWLOR.Component.Properties.UI.View
                             row.AddLabel()
                                 .BindText(model => model.InitialPrice)
                                 .SetHeight(20f)
-                                .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                                .SetVerticalAlign(NuiVerticalAlign.Middle);
+                                .SetHorizontalAlign(NuiHorizontalAlignType.Left)
+                                .SetVerticalAlign(NuiVerticalAlignType.Middle);
                         });
 
                         col.AddRow(row =>
@@ -94,8 +94,8 @@ namespace SWLOR.Component.Properties.UI.View
                             row.AddLabel()
                                 .BindText(model => model.PricePerDay)
                                 .SetHeight(20f)
-                                .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                                .SetVerticalAlign(NuiVerticalAlign.Middle);
+                                .SetHorizontalAlign(NuiHorizontalAlignType.Left)
+                                .SetVerticalAlign(NuiVerticalAlignType.Middle);
                         });
 
                         col.AddRow(row =>
@@ -103,8 +103,8 @@ namespace SWLOR.Component.Properties.UI.View
                             row.AddLabel()
                                 .BindText(model => model.FurnitureLimit)
                                 .SetHeight(20f)
-                                .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                                .SetVerticalAlign(NuiVerticalAlign.Middle);
+                                .SetHorizontalAlign(NuiHorizontalAlignType.Left)
+                                .SetVerticalAlign(NuiVerticalAlignType.Middle);
                         });
 
                         col.AddRow(row =>
@@ -113,8 +113,8 @@ namespace SWLOR.Component.Properties.UI.View
                                 .BindText(model => model.LeasedUntil)
                                 .BindColor(model => model.LeasedUntilColor)
                                 .SetHeight(20f)
-                                .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                                .SetVerticalAlign(NuiVerticalAlign.Middle);
+                                .SetHorizontalAlign(NuiHorizontalAlignType.Left)
+                                .SetVerticalAlign(NuiVerticalAlignType.Middle);
                         });
 
                         col.AddRow(row =>

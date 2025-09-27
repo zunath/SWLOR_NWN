@@ -15,12 +15,12 @@ namespace SWLOR.Shared.UI.Component
         private bool IsTextBound => !string.IsNullOrWhiteSpace(TextBindName);
 
         private bool ShowBorder { get; set; }
-        private NuiScrollbars Scrollbars { get; set; }
+        private NuiScrollbarType Scrollbars { get; set; }
 
         public GuiText()
         {
             ShowBorder = true;
-            Scrollbars = NuiScrollbars.Auto;
+            Scrollbars = NuiScrollbarType.Auto;
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace SWLOR.Shared.UI.Component
         /// Sets a static value for the scroll bars property.
         /// </summary>
         /// <param name="scrollbars">The scroll bar setting to use.</param>
-        public GuiText<T> SetScrollbars(NuiScrollbars scrollbars)
+        public GuiText<T> SetScrollbars(NuiScrollbarType scrollbars)
         {
             Scrollbars = scrollbars;
             return this;

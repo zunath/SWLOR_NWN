@@ -290,7 +290,7 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
             ApplyEffectToObject(DurationType.Temporary, effect, Player, RefiningDelaySeconds);
 
             // Play an animation
-            AssignCommand(Player, () => ActionPlayAnimation(Animation.LoopingGetMid, 1.0f, RefiningDelaySeconds));
+            AssignCommand(Player, () => ActionPlayAnimation(AnimationType.LoopingGetMid, 1.0f, RefiningDelaySeconds));
 
             // Display the timing bar and finish the process when the delay elapses.
             PlayerPlugin.StartGuiTimingBar(Player, RefiningDelaySeconds);

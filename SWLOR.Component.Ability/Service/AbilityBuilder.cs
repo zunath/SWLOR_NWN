@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Character.ValueObjects;
@@ -106,7 +105,7 @@ namespace SWLOR.Component.Ability.Service
         /// </summary>
         /// <param name="animation">The animation to set.</param>
         /// <returns>An ability builder with the configured options.</returns>
-        public IAbilityBuilder UsesAnimation(Animation animation)
+        public IAbilityBuilder UsesAnimation(AnimationType animation)
         {
             _activeAbility.AnimationType = animation;
 
@@ -130,7 +129,7 @@ namespace SWLOR.Component.Ability.Service
         /// </summary>
         /// <param name="vfx">The visual effect to display.</param>
         /// <returns>An ability builder with the configured options</returns>
-        public IAbilityBuilder DisplaysVisualEffectWhenActivating(VisualEffect vfx = VisualEffect.Vfx_Dur_Iounstone_Yellow)
+        public IAbilityBuilder DisplaysVisualEffectWhenActivating(VisualEffectType vfx = VisualEffectType.Vfx_Dur_Iounstone_Yellow)
         {
             _activeAbility.ActivationVisualEffect = vfx;
 

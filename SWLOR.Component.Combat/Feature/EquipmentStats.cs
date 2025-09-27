@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Domain.Character.Contracts;
@@ -60,7 +59,7 @@ namespace SWLOR.Component.Combat.Feature
 
         private void ReapplyNPCStat(uint npc, ItemPropertyType ipType, int amount, bool isAdding)
         {
-            var skin = GetItemInSlot(InventorySlot.CreatureArmor, npc);
+            var skin = GetItemInSlot(InventorySlotType.CreatureArmor, npc);
             var value = 0;
 
             for (var ip = GetFirstItemProperty(skin); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(skin))
@@ -108,7 +107,7 @@ namespace SWLOR.Component.Combat.Feature
             if (GetIsDM(creature) || GetIsDMPossessed(creature)) return;
 
             var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
-            var slot = (InventorySlot)Convert.ToInt32(EventsPlugin.GetEventData("SLOT"));
+            var slot = (InventorySlotType)Convert.ToInt32(EventsPlugin.GetEventData("SLOT"));
 
             // The unequip event doesn't fire if an item is being swapped out.
             // If there's an item in the slot, run the stat removals first.
@@ -187,7 +186,7 @@ namespace SWLOR.Component.Combat.Feature
             }
             else
             {
-                var skin = GetItemInSlot(InventorySlot.CreatureArmor, creature);
+                var skin = GetItemInSlot(InventorySlotType.CreatureArmor, creature);
 
                 var maxHP = 0;
                 for (var ipHP = GetFirstItemProperty(skin); GetIsItemPropertyValid(ipHP); ipHP = GetNextItemProperty(skin))
@@ -507,7 +506,7 @@ namespace SWLOR.Component.Combat.Feature
             }
             else
             {
-                var skin = GetItemInSlot(InventorySlot.CreatureArmor, creature);
+                var skin = GetItemInSlot(InventorySlotType.CreatureArmor, creature);
                 var value = 0;
                 for (var defenseIP = GetFirstItemProperty(skin); GetIsItemPropertyValid(defenseIP); defenseIP = GetNextItemProperty(skin))
                 {

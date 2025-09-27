@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Character.ValueObjects;
@@ -54,18 +53,18 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
 
             AssignCommand(activator, () =>
             {
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Mirv), target);
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Imp_Mirv), target);
             });
 
             DelayCommand(delay, () =>
             {
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Fire), target);
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Fnf_Fireball), target);
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Fnf_Fireball), target);
 
                 if (dc > 0)
                 {
                     const float Duration = 1f;
-                    dc = CombatService.CalculateSavingThrowDC(activator, SavingThrow.Fortitude, dc, AbilityType.Perception);
+                    dc = CombatService.CalculateSavingThrowDC(activator, SavingThrowCategoryType.Fortitude, dc, AbilityType.Perception);
                     var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
                     if (checkResult == SavingThrowResultType.Failed)
                     {
@@ -85,7 +84,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                 .HasRecastDelay(RecastGroup.WristRocket, 24f)
                 .HasActivationDelay(2f)
                 .RequirementStamina(1)
-                .UsesAnimation(Animation.CastOutAnimation)
+                .UsesAnimation(AnimationType.CastOutAnimation)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .BreaksStealth()
@@ -108,7 +107,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                 .HasRecastDelay(RecastGroup.WristRocket, 24f)
                 .HasActivationDelay(2f)
                 .RequirementStamina(2)
-                .UsesAnimation(Animation.CastOutAnimation)
+                .UsesAnimation(AnimationType.CastOutAnimation)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .BreaksStealth()
@@ -132,7 +131,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                 .HasRecastDelay(RecastGroup.WristRocket, 24f)
                 .HasActivationDelay(2f)
                 .RequirementStamina(3)
-                .UsesAnimation(Animation.CastOutAnimation)
+                .UsesAnimation(AnimationType.CastOutAnimation)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .BreaksStealth()

@@ -1,6 +1,5 @@
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
 
@@ -23,7 +22,7 @@ namespace SWLOR.Shared.Domain.Inventory.Contracts
         /// </summary>
         /// <param name="itemType">The item type</param>
         /// <returns>The ability type or AbilityType.Invalid if none is associated with the item.</returns>
-        AbilityType GetWeaponDamageAbilityType(BaseItem itemType);
+        AbilityType GetWeaponDamageAbilityType(BaseItemType itemType);
 
         /// <summary>
         /// Retrieves the ability type tied to a particular base item type for the purposes of accuracy calculation.
@@ -31,7 +30,7 @@ namespace SWLOR.Shared.Domain.Inventory.Contracts
         /// </summary>
         /// <param name="itemType">The item type</param>
         /// <returns>The ability type or AbilityType.Invalid if none is associated with the item.</returns>
-        AbilityType GetWeaponAccuracyAbilityType(BaseItem itemType);
+        AbilityType GetWeaponAccuracyAbilityType(BaseItemType itemType);
 
         /// <summary>
         /// When an item is used, if its tag is in the item cache, run it through the action item process.
@@ -74,100 +73,100 @@ namespace SWLOR.Shared.Domain.Inventory.Contracts
         /// <summary>
         /// Retrieves the list of weapon base item types.
         /// </summary>
-        List<BaseItem> WeaponBaseItemTypes { get; }
+        List<BaseItemType> WeaponBaseItemTypes { get; }
 
         /// <summary>
         /// Retrieves the list of armor base item types.
         /// </summary>
-        List<BaseItem> ArmorBaseItemTypes { get; }
+        List<BaseItemType> ArmorBaseItemTypes { get; }
 
         /// <summary>
         /// Retrieves the list of shield base item types.
         /// </summary>
-        List<BaseItem> ShieldBaseItemTypes { get; }
+        List<BaseItemType> ShieldBaseItemTypes { get; }
 
         /// <summary>
         /// Retrieves the list of Vibroblade base item types.
         /// </summary>
-        List<BaseItem> VibrobladeBaseItemTypes { get; }
+        List<BaseItemType> VibrobladeBaseItemTypes { get; }
 
         /// <summary>
         /// Retrieves the list of Finesse Vibroblade base item types.
         /// </summary>
-        List<BaseItem> FinesseVibrobladeBaseItemTypes { get; }
+        List<BaseItemType> FinesseVibrobladeBaseItemTypes { get; }
 
         /// <summary>
         /// Retrieves the list of Lightsaber base item types.
         /// </summary>
-        List<BaseItem> LightsaberBaseItemTypes { get; }
+        List<BaseItemType> LightsaberBaseItemTypes { get; }
 
         /// <summary>
         /// Retrieves the list of Heavy Vibroblade base item types.
         /// </summary>
-        List<BaseItem> HeavyVibrobladeBaseItemTypes { get; }
+        List<BaseItemType> HeavyVibrobladeBaseItemTypes { get; }
 
         /// <summary>
         /// Retrieves the list of Polearm base item types.
         /// </summary>
-        List<BaseItem> PolearmBaseItemTypes { get; }
+        List<BaseItemType> PolearmBaseItemTypes { get; }
 
         /// <summary>
         /// Retrieves the list of Twin Blade base item types.
         /// </summary>
-        List<BaseItem> TwinBladeBaseItemTypes { get; }
+        List<BaseItemType> TwinBladeBaseItemTypes { get; }
 
         /// <summary>
         /// Retrieves the list of Saberstaff base item types.
         /// </summary>
-        List<BaseItem> SaberstaffBaseItemTypes { get; }
+        List<BaseItemType> SaberstaffBaseItemTypes { get; }
 
         /// <summary>
         /// Retrieves the list of Katar base item types.
         /// </summary>
-        List<BaseItem> KatarBaseItemTypes { get; }
+        List<BaseItemType> KatarBaseItemTypes { get; }
 
         /// <summary>
         /// Retrieves the list of Staff base item types.
         /// </summary>
-        List<BaseItem> StaffBaseItemTypes { get; }
+        List<BaseItemType> StaffBaseItemTypes { get; }
 
         /// <summary>
         /// Retrieves the list of Pistol base item types.
         /// </summary>
-        List<BaseItem> PistolBaseItemTypes { get; }
+        List<BaseItemType> PistolBaseItemTypes { get; }
 
         /// <summary>
         /// Retrieves the list of Throwing Weapon base item types.
         /// </summary>
-        List<BaseItem> ThrowingWeaponBaseItemTypes { get; }
+        List<BaseItemType> ThrowingWeaponBaseItemTypes { get; }
 
         /// <summary>
         /// Retrieves the list of Rifle base item types.
         /// </summary>
-        List<BaseItem> RifleBaseItemTypes { get; }
+        List<BaseItemType> RifleBaseItemTypes { get; }
 
         /// <summary>
         /// Retrieves the list of One-Handed weapon types.
         /// These are the weapons which are held in one hand and not necessarily associated with the One-Handed skill.
         /// </summary>
-        List<BaseItem> OneHandedMeleeItemTypes { get; }
+        List<BaseItemType> OneHandedMeleeItemTypes { get; }
 
         /// <summary>
         /// Retrieves the list of Two-Handed melee weapon types.
         /// These are the weapons which are held in two hand and not necessarily associated with the Two-Handed skill.
         /// </summary>
-        List<BaseItem> TwoHandedMeleeItemTypes { get; }
+        List<BaseItemType> TwoHandedMeleeItemTypes { get; }
 
         /// <summary>
         /// Retrieves the list of Creature base item types.
         /// </summary>
-        List<BaseItem> CreatureBaseItemTypes { get; }
+        List<BaseItemType> CreatureBaseItemTypes { get; }
 
         /// <summary>
         /// Retrieves the list of Droid base item types.
         /// These are items which require the Use Limitation Race: Droid item property in order to be equipped by a Droid.
         /// </summary>
-        List<BaseItem> DroidBaseItemTypes { get; }
+        List<BaseItemType> DroidBaseItemTypes { get; }
 
         /// <summary>
         /// Retrieves the icon used on the UIs. 
@@ -220,7 +219,7 @@ namespace SWLOR.Shared.Domain.Inventory.Contracts
         /// </summary>
         /// <param name="type">The item type to check</param>
         /// <returns>The critical modifer value.</returns>
-        int GetCriticalModifier(BaseItem type);
+        int GetCriticalModifier(BaseItemType type);
 
         /// <summary>
         /// Reduces an item stack by a specific amount.
@@ -253,6 +252,6 @@ namespace SWLOR.Shared.Domain.Inventory.Contracts
         /// <param name="creature">The creature to check.</param>
         /// <param name="item">The item to search for.</param>
         /// <returns>The inventory slot of the item or InventorySlot.Invalid if not equipped.</returns>
-        InventorySlot GetItemSlot(uint creature, uint item);
+        InventorySlotType GetItemSlot(uint creature, uint item);
     }
 }

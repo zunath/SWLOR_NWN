@@ -1,7 +1,6 @@
 using SWLOR.Component.StatusEffect.Contracts;
 using SWLOR.Component.StatusEffect.Service;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Combat.Contracts;
@@ -72,7 +71,7 @@ namespace SWLOR.Component.StatusEffect.Feature.StatusEffectDefinition
                     ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), target);
                 });
 
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Poison_S), target);
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Imp_Poison_S), target);
 
                 var enmity = level * 50 + damage + 6;
                 _enmityService.ModifyEnmity(source, target, enmity);
@@ -103,7 +102,7 @@ namespace SWLOR.Component.StatusEffect.Feature.StatusEffectDefinition
                     }
 
 
-                    dc = _combatService.CalculateSavingThrowDC(source, SavingThrow.Will, dc);
+                    dc = _combatService.CalculateSavingThrowDC(source, SavingThrowCategoryType.Will, dc);
                     var checkResult = WillSave(target, dc, SavingThrowType.None, source);
 
                     if (checkResult == SavingThrowResultType.Failed)

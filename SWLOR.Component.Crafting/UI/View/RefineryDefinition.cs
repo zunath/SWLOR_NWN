@@ -34,8 +34,8 @@ namespace SWLOR.Component.Crafting.UI.View
                         row.AddLabel()
                             .SetHeight(20f)
                             .BindText(model => model.Instructions)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetVerticalAlign(NuiVerticalAlign.Middle)
+                            .SetHorizontalAlign(NuiHorizontalAlignType.Left)
+                            .SetVerticalAlign(NuiVerticalAlignType.Middle)
                             .BindColor(model => model.InstructionsColor);
                     });
 

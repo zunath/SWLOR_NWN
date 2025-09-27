@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Domain.Character.Enums;
@@ -40,11 +39,11 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
             SetLocalInt(item, "LIGHTSABER_UPGRADE_COUNT", level);
         }
 
-        private void CreateKit(string tag, string itemName, BaseItem expectedItemType, int upgradeNumber, int dmgIncrease)
+        private void CreateKit(string tag, string itemName, BaseItemType expectedItemType, int upgradeNumber, int dmgIncrease)
         {
             Builder.Create(tag)
                 .Delay(12f)
-                .PlaysAnimation(Animation.LoopingGetMid)
+                .PlaysAnimation(AnimationType.LoopingGetMid)
                 .MaxDistance(0.0f)
                 .ValidationAction((user, item, target, location, itemPropertyIndex) =>
                 {
@@ -79,8 +78,8 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
                         return "Only force sensitive characters may use this kit.";
                     }
 
-                    if (GetItemInSlot(InventorySlot.RightHand, user) == target ||
-                        GetItemInSlot(InventorySlot.LeftHand, user) == target)
+                    if (GetItemInSlot(InventorySlotType.RightHand, user) == target ||
+                        GetItemInSlot(InventorySlotType.LeftHand, user) == target)
                     {
                         return "Weapon must be unequipped.";
                     }
@@ -115,8 +114,8 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
 
         private void UpgradeKit()
         {
-            CreateKit("saber_upg1", "Lightsaber", BaseItem.Lightsaber, 1, 4);
-            CreateKit("saberstaff_upg1", "Saberstaff", BaseItem.Saberstaff, 1, 4);
+            CreateKit("saber_upg1", "Lightsaber", BaseItemType.Lightsaber, 1, 4);
+            CreateKit("saberstaff_upg1", "Saberstaff", BaseItemType.Saberstaff, 1, 4);
         }
     }
 }

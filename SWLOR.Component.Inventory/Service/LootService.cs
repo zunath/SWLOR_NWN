@@ -340,19 +340,19 @@ namespace SWLOR.Component.Inventory.Service
             // Dump equipped items in container
             for (var slot = 0; slot < NumberOfInventorySlots; slot++)
             {
-                if (slot == (int)InventorySlot.CreatureArmor ||
-                    slot == (int)InventorySlot.CreatureBite ||
-                    slot == (int)InventorySlot.CreatureLeft ||
-                    slot == (int)InventorySlot.CreatureRight)
+                if (slot == (int)InventorySlotType.CreatureArmor ||
+                    slot == (int)InventorySlotType.CreatureBite ||
+                    slot == (int)InventorySlotType.CreatureLeft ||
+                    slot == (int)InventorySlotType.CreatureRight)
                     continue;
 
-                var item = GetItemInSlot((InventorySlot)slot, self);
+                var item = GetItemInSlot((InventorySlotType)slot, self);
                 if (GetIsObjectValid(item) && !GetItemCursedFlag(item) && GetDroppableFlag(item))
                 {
                     var copy = CopyItem(item, container, true);
 
-                    if (slot == (int)InventorySlot.Head ||
-                        slot == (int)InventorySlot.Chest)
+                    if (slot == (int)InventorySlotType.Head ||
+                        slot == (int)InventorySlotType.Chest)
                     {
                         SetLocalObject(copy, CorpseCopyItemVariable, item);
                     }
@@ -462,7 +462,7 @@ namespace SWLOR.Component.Inventory.Service
 
             AssignCommand(looter, () =>
             {
-                ActionPlayAnimation(Animation.LoopingGetLow, 1.0f, 1.0f);
+                ActionPlayAnimation(AnimationType.LoopingGetLow, 1.0f, 1.0f);
             });
 
             if (type == DisturbType.Added)

@@ -2,8 +2,6 @@ using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Associate.Enums;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Associate;
-using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Models;
 using SWLOR.Shared.Core.Bioware;
@@ -526,9 +524,9 @@ namespace SWLOR.Component.Associate.UI.ViewModel
 
             Role = roleDetails.Name;
 
-            var fortitude = (level.Stats[AbilityType.Might] - 10) / 2 + (int)(level.MaxSavingThrowBonuses[SavingThrow.Fortitude] * (dbBeast.SavingThrowPurities[SavingThrow.Fortitude] * 0.01f));
-            var reflex = (level.Stats[AbilityType.Perception] - 10) / 2 + (int)(level.MaxSavingThrowBonuses[SavingThrow.Reflex] * (dbBeast.SavingThrowPurities[SavingThrow.Reflex] * 0.01f));
-            var will = (level.Stats[AbilityType.Willpower] - 10) / 2 + (int)(level.MaxSavingThrowBonuses[SavingThrow.Will] * (dbBeast.SavingThrowPurities[SavingThrow.Will] * 0.01f));
+            var fortitude = (level.Stats[AbilityType.Might] - 10) / 2 + (int)(level.MaxSavingThrowBonuses[SavingThrowCategoryType.Fortitude] * (dbBeast.SavingThrowPurities[SavingThrowCategoryType.Fortitude] * 0.01f));
+            var reflex = (level.Stats[AbilityType.Perception] - 10) / 2 + (int)(level.MaxSavingThrowBonuses[SavingThrowCategoryType.Reflex] * (dbBeast.SavingThrowPurities[SavingThrowCategoryType.Reflex] * 0.01f));
+            var will = (level.Stats[AbilityType.Willpower] - 10) / 2 + (int)(level.MaxSavingThrowBonuses[SavingThrowCategoryType.Will] * (dbBeast.SavingThrowPurities[SavingThrowCategoryType.Will] * 0.01f));
 
             SavingThrows = $"{fortitude}/{reflex}/{will}";
 
@@ -555,9 +553,9 @@ namespace SWLOR.Component.Associate.UI.ViewModel
             PoisonDefensePurity = $"{dbBeast.DefensePurities[CombatDamageType.Poison]}%";
             ElectricalDefensePurity = $"{dbBeast.DefensePurities[CombatDamageType.Electrical]}%";
 
-            FortitudePurity = $"{dbBeast.SavingThrowPurities[SavingThrow.Fortitude]}%";
-            ReflexPurity = $"{dbBeast.SavingThrowPurities[SavingThrow.Reflex]}%";
-            WillPurity = $"{dbBeast.SavingThrowPurities[SavingThrow.Will]}%";
+            FortitudePurity = $"{dbBeast.SavingThrowPurities[SavingThrowCategoryType.Fortitude]}%";
+            ReflexPurity = $"{dbBeast.SavingThrowPurities[SavingThrowCategoryType.Reflex]}%";
+            WillPurity = $"{dbBeast.SavingThrowPurities[SavingThrowCategoryType.Will]}%";
 
             LearningPurity = $"{dbBeast.LearningPurity}%";
             XPPenalty = $"{dbBeast.XPPenaltyPercent}%";
@@ -657,9 +655,9 @@ namespace SWLOR.Component.Associate.UI.ViewModel
             var electricalPurity = (int)(dbBeast.DefensePurities[CombatDamageType.Electrical] * percentage) * 10;
             var poisonPurity = (int)(dbBeast.DefensePurities[CombatDamageType.Poison] * percentage) * 10;
 
-            var fortitudePurity = (int)(dbBeast.SavingThrowPurities[SavingThrow.Fortitude] * percentage) * 10;
-            var reflexPurity = (int)(dbBeast.SavingThrowPurities[SavingThrow.Reflex] * percentage) * 10;
-            var willPurity = (int)(dbBeast.SavingThrowPurities[SavingThrow.Will] * percentage) * 10;
+            var fortitudePurity = (int)(dbBeast.SavingThrowPurities[SavingThrowCategoryType.Fortitude] * percentage) * 10;
+            var reflexPurity = (int)(dbBeast.SavingThrowPurities[SavingThrowCategoryType.Reflex] * percentage) * 10;
+            var willPurity = (int)(dbBeast.SavingThrowPurities[SavingThrowCategoryType.Will] * percentage) * 10;
 
             var xpPenalty = (int)(dbBeast.XPPenaltyPercent * percentage) * 10;
 

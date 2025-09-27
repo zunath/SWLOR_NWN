@@ -42,7 +42,7 @@ namespace SWLOR.Shared.Domain.Entities
 
         public Dictionary<CombatDamageType, int> DefensePurities { get; set; }
 
-        public Dictionary<SavingThrow, int> SavingThrowPurities { get; set; }
+        public Dictionary<SavingThrowCategoryType, int> SavingThrowPurities { get; set; }
 
 
         public Beast()
@@ -62,11 +62,11 @@ namespace SWLOR.Shared.Domain.Entities
                 { CombatDamageType.Electrical, 0 },
             };
 
-            SavingThrowPurities = new Dictionary<SavingThrow, int>
+            SavingThrowPurities = new Dictionary<SavingThrowCategoryType, int>
             {
-                { SavingThrow.Fortitude, 0},
-                { SavingThrow.Will, 0},
-                { SavingThrow.Reflex, 0},
+                { SavingThrowCategoryType.Fortitude, 0},
+                { SavingThrowCategoryType.Will, 0},
+                { SavingThrowCategoryType.Reflex, 0},
             };
         }
 

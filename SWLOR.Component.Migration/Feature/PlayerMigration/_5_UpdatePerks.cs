@@ -1,7 +1,6 @@
 using SWLOR.Component.Migration.Model;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
@@ -27,7 +26,7 @@ namespace SWLOR.Component.Migration.Feature.PlayerMigration
         public override int Version => 5;
         public override void Migrate(uint player)
         {
-            var rightHandWeapon = GetItemInSlot(InventorySlot.RightHand, player);
+            var rightHandWeapon = GetItemInSlot(InventorySlotType.RightHand, player);
 
             CreaturePlugin.RemoveFeat(player, FeatType.RapidShot);
             StatService.ApplyAttacksPerRound(player, rightHandWeapon);
@@ -36,7 +35,7 @@ namespace SWLOR.Component.Migration.Feature.PlayerMigration
             if (innerStrength > 0)
             {
                 // Remove old one which only targeted gloves.
-                CreaturePlugin.SetCriticalRangeModifier(player, 0, 0, true, BaseItem.Gloves);
+                CreaturePlugin.SetCriticalRangeModifier(player, 0, 0, true, BaseItemType.Gloves);
 
                 // Apply new one which targets all weapons
                 CreaturePlugin.SetCriticalRangeModifier(player, -innerStrength, 0, true);

@@ -1,5 +1,4 @@
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Domain.AI.ValueObjects;
 using SWLOR.Shared.Domain.Character.Contracts;
 
@@ -8,7 +7,7 @@ namespace SWLOR.Shared.Domain.Character.ValueObjects
     public class Animator : IAnimator
     {
         public Animator() { }
-        public Animator(VisualEffect vfx, AnimationEvent animEvent, DurationType duration, float scale = 1.0f)
+        public Animator(VisualEffectType vfx, AnimationEvent animEvent, DurationType duration, float scale = 1.0f)
         {
             Vfx = vfx;
             Event = animEvent;
@@ -16,7 +15,7 @@ namespace SWLOR.Shared.Domain.Character.ValueObjects
             Scale = scale;
         }
 
-        public VisualEffect Vfx { get; set; }
+        public VisualEffectType Vfx { get; set; }
         public AnimationEvent Event { get; set; }
         public DurationType Duration { get; set; }
         public float Scale { get; set; }

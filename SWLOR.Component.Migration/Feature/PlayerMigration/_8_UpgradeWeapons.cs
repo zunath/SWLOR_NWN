@@ -1,6 +1,5 @@
 using SWLOR.Component.Migration.Model;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Domain.Character.Contracts;
@@ -122,9 +121,9 @@ namespace SWLOR.Component.Migration.Feature.PlayerMigration
         {
             for (var index = 0; index < NumberOfInventorySlots; index++)
             {
-                var slot = (InventorySlot)index;
+                var slot = (InventorySlotType)index;
 
-                if (slot != InventorySlot.RightHand)
+                if (slot != InventorySlotType.RightHand)
                     continue;
 
                 var item = GetItemInSlot(slot, player);
@@ -150,7 +149,7 @@ namespace SWLOR.Component.Migration.Feature.PlayerMigration
                 oldDmg = _itemReplace[itemResRef].Item1;
                 newDmg = _itemReplace[itemResRef].Item2;
             }
-            else if (baseItem == BaseItem.Saberstaff) { newDmg = 3; } // Actual saberstaves won't be in the list, so we're just bumping their DMG directly
+            else if (baseItem == BaseItemType.Saberstaff) { newDmg = 3; } // Actual saberstaves won't be in the list, so we're just bumping their DMG directly
 
             var wpnDmg = newDmg - oldDmg;
             if (wpnDmg <= 0) { return; }

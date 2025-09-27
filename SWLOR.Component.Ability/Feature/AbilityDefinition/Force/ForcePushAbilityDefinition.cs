@@ -59,7 +59,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
 
             var willpowerBonus = 0.5f * GetAbilityModifier(AbilityType.Willpower, activator);
 
-            dc = CombatService.CalculateSavingThrowDC(activator, SavingThrow.Will, dc);
+            dc = CombatService.CalculateSavingThrowDC(activator, SavingThrowCategoryType.Will, dc);
             var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
             var duration = BaseDuration + willpowerBonus;
 
@@ -89,7 +89,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .RequirementFP(1)
                 .IsCastedAbility()
                 .IsHostileAbility()
-                .UsesAnimation(Animation.LoopingConjure1)
+                .UsesAnimation(AnimationType.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction(ImpactAction);
         }
@@ -104,7 +104,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .RequirementFP(2)
                 .IsCastedAbility()
                 .IsHostileAbility()
-                .UsesAnimation(Animation.LoopingConjure1)
+                .UsesAnimation(AnimationType.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction(ImpactAction);
         }
@@ -119,7 +119,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .RequirementFP(3)
                 .IsCastedAbility()
                 .IsHostileAbility()
-                .UsesAnimation(Animation.LoopingConjure1)
+                .UsesAnimation(AnimationType.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction(ImpactAction);
         }
@@ -134,7 +134,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .RequirementFP(4)
                 .IsCastedAbility()
                 .IsHostileAbility()
-                .UsesAnimation(Animation.LoopingConjure1)
+                .UsesAnimation(AnimationType.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction(ImpactAction);
         }

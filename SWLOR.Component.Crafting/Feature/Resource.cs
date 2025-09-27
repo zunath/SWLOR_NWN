@@ -25,7 +25,7 @@ namespace SWLOR.Component.Crafting.Feature
             var placeable = OBJECT_SELF;
 
             // Remove the heartbeat script no matter what.
-            SetEventScript(placeable, EventScript.Placeable_OnHeartbeat, string.Empty);
+            SetEventScript(placeable, EventScriptType.Placeable_OnHeartbeat, string.Empty);
 
             if (GetLocalBool(placeable, "RESOURCE_PROP_SPAWNED")) return;
 

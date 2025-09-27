@@ -54,14 +54,14 @@ public interface IChatCommandBuilder
     /// </summary>
     /// <param name="animation">The animation to play.</param>
     /// <returns>A configured ChatCommandBuilder.</returns>
-    IChatCommandBuilder AnimationAction(Animation animation);
+    IChatCommandBuilder AnimationAction(AnimationType animation);
 
     /// <summary>
     /// Sets the action to play a looping animation.
     /// </summary>
     /// <param name="animation">The looping animation to play.</param>
     /// <returns>A configured ChatCommandBuilder.</returns>
-    IChatCommandBuilder AnimationLoopingAction(Animation animation);
+    IChatCommandBuilder AnimationLoopingAction(AnimationType animation);
 
     /// <summary>
     /// If specified, this command requires a target to run.

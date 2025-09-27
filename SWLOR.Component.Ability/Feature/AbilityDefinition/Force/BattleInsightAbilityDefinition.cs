@@ -25,7 +25,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .HasRecastDelay(RecastGroup.BattleInsight, 60f)
                 .RequirementFP(3)
                 .IsConcentrationAbility(StatusEffectType.BattleInsight1)
-                .UsesAnimation(Animation.LoopingConjure1)
+                .UsesAnimation(AnimationType.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }
         private void BattleInsight2(IAbilityBuilder builder)
@@ -36,7 +36,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .HasRecastDelay(RecastGroup.BattleInsight, 60f)
                 .RequirementFP(5)
                 .IsConcentrationAbility(StatusEffectType.BattleInsight2)
-                .UsesAnimation(Animation.LoopingConjure1)
+                .UsesAnimation(AnimationType.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }
     }

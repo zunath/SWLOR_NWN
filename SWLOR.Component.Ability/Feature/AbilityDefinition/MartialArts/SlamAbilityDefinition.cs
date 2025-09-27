@@ -41,7 +41,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.MartialArts
 
         private string Validation(uint activator, uint target, int level, Location targetLocation)
         {
-            var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
+            var weapon = GetItemInSlot(InventorySlotType.RightHand, activator);
 
             if (!ItemService.StaffBaseItemTypes.Contains(GetBaseItemType(weapon)))
             {
@@ -103,7 +103,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.MartialArts
                 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Bludgeoning), target);
 
-            dc = CombatService.CalculateSavingThrowDC(activator, SavingThrow.Fortitude, dc);
+            dc = CombatService.CalculateSavingThrowDC(activator, SavingThrowCategoryType.Fortitude, dc);
             var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
 
             if (checkResult == SavingThrowResultType.Failed)

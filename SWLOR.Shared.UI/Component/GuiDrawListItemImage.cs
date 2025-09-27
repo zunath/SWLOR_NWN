@@ -18,15 +18,15 @@ namespace SWLOR.Shared.UI.Component
         private string PositionBindName { get; set; }
         private bool IsPositionBound => !string.IsNullOrWhiteSpace(PositionBindName);
         
-        private NuiAspect Aspect { get; set; }
+        private NuiAspectType Aspect { get; set; }
         private string AspectBindName { get; set; }
         private bool IsAspectBound => !string.IsNullOrWhiteSpace(AspectBindName);
         
-        private NuiHorizontalAlign HorizontalAlign { get; set; }
+        private NuiHorizontalAlignType HorizontalAlign { get; set; }
         private string HorizontalAlignBindName { get; set; }
         private bool IsHorizontalAlignBound => !string.IsNullOrWhiteSpace(HorizontalAlignBindName);
         
-        private NuiVerticalAlign VerticalAlign { get; set; }
+        private NuiVerticalAlignType VerticalAlign { get; set; }
         private string VerticalAlignBindName { get; set; }
         private bool IsVerticalAlignBound => !string.IsNullOrWhiteSpace(VerticalAlignBindName);
 
@@ -98,7 +98,7 @@ namespace SWLOR.Shared.UI.Component
         /// Sets a static value for the Aspect of the image.
         /// </summary>
         /// <param name="aspect">The aspect to set.</param>
-        public GuiDrawListItemImage<T> SetAspect(NuiAspect aspect)
+        public GuiDrawListItemImage<T> SetAspect(NuiAspectType aspect)
         {
             Aspect = aspect;
             return this;
@@ -119,7 +119,7 @@ namespace SWLOR.Shared.UI.Component
         /// Sets a static value for the horizontal alignment of the image.
         /// </summary>
         /// <param name="hAlign">The horizontal alignment</param>
-        public GuiDrawListItemImage<T> SetHorizontalAlign(NuiHorizontalAlign hAlign)
+        public GuiDrawListItemImage<T> SetHorizontalAlign(NuiHorizontalAlignType hAlign)
         {
             HorizontalAlign = hAlign;
             return this;
@@ -140,7 +140,7 @@ namespace SWLOR.Shared.UI.Component
         /// Sets a static value for the vertical alignment of the image.
         /// </summary>
         /// <param name="vAlign">The vertical alignment</param>
-        public GuiDrawListItemImage<T> SetVerticalAlign(NuiVerticalAlign vAlign)
+        public GuiDrawListItemImage<T> SetVerticalAlign(NuiVerticalAlignType vAlign)
         {
             VerticalAlign = vAlign;
             return this;

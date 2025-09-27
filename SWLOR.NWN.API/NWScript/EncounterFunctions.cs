@@ -81,7 +81,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nEncounterDifficulty">The encounter difficulty (ENCOUNTER_DIFFICULTY_* constants)</param>
         /// <param name="oEncounter">The encounter to set the difficulty for (default: OBJECT_SELF)</param>
-        public static void SetEncounterDifficulty(EncounterDifficulty nEncounterDifficulty,
+        public static void SetEncounterDifficulty(EncounterDifficultyType nEncounterDifficulty,
             uint oEncounter = OBJECT_INVALID)
         {
             if (oEncounter == OBJECT_INVALID)

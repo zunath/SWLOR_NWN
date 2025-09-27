@@ -102,7 +102,7 @@ namespace SWLOR.Component.Communication.Service
         /// </summary>
         /// <param name="animation">The animation to play.</param>
         /// <returns>A configured ChatCommandBuilder.</returns>
-        public IChatCommandBuilder AnimationAction(Animation animation)
+        public IChatCommandBuilder AnimationAction(AnimationType animation)
         {
             _currentDetail.DoAction = (user, target, location, args) =>
             {
@@ -119,7 +119,7 @@ namespace SWLOR.Component.Communication.Service
         /// </summary>
         /// <param name="animation">The looping animation to play.</param>
         /// <returns>A configured ChatCommandBuilder.</returns>
-        public IChatCommandBuilder AnimationLoopingAction(Animation animation)
+        public IChatCommandBuilder AnimationLoopingAction(AnimationType animation)
         {
             _currentDetail.DoAction = (user, target, location, args) =>
             {

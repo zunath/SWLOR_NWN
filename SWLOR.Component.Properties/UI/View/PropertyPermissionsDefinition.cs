@@ -34,8 +34,8 @@ namespace SWLOR.Component.Properties.UI.View
                         row.AddLabel()
                             .BindText(model => model.PropertyName)
                             .SetHeight(20f)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetVerticalAlign(NuiVerticalAlign.Middle);
+                            .SetHorizontalAlign(NuiHorizontalAlignType.Left)
+                            .SetVerticalAlign(NuiVerticalAlignType.Middle);
                     });
 
                     col.AddRow(row =>
@@ -44,8 +44,8 @@ namespace SWLOR.Component.Properties.UI.View
                             .BindText(model => model.Instruction)
                             .BindColor(model => model.InstructionColor)
                             .SetHeight(20f)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetVerticalAlign(NuiVerticalAlign.Middle);
+                            .SetHorizontalAlign(NuiHorizontalAlignType.Left)
+                            .SetVerticalAlign(NuiVerticalAlignType.Middle);
                     });
 
                     col.AddRow(row =>
@@ -95,8 +95,8 @@ namespace SWLOR.Component.Properties.UI.View
                             {
                                 row2.AddLabel()
                                     .SetHeight(20f)
-                                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                                    .SetVerticalAlign(NuiVerticalAlign.Middle)
+                                    .SetHorizontalAlign(NuiHorizontalAlignType.Left)
+                                    .SetVerticalAlign(NuiVerticalAlignType.Middle)
                                     .BindText(model => model.PlayerName);
                             });
 
@@ -110,8 +110,8 @@ namespace SWLOR.Component.Properties.UI.View
                                         cell.SetWidth(140f);
                                         cell.AddLabel()
                                             .BindText(model => model.PermissionNames)
-                                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                                            .SetVerticalAlign(NuiVerticalAlign.Middle)
+                                            .SetHorizontalAlign(NuiHorizontalAlignType.Left)
+                                            .SetVerticalAlign(NuiVerticalAlignType.Middle)
                                             .BindTooltip(model => model.PermissionDescriptions);
                                     });
 

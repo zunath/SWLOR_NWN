@@ -1,5 +1,4 @@
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Character.ValueObjects;
 using SWLOR.Shared.Domain.Combat.Enums;
@@ -56,7 +55,7 @@ namespace SWLOR.Component.Ability.Contracts
         /// </summary>
         /// <param name="animation">The animation to set.</param>
         /// <returns>An ability builder with the configured options.</returns>
-        IAbilityBuilder UsesAnimation(Animation animation);
+        IAbilityBuilder UsesAnimation(AnimationType animation);
 
         /// <summary>
         /// The ability will not display an activation message to nearby players if this is set.
@@ -70,7 +69,7 @@ namespace SWLOR.Component.Ability.Contracts
         /// </summary>
         /// <param name="vfx">The visual effect to display.</param>
         /// <returns>An ability builder with the configured options</returns>
-        IAbilityBuilder DisplaysVisualEffectWhenActivating(VisualEffect vfx = VisualEffect.Vfx_Dur_Iounstone_Yellow);
+        IAbilityBuilder DisplaysVisualEffectWhenActivating(VisualEffectType vfx = VisualEffectType.Vfx_Dur_Iounstone_Yellow);
 
         /// <summary>
         /// Indicates this ability runs an action immediately after validation but before any delays or impacts.

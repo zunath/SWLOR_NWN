@@ -232,7 +232,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nStandardFaction">The standard faction (STANDARD_FACTION_* constants)</param>
         /// <param name="nNewReputation">The new reputation (0-100 inclusive)</param>
         /// <param name="oCreature">The creature to set the reputation for (default: OBJECT_SELF)</param>
-        public static void SetStandardFactionReputation(StandardFaction nStandardFaction, int nNewReputation,
+        public static void SetStandardFactionReputation(StandardFactionType nStandardFaction, int nNewReputation,
             uint oCreature = OBJECT_INVALID)
         {
             if (oCreature == OBJECT_INVALID)
@@ -246,7 +246,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nStandardFaction">The standard faction (STANDARD_FACTION_* constants)</param>
         /// <param name="oCreature">The creature to check the reputation for (default: OBJECT_SELF)</param>
         /// <returns>Returns -1 on an error. Returns 0-100 based on the standing of the creature within the faction. 0-10: Hostile, 11-89: Neutral, 90-100: Friendly</returns>
-        public static int GetStandardFactionReputation(StandardFaction nStandardFaction, uint oCreature = OBJECT_INVALID)
+        public static int GetStandardFactionReputation(StandardFactionType nStandardFaction, uint oCreature = OBJECT_INVALID)
         {
             if (oCreature == OBJECT_INVALID)
                 oCreature = OBJECT_SELF;
@@ -259,7 +259,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oCreatureToChange">The creature to change the faction for</param>
         /// <param name="nStandardFaction">The standard faction to join (STANDARD_FACTION_* constants)</param>
         /// <remarks>This will only work on an NPC.</remarks>
-        public static void ChangeToStandardFaction(uint oCreatureToChange, StandardFaction nStandardFaction)
+        public static void ChangeToStandardFaction(uint oCreatureToChange, StandardFactionType nStandardFaction)
         {
             global::NWN.Core.NWScript.ChangeToStandardFaction(oCreatureToChange, (int)nStandardFaction);
         }

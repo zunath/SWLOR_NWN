@@ -41,7 +41,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.TwoHanded
 
         private string Validation(uint activator, uint target, int level, Location targetLocation)
         {
-            var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
+            var weapon = GetItemInSlot(InventorySlotType.RightHand, activator);
 
             if (!ItemService.TwinBladeBaseItemTypes.Contains(GetBaseItemType(weapon)))
             {
@@ -95,7 +95,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.TwoHanded
                 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
 
-            dc = CombatService.CalculateSavingThrowDC(activator, SavingThrow.Reflex, dc);
+            dc = CombatService.CalculateSavingThrowDC(activator, SavingThrowCategoryType.Reflex, dc);
             var checkResult = ReflexSave(target, dc, SavingThrowType.None, activator);
             if (checkResult == SavingThrowResultType.Failed)
             {
@@ -104,10 +104,10 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.TwoHanded
                 ApplyEffectToObject(DurationType.Temporary, breach, target, Duration);
             }
 
-            AssignCommand(activator, () => ActionPlayAnimation(Animation.CrossCut));
+            AssignCommand(activator, () => ActionPlayAnimation(AnimationType.CrossCut));
             DelayCommand(0.2f, () =>
             {
-                AssignCommand(activator, () => ActionPlayAnimation(Animation.DoubleStrike));
+                AssignCommand(activator, () => ActionPlayAnimation(AnimationType.DoubleStrike));
             });
 
             CombatPointService.AddCombatPoint(activator, target, SkillType.TwoHanded, 3);

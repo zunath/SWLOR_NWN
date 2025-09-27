@@ -1,5 +1,5 @@
 using SWLOR.NWN.API.NWNX;
-using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.NWNX;
 
@@ -18,9 +18,9 @@ namespace SWLOR.Component.Inventory.Feature
             var itemType = GetBaseItemType(item);
 
             // We ignore any decrements to shurikens, darts, and throwing axes.
-            if (itemType == BaseItem.Shuriken ||
-                itemType == BaseItem.Dart ||
-                itemType == BaseItem.ThrowingAxe)
+            if (itemType == BaseItemType.Shuriken ||
+                itemType == BaseItemType.Dart ||
+                itemType == BaseItemType.ThrowingAxe)
             {
                 EventsPlugin.SkipEvent();
             }

@@ -206,7 +206,7 @@ namespace SWLOR.Shared.UI.Component
         public GuiWindow<T> DefinePartialView(string name, Action<GuiGroup<T>> view)
         {
             var group = new GuiGroup<T>();
-            group.SetScrollbars(NuiScrollbars.None);
+            group.SetScrollbars(NuiScrollbarType.None);
             group.SetShowBorder(false);
             PartialViews[name] = group;
             view(group);

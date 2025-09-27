@@ -1,5 +1,5 @@
 using SWLOR.Component.Associate.Enums;
-using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Domain.Inventory.Contracts;

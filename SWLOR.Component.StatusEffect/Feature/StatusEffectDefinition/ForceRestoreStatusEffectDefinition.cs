@@ -1,7 +1,6 @@
 using SWLOR.Component.StatusEffect.Contracts;
 using SWLOR.Component.StatusEffect.Service;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Combat.ValueObjects;
@@ -45,12 +44,12 @@ namespace SWLOR.Component.StatusEffect.Feature.StatusEffectDefinition
             if (forceBody)
             {
                 _statService.RestoreFP(target, forceAmount);
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration_Lesser), target);
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Imp_Restoration_Lesser), target);
             }
             else
             {
                 _statService.RestoreStamina(target, staminaAmount);
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Holy), target);
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Imp_Head_Holy), target);
             }
         }
 

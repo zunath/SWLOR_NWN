@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Character.ValueObjects;
@@ -44,7 +43,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beasts
             var amount = baseAmount + beastWillBonus + beastmasterWillBonus + Random.D10(1);
 
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), target);
-            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), target);
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Imp_Healing_M), target);
 
             EnmityService.ModifyEnmityOnAll(activator, 200 + amount);
             CombatPointService.AddCombatPointToAllTagged(beastmaster, SkillType.BeastMastery, 3);
@@ -60,7 +59,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beasts
                 .RequirementStamina(3)
                 .IsCastedAbility()
                 .HasMaxRange(10f)
-                .UsesAnimation(Animation.LoopingConjure1)
+                .UsesAnimation(AnimationType.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level, location) =>
                 {
@@ -78,7 +77,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beasts
                 .RequirementStamina(4)
                 .IsCastedAbility()
                 .HasMaxRange(10f)
-                .UsesAnimation(Animation.LoopingConjure1)
+                .UsesAnimation(AnimationType.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level, location) =>
                 {
@@ -96,7 +95,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beasts
                 .RequirementStamina(5)
                 .IsCastedAbility()
                 .HasMaxRange(10f)
-                .UsesAnimation(Animation.LoopingConjure1)
+                .UsesAnimation(AnimationType.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level, location) =>
                 {
@@ -114,7 +113,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beasts
                 .RequirementStamina(6)
                 .IsCastedAbility()
                 .HasMaxRange(10f)
-                .UsesAnimation(Animation.LoopingConjure1)
+                .UsesAnimation(AnimationType.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level, location) =>
                 {
@@ -132,7 +131,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beasts
                 .RequirementStamina(7)
                 .IsCastedAbility()
                 .HasMaxRange(10f)
-                .UsesAnimation(Animation.LoopingConjure1)
+                .UsesAnimation(AnimationType.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level, location) =>
                 {

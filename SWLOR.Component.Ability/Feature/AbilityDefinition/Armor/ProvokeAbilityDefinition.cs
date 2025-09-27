@@ -1,8 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Creature;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Character.ValueObjects;
 using SWLOR.Shared.Domain.Combat.Contracts;
@@ -46,7 +44,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Armor
                 return;
 
             EnmityService.ModifyEnmity(activator, target, enmity);
-            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Howl_Odd), target);
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Fnf_Howl_Odd), target);
         }
 
         private void Provoke(IAbilityBuilder builder)
@@ -56,7 +54,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Armor
                 .Level(1)
                 .HasRecastDelay(RecastGroup.Provoke, 10f)
                 .HasActivationDelay(1f)
-                .UsesAnimation(Animation.FireForgetTaunt)
+                .UsesAnimation(AnimationType.FireForgetTaunt)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasMaxRange(15f)
@@ -75,7 +73,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Armor
                 .Level(2)
                 .HasRecastDelay(RecastGroup.Provoke2, 20f)
                 .HasActivationDelay(1f)
-                .UsesAnimation(Animation.FireForgetTaunt)
+                .UsesAnimation(AnimationType.FireForgetTaunt)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasMaxRange(15f)

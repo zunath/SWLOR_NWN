@@ -1,8 +1,5 @@
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Creature;
-using SWLOR.NWN.API.NWScript.Enum.Item.Property;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Character.ValueObjects;
 using SWLOR.Shared.Domain.Common.Enums;
@@ -37,13 +34,13 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.NPC
                     while (GetIsObjectValid(creature) &&
                            GetDistanceBetween(creature, activator) <= Distance)
                     {
-                        ApplyEffectToObject(DurationType.Temporary, EffectACDecrease(DecreaseBy, ArmorClassModiferType.Natural), creature, 20f);
+                        ApplyEffectToObject(DurationType.Temporary, EffectACDecrease(DecreaseBy, ItemPropertyArmorClassModiferType.Natural), creature, 20f);
 
                         count++;
                         creature = GetNearestCreature(CreatureType.IsAlive, 1, activator, count);
                     }
 
-                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Howl_Mind), activator);
+                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Fnf_Howl_Mind), activator);
                 });
         }
 

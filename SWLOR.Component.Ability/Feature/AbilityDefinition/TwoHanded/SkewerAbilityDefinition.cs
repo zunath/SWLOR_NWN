@@ -43,7 +43,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.TwoHanded
 
         private string Validation(uint activator, uint target, int level, Location targetLocation)
         {
-            var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
+            var weapon = GetItemInSlot(InventorySlotType.RightHand, activator);
 
             if (!ItemService.PolearmBaseItemTypes.Contains(GetBaseItemType(weapon)))
             {
@@ -91,7 +91,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.TwoHanded
                 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Piercing), target);
 
-            dc = CombatService.CalculateSavingThrowDC(activator, SavingThrow.Will, dc);
+            dc = CombatService.CalculateSavingThrowDC(activator, SavingThrowCategoryType.Will, dc);
             var checkResult = WillSave(target, dc, SavingThrowType.None, activator);
             if (checkResult == SavingThrowResultType.Failed)
             {

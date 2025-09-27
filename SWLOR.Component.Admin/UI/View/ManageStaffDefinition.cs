@@ -98,7 +98,7 @@ namespace SWLOR.Component.Admin.UI.View
                             .AddOption("DM")
                             .AddOption("Admin")
                             .BindSelectedValue(model => model.SelectedRoleId)
-                            .SetDirection(NuiDirection.Horizontal)
+                            .SetDirection(NuiDirectionType.Horizontal)
                             .BindIsEnabled(model => model.IsUserSelected);
                     });
 

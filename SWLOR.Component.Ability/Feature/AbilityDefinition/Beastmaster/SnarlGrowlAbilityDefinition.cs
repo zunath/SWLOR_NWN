@@ -1,8 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Associate;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Domain.Beasts.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Character.ValueObjects;
@@ -60,7 +58,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beastmaster
                 .Name("Snarl")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.SnarlGrowl, 30f)
-                .UsesAnimation(Animation.LoopingGetMid)
+                .UsesAnimation(AnimationType.LoopingGetMid)
                 .HasActivationDelay(1f)
                 .RequirementStamina(3)
                 .IsCastedAbility()
@@ -78,8 +76,8 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beastmaster
                         EnmityService.ModifyEnmity(beast, enemy, halfAmount);
                     }
 
-                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Com_Blood_Crt_Red), activator);
-                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Com_Blood_Crt_Yellow), beast);
+                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Com_Blood_Crt_Red), activator);
+                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Com_Blood_Crt_Yellow), beast);
                     CombatPointService.AddCombatPointToAllTagged(activator, SkillType.BeastMastery);
                 });
         }
@@ -90,7 +88,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beastmaster
                 .Name("Growl")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.SnarlGrowl, 30f)
-                .UsesAnimation(Animation.LoopingGetMid)
+                .UsesAnimation(AnimationType.LoopingGetMid)
                 .HasActivationDelay(1f)
                 .RequirementStamina(3)
                 .IsCastedAbility()
@@ -108,8 +106,8 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beastmaster
                         EnmityService.ModifyEnmity(beast, enemy, -halfAmount);
                     }
 
-                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Com_Blood_Crt_Red), beast);
-                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Com_Blood_Crt_Yellow), activator);
+                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Com_Blood_Crt_Red), beast);
+                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Com_Blood_Crt_Yellow), activator);
                     CombatPointService.AddCombatPointToAllTagged(activator, SkillType.BeastMastery);
                 });
         }

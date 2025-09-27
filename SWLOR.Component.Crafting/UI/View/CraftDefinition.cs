@@ -35,8 +35,8 @@ namespace SWLOR.Component.Crafting.UI.View
                         row.AddLabel()
                             .BindText(model => model.RecipeName)
                             .SetHeight(20f)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetVerticalAlign(NuiVerticalAlign.Middle);
+                            .SetHorizontalAlign(NuiHorizontalAlignType.Left)
+                            .SetVerticalAlign(NuiVerticalAlignType.Middle);
                     });
 
                     col.AddRow(row =>
@@ -44,8 +44,8 @@ namespace SWLOR.Component.Crafting.UI.View
                         row.AddLabel()
                             .BindText(model => model.RecipeLevel)
                             .SetHeight(20f)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetVerticalAlign(NuiVerticalAlign.Middle);
+                            .SetHorizontalAlign(NuiHorizontalAlignType.Left)
+                            .SetVerticalAlign(NuiVerticalAlignType.Middle);
                     });
 
                     col.AddRow(row =>
@@ -53,8 +53,8 @@ namespace SWLOR.Component.Crafting.UI.View
                         row.AddLabel()
                             .BindText(model => model.YourSkill)
                             .SetHeight(20f)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetVerticalAlign(NuiVerticalAlign.Middle);
+                            .SetHorizontalAlign(NuiHorizontalAlignType.Left)
+                            .SetVerticalAlign(NuiVerticalAlignType.Middle);
                     });
 
                     col.AddRow(row =>
@@ -62,8 +62,8 @@ namespace SWLOR.Component.Crafting.UI.View
                         row.AddLabel()
                             .SetText("Select Enhancements")
                             .SetHeight(20f)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetVerticalAlign(NuiVerticalAlign.Middle)
+                            .SetHorizontalAlign(NuiHorizontalAlignType.Left)
+                            .SetVerticalAlign(NuiVerticalAlignType.Middle)
                             .BindIsVisible(model => model.IsEnhancement1Visible);
                     });
 
@@ -158,8 +158,8 @@ namespace SWLOR.Component.Crafting.UI.View
                                 cell.AddLabel()
                                     .BindText(model => model.RecipeDescription)
                                     .BindColor(model => model.RecipeColors)
-                                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                                    .SetVerticalAlign(NuiVerticalAlign.Middle);
+                                    .SetHorizontalAlign(NuiHorizontalAlignType.Left)
+                                    .SetVerticalAlign(NuiVerticalAlignType.Middle);
                             });
                         })
                             .BindRowCount(model => model.RecipeDescription);
@@ -187,8 +187,8 @@ namespace SWLOR.Component.Crafting.UI.View
                         row.AddLabel()
                             .BindText(model => model.StatusText)
                             .BindColor(model => model.StatusColor)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                            .SetVerticalAlign(NuiVerticalAlign.Middle)
+                            .SetHorizontalAlign(NuiHorizontalAlignType.Center)
+                            .SetVerticalAlign(NuiVerticalAlignType.Middle)
                             .SetHeight(20f);
                     });
 
@@ -197,8 +197,8 @@ namespace SWLOR.Component.Crafting.UI.View
                         row.AddLabel()
                             .BindText(model => model.DurabilityText)
                             .SetHeight(20f)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetVerticalAlign(NuiVerticalAlign.Top);
+                            .SetHorizontalAlign(NuiHorizontalAlignType.Left)
+                            .SetVerticalAlign(NuiVerticalAlignType.Top);
                     });
 
                     col.AddRow(row =>
@@ -213,8 +213,8 @@ namespace SWLOR.Component.Crafting.UI.View
                         row.AddLabel()
                             .BindText(model => model.ProgressText)
                             .SetHeight(20f)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetVerticalAlign(NuiVerticalAlign.Top);
+                            .SetHorizontalAlign(NuiHorizontalAlignType.Left)
+                            .SetVerticalAlign(NuiVerticalAlignType.Top);
                     });
 
                     col.AddRow(row =>
@@ -229,8 +229,8 @@ namespace SWLOR.Component.Crafting.UI.View
                         row.AddLabel()
                             .BindText(model => model.QualityText)
                             .SetHeight(20f)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetVerticalAlign(NuiVerticalAlign.Top);
+                            .SetHorizontalAlign(NuiHorizontalAlignType.Left)
+                            .SetVerticalAlign(NuiVerticalAlignType.Top);
                     });
 
                     col.AddRow(row =>
@@ -245,8 +245,8 @@ namespace SWLOR.Component.Crafting.UI.View
                         row.AddLabel()
                             .BindText(model => model.CP)
                             .SetHeight(20f)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                            .SetVerticalAlign(NuiVerticalAlign.Middle);
+                            .SetHorizontalAlign(NuiHorizontalAlignType.Center)
+                            .SetVerticalAlign(NuiVerticalAlignType.Middle);
                     });
 
                     col.AddRow(row =>
@@ -254,8 +254,8 @@ namespace SWLOR.Component.Crafting.UI.View
                         row.AddLabel()
                             .SetText("Synthesis Abilities:")
                             .SetHeight(20f)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetVerticalAlign(NuiVerticalAlign.Top);
+                            .SetHorizontalAlign(NuiHorizontalAlignType.Left)
+                            .SetVerticalAlign(NuiVerticalAlignType.Top);
                     });
 
                     col.AddRow(row =>
@@ -287,8 +287,8 @@ namespace SWLOR.Component.Crafting.UI.View
                         row.AddLabel()
                             .SetText("Touch Abilities:")
                             .SetHeight(20f)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetVerticalAlign(NuiVerticalAlign.Top);
+                            .SetHorizontalAlign(NuiHorizontalAlignType.Left)
+                            .SetVerticalAlign(NuiVerticalAlignType.Top);
                     });
 
                     col.AddRow(row =>
@@ -321,8 +321,8 @@ namespace SWLOR.Component.Crafting.UI.View
                         row.AddLabel()
                             .SetText("Abilities:")
                             .SetHeight(20f)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetVerticalAlign(NuiVerticalAlign.Top);
+                            .SetHorizontalAlign(NuiHorizontalAlignType.Left)
+                            .SetVerticalAlign(NuiVerticalAlignType.Top);
                     });
 
                     col.AddRow(row =>

@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Space.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
@@ -79,7 +78,7 @@ namespace SWLOR.Component.Space.Feature.ShipModuleDefinition
 
                     AssignCommand(activator, () =>
                     {
-                        var beam = EffectBeam(VisualEffect.Vfx_Beam_Disintegrate, activator, BodyNode.Chest);
+                        var beam = EffectBeam(VisualEffectType.Vfx_Beam_Disintegrate, activator, BodyNodeType.Chest);
                         ApplyEffectToObject(DurationType.Temporary, beam, target, 18f);
                     });
 

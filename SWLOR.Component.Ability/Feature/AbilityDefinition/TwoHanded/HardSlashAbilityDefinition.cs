@@ -41,7 +41,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.TwoHanded
 
         private string Validation(uint activator, uint target, int level, Location targetLocation)
         {
-            var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
+            var weapon = GetItemInSlot(InventorySlotType.RightHand, activator);
 
             if (!ItemService.HeavyVibrobladeBaseItemTypes.Contains(GetBaseItemType(weapon)))
             {
@@ -85,7 +85,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.TwoHanded
                 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
 
-            AssignCommand(activator, () => ActionPlayAnimation(Animation.DoubleStrike));
+            AssignCommand(activator, () => ActionPlayAnimation(AnimationType.DoubleStrike));
 
             CombatPointService.AddCombatPoint(activator, target, SkillType.TwoHanded, 3);
             EnmityService.ModifyEnmity(activator, target, 100 * level + damage);

@@ -42,7 +42,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.TwoHanded
 
         private string Validation(uint activator, uint target, int level, Location targetLocation)
         {
-            var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
+            var weapon = GetItemInSlot(InventorySlotType.RightHand, activator);
 
             if (!ItemService.TwinBladeBaseItemTypes.Contains(GetBaseItemType(weapon)))
             {
@@ -74,7 +74,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.TwoHanded
             dmg += CombatService.GetAbilityDamageBonus(activator, SkillType.TwoHanded);
 
             var count = 0;
-            var creature = GetFirstObjectInShape(Shape.Sphere, RadiusSize.Large, GetLocation(activator), true, ObjectType.Creature);
+            var creature = GetFirstObjectInShape(ShapeType.Sphere, RadiusSize.Large, GetLocation(activator), true, ObjectType.Creature);
             while (GetIsObjectValid(creature) && count < 3)
             {
                 if(GetIsReactionTypeHostile(creature, activator))
@@ -100,10 +100,10 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.TwoHanded
                     EnmityService.ModifyEnmity(activator, creature, 100 * level + damage);
                     count++;
                 }
-                creature = GetNextObjectInShape(Shape.Sphere, RadiusSize.Large, GetLocation(activator), true, ObjectType.Creature);
+                creature = GetNextObjectInShape(ShapeType.Sphere, RadiusSize.Large, GetLocation(activator), true, ObjectType.Creature);
             }
 
-            AssignCommand(activator, () => ActionPlayAnimation(Animation.Whirlwind));
+            AssignCommand(activator, () => ActionPlayAnimation(AnimationType.Whirlwind));
         }
 
         private void SpinningWhirl1(IAbilityBuilder builder)

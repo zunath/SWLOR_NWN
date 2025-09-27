@@ -74,7 +74,7 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
                     if (GetLocalInt(area, "MAP_KEY_ITEM_ID") == keyItemId)
                     {
                         ExploreAreaForPlayer(area, user);
-                        SetGuiPanelDisabled(user, GuiPanel.Minimap, false);
+                        SetGuiPanelDisabled(user, GuiPanelType.Minimap, false);
                     }
                 });
         }

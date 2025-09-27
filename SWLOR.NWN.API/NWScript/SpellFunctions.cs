@@ -14,7 +14,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nSpell">SPELL_* constant</param>
         /// <param name="oObject">The object to check (defaults to OBJECT_SELF)</param>
         /// <returns>TRUE if the object has effects from the spell</returns>
-        public static bool GetHasSpellEffect(Spell nSpell, uint oObject = OBJECT_INVALID)
+        public static bool GetHasSpellEffect(SpellType nSpell, uint oObject = OBJECT_INVALID)
         {
             if (oObject == OBJECT_INVALID)
                 oObject = OBJECT_SELF;
@@ -97,8 +97,8 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="bCheat">If TRUE, the executor doesn't have to be able to cast the spell</param>
         /// <param name="nProjectilePathType">PROJECTILE_PATH_TYPE_* constant</param>
         /// <param name="bInstantSpell">If TRUE, the spell is cast immediately</param>
-        public static void ActionCastSpellAtLocation(Spell nSpell, Location lTargetLocation,
-            MetaMagic nMetaMagic = MetaMagic.Any, bool bCheat = false,
+        public static void ActionCastSpellAtLocation(SpellType nSpell, Location lTargetLocation,
+            MetaMagicType nMetaMagic = MetaMagicType.Any, bool bCheat = false,
             ProjectilePathType nProjectilePathType = ProjectilePathType.Default, bool bInstantSpell = false)
         {
             global::NWN.Core.NWScript.ActionCastSpellAtLocation((int)nSpell, lTargetLocation, (int)nMetaMagic, bCheat ? 1 : 0, (int)nProjectilePathType, bInstantSpell ? 1 : 0);
@@ -124,7 +124,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nSpell">The spell that was cast (SPELL_*)</param>
         /// <param name="bHarmful">Whether the spell is harmful</param>
         /// <returns>The SpellCastAt event</returns>
-        public static Event EventSpellCastAt(uint oCaster, Spell nSpell, bool bHarmful = true)
+        public static Event EventSpellCastAt(uint oCaster, SpellType nSpell, bool bHarmful = true)
         {
             return global::NWN.Core.NWScript.EventSpellCastAt(oCaster, (int)nSpell, bHarmful ? 1 : 0);
         }
@@ -173,7 +173,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nSpell">The spell to fake cast</param>
         /// <param name="oTarget">The target to fake cast at</param>
         /// <param name="nProjectilePathType">PROJECTILE_PATH_TYPE_* constant</param>
-        public static void ActionCastFakeSpellAtObject(Spell nSpell, uint oTarget,
+        public static void ActionCastFakeSpellAtObject(SpellType nSpell, uint oTarget,
             ProjectilePathType nProjectilePathType = ProjectilePathType.Default)
         {
             global::NWN.Core.NWScript.ActionCastFakeSpellAtObject((int)nSpell, oTarget, (int)nProjectilePathType);
@@ -186,7 +186,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nSpell">The spell to fake cast</param>
         /// <param name="lTarget">The target location to fake cast at</param>
         /// <param name="nProjectilePathType">PROJECTILE_PATH_TYPE_* constant</param>
-        public static void ActionCastFakeSpellAtLocation(Spell nSpell, Location lTarget,
+        public static void ActionCastFakeSpellAtLocation(SpellType nSpell, Location lTarget,
             ProjectilePathType nProjectilePathType = ProjectilePathType.Default)
         {
             global::NWN.Core.NWScript.ActionCastFakeSpellAtLocation((int)nSpell, lTarget, (int)nProjectilePathType);
@@ -319,9 +319,9 @@ namespace SWLOR.NWN.API.NWScript
             ClassType nClassType,
             int nSpellLevel,
             int nIndex,
-            Spell nSpellId,
+            SpellType nSpellId,
             bool bReady = true,
-            MetaMagic nMetaMagic = MetaMagic.None,
+            MetaMagicType nMetaMagic = MetaMagicType.None,
             bool bIsDomainSpell = false)
         {
             global::NWN.Core.NWScript.SetMemorizedSpell(oCreature, (int)nClassType, nSpellLevel, nIndex, (int)nSpellId, bReady ? 1 : 0, (int)nMetaMagic, bIsDomainSpell ? 1 : 0);
@@ -395,7 +395,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nClassType">A CLASS_TYPE_* constant. Must be a SpellBookRestricted class</param>
         /// <param name="nSpellId">A SPELL_* constant</param>
         /// <returns>TRUE if the spell is in the known spell list</returns>
-        public static bool GetIsInKnownSpellList(uint oCreature, ClassType nClassType, Spell nSpellId)
+        public static bool GetIsInKnownSpellList(uint oCreature, ClassType nClassType, SpellType nSpellId)
         {
             return global::NWN.Core.NWScript.GetIsInKnownSpellList(oCreature, (int)nClassType, (int)nSpellId) != 0;
         }
@@ -412,8 +412,8 @@ namespace SWLOR.NWN.API.NWScript
         public static int GetSpellUsesLeft(
             uint oCreature,
             ClassType nClassType,
-            Spell nSpellId,
-            MetaMagic nMetaMagic = MetaMagic.None,
+            SpellType nSpellId,
+            MetaMagicType nMetaMagic = MetaMagicType.None,
             int nDomainLevel = 0)
         {
             return global::NWN.Core.NWScript.GetSpellUsesLeft(oCreature, (int)nClassType, (int)nSpellId, (int)nMetaMagic, nDomainLevel);
@@ -425,7 +425,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nClassType">A CLASS_TYPE_* constant</param>
         /// <param name="nSpellId">A SPELL_* constant</param>
         /// <returns>The spell level or -1 if the class does not get the spell</returns>
-        public static int GetSpellLevelByClass(ClassType nClassType, Spell nSpellId)
+        public static int GetSpellLevelByClass(ClassType nClassType, SpellType nSpellId)
         {
             return global::NWN.Core.NWScript.GetSpellLevelByClass((int)nClassType, (int)nSpellId);
         }
@@ -440,7 +440,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nSpellResistance">The spell resistance to penetrate. If -1 it will use the spell resistance of oTarget (default: -1)</param>
         /// <param name="bFeedback">If true displays feedback automatically, false suppresses it (default: true)</param>
         /// <returns>True if the target resists the caster's spell resistance roll, false if failed or an error occurred</returns>
-        public static bool SpellResistanceCheck(uint oTarget, uint oCaster, Spell nSpellId = (Spell)(-1), int nCasterLevel = -1, int nSpellResistance = -1, bool bFeedback = true)
+        public static bool SpellResistanceCheck(uint oTarget, uint oCaster, SpellType nSpellId = (SpellType)(-1), int nCasterLevel = -1, int nSpellResistance = -1, bool bFeedback = true)
         {
             return global::NWN.Core.NWScript.SpellResistanceCheck(oTarget, oCaster, (int)nSpellId, nCasterLevel, nSpellResistance, bFeedback ? 1 : 0) != 0;
         }
@@ -453,7 +453,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nSpellId">The spell ID to check immunity of. If -1 it will attempt to be auto-detected (default: -1)</param>
         /// <param name="bFeedback">If true displays feedback automatically, false suppresses it (default: true)</param>
         /// <returns>True if the target is immune to the spell, false if failed or an error occurred</returns>
-        public static bool SpellImmunityCheck(uint oTarget, uint oCaster, Spell nSpellId = (Spell)(-1), bool bFeedback = true)
+        public static bool SpellImmunityCheck(uint oTarget, uint oCaster, SpellType nSpellId = (SpellType)(-1), bool bFeedback = true)
         {
             return global::NWN.Core.NWScript.SpellImmunityCheck(oTarget, oCaster, (int)nSpellId, bFeedback ? 1 : 0) != 0;
         }
@@ -469,7 +469,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="bRemoveLevels">If true this removes spell levels from the effect that would stop it (and remove it if 0 or less remain), but if false they will not be removed (default: true)</param>
         /// <param name="bFeedback">If true displays feedback automatically, false suppresses it (default: true)</param>
         /// <returns>True if the target absorbs the caster's spell, false if failed or an error occurred</returns>
-        public static bool SpellAbsorptionLimitedCheck(uint oTarget, uint oCaster, Spell nSpellId = (Spell)(-1), SpellSchool nSpellSchool = (SpellSchool)(-1), int nSpellLevel = -1, bool bRemoveLevels = true, bool bFeedback = true)
+        public static bool SpellAbsorptionLimitedCheck(uint oTarget, uint oCaster, SpellType nSpellId = (SpellType)(-1), SpellSchool nSpellSchool = (SpellSchool)(-1), int nSpellLevel = -1, bool bRemoveLevels = true, bool bFeedback = true)
         {
             return global::NWN.Core.NWScript.SpellAbsorptionLimitedCheck(oTarget, oCaster, (int)nSpellId, (int)nSpellSchool, nSpellLevel, bRemoveLevels ? 1 : 0, bFeedback ? 1 : 0) != 0;
         }
@@ -484,7 +484,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nSpellLevel">The spell level. If -1 uses the spell's level (given the caster's last spell cast class) (default: -1)</param>
         /// <param name="bFeedback">If true displays feedback automatically, false suppresses it. As per existing ResistSpell convention it defaults to false (default: false)</param>
         /// <returns>True if the target absorbs the caster's spell, false if failed or an error occurred</returns>
-        public static bool SpellAbsorptionUnlimitedCheck(uint oTarget, uint oCaster, Spell nSpellId = (Spell)(-1), SpellSchool nSpellSchool = (SpellSchool)(-1), int nSpellLevel = -1, bool bFeedback = false)
+        public static bool SpellAbsorptionUnlimitedCheck(uint oTarget, uint oCaster, SpellType nSpellId = (SpellType)(-1), SpellSchool nSpellSchool = (SpellSchool)(-1), int nSpellLevel = -1, bool bFeedback = false)
         {
             return global::NWN.Core.NWScript.SpellAbsorptionUnlimitedCheck(oTarget, oCaster, (int)nSpellId, (int)nSpellSchool, nSpellLevel, bFeedback ? 1 : 0) != 0;
         }

@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Communication.Dialog;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Domain.Communication.Contracts;
 using SWLOR.Shared.Domain.Dialog.Contracts;
@@ -67,10 +66,10 @@ namespace SWLOR.Component.Communication.Service
             if (channel != ChatChannelType.PlayerParty) return;
             */
 
-            if (talkVolume == TalkVolume.Shout) return;
-            if (talkVolume == TalkVolume.Tell) return;
-            if (talkVolume == TalkVolume.SilentShout) return;
-            if (talkVolume == TalkVolume.SilentTalk) return;
+            if (talkVolume == TalkVolumeType.Shout) return;
+            if (talkVolume == TalkVolumeType.Tell) return;
+            if (talkVolume == TalkVolumeType.SilentShout) return;
+            if (talkVolume == TalkVolumeType.SilentTalk) return;
 
             var receiver = GetHoloGram(sender);
             if (!GetIsObjectValid(receiver)) return;
@@ -79,9 +78,9 @@ namespace SWLOR.Component.Communication.Service
 
             if (text.StartsWith("/")) return;
 
-            var animation = Animation.LoopingTalkNormal;
-            if (text.Contains("!")) animation = Animation.LoopingTalkForceful;
-            if (text.Contains("?")) animation = Animation.LoopingTalkPleading;
+            var animation = AnimationType.LoopingTalkNormal;
+            if (text.Contains("!")) animation = AnimationType.LoopingTalkForceful;
+            if (text.Contains("?")) animation = AnimationType.LoopingTalkPleading;
 
             SetCommandable(true, receiver);
             AssignCommand(receiver, () => ClearAllActions());
@@ -125,8 +124,8 @@ namespace SWLOR.Component.Communication.Service
                 ApplyEffectToObject(DurationType.Instant, EffectHeal(GetMaxHitPoints(holoSender)), holoSender);
                 ApplyEffectToObject(DurationType.Instant, EffectHeal(GetMaxHitPoints(holoReceiver)), holoReceiver);
 
-                ApplyEffectToObject(DurationType.Permanent, EffectVisualEffect(VisualEffect.Vfx_Dur_Ghostly_Visage_No_Sound, false), holoSender);
-                ApplyEffectToObject(DurationType.Permanent, EffectVisualEffect(VisualEffect.Vfx_Dur_Ghostly_Visage_No_Sound, false), holoReceiver);
+                ApplyEffectToObject(DurationType.Permanent, EffectVisualEffect(VisualEffectType.Vfx_Dur_Ghostly_Visage_No_Sound, false), holoSender);
+                ApplyEffectToObject(DurationType.Permanent, EffectVisualEffect(VisualEffectType.Vfx_Dur_Ghostly_Visage_No_Sound, false), holoReceiver);
                 SetPlotFlag(holoReceiver, true);
                 SetPlotFlag(holoSender, true);
                 SetLocalObject(sender, HolocomHologram, holoSender);
@@ -151,7 +150,7 @@ namespace SWLOR.Component.Communication.Service
                     if (GetIsEffectValid(effect))
                     {
                         var effectType = GetEffectType(effect);
-                        if (effectType == EffectTypeScript.CutsceneImmobilize)
+                        if (effectType == EffectScriptType.CutsceneImmobilize)
                         {
                             RemoveEffect(sender, effect);
                         }
@@ -163,7 +162,7 @@ namespace SWLOR.Component.Communication.Service
                     if (GetIsEffectValid(effect))
                     {
                         var effectType = GetEffectType(effect);
-                        if (effectType == EffectTypeScript.CutsceneImmobilize)
+                        if (effectType == EffectScriptType.CutsceneImmobilize)
                         {
                             RemoveEffect(receiver, effect);
                         }

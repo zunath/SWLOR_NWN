@@ -80,7 +80,7 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
         {
             Builder.Create("droid_control")
                 .Delay(3f)
-                .PlaysAnimation(Animation.LoopingGetMid)
+                .PlaysAnimation(AnimationType.LoopingGetMid)
                 .ValidationAction((user, item, target, location, itemPropertyIndex) =>
                 {
                     var droid = DroidService.GetDroid(user);

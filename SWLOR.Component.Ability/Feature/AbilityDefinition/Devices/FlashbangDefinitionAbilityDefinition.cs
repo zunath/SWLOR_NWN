@@ -1,7 +1,6 @@
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Constants;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Character.ValueObjects;
 using SWLOR.Shared.Domain.Common.Enums;
@@ -44,14 +43,14 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                 .HasRecastDelay(RecastGroup.FlashbangGrenade, 24f)
                 .HasActivationDelay(2f)
                 .RequirementStamina(1)
-                .UsesAnimation(Animation.ThrowGrenade)
+                .UsesAnimation(AnimationType.ThrowGrenade)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasMaxRange(15f)
                 .HasCustomValidation(ExplosiveValidation)
                 .HasImpactAction((activator, _, _, location) =>
                 {
-                    ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffect.Vfx_Fnf_Mystical_Explosion), "explosion1", RadiusSize.Large, (target) =>
+                    ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffectType.Vfx_Fnf_Mystical_Explosion), "explosion1", RadiusSize.Large, (target) =>
                     {
                         Impact(activator, target, 2);
                     });
@@ -66,14 +65,14 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                 .HasRecastDelay(RecastGroup.FlashbangGrenade, 24f)
                 .HasActivationDelay(2f)
                 .RequirementStamina(2)
-                .UsesAnimation(Animation.ThrowGrenade)
+                .UsesAnimation(AnimationType.ThrowGrenade)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasMaxRange(15f)
                 .HasCustomValidation(ExplosiveValidation)
                 .HasImpactAction((activator, _, _, location) =>
                 {
-                    ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffect.Vfx_Fnf_Mystical_Explosion), "explosion1", RadiusSize.Large, (target) =>
+                    ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffectType.Vfx_Fnf_Mystical_Explosion), "explosion1", RadiusSize.Large, (target) =>
                     {
                         Impact(activator, target, 4);
                     });
@@ -88,14 +87,14 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                 .HasRecastDelay(RecastGroup.FlashbangGrenade, 24f)
                 .HasActivationDelay(2f)
                 .RequirementStamina(3)
-                .UsesAnimation(Animation.ThrowGrenade)
+                .UsesAnimation(AnimationType.ThrowGrenade)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasMaxRange(15f)
                 .HasCustomValidation(ExplosiveValidation)
                 .HasImpactAction((activator, _, _, location) =>
                 {
-                    ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffect.Vfx_Fnf_Mystical_Explosion), "explosion1", RadiusSize.Large, (target) =>
+                    ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffectType.Vfx_Fnf_Mystical_Explosion), "explosion1", RadiusSize.Large, (target) =>
                     {
                         Impact(activator, target, 6);
                     });

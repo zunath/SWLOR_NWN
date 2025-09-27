@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Character.ValueObjects;
 using SWLOR.Shared.Domain.Combat.Contracts;
@@ -40,7 +39,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.MartialArts
                 .HasImpactAction((activator, target, level, location) =>
                 {
                     ApplyEffectToObject(DurationType.Temporary, EffectModifyAttacks(1), activator, 60f);
-                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Negative_Energy), activator);
+                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Imp_Negative_Energy), activator);
 
                     EnmityService.ModifyEnmityOnAll(activator, 450);
                     CombatPointService.AddCombatPointToAllTagged(activator, SkillType.MartialArts, 3);

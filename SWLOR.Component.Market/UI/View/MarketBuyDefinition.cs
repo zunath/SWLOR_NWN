@@ -99,8 +99,8 @@ namespace SWLOR.Component.Market.UI.View
                                         {
                                             group.AddImage()
                                                 .BindResref(model => model.ItemIconResrefs)
-                                                .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                                                .SetVerticalAlign(NuiVerticalAlign.Top)
+                                                .SetHorizontalAlign(NuiHorizontalAlignType.Center)
+                                                .SetVerticalAlign(NuiVerticalAlignType.Top)
                                                 .BindTooltip(model => model.ItemNames);
                                         });
                                     })

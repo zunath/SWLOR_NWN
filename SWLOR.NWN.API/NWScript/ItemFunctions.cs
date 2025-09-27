@@ -1,6 +1,5 @@
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.NWN.API.NWScript
 {
@@ -14,7 +13,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nIndex">The appearance index</param>
         /// <returns>The appearance value</returns>
         /// <remarks>The parameters are identical to those of CopyItemAndModify().</remarks>
-        public static int GetItemAppearance(uint oItem, ItemAppearanceType nType, int nIndex)
+        public static int GetItemAppearance(uint oItem, ItemModelColorType nType, int nIndex)
         {
             return global::NWN.Core.NWScript.GetItemAppearance(oItem, (int)nType, nIndex);
         }
@@ -280,9 +279,9 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oItem">The item to query</param>
         /// <returns>The base item type (BASE_ITEM_*), or BASE_ITEM_INVALID if the item is not valid</returns>
-        public static BaseItem GetBaseItemType(uint oItem)
+        public static BaseItemType GetBaseItemType(uint oItem)
         {
-            return (BaseItem)global::NWN.Core.NWScript.GetBaseItemType(oItem);
+            return (BaseItemType)global::NWN.Core.NWScript.GetBaseItemType(oItem);
         }
 
         /// <summary>
@@ -374,7 +373,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nInventorySlot">The inventory slot to check (INVENTORY_SLOT_*)</param>
         /// <param name="oCreature">The creature to check (default: OBJECT_SELF)</param>
         /// <returns>The item in the specified slot, or OBJECT_INVALID if the creature is not valid or there is no item in the slot</returns>
-        public static uint GetItemInSlot(InventorySlot nInventorySlot, uint oCreature = OBJECT_INVALID)
+        public static uint GetItemInSlot(InventorySlotType nInventorySlot, uint oCreature = OBJECT_INVALID)
         {
             if (oCreature == OBJECT_INVALID)
                 oCreature = OBJECT_SELF;
@@ -388,7 +387,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="target">The target creature, placeable, or item to check</param>
         /// <returns>True if the base item type fits in the inventory, false if not or on error</returns>
         /// <remarks>Does not check inside any container items possessed by the target</remarks>
-        public static bool GetBaseItemFitsInInventory(BaseItem baseItemType, uint target)
+        public static bool GetBaseItemFitsInInventory(BaseItemType baseItemType, uint target)
         {
             return global::NWN.Core.NWScript.GetBaseItemFitsInInventory((int)baseItemType, target) == 1;
         }

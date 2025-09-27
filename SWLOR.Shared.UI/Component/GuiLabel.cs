@@ -14,11 +14,11 @@ namespace SWLOR.Shared.UI.Component
         private string TextBindName { get; set; }
         private bool IsTextBound => !string.IsNullOrWhiteSpace(TextBindName);
         
-        private NuiHorizontalAlign HorizontalAlign { get; set; }
+        private NuiHorizontalAlignType HorizontalAlign { get; set; }
         private string HorizontalAlignBindName { get; set; }
         private bool IsHorizontalAlignBound => !string.IsNullOrWhiteSpace(HorizontalAlignBindName);
         
-        private NuiVerticalAlign VerticalAlign { get; set; }
+        private NuiVerticalAlignType VerticalAlign { get; set; }
         private string VerticalAlignBindName { get; set; }
         private bool IsVerticalAlignBound => !string.IsNullOrWhiteSpace(VerticalAlignBindName);
 
@@ -47,7 +47,7 @@ namespace SWLOR.Shared.UI.Component
         /// Sets a static value for the horizontal alignment of the label.
         /// </summary>
         /// <param name="hAlign">The horizontal alignment</param>
-        public GuiLabel<T> SetHorizontalAlign(NuiHorizontalAlign hAlign)
+        public GuiLabel<T> SetHorizontalAlign(NuiHorizontalAlignType hAlign)
         {
             HorizontalAlign = hAlign;
             return this;
@@ -68,7 +68,7 @@ namespace SWLOR.Shared.UI.Component
         /// Sets a static value for the vertical alignment of the label.
         /// </summary>
         /// <param name="vAlign">The vertical alignment.</param>
-        public GuiLabel<T> SetVerticalAlign(NuiVerticalAlign vAlign)
+        public GuiLabel<T> SetVerticalAlign(NuiVerticalAlignType vAlign)
         {
             VerticalAlign = vAlign;
             return this;
@@ -88,8 +88,8 @@ namespace SWLOR.Shared.UI.Component
         public GuiLabel()
         {
             Text = string.Empty;
-            HorizontalAlign = NuiHorizontalAlign.Center;
-            VerticalAlign = NuiVerticalAlign.Middle;
+            HorizontalAlign = NuiHorizontalAlignType.Center;
+            VerticalAlign = NuiVerticalAlignType.Middle;
         }
 
         /// <summary>

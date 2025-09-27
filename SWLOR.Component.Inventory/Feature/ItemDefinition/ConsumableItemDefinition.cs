@@ -1,8 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Associate;
-using SWLOR.NWN.API.NWScript.Enum.Item;
-using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Beasts.Contracts;
 using SWLOR.Shared.Domain.Beasts.Enums;
@@ -55,7 +52,7 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
         {
             Builder.Create("slug_shake")
                 .Delay(1f)
-                .PlaysAnimation(Animation.FireForgetDrink)
+                .PlaysAnimation(AnimationType.FireForgetDrink)
                 .ReducesItemCharge()
                 .ApplyAction((user, item, target, location, itemPropertyIndex) =>
                 {
@@ -91,7 +88,7 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
         {
             Builder.Create("FOOD")
                 .Delay(1f)
-                .PlaysAnimation(Animation.FireForgetSalute)
+                .PlaysAnimation(AnimationType.FireForgetSalute)
                 .ReducesItemCharge()
                 .ValidationAction((user, item, target, location, itemPropertyIndex) =>
                 {
@@ -112,108 +109,108 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
                         if (GetItemPropertyType(ip) != ItemPropertyType.FoodBonus)
                             continue;
 
-                        var bonusType = (FoodItemPropertySubType)GetItemPropertySubType(ip);
+                        var bonusType = (ItemPropertyFoodSubType)GetItemPropertySubType(ip);
                         var amount = GetItemPropertyCostTableValue(ip);
 
                         switch (bonusType)
                         {
-                            case FoodItemPropertySubType.HP:
+                            case ItemPropertyFoodSubType.HP:
                                 foodEffect.HP += amount;
                                 break;
-                            case FoodItemPropertySubType.FP:
+                            case ItemPropertyFoodSubType.FP:
                                 foodEffect.FP += amount;
                                 break;
-                            case FoodItemPropertySubType.STM:
+                            case ItemPropertyFoodSubType.STM:
                                 foodEffect.STM += amount;
                                 break;
-                            case FoodItemPropertySubType.HPRegen:
+                            case ItemPropertyFoodSubType.HPRegen:
                                 foodEffect.HPRegen += amount;
                                 break;
-                            case FoodItemPropertySubType.FPRegen:
+                            case ItemPropertyFoodSubType.FPRegen:
                                 foodEffect.FPRegen += amount;
                                 break;
-                            case FoodItemPropertySubType.STMRegen:
+                            case ItemPropertyFoodSubType.STMRegen:
                                 foodEffect.STMRegen += amount;
                                 break;
-                            case FoodItemPropertySubType.RestRegen:
+                            case ItemPropertyFoodSubType.RestRegen:
                                 foodEffect.RestRegen += amount;
                                 break;
-                            case FoodItemPropertySubType.XPBonus:
+                            case ItemPropertyFoodSubType.XPBonus:
                                 foodEffect.XPBonusPercent += amount;
                                 break;
-                            case FoodItemPropertySubType.RecastReduction:
+                            case ItemPropertyFoodSubType.RecastReduction:
                                 foodEffect.RecastReductionPercent += amount;
                                 break;
-                            case FoodItemPropertySubType.Duration:
+                            case ItemPropertyFoodSubType.Duration:
                                 duration += amount * (60f * 5); // 5 minutes per duration bonus
                                 break;
-                            case FoodItemPropertySubType.Might:
+                            case ItemPropertyFoodSubType.Might:
                                 ApplyEffectToObject(DurationType.Temporary, EffectAbilityIncrease(AbilityType.Might, amount), user, duration);
                                 break;
-                            case FoodItemPropertySubType.Vitality:
+                            case ItemPropertyFoodSubType.Vitality:
                                 ApplyEffectToObject(DurationType.Temporary, EffectAbilityIncrease(AbilityType.Vitality, amount), user, duration);
                                 break;
-                            case FoodItemPropertySubType.Perception:
+                            case ItemPropertyFoodSubType.Perception:
                                 ApplyEffectToObject(DurationType.Temporary, EffectAbilityIncrease(AbilityType.Perception, amount), user, duration);
                                 break;
-                            case FoodItemPropertySubType.Willpower:
+                            case ItemPropertyFoodSubType.Willpower:
                                 ApplyEffectToObject(DurationType.Temporary, EffectAbilityIncrease(AbilityType.Willpower, amount), user, duration);
                                 break;
-                            case FoodItemPropertySubType.Agility:
+                            case ItemPropertyFoodSubType.Agility:
                                 ApplyEffectToObject(DurationType.Temporary, EffectAbilityIncrease(AbilityType.Agility, amount), user, duration);
                                 break;
-                            case FoodItemPropertySubType.Social:
+                            case ItemPropertyFoodSubType.Social:
                                 ApplyEffectToObject(DurationType.Temporary, EffectAbilityIncrease(AbilityType.Social, amount), user, duration);
                                 break;
-                            case FoodItemPropertySubType.DefensePhysical:
+                            case ItemPropertyFoodSubType.DefensePhysical:
                                 foodEffect.DefensePhysical += amount;
                                 break;
-                            case FoodItemPropertySubType.DefenseForce:
+                            case ItemPropertyFoodSubType.DefenseForce:
                                 foodEffect.DefenseForce += amount;
                                 break;
-                            case FoodItemPropertySubType.DefenseFire:
+                            case ItemPropertyFoodSubType.DefenseFire:
                                 foodEffect.DefenseFire += amount;
                                 break;
-                            case FoodItemPropertySubType.DefensePoison:
+                            case ItemPropertyFoodSubType.DefensePoison:
                                 foodEffect.DefensePoison += amount;
                                 break;
-                            case FoodItemPropertySubType.DefenseElectrical:
+                            case ItemPropertyFoodSubType.DefenseElectrical:
                                 foodEffect.DefenseElectrical += amount;
                                 break;
-                            case FoodItemPropertySubType.DefenseIce:
+                            case ItemPropertyFoodSubType.DefenseIce:
                                 foodEffect.DefenseIce += amount;
                                 break;
-                            case FoodItemPropertySubType.Evasion:
+                            case ItemPropertyFoodSubType.Evasion:
                                 foodEffect.Evasion += amount;
                                 break;
-                            case FoodItemPropertySubType.ControlSmithery:
+                            case ItemPropertyFoodSubType.ControlSmithery:
                                 foodEffect.Control[SkillType.Smithery] += amount;
                                 break;
-                            case FoodItemPropertySubType.CraftsmanshipSmithery:
+                            case ItemPropertyFoodSubType.CraftsmanshipSmithery:
                                 foodEffect.Craftsmanship[SkillType.Smithery] += amount;
                                 break;
-                            case FoodItemPropertySubType.ControlEngineering:
+                            case ItemPropertyFoodSubType.ControlEngineering:
                                 foodEffect.Control[SkillType.Engineering] += amount;
                                 break;
-                            case FoodItemPropertySubType.CraftsmanshipEngineering:
+                            case ItemPropertyFoodSubType.CraftsmanshipEngineering:
                                 foodEffect.Craftsmanship[SkillType.Engineering] += amount;
                                 break;
-                            case FoodItemPropertySubType.ControlFabrication:
+                            case ItemPropertyFoodSubType.ControlFabrication:
                                 foodEffect.Control[SkillType.Fabrication] += amount;
                                 break;
-                            case FoodItemPropertySubType.CraftsmanshipFabrication:
+                            case ItemPropertyFoodSubType.CraftsmanshipFabrication:
                                 foodEffect.Craftsmanship[SkillType.Fabrication] += amount;
                                 break;
-                            case FoodItemPropertySubType.ControlAgriculture:
+                            case ItemPropertyFoodSubType.ControlAgriculture:
                                 foodEffect.Control[SkillType.Agriculture] += amount;
                                 break;
-                            case FoodItemPropertySubType.CraftsmanshipAgriculture:
+                            case ItemPropertyFoodSubType.CraftsmanshipAgriculture:
                                 foodEffect.Craftsmanship[SkillType.Agriculture] += amount;
                                 break;
-                            case FoodItemPropertySubType.Accuracy:
+                            case ItemPropertyFoodSubType.Accuracy:
                                 foodEffect.Accuracy += amount;
                                 break;
-                            case FoodItemPropertySubType.Attack:
+                            case ItemPropertyFoodSubType.Attack:
                                 foodEffect.Attack += amount;
                                 break;
                             default:
@@ -229,7 +226,7 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
         {
             Builder.Create("PET_FOOD")
                 .Delay(1f)
-                .PlaysAnimation(Animation.LoopingGetLow)
+                .PlaysAnimation(AnimationType.LoopingGetLow)
                 .ValidationAction((user, item, target, location, itemPropertyIndex) =>
                 {
                     var minimumLevel = (GetLocalInt(item, "BEAST_FOOD_TIER") - 1) * 10;
@@ -285,7 +282,7 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
         private void RebuildToken()
         {
             Builder.Create("rebuild_token")
-                .PlaysAnimation(Animation.LoopingGetMid)
+                .PlaysAnimation(AnimationType.LoopingGetMid)
                 .ValidationAction((user, item, target, location, itemPropertyIndex) =>
                 {
                     if (!GetIsPC(user) || GetIsDM(user) || GetIsDMPossessed(user))

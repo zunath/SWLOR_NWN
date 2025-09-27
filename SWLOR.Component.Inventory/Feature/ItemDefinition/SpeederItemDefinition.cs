@@ -2,7 +2,6 @@ using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Inventory.ValueObjects;
 using SWLOR.Shared.Events.Attributes;
@@ -35,7 +34,7 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
         {
             Builder.Create("speeder")
                 .Delay(2f)
-                .PlaysAnimation(Animation.LoopingGetMid)
+                .PlaysAnimation(AnimationType.LoopingGetMid)
                 .ApplyAction((user, item, target, location, itemPropertyIndex) =>
                 {
                     var area = GetArea(user);
@@ -49,15 +48,15 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
                     if (GetPhenoType(user) == PhenoType.SpeederBike)
                     {
                         SetPhenoType(PhenoType.Normal, user);
-                        SetCreatureTailType(TailType.None, user);
-                        CreaturePlugin.SetMovementRate(user, MovementRate.PC);
+                        SetCreatureTailType(CreatureTailType.None, user);
+                        CreaturePlugin.SetMovementRate(user, MovementRateType.PC);
                         SendMessageToPC(user, "You dismount your speeder.");
                     }
                     else
                     {
-                        SetCreatureTailType(TailType.SpeederBike, user);
+                        SetCreatureTailType(CreatureTailType.SpeederBike, user);
                         SetPhenoType(PhenoType.SpeederBike, user);
-                        CreaturePlugin.SetMovementRate(user, MovementRate.DMFast);
+                        CreaturePlugin.SetMovementRate(user, MovementRateType.DMFast);
                         SendMessageToPC(user, "You mount your speeder.");
                     }
                     
@@ -83,13 +82,13 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
                 }
                 AssignCommand(player, () =>
                 {
-                    ActionPlayAnimation(Animation.LoopingDeadBack, 1, 2.0f);
+                    ActionPlayAnimation(AnimationType.LoopingDeadBack, 1, 2.0f);
                 });
 
                 FloatingTextStringOnCreature("You have been dismounted.", player, false);
                 SetPhenoType(PhenoType.Normal, player);
-                SetCreatureTailType(TailType.None, player);
-                CreaturePlugin.SetMovementRate(player, MovementRate.PC);
+                SetCreatureTailType(CreatureTailType.None, player);
+                CreaturePlugin.SetMovementRate(player, MovementRateType.PC);
             }
         }
         /// <summary>
@@ -106,8 +105,8 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
                 SendMessageToPC(player, "You have been dismounted.");
                 FloatingTextStringOnCreature("You have been dismounted.", player, false);
                 SetPhenoType(PhenoType.Normal, player);
-                SetCreatureTailType(TailType.None, player);
-                CreaturePlugin.SetMovementRate(player, MovementRate.PC);
+                SetCreatureTailType(CreatureTailType.None, player);
+                CreaturePlugin.SetMovementRate(player, MovementRateType.PC);
             }
         }
         /// <summary>
@@ -126,8 +125,8 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
             {
                 FloatingTextStringOnCreature("You have been dismounted for entering an area with a speeder.", player, false);
                 SetPhenoType(PhenoType.Normal, player);
-                SetCreatureTailType(TailType.None, player);
-                CreaturePlugin.SetMovementRate(player, MovementRate.PC);
+                SetCreatureTailType(CreatureTailType.None, player);
+                CreaturePlugin.SetMovementRate(player, MovementRateType.PC);
             }
         }
 

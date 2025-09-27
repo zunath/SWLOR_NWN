@@ -3,7 +3,6 @@ using SWLOR.Component.World.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Area;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Caching.Entity;
 using SWLOR.Shared.Events.Attributes;
@@ -99,8 +98,8 @@ namespace SWLOR.Component.World.Service
             _walkmeshesByArea[resref] = new List<Vector3>();
 
             const float MinDistance = 6.0f;
-            var width = GetAreaSize(Dimension.Width, area);
-            var height = GetAreaSize(Dimension.Height, area);
+            var width = GetAreaSize(AreaDimensionType.Width, area);
+            var height = GetAreaSize(AreaDimensionType.Height, area);
 
             var arraySizeX = width * (10 / AreaBakeStep);
             var arraySizeY = height * (10 / AreaBakeStep);

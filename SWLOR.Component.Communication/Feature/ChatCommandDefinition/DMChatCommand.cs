@@ -2,7 +2,6 @@ using SWLOR.Component.Communication.Service;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Events.Constants;
@@ -19,7 +18,8 @@ using SWLOR.Shared.Domain.Communication.ValueObjects;
 using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Space.Contracts;
 using SWLOR.Shared.Domain.UI.Events;
-using ChatChannel = SWLOR.NWN.API.NWNX.Enum.ChatChannel;
+using ChatChannelType = SWLOR.NWN.API.NWNX.Enum.ChatChannelType;
+using FactionType = SWLOR.Shared.Domain.Communication.Enums.FactionType;
 
 namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
 {
@@ -675,7 +675,7 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
 
                     try
                     {
-                        var unused = (VisualEffect) vfxId;
+                        var unused = (VisualEffectType) vfxId;
                     }
                     catch
                     {
@@ -687,7 +687,7 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
                 .Action((user, target, location, args) =>
                 {
                     var vfxId = Convert.ToInt32(args[0]);
-                    var vfx = (VisualEffect) vfxId;
+                    var vfx = (VisualEffectType) vfxId;
                     var effect = EffectVisualEffect(vfx);
                     ApplyEffectToObject(DurationType.Instant, effect, target);
                 });
@@ -967,7 +967,7 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
                 {
                     var message = string.Join(" ", args);
                     for (var onlinePlayer = GetFirstPC(); GetIsObjectValid(onlinePlayer); onlinePlayer = GetNextPC())
-                        ChatPlugin.SendMessage(ChatChannel.DMShout, message, user, onlinePlayer);
+                        ChatPlugin.SendMessage(ChatChannelType.DMShout, message, user, onlinePlayer);
                     
                     var authorName = $"{GetName(user)} ({GetPCPlayerName(user)}) [{GetPCPublicCDKey(user)}]";
                     _discord.PublishMessage(authorName, message, Color.Orange, DiscordNotificationType.DMShout);
@@ -1010,7 +1010,7 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
                     // Allows the scale value to be a decimal number.
                     var finalValue = float.TryParse(args[0], out var value) ? value : 1f;
 
-                    SetObjectVisualTransform(target, ObjectVisualTransform.Scale, finalValue);
+                    SetObjectVisualTransform(target, ObjectVisualTransformType.Scale, finalValue);
 
                     // Lets the DM know what he set the scale to, but round it to the third decimal place.
                     var targetName = GetName(target);
@@ -1029,7 +1029,7 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
                 .RequiresTarget()
                 .Action((user, target, location, args) =>
                 {
-                    var targetScale = GetObjectVisualTransform(target, ObjectVisualTransform.Scale);
+                    var targetScale = GetObjectVisualTransform(target, ObjectVisualTransformType.Scale);
                     var targetName = GetName(target);
                     var shownScale = targetScale.ToString("0.###");
 

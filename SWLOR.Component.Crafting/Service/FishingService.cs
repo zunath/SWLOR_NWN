@@ -278,7 +278,7 @@ namespace SWLOR.Component.Crafting.Service
             var player = GetPlaceableLastClickedBy();
             AssignCommand(player, () => ClearAllActions());
 
-            var rod = GetItemInSlot(InventorySlot.RightHand, player);
+            var rod = GetItemInSlot(InventorySlotType.RightHand, player);
             const float MaxDistance = 10f;
 
             if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
@@ -360,7 +360,7 @@ namespace SWLOR.Component.Crafting.Service
             );
             var position = GetPosition(player);
             var locationId = (FishingLocationType)GetLocalInt(fishingPoint, FishingPointLocationVariable);
-            var rod = GetItemInSlot(InventorySlot.RightHand, player);
+            var rod = GetItemInSlot(InventorySlotType.RightHand, player);
             var rodResref = GetResRef(rod);
 
             ClearFishingAttempt(player);

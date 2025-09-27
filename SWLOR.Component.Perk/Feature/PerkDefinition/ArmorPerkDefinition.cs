@@ -1,6 +1,5 @@
 using SWLOR.Component.Perk.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Character.ValueObjects;
@@ -56,7 +55,7 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Provoke2);
         }
 
-        private void UnequipArmorIfRequirementsNotMet(uint player, PerkType perkType, InventorySlot slot)
+        private void UnequipArmorIfRequirementsNotMet(uint player, PerkType perkType, InventorySlotType slot)
         {
             var item = GetItemInSlot(slot, player);
             if (!GetIsObjectValid(item))
@@ -122,7 +121,7 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 
                 .TriggerRefund(player =>
                 {
-                    UnequipArmorIfRequirementsNotMet(player, PerkType.CloakProficiency, InventorySlot.Cloak);
+                    UnequipArmorIfRequirementsNotMet(player, PerkType.CloakProficiency, InventorySlotType.Cloak);
                 });
         }
 
@@ -163,7 +162,7 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
 
                 .TriggerRefund(player =>
                 {
-                    UnequipArmorIfRequirementsNotMet(player, PerkType.BeltProficiency, InventorySlot.Belt);
+                    UnequipArmorIfRequirementsNotMet(player, PerkType.BeltProficiency, InventorySlotType.Belt);
                 });
         }
 
@@ -204,8 +203,8 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
 
                 .TriggerRefund(player =>
                 {
-                    UnequipArmorIfRequirementsNotMet(player, PerkType.RingProficiency, InventorySlot.LeftRing);
-                    UnequipArmorIfRequirementsNotMet(player, PerkType.RingProficiency, InventorySlot.RightRing);
+                    UnequipArmorIfRequirementsNotMet(player, PerkType.RingProficiency, InventorySlotType.LeftRing);
+                    UnequipArmorIfRequirementsNotMet(player, PerkType.RingProficiency, InventorySlotType.RightRing);
                 });
         }
 
@@ -246,7 +245,7 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
 
                 .TriggerRefund(player =>
                 {
-                    UnequipArmorIfRequirementsNotMet(player, PerkType.NecklaceProficiency, InventorySlot.Neck);
+                    UnequipArmorIfRequirementsNotMet(player, PerkType.NecklaceProficiency, InventorySlotType.Neck);
                 });
         }
 
@@ -286,7 +285,7 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
 
                 .TriggerRefund(player =>
                 {
-                    UnequipArmorIfRequirementsNotMet(player, PerkType.BreastplateProficiency, InventorySlot.Chest);
+                    UnequipArmorIfRequirementsNotMet(player, PerkType.BreastplateProficiency, InventorySlotType.Chest);
                 });
         }
 
@@ -326,7 +325,7 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
 
                 .TriggerRefund(player =>
                 {
-                    UnequipArmorIfRequirementsNotMet(player, PerkType.HelmetProficiency, InventorySlot.Head);
+                    UnequipArmorIfRequirementsNotMet(player, PerkType.HelmetProficiency, InventorySlotType.Head);
                 });
         }
 
@@ -366,7 +365,7 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
 
                 .TriggerRefund(player =>
                 {
-                    UnequipArmorIfRequirementsNotMet(player, PerkType.BracerProficiency, InventorySlot.Arms);
+                    UnequipArmorIfRequirementsNotMet(player, PerkType.BracerProficiency, InventorySlotType.Arms);
                 });
         }
 
@@ -406,7 +405,7 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
 
                 .TriggerRefund(player =>
                 {
-                    UnequipArmorIfRequirementsNotMet(player, PerkType.LeggingProficiency, InventorySlot.Boots);
+                    UnequipArmorIfRequirementsNotMet(player, PerkType.LeggingProficiency, InventorySlotType.Boots);
                 });
         }
 
@@ -446,7 +445,7 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
 
                 .TriggerRefund(player =>
                 {
-                    UnequipArmorIfRequirementsNotMet(player, PerkType.ShieldProficiency, InventorySlot.LeftHand);
+                    UnequipArmorIfRequirementsNotMet(player, PerkType.ShieldProficiency, InventorySlotType.LeftHand);
                 });
         }
 
@@ -486,7 +485,7 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
 
                 .TriggerRefund(player =>
                 {
-                    UnequipArmorIfRequirementsNotMet(player, PerkType.TunicProficiency, InventorySlot.Chest);
+                    UnequipArmorIfRequirementsNotMet(player, PerkType.TunicProficiency, InventorySlotType.Chest);
                 });
         }
 
@@ -526,7 +525,7 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
 
                 .TriggerRefund(player =>
                 {
-                    UnequipArmorIfRequirementsNotMet(player, PerkType.CapProficiency, InventorySlot.Head);
+                    UnequipArmorIfRequirementsNotMet(player, PerkType.CapProficiency, InventorySlotType.Head);
                 });
         }
 
@@ -566,7 +565,7 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
 
                 .TriggerRefund(player =>
                 {
-                    UnequipArmorIfRequirementsNotMet(player, PerkType.GloveProficiency, InventorySlot.Arms);
+                    UnequipArmorIfRequirementsNotMet(player, PerkType.GloveProficiency, InventorySlotType.Arms);
                 });
         }
 
@@ -606,7 +605,7 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
 
                 .TriggerRefund(player =>
                 {
-                    UnequipArmorIfRequirementsNotMet(player, PerkType.BootProficiency, InventorySlot.Boots);
+                    UnequipArmorIfRequirementsNotMet(player, PerkType.BootProficiency, InventorySlotType.Boots);
                 });
         }
     }

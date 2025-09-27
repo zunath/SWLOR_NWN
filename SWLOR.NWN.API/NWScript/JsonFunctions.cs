@@ -437,7 +437,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="jArray">The JSON array to transform</param>
         /// <param name="nTransform">The transformation to apply</param>
         /// <returns>A modified copy of the array</returns>
-        public static Json JsonArrayTransform(Json jArray, JsonArraySort nTransform)
+        public static Json JsonArrayTransform(Json jArray, JsonArraySortType nTransform)
         {
             return global::NWN.Core.NWScript.JsonArrayTransform(jArray, (int)nTransform);
         }
@@ -457,7 +457,7 @@ namespace SWLOR.NWN.API.NWScript
             Json jHaystack,
             Json jNeedle,
             int nNth = 0,
-            JsonFind nConditional = Enum.JsonFind.Equal)
+            JsonFindType nConditional = Enum.JsonFindType.Equal)
         {
             return global::NWN.Core.NWScript.JsonFind(jHaystack, jNeedle, nNth, (int)nConditional);
         }
@@ -495,7 +495,7 @@ namespace SWLOR.NWN.API.NWScript
         /// JSON_SET_SYMMETRIC_DIFFERENCE (v ^ o):
         ///   Returns a new array containing all elements present in either array, but not both.
         /// </summary>
-        public static Json JsonSetOp(Json jValue, JsonSet nOp, Json jOther)
+        public static Json JsonSetOp(Json jValue, JsonSetType nOp, Json jOther)
         {
             return global::NWN.Core.NWScript.JsonSetOp(jValue, (int)nOp, jOther);
         }

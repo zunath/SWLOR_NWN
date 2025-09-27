@@ -1,6 +1,4 @@
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Item;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 
@@ -19,11 +17,11 @@ namespace SWLOR.Component.Inventory.Feature
             var item = GetPCItemLastEquipped();
             var type = GetBaseItemType(item);
 
-            if (type != BaseItem.Lightsaber &&
-                type != BaseItem.Saberstaff)
+            if (type != BaseItemType.Lightsaber &&
+                type != BaseItemType.Saberstaff)
                 return;
 
-            var effect = EffectVisualEffect(VisualEffect.LightsaberHum);
+            var effect = EffectVisualEffect(VisualEffectType.LightsaberHum);
             effect = TagEffect(effect, "LIGHTSABER_HUM");
             
             ApplyEffectToObject(DurationType.Permanent, effect, player);
@@ -41,8 +39,8 @@ namespace SWLOR.Component.Inventory.Feature
             var item = GetPCItemLastUnequipped();
             var type = GetBaseItemType(item);
 
-            if (type != BaseItem.Lightsaber &&
-                type != BaseItem.Saberstaff)
+            if (type != BaseItemType.Lightsaber &&
+                type != BaseItemType.Saberstaff)
                 return;
 
             for (var effect = GetFirstEffect(player); GetIsEffectValid(effect); effect = GetNextEffect(player))

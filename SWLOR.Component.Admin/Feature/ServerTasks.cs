@@ -79,8 +79,8 @@ namespace SWLOR.Component.Admin.Feature
 
         private void ConfigureServerSettings()
         {
-            AdministrationPlugin.SetPlayOption(AdministrationOption.ExamineChallengeRating, false);
-            AdministrationPlugin.SetPlayOption(AdministrationOption.UseMaxHitpoints, true);
+            AdministrationPlugin.SetPlayOption(AdministrationOptionType.ExamineChallengeRating, false);
+            AdministrationPlugin.SetPlayOption(AdministrationOptionType.UseMaxHitpoints, true);
         }
 
         private void ApplyBans()

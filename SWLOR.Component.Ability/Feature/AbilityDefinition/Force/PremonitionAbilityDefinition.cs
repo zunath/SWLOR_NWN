@@ -27,7 +27,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .RequirementFP(4)
                 .IsCastedAbility()
                 .IsConcentrationAbility(StatusEffectType.Premonition1)
-                .UsesAnimation(Animation.LoopingConjure1)
+                .UsesAnimation(AnimationType.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }
 
@@ -40,7 +40,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .RequirementFP(6)
                 .IsCastedAbility()
                 .IsConcentrationAbility(StatusEffectType.Premonition2)
-                .UsesAnimation(Animation.LoopingConjure1)
+                .UsesAnimation(AnimationType.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }
     }

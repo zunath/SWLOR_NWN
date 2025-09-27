@@ -36,7 +36,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .Level(1)
                 .HasRecastDelay(RecastGroup.ForceRestore, 60f * 3f)
                 .IsCastedAbility()
-                .UsesAnimation(Animation.LoopingConjure1)
+                .UsesAnimation(AnimationType.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level, location) =>
                 {
@@ -51,7 +51,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .Level(2)
                 .HasRecastDelay(RecastGroup.ForceRestore, 60f * 3f)
                 .IsCastedAbility()
-                .UsesAnimation(Animation.LoopingConjure1)
+                .UsesAnimation(AnimationType.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level, location) =>
                 {

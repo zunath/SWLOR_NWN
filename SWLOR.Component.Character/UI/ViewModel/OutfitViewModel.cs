@@ -1,7 +1,6 @@
 using SWLOR.Component.Character.Enums;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.UI.Contracts;
@@ -187,7 +186,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
 
             void DoSave()
             {
-                var outfit = GetItemInSlot(InventorySlot.Chest, Player);
+                var outfit = GetItemInSlot(InventorySlotType.Chest, Player);
                 if (!GetIsObjectValid(outfit))
                 {
                     FloatingTextStringOnCreature("You do not have any clothes equipped.", Player, false);
@@ -197,27 +196,27 @@ namespace SWLOR.Component.Character.UI.ViewModel
                 dbOutfit.Data = ObjectPlugin.Serialize(outfit);
 
 
-                dbOutfit.NeckId = GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Neck);
-                dbOutfit.TorsoId = GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Torso);
-                dbOutfit.BeltId = GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Belt);
-                dbOutfit.PelvisId = GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Pelvis);
-                dbOutfit.RobeId = GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe);
+                dbOutfit.NeckId = GetItemAppearance(outfit, ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.Neck);
+                dbOutfit.TorsoId = GetItemAppearance(outfit, ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.Torso);
+                dbOutfit.BeltId = GetItemAppearance(outfit, ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.Belt);
+                dbOutfit.PelvisId = GetItemAppearance(outfit, ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.Pelvis);
+                dbOutfit.RobeId = GetItemAppearance(outfit, ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.Robe);
 
-                dbOutfit.LeftBicepId = GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftBicep);
-                dbOutfit.LeftFootId = GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftFoot);
-                dbOutfit.LeftForearmId = GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftForearm);
-                dbOutfit.LeftHandId = GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftHand);
-                dbOutfit.LeftShinId = GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftShin);
-                dbOutfit.LeftShoulderId = GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftShoulder);
-                dbOutfit.LeftThighId = GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftThigh);
+                dbOutfit.LeftBicepId = GetItemAppearance(outfit, ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.LeftBicep);
+                dbOutfit.LeftFootId = GetItemAppearance(outfit, ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.LeftFoot);
+                dbOutfit.LeftForearmId = GetItemAppearance(outfit, ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.LeftForearm);
+                dbOutfit.LeftHandId = GetItemAppearance(outfit, ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.LeftHand);
+                dbOutfit.LeftShinId = GetItemAppearance(outfit, ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.LeftShin);
+                dbOutfit.LeftShoulderId = GetItemAppearance(outfit, ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.LeftShoulder);
+                dbOutfit.LeftThighId = GetItemAppearance(outfit, ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.LeftThigh);
 
-                dbOutfit.RightBicepId = GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightBicep);
-                dbOutfit.RightFootId = GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightFoot);
-                dbOutfit.RightForearmId = GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightForearm);
-                dbOutfit.RightHandId = GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightHand);
-                dbOutfit.RightShinId = GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightShin);
-                dbOutfit.RightShoulderId = GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightShoulder);
-                dbOutfit.RightThighId = GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightThigh);
+                dbOutfit.RightBicepId = GetItemAppearance(outfit, ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.RightBicep);
+                dbOutfit.RightFootId = GetItemAppearance(outfit, ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.RightFoot);
+                dbOutfit.RightForearmId = GetItemAppearance(outfit, ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.RightForearm);
+                dbOutfit.RightHandId = GetItemAppearance(outfit, ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.RightHand);
+                dbOutfit.RightShinId = GetItemAppearance(outfit, ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.RightShin);
+                dbOutfit.RightShoulderId = GetItemAppearance(outfit, ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.RightShoulder);
+                dbOutfit.RightThighId = GetItemAppearance(outfit, ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.RightThigh);
 
                 _db.Set(dbOutfit);
 
@@ -243,7 +242,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
             ShowModal($"Loading this outfit will overwrite the appearance of your currently equipped clothes. Are you sure you want to do this?",
                 () =>
                 {
-                    var outfit = GetItemInSlot(InventorySlot.Chest, Player);
+                    var outfit = GetItemInSlot(InventorySlotType.Chest, Player);
                     if (!GetIsObjectValid(outfit))
                     {
                         FloatingTextStringOnCreature("You do not have any clothes equipped.", Player, false);
@@ -254,14 +253,14 @@ namespace SWLOR.Component.Character.UI.ViewModel
                 });
         };
 
-        private int CalculatePerPartColorIndex(AppearanceArmor armorModel, AppearanceArmorColor colorChannel)
+        private int CalculatePerPartColorIndex(ItemAppearanceArmorType armorModel, ItemAppearanceArmorColorType colorChannel)
         {
-            return (int)AppearanceArmorColor.NumColors + (int)armorModel * (int)AppearanceArmorColor.NumColors + (int)colorChannel;
+            return (int)ItemAppearanceArmorColorType.NumColors + (int)armorModel * (int)ItemAppearanceArmorColorType.NumColors + (int)colorChannel;
         }
 
         private void LoadOutfit()
         {
-            var armor = GetItemInSlot(InventorySlot.Chest, Player);
+            var armor = GetItemInSlot(InventorySlotType.Chest, Player);
             var dbOutfit = _db.Get<PlayerOutfit>(_outfitIds[SelectedSlotIndex]);
 
             // Get the temporary storage placeable and deserialize the outfit into it.
@@ -269,47 +268,47 @@ namespace SWLOR.Component.Character.UI.ViewModel
             var deserialized = ObjectPlugin.Deserialize(dbOutfit.Data);
             var copy = CopyItem(armor, tempStorage, true);
 
-            uint CopyColors(AppearanceArmor part)
+            uint CopyColors(ItemAppearanceArmorType part)
             {
-                copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorModel, (int)part, GetItemAppearance(deserialized, ItemAppearanceType.ArmorModel, (int)part), true);
+                copy = CopyItemAndModify(copy, ItemModelColorType.ArmorModel, (int)part, GetItemAppearance(deserialized, ItemModelColorType.ArmorModel, (int)part), true);
                 DestroyObject(copy);
-                copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorColor, (int)part, GetItemAppearance(deserialized, ItemAppearanceType.ArmorColor, (int)part), true);
+                copy = CopyItemAndModify(copy, ItemModelColorType.ArmorColor, (int)part, GetItemAppearance(deserialized, ItemModelColorType.ArmorColor, (int)part), true);
                 DestroyObject(copy);
-                copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorColor, CalculatePerPartColorIndex(part, AppearanceArmorColor.Cloth1), GetItemAppearance(deserialized, ItemAppearanceType.ArmorColor, CalculatePerPartColorIndex(part, AppearanceArmorColor.Cloth1)));
+                copy = CopyItemAndModify(copy, ItemModelColorType.ArmorColor, CalculatePerPartColorIndex(part, ItemAppearanceArmorColorType.Cloth1), GetItemAppearance(deserialized, ItemModelColorType.ArmorColor, CalculatePerPartColorIndex(part, ItemAppearanceArmorColorType.Cloth1)));
                 DestroyObject(copy);
-                copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorColor, CalculatePerPartColorIndex(part, AppearanceArmorColor.Cloth2), GetItemAppearance(deserialized, ItemAppearanceType.ArmorColor, CalculatePerPartColorIndex(part, AppearanceArmorColor.Cloth2)));
+                copy = CopyItemAndModify(copy, ItemModelColorType.ArmorColor, CalculatePerPartColorIndex(part, ItemAppearanceArmorColorType.Cloth2), GetItemAppearance(deserialized, ItemModelColorType.ArmorColor, CalculatePerPartColorIndex(part, ItemAppearanceArmorColorType.Cloth2)));
                 DestroyObject(copy);
-                copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorColor, CalculatePerPartColorIndex(part, AppearanceArmorColor.Leather1), GetItemAppearance(deserialized, ItemAppearanceType.ArmorColor, CalculatePerPartColorIndex(part, AppearanceArmorColor.Leather1)));
+                copy = CopyItemAndModify(copy, ItemModelColorType.ArmorColor, CalculatePerPartColorIndex(part, ItemAppearanceArmorColorType.Leather1), GetItemAppearance(deserialized, ItemModelColorType.ArmorColor, CalculatePerPartColorIndex(part, ItemAppearanceArmorColorType.Leather1)));
                 DestroyObject(copy);
-                copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorColor, CalculatePerPartColorIndex(part, AppearanceArmorColor.Leather2), GetItemAppearance(deserialized, ItemAppearanceType.ArmorColor, CalculatePerPartColorIndex(part, AppearanceArmorColor.Leather2)));
+                copy = CopyItemAndModify(copy, ItemModelColorType.ArmorColor, CalculatePerPartColorIndex(part, ItemAppearanceArmorColorType.Leather2), GetItemAppearance(deserialized, ItemModelColorType.ArmorColor, CalculatePerPartColorIndex(part, ItemAppearanceArmorColorType.Leather2)));
                 DestroyObject(copy);
-                copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorColor, CalculatePerPartColorIndex(part, AppearanceArmorColor.Metal1), GetItemAppearance(deserialized, ItemAppearanceType.ArmorColor, CalculatePerPartColorIndex(part, AppearanceArmorColor.Metal1)));
+                copy = CopyItemAndModify(copy, ItemModelColorType.ArmorColor, CalculatePerPartColorIndex(part, ItemAppearanceArmorColorType.Metal1), GetItemAppearance(deserialized, ItemModelColorType.ArmorColor, CalculatePerPartColorIndex(part, ItemAppearanceArmorColorType.Metal1)));
                 DestroyObject(copy);
-                copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorColor, CalculatePerPartColorIndex(part, AppearanceArmorColor.Metal2), GetItemAppearance(deserialized, ItemAppearanceType.ArmorColor, CalculatePerPartColorIndex(part, AppearanceArmorColor.Metal2)));
+                copy = CopyItemAndModify(copy, ItemModelColorType.ArmorColor, CalculatePerPartColorIndex(part, ItemAppearanceArmorColorType.Metal2), GetItemAppearance(deserialized, ItemModelColorType.ArmorColor, CalculatePerPartColorIndex(part, ItemAppearanceArmorColorType.Metal2)));
                 DestroyObject(copy);
 
                 return copy;
             }
 
-            copy = CopyColors(AppearanceArmor.LeftBicep);
-            copy = CopyColors(AppearanceArmor.Belt);
-            copy = CopyColors(AppearanceArmor.LeftFoot);
-            copy = CopyColors(AppearanceArmor.LeftForearm);
-            copy = CopyColors(AppearanceArmor.LeftHand);
-            copy = CopyColors(AppearanceArmor.LeftShin);
-            copy = CopyColors(AppearanceArmor.LeftShoulder);
-            copy = CopyColors(AppearanceArmor.LeftThigh);
-            copy = CopyColors(AppearanceArmor.Neck);
-            copy = CopyColors(AppearanceArmor.Pelvis);
-            copy = CopyColors(AppearanceArmor.RightBicep);
-            copy = CopyColors(AppearanceArmor.RightFoot);
-            copy = CopyColors(AppearanceArmor.RightForearm);
-            copy = CopyColors(AppearanceArmor.RightHand);
-            copy = CopyColors(AppearanceArmor.Robe);
-            copy = CopyColors(AppearanceArmor.RightShin);
-            copy = CopyColors(AppearanceArmor.RightShoulder);
-            copy = CopyColors(AppearanceArmor.RightThigh);
-            copy = CopyColors(AppearanceArmor.Torso);
+            copy = CopyColors(ItemAppearanceArmorType.LeftBicep);
+            copy = CopyColors(ItemAppearanceArmorType.Belt);
+            copy = CopyColors(ItemAppearanceArmorType.LeftFoot);
+            copy = CopyColors(ItemAppearanceArmorType.LeftForearm);
+            copy = CopyColors(ItemAppearanceArmorType.LeftHand);
+            copy = CopyColors(ItemAppearanceArmorType.LeftShin);
+            copy = CopyColors(ItemAppearanceArmorType.LeftShoulder);
+            copy = CopyColors(ItemAppearanceArmorType.LeftThigh);
+            copy = CopyColors(ItemAppearanceArmorType.Neck);
+            copy = CopyColors(ItemAppearanceArmorType.Pelvis);
+            copy = CopyColors(ItemAppearanceArmorType.RightBicep);
+            copy = CopyColors(ItemAppearanceArmorType.RightFoot);
+            copy = CopyColors(ItemAppearanceArmorType.RightForearm);
+            copy = CopyColors(ItemAppearanceArmorType.RightHand);
+            copy = CopyColors(ItemAppearanceArmorType.Robe);
+            copy = CopyColors(ItemAppearanceArmorType.RightShin);
+            copy = CopyColors(ItemAppearanceArmorType.RightShoulder);
+            copy = CopyColors(ItemAppearanceArmorType.RightThigh);
+            copy = CopyColors(ItemAppearanceArmorType.Torso);
 
             var final = CopyItem(copy, Player, true);
             DestroyObject(armor);
@@ -318,7 +317,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
 
             AssignCommand(Player, () =>
             {
-                ActionEquipItem(final, InventorySlot.Chest);
+                ActionEquipItem(final, InventorySlotType.Chest);
             });
         }
 

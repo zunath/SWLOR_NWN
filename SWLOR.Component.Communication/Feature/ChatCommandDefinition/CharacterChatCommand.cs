@@ -3,7 +3,6 @@ using SWLOR.Component.Communication.Contracts;
 using SWLOR.Component.Communication.Service;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Component.Communication.UI.Payload;
 using SWLOR.Shared.Abstractions.Enums;

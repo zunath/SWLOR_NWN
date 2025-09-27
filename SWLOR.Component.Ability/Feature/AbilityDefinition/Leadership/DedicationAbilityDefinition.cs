@@ -37,7 +37,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Leadership
                 .HasActivationDelay(4f)
                 .UnaffectedByHeavyArmor()
                 .IsCastedAbility()
-                .UsesAnimation(Animation.FireForgetTaunt)
+                .UsesAnimation(AnimationType.FireForgetTaunt)
                 .HasActivationAction((activator, target, level, location) =>
                 {
                     return AbilityService.ToggleAura(activator, StatusEffectType.Dedication);

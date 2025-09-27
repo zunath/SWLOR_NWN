@@ -12,7 +12,7 @@ namespace SWLOR.Component.Communication.Contracts
         string HelpTextAdmin { get; }
         GuiBindingList<string> EmoteNames { get; }
         GuiBindingList<string> EmoteDescriptions { get; }
-        List<Animation> EmoteAnimations { get; }
+        List<AnimationType> EmoteAnimations { get; }
         GuiBindingList<bool> EmoteIsLooping { get; }
 
         /// <summary>

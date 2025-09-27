@@ -107,7 +107,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .HasRecastDelay(RecastGroup.BurstOfSpeed, 20f)
                 .RequirementFP(2)
                 .HasActivationDelay(2f)
-                .UsesAnimation(Animation.LoopingConjure1)
+                .UsesAnimation(AnimationType.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
                 .HasCustomValidation((activator, target, level, location) => Validation(target, 1))
                 .HasImpactAction((activator, target, level, location) =>
@@ -123,7 +123,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .HasRecastDelay(RecastGroup.BurstOfSpeed, 20f)
                 .RequirementFP(3)
                 .HasActivationDelay(2f)
-                .UsesAnimation(Animation.LoopingConjure1)
+                .UsesAnimation(AnimationType.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
                 .HasCustomValidation((activator, target, level, location) => Validation(target, 2))
                 .HasImpactAction((activator, target, level, location) =>

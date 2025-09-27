@@ -1,4 +1,4 @@
-using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.UI.Component;
 
 namespace SWLOR.Component.Character.UI.ViewModel
@@ -17,193 +17,193 @@ namespace SWLOR.Component.Character.UI.ViewModel
             }
         }
 
-        private Dictionary<ColorTarget, Dictionary<AppearanceArmorColor, ColorRegion>> _colorMappings;
+        private Dictionary<ColorTarget, Dictionary<ItemAppearanceArmorColorType, ColorRegion>> _colorMappings;
 
         private void RegisterColorMappings()
         {
             InitializeRegions();
 
-            _colorMappings = new Dictionary<ColorTarget, Dictionary<AppearanceArmorColor, ColorRegion>>
+            _colorMappings = new Dictionary<ColorTarget, Dictionary<ItemAppearanceArmorColorType, ColorRegion>>
             {
                 [ColorTarget.Global] = new()
                 {
-                    [AppearanceArmorColor.Leather1] = new ColorRegion(nameof(GlobalLeather1Region), GlobalLeather1Region),
-                    [AppearanceArmorColor.Leather2] = new ColorRegion(nameof(GlobalLeather2Region), GlobalLeather2Region),
-                    [AppearanceArmorColor.Cloth1] = new ColorRegion(nameof(GlobalCloth1Region), GlobalCloth1Region),
-                    [AppearanceArmorColor.Cloth2] = new ColorRegion(nameof(GlobalCloth2Region), GlobalCloth2Region),
-                    [AppearanceArmorColor.Metal1] = new ColorRegion(nameof(GlobalMetal1Region), GlobalMetal1Region),
-                    [AppearanceArmorColor.Metal2] = new ColorRegion(nameof(GlobalMetal2Region), GlobalMetal2Region)
+                    [ItemAppearanceArmorColorType.Leather1] = new ColorRegion(nameof(GlobalLeather1Region), GlobalLeather1Region),
+                    [ItemAppearanceArmorColorType.Leather2] = new ColorRegion(nameof(GlobalLeather2Region), GlobalLeather2Region),
+                    [ItemAppearanceArmorColorType.Cloth1] = new ColorRegion(nameof(GlobalCloth1Region), GlobalCloth1Region),
+                    [ItemAppearanceArmorColorType.Cloth2] = new ColorRegion(nameof(GlobalCloth2Region), GlobalCloth2Region),
+                    [ItemAppearanceArmorColorType.Metal1] = new ColorRegion(nameof(GlobalMetal1Region), GlobalMetal1Region),
+                    [ItemAppearanceArmorColorType.Metal2] = new ColorRegion(nameof(GlobalMetal2Region), GlobalMetal2Region)
                 },
                 [ColorTarget.LeftShoulder] = new()
                 {
-                    [AppearanceArmorColor.Leather1] = new ColorRegion(nameof(LeftShoulderLeather1Region), LeftShoulderLeather1Region),
-                    [AppearanceArmorColor.Leather2] = new ColorRegion(nameof(LeftShoulderLeather2Region), LeftShoulderLeather2Region),
-                    [AppearanceArmorColor.Cloth1] = new ColorRegion(nameof(LeftShoulderCloth1Region), LeftShoulderCloth1Region),
-                    [AppearanceArmorColor.Cloth2] = new ColorRegion(nameof(LeftShoulderCloth2Region), LeftShoulderCloth2Region),
-                    [AppearanceArmorColor.Metal1] = new ColorRegion(nameof(LeftShoulderMetal1Region), LeftShoulderMetal1Region),
-                    [AppearanceArmorColor.Metal2] = new ColorRegion(nameof(LeftShoulderMetal2Region), LeftShoulderMetal2Region)
+                    [ItemAppearanceArmorColorType.Leather1] = new ColorRegion(nameof(LeftShoulderLeather1Region), LeftShoulderLeather1Region),
+                    [ItemAppearanceArmorColorType.Leather2] = new ColorRegion(nameof(LeftShoulderLeather2Region), LeftShoulderLeather2Region),
+                    [ItemAppearanceArmorColorType.Cloth1] = new ColorRegion(nameof(LeftShoulderCloth1Region), LeftShoulderCloth1Region),
+                    [ItemAppearanceArmorColorType.Cloth2] = new ColorRegion(nameof(LeftShoulderCloth2Region), LeftShoulderCloth2Region),
+                    [ItemAppearanceArmorColorType.Metal1] = new ColorRegion(nameof(LeftShoulderMetal1Region), LeftShoulderMetal1Region),
+                    [ItemAppearanceArmorColorType.Metal2] = new ColorRegion(nameof(LeftShoulderMetal2Region), LeftShoulderMetal2Region)
                 },
                 [ColorTarget.LeftBicep] = new()
                 {
-                    [AppearanceArmorColor.Leather1] = new ColorRegion(nameof(LeftBicepLeather1Region), LeftBicepLeather1Region),
-                    [AppearanceArmorColor.Leather2] = new ColorRegion(nameof(LeftBicepLeather2Region), LeftBicepLeather2Region),
-                    [AppearanceArmorColor.Cloth1] = new ColorRegion(nameof(LeftBicepCloth1Region), LeftBicepCloth1Region),
-                    [AppearanceArmorColor.Cloth2] = new ColorRegion(nameof(LeftBicepCloth2Region), LeftBicepCloth2Region),
-                    [AppearanceArmorColor.Metal1] = new ColorRegion(nameof(LeftBicepMetal1Region), LeftBicepMetal1Region),
-                    [AppearanceArmorColor.Metal2] = new ColorRegion(nameof(LeftBicepMetal2Region), LeftBicepMetal2Region)
+                    [ItemAppearanceArmorColorType.Leather1] = new ColorRegion(nameof(LeftBicepLeather1Region), LeftBicepLeather1Region),
+                    [ItemAppearanceArmorColorType.Leather2] = new ColorRegion(nameof(LeftBicepLeather2Region), LeftBicepLeather2Region),
+                    [ItemAppearanceArmorColorType.Cloth1] = new ColorRegion(nameof(LeftBicepCloth1Region), LeftBicepCloth1Region),
+                    [ItemAppearanceArmorColorType.Cloth2] = new ColorRegion(nameof(LeftBicepCloth2Region), LeftBicepCloth2Region),
+                    [ItemAppearanceArmorColorType.Metal1] = new ColorRegion(nameof(LeftBicepMetal1Region), LeftBicepMetal1Region),
+                    [ItemAppearanceArmorColorType.Metal2] = new ColorRegion(nameof(LeftBicepMetal2Region), LeftBicepMetal2Region)
                 },
                 [ColorTarget.LeftForearm] = new()
                 {
-                    [AppearanceArmorColor.Leather1] = new ColorRegion(nameof(LeftForearmLeather1Region), LeftForearmLeather1Region),
-                    [AppearanceArmorColor.Leather2] = new ColorRegion(nameof(LeftForearmLeather2Region), LeftForearmLeather2Region),
-                    [AppearanceArmorColor.Cloth1] = new ColorRegion(nameof(LeftForearmCloth1Region), LeftForearmCloth1Region),
-                    [AppearanceArmorColor.Cloth2] = new ColorRegion(nameof(LeftForearmCloth2Region), LeftForearmCloth2Region),
-                    [AppearanceArmorColor.Metal1] = new ColorRegion(nameof(LeftForearmMetal1Region), LeftForearmMetal1Region),
-                    [AppearanceArmorColor.Metal2] = new ColorRegion(nameof(LeftForearmMetal2Region), LeftForearmMetal2Region)
+                    [ItemAppearanceArmorColorType.Leather1] = new ColorRegion(nameof(LeftForearmLeather1Region), LeftForearmLeather1Region),
+                    [ItemAppearanceArmorColorType.Leather2] = new ColorRegion(nameof(LeftForearmLeather2Region), LeftForearmLeather2Region),
+                    [ItemAppearanceArmorColorType.Cloth1] = new ColorRegion(nameof(LeftForearmCloth1Region), LeftForearmCloth1Region),
+                    [ItemAppearanceArmorColorType.Cloth2] = new ColorRegion(nameof(LeftForearmCloth2Region), LeftForearmCloth2Region),
+                    [ItemAppearanceArmorColorType.Metal1] = new ColorRegion(nameof(LeftForearmMetal1Region), LeftForearmMetal1Region),
+                    [ItemAppearanceArmorColorType.Metal2] = new ColorRegion(nameof(LeftForearmMetal2Region), LeftForearmMetal2Region)
                 },
                 [ColorTarget.LeftHand] = new()
                 {
-                    [AppearanceArmorColor.Leather1] = new ColorRegion(nameof(LeftHandLeather1Region), LeftHandLeather1Region),
-                    [AppearanceArmorColor.Leather2] = new ColorRegion(nameof(LeftHandLeather2Region), LeftHandLeather2Region),
-                    [AppearanceArmorColor.Cloth1] = new ColorRegion(nameof(LeftHandCloth1Region), LeftHandCloth1Region),
-                    [AppearanceArmorColor.Cloth2] = new ColorRegion(nameof(LeftHandCloth2Region), LeftHandCloth2Region),
-                    [AppearanceArmorColor.Metal1] = new ColorRegion(nameof(LeftHandMetal1Region), LeftHandMetal1Region),
-                    [AppearanceArmorColor.Metal2] = new ColorRegion(nameof(LeftHandMetal2Region), LeftHandMetal2Region)
+                    [ItemAppearanceArmorColorType.Leather1] = new ColorRegion(nameof(LeftHandLeather1Region), LeftHandLeather1Region),
+                    [ItemAppearanceArmorColorType.Leather2] = new ColorRegion(nameof(LeftHandLeather2Region), LeftHandLeather2Region),
+                    [ItemAppearanceArmorColorType.Cloth1] = new ColorRegion(nameof(LeftHandCloth1Region), LeftHandCloth1Region),
+                    [ItemAppearanceArmorColorType.Cloth2] = new ColorRegion(nameof(LeftHandCloth2Region), LeftHandCloth2Region),
+                    [ItemAppearanceArmorColorType.Metal1] = new ColorRegion(nameof(LeftHandMetal1Region), LeftHandMetal1Region),
+                    [ItemAppearanceArmorColorType.Metal2] = new ColorRegion(nameof(LeftHandMetal2Region), LeftHandMetal2Region)
                 },
                 [ColorTarget.LeftThigh] = new()
                 {
-                    [AppearanceArmorColor.Leather1] = new ColorRegion(nameof(LeftThighLeather1Region), LeftThighLeather1Region),
-                    [AppearanceArmorColor.Leather2] = new ColorRegion(nameof(LeftThighLeather2Region), LeftThighLeather2Region),
-                    [AppearanceArmorColor.Cloth1] = new ColorRegion(nameof(LeftThighCloth1Region), LeftThighCloth1Region),
-                    [AppearanceArmorColor.Cloth2] = new ColorRegion(nameof(LeftThighCloth2Region), LeftThighCloth2Region),
-                    [AppearanceArmorColor.Metal1] = new ColorRegion(nameof(LeftThighMetal1Region), LeftThighMetal1Region),
-                    [AppearanceArmorColor.Metal2] = new ColorRegion(nameof(LeftThighMetal2Region), LeftThighMetal2Region)
+                    [ItemAppearanceArmorColorType.Leather1] = new ColorRegion(nameof(LeftThighLeather1Region), LeftThighLeather1Region),
+                    [ItemAppearanceArmorColorType.Leather2] = new ColorRegion(nameof(LeftThighLeather2Region), LeftThighLeather2Region),
+                    [ItemAppearanceArmorColorType.Cloth1] = new ColorRegion(nameof(LeftThighCloth1Region), LeftThighCloth1Region),
+                    [ItemAppearanceArmorColorType.Cloth2] = new ColorRegion(nameof(LeftThighCloth2Region), LeftThighCloth2Region),
+                    [ItemAppearanceArmorColorType.Metal1] = new ColorRegion(nameof(LeftThighMetal1Region), LeftThighMetal1Region),
+                    [ItemAppearanceArmorColorType.Metal2] = new ColorRegion(nameof(LeftThighMetal2Region), LeftThighMetal2Region)
                 },
                 [ColorTarget.LeftShin] = new()
                 {
-                    [AppearanceArmorColor.Leather1] = new ColorRegion(nameof(LeftShinLeather1Region), LeftShinLeather1Region),
-                    [AppearanceArmorColor.Leather2] = new ColorRegion(nameof(LeftShinLeather2Region), LeftShinLeather2Region),
-                    [AppearanceArmorColor.Cloth1] = new ColorRegion(nameof(LeftShinCloth1Region), LeftShinCloth1Region),
-                    [AppearanceArmorColor.Cloth2] = new ColorRegion(nameof(LeftShinCloth2Region), LeftShinCloth2Region),
-                    [AppearanceArmorColor.Metal1] = new ColorRegion(nameof(LeftShinMetal1Region), LeftShinMetal1Region),
-                    [AppearanceArmorColor.Metal2] = new ColorRegion(nameof(LeftShinMetal2Region), LeftShinMetal2Region)
+                    [ItemAppearanceArmorColorType.Leather1] = new ColorRegion(nameof(LeftShinLeather1Region), LeftShinLeather1Region),
+                    [ItemAppearanceArmorColorType.Leather2] = new ColorRegion(nameof(LeftShinLeather2Region), LeftShinLeather2Region),
+                    [ItemAppearanceArmorColorType.Cloth1] = new ColorRegion(nameof(LeftShinCloth1Region), LeftShinCloth1Region),
+                    [ItemAppearanceArmorColorType.Cloth2] = new ColorRegion(nameof(LeftShinCloth2Region), LeftShinCloth2Region),
+                    [ItemAppearanceArmorColorType.Metal1] = new ColorRegion(nameof(LeftShinMetal1Region), LeftShinMetal1Region),
+                    [ItemAppearanceArmorColorType.Metal2] = new ColorRegion(nameof(LeftShinMetal2Region), LeftShinMetal2Region)
                 },
                 [ColorTarget.LeftFoot] = new()
                 {
-                    [AppearanceArmorColor.Leather1] = new ColorRegion(nameof(LeftFootLeather1Region), LeftFootLeather1Region),
-                    [AppearanceArmorColor.Leather2] = new ColorRegion(nameof(LeftFootLeather2Region), LeftFootLeather2Region),
-                    [AppearanceArmorColor.Cloth1] = new ColorRegion(nameof(LeftFootCloth1Region), LeftFootCloth1Region),
-                    [AppearanceArmorColor.Cloth2] = new ColorRegion(nameof(LeftFootCloth2Region), LeftFootCloth2Region),
-                    [AppearanceArmorColor.Metal1] = new ColorRegion(nameof(LeftFootMetal1Region), LeftFootMetal1Region),
-                    [AppearanceArmorColor.Metal2] = new ColorRegion(nameof(LeftFootMetal2Region), LeftFootMetal2Region)
+                    [ItemAppearanceArmorColorType.Leather1] = new ColorRegion(nameof(LeftFootLeather1Region), LeftFootLeather1Region),
+                    [ItemAppearanceArmorColorType.Leather2] = new ColorRegion(nameof(LeftFootLeather2Region), LeftFootLeather2Region),
+                    [ItemAppearanceArmorColorType.Cloth1] = new ColorRegion(nameof(LeftFootCloth1Region), LeftFootCloth1Region),
+                    [ItemAppearanceArmorColorType.Cloth2] = new ColorRegion(nameof(LeftFootCloth2Region), LeftFootCloth2Region),
+                    [ItemAppearanceArmorColorType.Metal1] = new ColorRegion(nameof(LeftFootMetal1Region), LeftFootMetal1Region),
+                    [ItemAppearanceArmorColorType.Metal2] = new ColorRegion(nameof(LeftFootMetal2Region), LeftFootMetal2Region)
                 },
                 [ColorTarget.RightShoulder] = new()
                 {
-                    [AppearanceArmorColor.Leather1] = new ColorRegion(nameof(RightShoulderLeather1Region), RightShoulderLeather1Region),
-                    [AppearanceArmorColor.Leather2] = new ColorRegion(nameof(RightShoulderLeather2Region), RightShoulderLeather2Region),
-                    [AppearanceArmorColor.Cloth1] = new ColorRegion(nameof(RightShoulderCloth1Region), RightShoulderCloth1Region),
-                    [AppearanceArmorColor.Cloth2] = new ColorRegion(nameof(RightShoulderCloth2Region), RightShoulderCloth2Region),
-                    [AppearanceArmorColor.Metal1] = new ColorRegion(nameof(RightShoulderMetal1Region), RightShoulderMetal1Region),
-                    [AppearanceArmorColor.Metal2] = new ColorRegion(nameof(RightShoulderMetal2Region), RightShoulderMetal2Region)
+                    [ItemAppearanceArmorColorType.Leather1] = new ColorRegion(nameof(RightShoulderLeather1Region), RightShoulderLeather1Region),
+                    [ItemAppearanceArmorColorType.Leather2] = new ColorRegion(nameof(RightShoulderLeather2Region), RightShoulderLeather2Region),
+                    [ItemAppearanceArmorColorType.Cloth1] = new ColorRegion(nameof(RightShoulderCloth1Region), RightShoulderCloth1Region),
+                    [ItemAppearanceArmorColorType.Cloth2] = new ColorRegion(nameof(RightShoulderCloth2Region), RightShoulderCloth2Region),
+                    [ItemAppearanceArmorColorType.Metal1] = new ColorRegion(nameof(RightShoulderMetal1Region), RightShoulderMetal1Region),
+                    [ItemAppearanceArmorColorType.Metal2] = new ColorRegion(nameof(RightShoulderMetal2Region), RightShoulderMetal2Region)
                 },
                 [ColorTarget.RightBicep] = new()
                 {
-                    [AppearanceArmorColor.Leather1] = new ColorRegion(nameof(RightBicepLeather1Region), RightBicepLeather1Region),
-                    [AppearanceArmorColor.Leather2] = new ColorRegion(nameof(RightBicepLeather2Region), RightBicepLeather2Region),
-                    [AppearanceArmorColor.Cloth1] = new ColorRegion(nameof(RightBicepCloth1Region), RightBicepCloth1Region),
-                    [AppearanceArmorColor.Cloth2] = new ColorRegion(nameof(RightBicepCloth2Region), RightBicepCloth2Region),
-                    [AppearanceArmorColor.Metal1] = new ColorRegion(nameof(RightBicepMetal1Region), RightBicepMetal1Region),
-                    [AppearanceArmorColor.Metal2] = new ColorRegion(nameof(RightBicepMetal2Region), RightBicepMetal2Region)
+                    [ItemAppearanceArmorColorType.Leather1] = new ColorRegion(nameof(RightBicepLeather1Region), RightBicepLeather1Region),
+                    [ItemAppearanceArmorColorType.Leather2] = new ColorRegion(nameof(RightBicepLeather2Region), RightBicepLeather2Region),
+                    [ItemAppearanceArmorColorType.Cloth1] = new ColorRegion(nameof(RightBicepCloth1Region), RightBicepCloth1Region),
+                    [ItemAppearanceArmorColorType.Cloth2] = new ColorRegion(nameof(RightBicepCloth2Region), RightBicepCloth2Region),
+                    [ItemAppearanceArmorColorType.Metal1] = new ColorRegion(nameof(RightBicepMetal1Region), RightBicepMetal1Region),
+                    [ItemAppearanceArmorColorType.Metal2] = new ColorRegion(nameof(RightBicepMetal2Region), RightBicepMetal2Region)
                 },
                 [ColorTarget.RightForearm] = new()
                 {
-                    [AppearanceArmorColor.Leather1] = new ColorRegion(nameof(RightForearmLeather1Region), RightForearmLeather1Region),
-                    [AppearanceArmorColor.Leather2] = new ColorRegion(nameof(RightForearmLeather2Region), RightForearmLeather2Region),
-                    [AppearanceArmorColor.Cloth1] = new ColorRegion(nameof(RightForearmCloth1Region), RightForearmCloth1Region),
-                    [AppearanceArmorColor.Cloth2] = new ColorRegion(nameof(RightForearmCloth2Region), RightForearmCloth2Region),
-                    [AppearanceArmorColor.Metal1] = new ColorRegion(nameof(RightForearmMetal1Region), RightForearmMetal1Region),
-                    [AppearanceArmorColor.Metal2] = new ColorRegion(nameof(RightForearmMetal2Region), RightForearmMetal2Region)
+                    [ItemAppearanceArmorColorType.Leather1] = new ColorRegion(nameof(RightForearmLeather1Region), RightForearmLeather1Region),
+                    [ItemAppearanceArmorColorType.Leather2] = new ColorRegion(nameof(RightForearmLeather2Region), RightForearmLeather2Region),
+                    [ItemAppearanceArmorColorType.Cloth1] = new ColorRegion(nameof(RightForearmCloth1Region), RightForearmCloth1Region),
+                    [ItemAppearanceArmorColorType.Cloth2] = new ColorRegion(nameof(RightForearmCloth2Region), RightForearmCloth2Region),
+                    [ItemAppearanceArmorColorType.Metal1] = new ColorRegion(nameof(RightForearmMetal1Region), RightForearmMetal1Region),
+                    [ItemAppearanceArmorColorType.Metal2] = new ColorRegion(nameof(RightForearmMetal2Region), RightForearmMetal2Region)
                 },
                 [ColorTarget.RightHand] = new()
                 {
-                    [AppearanceArmorColor.Leather1] = new ColorRegion(nameof(RightHandLeather1Region), RightHandLeather1Region),
-                    [AppearanceArmorColor.Leather2] = new ColorRegion(nameof(RightHandLeather2Region), RightHandLeather2Region),
-                    [AppearanceArmorColor.Cloth1] = new ColorRegion(nameof(RightHandCloth1Region), RightHandCloth1Region),
-                    [AppearanceArmorColor.Cloth2] = new ColorRegion(nameof(RightHandCloth2Region), RightHandCloth2Region),
-                    [AppearanceArmorColor.Metal1] = new ColorRegion(nameof(RightHandMetal1Region), RightHandMetal1Region),
-                    [AppearanceArmorColor.Metal2] = new ColorRegion(nameof(RightHandMetal2Region), RightHandMetal2Region)
+                    [ItemAppearanceArmorColorType.Leather1] = new ColorRegion(nameof(RightHandLeather1Region), RightHandLeather1Region),
+                    [ItemAppearanceArmorColorType.Leather2] = new ColorRegion(nameof(RightHandLeather2Region), RightHandLeather2Region),
+                    [ItemAppearanceArmorColorType.Cloth1] = new ColorRegion(nameof(RightHandCloth1Region), RightHandCloth1Region),
+                    [ItemAppearanceArmorColorType.Cloth2] = new ColorRegion(nameof(RightHandCloth2Region), RightHandCloth2Region),
+                    [ItemAppearanceArmorColorType.Metal1] = new ColorRegion(nameof(RightHandMetal1Region), RightHandMetal1Region),
+                    [ItemAppearanceArmorColorType.Metal2] = new ColorRegion(nameof(RightHandMetal2Region), RightHandMetal2Region)
                 },
                 [ColorTarget.RightThigh] = new()
                 {
-                    [AppearanceArmorColor.Leather1] = new ColorRegion(nameof(RightThighLeather1Region), RightThighLeather1Region),
-                    [AppearanceArmorColor.Leather2] = new ColorRegion(nameof(RightThighLeather2Region), RightThighLeather2Region),
-                    [AppearanceArmorColor.Cloth1] = new ColorRegion(nameof(RightThighCloth1Region), RightThighCloth1Region),
-                    [AppearanceArmorColor.Cloth2] = new ColorRegion(nameof(RightThighCloth2Region), RightThighCloth2Region),
-                    [AppearanceArmorColor.Metal1] = new ColorRegion(nameof(RightThighMetal1Region), RightThighMetal1Region),
-                    [AppearanceArmorColor.Metal2] = new ColorRegion(nameof(RightThighMetal2Region), RightThighMetal2Region)
+                    [ItemAppearanceArmorColorType.Leather1] = new ColorRegion(nameof(RightThighLeather1Region), RightThighLeather1Region),
+                    [ItemAppearanceArmorColorType.Leather2] = new ColorRegion(nameof(RightThighLeather2Region), RightThighLeather2Region),
+                    [ItemAppearanceArmorColorType.Cloth1] = new ColorRegion(nameof(RightThighCloth1Region), RightThighCloth1Region),
+                    [ItemAppearanceArmorColorType.Cloth2] = new ColorRegion(nameof(RightThighCloth2Region), RightThighCloth2Region),
+                    [ItemAppearanceArmorColorType.Metal1] = new ColorRegion(nameof(RightThighMetal1Region), RightThighMetal1Region),
+                    [ItemAppearanceArmorColorType.Metal2] = new ColorRegion(nameof(RightThighMetal2Region), RightThighMetal2Region)
                 },
                 [ColorTarget.RightShin] = new()
                 {
-                    [AppearanceArmorColor.Leather1] = new ColorRegion(nameof(RightShinLeather1Region), RightShinLeather1Region),
-                    [AppearanceArmorColor.Leather2] = new ColorRegion(nameof(RightShinLeather2Region), RightShinLeather2Region),
-                    [AppearanceArmorColor.Cloth1] = new ColorRegion(nameof(RightShinCloth1Region), RightShinCloth1Region),
-                    [AppearanceArmorColor.Cloth2] = new ColorRegion(nameof(RightShinCloth2Region), RightShinCloth2Region),
-                    [AppearanceArmorColor.Metal1] = new ColorRegion(nameof(RightShinMetal1Region), RightShinMetal1Region),
-                    [AppearanceArmorColor.Metal2] = new ColorRegion(nameof(RightShinMetal2Region), RightShinMetal2Region)
+                    [ItemAppearanceArmorColorType.Leather1] = new ColorRegion(nameof(RightShinLeather1Region), RightShinLeather1Region),
+                    [ItemAppearanceArmorColorType.Leather2] = new ColorRegion(nameof(RightShinLeather2Region), RightShinLeather2Region),
+                    [ItemAppearanceArmorColorType.Cloth1] = new ColorRegion(nameof(RightShinCloth1Region), RightShinCloth1Region),
+                    [ItemAppearanceArmorColorType.Cloth2] = new ColorRegion(nameof(RightShinCloth2Region), RightShinCloth2Region),
+                    [ItemAppearanceArmorColorType.Metal1] = new ColorRegion(nameof(RightShinMetal1Region), RightShinMetal1Region),
+                    [ItemAppearanceArmorColorType.Metal2] = new ColorRegion(nameof(RightShinMetal2Region), RightShinMetal2Region)
                 },
                 [ColorTarget.RightFoot] = new()
                 {
-                    [AppearanceArmorColor.Leather1] = new ColorRegion(nameof(RightFootLeather1Region), RightFootLeather1Region),
-                    [AppearanceArmorColor.Leather2] = new ColorRegion(nameof(RightFootLeather2Region), RightFootLeather2Region),
-                    [AppearanceArmorColor.Cloth1] = new ColorRegion(nameof(RightFootCloth1Region), RightFootCloth1Region),
-                    [AppearanceArmorColor.Cloth2] = new ColorRegion(nameof(RightFootCloth2Region), RightFootCloth2Region),
-                    [AppearanceArmorColor.Metal1] = new ColorRegion(nameof(RightFootMetal1Region), RightFootMetal1Region),
-                    [AppearanceArmorColor.Metal2] = new ColorRegion(nameof(RightFootMetal2Region), RightFootMetal2Region)
+                    [ItemAppearanceArmorColorType.Leather1] = new ColorRegion(nameof(RightFootLeather1Region), RightFootLeather1Region),
+                    [ItemAppearanceArmorColorType.Leather2] = new ColorRegion(nameof(RightFootLeather2Region), RightFootLeather2Region),
+                    [ItemAppearanceArmorColorType.Cloth1] = new ColorRegion(nameof(RightFootCloth1Region), RightFootCloth1Region),
+                    [ItemAppearanceArmorColorType.Cloth2] = new ColorRegion(nameof(RightFootCloth2Region), RightFootCloth2Region),
+                    [ItemAppearanceArmorColorType.Metal1] = new ColorRegion(nameof(RightFootMetal1Region), RightFootMetal1Region),
+                    [ItemAppearanceArmorColorType.Metal2] = new ColorRegion(nameof(RightFootMetal2Region), RightFootMetal2Region)
                 },
                 [ColorTarget.Neck] = new()
                 {
-                    [AppearanceArmorColor.Leather1] = new ColorRegion(nameof(NeckLeather1Region), NeckLeather1Region),
-                    [AppearanceArmorColor.Leather2] = new ColorRegion(nameof(NeckLeather2Region), NeckLeather2Region),
-                    [AppearanceArmorColor.Cloth1] = new ColorRegion(nameof(NeckCloth1Region), NeckCloth1Region),
-                    [AppearanceArmorColor.Cloth2] = new ColorRegion(nameof(NeckCloth2Region), NeckCloth2Region),
-                    [AppearanceArmorColor.Metal1] = new ColorRegion(nameof(NeckMetal1Region), NeckMetal1Region),
-                    [AppearanceArmorColor.Metal2] = new ColorRegion(nameof(NeckMetal2Region), NeckMetal2Region)
+                    [ItemAppearanceArmorColorType.Leather1] = new ColorRegion(nameof(NeckLeather1Region), NeckLeather1Region),
+                    [ItemAppearanceArmorColorType.Leather2] = new ColorRegion(nameof(NeckLeather2Region), NeckLeather2Region),
+                    [ItemAppearanceArmorColorType.Cloth1] = new ColorRegion(nameof(NeckCloth1Region), NeckCloth1Region),
+                    [ItemAppearanceArmorColorType.Cloth2] = new ColorRegion(nameof(NeckCloth2Region), NeckCloth2Region),
+                    [ItemAppearanceArmorColorType.Metal1] = new ColorRegion(nameof(NeckMetal1Region), NeckMetal1Region),
+                    [ItemAppearanceArmorColorType.Metal2] = new ColorRegion(nameof(NeckMetal2Region), NeckMetal2Region)
                 },
                 [ColorTarget.Chest] = new()
                 {
-                    [AppearanceArmorColor.Leather1] = new ColorRegion(nameof(ChestLeather1Region), ChestLeather1Region),
-                    [AppearanceArmorColor.Leather2] = new ColorRegion(nameof(ChestLeather2Region), ChestLeather2Region),
-                    [AppearanceArmorColor.Cloth1] = new ColorRegion(nameof(ChestCloth1Region), ChestCloth1Region),
-                    [AppearanceArmorColor.Cloth2] = new ColorRegion(nameof(ChestCloth2Region), ChestCloth2Region),
-                    [AppearanceArmorColor.Metal1] = new ColorRegion(nameof(ChestMetal1Region), ChestMetal1Region),
-                    [AppearanceArmorColor.Metal2] = new ColorRegion(nameof(ChestMetal2Region), ChestMetal2Region)
+                    [ItemAppearanceArmorColorType.Leather1] = new ColorRegion(nameof(ChestLeather1Region), ChestLeather1Region),
+                    [ItemAppearanceArmorColorType.Leather2] = new ColorRegion(nameof(ChestLeather2Region), ChestLeather2Region),
+                    [ItemAppearanceArmorColorType.Cloth1] = new ColorRegion(nameof(ChestCloth1Region), ChestCloth1Region),
+                    [ItemAppearanceArmorColorType.Cloth2] = new ColorRegion(nameof(ChestCloth2Region), ChestCloth2Region),
+                    [ItemAppearanceArmorColorType.Metal1] = new ColorRegion(nameof(ChestMetal1Region), ChestMetal1Region),
+                    [ItemAppearanceArmorColorType.Metal2] = new ColorRegion(nameof(ChestMetal2Region), ChestMetal2Region)
                 },
                 [ColorTarget.Belt] = new()
                 {
-                    [AppearanceArmorColor.Leather1] = new ColorRegion(nameof(BeltLeather1Region), BeltLeather1Region),
-                    [AppearanceArmorColor.Leather2] = new ColorRegion(nameof(BeltLeather2Region), BeltLeather2Region),
-                    [AppearanceArmorColor.Cloth1] = new ColorRegion(nameof(BeltCloth1Region), BeltCloth1Region),
-                    [AppearanceArmorColor.Cloth2] = new ColorRegion(nameof(BeltCloth2Region), BeltCloth2Region),
-                    [AppearanceArmorColor.Metal1] = new ColorRegion(nameof(BeltMetal1Region), BeltMetal1Region),
-                    [AppearanceArmorColor.Metal2] = new ColorRegion(nameof(BeltMetal2Region), BeltMetal2Region)
+                    [ItemAppearanceArmorColorType.Leather1] = new ColorRegion(nameof(BeltLeather1Region), BeltLeather1Region),
+                    [ItemAppearanceArmorColorType.Leather2] = new ColorRegion(nameof(BeltLeather2Region), BeltLeather2Region),
+                    [ItemAppearanceArmorColorType.Cloth1] = new ColorRegion(nameof(BeltCloth1Region), BeltCloth1Region),
+                    [ItemAppearanceArmorColorType.Cloth2] = new ColorRegion(nameof(BeltCloth2Region), BeltCloth2Region),
+                    [ItemAppearanceArmorColorType.Metal1] = new ColorRegion(nameof(BeltMetal1Region), BeltMetal1Region),
+                    [ItemAppearanceArmorColorType.Metal2] = new ColorRegion(nameof(BeltMetal2Region), BeltMetal2Region)
                 },
                 [ColorTarget.Pelvis] = new()
                 {
-                    [AppearanceArmorColor.Leather1] = new ColorRegion(nameof(PelvisLeather1Region), PelvisLeather1Region),
-                    [AppearanceArmorColor.Leather2] = new ColorRegion(nameof(PelvisLeather2Region), PelvisLeather2Region),
-                    [AppearanceArmorColor.Cloth1] = new ColorRegion(nameof(PelvisCloth1Region), PelvisCloth1Region),
-                    [AppearanceArmorColor.Cloth2] = new ColorRegion(nameof(PelvisCloth2Region), PelvisCloth2Region),
-                    [AppearanceArmorColor.Metal1] = new ColorRegion(nameof(PelvisMetal1Region), PelvisMetal1Region),
-                    [AppearanceArmorColor.Metal2] = new ColorRegion(nameof(PelvisMetal2Region), PelvisMetal2Region)
+                    [ItemAppearanceArmorColorType.Leather1] = new ColorRegion(nameof(PelvisLeather1Region), PelvisLeather1Region),
+                    [ItemAppearanceArmorColorType.Leather2] = new ColorRegion(nameof(PelvisLeather2Region), PelvisLeather2Region),
+                    [ItemAppearanceArmorColorType.Cloth1] = new ColorRegion(nameof(PelvisCloth1Region), PelvisCloth1Region),
+                    [ItemAppearanceArmorColorType.Cloth2] = new ColorRegion(nameof(PelvisCloth2Region), PelvisCloth2Region),
+                    [ItemAppearanceArmorColorType.Metal1] = new ColorRegion(nameof(PelvisMetal1Region), PelvisMetal1Region),
+                    [ItemAppearanceArmorColorType.Metal2] = new ColorRegion(nameof(PelvisMetal2Region), PelvisMetal2Region)
                 },
                 [ColorTarget.Robe] = new()
                 {
-                    [AppearanceArmorColor.Leather1] = new ColorRegion(nameof(RobeLeather1Region), RobeLeather1Region),
-                    [AppearanceArmorColor.Leather2] = new ColorRegion(nameof(RobeLeather2Region), RobeLeather2Region),
-                    [AppearanceArmorColor.Cloth1] = new ColorRegion(nameof(RobeCloth1Region), RobeCloth1Region),
-                    [AppearanceArmorColor.Cloth2] = new ColorRegion(nameof(RobeCloth2Region), RobeCloth2Region),
-                    [AppearanceArmorColor.Metal1] = new ColorRegion(nameof(RobeMetal1Region), RobeMetal1Region),
-                    [AppearanceArmorColor.Metal2] = new ColorRegion(nameof(RobeMetal2Region), RobeMetal2Region)
+                    [ItemAppearanceArmorColorType.Leather1] = new ColorRegion(nameof(RobeLeather1Region), RobeLeather1Region),
+                    [ItemAppearanceArmorColorType.Leather2] = new ColorRegion(nameof(RobeLeather2Region), RobeLeather2Region),
+                    [ItemAppearanceArmorColorType.Cloth1] = new ColorRegion(nameof(RobeCloth1Region), RobeCloth1Region),
+                    [ItemAppearanceArmorColorType.Cloth2] = new ColorRegion(nameof(RobeCloth2Region), RobeCloth2Region),
+                    [ItemAppearanceArmorColorType.Metal1] = new ColorRegion(nameof(RobeMetal1Region), RobeMetal1Region),
+                    [ItemAppearanceArmorColorType.Metal2] = new ColorRegion(nameof(RobeMetal2Region), RobeMetal2Region)
                 },
             };
         }
@@ -383,7 +383,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
 
             return (x, y);
         }
-        private void ChangeColor(ColorTarget target, AppearanceArmorColor channel, int colorId)
+        private void ChangeColor(ColorTarget target, ItemAppearanceArmorColorType channel, int colorId)
         {
             if (colorId >= 255)
             {

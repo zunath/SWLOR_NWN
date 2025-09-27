@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Beasts.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
@@ -9,7 +8,7 @@ using SWLOR.Shared.Domain.Character.ValueObjects;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Common.Enums;
 using SWLOR.Shared.Domain.Inventory.Contracts;
-using AssociateType = SWLOR.NWN.API.NWScript.Enum.Associate.AssociateType;
+using AssociateType = SWLOR.NWN.API.NWScript.Enum.AssociateType;
 
 namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beastmaster
 {
@@ -96,7 +95,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beastmaster
             var amount = baseHealingAmount + willBonus * 10 + (maxHP / 5) + Random.D10(1);
 
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), beast);
-            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), beast);
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Imp_Healing_M), beast);
 
             TakePetTreat(activator);
             EnmityService.ModifyEnmityOnAll(activator, 300 + amount);
@@ -109,7 +108,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beastmaster
                 .Name("Reward I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.Reward, 18f)
-                .UsesAnimation(Animation.LoopingGetMid)
+                .UsesAnimation(AnimationType.LoopingGetMid)
                 .RequirementStamina(6)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
@@ -126,7 +125,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beastmaster
                 .Name("Reward II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.Reward, 18f)
-                .UsesAnimation(Animation.LoopingGetMid)
+                .UsesAnimation(AnimationType.LoopingGetMid)
                 .RequirementStamina(8)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
@@ -143,7 +142,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beastmaster
                 .Name("Reward III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.Reward, 18f)
-                .UsesAnimation(Animation.LoopingGetMid)
+                .UsesAnimation(AnimationType.LoopingGetMid)
                 .RequirementStamina(10)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()

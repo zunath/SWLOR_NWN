@@ -10,7 +10,7 @@ namespace SWLOR.Shared.UI.Component
     public class GuiOptions<T> : GuiWidget<T, GuiOptions<T>>
         where T: IGuiViewModel
     {
-        private NuiDirection Direction { get; set; }
+        private NuiDirectionType Direction { get; set; }
         private List<string> OptionLabels { get; set; }
 
         private int SelectedValue { get; set; }
@@ -21,7 +21,7 @@ namespace SWLOR.Shared.UI.Component
         /// Sets a static value for the direction of the options.
         /// </summary>
         /// <param name="direction">The direction to set.</param>
-        public GuiOptions<T> SetDirection(NuiDirection direction)
+        public GuiOptions<T> SetDirection(NuiDirectionType direction)
         {
             Direction = direction;
             return this;
@@ -60,7 +60,7 @@ namespace SWLOR.Shared.UI.Component
 
         public GuiOptions()
         {
-            Direction = NuiDirection.Horizontal;
+            Direction = NuiDirectionType.Horizontal;
             OptionLabels = new List<string>();
         }
 

@@ -4,8 +4,6 @@ using SWLOR.Component.Crafting.Model;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Item;
-using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Core.Bioware;
@@ -1242,7 +1240,7 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
         {
             for (var effect = GetFirstEffect(Player); GetIsEffectValid(effect); effect = GetNextEffect(Player))
             {
-                if (GetEffectType(effect) == EffectTypeScript.CutsceneImmobilize)
+                if (GetEffectType(effect) == EffectScriptType.CutsceneImmobilize)
                 {
                     RemoveEffect(Player, effect);
                 }
@@ -1508,7 +1506,7 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
             if (recipe.Category == RecipeCategoryType.Food && (int)qualityPercent > 0)
             {
                 var durationBonus = (int)qualityPercent;
-                var ip = ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.Duration, durationBonus);
+                var ip = ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)ItemPropertyFoodSubType.Duration, durationBonus);
                 BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
 
                 // Also increase charges based on the blueprint upgrade level

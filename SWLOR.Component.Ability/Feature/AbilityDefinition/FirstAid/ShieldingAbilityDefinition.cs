@@ -1,7 +1,6 @@
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Character.ValueObjects;
 using SWLOR.Shared.Domain.Combat.Enums;
@@ -47,7 +46,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.FirstAid
             var length = BaseLength + willpowerMod * 30f;
             
             StatusEffectService.Apply(activator, target, statusEffectType, length);
-            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Spell_Mantle_Use), target);
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Imp_Spell_Mantle_Use), target);
 
             TakeStimPack(activator);
         }
@@ -61,7 +60,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.FirstAid
                 .HasActivationDelay(2f)
                 .HasMaxRange(30.0f)
                 .RequirementStamina(3)
-                .UsesAnimation(Animation.LoopingGetMid)
+                .UsesAnimation(AnimationType.LoopingGetMid)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
@@ -83,7 +82,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.FirstAid
                 .HasActivationDelay(2f)
                 .HasMaxRange(30.0f)
                 .RequirementStamina(4)
-                .UsesAnimation(Animation.LoopingGetMid)
+                .UsesAnimation(AnimationType.LoopingGetMid)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
@@ -105,7 +104,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.FirstAid
                 .HasActivationDelay(2f)
                 .HasMaxRange(30.0f)
                 .RequirementStamina(5)
-                .UsesAnimation(Animation.LoopingGetMid)
+                .UsesAnimation(AnimationType.LoopingGetMid)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
@@ -127,7 +126,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.FirstAid
                 .HasActivationDelay(2f)
                 .HasMaxRange(30.0f)
                 .RequirementStamina(6)
-                .UsesAnimation(Animation.LoopingGetMid)
+                .UsesAnimation(AnimationType.LoopingGetMid)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)

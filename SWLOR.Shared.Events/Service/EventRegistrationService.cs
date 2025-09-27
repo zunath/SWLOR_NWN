@@ -62,18 +62,18 @@ namespace SWLOR.Shared.Events.Service
             if (!GetIsPC(player) || GetIsDM(player)) 
                 return;
 
-            SetEventScript(player, EventScript.Creature_OnHeartbeat, ScriptName.OnPlayerHeartbeat);
-            SetEventScript(player, EventScript.Creature_OnNotice, ScriptName.OnPlayerPerception);
-            SetEventScript(player, EventScript.Creature_OnSpellCastAt, ScriptName.OnPlayerSpellCastAt);
-            SetEventScript(player, EventScript.Creature_OnMeleeAttacked, ScriptName.OnPlayerAttacked);
-            SetEventScript(player, EventScript.Creature_OnDamaged, ScriptName.OnPlayerDamaged);
-            SetEventScript(player, EventScript.Creature_OnDisturbed, ScriptName.OnPlayerDisturbed);
-            SetEventScript(player, EventScript.Creature_OnEndCombatRound, ScriptName.OnPlayerRoundEnd);
-            SetEventScript(player, EventScript.Creature_OnSpawnIn, ScriptName.OnPlayerSpawn);
-            SetEventScript(player, EventScript.Creature_OnRested, ScriptName.OnPlayerRested);
-            SetEventScript(player, EventScript.Creature_OnDeath, ScriptName.OnPlayerDeath);
-            SetEventScript(player, EventScript.Creature_OnUserDefined, ScriptName.OnPlayerUserDefined);
-            SetEventScript(player, EventScript.Creature_OnBlockedByDoor, ScriptName.OnPlayerBlocked);
+            SetEventScript(player, EventScriptType.Creature_OnHeartbeat, ScriptName.OnPlayerHeartbeat);
+            SetEventScript(player, EventScriptType.Creature_OnNotice, ScriptName.OnPlayerPerception);
+            SetEventScript(player, EventScriptType.Creature_OnSpellCastAt, ScriptName.OnPlayerSpellCastAt);
+            SetEventScript(player, EventScriptType.Creature_OnMeleeAttacked, ScriptName.OnPlayerAttacked);
+            SetEventScript(player, EventScriptType.Creature_OnDamaged, ScriptName.OnPlayerDamaged);
+            SetEventScript(player, EventScriptType.Creature_OnDisturbed, ScriptName.OnPlayerDisturbed);
+            SetEventScript(player, EventScriptType.Creature_OnEndCombatRound, ScriptName.OnPlayerRoundEnd);
+            SetEventScript(player, EventScriptType.Creature_OnSpawnIn, ScriptName.OnPlayerSpawn);
+            SetEventScript(player, EventScriptType.Creature_OnRested, ScriptName.OnPlayerRested);
+            SetEventScript(player, EventScriptType.Creature_OnDeath, ScriptName.OnPlayerDeath);
+            SetEventScript(player, EventScriptType.Creature_OnUserDefined, ScriptName.OnPlayerUserDefined);
+            SetEventScript(player, EventScriptType.Creature_OnBlockedByDoor, ScriptName.OnPlayerBlocked);
         }
 
 
@@ -84,27 +84,27 @@ namespace SWLOR.Shared.Events.Service
         {
             var module = GetModule();
 
-            SetEventScript(module, EventScript.Module_OnAcquireItem, ScriptName.OnEventingModuleAcquire);
-            SetEventScript(module, EventScript.Module_OnActivateItem, ScriptName.OnEventingModuleActivate);
-            SetEventScript(module, EventScript.Module_OnClientEnter, ScriptName.OnEventingModuleEnter);
-            SetEventScript(module, EventScript.Module_OnClientExit, ScriptName.OnEventingModuleExit);
-            SetEventScript(module, EventScript.Module_OnPlayerCancelCutscene, ScriptName.OnEventingModulePlayerCancelCutscene);
-            SetEventScript(module, EventScript.Module_OnHeartbeat, ScriptName.OnEventingModuleHeartbeat);
-            SetEventScript(module, EventScript.Module_OnModuleLoad, ScriptName.OnEventingModuleLoad);
-            SetEventScript(module, EventScript.Module_OnPlayerChat, ScriptName.OnEventingModuleChat);
-            SetEventScript(module, EventScript.Module_OnPlayerDying, ScriptName.OnEventingModuleDying);
-            SetEventScript(module, EventScript.Module_OnPlayerDeath, ScriptName.OnEventingModuleDeath);
-            SetEventScript(module, EventScript.Module_OnEquipItem, ScriptName.OnEventingModuleEquip);
-            SetEventScript(module, EventScript.Module_OnPlayerLevelUp, ScriptName.OnEventingModuleLevelUp);
-            SetEventScript(module, EventScript.Module_OnRespawnButtonPressed, ScriptName.OnEventingModuleRespawn);
-            SetEventScript(module, EventScript.Module_OnPlayerRest, ScriptName.OnEventingModuleRest);
-            SetEventScript(module, EventScript.Module_OnUnequipItem, ScriptName.OnEventingModuleUnequip);
-            SetEventScript(module, EventScript.Module_OnLoseItem, ScriptName.OnEventingModuleUnacquire);
-            SetEventScript(module, EventScript.Module_OnUserDefined, ScriptName.OnEventingModuleUserDefined);
-            SetEventScript(module, EventScript.Module_OnPlayerTarget, ScriptName.OnEventingModulePlayerTarget);
-            SetEventScript(module, EventScript.Module_OnPlayerGuiEvent, ScriptName.OnEventingModuleGuiEvent);
-            SetEventScript(module, EventScript.Module_OnPlayerTileEvent, ScriptName.OnEventingModuleTileEvent);
-            SetEventScript(module, EventScript.Module_OnNuiEvent, ScriptName.OnEventingModuleNuiEvent);
+            SetEventScript(module, EventScriptType.Module_OnAcquireItem, ScriptName.OnEventingModuleAcquire);
+            SetEventScript(module, EventScriptType.Module_OnActivateItem, ScriptName.OnEventingModuleActivate);
+            SetEventScript(module, EventScriptType.Module_OnClientEnter, ScriptName.OnEventingModuleEnter);
+            SetEventScript(module, EventScriptType.Module_OnClientExit, ScriptName.OnEventingModuleExit);
+            SetEventScript(module, EventScriptType.Module_OnPlayerCancelCutscene, ScriptName.OnEventingModulePlayerCancelCutscene);
+            SetEventScript(module, EventScriptType.Module_OnHeartbeat, ScriptName.OnEventingModuleHeartbeat);
+            SetEventScript(module, EventScriptType.Module_OnModuleLoad, ScriptName.OnEventingModuleLoad);
+            SetEventScript(module, EventScriptType.Module_OnPlayerChat, ScriptName.OnEventingModuleChat);
+            SetEventScript(module, EventScriptType.Module_OnPlayerDying, ScriptName.OnEventingModuleDying);
+            SetEventScript(module, EventScriptType.Module_OnPlayerDeath, ScriptName.OnEventingModuleDeath);
+            SetEventScript(module, EventScriptType.Module_OnEquipItem, ScriptName.OnEventingModuleEquip);
+            SetEventScript(module, EventScriptType.Module_OnPlayerLevelUp, ScriptName.OnEventingModuleLevelUp);
+            SetEventScript(module, EventScriptType.Module_OnRespawnButtonPressed, ScriptName.OnEventingModuleRespawn);
+            SetEventScript(module, EventScriptType.Module_OnPlayerRest, ScriptName.OnEventingModuleRest);
+            SetEventScript(module, EventScriptType.Module_OnUnequipItem, ScriptName.OnEventingModuleUnequip);
+            SetEventScript(module, EventScriptType.Module_OnLoseItem, ScriptName.OnEventingModuleUnacquire);
+            SetEventScript(module, EventScriptType.Module_OnUserDefined, ScriptName.OnEventingModuleUserDefined);
+            SetEventScript(module, EventScriptType.Module_OnPlayerTarget, ScriptName.OnEventingModulePlayerTarget);
+            SetEventScript(module, EventScriptType.Module_OnPlayerGuiEvent, ScriptName.OnEventingModuleGuiEvent);
+            SetEventScript(module, EventScriptType.Module_OnPlayerTileEvent, ScriptName.OnEventingModuleTileEvent);
+            SetEventScript(module, EventScriptType.Module_OnNuiEvent, ScriptName.OnEventingModuleNuiEvent);
         }
 
         /// <summary>
@@ -114,10 +114,10 @@ namespace SWLOR.Shared.Events.Service
         {
             for (var area = GetFirstArea(); GetIsObjectValid(area); area = GetNextArea())
             {
-                SetEventScript(area, EventScript.Area_OnEnter, ScriptName.OnAreaEnter);
-                SetEventScript(area, EventScript.Area_OnExit, ScriptName.OnAreaExit);
-                SetEventScript(area, EventScript.Area_OnHeartbeat, string.Empty); // Disabled for performance reasons
-                SetEventScript(area, EventScript.Area_OnUserDefined, ScriptName.OnAreaUserDefined);
+                SetEventScript(area, EventScriptType.Area_OnEnter, ScriptName.OnAreaEnter);
+                SetEventScript(area, EventScriptType.Area_OnExit, ScriptName.OnAreaExit);
+                SetEventScript(area, EventScriptType.Area_OnHeartbeat, string.Empty); // Disabled for performance reasons
+                SetEventScript(area, EventScriptType.Area_OnUserDefined, ScriptName.OnAreaUserDefined);
             }
         }
 

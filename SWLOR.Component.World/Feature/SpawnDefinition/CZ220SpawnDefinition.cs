@@ -1,5 +1,4 @@
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Domain.AI.ValueObjects;
 using SWLOR.Shared.Domain.World.Contracts;
 using SWLOR.Shared.Domain.World.ValueObjects;
@@ -31,13 +30,13 @@ namespace SWLOR.Component.World.Feature.SpawnDefinition
                 .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
-                .PlayAnimation(DurationType.Instant, AnimationEvent.CreatureOnDeath, VisualEffect.Fnf_Fireball)
+                .PlayAnimation(DurationType.Instant, AnimationEvent.CreatureOnDeath, VisualEffectType.Fnf_Fireball)
 
                 .AddSpawn(ObjectType.Creature, "malspiderdroid")
                 .WithFrequency(50)
                 .RandomlyWalks()
                 .ReturnsHome()
-                .PlayAnimation(DurationType.Instant, AnimationEvent.CreatureOnDeath, VisualEffect.Fnf_Fireball);
+                .PlayAnimation(DurationType.Instant, AnimationEvent.CreatureOnDeath, VisualEffectType.Fnf_Fireball);
         }
 
         private void MynockSpawns()

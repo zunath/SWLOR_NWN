@@ -29,7 +29,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .HasRecastDelay(RecastGroup.ComprehendSpeech, 12f)
                 .RequirementFP(2)
                 .IsConcentrationAbility(StatusEffectType.ComprehendSpeech1)
-                .UsesAnimation(Animation.LoopingConjure1)
+                .UsesAnimation(AnimationType.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }
         private void ComprehendSpeech2(IAbilityBuilder builder)
@@ -40,7 +40,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .HasRecastDelay(RecastGroup.ComprehendSpeech, 12f)
                 .RequirementFP(3)
                 .IsConcentrationAbility(StatusEffectType.ComprehendSpeech2)
-                .UsesAnimation(Animation.LoopingConjure1)
+                .UsesAnimation(AnimationType.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }
         private void ComprehendSpeech3(IAbilityBuilder builder)
@@ -51,7 +51,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .HasRecastDelay(RecastGroup.ComprehendSpeech, 12f)
                 .RequirementFP(4)
                 .IsConcentrationAbility(StatusEffectType.ComprehendSpeech3)
-                .UsesAnimation(Animation.LoopingConjure1)
+                .UsesAnimation(AnimationType.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }
         private void ComprehendSpeech4(IAbilityBuilder builder)
@@ -62,7 +62,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .HasRecastDelay(RecastGroup.ComprehendSpeech, 12f)
                 .RequirementFP(5)
                 .IsConcentrationAbility(StatusEffectType.ComprehendSpeech4)
-                .UsesAnimation(Animation.LoopingConjure1)
+                .UsesAnimation(AnimationType.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }
     }

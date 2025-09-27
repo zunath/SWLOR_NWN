@@ -32,7 +32,7 @@ namespace SWLOR.Component.Communication.UI.ViewModel
             set => Set(value);
         }
 
-        private List<Animation> EmoteAnimations { get; set; }
+        private List<AnimationType> EmoteAnimations { get; set; }
 
         public GuiBindingList<bool> IsEmoteLoopingAnimations
         {
@@ -69,11 +69,11 @@ namespace SWLOR.Component.Communication.UI.ViewModel
             if (IsEmoteLoopingAnimations[SelectedEmoteIndex])
             {
                 var duration = 9999.9f;
-                AssignCommand(Player, () => ActionPlayAnimation((Animation) EmoteAnimations[SelectedEmoteIndex], 1f, duration));
+                AssignCommand(Player, () => ActionPlayAnimation((AnimationType) EmoteAnimations[SelectedEmoteIndex], 1f, duration));
             }
             else
             {
-                AssignCommand(Player, () => ActionPlayAnimation((Animation) EmoteAnimations[SelectedEmoteIndex]));
+                AssignCommand(Player, () => ActionPlayAnimation((AnimationType) EmoteAnimations[SelectedEmoteIndex]));
             }
 
         };

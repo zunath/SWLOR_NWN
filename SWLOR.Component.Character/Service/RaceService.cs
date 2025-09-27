@@ -1,5 +1,4 @@
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.ValueObjects;
 using SWLOR.Shared.Events.Attributes;
@@ -505,15 +504,15 @@ namespace SWLOR.Component.Character.Service
             var racialType = GetRacialType(player);
 
             // Ensure the race + gender configuration exists.
-            if (gender == Gender.Male && !_defaultRaceAppearancesMale.ContainsKey(racialType) ||
-                gender != Gender.Male && !_defaultRaceAppearancesFemale.ContainsKey(racialType))
+            if (gender == GenderType.Male && !_defaultRaceAppearancesMale.ContainsKey(racialType) ||
+                gender != GenderType.Male && !_defaultRaceAppearancesFemale.ContainsKey(racialType))
                 return;
 
-            var config = gender == Gender.Male
+            var config = gender == GenderType.Male
                 ? _defaultRaceAppearancesMale[racialType]
                 : _defaultRaceAppearancesFemale[racialType];
 
-            SetObjectVisualTransform(player, ObjectVisualTransform.Scale, config.Scale);
+            SetObjectVisualTransform(player, ObjectVisualTransformType.Scale, config.Scale);
         }
 
         /// <summary>
@@ -525,35 +524,35 @@ namespace SWLOR.Component.Character.Service
         {
             var gender = GetGender(player);
             var racialType = GetRacialType(player);
-            var raceConfig = gender == Gender.Male
+            var raceConfig = gender == GenderType.Male
                 ? _defaultRaceAppearancesMale[racialType]
                 : _defaultRaceAppearancesFemale[racialType];
 
             // Appearance, Skin, and Hair
             SetCreatureAppearanceType(player, raceConfig.AppearanceType);
-            SetColor(player, ColorChannel.Skin, raceConfig.SkinColorId);
-            SetColor(player, ColorChannel.Hair, raceConfig.HairColorId);
+            SetColor(player, ColorChannelType.Skin, raceConfig.SkinColorId);
+            SetColor(player, ColorChannelType.Hair, raceConfig.HairColorId);
 
             // Body parts
-            SetCreatureBodyPart(CreaturePart.Head, raceConfig.HeadId, player);
+            SetCreatureBodyPart(CreaturePartType.Head, raceConfig.HeadId, player);
 
-            SetCreatureBodyPart(CreaturePart.Neck, raceConfig.NeckId, player);
-            SetCreatureBodyPart(CreaturePart.Torso, raceConfig.TorsoId, player);
-            SetCreatureBodyPart(CreaturePart.Pelvis, raceConfig.PelvisId, player);
+            SetCreatureBodyPart(CreaturePartType.Neck, raceConfig.NeckId, player);
+            SetCreatureBodyPart(CreaturePartType.Torso, raceConfig.TorsoId, player);
+            SetCreatureBodyPart(CreaturePartType.Pelvis, raceConfig.PelvisId, player);
 
-            SetCreatureBodyPart(CreaturePart.RightBicep, raceConfig.RightBicepId, player);
-            SetCreatureBodyPart(CreaturePart.RightForearm, raceConfig.RightForearmId, player);
-            SetCreatureBodyPart(CreaturePart.RightHand, raceConfig.RightHandId, player);
-            SetCreatureBodyPart(CreaturePart.RightThigh, raceConfig.RightThighId, player);
-            SetCreatureBodyPart(CreaturePart.RightShin, raceConfig.RightShinId, player);
-            SetCreatureBodyPart(CreaturePart.RightFoot, raceConfig.RightFootId, player);
+            SetCreatureBodyPart(CreaturePartType.RightBicep, raceConfig.RightBicepId, player);
+            SetCreatureBodyPart(CreaturePartType.RightForearm, raceConfig.RightForearmId, player);
+            SetCreatureBodyPart(CreaturePartType.RightHand, raceConfig.RightHandId, player);
+            SetCreatureBodyPart(CreaturePartType.RightThigh, raceConfig.RightThighId, player);
+            SetCreatureBodyPart(CreaturePartType.RightShin, raceConfig.RightShinId, player);
+            SetCreatureBodyPart(CreaturePartType.RightFoot, raceConfig.RightFootId, player);
 
-            SetCreatureBodyPart(CreaturePart.LeftBicep, raceConfig.LeftBicepId, player);
-            SetCreatureBodyPart(CreaturePart.LeftForearm, raceConfig.LeftForearmId, player);
-            SetCreatureBodyPart(CreaturePart.LeftHand, raceConfig.LeftHandId, player);
-            SetCreatureBodyPart(CreaturePart.LeftThigh, raceConfig.LeftThighId, player);
-            SetCreatureBodyPart(CreaturePart.LeftShin, raceConfig.LeftShinId, player);
-            SetCreatureBodyPart(CreaturePart.LeftFoot, raceConfig.LeftFootId, player);
+            SetCreatureBodyPart(CreaturePartType.LeftBicep, raceConfig.LeftBicepId, player);
+            SetCreatureBodyPart(CreaturePartType.LeftForearm, raceConfig.LeftForearmId, player);
+            SetCreatureBodyPart(CreaturePartType.LeftHand, raceConfig.LeftHandId, player);
+            SetCreatureBodyPart(CreaturePartType.LeftThigh, raceConfig.LeftThighId, player);
+            SetCreatureBodyPart(CreaturePartType.LeftShin, raceConfig.LeftShinId, player);
+            SetCreatureBodyPart(CreaturePartType.LeftFoot, raceConfig.LeftFootId, player);
         }
 
         /// <summary>
@@ -565,8 +564,8 @@ namespace SWLOR.Component.Character.Service
         public RacialAppearance GetDefaultAppearance(object race, object gender)
         {
             var racialType = (RacialType)race;
-            var genderType = (Gender)gender;
-            return genderType == Gender.Female ?
+            var genderType = (GenderType)gender;
+            return genderType == GenderType.Female ?
                 _defaultRaceAppearancesFemale[racialType] :
                 _defaultRaceAppearancesMale[racialType];
         }

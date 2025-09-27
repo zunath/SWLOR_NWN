@@ -43,7 +43,7 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
         {
             Builder.Create("RECIPE")
                 .Delay(3f)
-                .PlaysAnimation(Animation.LoopingGetMid)
+                .PlaysAnimation(AnimationType.LoopingGetMid)
                 .ValidationAction((user, item, target, location, itemPropertyIndex) =>
                 {
                     if (!GetIsPC(user) || GetIsDM(user))

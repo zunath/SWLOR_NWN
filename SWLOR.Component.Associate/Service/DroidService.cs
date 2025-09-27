@@ -4,9 +4,6 @@ using SWLOR.Component.Associate.Contracts;
 using SWLOR.Component.Associate.Model;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Creature;
-using SWLOR.NWN.API.NWScript.Enum.Item;
-using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Domain.AI.Contracts;
@@ -292,7 +289,7 @@ namespace SWLOR.Component.Associate.Service
                 return "Containers cannot be stored.";
             }
 
-            if (GetBaseItemType(item) == BaseItem.Gold)
+            if (GetBaseItemType(item) == BaseItemType.Gold)
             {
                 return "Credits cannot be placed inside.";
             }
@@ -381,15 +378,15 @@ namespace SWLOR.Component.Associate.Service
             var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
             var itemId = GetDroidItemId(item);
             var controller = GetControllerItem(droid);
-            var slot = (InventorySlot)Convert.ToInt32(EventsPlugin.GetEventData("SLOT"));
+            var slot = (InventorySlotType)Convert.ToInt32(EventsPlugin.GetEventData("SLOT"));
 
-            if (slot == InventorySlot.CreatureArmor ||
-                slot == InventorySlot.CreatureBite ||
-                slot == InventorySlot.CreatureLeft ||
-                slot == InventorySlot.CreatureRight)
+            if (slot == InventorySlotType.CreatureArmor ||
+                slot == InventorySlotType.CreatureBite ||
+                slot == InventorySlotType.CreatureLeft ||
+                slot == InventorySlotType.CreatureRight)
                 return;
 
-            if (GetBaseItemType(item) == BaseItem.Helmet)
+            if (GetBaseItemType(item) == BaseItemType.Helmet)
             {
                 SetHiddenWhenEquipped(item, true);
             }
@@ -426,13 +423,13 @@ namespace SWLOR.Component.Associate.Service
             var controller = GetControllerItem(droid);
             var slot = ItemService.GetItemSlot(droid, item);
 
-            if (slot == InventorySlot.CreatureArmor ||
-                slot == InventorySlot.CreatureBite ||
-                slot == InventorySlot.CreatureLeft ||
-                slot == InventorySlot.CreatureRight)
+            if (slot == InventorySlotType.CreatureArmor ||
+                slot == InventorySlotType.CreatureBite ||
+                slot == InventorySlotType.CreatureLeft ||
+                slot == InventorySlotType.CreatureRight)
                 return;
 
-            if (GetBaseItemType(item) == BaseItem.Helmet)
+            if (GetBaseItemType(item) == BaseItemType.Helmet)
             {
                 SetHiddenWhenEquipped(item, false);
             }
@@ -459,62 +456,62 @@ namespace SWLOR.Component.Associate.Service
 
                 if (type == ItemPropertyType.DroidStat)
                 {
-                    var subType = (DroidStatSubType)GetItemPropertySubType(ip);
+                    var subType = (ItemPropertyDroidStatSubType)GetItemPropertySubType(ip);
                     var value = GetItemPropertyCostTableValue(ip);
 
                     switch (subType)
                     {
-                        case DroidStatSubType.Tier:
+                        case ItemPropertyDroidStatSubType.Tier:
                             details.Tier = value < 1 ? 1 : value;
                             details.Perks = _defaultPerksByTier[details.Tier]
                                 .ToDictionary(x => x.Key, y => y.Value);
                             break;
-                        case DroidStatSubType.AISlots:
+                        case ItemPropertyDroidStatSubType.AISlots:
                             details.AISlots += value;
                             break;
-                        case DroidStatSubType.HP:
+                        case ItemPropertyDroidStatSubType.HP:
                             details.HP += value;
                             break;
-                        case DroidStatSubType.STM:
+                        case ItemPropertyDroidStatSubType.STM:
                             details.STM += value;
                             break;
-                        case DroidStatSubType.MGT:
+                        case ItemPropertyDroidStatSubType.MGT:
                             details.MGT += value;
                             break;
-                        case DroidStatSubType.PER:
+                        case ItemPropertyDroidStatSubType.PER:
                             details.PER += value;
                             break;
-                        case DroidStatSubType.VIT:
+                        case ItemPropertyDroidStatSubType.VIT:
                             details.VIT += value;
                             break;
-                        case DroidStatSubType.WIL:
+                        case ItemPropertyDroidStatSubType.WIL:
                             details.WIL += value;
                             break;
-                        case DroidStatSubType.AGI:
+                        case ItemPropertyDroidStatSubType.AGI:
                             details.AGI += value;
                             break;
-                        case DroidStatSubType.SOC:
+                        case ItemPropertyDroidStatSubType.SOC:
                             details.SOC += value;
                             break;
-                        case DroidStatSubType.OneHanded:
+                        case ItemPropertyDroidStatSubType.OneHanded:
                             if (!details.Skills.ContainsKey(SkillType.OneHanded))
                                 details.Skills[SkillType.OneHanded] = value;
                             else
                                 details.Skills[SkillType.OneHanded] += value;
                             break;
-                        case DroidStatSubType.TwoHanded:
+                        case ItemPropertyDroidStatSubType.TwoHanded:
                             if (!details.Skills.ContainsKey(SkillType.TwoHanded))
                                 details.Skills[SkillType.TwoHanded] = value;
                             else
                                 details.Skills[SkillType.TwoHanded] += value;
                             break;
-                        case DroidStatSubType.MartialArts:
+                        case ItemPropertyDroidStatSubType.MartialArts:
                             if (!details.Skills.ContainsKey(SkillType.MartialArts))
                                 details.Skills[SkillType.MartialArts] = value;
                             else
                                 details.Skills[SkillType.MartialArts] += value;
                             break;
-                        case DroidStatSubType.Ranged:
+                        case ItemPropertyDroidStatSubType.Ranged:
                             if (!details.Skills.ContainsKey(SkillType.Ranged))
                                 details.Skills[SkillType.Ranged] = value;
                             else
@@ -563,51 +560,51 @@ namespace SWLOR.Component.Associate.Service
 
                 if (type == ItemPropertyType.DroidStat)
                 {
-                    var subType = (DroidStatSubType)GetItemPropertySubType(ip);
+                    var subType = (ItemPropertyDroidStatSubType)GetItemPropertySubType(ip);
                     var value = GetItemPropertyCostTableValue(ip);
 
                     switch (subType)
                     {
-                        case DroidStatSubType.Tier:
+                        case ItemPropertyDroidStatSubType.Tier:
                             details.Tier = value < 1 ? 1 : value;
                             break;
-                        case DroidStatSubType.AISlots:
+                        case ItemPropertyDroidStatSubType.AISlots:
                             details.AISlots += value;
                             break;
-                        case DroidStatSubType.HP:
+                        case ItemPropertyDroidStatSubType.HP:
                             details.HP += value;
                             break;
-                        case DroidStatSubType.STM:
+                        case ItemPropertyDroidStatSubType.STM:
                             details.STM += value;
                             break;
-                        case DroidStatSubType.MGT:
+                        case ItemPropertyDroidStatSubType.MGT:
                             details.MGT += value;
                             break;
-                        case DroidStatSubType.PER:
+                        case ItemPropertyDroidStatSubType.PER:
                             details.PER += value;
                             break;
-                        case DroidStatSubType.VIT:
+                        case ItemPropertyDroidStatSubType.VIT:
                             details.VIT += value;
                             break;
-                        case DroidStatSubType.WIL:
+                        case ItemPropertyDroidStatSubType.WIL:
                             details.WIL += value;
                             break;
-                        case DroidStatSubType.AGI:
+                        case ItemPropertyDroidStatSubType.AGI:
                             details.AGI += value;
                             break;
-                        case DroidStatSubType.SOC:
+                        case ItemPropertyDroidStatSubType.SOC:
                             details.SOC += value;
                             break;
-                        case DroidStatSubType.OneHanded:
+                        case ItemPropertyDroidStatSubType.OneHanded:
                             details.OneHanded += value;
                             break;
-                        case DroidStatSubType.TwoHanded:
+                        case ItemPropertyDroidStatSubType.TwoHanded:
                             details.TwoHanded += value;
                             break;
-                        case DroidStatSubType.MartialArts:
+                        case ItemPropertyDroidStatSubType.MartialArts:
                             details.MartialArts += value;
                             break;
-                        case DroidStatSubType.Ranged:
+                        case ItemPropertyDroidStatSubType.Ranged:
                             details.Ranged += value;
                             break;
                         default:
@@ -617,7 +614,7 @@ namespace SWLOR.Component.Associate.Service
 
                 else if (type == ItemPropertyType.DroidPart)
                 {
-                    details.PartType = (DroidPartItemPropertySubType)GetItemPropertySubType(ip);
+                    details.PartType = (ItemPropertyDroidPartSubType)GetItemPropertySubType(ip);
                 }
             }
             details.Level = _levelsByTier[details.Tier];
@@ -657,7 +654,7 @@ namespace SWLOR.Component.Associate.Service
             SetLocalBool(droid, DroidIsSpawning, true);
             var personality = _droidPersonalities[details.PersonalityType];
 
-            var skin = GetItemInSlot(InventorySlot.CreatureArmor, droid);
+            var skin = GetItemInSlot(InventorySlotType.CreatureArmor, droid);
 
             SetName(droid, string.IsNullOrWhiteSpace(details.CustomName) 
                 ? $"{GetName(player)}'s Droid" 
@@ -706,19 +703,19 @@ namespace SWLOR.Component.Associate.Service
             }
 
             // Scripts
-            SetEventScript(droid, EventScript.Creature_OnBlockedByDoor, ScriptName.OnDroidBlocked);
-            SetEventScript(droid, EventScript.Creature_OnEndCombatRound, ScriptName.OnDroidRoundEnd);
-            SetEventScript(droid, EventScript.Creature_OnDialogue, ScriptName.OnDroidConversation);
-            SetEventScript(droid, EventScript.Creature_OnDamaged, ScriptName.OnDroidDamaged);
-            SetEventScript(droid, EventScript.Creature_OnDeath, ScriptName.OnDroidDeath);
-            SetEventScript(droid, EventScript.Creature_OnDisturbed, ScriptName.OnDroidDisturbed);
-            SetEventScript(droid, EventScript.Creature_OnHeartbeat, ScriptName.OnDroidHeartbeat);
-            SetEventScript(droid, EventScript.Creature_OnNotice, ScriptName.OnDroidPerception);
-            SetEventScript(droid, EventScript.Creature_OnMeleeAttacked, ScriptName.OnDroidAttacked);
-            SetEventScript(droid, EventScript.Creature_OnRested, ScriptName.OnDroidRest);
-            SetEventScript(droid, EventScript.Creature_OnSpawnIn, ScriptName.OnDroidSpawn);
-            SetEventScript(droid, EventScript.Creature_OnSpellCastAt, ScriptName.OnDroidSpellCast);
-            SetEventScript(droid, EventScript.Creature_OnUserDefined, ScriptName.OnDroidUserDefined);
+            SetEventScript(droid, EventScriptType.Creature_OnBlockedByDoor, ScriptName.OnDroidBlocked);
+            SetEventScript(droid, EventScriptType.Creature_OnEndCombatRound, ScriptName.OnDroidRoundEnd);
+            SetEventScript(droid, EventScriptType.Creature_OnDialogue, ScriptName.OnDroidConversation);
+            SetEventScript(droid, EventScriptType.Creature_OnDamaged, ScriptName.OnDroidDamaged);
+            SetEventScript(droid, EventScriptType.Creature_OnDeath, ScriptName.OnDroidDeath);
+            SetEventScript(droid, EventScriptType.Creature_OnDisturbed, ScriptName.OnDroidDisturbed);
+            SetEventScript(droid, EventScriptType.Creature_OnHeartbeat, ScriptName.OnDroidHeartbeat);
+            SetEventScript(droid, EventScriptType.Creature_OnNotice, ScriptName.OnDroidPerception);
+            SetEventScript(droid, EventScriptType.Creature_OnMeleeAttacked, ScriptName.OnDroidAttacked);
+            SetEventScript(droid, EventScriptType.Creature_OnRested, ScriptName.OnDroidRest);
+            SetEventScript(droid, EventScriptType.Creature_OnSpawnIn, ScriptName.OnDroidSpawn);
+            SetEventScript(droid, EventScriptType.Creature_OnSpellCastAt, ScriptName.OnDroidSpellCast);
+            SetEventScript(droid, EventScriptType.Creature_OnUserDefined, ScriptName.OnDroidUserDefined);
 
             AssignCommand(droid, () => SpeakString(personality.GreetingPhrase()));
 
@@ -750,89 +747,89 @@ namespace SWLOR.Component.Associate.Service
             }
 
             // Appearance
-            var defaultDroid = RaceService.GetDefaultAppearance(RacialType.Droid, Gender.Male);
+            var defaultDroid = RaceService.GetDefaultAppearance(RacialType.Droid, GenderType.Male);
 
-            SetCreatureBodyPart(CreaturePart.Head,
-                constructedDroid.AppearanceParts.ContainsKey(CreaturePart.Head)
-                    ? constructedDroid.AppearanceParts[CreaturePart.Head]
+            SetCreatureBodyPart(CreaturePartType.Head,
+                constructedDroid.AppearanceParts.ContainsKey(CreaturePartType.Head)
+                    ? constructedDroid.AppearanceParts[CreaturePartType.Head]
                     : defaultDroid.HeadId,
                 droid);
 
-            SetCreatureBodyPart(CreaturePart.Neck,
-                constructedDroid.AppearanceParts.ContainsKey(CreaturePart.Neck)
-                    ? constructedDroid.AppearanceParts[CreaturePart.Neck]
+            SetCreatureBodyPart(CreaturePartType.Neck,
+                constructedDroid.AppearanceParts.ContainsKey(CreaturePartType.Neck)
+                    ? constructedDroid.AppearanceParts[CreaturePartType.Neck]
                     : defaultDroid.NeckId,
                 droid);
-            SetCreatureBodyPart(CreaturePart.Torso,
-                constructedDroid.AppearanceParts.ContainsKey(CreaturePart.Torso)
-                    ? constructedDroid.AppearanceParts[CreaturePart.Torso]
+            SetCreatureBodyPart(CreaturePartType.Torso,
+                constructedDroid.AppearanceParts.ContainsKey(CreaturePartType.Torso)
+                    ? constructedDroid.AppearanceParts[CreaturePartType.Torso]
                     : defaultDroid.TorsoId,
                 droid);
-            SetCreatureBodyPart(CreaturePart.Pelvis,
-                constructedDroid.AppearanceParts.ContainsKey(CreaturePart.Pelvis)
-                    ? constructedDroid.AppearanceParts[CreaturePart.Pelvis]
+            SetCreatureBodyPart(CreaturePartType.Pelvis,
+                constructedDroid.AppearanceParts.ContainsKey(CreaturePartType.Pelvis)
+                    ? constructedDroid.AppearanceParts[CreaturePartType.Pelvis]
                     : defaultDroid.PelvisId,
                 droid);
 
-            SetCreatureBodyPart(CreaturePart.RightBicep,
-                constructedDroid.AppearanceParts.ContainsKey(CreaturePart.RightBicep)
-                    ? constructedDroid.AppearanceParts[CreaturePart.RightBicep]
+            SetCreatureBodyPart(CreaturePartType.RightBicep,
+                constructedDroid.AppearanceParts.ContainsKey(CreaturePartType.RightBicep)
+                    ? constructedDroid.AppearanceParts[CreaturePartType.RightBicep]
                     : defaultDroid.RightBicepId,
                 droid);
-            SetCreatureBodyPart(CreaturePart.RightForearm,
-                constructedDroid.AppearanceParts.ContainsKey(CreaturePart.RightForearm)
-                    ? constructedDroid.AppearanceParts[CreaturePart.RightForearm]
+            SetCreatureBodyPart(CreaturePartType.RightForearm,
+                constructedDroid.AppearanceParts.ContainsKey(CreaturePartType.RightForearm)
+                    ? constructedDroid.AppearanceParts[CreaturePartType.RightForearm]
                     : defaultDroid.RightForearmId,
                 droid);
-            SetCreatureBodyPart(CreaturePart.RightHand,
-                constructedDroid.AppearanceParts.ContainsKey(CreaturePart.RightHand)
-                    ? constructedDroid.AppearanceParts[CreaturePart.RightHand]
+            SetCreatureBodyPart(CreaturePartType.RightHand,
+                constructedDroid.AppearanceParts.ContainsKey(CreaturePartType.RightHand)
+                    ? constructedDroid.AppearanceParts[CreaturePartType.RightHand]
                     : defaultDroid.RightHandId,
                 droid);
-            SetCreatureBodyPart(CreaturePart.RightThigh,
-                constructedDroid.AppearanceParts.ContainsKey(CreaturePart.RightThigh)
-                    ? constructedDroid.AppearanceParts[CreaturePart.RightThigh]
+            SetCreatureBodyPart(CreaturePartType.RightThigh,
+                constructedDroid.AppearanceParts.ContainsKey(CreaturePartType.RightThigh)
+                    ? constructedDroid.AppearanceParts[CreaturePartType.RightThigh]
                     : defaultDroid.RightThighId,
                 droid);
-            SetCreatureBodyPart(CreaturePart.RightShin,
-                constructedDroid.AppearanceParts.ContainsKey(CreaturePart.RightShin)
-                    ? constructedDroid.AppearanceParts[CreaturePart.RightShin]
+            SetCreatureBodyPart(CreaturePartType.RightShin,
+                constructedDroid.AppearanceParts.ContainsKey(CreaturePartType.RightShin)
+                    ? constructedDroid.AppearanceParts[CreaturePartType.RightShin]
                     : defaultDroid.RightShinId,
                 droid);
-            SetCreatureBodyPart(CreaturePart.RightFoot,
-                constructedDroid.AppearanceParts.ContainsKey(CreaturePart.RightFoot)
-                    ? constructedDroid.AppearanceParts[CreaturePart.RightFoot]
+            SetCreatureBodyPart(CreaturePartType.RightFoot,
+                constructedDroid.AppearanceParts.ContainsKey(CreaturePartType.RightFoot)
+                    ? constructedDroid.AppearanceParts[CreaturePartType.RightFoot]
                     : defaultDroid.RightFootId,
                 droid);
 
-            SetCreatureBodyPart(CreaturePart.LeftBicep,
-                constructedDroid.AppearanceParts.ContainsKey(CreaturePart.LeftBicep)
-                    ? constructedDroid.AppearanceParts[CreaturePart.LeftBicep]
+            SetCreatureBodyPart(CreaturePartType.LeftBicep,
+                constructedDroid.AppearanceParts.ContainsKey(CreaturePartType.LeftBicep)
+                    ? constructedDroid.AppearanceParts[CreaturePartType.LeftBicep]
                     : defaultDroid.LeftBicepId,
                 droid);
-            SetCreatureBodyPart(CreaturePart.LeftForearm,
-                constructedDroid.AppearanceParts.ContainsKey(CreaturePart.LeftForearm)
-                    ? constructedDroid.AppearanceParts[CreaturePart.LeftForearm]
+            SetCreatureBodyPart(CreaturePartType.LeftForearm,
+                constructedDroid.AppearanceParts.ContainsKey(CreaturePartType.LeftForearm)
+                    ? constructedDroid.AppearanceParts[CreaturePartType.LeftForearm]
                     : defaultDroid.LeftForearmId,
                 droid);
-            SetCreatureBodyPart(CreaturePart.LeftHand,
-                constructedDroid.AppearanceParts.ContainsKey(CreaturePart.LeftHand)
-                    ? constructedDroid.AppearanceParts[CreaturePart.LeftHand]
+            SetCreatureBodyPart(CreaturePartType.LeftHand,
+                constructedDroid.AppearanceParts.ContainsKey(CreaturePartType.LeftHand)
+                    ? constructedDroid.AppearanceParts[CreaturePartType.LeftHand]
                     : defaultDroid.LeftHandId,
                 droid);
-            SetCreatureBodyPart(CreaturePart.LeftThigh,
-                constructedDroid.AppearanceParts.ContainsKey(CreaturePart.LeftThigh)
-                    ? constructedDroid.AppearanceParts[CreaturePart.LeftThigh]
+            SetCreatureBodyPart(CreaturePartType.LeftThigh,
+                constructedDroid.AppearanceParts.ContainsKey(CreaturePartType.LeftThigh)
+                    ? constructedDroid.AppearanceParts[CreaturePartType.LeftThigh]
                     : defaultDroid.LeftThighId,
                 droid);
-            SetCreatureBodyPart(CreaturePart.LeftShin,
-                constructedDroid.AppearanceParts.ContainsKey(CreaturePart.LeftShin)
-                    ? constructedDroid.AppearanceParts[CreaturePart.LeftShin]
+            SetCreatureBodyPart(CreaturePartType.LeftShin,
+                constructedDroid.AppearanceParts.ContainsKey(CreaturePartType.LeftShin)
+                    ? constructedDroid.AppearanceParts[CreaturePartType.LeftShin]
                     : defaultDroid.LeftShinId,
                 droid);
-            SetCreatureBodyPart(CreaturePart.LeftFoot,
-                constructedDroid.AppearanceParts.ContainsKey(CreaturePart.LeftFoot)
-                    ? constructedDroid.AppearanceParts[CreaturePart.LeftFoot]
+            SetCreatureBodyPart(CreaturePartType.LeftFoot,
+                constructedDroid.AppearanceParts.ContainsKey(CreaturePartType.LeftFoot)
+                    ? constructedDroid.AppearanceParts[CreaturePartType.LeftFoot]
                     : defaultDroid.LeftFootId,
                 droid);
 
@@ -858,7 +855,7 @@ namespace SWLOR.Component.Associate.Service
 
             // Ensure the spawn script gets called as it normally gets skipped
             // because it doesn't exist at the time of the droid being created.
-            ExecuteScript(GetEventScript(droid, EventScript.Creature_OnSpawnIn), droid);
+            ExecuteScript(GetEventScript(droid, EventScriptType.Creature_OnSpawnIn), droid);
 
             AssignCommand(GetModule(), () =>
             {
@@ -919,23 +916,23 @@ namespace SWLOR.Component.Associate.Service
 
             var constructedDroid = LoadConstructedDroid(controller);
 
-            constructedDroid.AppearanceParts[CreaturePart.Head] = GetCreatureBodyPart(CreaturePart.Head, droid);
-            constructedDroid.AppearanceParts[CreaturePart.Torso] = GetCreatureBodyPart(CreaturePart.Torso, droid);
-            constructedDroid.AppearanceParts[CreaturePart.Pelvis] = GetCreatureBodyPart(CreaturePart.Pelvis, droid);
+            constructedDroid.AppearanceParts[CreaturePartType.Head] = GetCreatureBodyPart(CreaturePartType.Head, droid);
+            constructedDroid.AppearanceParts[CreaturePartType.Torso] = GetCreatureBodyPart(CreaturePartType.Torso, droid);
+            constructedDroid.AppearanceParts[CreaturePartType.Pelvis] = GetCreatureBodyPart(CreaturePartType.Pelvis, droid);
 
-            constructedDroid.AppearanceParts[CreaturePart.RightBicep] = GetCreatureBodyPart(CreaturePart.RightBicep, droid);
-            constructedDroid.AppearanceParts[CreaturePart.RightForearm] = GetCreatureBodyPart(CreaturePart.RightForearm, droid);
-            constructedDroid.AppearanceParts[CreaturePart.RightHand] = GetCreatureBodyPart(CreaturePart.RightHand, droid);
-            constructedDroid.AppearanceParts[CreaturePart.RightThigh] = GetCreatureBodyPart(CreaturePart.RightThigh, droid);
-            constructedDroid.AppearanceParts[CreaturePart.RightShin] = GetCreatureBodyPart(CreaturePart.RightShin, droid);
-            constructedDroid.AppearanceParts[CreaturePart.RightFoot] = GetCreatureBodyPart(CreaturePart.RightFoot, droid);
+            constructedDroid.AppearanceParts[CreaturePartType.RightBicep] = GetCreatureBodyPart(CreaturePartType.RightBicep, droid);
+            constructedDroid.AppearanceParts[CreaturePartType.RightForearm] = GetCreatureBodyPart(CreaturePartType.RightForearm, droid);
+            constructedDroid.AppearanceParts[CreaturePartType.RightHand] = GetCreatureBodyPart(CreaturePartType.RightHand, droid);
+            constructedDroid.AppearanceParts[CreaturePartType.RightThigh] = GetCreatureBodyPart(CreaturePartType.RightThigh, droid);
+            constructedDroid.AppearanceParts[CreaturePartType.RightShin] = GetCreatureBodyPart(CreaturePartType.RightShin, droid);
+            constructedDroid.AppearanceParts[CreaturePartType.RightFoot] = GetCreatureBodyPart(CreaturePartType.RightFoot, droid);
 
-            constructedDroid.AppearanceParts[CreaturePart.LeftBicep] = GetCreatureBodyPart(CreaturePart.LeftBicep, droid);
-            constructedDroid.AppearanceParts[CreaturePart.LeftForearm] = GetCreatureBodyPart(CreaturePart.LeftForearm, droid);
-            constructedDroid.AppearanceParts[CreaturePart.LeftHand] = GetCreatureBodyPart(CreaturePart.LeftHand, droid);
-            constructedDroid.AppearanceParts[CreaturePart.LeftThigh] = GetCreatureBodyPart(CreaturePart.LeftThigh, droid);
-            constructedDroid.AppearanceParts[CreaturePart.LeftShin] = GetCreatureBodyPart(CreaturePart.LeftShin, droid);
-            constructedDroid.AppearanceParts[CreaturePart.LeftFoot] = GetCreatureBodyPart(CreaturePart.LeftFoot, droid);
+            constructedDroid.AppearanceParts[CreaturePartType.LeftBicep] = GetCreatureBodyPart(CreaturePartType.LeftBicep, droid);
+            constructedDroid.AppearanceParts[CreaturePartType.LeftForearm] = GetCreatureBodyPart(CreaturePartType.LeftForearm, droid);
+            constructedDroid.AppearanceParts[CreaturePartType.LeftHand] = GetCreatureBodyPart(CreaturePartType.LeftHand, droid);
+            constructedDroid.AppearanceParts[CreaturePartType.LeftThigh] = GetCreatureBodyPart(CreaturePartType.LeftThigh, droid);
+            constructedDroid.AppearanceParts[CreaturePartType.LeftShin] = GetCreatureBodyPart(CreaturePartType.LeftShin, droid);
+            constructedDroid.AppearanceParts[CreaturePartType.LeftFoot] = GetCreatureBodyPart(CreaturePartType.LeftFoot, droid);
 
             SaveConstructedDroid(controller, constructedDroid);
         }
@@ -975,11 +972,11 @@ namespace SWLOR.Component.Associate.Service
 
             var itemType = GetBaseItemType(item);
 
-            if (itemType == BaseItem.CreatureBludgeonWeapon ||
-                itemType == BaseItem.CreaturePierceWeapon ||
-                itemType == BaseItem.CreatureSlashPierceWeapon ||
-                itemType == BaseItem.CreatureSlashWeapon ||
-                itemType == BaseItem.CreatureItem)
+            if (itemType == BaseItemType.CreatureBludgeonWeapon ||
+                itemType == BaseItemType.CreaturePierceWeapon ||
+                itemType == BaseItemType.CreatureSlashPierceWeapon ||
+                itemType == BaseItemType.CreatureSlashWeapon ||
+                itemType == BaseItemType.CreatureItem)
                 return;
             
             var controller = GetControllerItem(droid);

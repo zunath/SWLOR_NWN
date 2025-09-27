@@ -72,8 +72,8 @@ namespace SWLOR.Component.Character.UI.View
                     {
                         row.AddLabel()
                             .BindText(model => model.Name)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
+                            .SetHorizontalAlign(NuiHorizontalAlignType.Center)
+                            .SetVerticalAlign(NuiVerticalAlignType.Top)
                             .SetHeight(20f);
                     });
 
@@ -87,8 +87,8 @@ namespace SWLOR.Component.Character.UI.View
                     {
                         row.AddLabel()
                             .BindText(model => model.AcquiredDate)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                            .SetVerticalAlign(NuiVerticalAlign.Middle)
+                            .SetHorizontalAlign(NuiHorizontalAlignType.Center)
+                            .SetVerticalAlign(NuiVerticalAlignType.Middle)
                             .SetHeight(20f);
                     });
                 })

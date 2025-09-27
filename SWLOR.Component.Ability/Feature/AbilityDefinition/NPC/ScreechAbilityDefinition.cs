@@ -1,7 +1,5 @@
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Creature;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Character.ValueObjects;
 using SWLOR.Shared.Domain.Common.Enums;
@@ -22,7 +20,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.NPC
             builder.Create(FeatType.Screech, PerkType.Invalid)
                 .Name("Screech")
                 .HasActivationDelay(4.0f)
-                .DisplaysVisualEffectWhenActivating(VisualEffect.Vfx_Dur_Aura_Blue)
+                .DisplaysVisualEffectWhenActivating(VisualEffectType.Vfx_Dur_Aura_Blue)
                 .HasRecastDelay(RecastGroup.Screech, 120f)
                 .IsCastedAbility()
                 .RequirementStamina(10)
@@ -37,7 +35,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.NPC
                             const float Duration = 90f;
 
                             ApplyEffectToObject(DurationType.Temporary, EffectACDecrease(10), nearest, Duration);
-                            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Pulse_Negative), nearest);
+                            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Imp_Pulse_Negative), nearest);
 
                             SendMessageToPC(nearest, "The screech disorients you!");
                         }

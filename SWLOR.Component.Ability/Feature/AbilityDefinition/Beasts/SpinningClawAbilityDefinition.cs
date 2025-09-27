@@ -47,7 +47,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beasts
 
 
             var count = 0;
-            var creature = GetFirstObjectInShape(Shape.Sphere, RadiusSize.Large, GetLocation(activator), true);
+            var creature = GetFirstObjectInShape(ShapeType.Sphere, RadiusSize.Large, GetLocation(activator), true);
             while (GetIsObjectValid(creature) && count < 3)
             {
                 if (GetIsReactionTypeHostile(creature, activator))
@@ -77,7 +77,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beasts
                     count++;
                 }
 
-                creature = GetNextObjectInShape(Shape.Sphere, RadiusSize.Large, GetLocation(activator), true);
+                creature = GetNextObjectInShape(ShapeType.Sphere, RadiusSize.Large, GetLocation(activator), true);
             }
         }
 

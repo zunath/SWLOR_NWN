@@ -481,7 +481,7 @@ namespace SWLOR.Shared.UI.Service
             return _systemReservedIdCount[systemName];
         }
 
-        public void DrawWindow(uint player, int startId, ScreenAnchor anchor, int x, int y, int width, int height, float lifeTime = 10.0f)
+        public void DrawWindow(uint player, int startId, ScreenAnchorType anchor, int x, int y, int width, int height, float lifeTime = 10.0f)
         {
             var top = GuiTextTexture.WindowTopLeft;
             var middle = GuiTextTexture.WindowMiddleLeft;
@@ -498,7 +498,7 @@ namespace SWLOR.Shared.UI.Service
             middle += GuiTextTexture.WindowMiddleRight;
             bottom += GuiTextTexture.WindowBottomRight;
 
-            if (anchor == ScreenAnchor.BottomRight)
+            if (anchor == ScreenAnchorType.BottomRight)
             {
                 Draw(player, bottom, x, y, anchor, startId++, lifeTime);
             }
@@ -513,7 +513,7 @@ namespace SWLOR.Shared.UI.Service
                 Draw(player, middle, x, ++y, anchor, startId++, lifeTime);
             }
 
-            if (anchor == ScreenAnchor.BottomRight)
+            if (anchor == ScreenAnchorType.BottomRight)
             {
                 Draw(player, top, x, ++y, anchor, startId, lifeTime);
             }
@@ -524,7 +524,7 @@ namespace SWLOR.Shared.UI.Service
 
         }
 
-        private void Draw(uint player, string message, int x, int y, ScreenAnchor anchor, int id, float lifeTime = 10.0f)
+        private void Draw(uint player, string message, int x, int y, ScreenAnchorType anchor, int id, float lifeTime = 10.0f)
         {
             PostString(player, message, x, y, anchor, lifeTime, GuiStandardColor.ColorWhite, GuiStandardColor.ColorWhite, id, GuiTextTexture.GuiFontName);
         }
@@ -553,16 +553,16 @@ namespace SWLOR.Shared.UI.Service
                 return;
 
             // Spell Book - Completely unused
-            SetGuiPanelDisabled(player, GuiPanel.SpellBook, true);
+            SetGuiPanelDisabled(player, GuiPanelType.SpellBook, true);
 
             // Character Sheet - A NUI replacement is used
-            SetGuiPanelDisabled(player, GuiPanel.CharacterSheet, true);
+            SetGuiPanelDisabled(player, GuiPanelType.CharacterSheet, true);
 
             // Journal - A NUI replacement is used
-            SetGuiPanelDisabled(player, GuiPanel.Journal, true);
+            SetGuiPanelDisabled(player, GuiPanelType.Journal, true);
 
             // Compass - Space is used by HP/FP/STM bars.
-            SetGuiPanelDisabled(player, GuiPanel.Compass, true);
+            SetGuiPanelDisabled(player, GuiPanelType.Compass, true);
         }
     }
 }

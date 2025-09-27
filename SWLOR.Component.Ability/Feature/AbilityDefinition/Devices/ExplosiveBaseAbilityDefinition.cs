@@ -107,12 +107,12 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
 
             DelayCommand(delay, () =>
             {
-                var target = GetFirstObjectInShape(Shape.Sphere, radius, targetLocation, true);
+                var target = GetFirstObjectInShape(ShapeType.Sphere, radius, targetLocation, true);
                 while (GetIsObjectValid(target))
                 {
                     impactAction(target);
 
-                    target = GetNextObjectInShape(Shape.Sphere, radius, targetLocation, true);
+                    target = GetNextObjectInShape(ShapeType.Sphere, radius, targetLocation, true);
                 }
 
             });
@@ -123,7 +123,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
         protected void ExplosiveAOEImpact(
             uint activator,
             Location targetLocation,
-            AreaOfEffect aoe,
+            AreaOfEffectType aoe,
             string enterScript,
             string heartbeatScript,
             float duration)

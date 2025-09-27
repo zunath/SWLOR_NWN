@@ -1,4 +1,4 @@
-using SWLOR.NWN.API.NWScript.Enum.Creature;
+using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Communication.Contracts;
 
 namespace SWLOR.Component.Communication.Service

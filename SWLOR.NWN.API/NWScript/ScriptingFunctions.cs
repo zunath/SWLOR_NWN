@@ -38,9 +38,9 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="bInheritParent">If TRUE, ExecuteScript(Chunk) will inherit their event ID from their parent event.
         /// If FALSE, it will return the event ID of the current script, which may be 0</param>
         /// <returns>The currently executing event or 0 if not determinable</returns>
-        public static EventScript GetCurrentlyRunningEvent(bool bInheritParent = true)
+        public static EventScriptType GetCurrentlyRunningEvent(bool bInheritParent = true)
         {
-            return (EventScript)global::NWN.Core.NWScript.GetCurrentlyRunningEvent(bInheritParent ? 1 : 0);
+            return (EventScriptType)global::NWN.Core.NWScript.GetCurrentlyRunningEvent(bInheritParent ? 1 : 0);
         }
 
         /// <summary>

@@ -2,8 +2,7 @@
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
-using QuickBarSlot = SWLOR.NWN.API.NWNX.Enum.QuickBarSlot;
+using QuickBarSlot = SWLOR.NWN.API.NWNX.Model.QuickBarSlot;
 
 namespace SWLOR.NWN.API.NWNX
 {
@@ -259,7 +258,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="target">The target object to play the effect upon.</param>
         /// <param name="visualEffect">The visual effect id.</param>
         /// <remarks>Only works with instant effects: VFX_COM_*, VFX_FNF_*, VFX_IMP_*</remarks>
-        public static void ApplyInstantVisualEffectToObject(uint player, uint target, VisualEffect visualEffect)
+        public static void ApplyInstantVisualEffectToObject(uint player, uint target, VisualEffectType visualEffect)
         {
             global::NWN.Core.NWNX.PlayerPlugin.ApplyInstantVisualEffectToObject(player, target, (int)visualEffect);
         }
@@ -338,7 +337,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="target">The target object.</param>
         /// <param name="visualEffect">A VFX_DUR_*. Calling again will remove an applied effect. -1 to remove all effects.</param>
         /// <remarks>Only really works with looping effects: VFX_DUR_*. Other types *kind* of work, they'll play when reentering the area and the object is in view or when they come back in view range.</remarks>
-        public static void ApplyLoopingVisualEffectToObject(uint player, uint target, VisualEffect visualEffect)
+        public static void ApplyLoopingVisualEffectToObject(uint player, uint target, VisualEffectType visualEffect)
         {
             global::NWN.Core.NWNX.PlayerPlugin.ApplyLoopingVisualEffectToObject(player, target, (int)visualEffect);
         }
@@ -456,7 +455,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="oPlayer">The player object.</param>
         /// <param name="oObject">The object.</param>
         /// <param name="nCursor">The cursor, one of MOUSECURSOR_*. -1 to clear the override.</param>
-        public static void SetObjectMouseCursorOverride(uint oPlayer, uint oObject, MouseCursor nCursor)
+        public static void SetObjectMouseCursorOverride(uint oPlayer, uint oObject, MouseCursorType nCursor)
         {
             global::NWN.Core.NWNX.PlayerPlugin.SetObjectMouseCursorOverride(oPlayer, oObject, (int)nCursor);
         }

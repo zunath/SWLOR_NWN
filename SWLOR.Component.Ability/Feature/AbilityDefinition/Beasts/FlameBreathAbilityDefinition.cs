@@ -2,7 +2,6 @@ using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Character.ValueObjects;
@@ -45,7 +44,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beasts
 
             AssignCommand(activator, () =>
             {
-                ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Flamethrower), activator, 2f);
+                ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffectType.Vfx_Flamethrower), activator, 2f);
             });
 
             var beastmaster = GetMaster(activator);
@@ -54,9 +53,9 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beasts
             var totalStat = beastStat + beastmasterStat;
 
             var attack = StatService.GetAttack(activator, AbilityType.Might, SkillType.Invalid);
-            var eVFX = EffectVisualEffect(VisualEffect.Vfx_Imp_Flame_S);
+            var eVFX = EffectVisualEffect(VisualEffectType.Vfx_Imp_Flame_S);
 
-            var target = GetFirstObjectInShape(Shape.SpellCone, ConeSize, targetLocation, true, ObjectType.Creature);
+            var target = GetFirstObjectInShape(ShapeType.SpellCone, ConeSize, targetLocation, true, ObjectType.Creature);
             while (GetIsObjectValid(target))
             {
                 if (target != activator)
@@ -84,7 +83,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beasts
                             ApplyEffectToObject(DurationType.Instant, eVFX, targetCopy);
                         });
 
-                        dc = CombatService.CalculateSavingThrowDC(activator, SavingThrow.Reflex, baseDC);
+                        dc = CombatService.CalculateSavingThrowDC(activator, SavingThrowCategoryType.Reflex, baseDC);
                         var checkResult = ReflexSave(targetCopy, dc, SavingThrowType.None, activator);
                         if (checkResult == SavingThrowResultType.Failed)
                         {
@@ -93,7 +92,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beasts
                     });
                 }
 
-                target = GetNextObjectInShape(Shape.SpellCone, ConeSize, targetLocation, true, ObjectType.Creature);
+                target = GetNextObjectInShape(ShapeType.SpellCone, ConeSize, targetLocation, true, ObjectType.Creature);
             }
         }
 

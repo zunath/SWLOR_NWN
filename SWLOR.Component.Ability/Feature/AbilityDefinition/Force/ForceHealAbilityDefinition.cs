@@ -30,7 +30,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .RequirementFP(3)
                 .HasMaxRange(15)
                 .IsConcentrationAbility(StatusEffectType.ForceHeal1)
-                .UsesAnimation(Animation.LoopingConjure1)
+                .UsesAnimation(AnimationType.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }
 
@@ -44,7 +44,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .RequirementFP(4)
                 .HasMaxRange(15)
                 .IsConcentrationAbility(StatusEffectType.ForceHeal2)
-                .UsesAnimation(Animation.LoopingConjure1)
+                .UsesAnimation(AnimationType.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }
 
@@ -58,7 +58,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .RequirementFP(5)
                 .HasMaxRange(15)
                 .IsConcentrationAbility(StatusEffectType.ForceHeal3)
-                .UsesAnimation(Animation.LoopingConjure1)
+                .UsesAnimation(AnimationType.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }
 
@@ -72,7 +72,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .RequirementFP(6)
                 .HasMaxRange(15)
                 .IsConcentrationAbility(StatusEffectType.ForceHeal4)
-                .UsesAnimation(Animation.LoopingConjure1)
+                .UsesAnimation(AnimationType.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }
 
@@ -86,7 +86,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .RequirementFP(7)
                 .HasMaxRange(15)
                 .IsConcentrationAbility(StatusEffectType.ForceHeal5)
-                .UsesAnimation(Animation.LoopingConjure1)
+                .UsesAnimation(AnimationType.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }
     }

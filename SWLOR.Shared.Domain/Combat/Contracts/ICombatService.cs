@@ -2,8 +2,6 @@ using NWN.Native.API;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Combat.Enums;
-using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
-using SavingThrow = SWLOR.NWN.API.NWScript.Enum.SavingThrow;
 
 namespace SWLOR.Shared.Domain.Combat.Contracts
 {
@@ -144,7 +142,7 @@ namespace SWLOR.Shared.Domain.Combat.Contracts
         /// <param name="attacker">The attacker to check</param>
         /// <param name="weaponType">The BaseItem of the weapon held</param>
         /// <returns>The DMG value or 0 if requirements are not met.</returns>
-        int GetMiscDMGBonus(uint attacker, BaseItem weaponType);
+        int GetMiscDMGBonus(uint attacker, BaseItemType weaponType);
 
         /// <summary>
         /// Retrieves the DMG bonus granted by Might scaling on Crushing Style Staves and Strong Style Sabers.
@@ -153,7 +151,7 @@ namespace SWLOR.Shared.Domain.Combat.Contracts
         /// <param name="attacker">The attacker to check</param>
         /// <param name="weaponType">The BaseItem of the weapon held</param>
         /// <returns>The DMG value or 0 if requirements are not met.</returns>
-        int GetMightDMGBonus(uint attacker, BaseItem weaponType);
+        int GetMightDMGBonus(uint attacker, BaseItemType weaponType);
 
         /// <summary>
         /// Retrieves the DMG bonus granted by doublehand.
@@ -189,7 +187,7 @@ namespace SWLOR.Shared.Domain.Combat.Contracts
         /// <returns>A DC value with any bonuses applied.</returns>
         int CalculateSavingThrowDC(
             uint attacker,
-            SavingThrow type,
+            SavingThrowCategoryType type,
             int baseDC,
             AbilityType abilityOverride = AbilityType.Invalid);
     }

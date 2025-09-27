@@ -10,9 +10,6 @@ using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.UI.Service;
-using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
-using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
-using SavingThrow = SWLOR.NWN.API.NWScript.Enum.SavingThrow;
 
 namespace SWLOR.Component.Combat.Service
 {
@@ -363,7 +360,7 @@ namespace SWLOR.Component.Combat.Service
 
         public int GetPerkAdjustedAbilityScore(uint attacker)
         {
-            var weapon = GetItemInSlot(InventorySlot.RightHand, attacker);
+            var weapon = GetItemInSlot(InventorySlotType.RightHand, attacker);
             if (!GetIsObjectValid(weapon)) return 0;
             var weaponType = GetBaseItemType(weapon);
 
@@ -411,7 +408,7 @@ namespace SWLOR.Component.Combat.Service
         /// <param name="weaponType">The BaseItem of the weapon held</param>
         /// <returns>The DMG value or 0 if requirements are not met.</returns>
 
-        public int GetMiscDMGBonus(uint attacker, BaseItem weaponType)
+        public int GetMiscDMGBonus(uint attacker, BaseItemType weaponType)
         {
             var bonusDMG = 0;
 
@@ -430,7 +427,7 @@ namespace SWLOR.Component.Combat.Service
         /// <param name="weaponType">The BaseItem of the weapon held</param>
         /// <returns>The DMG value or 0 if requirements are not met.</returns>
 
-        public int GetMightDMGBonus(uint attacker, BaseItem weaponType)
+        public int GetMightDMGBonus(uint attacker, BaseItemType weaponType)
         {
             var mgtMod = GetAbilityModifier(AbilityType.Might, attacker);
 
@@ -454,8 +451,8 @@ namespace SWLOR.Component.Combat.Service
         public int GetDoublehandDMGBonus(uint attacker)
         {
             var dmg = 0;
-            var rightHand = GetItemInSlot(InventorySlot.RightHand, attacker);
-            var leftHand = GetItemInSlot(InventorySlot.LeftHand, attacker);
+            var rightHand = GetItemInSlot(InventorySlotType.RightHand, attacker);
+            var leftHand = GetItemInSlot(InventorySlotType.LeftHand, attacker);
 
             if (!GetIsObjectValid(rightHand) || GetIsObjectValid(leftHand))
                 return 0;
@@ -486,9 +483,9 @@ namespace SWLOR.Component.Combat.Service
         /// <returns>The DMG bonus, or 0 if Power Attack is not enabled.</returns>
         public int GetPowerAttackDMGBonus(uint attacker)
         {
-            if (GetActionMode(attacker, ActionMode.PowerAttack))
+            if (GetActionMode(attacker, ActionModeType.PowerAttack))
                 return 3;
-            else if (GetActionMode(attacker, ActionMode.ImprovedPowerAttack))
+            else if (GetActionMode(attacker, ActionModeType.ImprovedPowerAttack))
                 return 6;
             return 0;
         }
@@ -528,7 +525,7 @@ namespace SWLOR.Component.Combat.Service
         /// <returns>A DC value with any bonuses applied.</returns>
         public int CalculateSavingThrowDC(
             uint attacker, 
-            SavingThrow type, 
+            SavingThrowCategoryType type, 
             int baseDC, 
             AbilityType abilityOverride = AbilityType.Invalid)
         {
@@ -538,13 +535,13 @@ namespace SWLOR.Component.Combat.Service
             {
                 switch (type)
                 {
-                    case SavingThrow.Fortitude:
+                    case SavingThrowCategoryType.Fortitude:
                         ability = AbilityType.Might;
                         break;
-                    case SavingThrow.Reflex:
+                    case SavingThrowCategoryType.Reflex:
                         ability = AbilityType.Perception;
                         break;
-                    case SavingThrow.Will:
+                    case SavingThrowCategoryType.Will:
                         ability = AbilityType.Willpower;
                         break;
                     default:

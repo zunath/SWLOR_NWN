@@ -7,7 +7,7 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Properties.Contracts;
 using SWLOR.Shared.Domain.Properties.Enums;
-using ChatChannel = SWLOR.NWN.API.NWNX.Enum.ChatChannel;
+using ChatChannelType = SWLOR.NWN.API.NWNX.Enum.ChatChannelType;
 
 namespace SWLOR.Component.Communication.Service
 {
@@ -90,10 +90,10 @@ namespace SWLOR.Component.Communication.Service
             var now = DateTime.UtcNow;
 
             var isInCharacterChat =
-                channel == ChatChannel.PlayerTalk ||
-                channel == ChatChannel.PlayerWhisper ||
-                channel == ChatChannel.PlayerParty ||
-                channel == ChatChannel.PlayerShout;
+                channel == ChatChannelType.PlayerTalk ||
+                channel == ChatChannelType.PlayerWhisper ||
+                channel == ChatChannelType.PlayerParty ||
+                channel == ChatChannelType.PlayerShout;
 
             // Don't care about other chat channels.
             if (!isInCharacterChat) return;
@@ -138,12 +138,12 @@ namespace SWLOR.Component.Communication.Service
         /// <param name="player">The player to check.</param>
         /// <param name="channel">The chat channel used.</param>
         /// <returns>true if the player can receive an RP point, false otherwise</returns>
-        private static bool CanReceiveRPPoint(uint player, ChatChannel channel)
+        private static bool CanReceiveRPPoint(uint player, ChatChannelType channel)
         {
             var playerId = GetObjectUUID(player);
 
             // Party - Must be in a party with another PC.
-            if (channel == ChatChannel.PlayerParty)
+            if (channel == ChatChannelType.PlayerParty)
             {
                 for (var member = GetFirstFactionMember(player); GetIsObjectValid(member); member = GetNextFactionMember(player))
                 {
@@ -157,11 +157,11 @@ namespace SWLOR.Component.Communication.Service
             for (var currentPlayer = GetFirstPC(); GetIsObjectValid(currentPlayer); currentPlayer = GetNextPC())
             {
                 float distance;
-                if (channel == ChatChannel.PlayerTalk)
+                if (channel == ChatChannelType.PlayerTalk)
                 {
                     distance = 20.0f;
                 }
-                else if (channel == ChatChannel.PlayerWhisper)
+                else if (channel == ChatChannelType.PlayerWhisper)
                 {
                     distance = 4.0f;
                 }

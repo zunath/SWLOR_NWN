@@ -24,9 +24,9 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="playerClass">The class to get the domain for (default: ClassType.Cleric)</param>
         /// <returns>The domain (DOMAIN_* constants). Returns -1 on error</returns>
         /// <remarks>Unless custom content is used, only Clerics have domains.</remarks>
-        public static ClericDomain GetDomain(uint creature, int DomainIndex = 1, ClassType playerClass = ClassType.Cleric)
+        public static ClericDomainType GetDomain(uint creature, int DomainIndex = 1, ClassType playerClass = ClassType.Cleric)
         {
-            return (ClericDomain)global::NWN.Core.NWScript.GetDomain(creature, DomainIndex, (int)playerClass);
+            return (ClericDomainType)global::NWN.Core.NWScript.GetDomain(creature, DomainIndex, (int)playerClass);
         }
     }
 }

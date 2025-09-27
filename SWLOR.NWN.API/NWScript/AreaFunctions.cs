@@ -1,8 +1,8 @@
 using System.Numerics;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Area;
 using ObjectType = SWLOR.NWN.API.NWScript.Enum.ObjectType;
+using WeatherType = SWLOR.NWN.API.NWScript.Enum.WeatherType;
 
 namespace SWLOR.NWN.API.NWScript
 {
@@ -238,9 +238,9 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oArea">The area to get weather for</param>
         /// <returns>Weather conditions: WEATHER_CLEAR, WEATHER_RAIN, WEATHER_SNOW, or WEATHER_INVALID</returns>
         /// <remarks>If called on an interior area, this will always return WEATHER_CLEAR.</remarks>
-        public static Weather GetWeather(uint oArea)
+        public static WeatherType GetWeather(uint oArea)
         {
-            return (Weather)global::NWN.Core.NWScript.GetWeather(oArea);
+            return (WeatherType)global::NWN.Core.NWScript.GetWeather(oArea);
         }
 
         /// <summary>
@@ -248,9 +248,9 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oArea">The area to check</param>
         /// <returns>AREA_NATURAL if the area is natural, AREA_ARTIFICIAL otherwise. Returns AREA_INVALID on error</returns>
-        public static Natural GetIsAreaNatural(uint oArea)
+        public static AreaNaturalType GetIsAreaNatural(uint oArea)
         {
-            return (Natural)global::NWN.Core.NWScript.GetIsAreaNatural(oArea);
+            return (AreaNaturalType)global::NWN.Core.NWScript.GetIsAreaNatural(oArea);
         }
 
         /// <summary>
@@ -268,7 +268,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nSkyBox">The skybox to set (SKYBOX_* constants associated with skyboxes.2da)</param>
         /// <param name="oArea">The area to change the sky for. If no valid area is specified, uses the area of caller. If an object other than an area is specified, uses the area that the object is currently in (default: OBJECT_SELF)</param>
-        public static void SetSkyBox(Skybox nSkyBox, uint oArea = OBJECT_INVALID)
+        public static void SetSkyBox(SkyboxType nSkyBox, uint oArea = OBJECT_INVALID)
         {
             global::NWN.Core.NWScript.SetSkyBox((int)nSkyBox, oArea);
         }
@@ -279,7 +279,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nFogType">Specifies whether the Sun, Moon, or both fog types are set (FOG_TYPE_* constants)</param>
         /// <param name="nFogColor">The color to set the fog to (FOG_COLOR_* constants). Can also be represented as a hex RGB number (e.g., 0xFFEEDD where FF=red, EE=green, DD=blue)</param>
         /// <param name="oArea">The area to set fog color for. If no valid area is specified, uses the area of caller. If an object other than an area is specified, uses the area that the object is currently in (default: OBJECT_SELF)</param>
-        public static void SetFogColor(FogType nFogType, FogColor nFogColor, uint oArea = OBJECT_INVALID)
+        public static void SetFogColor(FogType nFogType, FogColorType nFogColor, uint oArea = OBJECT_INVALID)
         {
             global::NWN.Core.NWScript.SetFogColor((int)nFogType, (int)nFogColor, oArea);
         }
@@ -289,9 +289,9 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oArea">The area to get the skybox for. If no valid area is specified, uses the area of caller. If an object other than an area is specified, uses the area that the object is currently in (default: OBJECT_SELF)</param>
         /// <returns>The skybox constant (SKYBOX_*)</returns>
-        public static Skybox GetSkyBox(uint oArea = OBJECT_INVALID)
+        public static SkyboxType GetSkyBox(uint oArea = OBJECT_INVALID)
         {
-            return (Skybox)global::NWN.Core.NWScript.GetSkyBox(oArea);
+            return (SkyboxType)global::NWN.Core.NWScript.GetSkyBox(oArea);
         }
 
         /// <summary>
@@ -300,9 +300,9 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nFogType">Specifies whether the Sun or Moon fog type is returned. Valid values are FOG_TYPE_SUN or FOG_TYPE_MOON</param>
         /// <param name="oArea">The area to get fog color for. If no valid area is specified, uses the area of caller. If an object other than an area is specified, uses the area that the object is currently in (default: OBJECT_SELF)</param>
         /// <returns>The fog color constant (FOG_COLOR_*)</returns>
-        public static FogColor GetFogColor(FogType nFogType, uint oArea = OBJECT_INVALID)
+        public static FogColorType GetFogColor(FogType nFogType, uint oArea = OBJECT_INVALID)
         {
-            return (FogColor)global::NWN.Core.NWScript.GetFogColor((int)nFogType, oArea);
+            return (FogColorType)global::NWN.Core.NWScript.GetFogColor((int)nFogType, oArea);
         }
 
         /// <summary>
@@ -344,7 +344,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nAreaDimension">The area dimension to determine (AREA_HEIGHT or AREA_WIDTH)</param>
         /// <param name="oArea">The area to get the size for. If no valid area is specified, uses the area of the caller. If an object other than an area is specified, uses the area that the object is currently in (default: OBJECT_SELF)</param>
         /// <returns>The number of tiles that the area is wide/high, or zero on error</returns>
-        public static int GetAreaSize(Dimension nAreaDimension, uint oArea = OBJECT_INVALID)
+        public static int GetAreaSize(AreaDimensionType nAreaDimension, uint oArea = OBJECT_INVALID)
         {
             return global::NWN.Core.NWScript.GetAreaSize((int)nAreaDimension, oArea);
         }
@@ -496,7 +496,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oTarget">If this is GetModule(), all outdoor areas will be modified by the weather constant. If it is an area, the target will play the weather only if it is an outdoor area</param>
         /// <param name="nWeather">The weather type (WEATHER_* constant). WEATHER_USER_AREA_SETTINGS will set the area back to random weather. WEATHER_CLEAR, WEATHER_RAIN, WEATHER_SNOW will make the weather go to the appropriate precipitation without stopping</param>
-        public static void SetWeather(uint oTarget, WeatherType nWeather)
+        public static void SetWeather(uint oTarget, AreaWeatherType nWeather)
         {
             global::NWN.Core.NWScript.SetWeather(oTarget, (int)nWeather);
         }
@@ -685,7 +685,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nPredefinedAreaTransition">To use a predefined area transition bitmap, use one of AREA_TRANSITION_*. To use a custom, user-defined area transition bitmap, use AREA_TRANSITION_USER_DEFINED and specify the filename in the second parameter</param>
         /// <param name="sCustomAreaTransitionBMP">The filename of a custom, user-defined area transition bitmap (default: empty string)</param>
         /// <remarks>This action should be run by the person "clicking" the area transition via AssignCommand.</remarks>
-        public static void SetAreaTransitionBMP(AreaTransition nPredefinedAreaTransition,
+        public static void SetAreaTransitionBMP(AreaTransitionType nPredefinedAreaTransition,
             string sCustomAreaTransitionBMP = "")
         {
             global::NWN.Core.NWScript.SetAreaTransitionBMP((int)nPredefinedAreaTransition, sCustomAreaTransitionBMP);
@@ -726,7 +726,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="fFadeTime">If above 0.0, it will fade to the new color in the amount of seconds specified (default: 0.0)</param>
         public static void SetAreaLightColor(
             AreaLightColorType nColorType,
-            FogColor nColor,
+            FogColorType nColor,
             uint oArea = OBJECT_INVALID,
             float fFadeTime = 0.0f)
         {
@@ -769,7 +769,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The first object found. Returns OBJECT_INVALID if no object is found</returns>
         public static uint GetFirstInPersistentObject(uint oPersistentObject = OBJECT_INVALID,
             ObjectType nResidentObjectType = ObjectType.Creature,
-            PersistentZone nPersistentZone = PersistentZone.Active)
+            PersistentZoneType nPersistentZone = PersistentZoneType.Active)
         {
             if (oPersistentObject == OBJECT_INVALID)
                 oPersistentObject = OBJECT_SELF;
@@ -785,7 +785,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The next object found. Returns OBJECT_INVALID if no object is found</returns>
         public static uint GetNextInPersistentObject(uint oPersistentObject = OBJECT_INVALID,
             ObjectType nResidentObjectType = ObjectType.Creature,
-            PersistentZone nPersistentZone = PersistentZone.Active)
+            PersistentZoneType nPersistentZone = PersistentZoneType.Active)
         {
             if (oPersistentObject == OBJECT_INVALID)
                 oPersistentObject = OBJECT_SELF;

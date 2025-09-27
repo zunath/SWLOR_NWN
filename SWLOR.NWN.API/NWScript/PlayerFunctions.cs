@@ -305,7 +305,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oPC">The player character</param>
         /// <param name="nGUIPanel">GUI_PANEL_* constant, except GUI_PANEL_COMPASS / GUI_PANEL_LEVELUP / GUI_PANEL_GOLD_* / GUI_PANEL_EXAMINE_*</param>
-        public static void PopUpGUIPanel(uint oPC, GuiPanel nGUIPanel)
+        public static void PopUpGUIPanel(uint oPC, GuiPanelType nGUIPanel)
         {
             global::NWN.Core.NWScript.PopUpGUIPanel(oPC, (int)nGUIPanel);
         }
@@ -405,7 +405,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nGuiPanel">A GUI_PANEL_* constant, except GUI_PANEL_PLAYER_DEATH</param>
         /// <param name="bDisabled">Whether to disable the panel</param>
         /// <param name="oTarget">The target object</param>
-        public static void SetGuiPanelDisabled(uint oPlayer, GuiPanel nGuiPanel, bool bDisabled, uint oTarget = OBJECT_INVALID)
+        public static void SetGuiPanelDisabled(uint oPlayer, GuiPanelType nGuiPanel, bool bDisabled, uint oTarget = OBJECT_INVALID)
         {
             global::NWN.Core.NWScript.SetGuiPanelDisabled(oPlayer, (int)nGuiPanel, bDisabled ? 1 : 0, oTarget);
         }
@@ -623,9 +623,9 @@ namespace SWLOR.NWN.API.NWScript
         /// Can only be used in the module's OnPlayerEquip event.
         /// </summary>
         /// <returns>The inventory slot constant, or -1 on error</returns>
-        public static InventorySlot GetPCItemLastEquippedSlot()
+        public static InventorySlotType GetPCItemLastEquippedSlot()
         {
-            return (InventorySlot)global::NWN.Core.NWScript.GetPCItemLastEquippedSlot();
+            return (InventorySlotType)global::NWN.Core.NWScript.GetPCItemLastEquippedSlot();
         }
 
         /// <summary>
@@ -633,9 +633,9 @@ namespace SWLOR.NWN.API.NWScript
         /// Can only be used in the module's OnPlayerUnequip event.
         /// </summary>
         /// <returns>The inventory slot constant, or -1 on error</returns>
-        public static InventorySlot GetPCItemLastUnequippedSlot()
+        public static InventorySlotType GetPCItemLastUnequippedSlot()
         {
-            return (InventorySlot)global::NWN.Core.NWScript.GetPCItemLastUnequippedSlot();
+            return (InventorySlotType)global::NWN.Core.NWScript.GetPCItemLastUnequippedSlot();
         }
 
         /// <summary>

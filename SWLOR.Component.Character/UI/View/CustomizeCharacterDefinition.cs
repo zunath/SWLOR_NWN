@@ -35,9 +35,9 @@ namespace SWLOR.Component.Character.UI.View
                             row.AddSpacer();
                             row.AddImage()
                                 .BindResref(model => model.ActivePortrait)
-                                .SetVerticalAlign(NuiVerticalAlign.Top)
-                                .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                                .SetAspect(NuiAspect.ExactScaled)
+                                .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                .SetHorizontalAlign(NuiHorizontalAlignType.Center)
+                                .SetAspect(NuiAspectType.ExactScaled)
                                 .SetWidth(128f)
                                 .SetHeight(200f);
                             row.AddSpacer();
@@ -62,8 +62,8 @@ namespace SWLOR.Component.Character.UI.View
                                     row2.AddLabel()
                                         .BindText(model => model.MaxPortraitsText)
                                         .SetHeight(35f)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                                        .SetVerticalAlign(NuiVerticalAlign.Middle);
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left)
+                                        .SetVerticalAlign(NuiVerticalAlignType.Middle);
                                 });
                             });
 

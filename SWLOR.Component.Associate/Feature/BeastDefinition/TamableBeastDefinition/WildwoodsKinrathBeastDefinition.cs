@@ -111,9 +111,9 @@ namespace SWLOR.Component.Associate.Feature.BeastDefinition.TamableBeastDefiniti
 				.MaxDefenseBonus(CombatDamageType.Poison, 0)
 				.MaxDefenseBonus(CombatDamageType.Electrical, 0)
 				.MaxDefenseBonus(CombatDamageType.Ice, 0)
-				.MaxSavingThrowBonus(SavingThrow.Will, 0)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 0)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 0);
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Will, 0)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Fortitude, 0)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Reflex, 0);
 		}
 
 		private void Level2()
@@ -139,9 +139,9 @@ namespace SWLOR.Component.Associate.Feature.BeastDefinition.TamableBeastDefiniti
 				.MaxDefenseBonus(CombatDamageType.Poison, 1)
 				.MaxDefenseBonus(CombatDamageType.Electrical, 1)
 				.MaxDefenseBonus(CombatDamageType.Ice, 1)
-				.MaxSavingThrowBonus(SavingThrow.Will, 0)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 0)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 0);
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Will, 0)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Fortitude, 0)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Reflex, 0);
 		}
 
 		private void Level3()
@@ -167,9 +167,9 @@ namespace SWLOR.Component.Associate.Feature.BeastDefinition.TamableBeastDefiniti
 				.MaxDefenseBonus(CombatDamageType.Poison, 1)
 				.MaxDefenseBonus(CombatDamageType.Electrical, 1)
 				.MaxDefenseBonus(CombatDamageType.Ice, 2)
-				.MaxSavingThrowBonus(SavingThrow.Will, 0)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 0)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 0);
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Will, 0)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Fortitude, 0)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Reflex, 0);
 		}
 
 		private void Level4()
@@ -195,9 +195,9 @@ namespace SWLOR.Component.Associate.Feature.BeastDefinition.TamableBeastDefiniti
 				.MaxDefenseBonus(CombatDamageType.Poison, 2)
 				.MaxDefenseBonus(CombatDamageType.Electrical, 2)
 				.MaxDefenseBonus(CombatDamageType.Ice, 2)
-				.MaxSavingThrowBonus(SavingThrow.Will, 0)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 0)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 0);
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Will, 0)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Fortitude, 0)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Reflex, 0);
 		}
 
 		private void Level5()
@@ -223,9 +223,9 @@ namespace SWLOR.Component.Associate.Feature.BeastDefinition.TamableBeastDefiniti
 				.MaxDefenseBonus(CombatDamageType.Poison, 2)
 				.MaxDefenseBonus(CombatDamageType.Electrical, 2)
 				.MaxDefenseBonus(CombatDamageType.Ice, 3)
-				.MaxSavingThrowBonus(SavingThrow.Will, 0)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 0)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 1);
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Will, 0)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Fortitude, 0)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Reflex, 1);
 		}
 
 		private void Level6()
@@ -251,9 +251,9 @@ namespace SWLOR.Component.Associate.Feature.BeastDefinition.TamableBeastDefiniti
 				.MaxDefenseBonus(CombatDamageType.Poison, 2)
 				.MaxDefenseBonus(CombatDamageType.Electrical, 2)
 				.MaxDefenseBonus(CombatDamageType.Ice, 4)
-				.MaxSavingThrowBonus(SavingThrow.Will, 0)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 0)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 1);
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Will, 0)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Fortitude, 0)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Reflex, 1);
 		}
 
 		private void Level7()
@@ -279,9 +279,9 @@ namespace SWLOR.Component.Associate.Feature.BeastDefinition.TamableBeastDefiniti
 				.MaxDefenseBonus(CombatDamageType.Poison, 3)
 				.MaxDefenseBonus(CombatDamageType.Electrical, 3)
 				.MaxDefenseBonus(CombatDamageType.Ice, 4)
-				.MaxSavingThrowBonus(SavingThrow.Will, 0)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 0)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 1);
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Will, 0)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Fortitude, 0)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Reflex, 1);
 		}
 
 		private void Level8()
@@ -307,9 +307,9 @@ namespace SWLOR.Component.Associate.Feature.BeastDefinition.TamableBeastDefiniti
 				.MaxDefenseBonus(CombatDamageType.Poison, 3)
 				.MaxDefenseBonus(CombatDamageType.Electrical, 3)
 				.MaxDefenseBonus(CombatDamageType.Ice, 5)
-				.MaxSavingThrowBonus(SavingThrow.Will, 0)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 0)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 1);
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Will, 0)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Fortitude, 0)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Reflex, 1);
 		}
 
 		private void Level9()
@@ -335,9 +335,9 @@ namespace SWLOR.Component.Associate.Feature.BeastDefinition.TamableBeastDefiniti
 				.MaxDefenseBonus(CombatDamageType.Poison, 4)
 				.MaxDefenseBonus(CombatDamageType.Electrical, 4)
 				.MaxDefenseBonus(CombatDamageType.Ice, 6)
-				.MaxSavingThrowBonus(SavingThrow.Will, 0)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 0)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 1);
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Will, 0)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Fortitude, 0)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Reflex, 1);
 		}
 
 		private void Level10()
@@ -363,9 +363,9 @@ namespace SWLOR.Component.Associate.Feature.BeastDefinition.TamableBeastDefiniti
 				.MaxDefenseBonus(CombatDamageType.Poison, 4)
 				.MaxDefenseBonus(CombatDamageType.Electrical, 4)
 				.MaxDefenseBonus(CombatDamageType.Ice, 6)
-				.MaxSavingThrowBonus(SavingThrow.Will, 0)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 0)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 1);
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Will, 0)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Fortitude, 0)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Reflex, 1);
 		}
 
 		private void Level11()
@@ -391,9 +391,9 @@ namespace SWLOR.Component.Associate.Feature.BeastDefinition.TamableBeastDefiniti
 				.MaxDefenseBonus(CombatDamageType.Poison, 4)
 				.MaxDefenseBonus(CombatDamageType.Electrical, 4)
 				.MaxDefenseBonus(CombatDamageType.Ice, 7)
-				.MaxSavingThrowBonus(SavingThrow.Will, 0)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 0)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 1);
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Will, 0)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Fortitude, 0)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Reflex, 1);
 		}
 
 		private void Level12()
@@ -419,9 +419,9 @@ namespace SWLOR.Component.Associate.Feature.BeastDefinition.TamableBeastDefiniti
 				.MaxDefenseBonus(CombatDamageType.Poison, 5)
 				.MaxDefenseBonus(CombatDamageType.Electrical, 5)
 				.MaxDefenseBonus(CombatDamageType.Ice, 7)
-				.MaxSavingThrowBonus(SavingThrow.Will, 0)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 0)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 1);
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Will, 0)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Fortitude, 0)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Reflex, 1);
 		}
 
 		private void Level13()
@@ -447,9 +447,9 @@ namespace SWLOR.Component.Associate.Feature.BeastDefinition.TamableBeastDefiniti
 				.MaxDefenseBonus(CombatDamageType.Poison, 5)
 				.MaxDefenseBonus(CombatDamageType.Electrical, 5)
 				.MaxDefenseBonus(CombatDamageType.Ice, 8)
-				.MaxSavingThrowBonus(SavingThrow.Will, 0)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 0)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 1);
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Will, 0)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Fortitude, 0)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Reflex, 1);
 		}
 
 		private void Level14()
@@ -475,9 +475,9 @@ namespace SWLOR.Component.Associate.Feature.BeastDefinition.TamableBeastDefiniti
 				.MaxDefenseBonus(CombatDamageType.Poison, 6)
 				.MaxDefenseBonus(CombatDamageType.Electrical, 6)
 				.MaxDefenseBonus(CombatDamageType.Ice, 9)
-				.MaxSavingThrowBonus(SavingThrow.Will, 0)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 0)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 1);
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Will, 0)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Fortitude, 0)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Reflex, 1);
 		}
 
 		private void Level15()
@@ -503,9 +503,9 @@ namespace SWLOR.Component.Associate.Feature.BeastDefinition.TamableBeastDefiniti
 				.MaxDefenseBonus(CombatDamageType.Poison, 6)
 				.MaxDefenseBonus(CombatDamageType.Electrical, 6)
 				.MaxDefenseBonus(CombatDamageType.Ice, 9)
-				.MaxSavingThrowBonus(SavingThrow.Will, 0)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 0)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 2);
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Will, 0)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Fortitude, 0)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Reflex, 2);
 		}
 
 		private void Level16()
@@ -531,9 +531,9 @@ namespace SWLOR.Component.Associate.Feature.BeastDefinition.TamableBeastDefiniti
 				.MaxDefenseBonus(CombatDamageType.Poison, 7)
 				.MaxDefenseBonus(CombatDamageType.Electrical, 7)
 				.MaxDefenseBonus(CombatDamageType.Ice, 10)
-				.MaxSavingThrowBonus(SavingThrow.Will, 0)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 0)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 2);
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Will, 0)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Fortitude, 0)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Reflex, 2);
 		}
 
 		private void Level17()
@@ -559,9 +559,9 @@ namespace SWLOR.Component.Associate.Feature.BeastDefinition.TamableBeastDefiniti
 				.MaxDefenseBonus(CombatDamageType.Poison, 7)
 				.MaxDefenseBonus(CombatDamageType.Electrical, 7)
 				.MaxDefenseBonus(CombatDamageType.Ice, 10)
-				.MaxSavingThrowBonus(SavingThrow.Will, 0)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 0)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 2);
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Will, 0)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Fortitude, 0)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Reflex, 2);
 		}
 
 		private void Level18()
@@ -587,9 +587,9 @@ namespace SWLOR.Component.Associate.Feature.BeastDefinition.TamableBeastDefiniti
 				.MaxDefenseBonus(CombatDamageType.Poison, 7)
 				.MaxDefenseBonus(CombatDamageType.Electrical, 7)
 				.MaxDefenseBonus(CombatDamageType.Ice, 11)
-				.MaxSavingThrowBonus(SavingThrow.Will, 0)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 0)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 2);
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Will, 0)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Fortitude, 0)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Reflex, 2);
 		}
 
 		private void Level19()
@@ -615,9 +615,9 @@ namespace SWLOR.Component.Associate.Feature.BeastDefinition.TamableBeastDefiniti
 				.MaxDefenseBonus(CombatDamageType.Poison, 8)
 				.MaxDefenseBonus(CombatDamageType.Electrical, 8)
 				.MaxDefenseBonus(CombatDamageType.Ice, 12)
-				.MaxSavingThrowBonus(SavingThrow.Will, 0)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 0)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 2);
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Will, 0)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Fortitude, 0)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Reflex, 2);
 		}
 
 		private void Level20()
@@ -643,9 +643,9 @@ namespace SWLOR.Component.Associate.Feature.BeastDefinition.TamableBeastDefiniti
 				.MaxDefenseBonus(CombatDamageType.Poison, 8)
 				.MaxDefenseBonus(CombatDamageType.Electrical, 8)
 				.MaxDefenseBonus(CombatDamageType.Ice, 12)
-				.MaxSavingThrowBonus(SavingThrow.Will, 0)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 0)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 2);
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Will, 0)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Fortitude, 0)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Reflex, 2);
 		}
 
 		private void Level21()
@@ -671,9 +671,9 @@ namespace SWLOR.Component.Associate.Feature.BeastDefinition.TamableBeastDefiniti
 				.MaxDefenseBonus(CombatDamageType.Poison, 9)
 				.MaxDefenseBonus(CombatDamageType.Electrical, 9)
 				.MaxDefenseBonus(CombatDamageType.Ice, 13)
-				.MaxSavingThrowBonus(SavingThrow.Will, 0)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 0)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 2);
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Will, 0)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Fortitude, 0)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Reflex, 2);
 		}
 
 		private void Level22()
@@ -699,9 +699,9 @@ namespace SWLOR.Component.Associate.Feature.BeastDefinition.TamableBeastDefiniti
 				.MaxDefenseBonus(CombatDamageType.Poison, 9)
 				.MaxDefenseBonus(CombatDamageType.Electrical, 9)
 				.MaxDefenseBonus(CombatDamageType.Ice, 13)
-				.MaxSavingThrowBonus(SavingThrow.Will, 0)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 0)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 2);
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Will, 0)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Fortitude, 0)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Reflex, 2);
 		}
 
 		private void Level23()
@@ -727,9 +727,9 @@ namespace SWLOR.Component.Associate.Feature.BeastDefinition.TamableBeastDefiniti
 				.MaxDefenseBonus(CombatDamageType.Poison, 9)
 				.MaxDefenseBonus(CombatDamageType.Electrical, 9)
 				.MaxDefenseBonus(CombatDamageType.Ice, 14)
-				.MaxSavingThrowBonus(SavingThrow.Will, 0)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 0)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 2);
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Will, 0)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Fortitude, 0)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Reflex, 2);
 		}
 
 		private void Level24()
@@ -755,9 +755,9 @@ namespace SWLOR.Component.Associate.Feature.BeastDefinition.TamableBeastDefiniti
 				.MaxDefenseBonus(CombatDamageType.Poison, 10)
 				.MaxDefenseBonus(CombatDamageType.Electrical, 10)
 				.MaxDefenseBonus(CombatDamageType.Ice, 15)
-				.MaxSavingThrowBonus(SavingThrow.Will, 0)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 0)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 2);
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Will, 0)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Fortitude, 0)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Reflex, 2);
 		}
 
 		private void Level25()
@@ -783,9 +783,9 @@ namespace SWLOR.Component.Associate.Feature.BeastDefinition.TamableBeastDefiniti
 				.MaxDefenseBonus(CombatDamageType.Poison, 10)
 				.MaxDefenseBonus(CombatDamageType.Electrical, 10)
 				.MaxDefenseBonus(CombatDamageType.Ice, 15)
-				.MaxSavingThrowBonus(SavingThrow.Will, 1)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 1)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 3);
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Will, 1)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Fortitude, 1)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Reflex, 3);
 		}
 
 		private void Level26()
@@ -811,9 +811,9 @@ namespace SWLOR.Component.Associate.Feature.BeastDefinition.TamableBeastDefiniti
 				.MaxDefenseBonus(CombatDamageType.Poison, 11)
 				.MaxDefenseBonus(CombatDamageType.Electrical, 11)
 				.MaxDefenseBonus(CombatDamageType.Ice, 16)
-				.MaxSavingThrowBonus(SavingThrow.Will, 1)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 1)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 3);
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Will, 1)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Fortitude, 1)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Reflex, 3);
 		}
 
 		private void Level27()
@@ -839,9 +839,9 @@ namespace SWLOR.Component.Associate.Feature.BeastDefinition.TamableBeastDefiniti
 				.MaxDefenseBonus(CombatDamageType.Poison, 11)
 				.MaxDefenseBonus(CombatDamageType.Electrical, 11)
 				.MaxDefenseBonus(CombatDamageType.Ice, 17)
-				.MaxSavingThrowBonus(SavingThrow.Will, 1)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 1)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 3);
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Will, 1)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Fortitude, 1)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Reflex, 3);
 		}
 
 		private void Level28()
@@ -867,9 +867,9 @@ namespace SWLOR.Component.Associate.Feature.BeastDefinition.TamableBeastDefiniti
 				.MaxDefenseBonus(CombatDamageType.Poison, 11)
 				.MaxDefenseBonus(CombatDamageType.Electrical, 11)
 				.MaxDefenseBonus(CombatDamageType.Ice, 17)
-				.MaxSavingThrowBonus(SavingThrow.Will, 1)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 1)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 3);
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Will, 1)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Fortitude, 1)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Reflex, 3);
 		}
 
 		private void Level29()
@@ -895,9 +895,9 @@ namespace SWLOR.Component.Associate.Feature.BeastDefinition.TamableBeastDefiniti
 				.MaxDefenseBonus(CombatDamageType.Poison, 12)
 				.MaxDefenseBonus(CombatDamageType.Electrical, 12)
 				.MaxDefenseBonus(CombatDamageType.Ice, 18)
-				.MaxSavingThrowBonus(SavingThrow.Will, 1)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 1)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 3);
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Will, 1)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Fortitude, 1)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Reflex, 3);
 		}
 
 		private void Level30()
@@ -923,9 +923,9 @@ namespace SWLOR.Component.Associate.Feature.BeastDefinition.TamableBeastDefiniti
 				.MaxDefenseBonus(CombatDamageType.Poison, 12)
 				.MaxDefenseBonus(CombatDamageType.Electrical, 12)
 				.MaxDefenseBonus(CombatDamageType.Ice, 18)
-				.MaxSavingThrowBonus(SavingThrow.Will, 1)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 1)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 3);
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Will, 1)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Fortitude, 1)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Reflex, 3);
 		}
 
 		private void Level31()
@@ -951,9 +951,9 @@ namespace SWLOR.Component.Associate.Feature.BeastDefinition.TamableBeastDefiniti
 				.MaxDefenseBonus(CombatDamageType.Poison, 13)
 				.MaxDefenseBonus(CombatDamageType.Electrical, 13)
 				.MaxDefenseBonus(CombatDamageType.Ice, 19)
-				.MaxSavingThrowBonus(SavingThrow.Will, 1)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 1)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 3);
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Will, 1)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Fortitude, 1)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Reflex, 3);
 		}
 
 		private void Level32()
@@ -979,9 +979,9 @@ namespace SWLOR.Component.Associate.Feature.BeastDefinition.TamableBeastDefiniti
 				.MaxDefenseBonus(CombatDamageType.Poison, 13)
 				.MaxDefenseBonus(CombatDamageType.Electrical, 13)
 				.MaxDefenseBonus(CombatDamageType.Ice, 20)
-				.MaxSavingThrowBonus(SavingThrow.Will, 1)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 1)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 3);
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Will, 1)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Fortitude, 1)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Reflex, 3);
 		}
 
 		private void Level33()
@@ -1007,9 +1007,9 @@ namespace SWLOR.Component.Associate.Feature.BeastDefinition.TamableBeastDefiniti
 				.MaxDefenseBonus(CombatDamageType.Poison, 13)
 				.MaxDefenseBonus(CombatDamageType.Electrical, 13)
 				.MaxDefenseBonus(CombatDamageType.Ice, 20)
-				.MaxSavingThrowBonus(SavingThrow.Will, 1)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 1)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 3);
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Will, 1)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Fortitude, 1)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Reflex, 3);
 		}
 
 		private void Level34()
@@ -1035,9 +1035,9 @@ namespace SWLOR.Component.Associate.Feature.BeastDefinition.TamableBeastDefiniti
 				.MaxDefenseBonus(CombatDamageType.Poison, 14)
 				.MaxDefenseBonus(CombatDamageType.Electrical, 14)
 				.MaxDefenseBonus(CombatDamageType.Ice, 21)
-				.MaxSavingThrowBonus(SavingThrow.Will, 1)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 1)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 3);
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Will, 1)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Fortitude, 1)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Reflex, 3);
 		}
 
 		private void Level35()
@@ -1063,9 +1063,9 @@ namespace SWLOR.Component.Associate.Feature.BeastDefinition.TamableBeastDefiniti
 				.MaxDefenseBonus(CombatDamageType.Poison, 14)
 				.MaxDefenseBonus(CombatDamageType.Electrical, 14)
 				.MaxDefenseBonus(CombatDamageType.Ice, 21)
-				.MaxSavingThrowBonus(SavingThrow.Will, 1)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 1)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 4);
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Will, 1)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Fortitude, 1)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Reflex, 4);
 		}
 
 		private void Level36()
@@ -1091,9 +1091,9 @@ namespace SWLOR.Component.Associate.Feature.BeastDefinition.TamableBeastDefiniti
 				.MaxDefenseBonus(CombatDamageType.Poison, 15)
 				.MaxDefenseBonus(CombatDamageType.Electrical, 15)
 				.MaxDefenseBonus(CombatDamageType.Ice, 22)
-				.MaxSavingThrowBonus(SavingThrow.Will, 1)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 1)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 4);
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Will, 1)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Fortitude, 1)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Reflex, 4);
 		}
 
 		private void Level37()
@@ -1119,9 +1119,9 @@ namespace SWLOR.Component.Associate.Feature.BeastDefinition.TamableBeastDefiniti
 				.MaxDefenseBonus(CombatDamageType.Poison, 15)
 				.MaxDefenseBonus(CombatDamageType.Electrical, 15)
 				.MaxDefenseBonus(CombatDamageType.Ice, 23)
-				.MaxSavingThrowBonus(SavingThrow.Will, 1)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 1)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 4);
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Will, 1)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Fortitude, 1)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Reflex, 4);
 		}
 
 		private void Level38()
@@ -1147,9 +1147,9 @@ namespace SWLOR.Component.Associate.Feature.BeastDefinition.TamableBeastDefiniti
 				.MaxDefenseBonus(CombatDamageType.Poison, 16)
 				.MaxDefenseBonus(CombatDamageType.Electrical, 16)
 				.MaxDefenseBonus(CombatDamageType.Ice, 23)
-				.MaxSavingThrowBonus(SavingThrow.Will, 1)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 1)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 4);
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Will, 1)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Fortitude, 1)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Reflex, 4);
 		}
 
 		private void Level39()
@@ -1175,9 +1175,9 @@ namespace SWLOR.Component.Associate.Feature.BeastDefinition.TamableBeastDefiniti
 				.MaxDefenseBonus(CombatDamageType.Poison, 16)
 				.MaxDefenseBonus(CombatDamageType.Electrical, 16)
 				.MaxDefenseBonus(CombatDamageType.Ice, 24)
-				.MaxSavingThrowBonus(SavingThrow.Will, 1)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 1)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 4);
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Will, 1)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Fortitude, 1)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Reflex, 4);
 		}
 
 		private void Level40()
@@ -1203,9 +1203,9 @@ namespace SWLOR.Component.Associate.Feature.BeastDefinition.TamableBeastDefiniti
 				.MaxDefenseBonus(CombatDamageType.Poison, 16)
 				.MaxDefenseBonus(CombatDamageType.Electrical, 16)
 				.MaxDefenseBonus(CombatDamageType.Ice, 24)
-				.MaxSavingThrowBonus(SavingThrow.Will, 1)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 1)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 4);
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Will, 1)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Fortitude, 1)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Reflex, 4);
 		}
 
 		private void Level41()
@@ -1231,9 +1231,9 @@ namespace SWLOR.Component.Associate.Feature.BeastDefinition.TamableBeastDefiniti
 				.MaxDefenseBonus(CombatDamageType.Poison, 17)
 				.MaxDefenseBonus(CombatDamageType.Electrical, 17)
 				.MaxDefenseBonus(CombatDamageType.Ice, 25)
-				.MaxSavingThrowBonus(SavingThrow.Will, 1)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 1)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 4);
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Will, 1)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Fortitude, 1)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Reflex, 4);
 		}
 
 		private void Level42()
@@ -1259,9 +1259,9 @@ namespace SWLOR.Component.Associate.Feature.BeastDefinition.TamableBeastDefiniti
 				.MaxDefenseBonus(CombatDamageType.Poison, 17)
 				.MaxDefenseBonus(CombatDamageType.Electrical, 17)
 				.MaxDefenseBonus(CombatDamageType.Ice, 26)
-				.MaxSavingThrowBonus(SavingThrow.Will, 1)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 1)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 4);
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Will, 1)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Fortitude, 1)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Reflex, 4);
 		}
 
 		private void Level43()
@@ -1287,9 +1287,9 @@ namespace SWLOR.Component.Associate.Feature.BeastDefinition.TamableBeastDefiniti
 				.MaxDefenseBonus(CombatDamageType.Poison, 18)
 				.MaxDefenseBonus(CombatDamageType.Electrical, 18)
 				.MaxDefenseBonus(CombatDamageType.Ice, 26)
-				.MaxSavingThrowBonus(SavingThrow.Will, 1)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 1)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 4);
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Will, 1)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Fortitude, 1)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Reflex, 4);
 		}
 
 		private void Level44()
@@ -1315,9 +1315,9 @@ namespace SWLOR.Component.Associate.Feature.BeastDefinition.TamableBeastDefiniti
 				.MaxDefenseBonus(CombatDamageType.Poison, 18)
 				.MaxDefenseBonus(CombatDamageType.Electrical, 18)
 				.MaxDefenseBonus(CombatDamageType.Ice, 27)
-				.MaxSavingThrowBonus(SavingThrow.Will, 1)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 1)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 4);
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Will, 1)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Fortitude, 1)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Reflex, 4);
 		}
 
 		private void Level45()
@@ -1343,9 +1343,9 @@ namespace SWLOR.Component.Associate.Feature.BeastDefinition.TamableBeastDefiniti
 				.MaxDefenseBonus(CombatDamageType.Poison, 18)
 				.MaxDefenseBonus(CombatDamageType.Electrical, 18)
 				.MaxDefenseBonus(CombatDamageType.Ice, 28)
-				.MaxSavingThrowBonus(SavingThrow.Will, 1)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 1)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 5);
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Will, 1)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Fortitude, 1)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Reflex, 5);
 		}
 
 		private void Level46()
@@ -1371,9 +1371,9 @@ namespace SWLOR.Component.Associate.Feature.BeastDefinition.TamableBeastDefiniti
 				.MaxDefenseBonus(CombatDamageType.Poison, 19)
 				.MaxDefenseBonus(CombatDamageType.Electrical, 19)
 				.MaxDefenseBonus(CombatDamageType.Ice, 28)
-				.MaxSavingThrowBonus(SavingThrow.Will, 1)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 1)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 5);
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Will, 1)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Fortitude, 1)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Reflex, 5);
 		}
 
 		private void Level47()
@@ -1399,9 +1399,9 @@ namespace SWLOR.Component.Associate.Feature.BeastDefinition.TamableBeastDefiniti
 				.MaxDefenseBonus(CombatDamageType.Poison, 19)
 				.MaxDefenseBonus(CombatDamageType.Electrical, 19)
 				.MaxDefenseBonus(CombatDamageType.Ice, 29)
-				.MaxSavingThrowBonus(SavingThrow.Will, 1)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 1)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 5);
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Will, 1)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Fortitude, 1)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Reflex, 5);
 		}
 
 		private void Level48()
@@ -1427,9 +1427,9 @@ namespace SWLOR.Component.Associate.Feature.BeastDefinition.TamableBeastDefiniti
 				.MaxDefenseBonus(CombatDamageType.Poison, 20)
 				.MaxDefenseBonus(CombatDamageType.Electrical, 20)
 				.MaxDefenseBonus(CombatDamageType.Ice, 29)
-				.MaxSavingThrowBonus(SavingThrow.Will, 1)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 1)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 5);
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Will, 1)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Fortitude, 1)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Reflex, 5);
 		}
 
 		private void Level49()
@@ -1455,9 +1455,9 @@ namespace SWLOR.Component.Associate.Feature.BeastDefinition.TamableBeastDefiniti
 				.MaxDefenseBonus(CombatDamageType.Poison, 20)
 				.MaxDefenseBonus(CombatDamageType.Electrical, 20)
 				.MaxDefenseBonus(CombatDamageType.Ice, 30)
-				.MaxSavingThrowBonus(SavingThrow.Will, 1)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 1)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 5);
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Will, 1)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Fortitude, 1)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Reflex, 5);
 		}
 
 		private void Level50()
@@ -1483,9 +1483,9 @@ namespace SWLOR.Component.Associate.Feature.BeastDefinition.TamableBeastDefiniti
 				.MaxDefenseBonus(CombatDamageType.Poison, 20)
 				.MaxDefenseBonus(CombatDamageType.Electrical, 20)
 				.MaxDefenseBonus(CombatDamageType.Ice, 30)
-				.MaxSavingThrowBonus(SavingThrow.Will, 1)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, 1)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, 5);
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Will, 1)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Fortitude, 1)
+				.MaxSavingThrowBonus(SavingThrowCategoryType.Reflex, 5);
 		}
 
     }

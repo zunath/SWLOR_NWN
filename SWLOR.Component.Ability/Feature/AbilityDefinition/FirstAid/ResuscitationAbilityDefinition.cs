@@ -1,7 +1,6 @@
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Character.ValueObjects;
 using SWLOR.Shared.Domain.Common.Enums;
@@ -71,7 +70,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.FirstAid
                 ApplyEffectToObject(DurationType.Instant, EffectHeal(hp), target);
             }
 
-            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Heal), target);
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Imp_Head_Heal), target);
             TakeMedicalSupplies(activator);
         }
 
@@ -84,7 +83,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.FirstAid
                 .HasActivationDelay(6f)
                 .HasMaxRange(30.0f)
                 .RequirementStamina(10)
-                .UsesAnimation(Animation.LoopingGetLow)
+                .UsesAnimation(AnimationType.LoopingGetLow)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
@@ -106,7 +105,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.FirstAid
                 .HasActivationDelay(6f)
                 .HasMaxRange(30.0f)
                 .RequirementStamina(10)
-                .UsesAnimation(Animation.LoopingGetLow)
+                .UsesAnimation(AnimationType.LoopingGetLow)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
@@ -128,7 +127,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.FirstAid
                 .HasActivationDelay(6f)
                 .HasMaxRange(30.0f)
                 .RequirementStamina(10)
-                .UsesAnimation(Animation.LoopingGetLow)
+                .UsesAnimation(AnimationType.LoopingGetLow)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)

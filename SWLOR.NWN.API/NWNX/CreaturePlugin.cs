@@ -1,8 +1,7 @@
 using System.Numerics;
 using SWLOR.NWN.API.NWNX.Enum;
+using SWLOR.NWN.API.NWNX.Model;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Creature;
-using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.NWN.API.NWNX
 {
@@ -493,7 +492,7 @@ namespace SWLOR.NWN.API.NWNX
         /// The movement rate affects walking, running, and other movement actions.
         /// Use GetMovementRateFactor() to get the current movement rate factor.
         /// </remarks>
-        public static void SetMovementRate(uint creature, MovementRate rate)
+        public static void SetMovementRate(uint creature, MovementRateType rate)
         {
             global::NWN.Core.NWNX.CreaturePlugin.SetMovementRate(creature, (int)rate);
         }
@@ -681,7 +680,7 @@ namespace SWLOR.NWN.API.NWNX
         /// - Certain spell effects and area of effect calculations
         /// Use CREATURE_SIZE_* constants for valid size values.
         /// </remarks>
-        public static void SetSize(uint creature, CreatureSize creatureSize)
+        public static void SetSize(uint creature, CreatureSizeType creatureSize)
         {
             global::NWN.Core.NWNX.CreaturePlugin.SetSize(creature, (int)creatureSize);
         }
@@ -823,7 +822,7 @@ namespace SWLOR.NWN.API.NWNX
         /// The base saving throw is the foundation for the total saving throw calculation.
         /// This value is modified by ability scores and other factors to determine the final saving throw.
         /// </remarks>
-        public static void SetBaseSavingThrow(uint creature, SavingThrow which, int value)
+        public static void SetBaseSavingThrow(uint creature, SavingThrowCategoryType which, int value)
         {
             global::NWN.Core.NWNX.CreaturePlugin.SetBaseSavingThrow(creature, (int)which, value);
         }
@@ -1343,7 +1342,7 @@ namespace SWLOR.NWN.API.NWNX
         /// Persistence is activated each server reset by first use of either 'SetCriticalMultiplier*' functions.
         /// Recommended to trigger on a dummy target OnModuleLoad to enable persistence.
         /// </remarks>
-        public static void SetCriticalMultiplierModifier(uint creature, int modifier, int hand = 0, bool persist = false, BaseItem baseItemType = BaseItem.Invalid)
+        public static void SetCriticalMultiplierModifier(uint creature, int modifier, int hand = 0, bool persist = false, BaseItemType baseItemType = BaseItemType.Invalid)
         {
             global::NWN.Core.NWNX.CreaturePlugin.SetCriticalMultiplierModifier(creature, modifier, hand, persist ? 1 : 0, (int)baseItemType);
         }
@@ -1359,7 +1358,7 @@ namespace SWLOR.NWN.API.NWNX
         /// This returns the current critical hit multiplier modifier for the specified hand and item type.
         /// Returns 0 if no modifier is set or if there's an error.
         /// </remarks>
-        public static int GetCriticalMultiplierModifier(uint creature, int hand = 0, BaseItem baseItemType = BaseItem.Invalid)
+        public static int GetCriticalMultiplierModifier(uint creature, int hand = 0, BaseItemType baseItemType = BaseItemType.Invalid)
         {
             return global::NWN.Core.NWNX.CreaturePlugin.GetCriticalMultiplierModifier(creature, hand, (int)baseItemType);
         }
@@ -1377,7 +1376,7 @@ namespace SWLOR.NWN.API.NWNX
         /// Unlike modifiers, overrides completely replace the base critical hit multiplier.
         /// Persistence is activated each server reset by first use of either 'SetCriticalMultiplier*' functions.
         /// </remarks>
-        public static void SetCriticalMultiplierOverride(uint creature, int @override, int hand = 0, bool persist = false, BaseItem baseItemType = BaseItem.Invalid)
+        public static void SetCriticalMultiplierOverride(uint creature, int @override, int hand = 0, bool persist = false, BaseItemType baseItemType = BaseItemType.Invalid)
         {
             global::NWN.Core.NWNX.CreaturePlugin.SetCriticalMultiplierOverride(creature, @override, hand, persist ? 1 : 0, (int)baseItemType);
         }
@@ -1393,7 +1392,7 @@ namespace SWLOR.NWN.API.NWNX
         /// This returns the current critical hit multiplier override for the specified hand and item type.
         /// Returns 0 if no override is set or if there's an error.
         /// </remarks>
-        public static int GetCriticalMultiplierOverride(uint creature, int hand = 0, BaseItem baseItemType = BaseItem.Invalid)
+        public static int GetCriticalMultiplierOverride(uint creature, int hand = 0, BaseItemType baseItemType = BaseItemType.Invalid)
         {
             return global::NWN.Core.NWNX.CreaturePlugin.GetCriticalMultiplierOverride(creature, hand, (int)baseItemType);
         }
@@ -1411,7 +1410,7 @@ namespace SWLOR.NWN.API.NWNX
         /// The modifier is added to the base critical hit range (typically 20).
         /// A positive modifier increases the critical hit range, making critical hits more likely.
         /// </remarks>
-        public static void SetCriticalRangeModifier(uint creature, int modifier, int hand = 0, bool persist = false, BaseItem baseItemType = BaseItem.Invalid)
+        public static void SetCriticalRangeModifier(uint creature, int modifier, int hand = 0, bool persist = false, BaseItemType baseItemType = BaseItemType.Invalid)
         {
             global::NWN.Core.NWNX.CreaturePlugin.SetCriticalRangeModifier(creature, modifier, hand, persist ? 1 : 0, (int)baseItemType);
         }
@@ -1427,7 +1426,7 @@ namespace SWLOR.NWN.API.NWNX
         /// This returns the current critical range modifier for the specified hand and item type.
         /// Returns 0 if no modifier is set or if there's an error.
         /// </remarks>
-        public static int GetCriticalRangeModifier(uint creature, int hand = 0, BaseItem baseItemType = BaseItem.Invalid)
+        public static int GetCriticalRangeModifier(uint creature, int hand = 0, BaseItemType baseItemType = BaseItemType.Invalid)
         {
             return global::NWN.Core.NWNX.CreaturePlugin.GetCriticalRangeModifier(creature, hand, (int)baseItemType);
         }
@@ -1445,7 +1444,7 @@ namespace SWLOR.NWN.API.NWNX
         /// Unlike modifiers, overrides completely replace the base critical hit range.
         /// The override value represents the highest roll that can result in a critical hit.
         /// </remarks>
-        public static void SetCriticalRangeOverride(uint creature, int @override, int hand = 0, bool persist = false, BaseItem baseItemType = BaseItem.Invalid)
+        public static void SetCriticalRangeOverride(uint creature, int @override, int hand = 0, bool persist = false, BaseItemType baseItemType = BaseItemType.Invalid)
         {
             global::NWN.Core.NWNX.CreaturePlugin.SetCriticalRangeOverride(creature, @override, hand, persist ? 1 : 0, (int)baseItemType);
         }
@@ -1461,7 +1460,7 @@ namespace SWLOR.NWN.API.NWNX
         /// This returns the current critical range override for the specified hand and item type.
         /// Returns 0 if no override is set or if there's an error.
         /// </remarks>
-        public static int GetCriticalRangeOverride(uint creature, int hand = 0, BaseItem baseItemType = BaseItem.Invalid)
+        public static int GetCriticalRangeOverride(uint creature, int hand = 0, BaseItemType baseItemType = BaseItemType.Invalid)
         {
             return global::NWN.Core.NWNX.CreaturePlugin.GetCriticalRangeOverride(creature, hand, (int)baseItemType);
         }

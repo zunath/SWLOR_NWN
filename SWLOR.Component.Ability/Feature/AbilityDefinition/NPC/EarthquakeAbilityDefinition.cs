@@ -1,8 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Creature;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
@@ -40,7 +38,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.NPC
             builder.Create(FeatType.Earthquake, PerkType.Invalid)
                 .Name("Earthquake")
                 .HasActivationDelay(4.0f)
-                .DisplaysVisualEffectWhenActivating(VisualEffect.Vfx_Dur_Aura_Blue)
+                .DisplaysVisualEffectWhenActivating(VisualEffectType.Vfx_Dur_Aura_Blue)
                 .HasRecastDelay(RecastGroup.Earthquake, 60f)
                 .IsCastedAbility()
                 .RequirementStamina(10)
@@ -55,7 +53,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.NPC
                             var duration = 8f + Random.NextFloat(1f, 5f);
 
                             ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), nearest, duration);
-                            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Com_Chunk_Stone_Small), nearest);
+                            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Com_Chunk_Stone_Small), nearest);
 
                             SendMessageToPC(nearest, "The earthquake knocks you down!");
                         }
@@ -71,7 +69,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.NPC
             builder.Create(FeatType.GreaterEarthquake, PerkType.Invalid)
                 .Name("Greater Earthquake")
                 .HasActivationDelay(6.0f)
-                .DisplaysVisualEffectWhenActivating(VisualEffect.Vfx_Dur_Aura_Blue)
+                .DisplaysVisualEffectWhenActivating(VisualEffectType.Vfx_Dur_Aura_Blue)
                 .HasRecastDelay(RecastGroup.GreaterEarthquake, 180f)
                 .IsCastedAbility()
                 .RequirementStamina(10)
@@ -89,7 +87,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.NPC
                             var duration = 18f;
 
                             ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), nearest, duration);
-                            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Com_Chunk_Stone_Small), nearest);
+                            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Com_Chunk_Stone_Small), nearest);
 
                             SendMessageToPC(nearest, "The earthquake knocks you down!");
 

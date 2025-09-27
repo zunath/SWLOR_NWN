@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Beasts.Contracts;
 using SWLOR.Shared.Domain.Character.Contracts;
@@ -42,7 +41,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beastmaster
                 .Name("Call Beast")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.CallBeast, 60f * 10f)
-                .UsesAnimation(Animation.LoopingGetMid)
+                .UsesAnimation(AnimationType.LoopingGetMid)
                 .HasActivationDelay(6f)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()

@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Character.ValueObjects;
@@ -60,11 +59,11 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beasts
             AssignCommand(activator, () =>
             {
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), target);
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Com_Blood_Spark_Medium), target);
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Com_Blood_Spark_Medium), target);
             });
 
             StatusEffectService.Apply(activator, activator, StatusEffectType.Assault, 30f);
-            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Magblue), activator);
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Imp_Magblue), activator);
 
             EnmityService.ModifyEnmity(activator, target, 350 + damage);
         }

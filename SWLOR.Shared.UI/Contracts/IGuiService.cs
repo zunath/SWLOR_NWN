@@ -136,7 +136,7 @@ namespace SWLOR.Shared.UI.Contracts
         /// <returns>An object containing Id reservation details.</returns>
         IdReservation GetSystemReservation(string systemName);
 
-        void DrawWindow(uint player, int startId, ScreenAnchor anchor, int x, int y, int width, int height, float lifeTime = 10.0f);
+        void DrawWindow(uint player, int startId, ScreenAnchorType anchor, int x, int y, int width, int height, float lifeTime = 10.0f);
 
         /// <summary>
         /// Gets the modified X coordinate of where to place a string within the center of a window.

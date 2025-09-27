@@ -69,15 +69,15 @@ namespace SWLOR.Component.Inventory.UI.View
                                         .BindResref(model => model.ItemResrefs)
                                         .SetMargin(0f);
                                 })
-                                    .SetScrollbars(NuiScrollbars.None);
+                                    .SetScrollbars(NuiScrollbarType.None);
                             });
 
                             template.AddCell(cell =>
                             {
                                 cell.AddLabel()
                                     .BindText(model => model.ItemNames)
-                                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                                    .SetVerticalAlign(NuiVerticalAlign.Middle);
+                                    .SetHorizontalAlign(NuiHorizontalAlignType.Left)
+                                    .SetVerticalAlign(NuiVerticalAlignType.Middle);
                             });
 
                             template.AddCell(cell =>

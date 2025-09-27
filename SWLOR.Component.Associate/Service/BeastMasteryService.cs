@@ -4,8 +4,6 @@ using SWLOR.Component.Associate.Enums;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Associate;
-using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Contracts;
@@ -298,7 +296,7 @@ namespace SWLOR.Component.Associate.Service
             SetBeastType(beast, dbBeast.Type);
 
             SetCreatureAppearanceType(beast, beastDetail.Appearance);
-            SetObjectVisualTransform(beast, ObjectVisualTransform.Scale, beastDetail.AppearanceScale);
+            SetObjectVisualTransform(beast, ObjectVisualTransformType.Scale, beastDetail.AppearanceScale);
             SetPortraitId(beast, dbBeast.PortraitId > -1 ? dbBeast.PortraitId : beastDetail.PortraitId);
             SetSoundset(beast, dbBeast.SoundSetId > -1 ? dbBeast.SoundSetId : beastDetail.SoundSetId);
             
@@ -322,23 +320,23 @@ namespace SWLOR.Component.Associate.Service
             }
 
             // Scripts
-            SetEventScript(beast, EventScript.Creature_OnBlockedByDoor, ScriptName.OnBeastBlocked);
-            SetEventScript(beast, EventScript.Creature_OnEndCombatRound, ScriptName.OnBeastRoundEnd);
-            SetEventScript(beast, EventScript.Creature_OnDialogue, ScriptName.OnBeastConversation);
-            SetEventScript(beast, EventScript.Creature_OnDamaged, ScriptName.OnBeastDamaged);
-            SetEventScript(beast, EventScript.Creature_OnDeath, ScriptName.OnBeastDeath);
-            SetEventScript(beast, EventScript.Creature_OnDisturbed, ScriptName.OnBeastDisturbed);
-            SetEventScript(beast, EventScript.Creature_OnHeartbeat, ScriptName.OnBeastHeartbeat);
-            SetEventScript(beast, EventScript.Creature_OnNotice, ScriptName.OnBeastPerception);
-            SetEventScript(beast, EventScript.Creature_OnMeleeAttacked, ScriptName.OnBeastAttacked);
-            SetEventScript(beast, EventScript.Creature_OnRested, ScriptName.OnBeastRest);
-            SetEventScript(beast, EventScript.Creature_OnSpawnIn, ScriptName.OnBeastSpawn);
-            SetEventScript(beast, EventScript.Creature_OnSpellCastAt, ScriptName.OnBeastSpellCast);
-            SetEventScript(beast, EventScript.Creature_OnUserDefined, ScriptName.OnBeastUserDefined);
+            SetEventScript(beast, EventScriptType.Creature_OnBlockedByDoor, ScriptName.OnBeastBlocked);
+            SetEventScript(beast, EventScriptType.Creature_OnEndCombatRound, ScriptName.OnBeastRoundEnd);
+            SetEventScript(beast, EventScriptType.Creature_OnDialogue, ScriptName.OnBeastConversation);
+            SetEventScript(beast, EventScriptType.Creature_OnDamaged, ScriptName.OnBeastDamaged);
+            SetEventScript(beast, EventScriptType.Creature_OnDeath, ScriptName.OnBeastDeath);
+            SetEventScript(beast, EventScriptType.Creature_OnDisturbed, ScriptName.OnBeastDisturbed);
+            SetEventScript(beast, EventScriptType.Creature_OnHeartbeat, ScriptName.OnBeastHeartbeat);
+            SetEventScript(beast, EventScriptType.Creature_OnNotice, ScriptName.OnBeastPerception);
+            SetEventScript(beast, EventScriptType.Creature_OnMeleeAttacked, ScriptName.OnBeastAttacked);
+            SetEventScript(beast, EventScriptType.Creature_OnRested, ScriptName.OnBeastRest);
+            SetEventScript(beast, EventScriptType.Creature_OnSpawnIn, ScriptName.OnBeastSpawn);
+            SetEventScript(beast, EventScriptType.Creature_OnSpellCastAt, ScriptName.OnBeastSpellCast);
+            SetEventScript(beast, EventScriptType.Creature_OnUserDefined, ScriptName.OnBeastUserDefined);
 
             // Ensure the spawn script gets called as it normally gets skipped
             // because it doesn't exist at the time of the beast being created.
-            ExecuteScript(GetEventScript(beast, EventScript.Creature_OnSpawnIn), beast);
+            ExecuteScript(GetEventScript(beast, EventScriptType.Creature_OnSpawnIn), beast);
 
             AssignCommand(GetModule(), () =>
             {
@@ -362,8 +360,8 @@ namespace SWLOR.Component.Associate.Service
             var dbBeast = _db.Get<Beast>(beastId);
             var beastDetail = GetBeastDetail(dbBeast.Type);
 
-            var skin = GetItemInSlot(InventorySlot.CreatureArmor, beast);
-            var claw = GetItemInSlot(InventorySlot.CreatureLeft, beast);
+            var skin = GetItemInSlot(InventorySlotType.CreatureArmor, beast);
+            var claw = GetItemInSlot(InventorySlotType.CreatureLeft, beast);
             
             var level = beastDetail.Levels[dbBeast.Level];
             
@@ -394,9 +392,9 @@ namespace SWLOR.Component.Associate.Service
             var poisonDefenseBonus = (int)(level.MaxDefenseBonuses[CombatDamageType.Poison] * (dbBeast.DefensePurities[CombatDamageType.Poison] * 0.01f));
             var electricalDefenseBonus = (int)(level.MaxDefenseBonuses[CombatDamageType.Electrical] * (dbBeast.DefensePurities[CombatDamageType.Electrical] * 0.01f));
 
-            var willBonus = (int)(level.MaxSavingThrowBonuses[SavingThrow.Will] * (dbBeast.SavingThrowPurities[SavingThrow.Will] * 0.01f));
-            var fortitudeBonus = (int)(level.MaxSavingThrowBonuses[SavingThrow.Fortitude] * (dbBeast.SavingThrowPurities[SavingThrow.Fortitude] * 0.01f));
-            var reflexBonus = (int)(level.MaxSavingThrowBonuses[SavingThrow.Reflex] * (dbBeast.SavingThrowPurities[SavingThrow.Reflex] * 0.01f));
+            var willBonus = (int)(level.MaxSavingThrowBonuses[SavingThrowCategoryType.Will] * (dbBeast.SavingThrowPurities[SavingThrowCategoryType.Will] * 0.01f));
+            var fortitudeBonus = (int)(level.MaxSavingThrowBonuses[SavingThrowCategoryType.Fortitude] * (dbBeast.SavingThrowPurities[SavingThrowCategoryType.Fortitude] * 0.01f));
+            var reflexBonus = (int)(level.MaxSavingThrowBonuses[SavingThrowCategoryType.Reflex] * (dbBeast.SavingThrowPurities[SavingThrowCategoryType.Reflex] * 0.01f));
 
             BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.Attack, -1, attackBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
             BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.AccuracyBonus, -1, accuracyBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
@@ -409,9 +407,9 @@ namespace SWLOR.Component.Associate.Service
             BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.Defense, (int)CombatDamageType.Poison, poisonDefenseBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
             BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.Defense, (int)CombatDamageType.Electrical, electricalDefenseBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
 
-            BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.SavingThrowBonusSpecific, (int)SavingThrow.Will, willBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-            BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.SavingThrowBonusSpecific, (int)SavingThrow.Fortitude, fortitudeBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-            BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.SavingThrowBonusSpecific, (int)SavingThrow.Reflex, reflexBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.SavingThrowBonusSpecific, (int)SavingThrowCategoryType.Will, willBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.SavingThrowBonusSpecific, (int)SavingThrowCategoryType.Fortitude, fortitudeBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.SavingThrowBonusSpecific, (int)SavingThrowCategoryType.Reflex, reflexBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
         }
 
         public (BeastFoodType, BeastFoodType) GetLikedAndHatedFood()
@@ -472,11 +470,11 @@ namespace SWLOR.Component.Associate.Service
             var type = GetBaseItemType(item);
 
             // Creature items are OK to acquire.
-            if (type == BaseItem.CreatureBludgeonWeapon ||
-                type == BaseItem.CreaturePierceWeapon ||
-                type == BaseItem.CreatureSlashPierceWeapon ||
-                type == BaseItem.CreatureSlashWeapon ||
-                type == BaseItem.CreatureItem)
+            if (type == BaseItemType.CreatureBludgeonWeapon ||
+                type == BaseItemType.CreaturePierceWeapon ||
+                type == BaseItemType.CreatureSlashPierceWeapon ||
+                type == BaseItemType.CreatureSlashWeapon ||
+                type == BaseItemType.CreatureItem)
                 return;
 
             SendMessageToPC(master, "Beasts cannot hold items.");
@@ -567,7 +565,7 @@ namespace SWLOR.Component.Associate.Service
                 SetIsDestroyable(true, false, false);
             });
             StatService.LoadNPCStats();
-            StatService.ApplyAttacksPerRound(beast, GetItemInSlot(InventorySlot.CreatureLeft));
+            StatService.ApplyAttacksPerRound(beast, GetItemInSlot(InventorySlotType.CreatureLeft));
         }
 
         public void BeastOnSpellCastAt()
@@ -831,9 +829,9 @@ namespace SWLOR.Component.Associate.Service
                 ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.PoisonDefensePurity, job.DefensePurities[CombatDamageType.Poison]),
                 ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.ElectricalDefensePurity, job.DefensePurities[CombatDamageType.Electrical]),
                 ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.IceDefensePurity, job.DefensePurities[CombatDamageType.Ice]),
-                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.FortitudePurity, job.SavingThrowPurities[SavingThrow.Fortitude]),
-                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.ReflexPurity, job.SavingThrowPurities[SavingThrow.Reflex]),
-                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.WillPurity, job.SavingThrowPurities[SavingThrow.Will]),
+                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.FortitudePurity, job.SavingThrowPurities[SavingThrowCategoryType.Fortitude]),
+                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.ReflexPurity, job.SavingThrowPurities[SavingThrowCategoryType.Reflex]),
+                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.WillPurity, job.SavingThrowPurities[SavingThrowCategoryType.Will]),
                 ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.XPPenalty, job.XPPenalty),
             };
 

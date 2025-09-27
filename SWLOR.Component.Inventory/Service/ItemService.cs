@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Domain.Character.Contracts;
@@ -31,8 +30,8 @@ namespace SWLOR.Component.Inventory.Service
         
         // Additional caches for complex data
         private readonly Dictionary<int, int[]> _2daCache = new();
-        private readonly Dictionary<BaseItem, AbilityType> _itemToDamageAbilityMapping = new();
-        private readonly Dictionary<BaseItem, AbilityType> _itemToAccuracyAbilityMapping = new();
+        private readonly Dictionary<BaseItemType, AbilityType> _itemToDamageAbilityMapping = new();
+        private readonly Dictionary<BaseItemType, AbilityType> _itemToAccuracyAbilityMapping = new();
 
         public ItemService(
             ILogger logger, 
@@ -99,68 +98,68 @@ namespace SWLOR.Component.Inventory.Service
         public void LoadItemToDamageStatMapping()
         {
             // One-Handed Skills
-            _itemToDamageAbilityMapping[BaseItem.BastardSword] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.BattleAxe] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.Dagger] = AbilityType.Perception;
-            _itemToDamageAbilityMapping[BaseItem.HandAxe] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.Kama] = AbilityType.Perception;
-            _itemToDamageAbilityMapping[BaseItem.Katana] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.Kukri] = AbilityType.Perception;
-            _itemToDamageAbilityMapping[BaseItem.LightFlail] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.LightHammer] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.LightMace] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.Longsword] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.MorningStar] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.Rapier] = AbilityType.Perception;
-            _itemToDamageAbilityMapping[BaseItem.Scimitar] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.ShortSword] = AbilityType.Perception;
-            _itemToDamageAbilityMapping[BaseItem.Sickle] = AbilityType.Perception;
-            _itemToDamageAbilityMapping[BaseItem.Whip] = AbilityType.Perception;
-            _itemToDamageAbilityMapping[BaseItem.Lightsaber] = AbilityType.Perception;
-            _itemToDamageAbilityMapping[BaseItem.Electroblade] = AbilityType.Perception;
+            _itemToDamageAbilityMapping[BaseItemType.BastardSword] = AbilityType.Might;
+            _itemToDamageAbilityMapping[BaseItemType.BattleAxe] = AbilityType.Might;
+            _itemToDamageAbilityMapping[BaseItemType.Dagger] = AbilityType.Perception;
+            _itemToDamageAbilityMapping[BaseItemType.HandAxe] = AbilityType.Might;
+            _itemToDamageAbilityMapping[BaseItemType.Kama] = AbilityType.Perception;
+            _itemToDamageAbilityMapping[BaseItemType.Katana] = AbilityType.Might;
+            _itemToDamageAbilityMapping[BaseItemType.Kukri] = AbilityType.Perception;
+            _itemToDamageAbilityMapping[BaseItemType.LightFlail] = AbilityType.Might;
+            _itemToDamageAbilityMapping[BaseItemType.LightHammer] = AbilityType.Might;
+            _itemToDamageAbilityMapping[BaseItemType.LightMace] = AbilityType.Might;
+            _itemToDamageAbilityMapping[BaseItemType.Longsword] = AbilityType.Might;
+            _itemToDamageAbilityMapping[BaseItemType.MorningStar] = AbilityType.Might;
+            _itemToDamageAbilityMapping[BaseItemType.Rapier] = AbilityType.Perception;
+            _itemToDamageAbilityMapping[BaseItemType.Scimitar] = AbilityType.Might;
+            _itemToDamageAbilityMapping[BaseItemType.ShortSword] = AbilityType.Perception;
+            _itemToDamageAbilityMapping[BaseItemType.Sickle] = AbilityType.Perception;
+            _itemToDamageAbilityMapping[BaseItemType.Whip] = AbilityType.Perception;
+            _itemToDamageAbilityMapping[BaseItemType.Lightsaber] = AbilityType.Perception;
+            _itemToDamageAbilityMapping[BaseItemType.Electroblade] = AbilityType.Perception;
 
             // Two-Handed Skills
-            _itemToDamageAbilityMapping[BaseItem.DireMace] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.DwarvenWarAxe] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.GreatAxe] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.GreatSword] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.Halberd] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.HeavyFlail] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.Scythe] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.Trident] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.WarHammer] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.ShortSpear] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.TwoBladedSword] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.DoubleAxe] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.Saberstaff] = AbilityType.Perception;
-            _itemToDamageAbilityMapping[BaseItem.TwinElectroBlade] = AbilityType.Perception;
+            _itemToDamageAbilityMapping[BaseItemType.DireMace] = AbilityType.Might;
+            _itemToDamageAbilityMapping[BaseItemType.DwarvenWarAxe] = AbilityType.Might;
+            _itemToDamageAbilityMapping[BaseItemType.GreatAxe] = AbilityType.Might;
+            _itemToDamageAbilityMapping[BaseItemType.GreatSword] = AbilityType.Might;
+            _itemToDamageAbilityMapping[BaseItemType.Halberd] = AbilityType.Might;
+            _itemToDamageAbilityMapping[BaseItemType.HeavyFlail] = AbilityType.Might;
+            _itemToDamageAbilityMapping[BaseItemType.Scythe] = AbilityType.Might;
+            _itemToDamageAbilityMapping[BaseItemType.Trident] = AbilityType.Might;
+            _itemToDamageAbilityMapping[BaseItemType.WarHammer] = AbilityType.Might;
+            _itemToDamageAbilityMapping[BaseItemType.ShortSpear] = AbilityType.Might;
+            _itemToDamageAbilityMapping[BaseItemType.TwoBladedSword] = AbilityType.Might;
+            _itemToDamageAbilityMapping[BaseItemType.DoubleAxe] = AbilityType.Might;
+            _itemToDamageAbilityMapping[BaseItemType.Saberstaff] = AbilityType.Perception;
+            _itemToDamageAbilityMapping[BaseItemType.TwinElectroBlade] = AbilityType.Perception;
 
             // Martial Arts Skills
-            _itemToDamageAbilityMapping[BaseItem.Club] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.Bracer] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.Gloves] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.QuarterStaff] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.Katar] = AbilityType.Perception;
+            _itemToDamageAbilityMapping[BaseItemType.Club] = AbilityType.Might;
+            _itemToDamageAbilityMapping[BaseItemType.Bracer] = AbilityType.Might;
+            _itemToDamageAbilityMapping[BaseItemType.Gloves] = AbilityType.Might;
+            _itemToDamageAbilityMapping[BaseItemType.QuarterStaff] = AbilityType.Might;
+            _itemToDamageAbilityMapping[BaseItemType.Katar] = AbilityType.Perception;
 
             // Ranged Skills
-            _itemToDamageAbilityMapping[BaseItem.Cannon] = AbilityType.Perception;
-            _itemToDamageAbilityMapping[BaseItem.Rifle] = AbilityType.Perception;
-            _itemToDamageAbilityMapping[BaseItem.Longbow] = AbilityType.Perception;
-            _itemToDamageAbilityMapping[BaseItem.Pistol] = AbilityType.Perception;
-            _itemToDamageAbilityMapping[BaseItem.Arrow] = AbilityType.Perception;
-            _itemToDamageAbilityMapping[BaseItem.Bolt] = AbilityType.Perception;
-            _itemToDamageAbilityMapping[BaseItem.Bullet] = AbilityType.Perception;
-            _itemToDamageAbilityMapping[BaseItem.Sling] = AbilityType.Perception;
-            _itemToDamageAbilityMapping[BaseItem.Grenade] = AbilityType.Perception;
-            _itemToDamageAbilityMapping[BaseItem.Shuriken] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.ThrowingAxe] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.Dart] = AbilityType.Might;
+            _itemToDamageAbilityMapping[BaseItemType.Cannon] = AbilityType.Perception;
+            _itemToDamageAbilityMapping[BaseItemType.Rifle] = AbilityType.Perception;
+            _itemToDamageAbilityMapping[BaseItemType.Longbow] = AbilityType.Perception;
+            _itemToDamageAbilityMapping[BaseItemType.Pistol] = AbilityType.Perception;
+            _itemToDamageAbilityMapping[BaseItemType.Arrow] = AbilityType.Perception;
+            _itemToDamageAbilityMapping[BaseItemType.Bolt] = AbilityType.Perception;
+            _itemToDamageAbilityMapping[BaseItemType.Bullet] = AbilityType.Perception;
+            _itemToDamageAbilityMapping[BaseItemType.Sling] = AbilityType.Perception;
+            _itemToDamageAbilityMapping[BaseItemType.Grenade] = AbilityType.Perception;
+            _itemToDamageAbilityMapping[BaseItemType.Shuriken] = AbilityType.Might;
+            _itemToDamageAbilityMapping[BaseItemType.ThrowingAxe] = AbilityType.Might;
+            _itemToDamageAbilityMapping[BaseItemType.Dart] = AbilityType.Might;
 
             // NPCs
-            _itemToDamageAbilityMapping[BaseItem.CreatureBludgeonWeapon] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.CreaturePierceWeapon] = AbilityType.Perception;
-            _itemToDamageAbilityMapping[BaseItem.CreatureSlashPierceWeapon] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.CreatureSlashWeapon] = AbilityType.Might;
+            _itemToDamageAbilityMapping[BaseItemType.CreatureBludgeonWeapon] = AbilityType.Might;
+            _itemToDamageAbilityMapping[BaseItemType.CreaturePierceWeapon] = AbilityType.Perception;
+            _itemToDamageAbilityMapping[BaseItemType.CreatureSlashPierceWeapon] = AbilityType.Might;
+            _itemToDamageAbilityMapping[BaseItemType.CreatureSlashWeapon] = AbilityType.Might;
 
             Console.WriteLine($"Loaded {_itemToDamageAbilityMapping.Count} item to damage ability mappings.");
         }
@@ -168,68 +167,68 @@ namespace SWLOR.Component.Inventory.Service
         public void LoadItemToAccuracyStatMapping()
         {
             // One-Handed Skills
-            _itemToAccuracyAbilityMapping[BaseItem.BastardSword] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.BattleAxe] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.Dagger] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.HandAxe] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.Kama] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.Katana] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.Kukri] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.LightFlail] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.LightHammer] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.LightMace] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.Longsword] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.MorningStar] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.Rapier] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.Scimitar] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.ShortSword] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.Sickle] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.Whip] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.Lightsaber] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.Electroblade] = AbilityType.Agility;
+            _itemToAccuracyAbilityMapping[BaseItemType.BastardSword] = AbilityType.Perception;
+            _itemToAccuracyAbilityMapping[BaseItemType.BattleAxe] = AbilityType.Perception;
+            _itemToAccuracyAbilityMapping[BaseItemType.Dagger] = AbilityType.Agility;
+            _itemToAccuracyAbilityMapping[BaseItemType.HandAxe] = AbilityType.Perception;
+            _itemToAccuracyAbilityMapping[BaseItemType.Kama] = AbilityType.Agility;
+            _itemToAccuracyAbilityMapping[BaseItemType.Katana] = AbilityType.Perception;
+            _itemToAccuracyAbilityMapping[BaseItemType.Kukri] = AbilityType.Agility;
+            _itemToAccuracyAbilityMapping[BaseItemType.LightFlail] = AbilityType.Perception;
+            _itemToAccuracyAbilityMapping[BaseItemType.LightHammer] = AbilityType.Perception;
+            _itemToAccuracyAbilityMapping[BaseItemType.LightMace] = AbilityType.Perception;
+            _itemToAccuracyAbilityMapping[BaseItemType.Longsword] = AbilityType.Perception;
+            _itemToAccuracyAbilityMapping[BaseItemType.MorningStar] = AbilityType.Perception;
+            _itemToAccuracyAbilityMapping[BaseItemType.Rapier] = AbilityType.Agility;
+            _itemToAccuracyAbilityMapping[BaseItemType.Scimitar] = AbilityType.Perception;
+            _itemToAccuracyAbilityMapping[BaseItemType.ShortSword] = AbilityType.Agility;
+            _itemToAccuracyAbilityMapping[BaseItemType.Sickle] = AbilityType.Agility;
+            _itemToAccuracyAbilityMapping[BaseItemType.Whip] = AbilityType.Agility;
+            _itemToAccuracyAbilityMapping[BaseItemType.Lightsaber] = AbilityType.Agility;
+            _itemToAccuracyAbilityMapping[BaseItemType.Electroblade] = AbilityType.Agility;
 
             // Two-Handed Skills
-            _itemToAccuracyAbilityMapping[BaseItem.DireMace] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.DwarvenWarAxe] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.GreatAxe] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.GreatSword] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.Halberd] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.HeavyFlail] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.Scythe] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.Trident] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.WarHammer] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.ShortSpear] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.TwoBladedSword] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.DoubleAxe] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.Saberstaff] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.TwinElectroBlade] = AbilityType.Agility;
+            _itemToAccuracyAbilityMapping[BaseItemType.DireMace] = AbilityType.Perception;
+            _itemToAccuracyAbilityMapping[BaseItemType.DwarvenWarAxe] = AbilityType.Perception;
+            _itemToAccuracyAbilityMapping[BaseItemType.GreatAxe] = AbilityType.Perception;
+            _itemToAccuracyAbilityMapping[BaseItemType.GreatSword] = AbilityType.Perception;
+            _itemToAccuracyAbilityMapping[BaseItemType.Halberd] = AbilityType.Perception;
+            _itemToAccuracyAbilityMapping[BaseItemType.HeavyFlail] = AbilityType.Perception;
+            _itemToAccuracyAbilityMapping[BaseItemType.Scythe] = AbilityType.Perception;
+            _itemToAccuracyAbilityMapping[BaseItemType.Trident] = AbilityType.Perception;
+            _itemToAccuracyAbilityMapping[BaseItemType.WarHammer] = AbilityType.Perception;
+            _itemToAccuracyAbilityMapping[BaseItemType.ShortSpear] = AbilityType.Perception;
+            _itemToAccuracyAbilityMapping[BaseItemType.TwoBladedSword] = AbilityType.Agility;
+            _itemToAccuracyAbilityMapping[BaseItemType.DoubleAxe] = AbilityType.Agility;
+            _itemToAccuracyAbilityMapping[BaseItemType.Saberstaff] = AbilityType.Agility;
+            _itemToAccuracyAbilityMapping[BaseItemType.TwinElectroBlade] = AbilityType.Agility;
 
             // Martial Arts Skills
-            _itemToAccuracyAbilityMapping[BaseItem.Club] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.Bracer] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.Gloves] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.QuarterStaff] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.Katar] = AbilityType.Agility;
+            _itemToAccuracyAbilityMapping[BaseItemType.Club] = AbilityType.Perception;
+            _itemToAccuracyAbilityMapping[BaseItemType.Bracer] = AbilityType.Perception;
+            _itemToAccuracyAbilityMapping[BaseItemType.Gloves] = AbilityType.Perception;
+            _itemToAccuracyAbilityMapping[BaseItemType.QuarterStaff] = AbilityType.Perception;
+            _itemToAccuracyAbilityMapping[BaseItemType.Katar] = AbilityType.Agility;
 
             // Ranged Skills
-            _itemToAccuracyAbilityMapping[BaseItem.Cannon] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.Rifle] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.Longbow] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.Pistol] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.Arrow] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.Bolt] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.Bullet] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.Sling] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.Grenade] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.Shuriken] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.ThrowingAxe] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.Dart] = AbilityType.Agility;
+            _itemToAccuracyAbilityMapping[BaseItemType.Cannon] = AbilityType.Agility;
+            _itemToAccuracyAbilityMapping[BaseItemType.Rifle] = AbilityType.Agility;
+            _itemToAccuracyAbilityMapping[BaseItemType.Longbow] = AbilityType.Agility;
+            _itemToAccuracyAbilityMapping[BaseItemType.Pistol] = AbilityType.Agility;
+            _itemToAccuracyAbilityMapping[BaseItemType.Arrow] = AbilityType.Agility;
+            _itemToAccuracyAbilityMapping[BaseItemType.Bolt] = AbilityType.Agility;
+            _itemToAccuracyAbilityMapping[BaseItemType.Bullet] = AbilityType.Agility;
+            _itemToAccuracyAbilityMapping[BaseItemType.Sling] = AbilityType.Agility;
+            _itemToAccuracyAbilityMapping[BaseItemType.Grenade] = AbilityType.Agility;
+            _itemToAccuracyAbilityMapping[BaseItemType.Shuriken] = AbilityType.Agility;
+            _itemToAccuracyAbilityMapping[BaseItemType.ThrowingAxe] = AbilityType.Agility;
+            _itemToAccuracyAbilityMapping[BaseItemType.Dart] = AbilityType.Agility;
 
             // NPCs
-            _itemToAccuracyAbilityMapping[BaseItem.CreatureBludgeonWeapon] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.CreaturePierceWeapon] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.CreatureSlashPierceWeapon] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.CreatureSlashWeapon] = AbilityType.Perception;
+            _itemToAccuracyAbilityMapping[BaseItemType.CreatureBludgeonWeapon] = AbilityType.Perception;
+            _itemToAccuracyAbilityMapping[BaseItemType.CreaturePierceWeapon] = AbilityType.Perception;
+            _itemToAccuracyAbilityMapping[BaseItemType.CreatureSlashPierceWeapon] = AbilityType.Perception;
+            _itemToAccuracyAbilityMapping[BaseItemType.CreatureSlashWeapon] = AbilityType.Perception;
 
             Console.WriteLine($"Loaded {_itemToDamageAbilityMapping.Count} item to accuracy ability mappings.");
         }
@@ -240,7 +239,7 @@ namespace SWLOR.Component.Inventory.Service
         /// </summary>
         /// <param name="itemType">The item type</param>
         /// <returns>The ability type or AbilityType.Invalid if none is associated with the item.</returns>
-        public AbilityType GetWeaponDamageAbilityType(BaseItem itemType)
+        public AbilityType GetWeaponDamageAbilityType(BaseItemType itemType)
         {
             return !_itemToDamageAbilityMapping.ContainsKey(itemType) 
                 ? AbilityType.Invalid 
@@ -253,7 +252,7 @@ namespace SWLOR.Component.Inventory.Service
         /// </summary>
         /// <param name="itemType">The item type</param>
         /// <returns>The ability type or AbilityType.Invalid if none is associated with the item.</returns>
-        public AbilityType GetWeaponAccuracyAbilityType(BaseItem itemType)
+        public AbilityType GetWeaponAccuracyAbilityType(BaseItemType itemType)
         {
             return !_itemToAccuracyAbilityMapping.ContainsKey(itemType)
                 ? AbilityType.Invalid
@@ -380,7 +379,7 @@ namespace SWLOR.Component.Inventory.Service
 
             var delay = itemDetail.DelayAction?.Invoke(user, item, target, targetLocation, propertyIndex) ?? 0.0f;
             // Play an animation if configured.
-            if (itemDetail.ActivationAnimation != Animation.Invalid)
+            if (itemDetail.ActivationAnimation != AnimationType.Invalid)
             {
                 AssignCommand(user, () => ActionPlayAnimation(itemDetail.ActivationAnimation, 1.0f, delay));
             }
@@ -546,264 +545,264 @@ namespace SWLOR.Component.Inventory.Service
         /// <summary>
         /// Retrieves the list of weapon base item types.
         /// </summary>
-        public List<BaseItem> WeaponBaseItemTypes { get; } = new()
+        public List<BaseItemType> WeaponBaseItemTypes { get; } = new()
         {
-            BaseItem.BastardSword,
-            BaseItem.Longsword,
-            BaseItem.Katana,
-            BaseItem.Scimitar,
-            BaseItem.BattleAxe,
-            BaseItem.Dagger,
-            BaseItem.Rapier,
-            BaseItem.ShortSword,
-            BaseItem.Kukri,
-            BaseItem.Sickle,
-            BaseItem.Whip,
-            BaseItem.HandAxe,
-            BaseItem.Lightsaber,
-            BaseItem.Electroblade,
-            BaseItem.GreatAxe,
-            BaseItem.GreatSword,
-            BaseItem.DwarvenWarAxe,
-            BaseItem.Halberd,
-            BaseItem.Scythe,
-            BaseItem.ShortSpear,
-            BaseItem.Trident,
-            BaseItem.DoubleAxe,
-            BaseItem.TwoBladedSword,
-            BaseItem.Saberstaff,
-            BaseItem.TwinElectroBlade,
-            BaseItem.Katar,
-            BaseItem.QuarterStaff,
-            BaseItem.LightMace,
-            BaseItem.Pistol,
-            BaseItem.ThrowingAxe,
-            BaseItem.Shuriken,
-            BaseItem.Dart,
-            BaseItem.Cannon,
-            BaseItem.Longbow,
-            BaseItem.Rifle,
+            BaseItemType.BastardSword,
+            BaseItemType.Longsword,
+            BaseItemType.Katana,
+            BaseItemType.Scimitar,
+            BaseItemType.BattleAxe,
+            BaseItemType.Dagger,
+            BaseItemType.Rapier,
+            BaseItemType.ShortSword,
+            BaseItemType.Kukri,
+            BaseItemType.Sickle,
+            BaseItemType.Whip,
+            BaseItemType.HandAxe,
+            BaseItemType.Lightsaber,
+            BaseItemType.Electroblade,
+            BaseItemType.GreatAxe,
+            BaseItemType.GreatSword,
+            BaseItemType.DwarvenWarAxe,
+            BaseItemType.Halberd,
+            BaseItemType.Scythe,
+            BaseItemType.ShortSpear,
+            BaseItemType.Trident,
+            BaseItemType.DoubleAxe,
+            BaseItemType.TwoBladedSword,
+            BaseItemType.Saberstaff,
+            BaseItemType.TwinElectroBlade,
+            BaseItemType.Katar,
+            BaseItemType.QuarterStaff,
+            BaseItemType.LightMace,
+            BaseItemType.Pistol,
+            BaseItemType.ThrowingAxe,
+            BaseItemType.Shuriken,
+            BaseItemType.Dart,
+            BaseItemType.Cannon,
+            BaseItemType.Longbow,
+            BaseItemType.Rifle,
         };
 
         /// <summary>
         /// Retrieves the list of armor base item types.
         /// </summary>
-        public List<BaseItem> ArmorBaseItemTypes { get; } = new()
+        public List<BaseItemType> ArmorBaseItemTypes { get; } = new()
         {
-            BaseItem.Armor,
-            BaseItem.Helmet,
-            BaseItem.Cloak,
-            BaseItem.Belt,
-            BaseItem.Amulet,
-            BaseItem.Boots,
-            BaseItem.LargeShield,
-            BaseItem.SmallShield,
-            BaseItem.TowerShield,
-            BaseItem.Gloves,
-            BaseItem.Bracer,
-            BaseItem.Ring
+            BaseItemType.Armor,
+            BaseItemType.Helmet,
+            BaseItemType.Cloak,
+            BaseItemType.Belt,
+            BaseItemType.Amulet,
+            BaseItemType.Boots,
+            BaseItemType.LargeShield,
+            BaseItemType.SmallShield,
+            BaseItemType.TowerShield,
+            BaseItemType.Gloves,
+            BaseItemType.Bracer,
+            BaseItemType.Ring
         };
 
         /// <summary>
         /// Retrieves the list of shield base item types.
         /// </summary>
-        public List<BaseItem> ShieldBaseItemTypes { get; } = new()
+        public List<BaseItemType> ShieldBaseItemTypes { get; } = new()
         {
-            BaseItem.LargeShield,
-            BaseItem.SmallShield,
-            BaseItem.TowerShield
+            BaseItemType.LargeShield,
+            BaseItemType.SmallShield,
+            BaseItemType.TowerShield
         };
 
         /// <summary>
         /// Retrieves the list of Vibroblade base item types.
         /// </summary>
-        public List<BaseItem> VibrobladeBaseItemTypes { get; } = new()
+        public List<BaseItemType> VibrobladeBaseItemTypes { get; } = new()
         {
-            BaseItem.BastardSword,
-            BaseItem.Longsword,
-            BaseItem.Katana,
-            BaseItem.Scimitar,
-            BaseItem.BattleAxe
+            BaseItemType.BastardSword,
+            BaseItemType.Longsword,
+            BaseItemType.Katana,
+            BaseItemType.Scimitar,
+            BaseItemType.BattleAxe
         };
 
         /// <summary>
         /// Retrieves the list of Finesse Vibroblade base item types.
         /// </summary>
-        public List<BaseItem> FinesseVibrobladeBaseItemTypes { get; } = new()
+        public List<BaseItemType> FinesseVibrobladeBaseItemTypes { get; } = new()
         {
-            BaseItem.Dagger,
-            BaseItem.Rapier,
-            BaseItem.ShortSword,
-            BaseItem.Kukri,
-            BaseItem.Sickle,
-            BaseItem.Whip,
-            BaseItem.HandAxe,
+            BaseItemType.Dagger,
+            BaseItemType.Rapier,
+            BaseItemType.ShortSword,
+            BaseItemType.Kukri,
+            BaseItemType.Sickle,
+            BaseItemType.Whip,
+            BaseItemType.HandAxe,
         };
 
         /// <summary>
         /// Retrieves the list of Lightsaber base item types.
         /// </summary>
-        public List<BaseItem> LightsaberBaseItemTypes { get; } = new()
+        public List<BaseItemType> LightsaberBaseItemTypes { get; } = new()
         {
-            BaseItem.Lightsaber,
-            BaseItem.Electroblade
+            BaseItemType.Lightsaber,
+            BaseItemType.Electroblade
         };
 
         /// <summary>
         /// Retrieves the list of Heavy Vibroblade base item types.
         /// </summary>
-        public List<BaseItem> HeavyVibrobladeBaseItemTypes { get; } = new()
+        public List<BaseItemType> HeavyVibrobladeBaseItemTypes { get; } = new()
         {
-            BaseItem.GreatAxe,
-            BaseItem.GreatSword,
-            BaseItem.DwarvenWarAxe
+            BaseItemType.GreatAxe,
+            BaseItemType.GreatSword,
+            BaseItemType.DwarvenWarAxe
         };
 
         /// <summary>
         /// Retrieves the list of Polearm base item types.
         /// </summary>
-        public List<BaseItem> PolearmBaseItemTypes { get; } = new()
+        public List<BaseItemType> PolearmBaseItemTypes { get; } = new()
         {
-            BaseItem.Halberd,
-            BaseItem.Scythe,
-            BaseItem.ShortSpear,
-            BaseItem.Trident
+            BaseItemType.Halberd,
+            BaseItemType.Scythe,
+            BaseItemType.ShortSpear,
+            BaseItemType.Trident
         };
 
         /// <summary>
         /// Retrieves the list of Twin Blade base item types.
         /// </summary>
-        public List<BaseItem> TwinBladeBaseItemTypes { get; } = new()
+        public List<BaseItemType> TwinBladeBaseItemTypes { get; } = new()
         {
-            BaseItem.DoubleAxe,
-            BaseItem.TwoBladedSword
+            BaseItemType.DoubleAxe,
+            BaseItemType.TwoBladedSword
         };
 
         /// <summary>
         /// Retrieves the list of Saberstaff base item types.
         /// </summary>
-        public List<BaseItem> SaberstaffBaseItemTypes { get; } = new()
+        public List<BaseItemType> SaberstaffBaseItemTypes { get; } = new()
         {
-            BaseItem.Saberstaff,
-            BaseItem.TwinElectroBlade
+            BaseItemType.Saberstaff,
+            BaseItemType.TwinElectroBlade
         };
 
         /// <summary>
         /// Retrieves the list of Katar base item types.
         /// </summary>
-        public List<BaseItem> KatarBaseItemTypes { get; } = new()
+        public List<BaseItemType> KatarBaseItemTypes { get; } = new()
         {
-            BaseItem.Katar
+            BaseItemType.Katar
         };
 
         /// <summary>
         /// Retrieves the list of Staff base item types.
         /// </summary>
-        public List<BaseItem> StaffBaseItemTypes { get; } = new()
+        public List<BaseItemType> StaffBaseItemTypes { get; } = new()
         {
-            BaseItem.QuarterStaff,
-            BaseItem.LightMace,
-            BaseItem.Club,
-            BaseItem.MorningStar
+            BaseItemType.QuarterStaff,
+            BaseItemType.LightMace,
+            BaseItemType.Club,
+            BaseItemType.MorningStar
         };
 
         /// <summary>
         /// Retrieves the list of Pistol base item types.
         /// </summary>
-        public List<BaseItem> PistolBaseItemTypes { get; } = new()
+        public List<BaseItemType> PistolBaseItemTypes { get; } = new()
         {
-            BaseItem.Pistol
+            BaseItemType.Pistol
         };
 
         /// <summary>
         /// Retrieves the list of Throwing Weapon base item types.
         /// </summary>
-        public List<BaseItem> ThrowingWeaponBaseItemTypes { get; } = new()
+        public List<BaseItemType> ThrowingWeaponBaseItemTypes { get; } = new()
         {
-            BaseItem.ThrowingAxe,
-            BaseItem.Shuriken,
-            BaseItem.Dart
+            BaseItemType.ThrowingAxe,
+            BaseItemType.Shuriken,
+            BaseItemType.Dart
         };
         
         /// <summary>
         /// Retrieves the list of Rifle base item types.
         /// </summary>
-        public List<BaseItem> RifleBaseItemTypes { get; } = new()
+        public List<BaseItemType> RifleBaseItemTypes { get; } = new()
         {
-            BaseItem.Longbow,
-            BaseItem.Rifle,
-            BaseItem.Cannon
+            BaseItemType.Longbow,
+            BaseItemType.Rifle,
+            BaseItemType.Cannon
         };
 
         /// <summary>
         /// Retrieves the list of One-Handed weapon types.
         /// These are the weapons which are held in one hand and not necessarily associated with the One-Handed skill.
         /// </summary>
-        public List<BaseItem> OneHandedMeleeItemTypes { get; } = new()
+        public List<BaseItemType> OneHandedMeleeItemTypes { get; } = new()
         {
-            BaseItem.BastardSword,
-            BaseItem.Longsword,
-            BaseItem.Katana,
-            BaseItem.Scimitar,
-            BaseItem.BattleAxe,
-            BaseItem.Dagger,
-            BaseItem.Rapier,
-            BaseItem.ShortSword,
-            BaseItem.Kukri,
-            BaseItem.Sickle,
-            BaseItem.Whip,
-            BaseItem.HandAxe,
-            BaseItem.Lightsaber,
-            BaseItem.Electroblade,
-            BaseItem.ShortSpear,
-            BaseItem.Katar,
+            BaseItemType.BastardSword,
+            BaseItemType.Longsword,
+            BaseItemType.Katana,
+            BaseItemType.Scimitar,
+            BaseItemType.BattleAxe,
+            BaseItemType.Dagger,
+            BaseItemType.Rapier,
+            BaseItemType.ShortSword,
+            BaseItemType.Kukri,
+            BaseItemType.Sickle,
+            BaseItemType.Whip,
+            BaseItemType.HandAxe,
+            BaseItemType.Lightsaber,
+            BaseItemType.Electroblade,
+            BaseItemType.ShortSpear,
+            BaseItemType.Katar,
         };
 
         /// <summary>
         /// Retrieves the list of Two-Handed melee weapon types.
         /// These are the weapons which are held in two hand and not necessarily associated with the Two-Handed skill.
         /// </summary>
-        public List<BaseItem> TwoHandedMeleeItemTypes { get; } = new()
+        public List<BaseItemType> TwoHandedMeleeItemTypes { get; } = new()
         {
-            BaseItem.GreatAxe,
-            BaseItem.GreatSword,
-            BaseItem.DwarvenWarAxe,
-            BaseItem.Halberd,
-            BaseItem.Scythe,
-            BaseItem.Trident,
-            BaseItem.DoubleAxe,
-            BaseItem.TwoBladedSword,
-            BaseItem.Saberstaff,
-            BaseItem.QuarterStaff,
-            BaseItem.LightMace
+            BaseItemType.GreatAxe,
+            BaseItemType.GreatSword,
+            BaseItemType.DwarvenWarAxe,
+            BaseItemType.Halberd,
+            BaseItemType.Scythe,
+            BaseItemType.Trident,
+            BaseItemType.DoubleAxe,
+            BaseItemType.TwoBladedSword,
+            BaseItemType.Saberstaff,
+            BaseItemType.QuarterStaff,
+            BaseItemType.LightMace
         };
 
         /// <summary>
         /// Retrieves the list of Creature base item types.
         /// </summary>
-        public List<BaseItem> CreatureBaseItemTypes { get; } = new()
+        public List<BaseItemType> CreatureBaseItemTypes { get; } = new()
         {
-            BaseItem.CreatureBludgeonWeapon,
-            BaseItem.CreatureSlashWeapon,
-            BaseItem.CreaturePierceWeapon,
-            BaseItem.CreatureSlashPierceWeapon
+            BaseItemType.CreatureBludgeonWeapon,
+            BaseItemType.CreatureSlashWeapon,
+            BaseItemType.CreaturePierceWeapon,
+            BaseItemType.CreatureSlashPierceWeapon
         };
 
         /// <summary>
         /// Retrieves the list of Droid base item types.
         /// These are items which require the Use Limitation Race: Droid item property in order to be equipped by a Droid.
         /// </summary>
-        public List<BaseItem> DroidBaseItemTypes { get; } = new()
+        public List<BaseItemType> DroidBaseItemTypes { get; } = new()
         {
-            BaseItem.Armor,
-            BaseItem.Helmet,
-            BaseItem.Cloak,
-            BaseItem.Belt,
-            BaseItem.Amulet,
-            BaseItem.Boots,
-            BaseItem.Gloves,
-            BaseItem.Bracer,
-            BaseItem.Ring
+            BaseItemType.Armor,
+            BaseItemType.Helmet,
+            BaseItemType.Cloak,
+            BaseItemType.Belt,
+            BaseItemType.Amulet,
+            BaseItemType.Boots,
+            BaseItemType.Gloves,
+            BaseItemType.Bracer,
+            BaseItemType.Ring
         };
 
         /// <summary>
@@ -815,9 +814,9 @@ namespace SWLOR.Component.Inventory.Service
         {
             var baseItem = GetBaseItemType(item);
 
-            if (baseItem == BaseItem.Cloak) // Cloaks use PLTs so their default icon doesn't really work
+            if (baseItem == BaseItemType.Cloak) // Cloaks use PLTs so their default icon doesn't really work
                 return "iit_cloak";
-            else if (baseItem == BaseItem.SpellScroll || baseItem == BaseItem.EnchantedScroll)
+            else if (baseItem == BaseItemType.SpellScroll || baseItem == BaseItemType.EnchantedScroll)
             {// Scrolls get their icon from the cast spell property
                 if (GetItemHasItemProperty(item, ItemPropertyType.CastSpell))
                 {
@@ -830,7 +829,7 @@ namespace SWLOR.Component.Inventory.Service
             }
             else if (Get2DAString("baseitems", "ModelType", (int)baseItem) == "0")
             {// Create the icon resref for simple modeltype items
-                var sSimpleModelId = GetItemAppearance(item, ItemAppearanceType.SimpleModel, 0).ToString();
+                var sSimpleModelId = GetItemAppearance(item, ItemModelColorType.SimpleModel, 0).ToString();
                 while (GetStringLength(sSimpleModelId) < 3)
                 {
                     sSimpleModelId = "0" + sSimpleModelId;
@@ -839,22 +838,22 @@ namespace SWLOR.Component.Inventory.Service
                 var sDefaultIcon = Get2DAString("baseitems", "DefaultIcon", (int)baseItem);
                 switch (baseItem)
                 {
-                    case BaseItem.MiscSmall:
-                    case BaseItem.MiscellaneousSmallStackable:
-                    case BaseItem.CraftMaterialSmall:
+                    case BaseItemType.MiscSmall:
+                    case BaseItemType.MiscellaneousSmallStackable:
+                    case BaseItemType.CraftMaterialSmall:
                         sDefaultIcon = "iit_smlmisc_" + sSimpleModelId;
                         break;
-                    case BaseItem.MiscMedium:
-                    case BaseItem.MiscMediumStackable:
-                    case BaseItem.CraftMaterialMedium:
-                    case BaseItem.CraftBase:
+                    case BaseItemType.MiscMedium:
+                    case BaseItemType.MiscMediumStackable:
+                    case BaseItemType.CraftMaterialMedium:
+                    case BaseItemType.CraftBase:
                         sDefaultIcon = "iit_midmisc_" + sSimpleModelId;
                         break;
-                    case BaseItem.MiscLarge:
+                    case BaseItemType.MiscLarge:
                         sDefaultIcon = "iit_talmisc_" + sSimpleModelId;
                         break;
-                    case BaseItem.MiscThin:
-                    case BaseItem.MiscellaneousThinStackable:
+                    case BaseItemType.MiscThin:
+                    case BaseItemType.MiscellaneousThinStackable:
                         sDefaultIcon = "iit_thnmisc_" + sSimpleModelId;
                         break;
                 }
@@ -995,7 +994,7 @@ namespace SWLOR.Component.Inventory.Service
                 return "Containers cannot be stored.";
             }
 
-            if (GetBaseItemType(item) == BaseItem.Gold)
+            if (GetBaseItemType(item) == BaseItemType.Gold)
             {
                 return "Credits cannot be placed inside.";
             }
@@ -1012,7 +1011,7 @@ namespace SWLOR.Component.Inventory.Service
 
             for (var index = 0; index < NumberOfInventorySlots; index++)
             {
-                if (GetItemInSlot((InventorySlot)index, player) == item)
+                if (GetItemInSlot((InventorySlotType)index, player) == item)
                 {
                     return "Unequip the item first.";
                 }
@@ -1051,7 +1050,7 @@ namespace SWLOR.Component.Inventory.Service
         /// </summary>
         /// <param name="type">The item type to check</param>
         /// <returns>The critical modifer value.</returns>
-        public int GetCriticalModifier(BaseItem type)
+        public int GetCriticalModifier(BaseItemType type)
         {
             var mod = _2daCache[(int)type][1];
             _logger.Write<AttackLogGroup>("Crit multiplier for item type " + type + " is " + mod);
@@ -1120,28 +1119,28 @@ namespace SWLOR.Component.Inventory.Service
         /// <param name="creature">The creature to check.</param>
         /// <param name="item">The item to search for.</param>
         /// <returns>The inventory slot of the item or InventorySlot.Invalid if not equipped.</returns>
-        public InventorySlot GetItemSlot(uint creature, uint item)
+        public InventorySlotType GetItemSlot(uint creature, uint item)
         {
-            var slot = InventorySlot.Invalid;
+            var slot = InventorySlotType.Invalid;
 
-            if (GetItemInSlot(InventorySlot.Head, creature) == item) slot = InventorySlot.Head;
-            if (GetItemInSlot(InventorySlot.Chest, creature) == item) slot = InventorySlot.Chest;
-            if (GetItemInSlot(InventorySlot.Boots, creature) == item) slot = InventorySlot.Boots;
-            if (GetItemInSlot(InventorySlot.Arms, creature) == item) slot = InventorySlot.Arms;
-            if (GetItemInSlot(InventorySlot.RightHand, creature) == item) slot = InventorySlot.RightHand;
-            if (GetItemInSlot(InventorySlot.LeftHand, creature) == item) slot = InventorySlot.LeftHand;
-            if (GetItemInSlot(InventorySlot.Cloak, creature) == item) slot = InventorySlot.Cloak;
-            if (GetItemInSlot(InventorySlot.LeftRing, creature) == item) slot = InventorySlot.LeftRing;
-            if (GetItemInSlot(InventorySlot.RightRing, creature) == item) slot = InventorySlot.RightRing;
-            if (GetItemInSlot(InventorySlot.Neck, creature) == item) slot = InventorySlot.Neck;
-            if (GetItemInSlot(InventorySlot.Belt, creature) == item) slot = InventorySlot.Belt;
-            if (GetItemInSlot(InventorySlot.Arrows, creature) == item) slot = InventorySlot.Arrows;
-            if (GetItemInSlot(InventorySlot.Bullets, creature) == item) slot = InventorySlot.Bullets;
-            if (GetItemInSlot(InventorySlot.Bolts, creature) == item) slot = InventorySlot.Bolts;
-            if (GetItemInSlot(InventorySlot.CreatureLeft, creature) == item) slot = InventorySlot.CreatureLeft;
-            if (GetItemInSlot(InventorySlot.CreatureRight, creature) == item) slot = InventorySlot.CreatureRight;
-            if (GetItemInSlot(InventorySlot.CreatureBite, creature) == item) slot = InventorySlot.CreatureBite;
-            if (GetItemInSlot(InventorySlot.CreatureArmor, creature) == item) slot = InventorySlot.CreatureArmor;
+            if (GetItemInSlot(InventorySlotType.Head, creature) == item) slot = InventorySlotType.Head;
+            if (GetItemInSlot(InventorySlotType.Chest, creature) == item) slot = InventorySlotType.Chest;
+            if (GetItemInSlot(InventorySlotType.Boots, creature) == item) slot = InventorySlotType.Boots;
+            if (GetItemInSlot(InventorySlotType.Arms, creature) == item) slot = InventorySlotType.Arms;
+            if (GetItemInSlot(InventorySlotType.RightHand, creature) == item) slot = InventorySlotType.RightHand;
+            if (GetItemInSlot(InventorySlotType.LeftHand, creature) == item) slot = InventorySlotType.LeftHand;
+            if (GetItemInSlot(InventorySlotType.Cloak, creature) == item) slot = InventorySlotType.Cloak;
+            if (GetItemInSlot(InventorySlotType.LeftRing, creature) == item) slot = InventorySlotType.LeftRing;
+            if (GetItemInSlot(InventorySlotType.RightRing, creature) == item) slot = InventorySlotType.RightRing;
+            if (GetItemInSlot(InventorySlotType.Neck, creature) == item) slot = InventorySlotType.Neck;
+            if (GetItemInSlot(InventorySlotType.Belt, creature) == item) slot = InventorySlotType.Belt;
+            if (GetItemInSlot(InventorySlotType.Arrows, creature) == item) slot = InventorySlotType.Arrows;
+            if (GetItemInSlot(InventorySlotType.Bullets, creature) == item) slot = InventorySlotType.Bullets;
+            if (GetItemInSlot(InventorySlotType.Bolts, creature) == item) slot = InventorySlotType.Bolts;
+            if (GetItemInSlot(InventorySlotType.CreatureLeft, creature) == item) slot = InventorySlotType.CreatureLeft;
+            if (GetItemInSlot(InventorySlotType.CreatureRight, creature) == item) slot = InventorySlotType.CreatureRight;
+            if (GetItemInSlot(InventorySlotType.CreatureBite, creature) == item) slot = InventorySlotType.CreatureBite;
+            if (GetItemInSlot(InventorySlotType.CreatureArmor, creature) == item) slot = InventorySlotType.CreatureArmor;
 
             return slot;
         }

@@ -30,7 +30,7 @@ namespace SWLOR.Shared.Domain.Communication.ValueObjects
         public bool RequiresTarget { get; set; }
         public ObjectType ValidTargetTypes { get; set; }
         public bool IsEmote { get; set; }
-        public Animation EmoteAnimation { get; set; }
+        public AnimationType EmoteAnimation { get; set; }
         public bool IsEmoteLooping { get; set; }
         public bool AvailableToAllOnTestEnvironment { get; set; }
     }

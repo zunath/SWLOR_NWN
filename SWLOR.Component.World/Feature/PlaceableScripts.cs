@@ -1,7 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Associate;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Common.Enums;
 using SWLOR.Shared.Domain.Dialog.Contracts;
@@ -46,7 +44,7 @@ namespace SWLOR.Component.World.Feature
             var device = OBJECT_SELF;
             var destination = GetLocalString(device, "DESTINATION");
             var vfxId = GetLocalInt(device, "VISUAL_EFFECT");
-            var vfx = vfxId > 0 ? (VisualEffect) vfxId : VisualEffect.None;
+            var vfx = vfxId > 0 ? (VisualEffectType) vfxId : VisualEffectType.None;
             var requiredKeyItemId = GetLocalInt(device, "KEY_ITEM_ID");
             var missingKeyItemMessage = GetLocalString(device, "MISSING_KEY_ITEM_MESSAGE");
             if (string.IsNullOrWhiteSpace(missingKeyItemMessage))
@@ -64,7 +62,7 @@ namespace SWLOR.Component.World.Feature
                 }
             }
 
-            if (vfx != VisualEffect.None)
+            if (vfx != VisualEffectType.None)
             {
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(vfx), user);
             }
@@ -103,18 +101,18 @@ namespace SWLOR.Component.World.Feature
             var target = OBJECT_SELF;
 
             var vfxId = GetLocalInt(target, "PERMANENT_VFX_ID");
-            var vfx = vfxId > 0 ? (VisualEffect) vfxId : VisualEffect.None;
+            var vfx = vfxId > 0 ? (VisualEffectType) vfxId : VisualEffectType.None;
             
-            if (vfx != VisualEffect.None)
+            if (vfx != VisualEffectType.None)
             {
                 ApplyEffectToObject(DurationType.Permanent, EffectVisualEffect(vfx), target);
             }
 
             var type = GetObjectType(target);
             if(type == ObjectType.Placeable)
-                SetEventScript(target, EventScript.Placeable_OnHeartbeat, string.Empty);
+                SetEventScript(target, EventScriptType.Placeable_OnHeartbeat, string.Empty);
             else if (type == ObjectType.Creature)
-                SetEventScript(target, EventScript.Creature_OnHeartbeat, string.Empty);
+                SetEventScript(target, EventScriptType.Creature_OnHeartbeat, string.Empty);
         }
 
         /// <summary>
@@ -149,13 +147,13 @@ namespace SWLOR.Component.World.Feature
             var user = GetLastUsedBy();
 
             AssignCommand(user, () => ActionSit(OBJECT_SELF));
-            if (GetObjectVisualTransform(user, ObjectVisualTransform.Scale) == 1.0) return;
+            if (GetObjectVisualTransform(user, ObjectVisualTransformType.Scale) == 1.0) return;
 
             // Transformed creatures sit at the height of their transform. Normalise them to the height of the chair.
             // We want to take the negative/opposite of their differential from "standard" and divide by 2.  So a 
             // creature at 1.6 scale (0.6 above standard) should be Z-transformed by -0.3.
-            float fScale = GetObjectVisualTransform(user, ObjectVisualTransform.Scale) - 1.0f;
-            SetObjectVisualTransform(user, ObjectVisualTransform.TranslateZ, (-fScale) / 2.0f);           
+            float fScale = GetObjectVisualTransform(user, ObjectVisualTransformType.Scale) - 1.0f;
+            SetObjectVisualTransform(user, ObjectVisualTransformType.TranslateZ, (-fScale) / 2.0f);           
         }
 
         /// <summary>

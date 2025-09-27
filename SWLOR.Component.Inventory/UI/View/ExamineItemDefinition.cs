@@ -33,8 +33,8 @@ namespace SWLOR.Component.Inventory.UI.View
                         {
                             group.AddLabel()
                                 .SetText("Description")
-                                .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                                .SetVerticalAlign(NuiVerticalAlign.Middle);
+                                .SetHorizontalAlign(NuiHorizontalAlignType.Center)
+                                .SetVerticalAlign(NuiVerticalAlignType.Middle);
                         })
                             .SetHeight(26f);
                     });
@@ -52,8 +52,8 @@ namespace SWLOR.Component.Inventory.UI.View
                         {
                             group.AddLabel()
                                 .SetText("Item Properties")
-                                .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                                .SetVerticalAlign(NuiVerticalAlign.Middle);
+                                .SetHorizontalAlign(NuiHorizontalAlignType.Center)
+                                .SetVerticalAlign(NuiVerticalAlignType.Middle);
                         })
                             .SetHeight(26f);
                     });

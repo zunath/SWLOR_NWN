@@ -9,12 +9,12 @@ namespace SWLOR.Shared.UI.Component
         where T: IGuiViewModel
     {
         private bool ShowBorder { get; set; }
-        private NuiScrollbars Scrollbars { get; set; }
+        private NuiScrollbarType Scrollbars { get; set; }
 
         public GuiGroup()
         {
             ShowBorder = true;
-            Scrollbars = NuiScrollbars.Auto;
+            Scrollbars = NuiScrollbarType.Auto;
         }
 
         public GuiGroup<T> SetShowBorder(bool showBorder)
@@ -24,7 +24,7 @@ namespace SWLOR.Shared.UI.Component
             return this;
         }
 
-        public GuiGroup<T> SetScrollbars(NuiScrollbars scrollBars)
+        public GuiGroup<T> SetScrollbars(NuiScrollbarType scrollBars)
         {
             Scrollbars = scrollBars;
             return this;

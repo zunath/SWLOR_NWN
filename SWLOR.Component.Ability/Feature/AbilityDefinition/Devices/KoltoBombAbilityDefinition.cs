@@ -91,7 +91,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                 .HasRecastDelay(RecastGroup.Bombs, 60f)
                 .HasActivationDelay(3f)
                 .RequirementStamina(5)
-                .UsesAnimation(Animation.ThrowGrenade)
+                .UsesAnimation(AnimationType.ThrowGrenade)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasMaxRange(15f)
@@ -101,7 +101,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                     ExplosiveAOEImpact(
                         activator,
                         targetLocation,
-                        AreaOfEffect.FogMind,
+                        AreaOfEffectType.FogMind,
                         "grenade_kolt1_en",
                         "grenade_kolt1_hb",
                         20f);
@@ -119,7 +119,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                 .HasRecastDelay(RecastGroup.Bombs, 60f)
                 .HasActivationDelay(3f)
                 .RequirementStamina(7)
-                .UsesAnimation(Animation.ThrowGrenade)
+                .UsesAnimation(AnimationType.ThrowGrenade)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasMaxRange(20f)
@@ -129,7 +129,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                     ExplosiveAOEImpact(
                         activator,
                         targetLocation,
-                        AreaOfEffect.FogMind,
+                        AreaOfEffectType.FogMind,
                         "grenade_kolt2_en",
                         "grenade_kolt2_hb",
                         40f);
@@ -147,7 +147,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                 .HasRecastDelay(RecastGroup.Bombs, 60f)
                 .HasActivationDelay(3f)
                 .RequirementStamina(9)
-                .UsesAnimation(Animation.ThrowGrenade)
+                .UsesAnimation(AnimationType.ThrowGrenade)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasMaxRange(25f)
@@ -157,7 +157,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                     ExplosiveAOEImpact(
                         activator,
                         targetLocation,
-                        AreaOfEffect.FogMind,
+                        AreaOfEffectType.FogMind,
                         "grenade_kolt3_en",
                         "grenade_kolt3_hb",
                         60f);

@@ -3,7 +3,6 @@ using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Constants;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Character.ValueObjects;
 using SWLOR.Shared.Domain.Combat.Contracts;
@@ -57,14 +56,14 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 return;
             }
 
-            var dc = CombatService.CalculateSavingThrowDC(activator, SavingThrow.Will, 12);
+            var dc = CombatService.CalculateSavingThrowDC(activator, SavingThrowCategoryType.Will, 12);
             const string EffectTag = "StatusEffectType.MindTrick";
             var checkResult = WillSave(target, dc, SavingThrowType.None, activator);
 
             if (checkResult == SavingThrowResultType.Failed)
             {
                 var effect = EffectConfused();
-                effect = EffectLinkEffects(effect, EffectVisualEffect(VisualEffect.Vfx_Imp_Confusion_S));
+                effect = EffectLinkEffects(effect, EffectVisualEffect(VisualEffectType.Vfx_Imp_Confusion_S));
                 effect = TagEffect(effect, EffectTag);
                 ApplyEffectToObject(DurationType.Temporary, effect, target, 6f);
             }
@@ -80,7 +79,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .HasRecastDelay(RecastGroup.MindTrick, 60f)
                 .HasMaxRange(15.0f)
                 .RequirementFP(3)
-                .UsesAnimation(Animation.LoopingConjure1)
+                .UsesAnimation(AnimationType.LoopingConjure1)
                 .HasCustomValidation(Validation)
                 .IsHostileAbility()
                 .DisplaysVisualEffectWhenActivating()
@@ -98,7 +97,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .HasRecastDelay(RecastGroup.MindTrick, 60f)
                 .HasMaxRange(15.0f)
                 .RequirementFP(5)
-                .UsesAnimation(Animation.LoopingConjure1)
+                .UsesAnimation(AnimationType.LoopingConjure1)
                 .HasCustomValidation(Validation)
                 .IsHostileAbility()
                 .DisplaysVisualEffectWhenActivating()
@@ -107,7 +106,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                     const float Radius = RadiusSize.Medium;
                     ApplyMindTrick(activator, target);
                     // Target the next nearest creature and do the same thing.
-                    var targetCreature = GetFirstObjectInShape(Shape.Sphere, Radius, GetLocation(target), true);
+                    var targetCreature = GetFirstObjectInShape(ShapeType.Sphere, Radius, GetLocation(target), true);
                     while (GetIsObjectValid(targetCreature))
                     {
                         if (GetIsReactionTypeHostile(targetCreature, activator) &&
@@ -115,7 +114,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                         {
                             ApplyMindTrick(activator, targetCreature);
                         }
-                        targetCreature = GetNextObjectInShape(Shape.Sphere, Radius, GetLocation(target), true);
+                        targetCreature = GetNextObjectInShape(ShapeType.Sphere, Radius, GetLocation(target), true);
                     }
                     CombatPointService.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
                 });

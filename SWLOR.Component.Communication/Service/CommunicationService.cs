@@ -3,7 +3,6 @@ using SWLOR.Component.Communication.Contracts;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.UI.Service;
 using System.Globalization;
@@ -14,7 +13,7 @@ using SWLOR.Shared.Domain.Communication.Constants;
 using SWLOR.Shared.Domain.Communication.Contracts;
 using SWLOR.Shared.Domain.Communication.Enums;
 using SWLOR.Shared.Domain.Entities;
-using ChatChannel = SWLOR.NWN.API.NWNX.Enum.ChatChannel;
+using ChatChannelType = SWLOR.NWN.API.NWNX.Enum.ChatChannelType;
 
 namespace SWLOR.Component.Communication.Service
 {
@@ -111,7 +110,7 @@ namespace SWLOR.Component.Communication.Service
 
             if(type == GuiEventType.ChatBarFocus)
             {
-                var chatIndicator = TagEffect(EffectVisualEffect(VisualEffect.Vfx_Dur_Chat_Bubble, false, 0.5f), "typingindicator");
+                var chatIndicator = TagEffect(EffectVisualEffect(VisualEffectType.Vfx_Dur_Chat_Bubble, false, 0.5f), "typingindicator");
                 ApplyEffectToObject(DurationType.Temporary, chatIndicator, player, 120.0f);
             } else if (type == GuiEventType.ChatBarUnfocus)
             {
@@ -137,12 +136,12 @@ namespace SWLOR.Component.Communication.Service
             // - PlayerDM echoes back the message received to the sender.
 
             var inCharacterChat =
-                channel == ChatChannel.PlayerTalk ||
-                channel == ChatChannel.PlayerWhisper ||
-                channel == ChatChannel.PlayerParty ||
-                channel == ChatChannel.PlayerShout;
+                channel == ChatChannelType.PlayerTalk ||
+                channel == ChatChannelType.PlayerWhisper ||
+                channel == ChatChannelType.PlayerParty ||
+                channel == ChatChannelType.PlayerShout;
             
-            var messageToDm = channel == ChatChannel.PlayerDM;
+            var messageToDm = channel == ChatChannelType.PlayerDM;
 
             var sender = ChatPlugin.GetSender();
             var message = ChatPlugin.GetMessage().Trim();
@@ -165,7 +164,7 @@ namespace SWLOR.Component.Communication.Service
             // Echo the message back to the player.
             if (messageToDm)
             {
-                ChatPlugin.SendMessage(ChatChannel.ServerMessage, "(Sent to DM) " + message, sender, sender);
+                ChatPlugin.SendMessage(ChatChannelType.ServerMessage, "(Sent to DM) " + message, sender, sender);
                 return;
             }
 
@@ -191,7 +190,7 @@ namespace SWLOR.Component.Communication.Service
                 };
                 chatComponents.Add(component);
                 
-                if (channel == ChatChannel.PlayerShout)
+                if (channel == ChatChannelType.PlayerShout)
                 {
                     SendMessageToPC(sender, "Out-of-character messages cannot be sent on the Holonet.");
                     return;
@@ -223,7 +222,7 @@ namespace SWLOR.Component.Communication.Service
                 }
             }
 
-            if (channel == ChatChannel.PlayerShout &&
+            if (channel == ChatChannelType.PlayerShout &&
                 GetIsPC(sender) &&
                 !GetIsDM(sender) &&
                 !GetIsDMPossessed(sender))
@@ -279,13 +278,13 @@ namespace SWLOR.Component.Communication.Service
             }
 
             // This is a server-wide holonet message (that receivers can toggle on or off).
-            if (channel == ChatChannel.PlayerShout)
+            if (channel == ChatChannelType.PlayerShout)
             {
                 recipients.AddRange(allPlayers.Where(player => GetLocalBool(player, "DISPLAY_HOLONET")));
                 recipients.AddRange(allDMs);
             }
             // This is the normal party chat, plus everyone within 20 units of the sender.
-            else if (channel == ChatChannel.PlayerParty)
+            else if (channel == ChatChannelType.PlayerParty)
             {
                 // Can an NPC use the playerparty channel? I feel this is safe ...
 
@@ -302,13 +301,13 @@ namespace SWLOR.Component.Communication.Service
                 distanceCheck = 20.0f;
             }
             // Normal talk - 20 units.
-            else if (channel == ChatChannel.PlayerTalk)
+            else if (channel == ChatChannelType.PlayerTalk)
             {
                 needsAreaCheck = true;
                 distanceCheck = 20.0f;
             }
             // Whisper - 4 units.
-            else if (channel == ChatChannel.PlayerWhisper)
+            else if (channel == ChatChannelType.PlayerWhisper)
             {
                 needsAreaCheck = true;
                 distanceCheck = 4.0f;
@@ -346,11 +345,11 @@ namespace SWLOR.Component.Communication.Service
                 // Generate the final message as perceived by obj.
                 var finalMessage = new StringBuilder();
 
-                if (channel == ChatChannel.PlayerShout)
+                if (channel == ChatChannelType.PlayerShout)
                 {
                     finalMessage.Append("[Holonet] ");
                 }
-                else if (channel == ChatChannel.PlayerParty)
+                else if (channel == ChatChannelType.PlayerParty)
                 {
                     finalMessage.Append("[Comms] ");
 
@@ -485,9 +484,9 @@ namespace SWLOR.Component.Communication.Service
 
                 var finalChannel = channel;
 
-                if (channel == ChatChannel.PlayerShout || channel == ChatChannel.PlayerParty)
+                if (channel == ChatChannelType.PlayerShout || channel == ChatChannelType.PlayerParty)
                 {
-                    finalChannel = ChatChannel.DMTalk;
+                    finalChannel = ChatChannelType.DMTalk;
                 }
 
                 // There are a couple of color overrides we want to use here.
@@ -496,11 +495,11 @@ namespace SWLOR.Component.Communication.Service
 
                 var finalMessageColored = finalMessage.ToString();
 
-                if (channel == ChatChannel.PlayerShout)
+                if (channel == ChatChannelType.PlayerShout)
                 {
                     finalMessageColored = ColorToken.Custom(finalMessageColored, 0, 180, 255);
                 }
-                else if (channel == ChatChannel.PlayerParty)
+                else if (channel == ChatChannelType.PlayerParty)
                 {
                     finalMessageColored = ColorToken.Orange(finalMessageColored);
                 }

@@ -41,7 +41,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.OneHanded
 
         private string Validation(uint activator, uint target, int level, Location targetLocation)
         {
-            var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
+            var weapon = GetItemInSlot(InventorySlotType.RightHand, activator);
             var rightHandType = GetBaseItemType(weapon);
             
             if (ItemService.VibrobladeBaseItemTypes.Contains(rightHandType))
@@ -84,7 +84,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.OneHanded
             var damage = CombatService.CalculateDamage(attack, dmg, might, defense, vitality, 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
 
-            AssignCommand(activator, () => ActionPlayAnimation(Animation.RiotBlade));
+            AssignCommand(activator, () => ActionPlayAnimation(AnimationType.RiotBlade));
 
             EnmityService.ModifyEnmity(activator, target, 100 * level + damage);
         }

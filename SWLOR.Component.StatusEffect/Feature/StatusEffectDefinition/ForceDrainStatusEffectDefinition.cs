@@ -2,7 +2,6 @@ using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.StatusEffect.Contracts;
 using SWLOR.Component.StatusEffect.Service;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Combat.Contracts;
@@ -46,7 +45,7 @@ namespace SWLOR.Component.StatusEffect.Feature.StatusEffectDefinition
                 {
                     var willBonus = GetAbilityScore(source, AbilityType.Willpower);
                     var willDMG = willBonus + Random.D2(willBonus / 3);
-                    ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, willDMG, willDMG, target, source);
+                    ProcessForceDrainTick(VisualEffectType.Vfx_Beam_Drain, willDMG, willDMG, target, source);
                     EnmityService.ModifyEnmityOnAll(source, 200);
 
                     CombatPointService.AddCombatPoint(source, target, SkillType.Force, 3);
@@ -55,7 +54,7 @@ namespace SWLOR.Component.StatusEffect.Feature.StatusEffectDefinition
                 {
                     var willBonus = GetAbilityScore(source, AbilityType.Willpower);
                     var willDMG = willBonus + Random.D2(willBonus / 3);
-                    ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, willDMG, willDMG, target, source);
+                    ProcessForceDrainTick(VisualEffectType.Vfx_Beam_Drain, willDMG, willDMG, target, source);
                     EnmityService.ModifyEnmityOnAll(source, 75);
 
                     CombatPointService.AddCombatPoint(source, target, SkillType.Force, 3);
@@ -72,7 +71,7 @@ namespace SWLOR.Component.StatusEffect.Feature.StatusEffectDefinition
                 {
                     var willBonus = GetAbilityScore(source, AbilityType.Willpower);
                     var willDMG = 10 + willBonus + Random.D3(willBonus / 3);
-                    ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, willDMG, willDMG, target, source);
+                    ProcessForceDrainTick(VisualEffectType.Vfx_Beam_Drain, willDMG, willDMG, target, source);
                     EnmityService.ModifyEnmityOnAll(source, 250);
 
                     CombatPointService.AddCombatPoint(source, target, SkillType.Force, 3);
@@ -81,7 +80,7 @@ namespace SWLOR.Component.StatusEffect.Feature.StatusEffectDefinition
                 {
                     var willBonus = GetAbilityScore(source, AbilityType.Willpower);
                     var willDMG = 10 + willBonus + Random.D3(willBonus / 3);
-                    ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, willDMG, willDMG, target, source);
+                    ProcessForceDrainTick(VisualEffectType.Vfx_Beam_Drain, willDMG, willDMG, target, source);
                     EnmityService.ModifyEnmityOnAll(source, 100);
 
                     CombatPointService.AddCombatPoint(source, target, SkillType.Force, 3);
@@ -98,7 +97,7 @@ namespace SWLOR.Component.StatusEffect.Feature.StatusEffectDefinition
                 {
                     var willBonus = GetAbilityScore(source, AbilityType.Willpower);
                     var willDMG = 15 + willBonus + Random.D4(willBonus / 3);
-                    ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, willDMG, willDMG, target, source);
+                    ProcessForceDrainTick(VisualEffectType.Vfx_Beam_Drain, willDMG, willDMG, target, source);
                     EnmityService.ModifyEnmityOnAll(source, 250);
 
                     CombatPointService.AddCombatPoint(source, target, SkillType.Force, 3);
@@ -107,7 +106,7 @@ namespace SWLOR.Component.StatusEffect.Feature.StatusEffectDefinition
                 {
                     var willBonus = GetAbilityScore(source, AbilityType.Willpower);
                     var willDMG = 15 + willBonus + Random.D4(willBonus / 3);
-                    ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, willDMG, willDMG, target, source);
+                    ProcessForceDrainTick(VisualEffectType.Vfx_Beam_Drain, willDMG, willDMG, target, source);
                     EnmityService.ModifyEnmityOnAll(source, 125);
 
                     CombatPointService.AddCombatPoint(source, target, SkillType.Force, 3);
@@ -124,7 +123,7 @@ namespace SWLOR.Component.StatusEffect.Feature.StatusEffectDefinition
                 {
                     var willBonus = GetAbilityScore(source, AbilityType.Willpower);
                     var willDMG = 20 + willBonus + Random.D6(willBonus / 3);
-                    ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, willDMG, willDMG, target, source);
+                    ProcessForceDrainTick(VisualEffectType.Vfx_Beam_Drain, willDMG, willDMG, target, source);
                     EnmityService.ModifyEnmityOnAll(source, 300);
 
                     CombatPointService.AddCombatPoint(source, target, SkillType.Force, 3);
@@ -133,7 +132,7 @@ namespace SWLOR.Component.StatusEffect.Feature.StatusEffectDefinition
                 {
                     var willBonus = GetAbilityScore(source, AbilityType.Willpower);
                     var willDMG = 20 + willBonus + Random.D6(willBonus / 3);
-                    ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, willDMG, willDMG, target, source);
+                    ProcessForceDrainTick(VisualEffectType.Vfx_Beam_Drain, willDMG, willDMG, target, source);
                     EnmityService.ModifyEnmityOnAll(source, 150);
 
                     CombatPointService.AddCombatPoint(source, target, SkillType.Force, 3);
@@ -149,7 +148,7 @@ namespace SWLOR.Component.StatusEffect.Feature.StatusEffectDefinition
                 {
                     var willBonus = GetAbilityScore(source, AbilityType.Willpower);
                     var willDMG = 25 + willBonus + Random.D8(willBonus / 3);
-                    ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, willDMG, willDMG, target, source);
+                    ProcessForceDrainTick(VisualEffectType.Vfx_Beam_Drain, willDMG, willDMG, target, source);
                     EnmityService.ModifyEnmityOnAll(source, 350);
 
                     CombatPointService.AddCombatPoint(source, target, SkillType.Force, 3);
@@ -158,16 +157,16 @@ namespace SWLOR.Component.StatusEffect.Feature.StatusEffectDefinition
                 {
                     var willBonus = GetAbilityScore(source, AbilityType.Willpower);
                     var willDMG = 25 + willBonus + Random.D8(willBonus / 3);
-                    ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, willDMG, willDMG, target, source);
+                    ProcessForceDrainTick(VisualEffectType.Vfx_Beam_Drain, willDMG, willDMG, target, source);
                     EnmityService.ModifyEnmityOnAll(source, 175);
 
                     CombatPointService.AddCombatPoint(source, target, SkillType.Force, 3);
                 });
         }
 
-        private void ProcessForceDrainTick(VisualEffect vfx, int damage, int heal, uint target, uint source)
+        private void ProcessForceDrainTick(VisualEffectType vfx, int damage, int heal, uint target, uint source)
         {
-            var dc = CombatService.CalculateSavingThrowDC(source, SavingThrow.Will, 14);
+            var dc = CombatService.CalculateSavingThrowDC(source, SavingThrowCategoryType.Will, 14);
             var checkResult = WillSave(target, dc, SavingThrowType.None, source);
 
             if (checkResult == SavingThrowResultType.Failed)
@@ -176,13 +175,13 @@ namespace SWLOR.Component.StatusEffect.Feature.StatusEffectDefinition
 
                 AssignCommand(source, () =>
                 {
-                    ApplyEffectToObject(DurationType.Temporary, EffectBeam(vfx, target, BodyNode.Hand), source, 2.0f);
-                    ApplyEffectToObject(DurationType.Temporary, EffectBeam(vfx, source, BodyNode.Hand), target, 2.0f);
-                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Negative_Energy), target);
-                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Reduce_Ability_Score), target);
+                    ApplyEffectToObject(DurationType.Temporary, EffectBeam(vfx, target, BodyNodeType.Hand), source, 2.0f);
+                    ApplyEffectToObject(DurationType.Temporary, EffectBeam(vfx, source, BodyNodeType.Hand), target, 2.0f);
+                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Imp_Negative_Energy), target);
+                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Imp_Reduce_Ability_Score), target);
                     ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), target);
                     ApplyEffectToObject(DurationType.Instant, EffectHeal(heal), source);
-                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Pulse_Negative), source);
+                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Imp_Pulse_Negative), source);
                 });
             }
         }

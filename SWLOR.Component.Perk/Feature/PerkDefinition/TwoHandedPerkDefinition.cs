@@ -185,24 +185,24 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .Name("Heavy Vibroblade Mastery")
                 .TriggerEquippedItem((player, item, slot, type, level) =>
                 {
-                    if (slot != InventorySlot.RightHand) return;
+                    if (slot != InventorySlotType.RightHand) return;
 
                     StatService.ApplyAttacksPerRound(player, item);
                 })
                 .TriggerUnequippedItem((player, item, slot, type, level) =>
                 {
-                    if (slot != InventorySlot.RightHand) return;
+                    if (slot != InventorySlotType.RightHand) return;
 
                     StatService.ApplyAttacksPerRound(player, OBJECT_INVALID);
                 })
                 .TriggerPurchase((player) =>
                 {
-                    var item = GetItemInSlot(InventorySlot.RightHand, player);
+                    var item = GetItemInSlot(InventorySlotType.RightHand, player);
                     StatService.ApplyAttacksPerRound(player, item);
                 })
                 .TriggerRefund((player) =>
                 {
-                    var item = GetItemInSlot(InventorySlot.RightHand, player);
+                    var item = GetItemInSlot(InventorySlotType.RightHand, player);
                     StatService.ApplyAttacksPerRound(player, item);
                 })
 
@@ -350,24 +350,24 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .Name("Polearm Mastery")
                 .TriggerEquippedItem((player, item, slot, type, level) =>
                 {
-                    if (slot != InventorySlot.RightHand) return;
+                    if (slot != InventorySlotType.RightHand) return;
 
                     StatService.ApplyAttacksPerRound(player, item);
                 })
                 .TriggerUnequippedItem((player, item, slot, type, level) =>
                 {
-                    if (slot != InventorySlot.RightHand) return;
+                    if (slot != InventorySlotType.RightHand) return;
 
                     StatService.ApplyAttacksPerRound(player, OBJECT_INVALID);
                 })
                 .TriggerPurchase((player) =>
                 {
-                    var item = GetItemInSlot(InventorySlot.RightHand, player);
+                    var item = GetItemInSlot(InventorySlotType.RightHand, player);
                     StatService.ApplyAttacksPerRound(player, item);
                 })
                 .TriggerRefund((player) =>
                 {
-                    var item = GetItemInSlot(InventorySlot.RightHand, player);
+                    var item = GetItemInSlot(InventorySlotType.RightHand, player);
                     StatService.ApplyAttacksPerRound(player, item);
                 })
 
@@ -515,24 +515,24 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .Name("Twin Blade Mastery")
                 .TriggerEquippedItem((player, item, slot, type, level) =>
                 {
-                    if (slot != InventorySlot.RightHand) return;
+                    if (slot != InventorySlotType.RightHand) return;
 
                     StatService.ApplyAttacksPerRound(player, item);
                 })
                 .TriggerUnequippedItem((player, item, slot, type, level) =>
                 {
-                    if (slot != InventorySlot.RightHand) return;
+                    if (slot != InventorySlotType.RightHand) return;
 
                     StatService.ApplyAttacksPerRound(player, OBJECT_INVALID);
                 })
                 .TriggerPurchase((player) =>
                 {
-                    var item = GetItemInSlot(InventorySlot.RightHand, player);
+                    var item = GetItemInSlot(InventorySlotType.RightHand, player);
                     StatService.ApplyAttacksPerRound(player, item);
                 })
                 .TriggerRefund((player) =>
                 {
-                    var item = GetItemInSlot(InventorySlot.RightHand, player);
+                    var item = GetItemInSlot(InventorySlotType.RightHand, player);
                     StatService.ApplyAttacksPerRound(player, item);
                 })
 
@@ -688,24 +688,24 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .Name("Saberstaff Mastery")
                 .TriggerEquippedItem((player, item, slot, type, level) =>
                 {
-                    if (slot != InventorySlot.RightHand) return;
+                    if (slot != InventorySlotType.RightHand) return;
 
                     StatService.ApplyAttacksPerRound(player, item);
                 })
                 .TriggerUnequippedItem((player, item, slot, type, level) =>
                 {
-                    if (slot != InventorySlot.RightHand) return;
+                    if (slot != InventorySlotType.RightHand) return;
 
                     StatService.ApplyAttacksPerRound(player, OBJECT_INVALID);
                 })
                 .TriggerPurchase((player) =>
                 {
-                    var item = GetItemInSlot(InventorySlot.RightHand, player);
+                    var item = GetItemInSlot(InventorySlotType.RightHand, player);
                     StatService.ApplyAttacksPerRound(player, item);
                 })
                 .TriggerRefund((player) =>
                 {
-                    var item = GetItemInSlot(InventorySlot.RightHand, player);
+                    var item = GetItemInSlot(InventorySlotType.RightHand, player);
                     StatService.ApplyAttacksPerRound(player, item);
                 })
 

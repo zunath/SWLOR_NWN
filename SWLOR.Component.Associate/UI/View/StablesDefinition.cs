@@ -56,8 +56,8 @@ namespace SWLOR.Component.Associate.UI.View
                                 {
                                     row.AddLabel()
                                         .SetText("HP")
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left)
                                         .SetColor(GuiColor.HPColor)
                                         .SetTooltip("Hit Points - When these hit zero, your beast dies.");
                                 });
@@ -65,8 +65,8 @@ namespace SWLOR.Component.Associate.UI.View
                                 {
                                     row.AddLabel()
                                         .SetText("FP")
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left)
                                         .SetColor(GuiColor.FPColor)
                                         .SetTooltip("Force Points - Resource used to activate force abilities. Force sensitive beasts only.");
                                 });
@@ -74,8 +74,8 @@ namespace SWLOR.Component.Associate.UI.View
                                 {
                                     row.AddLabel()
                                         .SetText("STM")
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left)
                                         .SetColor(GuiColor.STMColor)
                                         .SetTooltip("Stamina - Resource used to activate non-force abilities.");
                                 });
@@ -83,64 +83,64 @@ namespace SWLOR.Component.Associate.UI.View
                                 {
                                     row.AddLabel()
                                         .SetText("SP")
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left)
                                         .SetTooltip("Skill Points - Used to purchase Perks.");
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
                                         .SetText("Level")
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left)
                                         .BindTooltip(model => model.XPTooltip);
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
                                         .SetText("Might")
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left)
                                         .SetTooltip("Might - Improves damage dealt by melee weapons, carrying capacity, and fortitude saving throws.");
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
                                         .SetText("Perception")
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left)
                                         .SetTooltip("Perception - Improves damage dealt by ranged and finesse weapons, increases physical accuracy, and reflex saving throws.");
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
                                         .SetText("Vitality")
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left)
                                         .SetTooltip("Vitality - Improves your max hit points and reduces damage received.");
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
                                         .SetText("Willpower")
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left)
                                         .SetTooltip("Willpower - Improves your force attack, force defense, max force points, and will saving throws.");
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
                                         .SetText("Agility")
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left)
                                         .SetTooltip("Agility - Improves ranged accuracy, evasion, and max stamina.");
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
                                         .SetText("Social")
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left)
                                         .SetTooltip("Social - Improves your XP gain and leadership capabilities.");
                                 });
                             });
@@ -151,80 +151,80 @@ namespace SWLOR.Component.Associate.UI.View
                                     row.AddLabel()
                                         .BindText(model => model.HP)
                                         .SetColor(GuiColor.HPColor)
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left);
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
                                         .BindText(model => model.FP)
                                         .SetColor(GuiColor.FPColor)
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left);
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
                                         .BindText(model => model.STM)
                                         .SetColor(GuiColor.STMColor)
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left);
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
                                         .BindText(model => model.SP)
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left);
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
                                         .BindText(model => model.Level)
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left);
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
                                         .BindText(model => model.Might)
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left);
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
                                         .BindText(model => model.Perception)
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left);
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
                                         .BindText(model => model.Vitality)
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left);
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
                                         .BindText(model => model.Willpower)
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left);
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
                                         .BindText(model => model.Agility)
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left);
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
                                         .BindText(model => model.Social)
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left);
                                 });
                             });
                             rowRoot.AddColumn(col =>
@@ -233,88 +233,88 @@ namespace SWLOR.Component.Associate.UI.View
                                 {
                                     row.AddLabel()
                                         .SetText("Main Hand")
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left)
                                         .SetTooltip("Main Hand DMG - Baseline damage ratio before stats and target defenses are taken into account.");
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
                                         .SetText("Off Hand")
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left)
                                         .SetTooltip("Off Hand DMG - Baseline damage ratio before stats and target defenses are taken into account.");
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
                                         .SetText("Attack")
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left)
                                         .SetTooltip("Attack - Improves damage dealt by physical attacks.");
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
                                         .SetText("Accuracy")
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left)
                                         .SetTooltip("Accuracy - Improves your chance to hit.");
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
                                         .SetText("Evasion")
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left)
                                         .SetTooltip("Evasion - Improves your ability to dodge attacks.");
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
                                         .SetText("Phys. DEF")
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left)
                                         .SetTooltip("Physical Defense - Reduces the amount of damage taken by physical attacks.");
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
                                         .SetText("Force DEF")
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left)
                                         .SetTooltip("Force Defense - Reduces the amount of damage taken by force attacks.");
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
                                         .SetText("Elem. DEF")
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left)
                                         .SetTooltip("Elemental Defenses - Reduces the amount of damage taken by elemental damage. (Order: Fire/Poison/Electrical/Ice)");
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
                                         .SetText("Role")
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left)
                                         .SetTooltip("Role - Determines the role of your beast. Available perks vary based on this role.");
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
                                         .SetText("Sav. Throws")
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left)
                                         .SetTooltip("Saving Throws - Used to resist certain attacks. (Order: Fortitude, Reflex, Will)");
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
                                         .SetText("")
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left);
                                 });
                             });
                             rowRoot.AddColumn(col =>
@@ -323,78 +323,78 @@ namespace SWLOR.Component.Associate.UI.View
                                 {
                                     row.AddLabel()
                                         .BindText(model => model.MainHand)
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left);
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
                                         .BindText(model => model.OffHand)
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left);
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
                                         .BindText(model => model.Attack)
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left);
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
                                         .BindText(model => model.Accuracy)
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left);
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
                                         .BindText(model => model.Evasion)
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left);
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
                                         .BindText(model => model.PhysicalDefense)
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left);
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
                                         .BindText(model => model.ForceDefense)
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left);
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
                                         .BindText(model => model.ElementalDefense)
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left);
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
                                         .BindText(model => model.Role)
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left);
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
                                         .BindText(model => model.SavingThrows)
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left);
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
                                         .SetText("")
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left);
                                 });
                             });
                         });
@@ -409,8 +409,8 @@ namespace SWLOR.Component.Associate.UI.View
                         {
                             cell.AddLabel()
                                 .BindText(model => model.PerkNames)
-                                .SetVerticalAlign(NuiVerticalAlign.Top)
-                                .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                .SetHorizontalAlign(NuiHorizontalAlignType.Left);
                         });
                     })
                         .BindRowCount(model => model.PerkNames);
@@ -428,51 +428,51 @@ namespace SWLOR.Component.Associate.UI.View
                                 {
                                     row.AddLabel()
                                         .SetText("Attack")
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left);
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
                                         .SetText("Accuracy")
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left);
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
                                         .SetText("Evasion")
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left);
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
                                         .SetText("Phys. Defense")
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left);
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
                                         .SetText("Force Defense")
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left);
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
                                         .SetText("Fire Defense")
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left);
                                 });
 
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
                                         .SetText("Learning")
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left);
                                 });
                             });
                             rootRow.AddColumn(col =>
@@ -481,50 +481,50 @@ namespace SWLOR.Component.Associate.UI.View
                                 {
                                     row.AddLabel()
                                         .BindText(model => model.AttackPurity)
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left);
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
                                         .BindText(model => model.AccuracyPurity)
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left);
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
                                         .BindText(model => model.EvasionPurity)
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left);
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
                                         .BindText(model => model.PhysicalDefensePurity)
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left);
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
                                         .BindText(model => model.ForceDefensePurity)
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left);
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
                                         .BindText(model => model.FireDefensePurity)
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left);
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
                                         .BindText(model => model.LearningPurity)
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left);
                                 });
                             });
                             rootRow.AddColumn(col =>
@@ -533,51 +533,51 @@ namespace SWLOR.Component.Associate.UI.View
                                 {
                                     row.AddLabel()
                                         .SetText("Ice Defense")
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left);
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
                                         .SetText("Pois. Defense")
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left);
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
                                         .SetText("Elec. Defense")
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left);
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
                                         .SetText("Fortitude")
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left);
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
                                         .SetText("Reflex")
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left);
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
                                         .SetText("Will")
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left);
                                 });
 
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
                                         .SetText("XP Penalty")
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left);
                                 });
                             });
                             rootRow.AddColumn(col =>
@@ -586,50 +586,50 @@ namespace SWLOR.Component.Associate.UI.View
                                 {
                                     row.AddLabel()
                                         .BindText(model => model.IceDefensePurity)
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left);
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
                                         .BindText(model => model.PoisonDefensePurity)
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left);
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
                                         .BindText(model => model.ElectricalDefensePurity)
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left);
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
                                         .BindText(model => model.FortitudePurity)
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left);
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
                                         .BindText(model => model.ReflexPurity)
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left);
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
                                         .BindText(model => model.WillPurity)
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left);
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
                                         .BindText(model => model.XPPenalty)
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Left);
                                 });
                             });
                         });
@@ -642,7 +642,7 @@ namespace SWLOR.Component.Associate.UI.View
                     {
                         rootRow.AddLabel()
                             .SetHeight(30f)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Center)
+                            .SetHorizontalAlign(NuiHorizontalAlignType.Center)
                             .BindText(model => model.Instructions)
                             .BindColor(model => model.InstructionsColor);
                     });

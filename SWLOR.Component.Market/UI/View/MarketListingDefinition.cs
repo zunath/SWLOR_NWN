@@ -63,7 +63,7 @@ namespace SWLOR.Component.Market.UI.View
                         row.AddLabel()
                             .BindText(model => model.ListCount)
                             .SetHeight(35f)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                            .SetHorizontalAlign(NuiHorizontalAlignType.Left);
                     });
                     col.AddRow(row =>
                     {
@@ -78,8 +78,8 @@ namespace SWLOR.Component.Market.UI.View
                                 {
                                     group.AddImage()
                                         .BindResref(model => model.ItemIconResrefs)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                                        .SetVerticalAlign(NuiVerticalAlign.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Center)
+                                        .SetVerticalAlign(NuiVerticalAlignType.Top)
                                         .BindTooltip(model => model.ItemNames);
                                 });
                             });

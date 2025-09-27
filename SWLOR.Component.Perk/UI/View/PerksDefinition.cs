@@ -66,8 +66,8 @@ namespace SWLOR.Component.Perk.UI.View
                     {
                         row.AddLabel()
                             .BindText(model => model.AvailableSP)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
+                            .SetHorizontalAlign(NuiHorizontalAlignType.Left)
+                            .SetVerticalAlign(NuiVerticalAlignType.Top)
                             .SetHeight(26f);
 
                     });
@@ -76,8 +76,8 @@ namespace SWLOR.Component.Perk.UI.View
                     {
                         row.AddLabel()
                             .BindText(model => model.TotalSP)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
+                            .SetHorizontalAlign(NuiHorizontalAlignType.Left)
+                            .SetVerticalAlign(NuiVerticalAlignType.Top)
                             .SetHeight(26f);
                     });
 
@@ -85,8 +85,8 @@ namespace SWLOR.Component.Perk.UI.View
                     {
                         row.AddLabel()
                             .BindText(model => model.ResetNextAvailable)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
+                            .SetHorizontalAlign(NuiHorizontalAlignType.Left)
+                            .SetVerticalAlign(NuiVerticalAlignType.Top)
                             .SetHeight(26f);
 
                     });
@@ -101,9 +101,9 @@ namespace SWLOR.Component.Perk.UI.View
                                 {
                                     group.AddImage()
                                         .BindResref(model => model.PerkButtonIcons)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                                        .SetVerticalAlign(NuiVerticalAlign.Middle)
-                                        .SetAspect(NuiAspect.Stretch);
+                                        .SetHorizontalAlign(NuiHorizontalAlignType.Center)
+                                        .SetVerticalAlign(NuiVerticalAlignType.Middle)
+                                        .SetAspect(NuiAspectType.Stretch);
                                 });
 
                                 cell.SetWidth(40f);
@@ -119,7 +119,7 @@ namespace SWLOR.Component.Perk.UI.View
                             });
                         })
                             .SetRowHeight(40f)
-                            .SetScrollbars(NuiScrollbars.Both)
+                            .SetScrollbars(NuiScrollbarType.Both)
                             .BindRowCount(model => model.PerkButtonTexts);
 
                         row.AddColumn(col2 =>
@@ -135,8 +135,8 @@ namespace SWLOR.Component.Perk.UI.View
                             {
                                 row2.AddLabel()
                                     .SetText("Requirements")
-                                    .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                                    .SetVerticalAlign(NuiVerticalAlign.Top)
+                                    .SetHorizontalAlign(NuiHorizontalAlignType.Center)
+                                    .SetVerticalAlign(NuiVerticalAlignType.Top)
                                     .SetHeight(26f)
                                     .BindIsVisible(model => model.IsPerkSelected);
                             });
@@ -149,11 +149,11 @@ namespace SWLOR.Component.Perk.UI.View
                                         cell.AddLabel()
                                             .BindText(model => model.SelectedRequirements)
                                             .BindColor(model => model.SelectedRequirementColors)
-                                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                                            .SetVerticalAlign(NuiVerticalAlign.Top);
+                                            .SetHorizontalAlign(NuiHorizontalAlignType.Left)
+                                            .SetVerticalAlign(NuiVerticalAlignType.Top);
                                     });
                                 })
-                                    .SetScrollbars(NuiScrollbars.Both)
+                                    .SetScrollbars(NuiScrollbarType.Both)
                                     .BindRowCount(model => model.SelectedRequirements)
                                     .BindIsVisible(model => model.IsPerkSelected);
                             });

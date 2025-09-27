@@ -54,7 +54,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oObject">The object to get the event script for</param>
         /// <param name="nHandler">The event script handler</param>
         /// <returns>The event script. Will return empty string if unset, the object is invalid, or the object cannot have the requested handler</returns>
-        public static string GetEventScript(uint oObject, EventScript nHandler)
+        public static string GetEventScript(uint oObject, EventScriptType nHandler)
         {
             return global::NWN.Core.NWScript.GetEventScript(oObject, (int)nHandler);
         }
@@ -66,7 +66,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nHandler">The event script handler</param>
         /// <param name="sScript">The script to set</param>
         /// <returns>1 on success, 0 on failure. Will fail if oObject is invalid or does not have the requested handler</returns>
-        public static int SetEventScript(uint oObject, EventScript nHandler, string sScript)
+        public static int SetEventScript(uint oObject, EventScriptType nHandler, string sScript)
         {
             return global::NWN.Core.NWScript.SetEventScript(oObject, (int)nHandler, sScript);
         }

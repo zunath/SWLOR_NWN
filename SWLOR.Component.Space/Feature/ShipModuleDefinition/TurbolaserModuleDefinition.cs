@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Space.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Combat.Contracts;
@@ -86,8 +85,8 @@ namespace SWLOR.Component.Space.Feature.ShipModuleDefinition
                             chanceToHit = 20;
                         }
                     }
-                    var sound = EffectVisualEffect(VisualEffect.Vfx_Ship_Blast);
-                    var missile = EffectVisualEffect(VisualEffect.Mirv_StarWars_Bolt2);
+                    var sound = EffectVisualEffect(VisualEffectType.Vfx_Ship_Blast);
+                    var missile = EffectVisualEffect(VisualEffectType.Mirv_StarWars_Bolt2);
                     for (var i = 0; i < attacks; i++)
                     {
                         var delay = i * 3f;
@@ -110,7 +109,7 @@ namespace SWLOR.Component.Space.Feature.ShipModuleDefinition
                                     {
                                         ApplyEffectToObject(DurationType.Instant, sound, target);
                                         ApplyEffectToObject(DurationType.Instant, missile, target);
-                                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Gas_Explosion_Fire), target);
+                                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Fnf_Gas_Explosion_Fire), target);
 
                                         DelayCommand(0.3f, () =>
                                         {

@@ -2,7 +2,6 @@ using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Constants;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Character.ValueObjects;
@@ -57,7 +56,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
 
             if (dc > 0)
             {
-                dc = CombatService.CalculateSavingThrowDC(activator, SavingThrow.Reflex, dc);
+                dc = CombatService.CalculateSavingThrowDC(activator, SavingThrowCategoryType.Reflex, dc);
                 var checkResult = ReflexSave(target, dc, SavingThrowType.None, activator);
                 if (checkResult == SavingThrowResultType.Failed)
                 {
@@ -85,7 +84,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                 .HasRecastDelay(RecastGroup.ConcussionGrenade, 24f)
                 .HasActivationDelay(1f)
                 .RequirementStamina(2)
-                .UsesAnimation(Animation.ThrowGrenade)
+                .UsesAnimation(AnimationType.ThrowGrenade)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .BreaksStealth()
@@ -93,8 +92,8 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                 .HasCustomValidation(ExplosiveValidation)
                 .HasImpactAction((activator, _, _, location) =>
                 {
-                    var vfx = EffectVisualEffect(VisualEffect.Vfx_Fnf_Sound_Burst_Silent);
-                    vfx = EffectLinkEffects(vfx, EffectVisualEffect(VisualEffect.Vfx_Fnf_Screen_Shake));
+                    var vfx = EffectVisualEffect(VisualEffectType.Vfx_Fnf_Sound_Burst_Silent);
+                    vfx = EffectLinkEffects(vfx, EffectVisualEffect(VisualEffectType.Vfx_Fnf_Screen_Shake));
                     ExplosiveImpact(activator, location, vfx, "explosion1", RadiusSize.Large, (target) =>
                     {
                         var perBonus = GetAbilityScore(activator, AbilityType.Perception);
@@ -111,7 +110,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                 .HasRecastDelay(RecastGroup.ConcussionGrenade, 24f)
                 .HasActivationDelay(2f)
                 .RequirementStamina(3)
-                .UsesAnimation(Animation.ThrowGrenade)
+                .UsesAnimation(AnimationType.ThrowGrenade)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .BreaksStealth()
@@ -119,8 +118,8 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                 .HasCustomValidation(ExplosiveValidation)
                 .HasImpactAction((activator, _, _, location) =>
                 {
-                    var vfx = EffectVisualEffect(VisualEffect.Vfx_Fnf_Sound_Burst_Silent);
-                    vfx = EffectLinkEffects(vfx, EffectVisualEffect(VisualEffect.Vfx_Fnf_Screen_Shake));
+                    var vfx = EffectVisualEffect(VisualEffectType.Vfx_Fnf_Sound_Burst_Silent);
+                    vfx = EffectLinkEffects(vfx, EffectVisualEffect(VisualEffectType.Vfx_Fnf_Screen_Shake));
                     ExplosiveImpact(activator, location, vfx, "explosion1", RadiusSize.Large, (target) =>
                     {
                         var perBonus = GetAbilityScore(activator, AbilityType.Perception);
@@ -138,7 +137,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                 .HasRecastDelay(RecastGroup.ConcussionGrenade, 24f)
                 .HasActivationDelay(2f)
                 .RequirementStamina(4)
-                .UsesAnimation(Animation.ThrowGrenade)
+                .UsesAnimation(AnimationType.ThrowGrenade)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .BreaksStealth()
@@ -146,8 +145,8 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                 .HasCustomValidation(ExplosiveValidation)
                 .HasImpactAction((activator, _, _, location) =>
                 {
-                    var vfx = EffectVisualEffect(VisualEffect.Vfx_Fnf_Sound_Burst_Silent);
-                    vfx = EffectLinkEffects(vfx, EffectVisualEffect(VisualEffect.Vfx_Fnf_Screen_Shake));
+                    var vfx = EffectVisualEffect(VisualEffectType.Vfx_Fnf_Sound_Burst_Silent);
+                    vfx = EffectLinkEffects(vfx, EffectVisualEffect(VisualEffectType.Vfx_Fnf_Screen_Shake));
                     ExplosiveImpact(activator, location, vfx, "explosion1", RadiusSize.Large, (target) =>
                     {
                         var perBonus = GetAbilityScore(activator, AbilityType.Perception);

@@ -43,7 +43,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.TwoHanded
 
         private string Validation(uint activator, uint target, int level, Location targetLocation)
         {
-            var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
+            var weapon = GetItemInSlot(InventorySlotType.RightHand, activator);
 
             if (!ItemService.SaberstaffBaseItemTypes.Contains(GetBaseItemType(weapon)))
             {
@@ -82,7 +82,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.TwoHanded
             }
 
             var count = 0;
-            var creature = GetFirstObjectInShape(Shape.Sphere, RadiusSize.Large, GetLocation(activator), true);
+            var creature = GetFirstObjectInShape(ShapeType.Sphere, RadiusSize.Large, GetLocation(activator), true);
             while (GetIsObjectValid(creature) && count < 3)
             {
                 if (GetIsReactionTypeHostile(creature, activator))
@@ -109,10 +109,10 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.TwoHanded
                     count++;
                 }
 
-                creature = GetNextObjectInShape(Shape.Sphere, RadiusSize.Large, GetLocation(activator), true);
+                creature = GetNextObjectInShape(ShapeType.Sphere, RadiusSize.Large, GetLocation(activator), true);
             }
 
-            AssignCommand(activator, () => ActionPlayAnimation(Animation.Whirlwind));
+            AssignCommand(activator, () => ActionPlayAnimation(AnimationType.Whirlwind));
         }
 
         private void CircleSlash1(IAbilityBuilder builder)

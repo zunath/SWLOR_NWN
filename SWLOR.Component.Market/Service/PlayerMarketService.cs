@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Market.Contracts;
 using SWLOR.Component.Market.Enums;
-using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Domain.Beasts.Contracts;
@@ -187,17 +187,17 @@ namespace SWLOR.Component.Market.Service
             switch (baseItemType)
             {
                 // Universal Armor
-                case BaseItem.LargeShield:
-                case BaseItem.SmallShield:
-                case BaseItem.TowerShield:
+                case BaseItemType.LargeShield:
+                case BaseItemType.SmallShield:
+                case BaseItemType.TowerShield:
                     return MarketCategoryType.Shield;
-                case BaseItem.Cloak:
+                case BaseItemType.Cloak:
                     return MarketCategoryType.Cloak;
-                case BaseItem.Belt:
+                case BaseItemType.Belt:
                     return MarketCategoryType.Belt;
-                case BaseItem.Ring:
+                case BaseItemType.Ring:
                     return MarketCategoryType.Ring;
-                case BaseItem.Amulet:
+                case BaseItemType.Amulet:
                     return MarketCategoryType.Necklace;
             }
 
@@ -207,14 +207,14 @@ namespace SWLOR.Component.Market.Service
             {
                 switch (baseItemType)
                 {
-                    case BaseItem.Helmet:
+                    case BaseItemType.Helmet:
                         return MarketCategoryType.Helmet;
-                    case BaseItem.Gloves:
-                    case BaseItem.Bracer:
+                    case BaseItemType.Gloves:
+                    case BaseItemType.Bracer:
                         return MarketCategoryType.Bracer;
-                    case BaseItem.Boots:
+                    case BaseItemType.Boots:
                         return MarketCategoryType.Legging;
-                    case BaseItem.Armor:
+                    case BaseItemType.Armor:
                         return MarketCategoryType.Breastplate;
                 }
             }
@@ -222,14 +222,14 @@ namespace SWLOR.Component.Market.Service
             {
                 switch (baseItemType)
                 {
-                    case BaseItem.Helmet:
+                    case BaseItemType.Helmet:
                         return MarketCategoryType.Cap;
-                    case BaseItem.Gloves:
-                    case BaseItem.Bracer:
+                    case BaseItemType.Gloves:
+                    case BaseItemType.Bracer:
                         return MarketCategoryType.Glove;
-                    case BaseItem.Boots:
+                    case BaseItemType.Boots:
                         return MarketCategoryType.Boot;
-                    case BaseItem.Armor:
+                    case BaseItemType.Armor:
                         return MarketCategoryType.Tunic;
                 }
             }

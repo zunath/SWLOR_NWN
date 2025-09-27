@@ -40,7 +40,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .RequirementFP(4)
                 .IsCastedAbility()
                 .HasMaxRange(10f)
-                .UsesAnimation(Animation.LoopingConjure1)
+                .UsesAnimation(AnimationType.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
                 .IsHostileAbility()
                 .HasImpactAction((activator, target, level, location) =>
@@ -59,7 +59,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .RequirementFP(6)
                 .IsCastedAbility()
                 .HasMaxRange(10f)
-                .UsesAnimation(Animation.LoopingConjure1)
+                .UsesAnimation(AnimationType.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
                 .IsHostileAbility()
                 .HasImpactAction((activator, target, level, location) =>
@@ -78,7 +78,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .RequirementFP(8)
                 .IsCastedAbility()
                 .HasMaxRange(10f)
-                .UsesAnimation(Animation.LoopingConjure1)
+                .UsesAnimation(AnimationType.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
                 .IsHostileAbility()
                 .HasImpactAction((activator, target, level, location) =>

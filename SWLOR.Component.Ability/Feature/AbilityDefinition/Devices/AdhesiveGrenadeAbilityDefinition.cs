@@ -1,7 +1,6 @@
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Constants;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Character.ValueObjects;
 using SWLOR.Shared.Domain.Common.Enums;
@@ -33,7 +32,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
             var effect = EffectSlow();
             if (immobilizeDC > 0)
             {
-                var dc = CombatService.CalculateSavingThrowDC(activator, SavingThrow.Fortitude, immobilizeDC);
+                var dc = CombatService.CalculateSavingThrowDC(activator, SavingThrowCategoryType.Fortitude, immobilizeDC);
                 var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
                 if (checkResult == SavingThrowResultType.Failed)
                 {
@@ -55,14 +54,14 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                 .HasRecastDelay(RecastGroup.AdhesiveGrenade, 24f)
                 .HasActivationDelay(2f)
                 .RequirementStamina(3)
-                .UsesAnimation(Animation.ThrowGrenade)
+                .UsesAnimation(AnimationType.ThrowGrenade)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasMaxRange(15f)
                 .HasCustomValidation(ExplosiveValidation)
                 .HasImpactAction((activator, _, _, location) =>
                 {
-                    ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffect.Fnf_Dispel_Greater), string.Empty, RadiusSize.Large, (target) =>
+                    ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffectType.Fnf_Dispel_Greater), string.Empty, RadiusSize.Large, (target) =>
                     {
                         Impact(activator, target, 0, 4f, -1);
                     });
@@ -77,14 +76,14 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                 .HasRecastDelay(RecastGroup.AdhesiveGrenade, 24f)
                 .HasActivationDelay(2f)
                 .RequirementStamina(4)
-                .UsesAnimation(Animation.ThrowGrenade)
+                .UsesAnimation(AnimationType.ThrowGrenade)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasMaxRange(15f)
                 .HasCustomValidation(ExplosiveValidation)
                 .HasImpactAction((activator, _, _, location) =>
                 {
-                    ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffect.Fnf_Dispel_Greater), string.Empty, RadiusSize.Large, (target) =>
+                    ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffectType.Fnf_Dispel_Greater), string.Empty, RadiusSize.Large, (target) =>
                     {
                         Impact(activator, target, 30, 6f, 8);
                     });
@@ -99,14 +98,14 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                 .HasRecastDelay(RecastGroup.AdhesiveGrenade, 24f)
                 .HasActivationDelay(2f)
                 .RequirementStamina(5)
-                .UsesAnimation(Animation.ThrowGrenade)
+                .UsesAnimation(AnimationType.ThrowGrenade)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasMaxRange(15f)
                 .HasCustomValidation(ExplosiveValidation)
                 .HasImpactAction((activator, _, _, location) =>
                 {
-                    ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffect.Fnf_Dispel_Greater), string.Empty, RadiusSize.Large, (target) =>
+                    ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffectType.Fnf_Dispel_Greater), string.Empty, RadiusSize.Large, (target) =>
                     {
                         Impact(activator, target, 50, 8f, 12);
                     });

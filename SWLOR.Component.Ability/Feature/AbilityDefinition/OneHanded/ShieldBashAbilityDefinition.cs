@@ -42,7 +42,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.OneHanded
 
         private string Validation(uint activator, uint target, int level, Location targetLocation)
         {
-            var weapon = GetItemInSlot(InventorySlot.LeftHand, activator);
+            var weapon = GetItemInSlot(InventorySlotType.LeftHand, activator);
             var leftHandType = GetBaseItemType(weapon);
             
             if (ItemService.ShieldBaseItemTypes.Contains(leftHandType))
@@ -91,7 +91,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.OneHanded
 
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
 
-            dc = CombatService.CalculateSavingThrowDC(activator, SavingThrow.Will, dc, AbilityType.Might);
+            dc = CombatService.CalculateSavingThrowDC(activator, SavingThrowCategoryType.Will, dc, AbilityType.Might);
             var checkResult = WillSave(target, dc, SavingThrowType.None, activator);
             if (checkResult == SavingThrowResultType.Failed)
             {
@@ -99,7 +99,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.OneHanded
                 AbilityService.ApplyTemporaryImmunity(target, Duration, ImmunityType.Dazed);
             }
 
-            AssignCommand(activator, () => ActionPlayAnimation(Animation.ShieldWall));
+            AssignCommand(activator, () => ActionPlayAnimation(AnimationType.ShieldWall));
 
             EnmityService.ModifyEnmity(activator, target, 400 * level + damage);
         }

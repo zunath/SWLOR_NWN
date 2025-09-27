@@ -4,7 +4,6 @@ using NWNX.NET;
 using SWLOR.Component.Combat.Enums;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Log.LogGroup;
@@ -15,7 +14,6 @@ using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
-using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
 using DamageType = NWN.Native.API.DamageType;
 using EquipmentSlot = NWN.Native.API.EquipmentSlot;
 using ILogger = SWLOR.Shared.Abstractions.Contracts.ILogger;
@@ -48,14 +46,14 @@ namespace SWLOR.Component.Combat.Feature.Native
         private const int MaxValidDamageType = 6;
         private const int MinValidDamageType = 1;
 
-        private static readonly Dictionary<BaseItem, (FeatType Feat, int Damage)> _weaponSpecializationLookup = CreateWeaponSpecializationLookup();
+        private static readonly Dictionary<BaseItemType, (FeatType Feat, int Damage)> _weaponSpecializationLookup = CreateWeaponSpecializationLookup();
 
-        private static Dictionary<BaseItem, (FeatType Feat, int Damage)> CreateWeaponSpecializationLookup()
+        private static Dictionary<BaseItemType, (FeatType Feat, int Damage)> CreateWeaponSpecializationLookup()
         {
-            var lookup = new Dictionary<BaseItem, (FeatType, int)>();
+            var lookup = new Dictionary<BaseItemType, (FeatType, int)>();
 
             // Helper to add all items from a collection
-            void AddItems(IEnumerable<BaseItem> items, FeatType feat, int damage)
+            void AddItems(IEnumerable<BaseItemType> items, FeatType feat, int damage)
             {
                 foreach (var item in items)
                 {
@@ -64,7 +62,7 @@ namespace SWLOR.Component.Combat.Feature.Native
             }
 
             // Gloves (unarmed)
-            lookup[BaseItem.Gloves] = (FeatType.WeaponSpecialization_UnarmedStrike, WeaponSpecializationUnarmedDamage);
+            lookup[BaseItemType.Gloves] = (FeatType.WeaponSpecialization_UnarmedStrike, WeaponSpecializationUnarmedDamage);
 
             // All other weapon types
             AddItems(_itemService.CreatureBaseItemTypes, FeatType.WeaponSpecialization_Creature, WeaponSpecializationCreatureDamage);
@@ -168,7 +166,7 @@ namespace SWLOR.Component.Combat.Feature.Native
 
                 // Calculate critical multiplier
                 var critical = CalculateCriticalMultiplier(attacker, weapon, bCritical);
-                var attackerAttack = weapon == null ? 0 : _statService.GetAttackNative(attacker, (BaseItem)weapon.m_nBaseItem);
+                var attackerAttack = weapon == null ? 0 : _statService.GetAttackNative(attacker, (BaseItemType)weapon.m_nBaseItem);
 
                 var physicalDamage = ProcessDamageTypes(pTarget, attacker, weapon, dmgValues, pAttackData,
                     attackerAttack, attackerStat, critical, weaponPerkLevel, attackType, damageFlags, bOffHand, targetObject);
@@ -199,7 +197,7 @@ namespace SWLOR.Component.Combat.Feature.Native
         {
             if (bCritical != 1) return 0;
 
-            var critMultiplier = weapon != null ? _itemService.GetCriticalModifier((BaseItem)weapon.m_nBaseItem) : 1;
+            var critMultiplier = weapon != null ? _itemService.GetCriticalModifier((BaseItemType)weapon.m_nBaseItem) : 1;
             if (HasImprovedMultiplier(attacker, weapon)) critMultiplier += 1;
             if (HasRapidReload(attacker, weapon)) critMultiplier += 1;
 
@@ -246,7 +244,7 @@ namespace SWLOR.Component.Combat.Feature.Native
                 return attacker.m_pStats.HasFeat((ushort)FeatType.WeaponSpecialization_UnarmedStrike);
             }
 
-            var baseItemType = (BaseItem)weapon.m_nBaseItem;
+            var baseItemType = (BaseItemType)weapon.m_nBaseItem;
 
             if (_weaponSpecializationLookup.TryGetValue(baseItemType, out var weaponSpec) &&
                 attacker.m_pStats.HasFeat((ushort)weaponSpec.Feat) == 1)
@@ -262,7 +260,7 @@ namespace SWLOR.Component.Combat.Feature.Native
             if (weapon == null) return false;
             if (attacker.m_pStats.HasFeat((ushort)FeatType.IncreaseMultiplier) == 0) return false;
 
-            var baseItemType = (BaseItem)weapon.m_nBaseItem;
+            var baseItemType = (BaseItemType)weapon.m_nBaseItem;
 
             if (_itemService.SaberstaffBaseItemTypes.Contains(baseItemType)) return true;
             if (_itemService.TwinBladeBaseItemTypes.Contains(baseItemType)) return true;
@@ -277,7 +275,7 @@ namespace SWLOR.Component.Combat.Feature.Native
             if (weapon == null) return false;
             if (attacker.m_pStats.HasFeat((ushort)FeatType.RapidReload) == 0) return false;
 
-            var baseItemType = (BaseItem)weapon.m_nBaseItem;
+            var baseItemType = (BaseItemType)weapon.m_nBaseItem;
 
             if (_itemService.RifleBaseItemTypes.Contains(baseItemType)) return true;
 
@@ -354,7 +352,7 @@ namespace SWLOR.Component.Combat.Feature.Native
                 }
             }
 
-            return _itemService.GetWeaponDamageAbilityType((BaseItem)weapon.m_nBaseItem);
+            return _itemService.GetWeaponDamageAbilityType((BaseItemType)weapon.m_nBaseItem);
         }
 
         private static int GetWeaponPerkLevel(CNWSItem weapon)
@@ -392,7 +390,7 @@ namespace SWLOR.Component.Combat.Feature.Native
 
             var playerId = attacker.m_pUUID.GetOrAssignRandom().ToString();
             var mightMod = attacker.m_pStats.m_nStrengthModifier;
-            var baseItemType = (BaseItem)weapon.m_nBaseItem;
+            var baseItemType = (BaseItemType)weapon.m_nBaseItem;
 
             // Doublehand bonus
             if (attacker.m_pInventory.GetItemInSlot((uint)EquipmentSlot.LeftHand) == null)
@@ -493,7 +491,7 @@ namespace SWLOR.Component.Combat.Feature.Native
 
             var playerId = attacker.m_pUUID.GetOrAssignRandom().ToString();
 
-            var baseItemType = (BaseItem)weapon.m_nBaseItem;
+            var baseItemType = (BaseItemType)weapon.m_nBaseItem;
             var wil = _statService.GetStatValueNative(attacker, AbilityType.Willpower);
             var weaponDamageAbilityType = _itemService.GetWeaponDamageAbilityType(baseItemType);
             var weaponDamageAbilityStat = _statService.GetStatValueNative(attacker, weaponDamageAbilityType);

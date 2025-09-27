@@ -2,7 +2,6 @@ using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Constants;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Character.ValueObjects;
 using SWLOR.Shared.Domain.Common.Enums;
@@ -37,7 +36,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
             eKolto = TagEffect(eKolto, "kolto_regen");
 
             ApplyEffectToObject(DurationType.Temporary, eKolto, target, 45f);
-            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_G), target);
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Imp_Healing_G), target);
 
             CombatPointService.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
             EnmityService.ModifyEnmityOnAll(activator, 180);
@@ -51,14 +50,14 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                 .HasRecastDelay(RecastGroup.KoltoGrenade, 30f)
                 .HasActivationDelay(1f)
                 .RequirementStamina(3)
-                .UsesAnimation(Animation.ThrowGrenade)
+                .UsesAnimation(AnimationType.ThrowGrenade)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasMaxRange(15f)
                 .HasCustomValidation(ExplosiveValidation)
                 .HasImpactAction((activator, _, _, location) =>
                 {
-                    ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffect.Vfx_Fnf_Gas_Explosion_Nature), string.Empty, RadiusSize.Large, (target) =>
+                    ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffectType.Vfx_Fnf_Gas_Explosion_Nature), string.Empty, RadiusSize.Large, (target) =>
                     {
                         Impact(activator, target, 6);
                     });
@@ -73,14 +72,14 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                 .HasRecastDelay(RecastGroup.KoltoGrenade, 30f)
                 .HasActivationDelay(1f)
                 .RequirementStamina(5)
-                .UsesAnimation(Animation.ThrowGrenade)
+                .UsesAnimation(AnimationType.ThrowGrenade)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasMaxRange(15f)
                 .HasCustomValidation(ExplosiveValidation)
                 .HasImpactAction((activator, _, _, location) =>
                 {
-                    ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffect.Vfx_Fnf_Gas_Explosion_Nature), string.Empty, RadiusSize.Large, (target) =>
+                    ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffectType.Vfx_Fnf_Gas_Explosion_Nature), string.Empty, RadiusSize.Large, (target) =>
                     {
                         Impact(activator, target, 14);
                     });
@@ -95,14 +94,14 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                 .HasRecastDelay(RecastGroup.KoltoGrenade, 30f)
                 .HasActivationDelay(1f)
                 .RequirementStamina(7)
-                .UsesAnimation(Animation.ThrowGrenade)
+                .UsesAnimation(AnimationType.ThrowGrenade)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasMaxRange(15f)
                 .HasCustomValidation(ExplosiveValidation)
                 .HasImpactAction((activator, _, _, location) =>
                 {
-                    ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffect.Vfx_Fnf_Gas_Explosion_Nature), string.Empty, RadiusSize.Large, (target) =>
+                    ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffectType.Vfx_Fnf_Gas_Explosion_Nature), string.Empty, RadiusSize.Large, (target) =>
                     {
                         Impact(activator, target, 24);
                     });

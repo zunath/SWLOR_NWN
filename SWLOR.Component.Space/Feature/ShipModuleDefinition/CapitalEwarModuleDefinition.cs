@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Space.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Communication.Contracts;
@@ -57,11 +56,11 @@ namespace SWLOR.Component.Space.Feature.ShipModuleDefinition
                 {
                     enmityAmount += moduleBonus * 25;
 
-                    ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Blue_White), activator, 12.0f);
+                    ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffectType.Vfx_Dur_Aura_Pulse_Blue_White), activator, 12.0f);
                     ApplyEffectToObject(DurationType.Temporary, EffectAbilityIncrease(AbilityType.Vitality, 4),activator, 12.0f);
 
                     const float Distance = 20f;
-                    var nearby = GetFirstObjectInShape(Shape.Sphere, Distance, GetLocation(activator), true, ObjectType.Creature);
+                    var nearby = GetFirstObjectInShape(ShapeType.Sphere, Distance, GetLocation(activator), true, ObjectType.Creature);
                     var count = 1;
 
                     while (GetIsObjectValid(nearby) && count <= 10)
@@ -73,14 +72,14 @@ namespace SWLOR.Component.Space.Feature.ShipModuleDefinition
                         {
                             var nearbyStatus = SpaceService.GetShipStatus(nearby);
 
-                            ApplyEffectToObject(DurationType.Temporary, EffectBeam(VisualEffect.Vfx_Beam_Cold, activator, BodyNode.Chest), nearby, 2.0f);
-                            ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Blue_White), nearby, 2.0f);
+                            ApplyEffectToObject(DurationType.Temporary, EffectBeam(VisualEffectType.Vfx_Beam_Cold, activator, BodyNodeType.Chest), nearby, 2.0f);
+                            ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffectType.Vfx_Dur_Aura_Pulse_Blue_White), nearby, 2.0f);
                             EnmityService.ModifyEnmity(activator, nearby, enmityAmount);
 
                             count++;
                         }
 
-                        nearby = GetNextObjectInShape(Shape.Sphere, Distance, GetLocation(activator), true, ObjectType.Creature);
+                        nearby = GetNextObjectInShape(ShapeType.Sphere, Distance, GetLocation(activator), true, ObjectType.Creature);
                         
                     }
 

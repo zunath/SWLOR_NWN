@@ -101,7 +101,7 @@ namespace SWLOR.Shared.UI.Service
                                 {
                                     row.AddText()
                                         .BindText(model => model.ModalPromptText)
-                                        .SetScrollbars(NuiScrollbars.Auto)
+                                        .SetScrollbars(NuiScrollbarType.Auto)
                                         .SetShowBorder(false);
                                 });
 

@@ -1,5 +1,4 @@
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Associate;
 
 namespace SWLOR.NWN.API.NWScript
 {
@@ -46,7 +45,7 @@ namespace SWLOR.NWN.API.NWScript
             uint oCreature, 
             ClassType nClass = ClassType.Invalid,
             bool bReadyAllSpells = false, 
-            Package nPackage = Package.Invalid)
+            PackageType nPackage = PackageType.Invalid)
         {
             return global::NWN.Core.NWScript.LevelUpHenchman(oCreature, (int)nClass, bReadyAllSpells ? 1 : 0, (int)nPackage);
         }

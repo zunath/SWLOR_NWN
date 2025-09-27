@@ -3,7 +3,6 @@ using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Constants;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Character.ValueObjects;
@@ -61,7 +60,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
 
             dmg += CombatService.GetAbilityDamageBonus(activator, SkillType.Force);
             var count = 0;
-            var creature = GetFirstObjectInShape(Shape.Sphere, RadiusSize.Huge, GetLocation(target), true, ObjectType.Creature);
+            var creature = GetFirstObjectInShape(ShapeType.Sphere, RadiusSize.Huge, GetLocation(target), true, ObjectType.Creature);
             while (GetIsObjectValid(creature) && count <= 5)
             {
                 if (GetIsReactionTypeHostile(creature, activator) && GetIsDead(creature) == false)
@@ -78,14 +77,14 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                         defenderStat,
                         0);
 
-                    var elecBeam = EffectBeam(VisualEffect.Vfx_Beam_Silent_Lightning, activator, BodyNode.Hand, true);
-                    var elecBurst = EffectVisualEffect(VisualEffect.Vfx_Imp_Lightning_S);
+                    var elecBeam = EffectBeam(VisualEffectType.Vfx_Beam_Silent_Lightning, activator, BodyNodeType.Hand, true);
+                    var elecBurst = EffectVisualEffect(VisualEffectType.Vfx_Imp_Lightning_S);
                     var dTarget = creature;
 
                     AssignCommand(activator, () =>
                     {
                         PlaySound("frc_lghtning");
-                        ActionPlayAnimation(Animation.CastOutAnimation, 1.0f, 3.0f);
+                        ActionPlayAnimation(AnimationType.CastOutAnimation, 1.0f, 3.0f);
                         ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Electrical), dTarget);
                         ApplyEffectToObject(DurationType.Temporary, elecBeam, dTarget, 2.5f);
                         ApplyEffectToObject(DurationType.Instant, elecBurst, dTarget);
@@ -95,7 +94,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                     EnmityService.ModifyEnmity(activator, creature, 100 * level + damage);
                     count++;
                 }
-                creature = GetNextObjectInShape(Shape.Sphere, RadiusSize.Huge, GetLocation(target), true, ObjectType.Creature);
+                creature = GetNextObjectInShape(ShapeType.Sphere, RadiusSize.Huge, GetLocation(target), true, ObjectType.Creature);
             }
             if (StatService.GetCurrentFP(activator) < 1 + (level * 2))
             {
@@ -117,7 +116,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
-                .UsesAnimation(Animation.LoopingConjure1)
+                .UsesAnimation(AnimationType.LoopingConjure1)
                 .HasImpactAction(ImpactAction);
         }
 
@@ -132,7 +131,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
-                .UsesAnimation(Animation.LoopingConjure1)
+                .UsesAnimation(AnimationType.LoopingConjure1)
                 .HasImpactAction(ImpactAction);
         }
 
@@ -147,7 +146,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
-                .UsesAnimation(Animation.LoopingConjure1)
+                .UsesAnimation(AnimationType.LoopingConjure1)
                 .HasImpactAction(ImpactAction);
         }
 
@@ -162,7 +161,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
-                .UsesAnimation(Animation.LoopingConjure1)
+                .UsesAnimation(AnimationType.LoopingConjure1)
                 .HasImpactAction(ImpactAction);
         }
     }

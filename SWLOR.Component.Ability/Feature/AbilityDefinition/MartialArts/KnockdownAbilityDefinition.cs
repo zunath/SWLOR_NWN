@@ -42,7 +42,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.MartialArts
                 {
                     const float Duration = 4f;
 
-                    var dc = CombatService.CalculateSavingThrowDC(activator, SavingThrow.Fortitude, 12);
+                    var dc = CombatService.CalculateSavingThrowDC(activator, SavingThrowCategoryType.Fortitude, 12);
                     var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
                     if (checkResult == SavingThrowResultType.Failed)
                     {

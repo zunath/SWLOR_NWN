@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Perk.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.Shared.Domain.Beasts.Contracts;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
@@ -154,7 +153,7 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                     if (!BeastMastery.IsPlayerBeast(beast))
                         return;
 
-                    StatService.ApplyAttacksPerRound(beast, GetItemInSlot(InventorySlot.CreatureLeft));
+                    StatService.ApplyAttacksPerRound(beast, GetItemInSlot(InventorySlotType.CreatureLeft));
                 })
                 .TriggerRefund((player) =>
                 {
@@ -162,7 +161,7 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                     if (!BeastMastery.IsPlayerBeast(beast))
                         return;
 
-                    StatService.ApplyAttacksPerRound(beast, GetItemInSlot(InventorySlot.CreatureLeft));
+                    StatService.ApplyAttacksPerRound(beast, GetItemInSlot(InventorySlotType.CreatureLeft));
                 })
 
                 .AddPerkLevel()

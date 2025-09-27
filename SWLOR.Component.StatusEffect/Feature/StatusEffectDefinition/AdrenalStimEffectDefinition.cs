@@ -1,7 +1,6 @@
 using SWLOR.Component.StatusEffect.Contracts;
 using SWLOR.Component.StatusEffect.Service;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Combat.ValueObjects;
@@ -44,7 +43,7 @@ namespace SWLOR.Component.StatusEffect.Feature.StatusEffectDefinition
             }
 
             _statService.RestoreStamina(target, staminaAmount);
-            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Heal), target);
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Imp_Head_Heal), target);
         }
 
         private void AdrenalStim1(StatusEffectBuilder builder)

@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Domain.Character.Contracts;
@@ -70,7 +69,7 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
         {
             Builder.Create(tag)
                 .Delay(5f)
-                .PlaysAnimation(Animation.LoopingGetMid)
+                .PlaysAnimation(AnimationType.LoopingGetMid)
                 .UserFacesTarget()
                 .MaxDistance(3.0f)
                 .ReducesItemCharge()
@@ -155,7 +154,7 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
                         SetLocalInt(target, "RESOURCE_COUNT", resourceCount);
                     }
 
-                    ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Summon_Monster_3), GetLocation(target));
+                    ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Fnf_Summon_Monster_3), GetLocation(target));
 
                     if (GetIsPC(user) && !GetIsDM(user))
                     {

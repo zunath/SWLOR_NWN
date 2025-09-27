@@ -42,7 +42,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.MartialArts
 
         private string Validation(uint activator, uint target, int level, Location targetLocation)
         {
-            var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
+            var weapon = GetItemInSlot(InventorySlotType.RightHand, activator);
 
             if (!ItemService.KatarBaseItemTypes.Contains(GetBaseItemType(weapon)))
             {
@@ -97,7 +97,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.MartialArts
                 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Electrical), target);
 
-            dc = CombatService.CalculateSavingThrowDC(activator, SavingThrow.Reflex, dc);
+            dc = CombatService.CalculateSavingThrowDC(activator, SavingThrowCategoryType.Reflex, dc);
             var checkResult = ReflexSave(target, dc, SavingThrowType.None, activator);
             if (checkResult == SavingThrowResultType.Failed)
             {

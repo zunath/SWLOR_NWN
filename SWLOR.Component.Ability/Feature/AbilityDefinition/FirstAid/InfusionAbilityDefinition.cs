@@ -72,7 +72,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.FirstAid
                 .HasActivationDelay(2f)
                 .HasMaxRange(30.0f)
                 .RequirementStamina(6)
-                .UsesAnimation(Animation.LoopingGetMid)
+                .UsesAnimation(AnimationType.LoopingGetMid)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation((activator, target, level, location) =>
@@ -94,7 +94,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.FirstAid
                 .HasActivationDelay(2f)
                 .HasMaxRange(30.0f)
                 .RequirementStamina(8)
-                .UsesAnimation(Animation.LoopingGetMid)
+                .UsesAnimation(AnimationType.LoopingGetMid)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation((activator, target, level, location) =>

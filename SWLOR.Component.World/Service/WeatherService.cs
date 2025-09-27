@@ -3,14 +3,13 @@ using SWLOR.Component.World.Model;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Area;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Domain.Common.Enums;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Area;
 using SWLOR.Shared.Events.Events.Module;
+using WeatherType = SWLOR.NWN.API.NWScript.Enum.WeatherType;
 
 namespace SWLOR.Component.World.Service
 {
@@ -162,7 +161,7 @@ namespace SWLOR.Component.World.Service
             var nHeat = GetHeatIndex(oArea);
             var nHumidity = GetHumidity(oArea);
             var nWind = GetWindStrength(oArea);
-            var bStormy = GetSkyBox(oArea) == Skybox.GrassStorm;
+            var bStormy = GetSkyBox(oArea) == SkyboxType.GrassStorm;
             var bDustStorm = (GetLocalInt(oArea, "DUST_STORM") == 1);
             var bSandStorm = (GetLocalInt(oArea, "SAND_STORM") == 1);
             var bSnowStorm = (GetLocalInt(oArea, "SNOW_STORM") == 1);
@@ -174,12 +173,12 @@ namespace SWLOR.Component.World.Service
             {
                 if (nHeat < 6 && nWind < 3)
                 {
-                    NWScript.SetWeather(oArea, WeatherType.Clear);
+                    NWScript.SetWeather(oArea, AreaWeatherType.Clear);
                 }
-                else NWScript.SetWeather(oArea, WeatherType.Rain);
+                else NWScript.SetWeather(oArea, AreaWeatherType.Rain);
             }
-            else if (nHumidity > 7) NWScript.SetWeather(oArea, WeatherType.Snow);
-            else NWScript.SetWeather(oArea, WeatherType.Clear);
+            else if (nHumidity > 7) NWScript.SetWeather(oArea, AreaWeatherType.Snow);
+            else NWScript.SetWeather(oArea, AreaWeatherType.Clear);
 
             //--------------------------------------------------------------------------
             // Stormy if heat is greater than 4 only; if already stormy then 2 in 3
@@ -189,13 +188,13 @@ namespace SWLOR.Component.World.Service
             if (nHeat > 4 && nHumidity > 7 &&
                 ((bStormy && d20() - nWind < 1) || (bStormy && d3() == 1)))
             {
-                SetSkyBox(Skybox.GrassStorm, oArea);
+                SetSkyBox(SkyboxType.GrassStorm, oArea);
                 Thunderstorm(oArea);
                 SetLocalInt(oArea, "GS_AM_SKY_OVERRIDE", 1);
             }
             else
             {
-                SetSkyBox((Skybox)GetLocalInt(oArea, VAR_SKYBOX), oArea);
+                SetSkyBox((SkyboxType)GetLocalInt(oArea, VAR_SKYBOX), oArea);
                 DeleteLocalInt(oArea, "GS_AM_SKY_OVERRIDE");
                 bStormy = false;
             }
@@ -206,8 +205,8 @@ namespace SWLOR.Component.World.Service
                 // Dust storm - low visibility but no damage.
                 if (GetAreaClimate(oArea).HasSandStorms)
                 {
-                    SetFogColor(FogType.Sun, FogColor.OrangeDark, oArea);
-                    SetFogColor(FogType.Moon, FogColor.OrangeDark, oArea);
+                    SetFogColor(FogType.Sun, FogColorType.OrangeDark, oArea);
+                    SetFogColor(FogType.Moon, FogColorType.OrangeDark, oArea);
                     SetFogAmount(FogType.Sun, 80, oArea);
                     SetFogAmount(FogType.Moon, 80, oArea);
 
@@ -215,8 +214,8 @@ namespace SWLOR.Component.World.Service
                 }
                 else if (GetAreaClimate(oArea).HasSnowStorms)
                 {
-                    SetFogColor(FogType.Sun, FogColor.White, oArea);
-                    SetFogColor(FogType.Moon, FogColor.White, oArea);
+                    SetFogColor(FogType.Sun, FogColorType.White, oArea);
+                    SetFogColor(FogType.Moon, FogColorType.White, oArea);
                     SetFogAmount(FogType.Sun, 80, oArea);
                     SetFogAmount(FogType.Moon, 80, oArea);
 
@@ -230,23 +229,23 @@ namespace SWLOR.Component.World.Service
                 DeleteLocalInt(oArea, "SAND_STORM");
                 DeleteLocalInt(oArea, "SNOW_STORM");
 
-                SetFogColor(FogType.Sun, (FogColor)GetLocalInt(oArea, VAR_FOG_C_SUN), oArea);
-                SetFogColor(FogType.Moon, (FogColor)GetLocalInt(oArea, VAR_FOG_C_MOON), oArea);
+                SetFogColor(FogType.Sun, (FogColorType)GetLocalInt(oArea, VAR_FOG_C_SUN), oArea);
+                SetFogColor(FogType.Moon, (FogColorType)GetLocalInt(oArea, VAR_FOG_C_MOON), oArea);
                 SetFogAmount(FogType.Sun, GetLocalInt(oArea, VAR_FOG_SUN), oArea);
                 SetFogAmount(FogType.Moon, GetLocalInt(oArea, VAR_FOG_MOON), oArea);
             }
         }
 
-        public Weather GetWeather()
+        public WeatherType GetWeather()
         {
             return GetWeather(OBJECT_SELF);
         }
 
-        public Weather GetWeather(uint oArea)
+        public WeatherType GetWeather(uint oArea)
         {
             if (GetIsAreaInterior(oArea) || GetIsAreaAboveGround(oArea) == false)
             {
-                return Weather.Invalid;
+                return WeatherType.Invalid;
             }
 
             var nHeat = GetHeatIndex(oArea);
@@ -255,7 +254,7 @@ namespace SWLOR.Component.World.Service
 
             if (nHumidity > 7 && nHeat > 3 && nHeat < 6 && nWind < 3)
             {
-                return Weather.Foggy;
+                return WeatherType.Foggy;
             }
 
             // Rather unfortunately, the default method is also called GetWeather. 
@@ -282,7 +281,7 @@ namespace SWLOR.Component.World.Service
             //apply
             var eEffect =
                 EffectLinkEffects(
-                    EffectVisualEffect(VisualEffect.Vfx_Imp_Acid_S),
+                    EffectVisualEffect(VisualEffectType.Vfx_Imp_Acid_S),
                     EffectDamage(
                         d6(),
                         DamageType.Acid));
@@ -301,7 +300,7 @@ namespace SWLOR.Component.World.Service
             //apply
             var eEffect =
                 EffectLinkEffects(
-                    EffectVisualEffect(VisualEffect.Vfx_Imp_Acid_S),
+                    EffectVisualEffect(VisualEffectType.Vfx_Imp_Acid_S),
                     EffectDamage(
                         d6(),
                         DamageType.Acid));
@@ -320,7 +319,7 @@ namespace SWLOR.Component.World.Service
             //apply
             var eEffect =
                 EffectLinkEffects(
-                    EffectVisualEffect(VisualEffect.Vfx_Imp_Flame_S),
+                    EffectVisualEffect(VisualEffectType.Vfx_Imp_Flame_S),
                     EffectDamage(
                         d6(2),
                         DamageType.Bludgeoning));
@@ -339,7 +338,7 @@ namespace SWLOR.Component.World.Service
             //apply
             var eEffect =
                 EffectLinkEffects(
-                    EffectVisualEffect(VisualEffect.Vfx_Dur_Iceskin),
+                    EffectVisualEffect(VisualEffectType.Vfx_Dur_Iceskin),
                     EffectDamage(
                         d6(2),
                         DamageType.Cold));
@@ -357,7 +356,7 @@ namespace SWLOR.Component.World.Service
             var nHeat = GetHeatIndex(oArea);
             var nHumidity = GetHumidity(oArea);
             var nWind = GetWindStrength(oArea);
-            var bStormy = GetSkyBox(oArea) == Skybox.GrassStorm;
+            var bStormy = GetSkyBox(oArea) == SkyboxType.GrassStorm;
             var bIsPC = GetIsPC(oCreature);
             string sMessage;
             var climate = GetAreaClimate(oArea);
@@ -366,11 +365,11 @@ namespace SWLOR.Component.World.Service
             // Apply acid rain, if applicable.  Stolen shamelessly from the Melf's Acid
             // Arrow spell.
             //--------------------------------------------------------------------------
-            if (bIsPC && NWScript.GetWeather(oArea) == Weather.Rain && GetLocalInt(oArea, VAR_WEATHER_ACID_RAIN) == 1)
+            if (bIsPC && NWScript.GetWeather(oArea) == WeatherType.Rain && GetLocalInt(oArea, VAR_WEATHER_ACID_RAIN) == 1)
             {
                 var eEffect =
                   EffectLinkEffects(
-                      EffectVisualEffect(VisualEffect.Vfx_Imp_Acid_S),
+                      EffectVisualEffect(VisualEffectType.Vfx_Imp_Acid_S),
                       EffectDamage(
                           d6(2),
                           DamageType.Acid));
@@ -386,7 +385,7 @@ namespace SWLOR.Component.World.Service
             {
                 var eEffect =
                     EffectLinkEffects(
-                        EffectVisualEffect(VisualEffect.Vfx_Imp_Flame_S),
+                        EffectVisualEffect(VisualEffectType.Vfx_Imp_Flame_S),
                         EffectDamage(
                             d6(2),
                             DamageType.Bludgeoning));
@@ -399,7 +398,7 @@ namespace SWLOR.Component.World.Service
             {
                 var eEffect =
                     EffectLinkEffects(
-                        EffectVisualEffect(VisualEffect.Vfx_Dur_Iceskin),
+                        EffectVisualEffect(VisualEffectType.Vfx_Dur_Iceskin),
                         EffectDamage(
                             d6(2),
                             DamageType.Cold));
@@ -582,8 +581,8 @@ namespace SWLOR.Component.World.Service
             if (d3() != 1) return;
 
             // Pick a spot. Any spot.
-            var nWidth = GetAreaSize(Dimension.Width, oArea);
-            var nHeight = GetAreaSize(Dimension.Height, oArea);
+            var nWidth = GetAreaSize(AreaDimensionType.Width, oArea);
+            var nHeight = GetAreaSize(AreaDimensionType.Height, oArea);
             var nPointWide = Random(nWidth * 10);
             var nPointHigh = Random(nHeight * 10);
             var fStrikeX = IntToFloat(nPointWide) + (IntToFloat(Random(10)) * 0.1f);
@@ -612,10 +611,10 @@ namespace SWLOR.Component.World.Service
             if (fRange > 6.0) fRange = 6.0f;
 
             //Effects
-            var eEffBolt = EffectVisualEffect(VisualEffect.Vfx_Imp_Lightning_M);
+            var eEffBolt = EffectVisualEffect(VisualEffectType.Vfx_Imp_Lightning_M);
             ApplyEffectAtLocation(DurationType.Instant, eEffBolt, lLocation);
 
-            var oObject = GetFirstObjectInShape(Shape.Sphere, fRange, lLocation, false, ObjectType.Creature | ObjectType.Door | ObjectType.Placeable);
+            var oObject = GetFirstObjectInShape(ShapeType.Sphere, fRange, lLocation, false, ObjectType.Creature | ObjectType.Door | ObjectType.Placeable);
             while (GetIsObjectValid(oObject))
             {
                 var nType = GetObjectType(oObject);
@@ -632,12 +631,12 @@ namespace SWLOR.Component.World.Service
                     {
                         if (GetIsPC(oObject)) SendMessageToPC(oObject, WeatherFeedbackText.Lightning);
 
-                        PlayVoiceChat(VoiceChat.Pain1, oObject);
+                        PlayVoiceChat(VoiceChatType.Pain1, oObject);
                         var duration = IntToFloat(d6());
                         ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), oObject, duration);
                     }
                 }
-                oObject = GetNextObjectInShape(Shape.Sphere, fRange, lLocation, false, ObjectType.Creature | ObjectType.Door | ObjectType.Placeable);
+                oObject = GetNextObjectInShape(ShapeType.Sphere, fRange, lLocation, false, ObjectType.Creature | ObjectType.Door | ObjectType.Placeable);
             }
         }
 
@@ -669,11 +668,11 @@ namespace SWLOR.Component.World.Service
                 // Create new ones depending on the current weather.
                 var nWeather = GetWeather();
 
-                if (nWeather == Weather.Foggy)
+                if (nWeather == WeatherType.Foggy)
                 {
                     // Get the size in tiles.
-                    var nSizeX = GetAreaSize(Dimension.Width, oArea);
-                    var nSizeY = GetAreaSize(Dimension.Height, oArea);
+                    var nSizeX = GetAreaSize(AreaDimensionType.Width, oArea);
+                    var nSizeY = GetAreaSize(AreaDimensionType.Height, oArea);
 
                     // We want one placeable per 8 tiles.
                     var nMax = (nSizeX * nSizeY) / 8;
@@ -691,7 +690,7 @@ namespace SWLOR.Component.World.Service
                         var sResRef = "x3_plc_mist";
 
                         var oPlaceable = CreateObject(ObjectType.Placeable, sResRef, Location(oArea, vPosition, fFacing));
-                        SetObjectVisualTransform(oPlaceable, ObjectVisualTransform.Scale, IntToFloat(200 + Random(200)) / 100.0f);
+                        SetObjectVisualTransform(oPlaceable, ObjectVisualTransformType.Scale, IntToFloat(200 + Random(200)) / 100.0f);
 
                         weatherObjects.Add(oPlaceable);
                     }

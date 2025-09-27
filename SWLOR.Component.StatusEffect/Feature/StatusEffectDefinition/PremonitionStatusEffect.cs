@@ -1,7 +1,6 @@
 using SWLOR.Component.StatusEffect.Contracts;
 using SWLOR.Component.StatusEffect.Service;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Combat.Enums;
@@ -45,7 +44,7 @@ namespace SWLOR.Component.StatusEffect.Feature.StatusEffectDefinition
 
                 var effect = EffectLinkEffects(
                     EffectConcealment(amount), 
-                    EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Blue_Yellow));
+                    EffectVisualEffect(VisualEffectType.Vfx_Dur_Aura_Pulse_Blue_Yellow));
                 ApplyEffectToObject(DurationType.Temporary, effect, member, 6.1f);
             }
 

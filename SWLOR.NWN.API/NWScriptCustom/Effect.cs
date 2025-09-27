@@ -27,7 +27,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="creature">The creature to remove from.</param>
         /// <param name="types">The types of effects to look for.</param>
-        public static void RemoveEffect(uint creature, params EffectTypeScript[] types)
+        public static void RemoveEffect(uint creature, params EffectScriptType[] types)
         {
             for (var effect = GetFirstEffect(creature); GetIsEffectValid(effect); effect = GetNextEffect(creature))
             {

@@ -339,7 +339,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="sOnTrapTriggeredScript">The OnTrapTriggered script that will fire when the trap is triggered. If empty string, the default OnTrapTriggered script for the trap type specified will fire instead (as specified in the traps.2da)</param>
         /// <returns>The created trap object</returns>
         public static uint CreateTrapAtLocation(TrapBaseType nTrapType, Location lLocation, float fSize = 2.0f,
-            string sTag = "", Faction nFaction = Faction.Hostile, string sOnDisarmScript = "",
+            string sTag = "", FactionType nFaction = FactionType.Hostile, string sOnDisarmScript = "",
             string sOnTrapTriggeredScript = "")
         {
             return global::NWN.Core.NWScript.CreateTrapAtLocation((int)nTrapType, lLocation, fSize, sTag, (int)nFaction, sOnDisarmScript, sOnTrapTriggeredScript);
@@ -357,7 +357,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nFaction">The faction of the trap (STANDARD_FACTION_*)</param>
         /// <param name="sOnDisarmScript">The OnDisarm script that will fire when the trap is disarmed. If empty string, no script will fire</param>
         /// <param name="sOnTrapTriggeredScript">The OnTrapTriggered script that will fire when the trap is triggered. If empty string, the default OnTrapTriggered script for the trap type specified will fire instead (as specified in the traps.2da)</param>
-        public static void CreateTrapOnObject(TrapBaseType nTrapType, uint oObject, Faction nFaction = Faction.Hostile,
+        public static void CreateTrapOnObject(TrapBaseType nTrapType, uint oObject, FactionType nFaction = FactionType.Hostile,
             string sOnDisarmScript = "", string sOnTrapTriggeredScript = "")
         {
             global::NWN.Core.NWScript.CreateTrapOnObject((int)nTrapType, oObject, (int)nFaction, sOnDisarmScript, sOnTrapTriggeredScript);

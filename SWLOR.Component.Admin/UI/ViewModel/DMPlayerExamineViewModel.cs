@@ -44,9 +44,9 @@ namespace SWLOR.Component.Admin.UI.ViewModel
 
             var payload = new DMPlayerExaminePayload(target);
 
-            SetGuiPanelDisabled(dm, GuiPanel.ExamineCreature, true);
+            SetGuiPanelDisabled(dm, GuiPanelType.ExamineCreature, true);
             GuiService.TogglePlayerWindow(dm, GuiWindowType.DMPlayerExamine, payload);
-            DelayCommand(1f, () => SetGuiPanelDisabled(dm, GuiPanel.ExamineCreature, false));
+            DelayCommand(1f, () => SetGuiPanelDisabled(dm, GuiPanelType.ExamineCreature, false));
         }
 
         private string _playerId;

@@ -49,7 +49,7 @@ namespace SWLOR.Component.Inventory.UI.View
                                         .BindResref(model => model.Icons)
                                         .SetMargin(0f);
                                 })
-                                    .SetScrollbars(NuiScrollbars.None);
+                                    .SetScrollbars(NuiScrollbarType.None);
                             });
                             template.AddCell(cell =>
                             {

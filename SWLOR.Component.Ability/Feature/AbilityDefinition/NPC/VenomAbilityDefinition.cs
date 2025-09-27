@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Character.ValueObjects;
 using SWLOR.Shared.Domain.Combat.Contracts;
@@ -39,7 +38,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.NPC
                 .RequirementStamina(3)
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Disease_S), target);
+                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Imp_Disease_S), target);
                     StatusEffectService.Apply(activator, target, StatusEffectType.Poison, 120f);
                 });
         }

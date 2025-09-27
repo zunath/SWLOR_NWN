@@ -1,9 +1,6 @@
 using System.Numerics;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Item.Property;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
-using Alignment = SWLOR.NWN.API.NWScript.Enum.Alignment;
 using DamageType = SWLOR.NWN.API.NWScript.Enum.DamageType;
 using RacialType = SWLOR.NWN.API.NWScript.Enum.RacialType;
 using SpellSchool = SWLOR.NWN.API.NWScript.Enum.SpellSchool;
@@ -148,7 +145,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oItem">The item to equip</param>
         /// <param name="nInventorySlot">The inventory slot to equip the item to (INVENTORY_SLOT_* constants)</param>
         /// <remarks>If an error occurs, the log file will contain "ActionEquipItem failed." If the creature already has an item equipped in the slot specified, it will be unequipped automatically by the call to ActionEquipItem. In order for ActionEquipItem to succeed the creature must be able to equip the item normally. This means that: 1) The item is in the creature's inventory, 2) The item must already be identified (if magical), 3) The creature has the level required to equip the item (if magical and ILR is on), 4) The creature possesses the required feats to equip the item (such as weapon proficiencies).</remarks>
-        public static void ActionEquipItem(uint oItem, InventorySlot nInventorySlot)
+        public static void ActionEquipItem(uint oItem, InventorySlotType nInventorySlot)
         {
             global::NWN.Core.NWScript.ActionEquipItem(oItem, (int)nInventorySlot);
         }
@@ -272,7 +269,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nModifierType">The attack bonus type (ATTACK_BONUS_* constants) (default: AttackBonus.Misc)</param>
         /// <returns>The Attack Increase effect</returns>
         /// <remarks>On SWLOR, this is used for Accuracy.</remarks>
-        public static Effect EffectAccuracyIncrease(int nBonus, AttackBonus nModifierType = AttackBonus.Misc)
+        public static Effect EffectAccuracyIncrease(int nBonus, AttackBonusType nModifierType = AttackBonusType.Misc)
         {
             return EffectAttackIncrease(nBonus, (int)nModifierType);
         }
@@ -284,7 +281,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nDamagePower">The damage power type (DAMAGE_POWER_* constants)</param>
         /// <param name="nLimit">How much damage the effect can absorb before disappearing. Set to zero for infinite (default: 0)</param>
         /// <returns>The Damage Reduction effect</returns>
-        public static Effect EffectDamageReduction(int nAmount, DamagePower nDamagePower, int nLimit = 0)
+        public static Effect EffectDamageReduction(int nAmount, DamagePowerType nDamagePower, int nLimit = 0)
         {
             return global::NWN.Core.NWScript.EffectDamageReduction(nAmount, (int)nDamagePower, nLimit);
         }
@@ -343,8 +340,8 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The AC Increase effect</returns>
         /// <remarks>Default value for nDamageType should only ever be used in this function prototype.</remarks>
         public static Effect EffectACIncrease(int nValue,
-            ArmorClassModiferType nModifyType = ArmorClassModiferType.Dodge,
-            AC nDamageType = AC.VsDamageTypeAll)
+            ItemPropertyArmorClassModiferType nModifyType = ItemPropertyArmorClassModiferType.Dodge,
+            ACType nDamageType = ACType.VsDamageTypeAll)
         {
             return global::NWN.Core.NWScript.EffectACIncrease(nValue, (int)nModifyType, (int)nDamageType);
         }
@@ -440,7 +437,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The Damage effect</returns>
         /// <remarks>This should be applied as an instantaneous effect.</remarks>
         public static Effect EffectDamage(int nDamageAmount, DamageType nDamageType = DamageType.Force,
-            DamagePower nDamagePower = DamagePower.Normal)
+            DamagePowerType nDamagePower = DamagePowerType.Normal)
         {
             return global::NWN.Core.NWScript.EffectDamage(nDamageAmount, (int)nDamageType, (int)nDamagePower);
         }
@@ -489,8 +486,8 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oSummonToAdd">The object to add the summoned creature to (default: OBJECT_INVALID)</param>
         /// <returns>The Summon Creature effect</returns>
         /// <remarks>The creature is created and placed into the caller's party/faction. If nUseAppearAnimation is zero, it will just fade in somewhere near the target. If the value is 1 it will use the appear animation, and if it's 2 it will use appear2 (which doesn't exist for most creatures).</remarks>
-        public static Effect EffectSummonCreature(string sCreatureResref, VisualEffect nVisualEffectId = VisualEffect.Vfx_Com_Sparks_Parry,
-            float fDelaySeconds = 0.0f, bool nUseAppearAnimation = false, VisualEffect nUnsummonVisualEffectId = VisualEffect.Vfx_Imp_Unsummon, uint oSummonToAdd = OBJECT_INVALID)
+        public static Effect EffectSummonCreature(string sCreatureResref, VisualEffectType nVisualEffectId = VisualEffectType.Vfx_Com_Sparks_Parry,
+            float fDelaySeconds = 0.0f, bool nUseAppearAnimation = false, VisualEffectType nUnsummonVisualEffectId = VisualEffectType.Vfx_Imp_Unsummon, uint oSummonToAdd = OBJECT_INVALID)
         {
             return global::NWN.Core.NWScript.EffectSummonCreature(sCreatureResref, (int)nVisualEffectId, fDelaySeconds, nUseAppearAnimation ? 1 : 0, (int)nUnsummonVisualEffectId, oSummonToAdd);
         }
@@ -635,7 +632,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nDamageType">The damage type (DAMAGE_TYPE_* constants)</param>
         /// <returns>The Damage Shield effect</returns>
         /// <remarks>You must use the DAMAGE_BONUS_* constants! Using other values may result in odd behavior.</remarks>
-        public static Effect EffectDamageShield(int nDamageAmount, DamageBonus nRandomAmount, DamageType nDamageType)
+        public static Effect EffectDamageShield(int nDamageAmount, ItemPropertyDamageBonusType nRandomAmount, DamageType nDamageType)
         {
             return global::NWN.Core.NWScript.EffectDamageShield(nDamageAmount, (int)nRandomAmount, (int)nDamageType);
         }
@@ -811,7 +808,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nModifierType">The attack bonus type (ATTACK_BONUS_* constants) (default: AttackBonus.Misc)</param>
         /// <returns>The Attack Decrease effect</returns>
         /// <remarks>On SWLOR, this is used for Accuracy.</remarks>
-        public static Effect EffectAccuracyDecrease(int nPenalty, AttackBonus nModifierType = AttackBonus.Misc)
+        public static Effect EffectAccuracyDecrease(int nPenalty, AttackBonusType nModifierType = AttackBonusType.Misc)
         {
             return EffectAttackDecrease(nPenalty, (int)nModifierType);
         }
@@ -847,8 +844,8 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The AC Decrease effect</returns>
         /// <remarks>Default value for nDamageType should only ever be used in this function prototype.</remarks>
         public static Effect EffectACDecrease(int nValue,
-            ArmorClassModiferType nModifyType = ArmorClassModiferType.Dodge,
-            AC nDamageType = AC.VsDamageTypeAll)
+            ItemPropertyArmorClassModiferType nModifyType = ItemPropertyArmorClassModiferType.Dodge,
+            ACType nDamageType = ACType.VsDamageTypeAll)
         {
             return global::NWN.Core.NWScript.EffectACDecrease(nValue, (int)nModifyType, (int)nDamageType);
         }
@@ -941,8 +938,8 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nGoodEvil">The good/evil alignment (ALIGNMENT_GOOD/ALIGNMENT_EVIL/ALIGNMENT_ALL) (default: Alignment.All)</param>
         /// <returns>The modified effect</returns>
         public static Effect VersusAlignmentEffect(Effect eEffect,
-            Alignment nLawChaos = Alignment.All,
-            Alignment nGoodEvil = Alignment.All)
+            AlignmentType nLawChaos = AlignmentType.All,
+            AlignmentType nGoodEvil = AlignmentType.All)
         {
             return global::NWN.Core.NWScript.VersusAlignmentEffect(eEffect, (int)nLawChaos, (int)nGoodEvil);
         }
@@ -1043,7 +1040,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nPoisonType">The poison type (POISON_* constants)</param>
         /// <returns>The Poison effect</returns>
-        public static Effect EffectPoison(Poison nPoisonType)
+        public static Effect EffectPoison(PoisonType nPoisonType)
         {
             return global::NWN.Core.NWScript.EffectPoison((int)nPoisonType);
         }
@@ -1053,7 +1050,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nDiseaseType">The disease type (DISEASE_* constants)</param>
         /// <returns>The Disease effect</returns>
-        public static Effect EffectDisease(Disease nDiseaseType)
+        public static Effect EffectDisease(DiseaseType nDiseaseType)
         {
             return global::NWN.Core.NWScript.EffectDisease((int)nDiseaseType);
         }
@@ -1085,7 +1082,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nBodyPart">The body part (BODY_NODE_* constants)</param>
         /// <param name="bMissEffect">If true, the beam will fire to a random vector near or past the target (default: false)</param>
         /// <returns>The Beam effect. Returns an effect of type EFFECT_TYPE_INVALIDEFFECT if nBeamVisualEffect is not valid</returns>
-        public static Effect EffectBeam(VisualEffect nBeamVisualEffect, uint oEffector, BodyNode nBodyPart, bool bMissEffect = false)
+        public static Effect EffectBeam(VisualEffectType nBeamVisualEffect, uint oEffector, BodyNodeType nBodyPart, bool bMissEffect = false)
         {
             return global::NWN.Core.NWScript.EffectBeam((int)nBeamVisualEffect, oEffector, (int)nBodyPart, bMissEffect ? 1 : 0);
         }
@@ -1111,7 +1108,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="vTranslate">The translation vector (default: new Vector3())</param>
         /// <param name="vRotate">The rotation vector (default: new Vector3())</param>
         /// <returns>The Visual Effect</returns>
-        public static Effect EffectVisualEffect(VisualEffect visualEffectID, bool nMissEffect = false, float fScale = 1.0f, Vector3 vTranslate = new(), Vector3 vRotate = new())
+        public static Effect EffectVisualEffect(VisualEffectType visualEffectID, bool nMissEffect = false, float fScale = 1.0f, Vector3 vTranslate = new(), Vector3 vRotate = new())
         {
             return global::NWN.Core.NWScript.EffectVisualEffect((int)visualEffectID, nMissEffect ? 1 : 0, fScale, vTranslate, vRotate);
         }
@@ -1134,9 +1131,9 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="eEffect">The effect to get the type for</param>
         /// <returns>The effect type (EFFECT_TYPE_* constants). Returns EFFECT_INVALIDEFFECT if the effect is invalid</returns>
-        public static EffectTypeScript GetEffectType(Effect eEffect)
+        public static EffectScriptType GetEffectType(Effect eEffect)
         {
-            return (EffectTypeScript)global::NWN.Core.NWScript.GetEffectType(eEffect);
+            return (EffectScriptType)global::NWN.Core.NWScript.GetEffectType(eEffect);
         }
 
         /// <summary>
@@ -1148,7 +1145,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="sOnExitScript">The script to run when exiting the area (default: empty string)</param>
         /// <returns>The Area Of Effect effect</returns>
         /// <remarks>If the scripts are not specified, default ones will be used.</remarks>
-        public static Effect EffectAreaOfEffect(AreaOfEffect nAreaEffect, string sOnEnterScript = "",
+        public static Effect EffectAreaOfEffect(AreaOfEffectType nAreaEffect, string sOnEnterScript = "",
             string sHeartbeatScript = "", string sOnExitScript = "")
         {
             return global::NWN.Core.NWScript.EffectAreaOfEffect((int)nAreaEffect, sOnEnterScript, sHeartbeatScript, sOnExitScript);
@@ -1254,7 +1251,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nImmunityToSpell">The spell to be immune to (SPELL_* constants) (default: Spell.AllSpells)</param>
         /// <returns>The Spell Immunity effect. Returns an effect of type EFFECT_TYPE_INVALIDEFFECT if nImmunityToSpell is invalid</returns>
         /// <remarks>There is a known bug with this function. There must be a parameter specified when this is called (even if the desired parameter is SPELL_ALL_SPELLS), otherwise an effect of type EFFECT_TYPE_INVALIDEFFECT will be returned.</remarks>
-        public static Effect EffectSpellImmunity(Spell nImmunityToSpell = Spell.AllSpells)
+        public static Effect EffectSpellImmunity(SpellType nImmunityToSpell = SpellType.AllSpells)
         {
             return global::NWN.Core.NWScript.EffectSpellImmunity((int)nImmunityToSpell);
         }
@@ -1483,7 +1480,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="eEffect">The effect to modify</param>
         /// <param name="nSpellId">The spell ID for the purposes of effect stacking, dispel magic and GetEffectSpellId. Must be >= -1 (-1 being invalid/no spell)</param>
         /// <returns>The modified effect</returns>
-        public static Effect SetEffectSpellId(Effect eEffect, Spell nSpellId)
+        public static Effect SetEffectSpellId(Effect eEffect, SpellType nSpellId)
         {
             return global::NWN.Core.NWScript.SetEffectSpellId(eEffect, (int)nSpellId);
         }

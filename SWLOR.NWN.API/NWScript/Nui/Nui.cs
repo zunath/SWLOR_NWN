@@ -134,7 +134,7 @@ namespace SWLOR.NWN.API.NWScript.Nui
         /// A group, usually with a border and some padding, holding a single element. Can scroll.
         /// Will not advise parent of size, so you need to let it fill a span (col/row) as if it was a element.
         /// </summary>
-        public static Json Group(Json jChild, bool bBorder = true, NuiScrollbars nScroll = NuiScrollbars.Auto)
+        public static Json Group(Json jChild, bool bBorder = true, NuiScrollbarType nScroll = NuiScrollbarType.Auto)
         {
             var ret = NuiElement("group", JsonNull(), JsonNull());
             ret = JsonObjectSet(ret, "children", JsonArrayInsert(JsonArray(), jChild));
@@ -298,7 +298,7 @@ namespace SWLOR.NWN.API.NWScript.Nui
         /// <param name="jValue">Bind:String</param>
         /// <param name="showBorder">bool</param>
         /// <param name="scrollbars">int</param>
-        public static Json Text(Json jValue, bool showBorder = true, NuiScrollbars scrollbars = NuiScrollbars.Auto)
+        public static Json Text(Json jValue, bool showBorder = true, NuiScrollbarType scrollbars = NuiScrollbarType.Auto)
         {
             var ret = NuiElement("text", JsonNull(), jValue);
             ret = JsonObjectSet(ret, "border", JsonBool(showBorder ? 1 : 0));
@@ -472,7 +472,7 @@ namespace SWLOR.NWN.API.NWScript.Nui
             Json jRowCount, 
             float fRowHeight = NuiStyle.RowHeight,
             bool showBorder = true,
-            NuiScrollbars scrollbars = NuiScrollbars.Y)
+            NuiScrollbarType scrollbars = NuiScrollbarType.Y)
         {
             var ret = NuiElement("list", JsonNull(), JsonNull());
             ret = JsonObjectSet(ret, "row_template", jTemplate);
@@ -517,7 +517,7 @@ namespace SWLOR.NWN.API.NWScript.Nui
         /// <param name="nDirection">NUI_DIRECTION_*</param>
         /// <param name="jElements">JsonArray of string labels</param>
         /// <param name="jValue">Bind:UInt</param>
-        public static Json Options(NuiDirection nDirection, Json jElements, Json jValue)
+        public static Json Options(NuiDirectionType nDirection, Json jElements, Json jValue)
         {
             var ret = NuiElement("options", JsonNull(), jValue);
             ret = JsonObjectSet(ret, "direction", JsonInt((int)nDirection));
@@ -530,7 +530,7 @@ namespace SWLOR.NWN.API.NWScript.Nui
         /// is updated every time a different button is selected.  The special
         /// value -1 means "nothing".
         /// </summary>
-        public static Json Toggles(NuiDirection nDirection, Json jElements, Json jValue)
+        public static Json Toggles(NuiDirectionType nDirection, Json jElements, Json jValue)
         {
             var ret = NuiElement("tabbar", JsonNull(), jValue);
             ret = JsonObjectSet(ret, "direction", JsonInt((int)nDirection));

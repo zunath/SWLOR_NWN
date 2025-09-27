@@ -30,7 +30,7 @@ namespace SWLOR.Shared.Domain.Crafting.ValueObjects
 
         public Dictionary<CombatDamageType, int> DefensePurities { get; set; }
 
-        public Dictionary<SavingThrow, int> SavingThrowPurities { get; set; }
+        public Dictionary<SavingThrowCategoryType, int> SavingThrowPurities { get; set; }
 
         public int XPPenalty { get; set; }
 
@@ -44,7 +44,7 @@ namespace SWLOR.Shared.Domain.Crafting.ValueObjects
         public IncubationJob()
         {
             DefensePurities = new Dictionary<CombatDamageType, int>();
-            SavingThrowPurities = new Dictionary<SavingThrow, int>();
+            SavingThrowPurities = new Dictionary<SavingThrowCategoryType, int>();
             LyaseColors = new Dictionary<EnzymeColorType, int>
             {
                 { EnzymeColorType.Blue, 0 },

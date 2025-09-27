@@ -1,6 +1,5 @@
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Character.ValueObjects;
 using SWLOR.Shared.Domain.Combat.Enums;
@@ -31,7 +30,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.FirstAid
                 .HasRecastDelay(RecastGroup.AdrenalStim, 60f * 3f)
                 .HasActivationDelay(2f)
                 .HasMaxRange(5f)
-                .UsesAnimation(Animation.LoopingGetMid)
+                .UsesAnimation(AnimationType.LoopingGetMid)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation((activator, target, level, location) =>
@@ -55,7 +54,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.FirstAid
                 })
                 .HasImpactAction((activator, target, _, _) =>
                 {
-                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration), target);
+                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Imp_Restoration), target);
                     StatusEffectService.Apply(activator, activator, StatusEffectType.AdrenalStim1, 30f);
                     ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Willpower, 2), activator, 30f);
                 });
@@ -69,7 +68,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.FirstAid
                 .HasRecastDelay(RecastGroup.AdrenalStim, 60f * 3f)
                 .HasActivationDelay(2f)
                 .HasMaxRange(5f)
-                .UsesAnimation(Animation.LoopingGetMid)
+                .UsesAnimation(AnimationType.LoopingGetMid)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation((activator, target, level, location) =>
@@ -93,7 +92,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.FirstAid
                 })
                 .HasImpactAction((activator, target, _, _) =>
                 {
-                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration), target);
+                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Imp_Restoration), target);
                     StatusEffectService.Apply(activator, activator, StatusEffectType.AdrenalStim2, 30f);
                     ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Willpower, 4), activator, 30f);
                 });
@@ -107,7 +106,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.FirstAid
                 .HasRecastDelay(RecastGroup.AdrenalStim, 60f * 3f)
                 .HasActivationDelay(2f)
                 .HasMaxRange(5f)
-                .UsesAnimation(Animation.LoopingGetMid)
+                .UsesAnimation(AnimationType.LoopingGetMid)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation((activator, target, level, location) =>
@@ -131,7 +130,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.FirstAid
                 })
                 .HasImpactAction((activator, target, _, _) =>
                 {
-                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration), target);
+                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Imp_Restoration), target);
                     StatusEffectService.Apply(activator, activator, StatusEffectType.AdrenalStim3, 48f);
                     ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Willpower, 6), activator, 48f);
                 });

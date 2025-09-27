@@ -4,7 +4,6 @@ using SWLOR.Component.World.Contracts;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Area;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Domain.AI.Contracts;
@@ -247,8 +246,8 @@ namespace SWLOR.Component.World.Service
 
             // Local variable wasn't found or was zero. 
             // Determine the count by the size of the area.
-            var width = GetAreaSize(Dimension.Width, area);
-            var height = GetAreaSize(Dimension.Height, area);
+            var width = GetAreaSize(AreaDimensionType.Width, area);
+            var height = GetAreaSize(AreaDimensionType.Height, area);
             var size = width * height;
 
             if (size <= 12)
@@ -276,8 +275,8 @@ namespace SWLOR.Component.World.Service
 
             // Local variable wasn't found or was zero. 
             // Determine the count by the size of the area.
-            var width = GetAreaSize(Dimension.Width, area);
-            var height = GetAreaSize(Dimension.Height, area);
+            var width = GetAreaSize(AreaDimensionType.Width, area);
+            var height = GetAreaSize(AreaDimensionType.Height, area);
             var size = width * height;
 
             if (size <= 12)
@@ -603,21 +602,21 @@ namespace SWLOR.Component.World.Service
 
             if (type == ObjectType.Creature)
             {
-                var originalSpawnScript = GetEventScript(spawn, EventScript.Creature_OnSpawnIn);
+                var originalSpawnScript = GetEventScript(spawn, EventScriptType.Creature_OnSpawnIn);
 
-                SetEventScript(spawn, EventScript.Creature_OnBlockedByDoor, "x2_def_onblocked");
-                SetEventScript(spawn, EventScript.Creature_OnEndCombatRound, "x2_def_endcombat");
+                SetEventScript(spawn, EventScriptType.Creature_OnBlockedByDoor, "x2_def_onblocked");
+                SetEventScript(spawn, EventScriptType.Creature_OnEndCombatRound, "x2_def_endcombat");
                 //SetEventScript(creature, EventScript.Creature_OnDialogue, "x2_def_onconv");
-                SetEventScript(spawn, EventScript.Creature_OnDamaged, "x2_def_ondamage");
-                SetEventScript(spawn, EventScript.Creature_OnDeath, "x2_def_ondeath");
-                SetEventScript(spawn, EventScript.Creature_OnDisturbed, "x2_def_ondisturb");
-                SetEventScript(spawn, EventScript.Creature_OnHeartbeat, "x2_def_heartbeat");
-                SetEventScript(spawn, EventScript.Creature_OnNotice, "x2_def_percept");
-                SetEventScript(spawn, EventScript.Creature_OnMeleeAttacked, "x2_def_attacked");
-                SetEventScript(spawn, EventScript.Creature_OnRested, "x2_def_rested");
-                SetEventScript(spawn, EventScript.Creature_OnSpawnIn, "x2_def_spawn");
-                SetEventScript(spawn, EventScript.Creature_OnSpellCastAt, "x2_def_spellcast");
-                SetEventScript(spawn, EventScript.Creature_OnUserDefined, "x2_def_userdef");
+                SetEventScript(spawn, EventScriptType.Creature_OnDamaged, "x2_def_ondamage");
+                SetEventScript(spawn, EventScriptType.Creature_OnDeath, "x2_def_ondeath");
+                SetEventScript(spawn, EventScriptType.Creature_OnDisturbed, "x2_def_ondisturb");
+                SetEventScript(spawn, EventScriptType.Creature_OnHeartbeat, "x2_def_heartbeat");
+                SetEventScript(spawn, EventScriptType.Creature_OnNotice, "x2_def_percept");
+                SetEventScript(spawn, EventScriptType.Creature_OnMeleeAttacked, "x2_def_attacked");
+                SetEventScript(spawn, EventScriptType.Creature_OnRested, "x2_def_rested");
+                SetEventScript(spawn, EventScriptType.Creature_OnSpawnIn, "x2_def_spawn");
+                SetEventScript(spawn, EventScriptType.Creature_OnSpellCastAt, "x2_def_spellcast");
+                SetEventScript(spawn, EventScriptType.Creature_OnUserDefined, "x2_def_userdef");
 
                 // The spawn script will not fire because it has already executed. In the event there wasn't a script
                 // already on the creature, we need to run the normal spawn script to ensure it gets created appropriately.
@@ -628,9 +627,9 @@ namespace SWLOR.Component.World.Service
             }
             else if (type == ObjectType.Placeable)
             {
-                if (string.IsNullOrWhiteSpace(GetEventScript(spawn, EventScript.Placeable_OnDeath)))
+                if (string.IsNullOrWhiteSpace(GetEventScript(spawn, EventScriptType.Placeable_OnDeath)))
                 {
-                    SetEventScript(spawn, EventScript.Placeable_OnDeath, "plc_death");
+                    SetEventScript(spawn, EventScriptType.Placeable_OnDeath, "plc_death");
                 }
             }
         }
@@ -662,20 +661,20 @@ namespace SWLOR.Component.World.Service
 
             AssignCommand(spawn, () => ClearAllActions());
 
-            if (!GetIsObjectValid(GetItemInSlot(InventorySlot.CreatureRight, spawn)))
+            if (!GetIsObjectValid(GetItemInSlot(InventorySlotType.CreatureRight, spawn)))
             {
                 var claw = CreateItemOnObject("npc_claw", spawn);
                 AssignCommand(spawn, () =>
                 {
-                    ActionEquipItem(claw, InventorySlot.CreatureRight);
+                    ActionEquipItem(claw, InventorySlotType.CreatureRight);
                 });
             }
-            if (!GetIsObjectValid(GetItemInSlot(InventorySlot.CreatureLeft, spawn)))
+            if (!GetIsObjectValid(GetItemInSlot(InventorySlotType.CreatureLeft, spawn)))
             {
                 var claw = CreateItemOnObject("npc_claw", spawn);
                 AssignCommand(spawn, () =>
                 {
-                    ActionEquipItem(claw, InventorySlot.CreatureLeft);
+                    ActionEquipItem(claw, InventorySlotType.CreatureLeft);
                 });
             }
         }

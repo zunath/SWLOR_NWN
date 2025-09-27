@@ -1,12 +1,11 @@
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Domain.AI.ValueObjects;
 
 namespace SWLOR.Shared.Domain.Character.Contracts
 {
     public interface IAnimator
     {
-        VisualEffect Vfx { get; set; }
+        VisualEffectType Vfx { get; set; }
 
         AnimationEvent Event { get; set; }
 

@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Space.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Combat.Contracts;
@@ -74,7 +73,7 @@ namespace SWLOR.Component.Space.Feature.ShipModuleDefinition
                     var defense = SpaceService.GetShipDefense(target, defenseBonus);
                     var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
 
-                    var beam = EffectBeam(VisualEffect.Vfx_Beam_Holy, activator, BodyNode.Chest);
+                    var beam = EffectBeam(VisualEffectType.Vfx_Beam_Holy, activator, BodyNodeType.Chest);
 
                     for (var i = 0; i < 3; i++)
                     {

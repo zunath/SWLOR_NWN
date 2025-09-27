@@ -1,6 +1,5 @@
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Character.ValueObjects;
 using SWLOR.Shared.Domain.Combat.Enums;
@@ -31,7 +30,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.FirstAid
                 .HasActivationDelay(2f)
                 .HasMaxRange(30.0f)
                 .RequirementStamina(3)
-                .UsesAnimation(Animation.LoopingGetMid)
+                .UsesAnimation(AnimationType.LoopingGetMid)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation((activator, target, level, location) =>
@@ -55,10 +54,10 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.FirstAid
                 })
                 .HasImpactAction((activator, target, _, _) =>
                 {
-                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_G), target);
+                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Imp_Healing_G), target);
                     StatusEffectService.Remove(target, StatusEffectType.Bleed);
                     StatusEffectService.Remove(target, StatusEffectType.Poison);
-                    RemoveEffect(target, EffectTypeScript.Poison, EffectTypeScript.Disease);
+                    RemoveEffect(target, EffectScriptType.Poison, EffectScriptType.Disease);
 
                     TakeMedicalSupplies(activator);
 
@@ -75,7 +74,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.FirstAid
                 .HasActivationDelay(2f)
                 .HasMaxRange(30.0f)
                 .RequirementStamina(3)
-                .UsesAnimation(Animation.LoopingGetMid)
+                .UsesAnimation(AnimationType.LoopingGetMid)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation((activator, target, level, location) =>
@@ -99,13 +98,13 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.FirstAid
                 })
                 .HasImpactAction((activator, target, _, _) =>
                 {
-                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_G), target);
+                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Imp_Healing_G), target);
                     StatusEffectService.Remove(target, StatusEffectType.Bleed);
                     StatusEffectService.Remove(target, StatusEffectType.Poison);
                     StatusEffectService.Remove(target, StatusEffectType.Shock);
                     StatusEffectService.Remove(target, StatusEffectType.Burn);
                     StatusEffectService.Remove(target, StatusEffectType.Disease);
-                    RemoveEffect(target, EffectTypeScript.Poison, EffectTypeScript.Disease);
+                    RemoveEffect(target, EffectScriptType.Poison, EffectScriptType.Disease);
 
                     TakeMedicalSupplies(activator);
 

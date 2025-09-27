@@ -2,7 +2,6 @@ using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
@@ -41,7 +40,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
 
         private string Validation(uint activator, uint target, int level, Location targetLocation)
         {
-            var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
+            var weapon = GetItemInSlot(InventorySlotType.RightHand, activator);
             var distance = GetDistanceBetween(activator, target);
 
             var validWeapon = GetIsObjectValid(weapon) &&
@@ -72,7 +71,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
             ClearAllActions();
             BiowarePosition.TurnToFaceObject(target, activator);
 
-            AssignCommand(activator, () => ActionPlayAnimation(Animation.SaberThrow, 2));
+            AssignCommand(activator, () => ActionPlayAnimation(AnimationType.SaberThrow, 2));
             var willBonus = GetAbilityScore(activator, AbilityType.Willpower);
             var perBonus = GetAbilityScore(activator, AbilityType.Perception);
 
@@ -105,12 +104,12 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                     defense,
                     defenderStat,
                     0);
-                ApplyEffectToObject(DurationType.Instant, EffectLinkEffects(EffectVisualEffect(VisualEffect.Vfx_Imp_Sonic), EffectDamage(damage, DamageType.Sonic)), target);
+                ApplyEffectToObject(DurationType.Instant, EffectLinkEffects(EffectVisualEffect(VisualEffectType.Vfx_Imp_Sonic), EffectDamage(damage, DamageType.Sonic)), target);
                 EnmityService.ModifyEnmity(activator, target, damage + 200 * level);
             });
 
             // apply to next nearest creature in the spellcylinder
-            var nearby = GetFirstObjectInShape(Shape.SpellCylinder, Range, GetLocation(target), true, ObjectType.Creature, GetPosition(activator));
+            var nearby = GetFirstObjectInShape(ShapeType.SpellCylinder, Range, GetLocation(target), true, ObjectType.Creature, GetPosition(activator));
             while (GetIsObjectValid(nearby) && count < level)
             {
                 if (nearby != target && nearby != activator)
@@ -128,14 +127,14 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                             defense,
                             defenderStat,
                             0);
-                        ApplyEffectToObject(DurationType.Instant, EffectLinkEffects(EffectVisualEffect(VisualEffect.Vfx_Imp_Sonic), EffectDamage(damage, DamageType.Sonic)), nearbyCopy);
+                        ApplyEffectToObject(DurationType.Instant, EffectLinkEffects(EffectVisualEffect(VisualEffectType.Vfx_Imp_Sonic), EffectDamage(damage, DamageType.Sonic)), nearbyCopy);
                         CombatPointService.AddCombatPoint(activator, nearbyCopy, SkillType.Force, 3);
                         EnmityService.ModifyEnmity(activator, nearbyCopy, damage + 200 * level);
                     });
 
                     count++;
                 }
-                nearby = GetNextObjectInShape(Shape.SpellCylinder, Range, GetLocation(target), true, ObjectType.Creature, GetPosition(activator));
+                nearby = GetNextObjectInShape(ShapeType.SpellCylinder, Range, GetLocation(target), true, ObjectType.Creature, GetPosition(activator));
             }
 
         }

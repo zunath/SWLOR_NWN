@@ -1,7 +1,6 @@
 using SWLOR.Component.Associate.Enums;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Domain.Beasts.Contracts;
@@ -46,7 +45,7 @@ namespace SWLOR.Component.Associate.Feature.ItemDefinition
         {
             _builder.Create("dna_extractor_1", "dna_extractor_2", "dna_extractor_3", "dna_extractor_4", "dna_extractor_5")
                 .Delay(10f)
-                .PlaysAnimation(Animation.LoopingGetMid)
+                .PlaysAnimation(AnimationType.LoopingGetMid)
                 .ValidationAction((user, item, target, location, index) =>
                 {
                     var itemResref = GetResRef(item);

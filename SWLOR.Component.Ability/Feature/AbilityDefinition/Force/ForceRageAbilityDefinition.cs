@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Character.ValueObjects;
 using SWLOR.Shared.Domain.Combat.Contracts;
@@ -41,7 +40,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .RequirementFP(4)
                 .IsCastedAbility()
                 .HasMaxRange(10f)
-                .UsesAnimation(Animation.LoopingConjure1)
+                .UsesAnimation(AnimationType.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level, location) =>
                 {
@@ -52,7 +51,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                     var enmityService = EnmityService;
 
                     statusEffectService.Apply(activator, target, StatusEffectType.ForceRage1, 60f * 15f + willpowerBonus);
-                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Negative_Energy), target);
+                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Imp_Negative_Energy), target);
 
                     combatPointService.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
                     enmityService.ModifyEnmityOnAll(activator, 250 * level);
@@ -68,7 +67,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .RequirementFP(6)
                 .IsCastedAbility()
                 .HasMaxRange(10f)
-                .UsesAnimation(Animation.LoopingConjure1)
+                .UsesAnimation(AnimationType.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level, location) =>
                 {
@@ -79,7 +78,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                     var enmityService = EnmityService;
 
                     statusEffectService.Apply(activator, target, StatusEffectType.ForceRage2, 60f * 15f + willpowerBonus);
-                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Negative_Energy), target);
+                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Imp_Negative_Energy), target);
 
                     combatPointService.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
                     enmityService.ModifyEnmityOnAll(activator, 250 * level);

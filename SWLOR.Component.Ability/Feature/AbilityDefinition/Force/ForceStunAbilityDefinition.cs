@@ -2,7 +2,6 @@ using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Constants;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Character.ValueObjects;
@@ -38,7 +37,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
 
         private void Impact(uint source, uint target)
         {
-            var dc = CombatService.CalculateSavingThrowDC(source, SavingThrow.Will, 12);
+            var dc = CombatService.CalculateSavingThrowDC(source, SavingThrowCategoryType.Will, 12);
             const string EffectTag = "StatusEffectType.ForceStun";
             var checkResult = WillSave(target, dc, SavingThrowType.None, source);
             const float Duration = 6.1f;
@@ -46,7 +45,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
             if (checkResult == SavingThrowResultType.Failed)
             {
                 var effect = EffectDazed();
-                effect = EffectLinkEffects(effect, EffectVisualEffect(VisualEffect.Vfx_Dur_Iounstone_Blue));
+                effect = EffectLinkEffects(effect, EffectVisualEffect(VisualEffectType.Vfx_Dur_Iounstone_Blue));
                 effect = TagEffect(effect, EffectTag);
                 ApplyEffectToObject(DurationType.Temporary, effect, target, 6.1f);
 
@@ -73,7 +72,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .HasRecastDelay(RecastGroup.ForceStun, 60f * 5f)
                 .HasMaxRange(15.0f)
                 .RequirementFP(4)
-                .UsesAnimation(Animation.LoopingConjure1)
+                .UsesAnimation(AnimationType.LoopingConjure1)
                 .IsHostileAbility()
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level, location) =>
@@ -90,7 +89,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .HasRecastDelay(RecastGroup.ForceStun, 60f * 5f)
                 .HasMaxRange(15.0f)
                 .RequirementFP(6)
-                .UsesAnimation(Animation.LoopingConjure1)
+                .UsesAnimation(AnimationType.LoopingConjure1)
                 .IsHostileAbility()
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level, location) =>
@@ -98,7 +97,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                     Impact(activator, target);
 
                     // Target the next nearest creature and do the same thing.
-                    var targetCreature = GetFirstObjectInShape(Shape.Sphere, AOESize, GetLocation(target), true);
+                    var targetCreature = GetFirstObjectInShape(ShapeType.Sphere, AOESize, GetLocation(target), true);
                     while (GetIsObjectValid(targetCreature))
                     {
                         if (targetCreature != target && GetIsReactionTypeHostile(targetCreature, activator))
@@ -107,7 +106,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                             Impact(activator, targetCreature);
                             break;
                         }
-                        targetCreature = GetNextObjectInShape(Shape.Sphere, AOESize, GetLocation(target), true);
+                        targetCreature = GetNextObjectInShape(ShapeType.Sphere, AOESize, GetLocation(target), true);
                     }
                 });
         }
@@ -120,7 +119,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .HasRecastDelay(RecastGroup.ForceStun, 60f * 5f)
                 .HasMaxRange(15.0f)
                 .RequirementFP(8)
-                .UsesAnimation(Animation.LoopingConjure1)
+                .UsesAnimation(AnimationType.LoopingConjure1)
                 .IsHostileAbility()
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level, location) =>
@@ -128,7 +127,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                     Impact(activator, target);
 
                     // Target the next nearest creature and do the same thing.
-                    var targetCreature = GetFirstObjectInShape(Shape.Sphere, AOESize, GetLocation(target), true);
+                    var targetCreature = GetFirstObjectInShape(ShapeType.Sphere, AOESize, GetLocation(target), true);
                     while (GetIsObjectValid(targetCreature))
                     {
                         if (targetCreature != target && GetIsReactionTypeHostile(targetCreature, activator))
@@ -137,7 +136,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                             // Intentionally applying Force Stun I so that it doesn't continue to chain exponentially.
                             Impact(activator, targetCreature);
                         }
-                        targetCreature = GetNextObjectInShape(Shape.Sphere, AOESize, GetLocation(target), true);
+                        targetCreature = GetNextObjectInShape(ShapeType.Sphere, AOESize, GetLocation(target), true);
                     }
                 });
         }

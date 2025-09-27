@@ -51,7 +51,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="ID">Optional ID of a string. If not 0, subsequent calls to PostString will
         /// remove the old string with the same ID, even if its lifetime has not elapsed. Only positive values allowed</param>
         /// <param name="font">If specified, use this custom font instead of default console font</param>
-        public static void PostString(uint PC, string Msg, int X = 0, int Y = 0, ScreenAnchor anchor = ScreenAnchor.TopLeft,
+        public static void PostString(uint PC, string Msg, int X = 0, int Y = 0, ScreenAnchorType anchor = ScreenAnchorType.TopLeft,
             float life = 10.0f, int RGBA = 2147418367, int RGBA2 = 2147418367, int ID = 0, string font = "")
         {
             global::NWN.Core.NWScript.PostString(PC, Msg, X, Y, (int)anchor, life, RGBA, RGBA2, ID, font);
@@ -72,7 +72,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oObject">The object to set the mouse cursor for</param>
         /// <param name="nCursor">The mouse cursor type to use when hovering over the object</param>
-        public static void SetObjectMouseCursor(uint oObject, MouseCursor nCursor = MouseCursor.Invalid)
+        public static void SetObjectMouseCursor(uint oObject, MouseCursorType nCursor = MouseCursorType.Invalid)
         {
             global::NWN.Core.NWScript.SetObjectMouseCursor(oObject, (int)nCursor);
         }
@@ -94,7 +94,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oObject">Any valid Creature, Placeable, Item or Door</param>
         /// <param name="nTransform">One of OBJECT_VISUAL_TRANSFORM_* constants</param>
         /// <returns>The current (or default) value of the visual transform</returns>
-        public static float GetObjectVisualTransform(uint oObject, ObjectVisualTransform nTransform)
+        public static float GetObjectVisualTransform(uint oObject, ObjectVisualTransformType nTransform)
         {
             return global::NWN.Core.NWScript.GetObjectVisualTransform(oObject, (int)nTransform);
         }
@@ -114,9 +114,9 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The old/previous value of the visual transform</returns>
         public static float SetObjectVisualTransform(
             uint oObject,
-            ObjectVisualTransform nTransform,
+            ObjectVisualTransformType nTransform,
             float fValue,
-            Lerp nLerpType = Lerp.None,
+            LerpType nLerpType = LerpType.None,
             float fLerpDuration = 0.0f,
             bool bPauseWithGame = true,
             ObjectVisualTransformDataScopeType nScope = ObjectVisualTransformDataScopeType.Base,

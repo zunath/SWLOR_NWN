@@ -1,6 +1,5 @@
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Character.ValueObjects;
 using SWLOR.Shared.Domain.Common.Enums;
@@ -38,7 +37,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
             effect = TagEffect(effect, "FORCE_INSPIRATION");
 
             ApplyEffectToObject(DurationType.Temporary, effect, target, length);
-            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Globe_Use), target);
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Imp_Globe_Use), target);
 
         }
 
@@ -49,7 +48,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .HasRecastDelay(RecastGroup.ForceInspiration, 30f)
                 .HasActivationDelay(2f)
                 .RequirementFP(5)
-                .UsesAnimation(Animation.LoopingGetMid)
+                .UsesAnimation(AnimationType.LoopingGetMid)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, target, _, _) =>
@@ -64,7 +63,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .HasRecastDelay(RecastGroup.ForceInspiration, 30f)
                 .HasActivationDelay(2f)
                 .RequirementFP(6)
-                .UsesAnimation(Animation.LoopingGetMid)
+                .UsesAnimation(AnimationType.LoopingGetMid)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, target, _, _) =>
@@ -79,7 +78,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .HasRecastDelay(RecastGroup.ForceInspiration, 30f)
                 .HasActivationDelay(2f)
                 .RequirementFP(7)
-                .UsesAnimation(Animation.LoopingGetMid)
+                .UsesAnimation(AnimationType.LoopingGetMid)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, target, _, _) =>

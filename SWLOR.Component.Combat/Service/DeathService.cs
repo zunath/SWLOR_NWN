@@ -57,9 +57,9 @@ namespace SWLOR.Component.Combat.Service
             var player = GetLastPlayerDied();
             var hostile = GetLastHostileActor(player);
 
-            SetStandardFactionReputation(StandardFaction.Commoner, 100, player);
-            SetStandardFactionReputation(StandardFaction.Merchant, 100, player);
-            SetStandardFactionReputation(StandardFaction.Defender, 100, player);
+            SetStandardFactionReputation(StandardFactionType.Commoner, 100, player);
+            SetStandardFactionReputation(StandardFactionType.Merchant, 100, player);
+            SetStandardFactionReputation(StandardFactionType.Defender, 100, player);
 
             var factionMember = GetFirstFactionMember(hostile, false);
             while (GetIsObjectValid(factionMember))

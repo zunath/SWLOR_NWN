@@ -73,8 +73,8 @@ namespace SWLOR.Component.Quest.UI.View
                             row2.AddLabel()
                                 .BindText(model => model.ActiveQuestName)
                                 .SetHeight(20f)
-                                .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                                .SetVerticalAlign(NuiVerticalAlign.Top);
+                                .SetHorizontalAlign(NuiHorizontalAlignType.Center)
+                                .SetVerticalAlign(NuiVerticalAlignType.Top);
                         });
 
                         col.AddRow(row2 =>

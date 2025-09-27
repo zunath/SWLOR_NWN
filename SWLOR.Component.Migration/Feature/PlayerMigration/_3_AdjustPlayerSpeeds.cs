@@ -36,7 +36,7 @@ namespace SWLOR.Component.Migration.Feature.PlayerMigration
         {
             AbilityService.ToggleAbility(player, AbilityToggleType.Dash, false);
 
-            CreaturePlugin.SetMovementRate(player, MovementRate.PC);
+            CreaturePlugin.SetMovementRate(player, MovementRateType.PC);
             CreaturePlugin.SetMovementRateFactor(player, 1.0f);
         }
     }

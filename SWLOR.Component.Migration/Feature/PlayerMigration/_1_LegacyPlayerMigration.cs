@@ -4,7 +4,6 @@ using SWLOR.Component.Migration.Model;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Entities;
@@ -168,7 +167,7 @@ namespace SWLOR.Component.Migration.Feature.PlayerMigration
             // Equipped Items
             for (var index = 0; index < NumberOfInventorySlots; index++)
             {
-                var slot = (InventorySlot)index;
+                var slot = (InventorySlotType)index;
                 var item = GetItemInSlot(slot, player);
 
                 // Skip invalid items (empty item slots)
@@ -176,10 +175,10 @@ namespace SWLOR.Component.Migration.Feature.PlayerMigration
                     continue;
 
                 // Skip creature items.
-                if (slot == InventorySlot.CreatureLeft ||
-                    slot == InventorySlot.CreatureRight ||
-                    slot == InventorySlot.CreatureBite ||
-                    slot == InventorySlot.CreatureArmor)
+                if (slot == InventorySlotType.CreatureLeft ||
+                    slot == InventorySlotType.CreatureRight ||
+                    slot == InventorySlotType.CreatureBite ||
+                    slot == InventorySlotType.CreatureArmor)
                 {
                     continue;
                 }
@@ -210,21 +209,21 @@ namespace SWLOR.Component.Migration.Feature.PlayerMigration
                 {
                     var gender = GetGender(player);
 
-                    SetCreatureBodyPart(CreaturePart.Head, RacialAppearanceService.GetFirstRacialAppearanceValue(RacialType.Cathar, CreaturePart.Head, gender), player);
-                    SetCreatureBodyPart(CreaturePart.Torso, RacialAppearanceService.GetFirstRacialAppearanceValue(RacialType.Cathar, CreaturePart.Torso, gender), player);
-                    SetCreatureBodyPart(CreaturePart.Pelvis, RacialAppearanceService.GetFirstRacialAppearanceValue(RacialType.Cathar, CreaturePart.Pelvis, gender), player);
-                    SetCreatureBodyPart(CreaturePart.RightBicep, RacialAppearanceService.GetFirstRacialAppearanceValue(RacialType.Cathar, CreaturePart.RightBicep, gender), player);
-                    SetCreatureBodyPart(CreaturePart.RightForearm, RacialAppearanceService.GetFirstRacialAppearanceValue(RacialType.Cathar, CreaturePart.RightForearm, gender), player);
-                    SetCreatureBodyPart(CreaturePart.RightHand, RacialAppearanceService.GetFirstRacialAppearanceValue(RacialType.Cathar, CreaturePart.RightHand, gender), player);
-                    SetCreatureBodyPart(CreaturePart.RightThigh, RacialAppearanceService.GetFirstRacialAppearanceValue(RacialType.Cathar, CreaturePart.RightThigh, gender), player);
-                    SetCreatureBodyPart(CreaturePart.RightShin, RacialAppearanceService.GetFirstRacialAppearanceValue(RacialType.Cathar, CreaturePart.RightShin, gender), player);
-                    SetCreatureBodyPart(CreaturePart.RightFoot, RacialAppearanceService.GetFirstRacialAppearanceValue(RacialType.Cathar, CreaturePart.RightFoot, gender), player);
-                    SetCreatureBodyPart(CreaturePart.LeftBicep, RacialAppearanceService.GetFirstRacialAppearanceValue(RacialType.Cathar, CreaturePart.LeftBicep, gender), player);
-                    SetCreatureBodyPart(CreaturePart.LeftForearm, RacialAppearanceService.GetFirstRacialAppearanceValue(RacialType.Cathar, CreaturePart.LeftForearm, gender), player);
-                    SetCreatureBodyPart(CreaturePart.LeftHand, RacialAppearanceService.GetFirstRacialAppearanceValue(RacialType.Cathar, CreaturePart.LeftHand, gender), player);
-                    SetCreatureBodyPart(CreaturePart.LeftThigh, RacialAppearanceService.GetFirstRacialAppearanceValue(RacialType.Cathar, CreaturePart.LeftThigh, gender), player);
-                    SetCreatureBodyPart(CreaturePart.LeftShin, RacialAppearanceService.GetFirstRacialAppearanceValue(RacialType.Cathar, CreaturePart.LeftShin, gender), player);
-                    SetCreatureBodyPart(CreaturePart.LeftFoot, RacialAppearanceService.GetFirstRacialAppearanceValue(RacialType.Cathar, CreaturePart.LeftFoot, gender), player);
+                    SetCreatureBodyPart(CreaturePartType.Head, RacialAppearanceService.GetFirstRacialAppearanceValue(RacialType.Cathar, CreaturePartType.Head, gender), player);
+                    SetCreatureBodyPart(CreaturePartType.Torso, RacialAppearanceService.GetFirstRacialAppearanceValue(RacialType.Cathar, CreaturePartType.Torso, gender), player);
+                    SetCreatureBodyPart(CreaturePartType.Pelvis, RacialAppearanceService.GetFirstRacialAppearanceValue(RacialType.Cathar, CreaturePartType.Pelvis, gender), player);
+                    SetCreatureBodyPart(CreaturePartType.RightBicep, RacialAppearanceService.GetFirstRacialAppearanceValue(RacialType.Cathar, CreaturePartType.RightBicep, gender), player);
+                    SetCreatureBodyPart(CreaturePartType.RightForearm, RacialAppearanceService.GetFirstRacialAppearanceValue(RacialType.Cathar, CreaturePartType.RightForearm, gender), player);
+                    SetCreatureBodyPart(CreaturePartType.RightHand, RacialAppearanceService.GetFirstRacialAppearanceValue(RacialType.Cathar, CreaturePartType.RightHand, gender), player);
+                    SetCreatureBodyPart(CreaturePartType.RightThigh, RacialAppearanceService.GetFirstRacialAppearanceValue(RacialType.Cathar, CreaturePartType.RightThigh, gender), player);
+                    SetCreatureBodyPart(CreaturePartType.RightShin, RacialAppearanceService.GetFirstRacialAppearanceValue(RacialType.Cathar, CreaturePartType.RightShin, gender), player);
+                    SetCreatureBodyPart(CreaturePartType.RightFoot, RacialAppearanceService.GetFirstRacialAppearanceValue(RacialType.Cathar, CreaturePartType.RightFoot, gender), player);
+                    SetCreatureBodyPart(CreaturePartType.LeftBicep, RacialAppearanceService.GetFirstRacialAppearanceValue(RacialType.Cathar, CreaturePartType.LeftBicep, gender), player);
+                    SetCreatureBodyPart(CreaturePartType.LeftForearm, RacialAppearanceService.GetFirstRacialAppearanceValue(RacialType.Cathar, CreaturePartType.LeftForearm, gender), player);
+                    SetCreatureBodyPart(CreaturePartType.LeftHand, RacialAppearanceService.GetFirstRacialAppearanceValue(RacialType.Cathar, CreaturePartType.LeftHand, gender), player);
+                    SetCreatureBodyPart(CreaturePartType.LeftThigh, RacialAppearanceService.GetFirstRacialAppearanceValue(RacialType.Cathar, CreaturePartType.LeftThigh, gender), player);
+                    SetCreatureBodyPart(CreaturePartType.LeftShin, RacialAppearanceService.GetFirstRacialAppearanceValue(RacialType.Cathar, CreaturePartType.LeftShin, gender), player);
+                    SetCreatureBodyPart(CreaturePartType.LeftFoot, RacialAppearanceService.GetFirstRacialAppearanceValue(RacialType.Cathar, CreaturePartType.LeftFoot, gender), player);
                 });
             }
         }

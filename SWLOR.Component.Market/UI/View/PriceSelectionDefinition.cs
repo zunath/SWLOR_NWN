@@ -33,8 +33,8 @@ namespace SWLOR.Component.Market.UI.View
                         row.AddLabel()
                             .BindText(model => model.ItemName)
                             .SetHeight(26f)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                            .SetVerticalAlign(NuiVerticalAlign.Top);
+                            .SetHorizontalAlign(NuiHorizontalAlignType.Center)
+                            .SetVerticalAlign(NuiVerticalAlignType.Top);
                     });
 
                     col.AddRow(row =>

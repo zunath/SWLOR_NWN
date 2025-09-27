@@ -3,7 +3,6 @@ using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Constants;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Character.ValueObjects;
@@ -60,7 +59,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
             }
 
             dmg += CombatService.GetAbilityDamageBonus(activator, SkillType.Force);
-            var creature = GetFirstObjectInShape(Shape.Sphere, RadiusSize.Medium, GetLocation(target), true, ObjectType.Creature);
+            var creature = GetFirstObjectInShape(ShapeType.Sphere, RadiusSize.Medium, GetLocation(target), true, ObjectType.Creature);
             while (GetIsObjectValid(creature))
             {
                 if (GetDistanceBetween(target, creature) <= 4f && GetIsReactionTypeHostile(creature, activator))
@@ -88,25 +87,25 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                     DelayCommand(delay, () =>
                     {
                         ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), dTarget);
-                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Silence), dTarget);
-                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.VFX_IMP_KIN_L), dTarget);
-                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Pulse_Wind), target);
+                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Imp_Silence), dTarget);
+                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.VFX_IMP_KIN_L), dTarget);
+                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Imp_Pulse_Wind), target);
                     });
                     
                     DelayCommand(delay + 0.1f, () =>
                     {
-                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Pulse_Wind), target);
+                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Imp_Pulse_Wind), target);
                     });
                     
                     DelayCommand(delay + 0.2f, () =>
                     {
-                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Pulse_Wind), target);
+                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Imp_Pulse_Wind), target);
                     });
 
                     CombatPointService.AddCombatPoint(activator, creature, SkillType.Force, 3);
                     EnmityService.ModifyEnmity(activator, creature, 250 * level + damage);
                 }
-                creature = GetNextObjectInShape(Shape.Sphere, RadiusSize.Medium, GetLocation(target), true , ObjectType.Creature);
+                creature = GetNextObjectInShape(ShapeType.Sphere, RadiusSize.Medium, GetLocation(target), true , ObjectType.Creature);
             }
         }
 
@@ -123,7 +122,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .IsHostileAbility()
                 .BreaksStealth()
                 .DisplaysVisualEffectWhenActivating()
-                .UsesAnimation(Animation.LoopingConjure1)
+                .UsesAnimation(AnimationType.LoopingConjure1)
                 .HasImpactAction(ImpactAction);
         }
 
@@ -140,7 +139,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .IsHostileAbility()
                 .BreaksStealth()
                 .DisplaysVisualEffectWhenActivating()
-                .UsesAnimation(Animation.LoopingConjure1)
+                .UsesAnimation(AnimationType.LoopingConjure1)
                 .HasImpactAction(ImpactAction);
         }
 
@@ -157,7 +156,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .IsHostileAbility()
                 .BreaksStealth()
                 .DisplaysVisualEffectWhenActivating()
-                .UsesAnimation(Animation.LoopingConjure1)
+                .UsesAnimation(AnimationType.LoopingConjure1)
                 .HasImpactAction(ImpactAction);
         }
 
@@ -174,12 +173,12 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .IsHostileAbility()
                 .BreaksStealth()
                 .DisplaysVisualEffectWhenActivating()
-                .UsesAnimation(Animation.LoopingConjure1)
+                .UsesAnimation(AnimationType.LoopingConjure1)
                 .HasImpactAction(ImpactAction);
         }
         private static void DoFireball(uint target)
         {
-            var missile = EffectVisualEffect(VisualEffect.Vfx_Imp_Mirv_Fireball);
+            var missile = EffectVisualEffect(VisualEffectType.Vfx_Imp_Mirv_Fireball);
             ApplyEffectToObject(DurationType.Instant, missile, target);
         }
     }

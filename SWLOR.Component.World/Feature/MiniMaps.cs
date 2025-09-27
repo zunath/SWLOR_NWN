@@ -36,7 +36,7 @@ namespace SWLOR.Component.World.Feature
             var isMiniMapDisabled = GetLocalInt(area, AreaMiniMapVariable);
             if (isMiniMapDisabled == 1)
             {
-                SetGuiPanelDisabled(player, GuiPanel.Minimap, true);
+                SetGuiPanelDisabled(player, GuiPanelType.Minimap, true);
             }
 
             var keyItemId = GetLocalInt(area, "MAP_KEY_ITEM_ID");
@@ -47,7 +47,7 @@ namespace SWLOR.Component.World.Feature
 
                 if (hasKeyItem)
                 {
-                    SetGuiPanelDisabled(player, GuiPanel.Minimap, false);
+                    SetGuiPanelDisabled(player, GuiPanelType.Minimap, false);
                     ExploreAreaForPlayer(area, player);
                 }
             }
@@ -62,7 +62,7 @@ namespace SWLOR.Component.World.Feature
             var player = GetExitingObject();
             if (!GetIsPC(player)) return;
 
-            SetGuiPanelDisabled(player, GuiPanel.Minimap, false);
+            SetGuiPanelDisabled(player, GuiPanelType.Minimap, false);
         }
 
         /// <summary>
@@ -73,10 +73,10 @@ namespace SWLOR.Component.World.Feature
         {
             var player = GetLastGuiEventPlayer();
             var type = GetLastGuiEventType();
-            var panelType = (GuiPanel)GetLastGuiEventInteger();
+            var panelType = (GuiPanelType)GetLastGuiEventInteger();
             if (!GetIsPC(player) || GetIsDM(player)) return;
             if (type != GuiEventType.DisabledPanelAttemptOpen) return;
-            if (panelType != GuiPanel.Minimap) return;
+            if (panelType != GuiPanelType.Minimap) return;
 
             var area = GetArea(player);
             if (GetLocalInt(area, AreaMiniMapVariable) != 1) return;

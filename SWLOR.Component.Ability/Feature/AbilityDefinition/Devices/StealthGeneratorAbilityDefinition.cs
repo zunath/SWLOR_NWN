@@ -32,7 +32,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
 
         public static void ClearInvisibility()
         {
-            RemoveEffect(OBJECT_SELF, EffectTypeScript.Invisibility, EffectTypeScript.ImprovedInvisibility);
+            RemoveEffect(OBJECT_SELF, EffectScriptType.Invisibility, EffectScriptType.ImprovedInvisibility);
         }
 
         private void StealthGenerator1(IAbilityBuilder builder)
@@ -43,7 +43,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                 .HasRecastDelay(RecastGroup.StealthGenerator, 360f)
                 .HasActivationDelay(2f)
                 .RequirementStamina(4)
-                .UsesAnimation(Animation.Crouch)
+                .UsesAnimation(AnimationType.Crouch)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, _, _, targetLocation) =>
@@ -63,7 +63,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                 .HasRecastDelay(RecastGroup.StealthGenerator, 360f)
                 .HasActivationDelay(2f)
                 .RequirementStamina(6)
-                .UsesAnimation(Animation.Crouch)
+                .UsesAnimation(AnimationType.Crouch)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, _, _, targetLocation) =>
@@ -83,7 +83,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                 .HasRecastDelay(RecastGroup.StealthGenerator, 360f)
                 .HasActivationDelay(2f)
                 .RequirementStamina(8)
-                .UsesAnimation(Animation.Crouch)
+                .UsesAnimation(AnimationType.Crouch)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, _, _, targetLocation) =>

@@ -66,7 +66,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oTargetDoor">The target door</param>
         /// <param name="nDoorAction">The door action to check (DOOR_ACTION_* constants)</param>
         /// <returns>True if the door action can be performed, false otherwise</returns>
-        public static bool GetIsDoorActionPossible(uint oTargetDoor, DoorAction nDoorAction)
+        public static bool GetIsDoorActionPossible(uint oTargetDoor, DoorActionType nDoorAction)
         {
             return global::NWN.Core.NWScript.GetIsDoorActionPossible(oTargetDoor, (int)nDoorAction) == 1;
         }
@@ -76,7 +76,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oTargetDoor">The target door</param>
         /// <param name="nDoorAction">The door action to perform (DOOR_ACTION_* constants)</param>
-        public static void DoDoorAction(uint oTargetDoor, DoorAction nDoorAction)
+        public static void DoDoorAction(uint oTargetDoor, DoorActionType nDoorAction)
         {
             global::NWN.Core.NWScript.DoDoorAction(oTargetDoor, (int)nDoorAction);
         }

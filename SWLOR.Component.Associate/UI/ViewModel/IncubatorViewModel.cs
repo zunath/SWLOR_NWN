@@ -2,7 +2,6 @@ using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Associate.Enums;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data;
@@ -305,9 +304,9 @@ namespace SWLOR.Component.Associate.UI.ViewModel
                 _poisonDefense = dbJob.DefensePurities[CombatDamageType.Poison];
                 _electricalDefense = dbJob.DefensePurities[CombatDamageType.Electrical];
 
-                _fortitude = dbJob.SavingThrowPurities[SavingThrow.Fortitude];
-                _reflex = dbJob.SavingThrowPurities[SavingThrow.Reflex];
-                _will = dbJob.SavingThrowPurities[SavingThrow.Will];
+                _fortitude = dbJob.SavingThrowPurities[SavingThrowCategoryType.Fortitude];
+                _reflex = dbJob.SavingThrowPurities[SavingThrowCategoryType.Reflex];
+                _will = dbJob.SavingThrowPurities[SavingThrowCategoryType.Will];
 
                 if (now >= dbJob.DateCompleted)
                 {
@@ -1030,9 +1029,9 @@ namespace SWLOR.Component.Associate.UI.ViewModel
                 job.DefensePurities[CombatDamageType.Poison] = poisonDefense > MaxStat ? MaxStat : poisonDefense;
                 job.DefensePurities[CombatDamageType.Electrical] = electricalDefense > MaxStat ? MaxStat : electricalDefense;
 
-                job.SavingThrowPurities[SavingThrow.Fortitude] = fortitudePurity > MaxStat ? MaxStat : fortitudePurity;
-                job.SavingThrowPurities[SavingThrow.Reflex] = reflexPurity > MaxStat ? MaxStat : reflexPurity;
-                job.SavingThrowPurities[SavingThrow.Will] = willPurity > MaxStat ? MaxStat : willPurity;
+                job.SavingThrowPurities[SavingThrowCategoryType.Fortitude] = fortitudePurity > MaxStat ? MaxStat : fortitudePurity;
+                job.SavingThrowPurities[SavingThrowCategoryType.Reflex] = reflexPurity > MaxStat ? MaxStat : reflexPurity;
+                job.SavingThrowPurities[SavingThrowCategoryType.Will] = willPurity > MaxStat ? MaxStat : willPurity;
 
                 if(_lyaseColor != EnzymeColorType.Invalid)
                     job.LyaseColors[_lyaseColor]++;

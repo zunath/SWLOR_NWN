@@ -14,15 +14,15 @@ namespace SWLOR.Shared.UI.Component
         private string ResrefBindName { get; set; }
         private bool IsResrefBound => !string.IsNullOrWhiteSpace(ResrefBindName);
         
-        private NuiAspect Aspect { get; set; }
+        private NuiAspectType Aspect { get; set; }
         private string AspectBindName { get; set; }
         private bool IsAspectBound => !string.IsNullOrWhiteSpace(AspectBindName);
         
-        private NuiHorizontalAlign HorizontalAlign { get; set; }
+        private NuiHorizontalAlignType HorizontalAlign { get; set; }
         private string HorizontalAlignBindName { get; set; }
         private bool IsHorizontalAlignBound => !string.IsNullOrWhiteSpace(HorizontalAlignBindName);
         
-        private NuiVerticalAlign  VerticalAlign { get; set; }
+        private NuiVerticalAlignType  VerticalAlign { get; set; }
         private string VerticalAlignBindName { get; set; }
         private bool IsVerticalAlignBound => !string.IsNullOrWhiteSpace(VerticalAlignBindName);
 
@@ -55,7 +55,7 @@ namespace SWLOR.Shared.UI.Component
         /// Sets a static value for the aspect of the image.
         /// </summary>
         /// <param name="aspect">The aspect to set.</param>
-        public GuiImage<T> SetAspect(NuiAspect aspect)
+        public GuiImage<T> SetAspect(NuiAspectType aspect)
         {
             Aspect = aspect;
             return this;
@@ -76,7 +76,7 @@ namespace SWLOR.Shared.UI.Component
         /// Sets the horizontal alignment of the image.
         /// </summary>
         /// <param name="hAlign">The horizontal alignment to set.</param>
-        public GuiImage<T> SetHorizontalAlign(NuiHorizontalAlign hAlign)
+        public GuiImage<T> SetHorizontalAlign(NuiHorizontalAlignType hAlign)
         {
             HorizontalAlign = hAlign;
             return this;
@@ -97,7 +97,7 @@ namespace SWLOR.Shared.UI.Component
         /// Sets the vertical alignment of the image.
         /// </summary>
         /// <param name="vAlign">The vertical alignment to set.</param>
-        public GuiImage<T> SetVerticalAlign(NuiVerticalAlign vAlign)
+        public GuiImage<T> SetVerticalAlign(NuiVerticalAlignType vAlign)
         {
             VerticalAlign = vAlign;
             return this;

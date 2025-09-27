@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Character.ValueObjects;
 using SWLOR.Shared.Domain.Combat.Contracts;
@@ -37,7 +36,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.MartialArts
             var recovery = baseRecovery + bonusRecovery;
 
             ApplyEffectToObject(DurationType.Instant, EffectHeal(recovery), activator);
-            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_G), activator);
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Imp_Healing_G), activator);
 
             EnmityService.ModifyEnmityOnAll(activator, 300 + recovery + 10);
             CombatPointService.AddCombatPointToAllTagged(activator, SkillType.MartialArts, 3);

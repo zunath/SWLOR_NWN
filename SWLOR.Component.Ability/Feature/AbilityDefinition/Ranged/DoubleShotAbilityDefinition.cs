@@ -39,7 +39,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Ranged
 
         private string Validation(uint activator, uint target, int level, Location targetLocation)
         {
-            var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
+            var weapon = GetItemInSlot(InventorySlotType.RightHand, activator);
 
             if (!ItemService.PistolBaseItemTypes.Contains(GetBaseItemType(weapon)))
             {
@@ -89,8 +89,8 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Ranged
             // Second attack
             damage = CombatService.CalculateDamage(attack, dmg, attackerStat, defense, defenderStat, 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Piercing), target);
-            AssignCommand(activator, () => ActionPlayAnimation(Animation.DoubleShot));
-            AssignCommand(activator, () => ActionPlayAnimation(Animation.DoubleShot));
+            AssignCommand(activator, () => ActionPlayAnimation(AnimationType.DoubleShot));
+            AssignCommand(activator, () => ActionPlayAnimation(AnimationType.DoubleShot));
 
             EnmityService.ModifyEnmity(activator, target, 200 * level + damage);
         }

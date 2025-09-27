@@ -104,8 +104,8 @@ namespace SWLOR.Component.Space.UI.View
                     col.AddRow(row =>
                     {
                         row.AddLabel()
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
+                            .SetHorizontalAlign(NuiHorizontalAlignType.Left)
+                            .SetVerticalAlign(NuiVerticalAlignType.Top)
                             .BindText(model => model.ShipType)
                             .SetHeight(20f);
                     });
@@ -113,8 +113,8 @@ namespace SWLOR.Component.Space.UI.View
                     col.AddRow(row =>
                     {
                         row.AddLabel()
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
+                            .SetHorizontalAlign(NuiHorizontalAlignType.Left)
+                            .SetVerticalAlign(NuiVerticalAlignType.Top)
                             .BindText(model => model.ShipLocation)
                             .SetHeight(20f);
                     });
@@ -122,8 +122,8 @@ namespace SWLOR.Component.Space.UI.View
                     col.AddRow(row =>
                     {
                         row.AddLabel()
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
+                            .SetHorizontalAlign(NuiHorizontalAlignType.Left)
+                            .SetVerticalAlign(NuiVerticalAlignType.Top)
                             .SetText("Shields:");
 
                         row.AddProgressBar()
@@ -135,8 +135,8 @@ namespace SWLOR.Component.Space.UI.View
                     col.AddRow(row =>
                     {
                         row.AddLabel()
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
+                            .SetHorizontalAlign(NuiHorizontalAlignType.Left)
+                            .SetVerticalAlign(NuiVerticalAlignType.Top)
                             .SetText("Hull:");
 
                         row.AddProgressBar()
@@ -148,8 +148,8 @@ namespace SWLOR.Component.Space.UI.View
                     col.AddRow(row =>
                     {
                         row.AddLabel()
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
+                            .SetHorizontalAlign(NuiHorizontalAlignType.Left)
+                            .SetVerticalAlign(NuiVerticalAlignType.Top)
                             .SetText("Capacitor:");
 
                         row.AddProgressBar()

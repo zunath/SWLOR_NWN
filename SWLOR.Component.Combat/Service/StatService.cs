@@ -2,7 +2,6 @@ using Microsoft.Extensions.DependencyInjection;
 using NWN.Native.API;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Domain.Character.Contracts;
@@ -16,11 +15,7 @@ using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Module;
-using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
 using EquipmentSlot = NWN.Native.API.EquipmentSlot;
-using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
-using SavingThrow = SWLOR.NWN.API.NWScript.Enum.SavingThrow;
-using MovementRate = SWLOR.NWN.API.NWScript.Enum.MovementRate;
 
 namespace SWLOR.Component.Combat.Service
 {
@@ -512,7 +507,7 @@ namespace SWLOR.Component.Combat.Service
         {
             if (GetIsPC(player) && !GetIsDM(player) && !GetIsDMPossessed(player))
             {
-                CreaturePlugin.SetMovementRate(player, MovementRate.PC);
+                CreaturePlugin.SetMovementRate(player, MovementRateType.PC);
             }
 
             var movementRate = 1.0f;
@@ -534,12 +529,12 @@ namespace SWLOR.Component.Combat.Service
             {
                 var type = GetEffectType(effect);
                 float amount;
-                if (type == EffectTypeScript.MovementSpeedIncrease)
+                if (type == EffectScriptType.MovementSpeedIncrease)
                 {
                     amount = GetEffectInteger(effect, 0) - 100;
                     movementRate += amount * 0.01f;
                 }
-                else if (type == EffectTypeScript.MovementSpeedDecrease)
+                else if (type == EffectScriptType.MovementSpeedDecrease)
                 {
                     amount = GetEffectInteger(effect, 0);
                     movementRate -= amount * 0.01f;
@@ -919,7 +914,7 @@ namespace SWLOR.Component.Combat.Service
             return GetAttack(skillLevel, stat, attackBonus);
         }
 
-        public int GetAttackNative(CNWSCreature creature, BaseItem itemType)
+        public int GetAttackNative(CNWSCreature creature, BaseItemType itemType)
         {
             var attackBonus = 0;
             var skillLevel = 0;
@@ -1203,9 +1198,9 @@ namespace SWLOR.Component.Combat.Service
             accuracyBonus = CalculateEffectAccuracy(creature, accuracyBonus);
 
             // Power Attack to-hit penalty
-            if (GetActionMode(creature, ActionMode.PowerAttack))
+            if (GetActionMode(creature, ActionModeType.PowerAttack))
                 accuracyBonus -= 5;
-            else if (GetActionMode(creature, ActionMode.ImprovedPowerAttack))
+            else if (GetActionMode(creature, ActionModeType.ImprovedPowerAttack))
                 accuracyBonus -= 10;
 
             return GetAccuracy(skillLevel, stat, accuracyBonus);
@@ -1240,7 +1235,7 @@ namespace SWLOR.Component.Combat.Service
                 }
             }
 
-            var baseItemType = weapon == null ? BaseItem.Invalid : (BaseItem)weapon.m_nBaseItem;
+            var baseItemType = weapon == null ? BaseItemType.Invalid : (BaseItemType)weapon.m_nBaseItem;
             var statType = statOverride == AbilityType.Invalid ? 
                 ItemService.GetWeaponAccuracyAbilityType(baseItemType) :
                 statOverride;
@@ -1288,11 +1283,11 @@ namespace SWLOR.Component.Combat.Service
             for (var effect = GetFirstEffect(creature); GetIsEffectValid(effect); effect = GetNextEffect(creature))
             {
                 var type = GetEffectType(effect);
-                if (type == EffectTypeScript.AttackIncrease)
+                if (type == EffectScriptType.AttackIncrease)
                 {
                     accuracy += 5 * GetEffectInteger(effect, 0);
                 }
-                else if (type == EffectTypeScript.AttackDecrease)
+                else if (type == EffectScriptType.AttackDecrease)
                 {
                     accuracy -= 5 * GetEffectInteger(effect, 0);
                 }
@@ -1532,7 +1527,7 @@ namespace SWLOR.Component.Combat.Service
         {
             var npcStats = new NPCStats();
 
-            var skin = GetItemInSlot(InventorySlot.CreatureArmor, npc);
+            var skin = GetItemInSlot(InventorySlotType.CreatureArmor, npc);
             if (!GetIsObjectValid(skin))
                 return npcStats;
 
@@ -1765,12 +1760,12 @@ namespace SWLOR.Component.Combat.Service
 
             var critMod = 0;
             var itemType = GetBaseItemType(rightHandWeapon);
-            var offhandType = GetBaseItemType(GetItemInSlot(InventorySlot.LeftHand, player));
+            var offhandType = GetBaseItemType(GetItemInSlot(InventorySlotType.LeftHand, player));
             if (ItemService.OneHandedMeleeItemTypes.Contains(itemType) || ItemService.ThrowingWeaponBaseItemTypes.Contains(itemType))
             {
                 if (ItemService.OneHandedMeleeItemTypes.Contains(offhandType))
                     critMod += PerkService.GetPerkLevel(player, PerkType.WailingBlows) * 3; // 15% for WB
-                else if(offhandType == BaseItem.Invalid || ItemService.ShieldBaseItemTypes.Contains(offhandType))
+                else if(offhandType == BaseItemType.Invalid || ItemService.ShieldBaseItemTypes.Contains(offhandType))
                     critMod += PerkService.GetPerkLevel(player, PerkType.Duelist);
             }
 
@@ -1880,7 +1875,7 @@ namespace SWLOR.Component.Combat.Service
         /// <param name="type">The type of saving throw.</param>
         /// <param name="offHandItem">The off hand item equipped to the left hand.</param>
         /// <returns>The base saving throw value</returns>
-        public int CalculateBaseSavingThrow(uint player, SavingThrow type, uint offHandItem = OBJECT_INVALID)
+        public int CalculateBaseSavingThrow(uint player, SavingThrowCategoryType type, uint offHandItem = OBJECT_INVALID)
         {
             if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                 return 0;
@@ -1903,7 +1898,7 @@ namespace SWLOR.Component.Combat.Service
         public void LoadNPCStats()
         {
             var self = OBJECT_SELF;
-            var skin = GetItemInSlot(InventorySlot.CreatureArmor, self);
+            var skin = GetItemInSlot(InventorySlotType.CreatureArmor, self);
 
             var maxHP = 0;
             for (var ip = GetFirstItemProperty(skin); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(skin))

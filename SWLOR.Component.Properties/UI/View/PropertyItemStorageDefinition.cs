@@ -34,8 +34,8 @@ namespace SWLOR.Component.Properties.UI.View
                             .SetHeight(20f)
                             .BindText(model => model.Instructions)
                             .BindColor(model => model.InstructionsColor)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetVerticalAlign(NuiVerticalAlign.Middle);
+                            .SetHorizontalAlign(NuiHorizontalAlignType.Left)
+                            .SetVerticalAlign(NuiVerticalAlignType.Middle);
                     });
 
                     colHeader.AddRow(rowHeader =>
@@ -43,8 +43,8 @@ namespace SWLOR.Component.Properties.UI.View
                         rowHeader.AddLabel()
                             .SetHeight(20f)
                             .BindText(model => model.ItemCount)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetVerticalAlign(NuiVerticalAlign.Middle);
+                            .SetHorizontalAlign(NuiHorizontalAlignType.Left)
+                            .SetVerticalAlign(NuiVerticalAlignType.Middle);
                     });
 
                     colHeader.AddRow(rowHeader =>

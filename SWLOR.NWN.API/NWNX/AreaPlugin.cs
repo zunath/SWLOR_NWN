@@ -1,7 +1,6 @@
 using System.Numerics;
 using NWN.Core.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Area;
 
 namespace SWLOR.NWN.API.NWNX
 {
@@ -66,10 +65,10 @@ namespace SWLOR.NWN.API.NWNX
         /// This affects the behavior of attack actions and combat mechanics.
         /// Use SetPVPSetting() to modify this value.
         /// </remarks>
-        public static PvPSetting GetPVPSetting(uint area)
+        public static PvPSettingType GetPVPSetting(uint area)
         {
             int result = global::NWN.Core.NWNX.AreaPlugin.GetPVPSetting(area);
-            return (PvPSetting)result;
+            return (PvPSettingType)result;
         }
 
         /// <summary>
@@ -82,7 +81,7 @@ namespace SWLOR.NWN.API.NWNX
         /// Changes take effect immediately and affect all creatures in the area.
         /// This setting overrides individual creature PvP settings within the area.
         /// </remarks>
-        public static void SetPVPSetting(uint area, PvPSetting pvpSetting)
+        public static void SetPVPSetting(uint area, PvPSettingType pvpSetting)
         {
             global::NWN.Core.NWNX.AreaPlugin.SetPVPSetting(area, (int)pvpSetting);
         }
@@ -310,10 +309,10 @@ namespace SWLOR.NWN.API.NWNX
         /// This affects the overall lighting and atmosphere of the area.
         /// Use SetDayNightCycle() to modify this setting.
         /// </remarks>
-        public static DayNightCycle GetDayNightCycle(uint area)
+        public static AreaDayNightCycleType GetDayNightCycle(uint area)
         {
             int result = global::NWN.Core.NWNX.AreaPlugin.GetDayNightCycle(area);
-            return (DayNightCycle)result;
+            return (AreaDayNightCycleType)result;
         }
 
         /// <summary>
@@ -326,7 +325,7 @@ namespace SWLOR.NWN.API.NWNX
         /// Changes take effect immediately and affect the overall lighting and atmosphere.
         /// This setting can create immersive day/night transitions in the area.
         /// </remarks>
-        public static void SetDayNightCycle(uint area, DayNightCycle type)
+        public static void SetDayNightCycle(uint area, AreaDayNightCycleType type)
         {
             global::NWN.Core.NWNX.AreaPlugin.SetDayNightCycle(area, (int)type);
         }

@@ -13,7 +13,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nValidObjectTypes">The valid object types that can be targeted</param>
         /// <param name="nMouseCursorId">The mouse cursor to display when hovering over valid targets</param>
         /// <param name="nBadTargetCursor">The mouse cursor to display when hovering over invalid targets</param>
-        public static void EnterTargetingMode(uint oPC, ObjectType nValidObjectTypes = ObjectType.All, MouseCursor nMouseCursorId = MouseCursor.Magic, MouseCursor nBadTargetCursor = MouseCursor.NoMagic)
+        public static void EnterTargetingMode(uint oPC, ObjectType nValidObjectTypes = ObjectType.All, MouseCursorType nMouseCursorId = MouseCursorType.Magic, MouseCursorType nBadTargetCursor = MouseCursorType.NoMagic)
         {
             global::NWN.Core.NWScript.EnterTargetingMode(oPC, (int)nValidObjectTypes, (int)nMouseCursorId, (int)nBadTargetCursor);
         }
@@ -58,7 +58,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="fSizeX">Size X for the targeting area</param>
         /// <param name="fSizeY">Size Y for the targeting area</param>
         /// <param name="nFlags">SPELL_TARGETING_FLAGS_* constants</param>
-        public static void SetSpellTargetingData(uint oPlayer, Spell nSpell, int nShape, float fSizeX, float fSizeY, int nFlags)
+        public static void SetSpellTargetingData(uint oPlayer, SpellType nSpell, int nShape, float fSizeX, float fSizeY, int nFlags)
         {
             global::NWN.Core.NWScript.SetSpellTargetingData(oPlayer, (int)nSpell, nShape, fSizeX, fSizeY, nFlags);
         }
@@ -82,7 +82,7 @@ namespace SWLOR.NWN.API.NWScript
             float fSizeY,
             int nFlags,
             float fRange = 0.0f,
-            Spell nSpell = Spell.AllSpells,
+            SpellType nSpell = SpellType.AllSpells,
             FeatType nFeat = FeatType.Invalid)
         {
             global::NWN.Core.NWScript.SetEnterTargetingModeData(oPlayer, nShape, fSizeX, fSizeY, nFlags, fRange, (int)nSpell, (int)nFeat);

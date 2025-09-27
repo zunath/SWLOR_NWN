@@ -2,8 +2,6 @@ using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Creature;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Character.ValueObjects;
 using SWLOR.Shared.Domain.Combat.Contracts;
@@ -50,7 +48,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beasts
                 return;
 
             EnmityService.ModifyEnmity(activator, target, baseEnmity);
-            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Howl_Odd), target);
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Fnf_Howl_Odd), target);
         }
 
         private void ImpactAOE(uint activator, Location location, int baseEnmity)
@@ -81,7 +79,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beasts
                 .Level(1)
                 .HasRecastDelay(RecastGroup.Anger, 30f)
                 .HasActivationDelay(1f)
-                .UsesAnimation(Animation.FireForgetTaunt)
+                .UsesAnimation(AnimationType.FireForgetTaunt)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasMaxRange(30f)
@@ -99,7 +97,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beasts
                 .Level(2)
                 .HasRecastDelay(RecastGroup.Anger, 30f)
                 .HasActivationDelay(1f)
-                .UsesAnimation(Animation.FireForgetTaunt)
+                .UsesAnimation(AnimationType.FireForgetTaunt)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasMaxRange(30f)
@@ -117,7 +115,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beasts
                 .Level(3)
                 .HasRecastDelay(RecastGroup.Anger, 30f)
                 .HasActivationDelay(1f)
-                .UsesAnimation(Animation.FireForgetTaunt)
+                .UsesAnimation(AnimationType.FireForgetTaunt)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasMaxRange(30f)
@@ -136,7 +134,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beasts
                 .Level(4)
                 .HasRecastDelay(RecastGroup.AOEAnger, 40f)
                 .HasActivationDelay(1f)
-                .UsesAnimation(Animation.FireForgetTaunt)
+                .UsesAnimation(AnimationType.FireForgetTaunt)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasMaxRange(15f)
@@ -153,7 +151,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beasts
                 .Level(5)
                 .HasRecastDelay(RecastGroup.AOEAnger, 40f)
                 .HasActivationDelay(1f)
-                .UsesAnimation(Animation.FireForgetTaunt)
+                .UsesAnimation(AnimationType.FireForgetTaunt)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasMaxRange(15f)

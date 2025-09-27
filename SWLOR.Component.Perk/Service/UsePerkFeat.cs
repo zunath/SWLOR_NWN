@@ -4,8 +4,6 @@ using SWLOR.Component.Perk.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Item;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
@@ -59,11 +57,11 @@ namespace SWLOR.Component.Perk.Service
             if (!ability.BreaksStealth) return;
 
             // If activator is in stealth mode, force them out of stealth mode.
-            if (GetActionMode(activator, ActionMode.Stealth))
-                SetActionMode(activator, ActionMode.Stealth, false);
+            if (GetActionMode(activator, ActionModeType.Stealth))
+                SetActionMode(activator, ActionModeType.Stealth, false);
 
             // Remove invisibility effects (stealth generator)
-            RemoveEffect(activator, EffectTypeScript.Invisibility, EffectTypeScript.ImprovedInvisibility);
+            RemoveEffect(activator, EffectScriptType.Invisibility, EffectScriptType.ImprovedInvisibility);
         }
 
         /// <summary>
@@ -189,7 +187,7 @@ namespace SWLOR.Component.Perk.Service
                 var penaltyMessage = string.Empty;
                 for (var slot = 0; slot < NumberOfInventorySlots; slot++)
                 {
-                    var item = GetItemInSlot((InventorySlot)slot, activator);
+                    var item = GetItemInSlot((InventorySlotType)slot, activator);
                     var armorType = ItemService.GetArmorType(item);
                     if (armorType == ArmorType.Heavy && !ability.IgnoreHeavyArmorPenalty)
                     {
@@ -215,14 +213,14 @@ namespace SWLOR.Component.Perk.Service
             void ProcessAnimationAndVisualEffects(float delay)
             {
                 // Force out of stealth
-                if (GetActionMode(activator, ActionMode.Stealth))
-                    SetActionMode(activator, ActionMode.Stealth, false);
+                if (GetActionMode(activator, ActionModeType.Stealth))
+                    SetActionMode(activator, ActionModeType.Stealth, false);
 
                 AssignCommand(activator, () => ClearAllActions());
                 BiowarePosition.TurnToFaceObject(target, activator);
 
                 // Display a casting visual effect if one has been specified.
-                if (ability.ActivationVisualEffect != VisualEffect.None)
+                if (ability.ActivationVisualEffect != VisualEffectType.None)
                 {
                     var vfx = TagEffect(EffectVisualEffect(ability.ActivationVisualEffect), "ACTIVATION_VFX");
                     ApplyEffectToObject(DurationType.Temporary, vfx, activator, delay + 0.2f);
@@ -230,7 +228,7 @@ namespace SWLOR.Component.Perk.Service
 
                 // Casted types play an animation of casting.
                 if (ability.ActivationType == AbilityActivationType.Casted &&
-                    ability.AnimationType != Animation.Invalid)
+                    ability.AnimationType != AnimationType.Invalid)
                 {
                     var animationLength = delay - 0.2f;
                     if (animationLength < 0f)
@@ -295,7 +293,7 @@ namespace SWLOR.Component.Perk.Service
                 
                 if (!GetIsPC(activator))
                 {
-                    var combatRoundEndScript = GetEventScript(activator, EventScript.Creature_OnEndCombatRound);
+                    var combatRoundEndScript = GetEventScript(activator, EventScriptType.Creature_OnEndCombatRound);
                     ExecuteScript(combatRoundEndScript, activator);
                 }
             }
@@ -406,7 +404,7 @@ namespace SWLOR.Component.Perk.Service
             var item = GetSpellCastItem();
 
             // If this method was triggered by our own armor (from getting hit), return. 
-            if (GetBaseItemType(item) == BaseItem.Armor) return;
+            if (GetBaseItemType(item) == BaseItemType.Armor) return;
 
             var activeWeaponAbility = (FeatType)GetLocalInt(activator, ActiveAbilityFeatIdName);
             var activeAbilityEffectivePerkLevel = GetLocalInt(activator, ActiveAbilityEffectivePerkLevelName);

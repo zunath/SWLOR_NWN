@@ -101,13 +101,13 @@ namespace SWLOR.Component.Communication.Service
 
             switch (eventScript)
             {
-                case EventScript.Placeable_OnUsed:
+                case EventScriptType.Placeable_OnUsed:
                     player = GetLastUsedBy();
                     break;
-                case EventScript.Creature_OnDialogue:
+                case EventScriptType.Creature_OnDialogue:
                     player = GetPCSpeaker();
                     break;
-                case EventScript.Door_OnFailToOpen:
+                case EventScriptType.Door_OnFailToOpen:
                     player = GetClickingObject();
                     break;
             }

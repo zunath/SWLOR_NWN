@@ -97,11 +97,11 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oAttacker">The attacker object (defaults to OBJECT_SELF)</param>
         /// <returns>0 on a miss, 1 on a hit, and 2 on a critical hit</returns>
         /// <remarks>This is not an action, and it assumes the attacker is already within range of the target.</remarks>
-        public static TouchAttackReturn TouchAttackMelee(uint oTarget, bool bDisplayFeedback = true, uint oAttacker = OBJECT_INVALID)
+        public static TouchAttackReturnType TouchAttackMelee(uint oTarget, bool bDisplayFeedback = true, uint oAttacker = OBJECT_INVALID)
         {
             if (oAttacker == OBJECT_INVALID)
                 oAttacker = OBJECT_SELF;
-            return (TouchAttackReturn)global::NWN.Core.NWScript.TouchAttackMelee(oTarget, bDisplayFeedback ? 1 : 0, oAttacker);
+            return (TouchAttackReturnType)global::NWN.Core.NWScript.TouchAttackMelee(oTarget, bDisplayFeedback ? 1 : 0, oAttacker);
         }
 
         /// <summary>
@@ -111,11 +111,11 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="bDisplayFeedback">Whether to display feedback (default: true)</param>
         /// <param name="oAttacker">The attacker object (defaults to OBJECT_SELF)</param>
         /// <returns>0 on a miss, 1 on a hit, and 2 on a critical hit</returns>
-        public static TouchAttackReturn TouchAttackRanged(uint oTarget, bool bDisplayFeedback = true, uint oAttacker = OBJECT_INVALID)
+        public static TouchAttackReturnType TouchAttackRanged(uint oTarget, bool bDisplayFeedback = true, uint oAttacker = OBJECT_INVALID)
         {
             if (oAttacker == OBJECT_INVALID)
                 oAttacker = OBJECT_SELF;
-            return (TouchAttackReturn)global::NWN.Core.NWScript.TouchAttackRanged(oTarget, bDisplayFeedback ? 1 : 0, oAttacker);
+            return (TouchAttackReturnType)global::NWN.Core.NWScript.TouchAttackRanged(oTarget, bDisplayFeedback ? 1 : 0, oAttacker);
         }
 
         /// <summary>
@@ -124,11 +124,11 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oCreature">The creature to get the attack mode for (default: OBJECT_SELF)</param>
         /// <returns>The attack mode (COMBAT_MODE_* constants)</returns>
         /// <remarks>This only works when the creature is in combat.</remarks>
-        public static CombatMode GetLastAttackMode(uint oCreature = OBJECT_INVALID)
+        public static CombatModeType GetLastAttackMode(uint oCreature = OBJECT_INVALID)
         {
             if (oCreature == OBJECT_INVALID)
                 oCreature = OBJECT_SELF;
-            return (CombatMode)global::NWN.Core.NWScript.GetLastAttackMode(oCreature);
+            return (CombatModeType)global::NWN.Core.NWScript.GetLastAttackMode(oCreature);
         }
 
         /// <summary>

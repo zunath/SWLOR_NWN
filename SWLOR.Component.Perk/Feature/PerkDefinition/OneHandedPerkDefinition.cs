@@ -127,24 +127,24 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
 
                 .TriggerEquippedItem((player, item, slot, type, level) =>
                  {
-                     if (slot != InventorySlot.RightHand) return;
+                     if (slot != InventorySlotType.RightHand) return;
 
                      StatService.ApplyCritModifier(player, item);
                  })
                 .TriggerUnequippedItem((player, item, slot, type, level) =>
                 {
-                    if (slot != InventorySlot.RightHand) return;
+                    if (slot != InventorySlotType.RightHand) return;
 
                     StatService.ApplyCritModifier(player, OBJECT_INVALID);
                 })
                 .TriggerPurchase((player) =>
                 {
-                    var item = GetItemInSlot(InventorySlot.RightHand, player);
+                    var item = GetItemInSlot(InventorySlotType.RightHand, player);
                     StatService.ApplyCritModifier(player, item);
                 })
                 .TriggerRefund((player) =>
                 {
-                    var item = GetItemInSlot(InventorySlot.RightHand, player);
+                    var item = GetItemInSlot(InventorySlotType.RightHand, player);
                     StatService.ApplyCritModifier(player, item);
                 });
         }
@@ -162,24 +162,24 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
 
                 .TriggerEquippedItem((player, item, slot, type, level) =>
                  {
-                     if (slot != InventorySlot.RightHand) return;
+                     if (slot != InventorySlotType.RightHand) return;
 
                      StatService.ApplyCritModifier(player, item);
                  })
                 .TriggerUnequippedItem((player, item, slot, type, level) =>
                 {
-                    if (slot != InventorySlot.RightHand) return;
+                    if (slot != InventorySlotType.RightHand) return;
 
                     StatService.ApplyCritModifier(player, OBJECT_INVALID);
                 })
                 .TriggerPurchase((player) =>
                 {
-                    var item = GetItemInSlot(InventorySlot.RightHand, player);
+                    var item = GetItemInSlot(InventorySlotType.RightHand, player);
                     StatService.ApplyCritModifier(player, item);
                 })
                 .TriggerRefund((player) =>
                 {
-                    var item = GetItemInSlot(InventorySlot.RightHand, player);
+                    var item = GetItemInSlot(InventorySlotType.RightHand, player);
                     StatService.ApplyCritModifier(player, item);
                 });
         }
@@ -190,27 +190,27 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .Name("Shield Master")
                 .TriggerEquippedItem((player, item, slot, type, level) =>
                 {
-                    if (slot == InventorySlot.RightHand)
+                    if (slot == InventorySlotType.RightHand)
                     {
-                        var offHand = GetItemInSlot(InventorySlot.LeftHand, player);
+                        var offHand = GetItemInSlot(InventorySlotType.LeftHand, player);
                         StatService.ApplyAttacksPerRound(player, item, offHand);
                     }
-                    else if (slot == InventorySlot.LeftHand)
+                    else if (slot == InventorySlotType.LeftHand)
                     {
-                        var mainHand = GetItemInSlot(InventorySlot.RightHand, player);
+                        var mainHand = GetItemInSlot(InventorySlotType.RightHand, player);
                         StatService.ApplyAttacksPerRound(player, mainHand, item);
                     }
                 })
                 .TriggerUnequippedItem((player, item, slot, type, level) =>
                 {
-                    if (slot == InventorySlot.RightHand)
+                    if (slot == InventorySlotType.RightHand)
                     {
-                        var offHand = GetItemInSlot(InventorySlot.LeftHand, player);
+                        var offHand = GetItemInSlot(InventorySlotType.LeftHand, player);
                         StatService.ApplyAttacksPerRound(player, item, offHand);
                     }
-                    else if (slot == InventorySlot.LeftHand)
+                    else if (slot == InventorySlotType.LeftHand)
                     {
-                        var mainHand = GetItemInSlot(InventorySlot.RightHand, player);
+                        var mainHand = GetItemInSlot(InventorySlotType.RightHand, player);
                         StatService.ApplyAttacksPerRound(player, mainHand, item);
                     }
 
@@ -218,14 +218,14 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 })
                 .TriggerPurchase((player) =>
                 {
-                    var mainHand = GetItemInSlot(InventorySlot.RightHand, player);
-                    var offHand = GetItemInSlot(InventorySlot.LeftHand, player);
+                    var mainHand = GetItemInSlot(InventorySlotType.RightHand, player);
+                    var offHand = GetItemInSlot(InventorySlotType.LeftHand, player);
                     StatService.ApplyAttacksPerRound(player, mainHand, offHand);
                 })
                 .TriggerRefund((player) =>
                 {
-                    var mainHand = GetItemInSlot(InventorySlot.RightHand, player);
-                    var offHand = GetItemInSlot(InventorySlot.LeftHand, player);
+                    var mainHand = GetItemInSlot(InventorySlotType.RightHand, player);
+                    var offHand = GetItemInSlot(InventorySlotType.LeftHand, player);
                     StatService.ApplyAttacksPerRound(player, mainHand, offHand);
                 })
 
@@ -281,9 +281,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
         {
             void AdjustSavingThrows(uint player, uint item)
             {
-                CreaturePlugin.SetBaseSavingThrow(player, SavingThrow.Fortitude, StatService.CalculateBaseSavingThrow(player, SavingThrow.Fortitude, item));
-                CreaturePlugin.SetBaseSavingThrow(player, SavingThrow.Will, StatService.CalculateBaseSavingThrow(player, SavingThrow.Will, item));
-                CreaturePlugin.SetBaseSavingThrow(player, SavingThrow.Reflex, StatService.CalculateBaseSavingThrow(player, SavingThrow.Reflex, item));
+                CreaturePlugin.SetBaseSavingThrow(player, SavingThrowCategoryType.Fortitude, StatService.CalculateBaseSavingThrow(player, SavingThrowCategoryType.Fortitude, item));
+                CreaturePlugin.SetBaseSavingThrow(player, SavingThrowCategoryType.Will, StatService.CalculateBaseSavingThrow(player, SavingThrowCategoryType.Will, item));
+                CreaturePlugin.SetBaseSavingThrow(player, SavingThrowCategoryType.Reflex, StatService.CalculateBaseSavingThrow(player, SavingThrowCategoryType.Reflex, item));
             }
 
             builder.Create(PerkCategoryType.OneHandedShield, PerkType.ShieldResistance)
@@ -304,7 +304,7 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .TriggerEquippedItem((player, item, slot, type, level) =>
                 {
                     var itemType = GetBaseItemType(item);
-                    if (slot == InventorySlot.LeftHand &&
+                    if (slot == InventorySlotType.LeftHand &&
                         ItemService.ShieldBaseItemTypes.Contains(itemType))
                     {
                         AdjustSavingThrows(player, item);
@@ -313,7 +313,7 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .TriggerUnequippedItem((player, item, slot, type, level) =>
                 {
                     var itemType = GetBaseItemType(item);
-                    if (slot == InventorySlot.LeftHand &&
+                    if (slot == InventorySlotType.LeftHand &&
                         ItemService.ShieldBaseItemTypes.Contains(itemType))
                     {
                         AdjustSavingThrows(player, OBJECT_INVALID);
@@ -321,12 +321,12 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 })
                 .TriggerPurchase((player) =>
                 {
-                    var item = GetItemInSlot(InventorySlot.LeftHand, player);
+                    var item = GetItemInSlot(InventorySlotType.LeftHand, player);
                     AdjustSavingThrows(player, item);
                 })
                 .TriggerRefund((player) =>
                 {
-                    var item = GetItemInSlot(InventorySlot.LeftHand, player);
+                    var item = GetItemInSlot(InventorySlotType.LeftHand, player);
                     AdjustSavingThrows(player, item);
                 });
         }
@@ -429,24 +429,24 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .Name("Vibroblade Mastery")
                 .TriggerEquippedItem((player, item, slot, type, level) =>
                 {
-                    if (slot != InventorySlot.RightHand) return;
+                    if (slot != InventorySlotType.RightHand) return;
 
                     StatService.ApplyAttacksPerRound(player, item);
                 })
                 .TriggerUnequippedItem((player, item, slot, type, level) =>
                 {
-                    if (slot != InventorySlot.RightHand) return;
+                    if (slot != InventorySlotType.RightHand) return;
 
                     StatService.ApplyAttacksPerRound(player, OBJECT_INVALID);
                 })
                 .TriggerPurchase((player) =>
                 {
-                    var item = GetItemInSlot(InventorySlot.RightHand, player);
+                    var item = GetItemInSlot(InventorySlotType.RightHand, player);
                     StatService.ApplyAttacksPerRound(player, item);
                 })
                 .TriggerRefund((player) =>
                 {
-                    var item = GetItemInSlot(InventorySlot.RightHand, player);
+                    var item = GetItemInSlot(InventorySlotType.RightHand, player);
                     StatService.ApplyAttacksPerRound(player, item);
                 })
 
@@ -588,24 +588,24 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .Name("Finesse Vibroblade Mastery")
                 .TriggerEquippedItem((player, item, slot, type, level) =>
                 {
-                    if (slot != InventorySlot.RightHand) return;
+                    if (slot != InventorySlotType.RightHand) return;
 
                     StatService.ApplyAttacksPerRound(player, item);
                 })
                 .TriggerUnequippedItem((player, item, slot, type, level) =>
                 {
-                    if (slot != InventorySlot.RightHand) return;
+                    if (slot != InventorySlotType.RightHand) return;
 
                     StatService.ApplyAttacksPerRound(player, OBJECT_INVALID);
                 })
                 .TriggerPurchase((player) =>
                 {
-                    var item = GetItemInSlot(InventorySlot.RightHand, player);
+                    var item = GetItemInSlot(InventorySlotType.RightHand, player);
                     StatService.ApplyAttacksPerRound(player, item);
                 })
                 .TriggerRefund((player) =>
                 {
-                    var item = GetItemInSlot(InventorySlot.RightHand, player);
+                    var item = GetItemInSlot(InventorySlotType.RightHand, player);
                     StatService.ApplyAttacksPerRound(player, item);
                 })
 
@@ -761,24 +761,24 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .Name("Lightsaber Mastery")
                 .TriggerEquippedItem((player, item, slot, type, level) =>
                 {
-                    if (slot != InventorySlot.RightHand) return;
+                    if (slot != InventorySlotType.RightHand) return;
 
                     StatService.ApplyAttacksPerRound(player, item);
                 })
                 .TriggerUnequippedItem((player, item, slot, type, level) =>
                 {
-                    if (slot != InventorySlot.RightHand) return;
+                    if (slot != InventorySlotType.RightHand) return;
 
                     StatService.ApplyAttacksPerRound(player, OBJECT_INVALID);
                 })
                 .TriggerPurchase((player) =>
                 {
-                    var item = GetItemInSlot(InventorySlot.RightHand, player);
+                    var item = GetItemInSlot(InventorySlotType.RightHand, player);
                     StatService.ApplyAttacksPerRound(player, item);
                 })
                 .TriggerRefund((player) =>
                 {
-                    var item = GetItemInSlot(InventorySlot.RightHand, player);
+                    var item = GetItemInSlot(InventorySlotType.RightHand, player);
                     StatService.ApplyAttacksPerRound(player, item);
                 })
 

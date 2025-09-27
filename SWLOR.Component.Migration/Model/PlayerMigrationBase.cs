@@ -48,11 +48,11 @@ namespace SWLOR.Component.Migration.Model
             // Unequip items
             for (var index = 0; index < NumberOfInventorySlots; index++)
             {
-                var slot = (InventorySlot)index;
-                if (slot == InventorySlot.CreatureArmor ||
-                    slot == InventorySlot.CreatureBite ||
-                    slot == InventorySlot.CreatureLeft ||
-                    slot == InventorySlot.CreatureRight)
+                var slot = (InventorySlotType)index;
+                if (slot == InventorySlotType.CreatureArmor ||
+                    slot == InventorySlotType.CreatureBite ||
+                    slot == InventorySlotType.CreatureLeft ||
+                    slot == InventorySlotType.CreatureRight)
                     continue;
 
                 var item = GetItemInSlot(slot, player);

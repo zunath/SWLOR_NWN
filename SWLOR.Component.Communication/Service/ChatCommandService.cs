@@ -33,7 +33,7 @@ namespace SWLOR.Component.Communication.Service
 
         public GuiBindingList<string> EmoteNames { get; } = new();
         public GuiBindingList<string> EmoteDescriptions { get; } = new();
-        public List<Animation> EmoteAnimations { get; } = new();
+        public List<AnimationType> EmoteAnimations { get; } = new();
         public GuiBindingList<bool> EmoteIsLooping { get; } = new();
 
         public ChatCommandService(IAppSettings appSettings, IServiceProvider serviceProvider)

@@ -14,9 +14,7 @@ using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
 using ClassType = SWLOR.NWN.API.NWScript.Enum.ClassType;
-using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
 using RacialType = SWLOR.NWN.API.NWScript.Enum.RacialType;
-using SavingThrow = SWLOR.NWN.API.NWScript.Enum.SavingThrow;
 
 namespace SWLOR.Component.Character.UI.ViewModel
 {
@@ -314,13 +312,13 @@ namespace SWLOR.Component.Character.UI.ViewModel
                 AssignCommand(Player, () => ClearAllActions());
                 for (var index = 0; index < NumberOfInventorySlots; index++)
                 {
-                    var slot = (InventorySlot)index;
+                    var slot = (InventorySlotType)index;
                     var item = GetItemInSlot(slot, Player);
                     if (GetIsObjectValid(item)
-                        && slot != InventorySlot.CreatureArmor 
-                        && slot != InventorySlot.CreatureBite
-                        && slot != InventorySlot.CreatureLeft
-                        && slot != InventorySlot.CreatureRight)
+                        && slot != InventorySlotType.CreatureArmor 
+                        && slot != InventorySlotType.CreatureBite
+                        && slot != InventorySlotType.CreatureLeft
+                        && slot != InventorySlotType.CreatureRight)
                     {
                         AssignCommand(Player, () =>
                         {
@@ -396,9 +394,9 @@ namespace SWLOR.Component.Character.UI.ViewModel
                 CreaturePlugin.SetRawAbilityScore(Player, AbilityType.Social, 10);
                 CreaturePlugin.SetBaseAttackBonus(Player, 1);
 
-                CreaturePlugin.SetBaseSavingThrow(Player, SavingThrow.Fortitude, 0);
-                CreaturePlugin.SetBaseSavingThrow(Player, SavingThrow.Will, 0);
-                CreaturePlugin.SetBaseSavingThrow(Player, SavingThrow.Reflex, 0);
+                CreaturePlugin.SetBaseSavingThrow(Player, SavingThrowCategoryType.Fortitude, 0);
+                CreaturePlugin.SetBaseSavingThrow(Player, SavingThrowCategoryType.Will, 0);
+                CreaturePlugin.SetBaseSavingThrow(Player, SavingThrowCategoryType.Reflex, 0);
 
                 dbPlayer.BaseStats[AbilityType.Might] = CreaturePlugin.GetRawAbilityScore(Player, AbilityType.Might);
                 dbPlayer.BaseStats[AbilityType.Perception] = CreaturePlugin.GetRawAbilityScore(Player, AbilityType.Perception);

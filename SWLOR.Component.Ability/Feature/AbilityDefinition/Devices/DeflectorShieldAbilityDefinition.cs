@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Character.ValueObjects;
 using SWLOR.Shared.Domain.Combat.Contracts;
@@ -74,12 +73,12 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
             RemoveEffectByTag(target, Tier1Tag, Tier2Tag, Tier3Tag);
 
             var maxHP = (int)(GetMaxHitPoints(target) * percent);
-            var effect = EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Cyan_Blue);
+            var effect = EffectVisualEffect(VisualEffectType.Vfx_Dur_Aura_Pulse_Cyan_Blue);
             effect = EffectLinkEffects(effect, EffectTemporaryHitpoints(maxHP));
             effect = TagEffect(effect, tag);
 
             ApplyEffectToObject(DurationType.Temporary, effect, target, duration);
-            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Ac_Bonus), target);
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Imp_Ac_Bonus), target);
         }
 
         private void DeflectorShield1(IAbilityBuilder builder)
@@ -90,7 +89,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                 .HasRecastDelay(RecastGroup.DeflectorShield, 600f)
                 .HasActivationDelay(3f)
                 .RequirementStamina(5)
-                .UsesAnimation(Animation.Kneel)
+                .UsesAnimation(AnimationType.Kneel)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation((activator, target, level, location) => Validation(target, 1))
@@ -108,7 +107,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                 .HasRecastDelay(RecastGroup.DeflectorShield, 600f)
                 .HasActivationDelay(3f)
                 .RequirementStamina(7)
-                .UsesAnimation(Animation.Kneel)
+                .UsesAnimation(AnimationType.Kneel)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation((activator, target, level, location) => Validation(target, 2))
@@ -126,7 +125,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                 .HasRecastDelay(RecastGroup.DeflectorShield, 600f)
                 .HasActivationDelay(3f)
                 .RequirementStamina(9)
-                .UsesAnimation(Animation.Kneel)
+                .UsesAnimation(AnimationType.Kneel)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation((activator, target, level, location) => Validation(target, 3))

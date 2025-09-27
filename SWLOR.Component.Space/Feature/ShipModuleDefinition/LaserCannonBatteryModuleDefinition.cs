@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Space.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Combat.Contracts;
@@ -80,7 +79,7 @@ namespace SWLOR.Component.Space.Feature.ShipModuleDefinition
                 var attack = SpaceService.GetShipAttack(activator, attackBonus);
 
                 var moduleDMG = dmg + moduleBonus;
-                var missile = EffectVisualEffect(VisualEffect.Mirv_StarWars_Bolt2);
+                var missile = EffectVisualEffect(VisualEffectType.Mirv_StarWars_Bolt2);
 
                 for (var i = 0; i < 9; i++)
                 {
@@ -89,7 +88,7 @@ namespace SWLOR.Component.Space.Feature.ShipModuleDefinition
                     {
                         if (!GetIsDead(activator))
                         {
-                            var nearbyTarget = GetFirstObjectInShape(Shape.Sphere, 20f, GetLocation(activator), true, ObjectType.Creature);
+                            var nearbyTarget = GetFirstObjectInShape(ShapeType.Sphere, 20f, GetLocation(activator), true, ObjectType.Creature);
                             while (GetIsObjectValid(nearbyTarget))
                             {
                                 if (nearbyTarget != activator && 
@@ -124,7 +123,7 @@ namespace SWLOR.Component.Space.Feature.ShipModuleDefinition
                                     EnmityService.ModifyEnmity(activator, nearbyTarget, damage);
                                     CombatPointService.AddCombatPoint(activator, nearbyTarget, SkillType.Piloting);
                                 }
-                                nearbyTarget = GetNextObjectInShape(Shape.Sphere, 20f, GetLocation(activator), true, ObjectType.Creature);
+                                nearbyTarget = GetNextObjectInShape(ShapeType.Sphere, 20f, GetLocation(activator), true, ObjectType.Creature);
                             }
                         }
                     });

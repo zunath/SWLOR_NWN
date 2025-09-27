@@ -99,7 +99,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nAnimation">The animation to play (ANIMATION_* constant)</param>
         /// <param name="fSpeed">Speed of the animation (default: 1.0)</param>
         /// <param name="fDurationSeconds">Duration of the animation in seconds. This is not used for Fire and Forget animations (default: 0.0)</param>
-        public static void ActionPlayAnimation(Animation nAnimation, float fSpeed = 1.0f, float fDurationSeconds = 0.0f)
+        public static void ActionPlayAnimation(AnimationType nAnimation, float fSpeed = 1.0f, float fDurationSeconds = 0.0f)
         {
             global::NWN.Core.NWScript.ActionPlayAnimation((int)nAnimation, fSpeed, fDurationSeconds);
         }
@@ -114,7 +114,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nDomainLevel">Domain level (default: 0)</param>
         /// <param name="nProjectilePathType">The projectile path type (default: ProjectilePathType.Default)</param>
         /// <param name="bInstantSpell">If true, the spell is cast immediately, allowing simulation of high-level magic users with advance warning (default: false)</param>
-        public static void ActionCastSpellAtObject(Spell nSpell, uint oTarget, MetaMagic nMetaMagic = MetaMagic.Any,
+        public static void ActionCastSpellAtObject(SpellType nSpell, uint oTarget, MetaMagicType nMetaMagic = MetaMagicType.Any,
             bool nCheat = false, int nDomainLevel = 0,
             ProjectilePathType nProjectilePathType = ProjectilePathType.Default, bool bInstantSpell = false)
         {
@@ -194,7 +194,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nStrRef">Reference of the string in the talk table</param>
         /// <param name="nTalkVolume">The talk volume (TALKVOLUME_* constant) (default: TalkVolume.Talk)</param>
-        public static void ActionSpeakStringByStrRef(int nStrRef, TalkVolume nTalkVolume = TalkVolume.Talk)
+        public static void ActionSpeakStringByStrRef(int nStrRef, TalkVolumeType nTalkVolume = TalkVolumeType.Talk)
         {
             global::NWN.Core.NWScript.ActionSpeakStringByStrRef(nStrRef, (int)nTalkVolume);
         }
@@ -216,7 +216,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oTarget">The target to use the skill on</param>
         /// <param name="nSubSkill">The subskill to use (SUBSKILL_* constant) (default: SubSkill.None)</param>
         /// <param name="oItemUsed">Item to use in conjunction with the skill (default: OBJECT_INVALID)</param>
-        public static void ActionUseSkill(NWNSkillType nSkill, uint oTarget, SubSkill nSubSkill = SubSkill.None,
+        public static void ActionUseSkill(NWNSkillType nSkill, uint oTarget, SubSkillType nSubSkill = SubSkillType.None,
             uint oItemUsed = OBJECT_INVALID)
         {
             global::NWN.Core.NWScript.ActionUseSkill((int)nSkill, oTarget, (int)nSubSkill, oItemUsed);

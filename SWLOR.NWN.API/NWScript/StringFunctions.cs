@@ -191,7 +191,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nStrRef">The string reference to look up</param>
         /// <param name="nGender">The gender for gender-specific strings</param>
         /// <returns>The string from the talk table</returns>
-        public static string GetStringByStrRef(int nStrRef, Gender nGender = Gender.Male)
+        public static string GetStringByStrRef(int nStrRef, GenderType nGender = GenderType.Male)
         {
             return global::NWN.Core.NWScript.GetStringByStrRef(nStrRef, (int)nGender);
         }
@@ -201,7 +201,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nNameType">The type of random name to be generated (NAME_*)</param>
         /// <returns>A random name of the specified type</returns>
-        public static string RandomName(Name nNameType = Name.FirstGenericMale)
+        public static string RandomName(NameType nNameType = NameType.FirstGenericMale)
         {
             return global::NWN.Core.NWScript.RandomName((int)nNameType);
         }

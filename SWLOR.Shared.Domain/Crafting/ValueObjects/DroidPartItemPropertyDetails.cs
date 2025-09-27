@@ -1,10 +1,10 @@
-using SWLOR.NWN.API.NWScript.Enum.Item.Property;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Shared.Domain.Crafting.ValueObjects
 {
     public class DroidPartItemPropertyDetails
     {
-        public DroidPartItemPropertySubType PartType { get; set; }
+        public ItemPropertyDroidPartSubType PartType { get; set; }
         public int Tier { get; set; }
         public int Level { get; set; }
         public int HP { get; set; }
@@ -23,7 +23,7 @@ namespace SWLOR.Shared.Domain.Crafting.ValueObjects
 
         public DroidPartItemPropertyDetails()
         {
-            PartType = DroidPartItemPropertySubType.Invalid;
+            PartType = ItemPropertyDroidPartSubType.Invalid;
         }
     }
 }

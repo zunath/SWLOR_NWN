@@ -1,5 +1,4 @@
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Creature;
 
 namespace SWLOR.Shared.Domain.Crafting.ValueObjects
 {
@@ -13,10 +12,10 @@ namespace SWLOR.Shared.Domain.Crafting.ValueObjects
         public string SerializedLegs { get; set; }
         public int PortraitId { get; set; }
         public int SoundSetId { get; set; }
-        public Dictionary<CreaturePart, int> AppearanceParts { get; set; }
+        public Dictionary<CreaturePartType, int> AppearanceParts { get; set; }
         public List<DroidPerk> LearnedPerks { get; set; }
         public List<DroidPerk> ActivePerks { get; set; }
-        public Dictionary<InventorySlot, string> EquippedItems { get; set; }
+        public Dictionary<InventorySlotType, string> EquippedItems { get; set; }
         public Dictionary<string, string> Inventory { get; set; }
 
         public ConstructedDroid()
@@ -29,10 +28,10 @@ namespace SWLOR.Shared.Domain.Crafting.ValueObjects
             SerializedLegs = string.Empty;
             PortraitId = -1;
             SoundSetId = -1;
-            AppearanceParts = new Dictionary<CreaturePart, int>();
+            AppearanceParts = new Dictionary<CreaturePartType, int>();
             LearnedPerks = new List<DroidPerk>();
             ActivePerks = new List<DroidPerk>();
-            EquippedItems = new Dictionary<InventorySlot, string>();
+            EquippedItems = new Dictionary<InventorySlotType, string>();
             Inventory = new Dictionary<string, string>();
         }
     }

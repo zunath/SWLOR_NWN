@@ -41,7 +41,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nSpell">SPELL_* constant</param>
         /// <returns>The created spell talent</returns>
-        public static Talent TalentSpell(Spell nSpell)
+        public static Talent TalentSpell(SpellType nSpell)
         {
             return global::NWN.Core.NWScript.TalentSpell((int)nSpell);
         }
@@ -85,7 +85,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nCategory">TALENT_CATEGORY_* constant</param>
         /// <param name="oCreature">The creature to get the talent from (defaults to OBJECT_SELF)</param>
         /// <returns>A random talent from the specified category</returns>
-        public static Talent GetCreatureTalentRandom(TalentCategory nCategory, uint oCreature = OBJECT_INVALID)
+        public static Talent GetCreatureTalentRandom(TalentCategoryType nCategory, uint oCreature = OBJECT_INVALID)
         {
             if (oCreature == OBJECT_INVALID)
                 oCreature = OBJECT_SELF;
@@ -99,7 +99,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nCRMax">Challenge Rating of the talent</param>
         /// <param name="oCreature">The creature to get the talent from (defaults to OBJECT_SELF)</param>
         /// <returns>The best talent from the specified category</returns>
-        public static Talent GetCreatureTalentBest(TalentCategory nCategory, int nCRMax,
+        public static Talent GetCreatureTalentBest(TalentCategoryType nCategory, int nCRMax,
             uint oCreature = OBJECT_INVALID)
         {
             if (oCreature == OBJECT_INVALID)

@@ -80,7 +80,7 @@ namespace SWLOR.Component.Crafting.Feature
                 attempts++;
             }
 
-            AssignCommand(user, () => ActionPlayAnimation(Animation.LoopingGetLow, 1.0f, 2.0f));
+            AssignCommand(user, () => ActionPlayAnimation(AnimationType.LoopingGetLow, 1.0f, 2.0f));
 
             var lootTable = LootService.GetLootTableByName(lootTableName);
             var dc = 6;

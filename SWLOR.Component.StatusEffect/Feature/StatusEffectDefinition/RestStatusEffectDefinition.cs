@@ -100,7 +100,7 @@ namespace SWLOR.Component.StatusEffect.Feature.StatusEffectDefinition
                 {
                     AssignCommand(target, () =>
                     {
-                        ActionPlayAnimation(Animation.LoopingSitCross, 1f, 9999f);
+                        ActionPlayAnimation(AnimationType.LoopingSitCross, 1f, 9999f);
                     });
 
                     // Store position the player is at when the rest effect is granted.

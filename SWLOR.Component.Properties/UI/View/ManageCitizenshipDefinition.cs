@@ -36,8 +36,8 @@ namespace SWLOR.Component.Properties.UI.View
                             {
                                 cell.AddLabel()
                                     .BindText(model => model.CityDetails)
-                                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                                    .SetVerticalAlign(NuiVerticalAlign.Middle);
+                                    .SetHorizontalAlign(NuiHorizontalAlignType.Left)
+                                    .SetVerticalAlign(NuiVerticalAlignType.Middle);
                             });
                         })
                             .BindRowCount(model => model.CityDetails);

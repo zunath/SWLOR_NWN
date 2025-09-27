@@ -2,7 +2,6 @@ using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.AI.Contracts;
 using SWLOR.Component.AI.Model;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.AI.Contracts;
 using SWLOR.Shared.Domain.AI.Enums;
@@ -49,7 +48,7 @@ namespace SWLOR.Component.AI.Service
         /// <param name="creature">The creature to process</param>
         public void ProcessCreatureHeartbeat(uint creature)
         {
-            if (GetAILevel(creature) == AILevel.VeryLow)
+            if (GetAILevel(creature) == AILevelType.VeryLow)
                 return;
 
             StatService.RestoreNPCStats(true);
@@ -189,7 +188,7 @@ namespace SWLOR.Component.AI.Service
             var self = GetAreaOfEffectCreator(creature);
 
             // Target is invisible
-            if (GetHasEffect(entering, EffectTypeScript.Invisibility, EffectTypeScript.ImprovedInvisibility))
+            if (GetHasEffect(entering, EffectScriptType.Invisibility, EffectScriptType.ImprovedInvisibility))
             {
                 return;
             }
@@ -240,7 +239,7 @@ namespace SWLOR.Component.AI.Service
         public void ProcessPerkAI(AIDefinitionType aiType, uint creature, bool usesEnmity)
         {
             // Petrified - do nothing else.
-            if (GetHasEffect(creature, EffectTypeScript.Petrify)) 
+            if (GetHasEffect(creature, EffectScriptType.Petrify)) 
                 return;
 
             // Attempt to target the highest enmity creature.
@@ -305,7 +304,7 @@ namespace SWLOR.Component.AI.Service
         /// <param name="effectType">The type of effect to look for.</param>
         /// <param name="creature">The creature to check</param>
         /// <returns>true if creature has the effect, false otherwise</returns>
-        private bool GetHasEffect(uint creature, EffectTypeScript effectType, params EffectTypeScript[] otherEffectTypes)
+        private bool GetHasEffect(uint creature, EffectScriptType effectType, params EffectScriptType[] otherEffectTypes)
         {
             var effect = GetFirstEffect(creature);
             while (GetIsEffectValid(effect))
@@ -328,7 +327,7 @@ namespace SWLOR.Component.AI.Service
         /// <param name="creature">The creature to add the effect to</param>
         private void LoadAggroEffect(uint creature)
         {
-            var effect = SupernaturalEffect(EffectAreaOfEffect(AreaOfEffect.CustomAoe, "crea_aggro_enter", string.Empty, "crea_aggro_exit"));
+            var effect = SupernaturalEffect(EffectAreaOfEffect(AreaOfEffectType.CustomAoe, "crea_aggro_enter", string.Empty, "crea_aggro_exit"));
             effect = TagEffect(effect, "AGGRO_AOE");
             ApplyEffectToObject(DurationType.Permanent, effect, creature);
         }
@@ -343,7 +342,7 @@ namespace SWLOR.Component.AI.Service
             // Index of standard VFX effects here: https://nwnlexicon.com/index.php?title=Vfx_dur
             var vfx = GetLocalInt(creature, "PERMANENT_VFX_ID");
             if (vfx > 0) 
-                ApplyEffectToObject(DurationType.Permanent, EffectVisualEffect((VisualEffect)vfx), creature);
+                ApplyEffectToObject(DurationType.Permanent, EffectVisualEffect((VisualEffectType)vfx), creature);
 
             // Cutscene paralysis - for statues.
             var paralyze = GetLocalInt(creature, "PARALYZE");
@@ -364,7 +363,7 @@ namespace SWLOR.Component.AI.Service
         private void ProcessFlags(uint creature)
         {
             // Certain effects should interrupt the random walk process.
-            var effects = new[] {EffectTypeScript.Dazed, EffectTypeScript.Petrify};
+            var effects = new[] {EffectScriptType.Dazed, EffectScriptType.Petrify};
             for (var effect = GetFirstEffect(creature); GetIsEffectValid(effect); effect = GetNextEffect(creature))
             {
                 if (effects.Contains(GetEffectType(effect)))

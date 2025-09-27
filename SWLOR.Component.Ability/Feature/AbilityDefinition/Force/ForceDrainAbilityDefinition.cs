@@ -31,7 +31,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .RequirementFP(2)
                 .IsConcentrationAbility(StatusEffectType.ForceDrain1)
                 .IsHostileAbility()
-                .UsesAnimation(Animation.LoopingConjure1)
+                .UsesAnimation(AnimationType.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }
 
@@ -46,7 +46,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .RequirementFP(3)
                 .IsConcentrationAbility(StatusEffectType.ForceDrain2)
                 .IsHostileAbility()
-                .UsesAnimation(Animation.LoopingConjure1)
+                .UsesAnimation(AnimationType.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }
 
@@ -61,7 +61,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .RequirementFP(4)
                 .IsConcentrationAbility(StatusEffectType.ForceDrain3)
                 .IsHostileAbility()
-                .UsesAnimation(Animation.LoopingConjure1)
+                .UsesAnimation(AnimationType.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }
 
@@ -76,7 +76,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .RequirementFP(5)
                 .IsConcentrationAbility(StatusEffectType.ForceDrain4)
                 .IsHostileAbility()
-                .UsesAnimation(Animation.LoopingConjure1)
+                .UsesAnimation(AnimationType.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }
 
@@ -90,7 +90,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .RequirementFP(6)
                 .IsConcentrationAbility(StatusEffectType.ForceDrain5)
                 .IsHostileAbility()
-                .UsesAnimation(Animation.LoopingConjure1)
+                .UsesAnimation(AnimationType.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }
     }

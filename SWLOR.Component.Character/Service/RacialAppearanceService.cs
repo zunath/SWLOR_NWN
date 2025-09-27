@@ -1,6 +1,5 @@
 using SWLOR.Component.Character.Feature.AppearanceDefinition.RacialAppearance;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.Shared.Domain.Character.Contracts;
 
 namespace SWLOR.Component.Character.Service
@@ -44,7 +43,7 @@ namespace SWLOR.Component.Character.Service
         /// <param name="creaturePart">The creature part to get the first value for</param>
         /// <param name="gender">The gender to get the appearance for (affects head selection)</param>
         /// <returns>The first integer value for the specified part, or 1 if not found</returns>
-        public int GetFirstRacialAppearanceValue(RacialType racialType, CreaturePart creaturePart, Gender gender)
+        public int GetFirstRacialAppearanceValue(RacialType racialType, CreaturePartType creaturePart, GenderType gender)
         {
             var appearanceType = ConvertRacialTypeToAppearanceType(racialType);
             
@@ -55,21 +54,21 @@ namespace SWLOR.Component.Character.Service
 
             return creaturePart switch
             {
-                CreaturePart.Head => GetGenderSpecificHead(racialAppearance, gender),
-                CreaturePart.Torso => racialAppearance.Torsos?.FirstOrDefault() ?? 1,
-                CreaturePart.Pelvis => racialAppearance.Pelvis?.FirstOrDefault() ?? 1,
-                CreaturePart.RightBicep => racialAppearance.RightBicep?.FirstOrDefault() ?? 1,
-                CreaturePart.RightForearm => racialAppearance.RightForearm?.FirstOrDefault() ?? 1,
-                CreaturePart.RightHand => racialAppearance.RightHand?.FirstOrDefault() ?? 1,
-                CreaturePart.RightThigh => racialAppearance.RightThigh?.FirstOrDefault() ?? 1,
-                CreaturePart.RightShin => racialAppearance.RightShin?.FirstOrDefault() ?? 1,
-                CreaturePart.RightFoot => racialAppearance.RightFoot?.FirstOrDefault() ?? 1,
-                CreaturePart.LeftBicep => racialAppearance.LeftBicep?.FirstOrDefault() ?? 1,
-                CreaturePart.LeftForearm => racialAppearance.LeftForearm?.FirstOrDefault() ?? 1,
-                CreaturePart.LeftHand => racialAppearance.LeftHand?.FirstOrDefault() ?? 1,
-                CreaturePart.LeftThigh => racialAppearance.LeftThigh?.FirstOrDefault() ?? 1,
-                CreaturePart.LeftShin => racialAppearance.LeftShin?.FirstOrDefault() ?? 1,
-                CreaturePart.LeftFoot => racialAppearance.LeftFoot?.FirstOrDefault() ?? 1,
+                CreaturePartType.Head => GetGenderSpecificHead(racialAppearance, gender),
+                CreaturePartType.Torso => racialAppearance.Torsos?.FirstOrDefault() ?? 1,
+                CreaturePartType.Pelvis => racialAppearance.Pelvis?.FirstOrDefault() ?? 1,
+                CreaturePartType.RightBicep => racialAppearance.RightBicep?.FirstOrDefault() ?? 1,
+                CreaturePartType.RightForearm => racialAppearance.RightForearm?.FirstOrDefault() ?? 1,
+                CreaturePartType.RightHand => racialAppearance.RightHand?.FirstOrDefault() ?? 1,
+                CreaturePartType.RightThigh => racialAppearance.RightThigh?.FirstOrDefault() ?? 1,
+                CreaturePartType.RightShin => racialAppearance.RightShin?.FirstOrDefault() ?? 1,
+                CreaturePartType.RightFoot => racialAppearance.RightFoot?.FirstOrDefault() ?? 1,
+                CreaturePartType.LeftBicep => racialAppearance.LeftBicep?.FirstOrDefault() ?? 1,
+                CreaturePartType.LeftForearm => racialAppearance.LeftForearm?.FirstOrDefault() ?? 1,
+                CreaturePartType.LeftHand => racialAppearance.LeftHand?.FirstOrDefault() ?? 1,
+                CreaturePartType.LeftThigh => racialAppearance.LeftThigh?.FirstOrDefault() ?? 1,
+                CreaturePartType.LeftShin => racialAppearance.LeftShin?.FirstOrDefault() ?? 1,
+                CreaturePartType.LeftFoot => racialAppearance.LeftFoot?.FirstOrDefault() ?? 1,
                 _ => 1 // Default fallback for unsupported parts
             };
         }
@@ -80,12 +79,12 @@ namespace SWLOR.Component.Character.Service
         /// <param name="racialAppearance">The racial appearance definition</param>
         /// <param name="gender">The gender to get the head for</param>
         /// <returns>The first head value for the specified gender, or 1 if not found</returns>
-        private static int GetGenderSpecificHead(IRacialAppearanceDefinition racialAppearance, Gender gender)
+        private static int GetGenderSpecificHead(IRacialAppearanceDefinition racialAppearance, GenderType gender)
         {
             return gender switch
             {
-                Gender.Male => racialAppearance.MaleHeads?.FirstOrDefault() ?? 1,
-                Gender.Female => racialAppearance.FemaleHeads?.FirstOrDefault() ?? 1,
+                GenderType.Male => racialAppearance.MaleHeads?.FirstOrDefault() ?? 1,
+                GenderType.Female => racialAppearance.FemaleHeads?.FirstOrDefault() ?? 1,
                 _ => racialAppearance.MaleHeads?.FirstOrDefault() ?? 1 // Default to male if unknown gender
             };
         }

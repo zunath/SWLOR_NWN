@@ -93,7 +93,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                 .HasRecastDelay(RecastGroup.Bombs, 60f)
                 .HasActivationDelay(3f)
                 .RequirementStamina(4)
-                .UsesAnimation(Animation.ThrowGrenade)
+                .UsesAnimation(AnimationType.ThrowGrenade)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .BreaksStealth()
@@ -104,7 +104,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                     ExplosiveAOEImpact(
                         activator,
                         targetLocation,
-                        AreaOfEffect.FogAcid,
+                        AreaOfEffectType.FogAcid,
                         "grenade_gas1_en",
                         "grenade_gas1_hb",
                         18f);
@@ -122,7 +122,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                 .HasRecastDelay(RecastGroup.Bombs, 60f)
                 .HasActivationDelay(3f)
                 .RequirementStamina(5)
-                .UsesAnimation(Animation.ThrowGrenade)
+                .UsesAnimation(AnimationType.ThrowGrenade)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .BreaksStealth()
@@ -133,7 +133,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                     ExplosiveAOEImpact(
                         activator,
                         targetLocation,
-                        AreaOfEffect.FogAcid,
+                        AreaOfEffectType.FogAcid,
                         "grenade_gas2_en",
                         "grenade_gas2_hb",
                         30f);
@@ -151,7 +151,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                 .HasRecastDelay(RecastGroup.Bombs, 60f)
                 .HasActivationDelay(3f)
                 .RequirementStamina(6)
-                .UsesAnimation(Animation.ThrowGrenade)
+                .UsesAnimation(AnimationType.ThrowGrenade)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .BreaksStealth()
@@ -162,7 +162,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                     ExplosiveAOEImpact(
                         activator,
                         targetLocation,
-                        AreaOfEffect.FogAcid,
+                        AreaOfEffectType.FogAcid,
                         "grenade_gas3_en",
                         "grenade_gas3_hb",
                         48f);

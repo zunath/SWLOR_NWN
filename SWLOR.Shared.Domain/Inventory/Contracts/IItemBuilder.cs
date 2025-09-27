@@ -55,7 +55,7 @@ public interface IItemBuilder
     /// </summary>
     /// <param name="animation">The animation to play</param>
     /// <returns>An item builder with the configured options.</returns>
-    IItemBuilder PlaysAnimation(Animation animation);
+    IItemBuilder PlaysAnimation(AnimationType animation);
 
     /// <summary>
     /// The max distance the user may be from their target when using this item.

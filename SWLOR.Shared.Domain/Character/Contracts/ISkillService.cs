@@ -1,4 +1,4 @@
-using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Character.Enums;
 
 namespace SWLOR.Shared.Domain.Character.Contracts
@@ -17,7 +17,7 @@ namespace SWLOR.Shared.Domain.Character.Contracts
         /// </summary>
         /// <param name="baseItem">The type of base item to look for.</param>
         /// <returns>A skill type associated with the given base item type.</returns>
-        SkillType GetSkillTypeByBaseItem(BaseItem baseItem);
+        SkillType GetSkillTypeByBaseItem(BaseItemType baseItem);
 
         /// <summary>
         /// When the module loads, cache all XP chart data used for quick access.

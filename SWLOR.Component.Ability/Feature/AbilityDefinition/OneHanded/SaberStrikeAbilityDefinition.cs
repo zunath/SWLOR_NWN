@@ -40,7 +40,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.OneHanded
 
         private string Validation(uint activator, uint target, int level, Location targetLocation)
         {
-            var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
+            var weapon = GetItemInSlot(InventorySlotType.RightHand, activator);
             var rightHandType = GetBaseItemType(weapon);
 
             if (ItemService.LightsaberBaseItemTypes.Contains(rightHandType))
@@ -104,7 +104,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.OneHanded
                 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
 
-            dc = CombatService.CalculateSavingThrowDC(activator, SavingThrow.Fortitude, dc);
+            dc = CombatService.CalculateSavingThrowDC(activator, SavingThrowCategoryType.Fortitude, dc);
             var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
             if (checkResult == SavingThrowResultType.Failed)
             {
@@ -115,7 +115,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.OneHanded
             
             CombatPointService.AddCombatPoint(activator, target, SkillType.OneHanded, 3);
 
-            AssignCommand(activator, () => ActionPlayAnimation(Animation.RiotBlade));
+            AssignCommand(activator, () => ActionPlayAnimation(AnimationType.RiotBlade));
 
             EnmityService.ModifyEnmity(activator, target, 100 * level + damage);
         }

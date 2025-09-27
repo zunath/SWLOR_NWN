@@ -87,10 +87,10 @@ namespace SWLOR.Component.Admin.Service
             string log;
 
             // We don't log server messages because there isn't a good way to filter them.
-            if (channel == ChatChannel.ServerMessage) return;
+            if (channel == ChatChannelType.ServerMessage) return;
 
-            if (channel == ChatChannel.DMTell ||
-                channel == ChatChannel.PlayerTell)
+            if (channel == ChatChannelType.DMTell ||
+                channel == ChatChannelType.PlayerTell)
             {
                 log = BuildTellLog();
             }

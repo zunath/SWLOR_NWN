@@ -3,8 +3,6 @@ using SWLOR.Component.Character.Feature.AppearanceDefinition.RacialAppearance;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Constants;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Creature;
-using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Domain.Entities;
@@ -75,7 +73,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
 
         private static readonly Dictionary<AppearanceType, IArmorAppearanceDefinition> _armorAppearances = new();
         private static readonly Dictionary<AppearanceType, IRacialAppearanceDefinition> _racialAppearances = new();
-        private static readonly Dictionary<BaseItem, IWeaponAppearanceDefinition> _weaponAppearances = new();
+        private static readonly Dictionary<BaseItemType, IWeaponAppearanceDefinition> _weaponAppearances = new();
         private Dictionary<int, int> _partIdToIndex = new();
 
         private const string OutfitBarrelTag = "OUTFIT_BARREL";
@@ -83,7 +81,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
         private uint _target;
         private bool _isMetalPalette;
 
-        private AppearanceArmorColor _selectedColorChannel;
+        private ItemAppearanceArmorColorType _selectedColorChannel;
         private ColorTarget _colorTarget;
 
         [ScriptHandler<OnModuleLoad>]
@@ -163,19 +161,19 @@ namespace SWLOR.Component.Character.UI.ViewModel
 
         private static void LoadWeaponAppearances()
         {
-            _weaponAppearances[BaseItem.Dagger] = new DaggerAppearanceDefinition();
-            _weaponAppearances[BaseItem.Electroblade] = new ElectrobladeAppearanceDefinition();
-            _weaponAppearances[BaseItem.GreatSword] = new GreatSwordAppearanceDefinition();
-            _weaponAppearances[BaseItem.Katar] = new KatarAppearanceDefinition();
-            _weaponAppearances[BaseItem.LargeShield] = new LargeShieldAppearanceDefinition();
-            _weaponAppearances[BaseItem.Longsword] = new LongswordAppearanceDefinition();
-            _weaponAppearances[BaseItem.Pistol] = new PistolAppearanceDefinition();
-            _weaponAppearances[BaseItem.QuarterStaff] = new QuarterstaffAppearanceDefinition();
-            _weaponAppearances[BaseItem.Rifle] = new RifleAppearanceDefinition();
-            _weaponAppearances[BaseItem.Shuriken] = new ShurikenAppearanceDefinition();
-            _weaponAppearances[BaseItem.ShortSpear] = new SpearAppearanceDefinition();
-            _weaponAppearances[BaseItem.TwoBladedSword] = new TwinBladeAppearanceDefinition();
-            _weaponAppearances[BaseItem.TwinElectroBlade] = new TwinElectrobladeAppearanceDefinition();
+            _weaponAppearances[BaseItemType.Dagger] = new DaggerAppearanceDefinition();
+            _weaponAppearances[BaseItemType.Electroblade] = new ElectrobladeAppearanceDefinition();
+            _weaponAppearances[BaseItemType.GreatSword] = new GreatSwordAppearanceDefinition();
+            _weaponAppearances[BaseItemType.Katar] = new KatarAppearanceDefinition();
+            _weaponAppearances[BaseItemType.LargeShield] = new LargeShieldAppearanceDefinition();
+            _weaponAppearances[BaseItemType.Longsword] = new LongswordAppearanceDefinition();
+            _weaponAppearances[BaseItemType.Pistol] = new PistolAppearanceDefinition();
+            _weaponAppearances[BaseItemType.QuarterStaff] = new QuarterstaffAppearanceDefinition();
+            _weaponAppearances[BaseItemType.Rifle] = new RifleAppearanceDefinition();
+            _weaponAppearances[BaseItemType.Shuriken] = new ShurikenAppearanceDefinition();
+            _weaponAppearances[BaseItemType.ShortSpear] = new SpearAppearanceDefinition();
+            _weaponAppearances[BaseItemType.TwoBladedSword] = new TwinBladeAppearanceDefinition();
+            _weaponAppearances[BaseItemType.TwinElectroBlade] = new TwinElectrobladeAppearanceDefinition();
         }
 
         public bool IsAppearanceSelected
@@ -282,8 +280,8 @@ namespace SWLOR.Component.Character.UI.ViewModel
             set
             {
                 Set(value);
-                if (!_skipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftShoulder))
-                    AdjustArmorPart(AppearanceArmor.LeftShoulder, 0);
+                if (!_skipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.LeftShoulder))
+                    AdjustArmorPart(ItemAppearanceArmorType.LeftShoulder, 0);
             }
         }
 
@@ -293,8 +291,8 @@ namespace SWLOR.Component.Character.UI.ViewModel
             set
             {
                 Set(value);
-                if (!_skipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftBicep))
-                    AdjustArmorPart(AppearanceArmor.LeftBicep, 0);
+                if (!_skipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.LeftBicep))
+                    AdjustArmorPart(ItemAppearanceArmorType.LeftBicep, 0);
             }
         }
         public int LeftForearmSelection
@@ -303,8 +301,8 @@ namespace SWLOR.Component.Character.UI.ViewModel
             set
             {
                 Set(value);
-                if (!_skipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftForearm))
-                    AdjustArmorPart(AppearanceArmor.LeftForearm, 0);
+                if (!_skipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.LeftForearm))
+                    AdjustArmorPart(ItemAppearanceArmorType.LeftForearm, 0);
             }
         }
         public int LeftHandSelection
@@ -313,8 +311,8 @@ namespace SWLOR.Component.Character.UI.ViewModel
             set
             {
                 Set(value);
-                if (!_skipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftHand))
-                    AdjustArmorPart(AppearanceArmor.LeftHand, 0);
+                if (!_skipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.LeftHand))
+                    AdjustArmorPart(ItemAppearanceArmorType.LeftHand, 0);
             }
         }
         public int LeftThighSelection
@@ -323,8 +321,8 @@ namespace SWLOR.Component.Character.UI.ViewModel
             set
             {
                 Set(value);
-                if (!_skipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftThigh))
-                    AdjustArmorPart(AppearanceArmor.LeftThigh, 0);
+                if (!_skipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.LeftThigh))
+                    AdjustArmorPart(ItemAppearanceArmorType.LeftThigh, 0);
             }
         }
         public int LeftShinSelection
@@ -333,8 +331,8 @@ namespace SWLOR.Component.Character.UI.ViewModel
             set
             {
                 Set(value);
-                if (!_skipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftShin))
-                    AdjustArmorPart(AppearanceArmor.LeftShin, 0);
+                if (!_skipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.LeftShin))
+                    AdjustArmorPart(ItemAppearanceArmorType.LeftShin, 0);
             }
         }
         public int LeftFootSelection
@@ -343,8 +341,8 @@ namespace SWLOR.Component.Character.UI.ViewModel
             set
             {
                 Set(value);
-                if (!_skipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftFoot))
-                    AdjustArmorPart(AppearanceArmor.LeftFoot, 0);
+                if (!_skipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.LeftFoot))
+                    AdjustArmorPart(ItemAppearanceArmorType.LeftFoot, 0);
             }
         }
         public int RightShoulderSelection
@@ -353,8 +351,8 @@ namespace SWLOR.Component.Character.UI.ViewModel
             set
             {
                 Set(value);
-                if (!_skipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightShoulder))
-                    AdjustArmorPart(AppearanceArmor.RightShoulder, 0);
+                if (!_skipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.RightShoulder))
+                    AdjustArmorPart(ItemAppearanceArmorType.RightShoulder, 0);
             }
         }
         public int RightBicepSelection
@@ -363,8 +361,8 @@ namespace SWLOR.Component.Character.UI.ViewModel
             set
             {
                 Set(value);
-                if (!_skipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightBicep))
-                    AdjustArmorPart(AppearanceArmor.RightBicep, 0);
+                if (!_skipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.RightBicep))
+                    AdjustArmorPart(ItemAppearanceArmorType.RightBicep, 0);
             }
         }
         public int RightForearmSelection
@@ -373,8 +371,8 @@ namespace SWLOR.Component.Character.UI.ViewModel
             set
             {
                 Set(value);
-                if (!_skipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightForearm))
-                    AdjustArmorPart(AppearanceArmor.RightForearm, 0);
+                if (!_skipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.RightForearm))
+                    AdjustArmorPart(ItemAppearanceArmorType.RightForearm, 0);
             }
         }
         public int RightHandSelection
@@ -383,8 +381,8 @@ namespace SWLOR.Component.Character.UI.ViewModel
             set
             {
                 Set(value);
-                if (!_skipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightHand))
-                    AdjustArmorPart(AppearanceArmor.RightHand, 0);
+                if (!_skipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.RightHand))
+                    AdjustArmorPart(ItemAppearanceArmorType.RightHand, 0);
             }
         }
         public int RightThighSelection
@@ -393,8 +391,8 @@ namespace SWLOR.Component.Character.UI.ViewModel
             set
             {
                 Set(value);
-                if (!_skipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightThigh))
-                    AdjustArmorPart(AppearanceArmor.RightThigh, 0);
+                if (!_skipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.RightThigh))
+                    AdjustArmorPart(ItemAppearanceArmorType.RightThigh, 0);
             }
         }
         public int RightShinSelection
@@ -403,8 +401,8 @@ namespace SWLOR.Component.Character.UI.ViewModel
             set
             {
                 Set(value);
-                if (!_skipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightShin))
-                    AdjustArmorPart(AppearanceArmor.RightShin, 0);
+                if (!_skipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.RightShin))
+                    AdjustArmorPart(ItemAppearanceArmorType.RightShin, 0);
             }
         }
         public int RightFootSelection
@@ -413,8 +411,8 @@ namespace SWLOR.Component.Character.UI.ViewModel
             set
             {
                 Set(value);
-                if (!_skipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightFoot))
-                    AdjustArmorPart(AppearanceArmor.RightFoot, 0);
+                if (!_skipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.RightFoot))
+                    AdjustArmorPart(ItemAppearanceArmorType.RightFoot, 0);
             }
         }
         public int NeckSelection
@@ -423,8 +421,8 @@ namespace SWLOR.Component.Character.UI.ViewModel
             set
             {
                 Set(value);
-                if (!_skipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Neck))
-                    AdjustArmorPart(AppearanceArmor.Neck, 0);
+                if (!_skipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.Neck))
+                    AdjustArmorPart(ItemAppearanceArmorType.Neck, 0);
             }
         }
         public int ChestSelection
@@ -433,8 +431,8 @@ namespace SWLOR.Component.Character.UI.ViewModel
             set
             {
                 Set(value);
-                if (!_skipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Torso))
-                    AdjustArmorPart(AppearanceArmor.Torso, 0);
+                if (!_skipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.Torso))
+                    AdjustArmorPart(ItemAppearanceArmorType.Torso, 0);
             }
         }
         public int BeltSelection
@@ -443,8 +441,8 @@ namespace SWLOR.Component.Character.UI.ViewModel
             set
             {
                 Set(value);
-                if (!_skipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Belt))
-                    AdjustArmorPart(AppearanceArmor.Belt, 0);
+                if (!_skipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.Belt))
+                    AdjustArmorPart(ItemAppearanceArmorType.Belt, 0);
             }
         }
         public int PelvisSelection
@@ -453,8 +451,8 @@ namespace SWLOR.Component.Character.UI.ViewModel
             set
             {
                 Set(value);
-                if (!_skipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Pelvis))
-                    AdjustArmorPart(AppearanceArmor.Pelvis, 0);
+                if (!_skipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.Pelvis))
+                    AdjustArmorPart(ItemAppearanceArmorType.Pelvis, 0);
             }
         }
         public int RobeSelection
@@ -463,8 +461,8 @@ namespace SWLOR.Component.Character.UI.ViewModel
             set
             {
                 Set(value);
-                if (!_skipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe))
-                    AdjustArmorPart(AppearanceArmor.Robe, 0);
+                if (!_skipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.Robe))
+                    AdjustArmorPart(ItemAppearanceArmorType.Robe, 0);
             }
         }
 
@@ -696,30 +694,30 @@ namespace SWLOR.Component.Character.UI.ViewModel
             {
                 var appearanceType = GetAppearanceType(_target);
 
-                if (!_armorAppearances[appearanceType].Neck.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Neck)) ||
-                    !_armorAppearances[appearanceType].Torso.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Torso)) ||
-                    !_armorAppearances[appearanceType].Belt.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Belt)) ||
-                    !_armorAppearances[appearanceType].Pelvis.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Pelvis)) ||
+                if (!_armorAppearances[appearanceType].Neck.Contains(GetItemAppearance(GetItem(), ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.Neck)) ||
+                    !_armorAppearances[appearanceType].Torso.Contains(GetItemAppearance(GetItem(), ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.Torso)) ||
+                    !_armorAppearances[appearanceType].Belt.Contains(GetItemAppearance(GetItem(), ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.Belt)) ||
+                    !_armorAppearances[appearanceType].Pelvis.Contains(GetItemAppearance(GetItem(), ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.Pelvis)) ||
 
-                    !_armorAppearances[appearanceType].Shoulder.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftShoulder)) ||
-                    !_armorAppearances[appearanceType].Bicep.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftBicep)) ||
-                    !_armorAppearances[appearanceType].Forearm.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftForearm)) ||
-                    !_armorAppearances[appearanceType].Hand.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftHand)) ||
+                    !_armorAppearances[appearanceType].Shoulder.Contains(GetItemAppearance(GetItem(), ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.LeftShoulder)) ||
+                    !_armorAppearances[appearanceType].Bicep.Contains(GetItemAppearance(GetItem(), ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.LeftBicep)) ||
+                    !_armorAppearances[appearanceType].Forearm.Contains(GetItemAppearance(GetItem(), ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.LeftForearm)) ||
+                    !_armorAppearances[appearanceType].Hand.Contains(GetItemAppearance(GetItem(), ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.LeftHand)) ||
                     
-                    !_armorAppearances[appearanceType].Thigh.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftThigh)) ||
-                    !_armorAppearances[appearanceType].Shin.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftShin)) ||
-                    !_armorAppearances[appearanceType].Foot.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftFoot)) ||
+                    !_armorAppearances[appearanceType].Thigh.Contains(GetItemAppearance(GetItem(), ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.LeftThigh)) ||
+                    !_armorAppearances[appearanceType].Shin.Contains(GetItemAppearance(GetItem(), ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.LeftShin)) ||
+                    !_armorAppearances[appearanceType].Foot.Contains(GetItemAppearance(GetItem(), ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.LeftFoot)) ||
 
-                    !_armorAppearances[appearanceType].Shoulder.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightShoulder)) ||
-                    !_armorAppearances[appearanceType].Bicep.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightBicep)) ||
-                    !_armorAppearances[appearanceType].Forearm.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightForearm)) ||
-                    !_armorAppearances[appearanceType].Hand.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightHand)) ||
+                    !_armorAppearances[appearanceType].Shoulder.Contains(GetItemAppearance(GetItem(), ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.RightShoulder)) ||
+                    !_armorAppearances[appearanceType].Bicep.Contains(GetItemAppearance(GetItem(), ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.RightBicep)) ||
+                    !_armorAppearances[appearanceType].Forearm.Contains(GetItemAppearance(GetItem(), ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.RightForearm)) ||
+                    !_armorAppearances[appearanceType].Hand.Contains(GetItemAppearance(GetItem(), ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.RightHand)) ||
 
-                    !_armorAppearances[appearanceType].Thigh.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightThigh)) ||
-                    !_armorAppearances[appearanceType].Shin.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightShin)) ||
-                    !_armorAppearances[appearanceType].Foot.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightFoot)) ||
+                    !_armorAppearances[appearanceType].Thigh.Contains(GetItemAppearance(GetItem(), ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.RightThigh)) ||
+                    !_armorAppearances[appearanceType].Shin.Contains(GetItemAppearance(GetItem(), ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.RightShin)) ||
+                    !_armorAppearances[appearanceType].Foot.Contains(GetItemAppearance(GetItem(), ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.RightFoot)) ||
 
-                    !_armorAppearances[appearanceType].Robe.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe)))
+                    !_armorAppearances[appearanceType].Robe.Contains(GetItemAppearance(GetItem(), ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.Robe)))
                 {
                     return false;
                 }
@@ -737,18 +735,18 @@ namespace SWLOR.Component.Character.UI.ViewModel
 
                 if (appearance.IsSimple)
                 {
-                    var partId = GetItemAppearance(item, ItemAppearanceType.SimpleModel, -1);
+                    var partId = GetItemAppearance(item, ItemModelColorType.SimpleModel, -1);
                     if (!appearance.SimpleParts.Contains(partId))
                         return false;
                 }
                 else
                 {
-                    var topId = GetItemAppearance(item, ItemAppearanceType.WeaponModel, (int)AppearanceWeapon.Top);
-                    var middleId = GetItemAppearance(item, ItemAppearanceType.WeaponModel, (int)AppearanceWeapon.Middle);
-                    var bottomId = GetItemAppearance(item, ItemAppearanceType.WeaponModel, (int)AppearanceWeapon.Bottom);
-                    var topColor = GetItemAppearance(item, ItemAppearanceType.WeaponColor, (int)AppearanceWeapon.Top);
-                    var middleColor = GetItemAppearance(item, ItemAppearanceType.WeaponColor, (int)AppearanceWeapon.Middle);
-                    var bottomColor = GetItemAppearance(item, ItemAppearanceType.WeaponColor, (int)AppearanceWeapon.Bottom);
+                    var topId = GetItemAppearance(item, ItemModelColorType.WeaponModel, (int)ItemAppearanceWeaponType.Top);
+                    var middleId = GetItemAppearance(item, ItemModelColorType.WeaponModel, (int)ItemAppearanceWeaponType.Middle);
+                    var bottomId = GetItemAppearance(item, ItemModelColorType.WeaponModel, (int)ItemAppearanceWeaponType.Bottom);
+                    var topColor = GetItemAppearance(item, ItemModelColorType.WeaponColor, (int)ItemAppearanceWeaponType.Top);
+                    var middleColor = GetItemAppearance(item, ItemModelColorType.WeaponColor, (int)ItemAppearanceWeaponType.Middle);
+                    var bottomColor = GetItemAppearance(item, ItemModelColorType.WeaponColor, (int)ItemAppearanceWeaponType.Bottom);
 
                     var topPartId = topId + topColor * 100;
                     var middlePartId = middleId + middleColor * 100;
@@ -1002,23 +1000,23 @@ namespace SWLOR.Component.Character.UI.ViewModel
         {
             if (SelectedItemTypeIndex == 0) // 0 = Armor
             {
-                return GetItemInSlot(InventorySlot.Chest, _target);
+                return GetItemInSlot(InventorySlotType.Chest, _target);
             }
             else if (SelectedItemTypeIndex == 1) // 1 = Helmet
             {
-                return GetItemInSlot(InventorySlot.Head, _target);
+                return GetItemInSlot(InventorySlotType.Head, _target);
             }
             else if (SelectedItemTypeIndex == 2) // 2 = Cloak
             {
-                return GetItemInSlot(InventorySlot.Cloak, _target);
+                return GetItemInSlot(InventorySlotType.Cloak, _target);
             }
             else if (SelectedItemTypeIndex == 3) // 3 = Weapon (Main Hand)
             {
-                return GetItemInSlot(InventorySlot.RightHand, _target);
+                return GetItemInSlot(InventorySlotType.RightHand, _target);
             }
             else if (SelectedItemTypeIndex == 4) // 4 = Weapon (Off Hand)
             {
-                return GetItemInSlot(InventorySlot.LeftHand, _target);
+                return GetItemInSlot(InventorySlotType.LeftHand, _target);
             }
 
             return OBJECT_INVALID;
@@ -1044,7 +1042,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
                 case 0: // Head
                     switch (gender)
                     {
-                        case Gender.Male:
+                        case GenderType.Male:
                             partIds = appearance.MaleHeads;
                             break;
                         default:
@@ -1052,63 +1050,63 @@ namespace SWLOR.Component.Character.UI.ViewModel
                             break;
                     }
 
-                    selectedPartId = GetCreatureBodyPart(CreaturePart.Head, _target);
+                    selectedPartId = GetCreatureBodyPart(CreaturePartType.Head, _target);
                     break;
                 case 1: // Torso
                     partIds = appearance.Torsos;
-                    selectedPartId = GetCreatureBodyPart(CreaturePart.Torso, _target);
+                    selectedPartId = GetCreatureBodyPart(CreaturePartType.Torso, _target);
                     break;
                 case 2: // Pelvis
                     partIds = appearance.Pelvis;
-                    selectedPartId = GetCreatureBodyPart(CreaturePart.Pelvis, _target);
+                    selectedPartId = GetCreatureBodyPart(CreaturePartType.Pelvis, _target);
                     break;
                 case 3: // Right Bicep
                     partIds = appearance.RightBicep;
-                    selectedPartId = GetCreatureBodyPart(CreaturePart.RightBicep, _target);
+                    selectedPartId = GetCreatureBodyPart(CreaturePartType.RightBicep, _target);
                     break;
                 case 4: // Right Forearm
                     partIds = appearance.RightForearm;
-                    selectedPartId = GetCreatureBodyPart(CreaturePart.RightForearm, _target);
+                    selectedPartId = GetCreatureBodyPart(CreaturePartType.RightForearm, _target);
                     break;
                 case 5: // Right Hand
                     partIds = appearance.RightHand;
-                    selectedPartId = GetCreatureBodyPart(CreaturePart.RightHand, _target);
+                    selectedPartId = GetCreatureBodyPart(CreaturePartType.RightHand, _target);
                     break;
                 case 6: // Right Thigh
                     partIds = appearance.RightThigh;
-                    selectedPartId = GetCreatureBodyPart(CreaturePart.RightThigh, _target);
+                    selectedPartId = GetCreatureBodyPart(CreaturePartType.RightThigh, _target);
                     break;
                 case 7: // Right Shin
                     partIds = appearance.RightShin;
-                    selectedPartId = GetCreatureBodyPart(CreaturePart.RightShin, _target);
+                    selectedPartId = GetCreatureBodyPart(CreaturePartType.RightShin, _target);
                     break;
                 case 8: // Right Foot
                     partIds = appearance.RightFoot;
-                    selectedPartId = GetCreatureBodyPart(CreaturePart.RightFoot, _target);
+                    selectedPartId = GetCreatureBodyPart(CreaturePartType.RightFoot, _target);
                     break;
                 case 9: // Left Bicep
                     partIds = appearance.LeftBicep;
-                    selectedPartId = GetCreatureBodyPart(CreaturePart.LeftBicep, _target);
+                    selectedPartId = GetCreatureBodyPart(CreaturePartType.LeftBicep, _target);
                     break;
                 case 10: // Left Forearm
                     partIds = appearance.LeftForearm;
-                    selectedPartId = GetCreatureBodyPart(CreaturePart.LeftForearm, _target);
+                    selectedPartId = GetCreatureBodyPart(CreaturePartType.LeftForearm, _target);
                     break;
                 case 11: // Left Hand
                     partIds = appearance.LeftHand;
-                    selectedPartId = GetCreatureBodyPart(CreaturePart.LeftHand, _target);
+                    selectedPartId = GetCreatureBodyPart(CreaturePartType.LeftHand, _target);
                     break;
                 case 12: // Left Thigh
                     partIds = appearance.LeftThigh;
-                    selectedPartId = GetCreatureBodyPart(CreaturePart.LeftThigh, _target);
+                    selectedPartId = GetCreatureBodyPart(CreaturePartType.LeftThigh, _target);
                     break;
                 case 13: // Left Shin
                     partIds = appearance.LeftShin;
-                    selectedPartId = GetCreatureBodyPart(CreaturePart.LeftShin, _target);
+                    selectedPartId = GetCreatureBodyPart(CreaturePartType.LeftShin, _target);
                     break;
                 case 14: // Left Foot
                     partIds = appearance.LeftFoot;
-                    selectedPartId = GetCreatureBodyPart(CreaturePart.LeftFoot, _target);
+                    selectedPartId = GetCreatureBodyPart(CreaturePartType.LeftFoot, _target);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(SelectedPartIndex));
@@ -1171,27 +1169,27 @@ namespace SWLOR.Component.Character.UI.ViewModel
                 RightShinOptions = _armorAppearances[appearanceType].ShinOptions;
                 RightFootOptions = _armorAppearances[appearanceType].FootOptions;
 
-                NeckSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Neck);
-                ChestSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Torso);
-                BeltSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Belt);
-                PelvisSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Pelvis);
-                RobeSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe);
+                NeckSelection = GetItemAppearance(item, ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.Neck);
+                ChestSelection = GetItemAppearance(item, ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.Torso);
+                BeltSelection = GetItemAppearance(item, ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.Belt);
+                PelvisSelection = GetItemAppearance(item, ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.Pelvis);
+                RobeSelection = GetItemAppearance(item, ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.Robe);
 
-                LeftShoulderSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftShoulder);
-                LeftBicepSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftBicep);
-                LeftForearmSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftForearm);
-                LeftHandSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftHand);
-                LeftThighSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftThigh);
-                LeftShinSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftShin);
-                LeftFootSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftFoot);
+                LeftShoulderSelection = GetItemAppearance(item, ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.LeftShoulder);
+                LeftBicepSelection = GetItemAppearance(item, ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.LeftBicep);
+                LeftForearmSelection = GetItemAppearance(item, ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.LeftForearm);
+                LeftHandSelection = GetItemAppearance(item, ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.LeftHand);
+                LeftThighSelection = GetItemAppearance(item, ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.LeftThigh);
+                LeftShinSelection = GetItemAppearance(item, ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.LeftShin);
+                LeftFootSelection = GetItemAppearance(item, ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.LeftFoot);
 
-                RightShoulderSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightShoulder);
-                RightBicepSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightBicep);
-                RightForearmSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightForearm);
-                RightHandSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightHand);
-                RightThighSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightThigh);
-                RightShinSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightShin);
-                RightFootSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightFoot);
+                RightShoulderSelection = GetItemAppearance(item, ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.RightShoulder);
+                RightBicepSelection = GetItemAppearance(item, ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.RightBicep);
+                RightForearmSelection = GetItemAppearance(item, ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.RightForearm);
+                RightHandSelection = GetItemAppearance(item, ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.RightHand);
+                RightThighSelection = GetItemAppearance(item, ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.RightThigh);
+                RightShinSelection = GetItemAppearance(item, ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.RightShin);
+                RightFootSelection = GetItemAppearance(item, ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.RightFoot);
 
                 UpdateAllColors();
 
@@ -1200,12 +1198,12 @@ namespace SWLOR.Component.Character.UI.ViewModel
             else if (SelectedItemTypeIndex == 1) // 1 = Helmet
             {
                 partIds = _armorAppearances[appearanceType].Helmet;
-                selectedPartId = GetItemAppearance(item, ItemAppearanceType.SimpleModel, -1);
+                selectedPartId = GetItemAppearance(item, ItemModelColorType.SimpleModel, -1);
             }
             else if (SelectedItemTypeIndex == 2) // 2 = Cloak
             {
                 partIds = _armorAppearances[appearanceType].Cloak;
-                selectedPartId = GetItemAppearance(item, ItemAppearanceType.SimpleModel, -1);
+                selectedPartId = GetItemAppearance(item, ItemModelColorType.SimpleModel, -1);
             }
             else if (SelectedItemTypeIndex == 3 || SelectedItemTypeIndex == 4) // 3 = Weapon (Main Hand), 4 = Weapon (Off Hand)
             {
@@ -1214,7 +1212,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
                 if (_weaponAppearances[type].IsSimple)
                 {
                     partIds = _weaponAppearances[type].SimpleParts;
-                    selectedPartId = GetItemAppearance(item, ItemAppearanceType.SimpleModel, -1);
+                    selectedPartId = GetItemAppearance(item, ItemModelColorType.SimpleModel, -1);
                 }
                 else
                 {
@@ -1222,18 +1220,18 @@ namespace SWLOR.Component.Character.UI.ViewModel
                     {
                         case 0: // 0 = Top
                             partIds = _weaponAppearances[type].TopParts;
-                            selectedPartId = GetItemAppearance(item, ItemAppearanceType.WeaponModel, (int)AppearanceWeapon.Top);
-                            offset = GetItemAppearance(item, ItemAppearanceType.WeaponColor, (int)AppearanceWeapon.Top);
+                            selectedPartId = GetItemAppearance(item, ItemModelColorType.WeaponModel, (int)ItemAppearanceWeaponType.Top);
+                            offset = GetItemAppearance(item, ItemModelColorType.WeaponColor, (int)ItemAppearanceWeaponType.Top);
                             break;
                         case 1: // 1 = Middle
                             partIds = _weaponAppearances[type].MiddleParts;
-                            selectedPartId = GetItemAppearance(item, ItemAppearanceType.WeaponModel, (int)AppearanceWeapon.Middle);
-                            offset = GetItemAppearance(item, ItemAppearanceType.WeaponColor, (int)AppearanceWeapon.Middle);
+                            selectedPartId = GetItemAppearance(item, ItemModelColorType.WeaponModel, (int)ItemAppearanceWeaponType.Middle);
+                            offset = GetItemAppearance(item, ItemModelColorType.WeaponColor, (int)ItemAppearanceWeaponType.Middle);
                             break;
                         case 2: // 2 = Bottom
                             partIds = _weaponAppearances[type].BottomParts;
-                            selectedPartId = GetItemAppearance(item, ItemAppearanceType.WeaponModel, (int)AppearanceWeapon.Bottom);
-                            offset = GetItemAppearance(item, ItemAppearanceType.WeaponColor, (int)AppearanceWeapon.Bottom);
+                            selectedPartId = GetItemAppearance(item, ItemModelColorType.WeaponModel, (int)ItemAppearanceWeaponType.Bottom);
+                            offset = GetItemAppearance(item, ItemModelColorType.WeaponColor, (int)ItemAppearanceWeaponType.Bottom);
                             break;
                         default:
                             throw new ArgumentOutOfRangeException(nameof(SelectedPartIndex));
@@ -1322,7 +1320,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
             }
 
             var appearance = _racialAppearances[appearanceType];
-            var scale = GetObjectVisualTransform(_target, ObjectVisualTransform.Scale);
+            var scale = GetObjectVisualTransform(_target, ObjectVisualTransformType.Scale);
             const float Increment = 0.01f;
 
             if (scale - Increment < appearance.MinimumScale)
@@ -1331,8 +1329,8 @@ namespace SWLOR.Component.Character.UI.ViewModel
             }
             else
             {
-                SetObjectVisualTransform(_target, ObjectVisualTransform.Scale, scale - Increment);
-                SendMessageToPC(_target, $"Height: {GetObjectVisualTransform(_target, ObjectVisualTransform.Scale)}");
+                SetObjectVisualTransform(_target, ObjectVisualTransformType.Scale, scale - Increment);
+                SendMessageToPC(_target, $"Height: {GetObjectVisualTransform(_target, ObjectVisualTransformType.Scale)}");
             }
         };
         public Action OnIncreaseAppearanceScale() => () =>
@@ -1346,7 +1344,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
 
             var appearance = _racialAppearances[appearanceType];
 
-            var scale = GetObjectVisualTransform(_target, ObjectVisualTransform.Scale);
+            var scale = GetObjectVisualTransform(_target, ObjectVisualTransformType.Scale);
             const float Increment = 0.01f;
 
             if (scale + Increment > appearance.MaximumScale)
@@ -1355,8 +1353,8 @@ namespace SWLOR.Component.Character.UI.ViewModel
             }
             else
             {
-                SetObjectVisualTransform(_target, ObjectVisualTransform.Scale, scale + Increment);
-                SendMessageToPC(_target, $"Height: {GetObjectVisualTransform(_target, ObjectVisualTransform.Scale)}");
+                SetObjectVisualTransform(_target, ObjectVisualTransformType.Scale, scale + Increment);
+                SendMessageToPC(_target, $"Height: {GetObjectVisualTransform(_target, ObjectVisualTransformType.Scale)}");
             }
         };
 
@@ -1399,52 +1397,52 @@ namespace SWLOR.Component.Character.UI.ViewModel
         // will result in the wrong equipped item being destroyed.
         private uint _lastModifiedItem = OBJECT_INVALID;
 
-        private InventorySlot GetInventorySlot()
+        private InventorySlotType GetInventorySlot()
         {
-            var slot = InventorySlot.Invalid;
+            var slot = InventorySlotType.Invalid;
 
             switch (SelectedItemTypeIndex)
             {
                 case 0: // 0 = Chest
-                    slot = InventorySlot.Chest;
+                    slot = InventorySlotType.Chest;
                     break;
                 case 1: // 1 = Head
-                    slot = InventorySlot.Head;
+                    slot = InventorySlotType.Head;
                     break;
                 case 2: // 2 = Cloak
-                    slot = InventorySlot.Cloak;
+                    slot = InventorySlotType.Cloak;
                     break;
                 case 3: // 3 = Weapon (Main Hand)
-                    slot = InventorySlot.RightHand;
+                    slot = InventorySlotType.RightHand;
                     break;
                 case 4: // 4 = Weapon (Off Hand)
-                    slot = InventorySlot.LeftHand;
+                    slot = InventorySlotType.LeftHand;
                     break;
             }
 
             return slot;
         }
 
-        private ItemAppearanceType GetModelType()
+        private ItemModelColorType GetModelType()
         {
-            var modelType = ItemAppearanceType.ArmorModel;
+            var modelType = ItemModelColorType.ArmorModel;
 
             switch (SelectedItemTypeIndex)
             {
                 case 0: // 0 = Chest
-                    modelType = ItemAppearanceType.ArmorModel;
+                    modelType = ItemModelColorType.ArmorModel;
                     break;
                 case 1: // 1 = Head
-                    modelType = ItemAppearanceType.SimpleModel;
+                    modelType = ItemModelColorType.SimpleModel;
                     break;
                 case 2: // 2 = Cloak
-                    modelType = ItemAppearanceType.SimpleModel;
+                    modelType = ItemModelColorType.SimpleModel;
                     break;
                 case 3: // 3 = Weapon (Main Hand)
-                    modelType = ItemAppearanceType.WeaponModel;
+                    modelType = ItemModelColorType.WeaponModel;
                     break;
                 case 4: // 4 = Weapon (Off Hand)
-                    modelType = ItemAppearanceType.WeaponModel;
+                    modelType = ItemModelColorType.WeaponModel;
                     break;
             }
 
@@ -1466,7 +1464,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
             if (colorId > -1)
             {
                 var oldCopy = copy;
-                copy = CopyItemAndModify(copy, ItemAppearanceType.WeaponColor, type, colorId, true);
+                copy = CopyItemAndModify(copy, ItemModelColorType.WeaponColor, type, colorId, true);
                 partId %= 100;
 
                 // Note: DestroyObject gets run at the end of the process so it's fine to queue up a call to destroy this temporary copy here.
@@ -1476,7 +1474,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
 
             if (_weaponAppearances.ContainsKey(itemType) && _weaponAppearances[itemType].IsSimple)
             {
-                copy = CopyItemAndModify(copy, ItemAppearanceType.SimpleModel, type, partId, true);
+                copy = CopyItemAndModify(copy, ItemModelColorType.SimpleModel, type, partId, true);
             }
             else
             {
@@ -1535,16 +1533,16 @@ namespace SWLOR.Component.Character.UI.ViewModel
                 switch (SelectedColorCategoryIndex)
                 {
                     case 0: // 0 = Skin
-                        SetColor(_target, ColorChannel.Skin, colorId);
+                        SetColor(_target, ColorChannelType.Skin, colorId);
                         break;
                     case 1: //  1 = Hair
-                        SetColor(_target, ColorChannel.Hair, colorId);
+                        SetColor(_target, ColorChannelType.Hair, colorId);
                         break;
                     case 2: // 2 = Tattoo 1
-                        SetColor(_target, ColorChannel.Tattoo1, colorId);
+                        SetColor(_target, ColorChannelType.Tattoo1, colorId);
                         break;
                     case 3: // 3 = Tattoo 2
-                        SetColor(_target, ColorChannel.Tattoo2, colorId);
+                        SetColor(_target, ColorChannelType.Tattoo2, colorId);
                         break;
                 }
             }
@@ -1554,28 +1552,28 @@ namespace SWLOR.Component.Character.UI.ViewModel
                 switch (SelectedColorCategoryIndex)
                 {
                     case 0: // 0 = Leather 1
-                        ModifyHelmetCloakColor(AppearanceArmorColor.Leather1, colorId);
+                        ModifyHelmetCloakColor(ItemAppearanceArmorColorType.Leather1, colorId);
                         break;
                     case 1: // 1 = Leather 2
-                        ModifyHelmetCloakColor(AppearanceArmorColor.Leather2, colorId);
+                        ModifyHelmetCloakColor(ItemAppearanceArmorColorType.Leather2, colorId);
                         break;
                     case 2: // 2 = Cloth 1
-                        ModifyHelmetCloakColor(AppearanceArmorColor.Cloth1, colorId);
+                        ModifyHelmetCloakColor(ItemAppearanceArmorColorType.Cloth1, colorId);
                         break;
                     case 3: // 3 = Cloth 2
-                        ModifyHelmetCloakColor(AppearanceArmorColor.Cloth2, colorId);
+                        ModifyHelmetCloakColor(ItemAppearanceArmorColorType.Cloth2, colorId);
                         break;
                     case 4: // 4 = Metal 1
-                        ModifyHelmetCloakColor(AppearanceArmorColor.Metal1, colorId);
+                        ModifyHelmetCloakColor(ItemAppearanceArmorColorType.Metal1, colorId);
                         break;
                     case 5: // 5 = Metal 2
-                        ModifyHelmetCloakColor(AppearanceArmorColor.Metal2, colorId);
+                        ModifyHelmetCloakColor(ItemAppearanceArmorColorType.Metal2, colorId);
                         break;
                 }
             }
         };
 
-        private void ModifyHelmetCloakColor(AppearanceArmorColor colorChannel, int colorId)
+        private void ModifyHelmetCloakColor(ItemAppearanceArmorColorType colorChannel, int colorId)
         {
             ToggleItemEquippedFlags();
             if (DoesNotHaveItemEquipped)
@@ -1583,7 +1581,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
 
             var slot = GetInventorySlot();
             var item = GetItem();
-            var copy = CopyItemAndModify(item, ItemAppearanceType.ArmorColor, (int)colorChannel, colorId, true);
+            var copy = CopyItemAndModify(item, ItemModelColorType.ArmorColor, (int)colorChannel, colorId, true);
 
             if (item != _lastModifiedItem && _lastModifiedItem != OBJECT_INVALID)
             {
@@ -1614,55 +1612,55 @@ namespace SWLOR.Component.Character.UI.ViewModel
                 case 0: // Head
                     switch (gender)
                     {
-                        case Gender.Male:
-                            SetCreatureBodyPart(CreaturePart.Head, appearance.MaleHeads[SelectedPartIndex], _target);
+                        case GenderType.Male:
+                            SetCreatureBodyPart(CreaturePartType.Head, appearance.MaleHeads[SelectedPartIndex], _target);
                             break;
                         default:
-                            SetCreatureBodyPart(CreaturePart.Head, appearance.FemaleHeads[SelectedPartIndex], _target);
+                            SetCreatureBodyPart(CreaturePartType.Head, appearance.FemaleHeads[SelectedPartIndex], _target);
                             break;
                     }
                     break;
                 case 1: // Torso
-                    SetCreatureBodyPart(CreaturePart.Torso, appearance.Torsos[SelectedPartIndex], _target);
+                    SetCreatureBodyPart(CreaturePartType.Torso, appearance.Torsos[SelectedPartIndex], _target);
                     break;
                 case 2: // Pelvis
-                    SetCreatureBodyPart(CreaturePart.Pelvis, appearance.Pelvis[SelectedPartIndex], _target);
+                    SetCreatureBodyPart(CreaturePartType.Pelvis, appearance.Pelvis[SelectedPartIndex], _target);
                     break;
                 case 3: // Right Bicep
-                    SetCreatureBodyPart(CreaturePart.RightBicep, appearance.RightBicep[SelectedPartIndex], _target);
+                    SetCreatureBodyPart(CreaturePartType.RightBicep, appearance.RightBicep[SelectedPartIndex], _target);
                     break;
                 case 4: // Right Forearm
-                    SetCreatureBodyPart(CreaturePart.RightForearm, appearance.RightForearm[SelectedPartIndex], _target);
+                    SetCreatureBodyPart(CreaturePartType.RightForearm, appearance.RightForearm[SelectedPartIndex], _target);
                     break;
                 case 5: // Right Hand
-                    SetCreatureBodyPart(CreaturePart.RightHand, appearance.RightHand[SelectedPartIndex], _target);
+                    SetCreatureBodyPart(CreaturePartType.RightHand, appearance.RightHand[SelectedPartIndex], _target);
                     break;
                 case 6: // Right Thigh
-                    SetCreatureBodyPart(CreaturePart.RightThigh, appearance.RightThigh[SelectedPartIndex], _target);
+                    SetCreatureBodyPart(CreaturePartType.RightThigh, appearance.RightThigh[SelectedPartIndex], _target);
                     break;
                 case 7: // Right Shin
-                    SetCreatureBodyPart(CreaturePart.RightShin, appearance.RightShin[SelectedPartIndex], _target);
+                    SetCreatureBodyPart(CreaturePartType.RightShin, appearance.RightShin[SelectedPartIndex], _target);
                     break;
                 case 8: // Right Foot
-                    SetCreatureBodyPart(CreaturePart.RightFoot, appearance.RightFoot[SelectedPartIndex], _target);
+                    SetCreatureBodyPart(CreaturePartType.RightFoot, appearance.RightFoot[SelectedPartIndex], _target);
                     break;
                 case 9: // Left Bicep
-                    SetCreatureBodyPart(CreaturePart.LeftBicep, appearance.LeftBicep[SelectedPartIndex], _target);
+                    SetCreatureBodyPart(CreaturePartType.LeftBicep, appearance.LeftBicep[SelectedPartIndex], _target);
                     break;
                 case 10: // Left Forearm
-                    SetCreatureBodyPart(CreaturePart.LeftForearm, appearance.LeftForearm[SelectedPartIndex], _target);
+                    SetCreatureBodyPart(CreaturePartType.LeftForearm, appearance.LeftForearm[SelectedPartIndex], _target);
                     break;
                 case 11: // Left Hand
-                    SetCreatureBodyPart(CreaturePart.LeftHand, appearance.LeftHand[SelectedPartIndex], _target);
+                    SetCreatureBodyPart(CreaturePartType.LeftHand, appearance.LeftHand[SelectedPartIndex], _target);
                     break;
                 case 12: // Left Thigh
-                    SetCreatureBodyPart(CreaturePart.LeftThigh, appearance.LeftThigh[SelectedPartIndex], _target);
+                    SetCreatureBodyPart(CreaturePartType.LeftThigh, appearance.LeftThigh[SelectedPartIndex], _target);
                     break;
                 case 13: // Left Shin
-                    SetCreatureBodyPart(CreaturePart.LeftShin, appearance.LeftShin[SelectedPartIndex], _target);
+                    SetCreatureBodyPart(CreaturePartType.LeftShin, appearance.LeftShin[SelectedPartIndex], _target);
                     break;
                 case 14: // Left Foot
-                    SetCreatureBodyPart(CreaturePart.LeftFoot, appearance.LeftFoot[SelectedPartIndex], _target);
+                    SetCreatureBodyPart(CreaturePartType.LeftFoot, appearance.LeftFoot[SelectedPartIndex], _target);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(SelectedPartIndex));
@@ -1682,11 +1680,11 @@ namespace SWLOR.Component.Character.UI.ViewModel
 
             if (SelectedItemTypeIndex == 1) // 1 = Helmet
             {
-                ModifyItemPart((int)AppearanceArmor.Invalid, _armorAppearances[appearanceType].Helmet[SelectedPartIndex]);
+                ModifyItemPart((int)ItemAppearanceArmorType.Invalid, _armorAppearances[appearanceType].Helmet[SelectedPartIndex]);
             }
             else if (SelectedItemTypeIndex == 2) // 2 = Cloak
             {
-                ModifyItemPart((int)AppearanceArmor.Invalid, _armorAppearances[appearanceType].Cloak[SelectedPartIndex]);
+                ModifyItemPart((int)ItemAppearanceArmorType.Invalid, _armorAppearances[appearanceType].Cloak[SelectedPartIndex]);
             }
             else if (SelectedItemTypeIndex == 3 || SelectedItemTypeIndex == 4) // 3 = Weapon (Main Hand), 4 = Weapon (Off Hand)
             {
@@ -1696,7 +1694,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
                 if (_weaponAppearances[itemType].IsSimple)
                 {
                     partId = _weaponAppearances[itemType].SimpleParts[SelectedPartIndex];
-                    ModifyItemPart((int)ItemAppearanceType.SimpleModel, partId);
+                    ModifyItemPart((int)ItemModelColorType.SimpleModel, partId);
                 }
                 else
                 {
@@ -1705,17 +1703,17 @@ namespace SWLOR.Component.Character.UI.ViewModel
                         case 0: // Top
                             color = _weaponAppearances[itemType].TopParts[SelectedPartIndex] / 100;
                             partId = _weaponAppearances[itemType].TopParts[SelectedPartIndex] % 100;
-                            ModifyItemPart((int)AppearanceWeapon.Top, partId, color);
+                            ModifyItemPart((int)ItemAppearanceWeaponType.Top, partId, color);
                             break;
                         case 1: // Middle
                             color = _weaponAppearances[itemType].MiddleParts[SelectedPartIndex] / 100;
                             partId = _weaponAppearances[itemType].MiddleParts[SelectedPartIndex] % 100;
-                            ModifyItemPart((int)AppearanceWeapon.Middle, partId, color);
+                            ModifyItemPart((int)ItemAppearanceWeaponType.Middle, partId, color);
                             break;
                         case 2: // Bottom
                             color = _weaponAppearances[itemType].BottomParts[SelectedPartIndex] / 100;
                             partId = _weaponAppearances[itemType].BottomParts[SelectedPartIndex] % 100;
-                            ModifyItemPart((int)AppearanceWeapon.Bottom, partId, color);
+                            ModifyItemPart((int)ItemAppearanceWeaponType.Bottom, partId, color);
                             break;
                         default:
                             throw new ArgumentOutOfRangeException(nameof(SelectedPartIndex));
@@ -1787,7 +1785,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
             var playerId = GetObjectUUID(_target);
             var dbPlayer = _db.Get<Player>(playerId);
 
-            SetObjectVisualTransform(_target, ObjectVisualTransform.Scale, dbPlayer.AppearanceScale);
+            SetObjectVisualTransform(_target, ObjectVisualTransformType.Scale, dbPlayer.AppearanceScale);
         };
 
         public Action OnClickSaveSettings() => () =>
@@ -1798,7 +1796,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
             dbPlayer.Settings.ShowCloak = ShowCloak;
             dbPlayer.Settings.ShowHelmet = ShowHelmet;
 
-            var newHeight = GetObjectVisualTransform(_target, ObjectVisualTransform.Scale);
+            var newHeight = GetObjectVisualTransform(_target, ObjectVisualTransformType.Scale);
             dbPlayer.AppearanceScale = newHeight;
 
             _db.Set(dbPlayer);
@@ -1813,7 +1811,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
             if (DoesNotHaveItemEquipped)
                 return;
 
-            if (!GetBaseItemFitsInInventory(BaseItem.Armor, _target))
+            if (!GetBaseItemFitsInInventory(BaseItemType.Armor, _target))
             {
                 SendMessageToPC(Player, "Not enough space to modify item.");
                 return;
@@ -1826,8 +1824,8 @@ namespace SWLOR.Component.Character.UI.ViewModel
             {
                 var item = GetItem();
                 DestroyObject(item);
-                item = CopyItemAndModify(item, ItemAppearanceType.ArmorColor, (int)_selectedColorChannel, colorId, true);
-                AssignCommand(_target, () => ActionEquipItem(item, InventorySlot.Chest));
+                item = CopyItemAndModify(item, ItemModelColorType.ArmorColor, (int)_selectedColorChannel, colorId, true);
+                AssignCommand(_target, () => ActionEquipItem(item, InventorySlotType.Chest));
             }
             else
             {
@@ -1836,14 +1834,14 @@ namespace SWLOR.Component.Character.UI.ViewModel
 
                 var armorModel = GetArmorModelType(_colorTarget);
                 var index = CalculatePerPartColorIndex(armorModel, _selectedColorChannel);
-                item = CopyItemAndModify(item, ItemAppearanceType.ArmorColor, index, colorId, true);
-                AssignCommand(_target, () => ActionEquipItem(item, InventorySlot.Chest));
+                item = CopyItemAndModify(item, ItemModelColorType.ArmorColor, index, colorId, true);
+                AssignCommand(_target, () => ActionEquipItem(item, InventorySlotType.Chest));
             }
 
             ChangeColor(_colorTarget, _selectedColorChannel, colorId);
         };
 
-        public Action OnClickClearColor(ColorTarget colorTarget, AppearanceArmorColor colorChannel) => () =>
+        public Action OnClickClearColor(ColorTarget colorTarget, ItemAppearanceArmorColorType colorChannel) => () =>
         {
             ToggleItemEquippedFlags();
             if (DoesNotHaveItemEquipped)
@@ -1863,85 +1861,85 @@ namespace SWLOR.Component.Character.UI.ViewModel
 
             var armorModel = GetArmorModelType(colorTarget);
             var index = CalculatePerPartColorIndex(armorModel, colorChannel);
-            item = CopyItemAndModify(item, ItemAppearanceType.ArmorColor, index, 255, true);
-            AssignCommand(_target, () => ActionEquipItem(item, InventorySlot.Chest));
+            item = CopyItemAndModify(item, ItemModelColorType.ArmorColor, index, 255, true);
+            AssignCommand(_target, () => ActionEquipItem(item, InventorySlotType.Chest));
 
             ChangeColor(colorTarget, colorChannel, 255);
         };
 
-        private AppearanceArmor GetArmorModelType(ColorTarget colorTarget)
+        private ItemAppearanceArmorType GetArmorModelType(ColorTarget colorTarget)
         {
-            var armorModel = AppearanceArmor.Invalid;
+            var armorModel = ItemAppearanceArmorType.Invalid;
             switch (colorTarget)
             {
                 case ColorTarget.LeftShoulder:
-                    armorModel = AppearanceArmor.LeftShoulder;
+                    armorModel = ItemAppearanceArmorType.LeftShoulder;
                     break;
                 case ColorTarget.LeftBicep:
-                    armorModel = AppearanceArmor.LeftBicep;
+                    armorModel = ItemAppearanceArmorType.LeftBicep;
                     break;
                 case ColorTarget.LeftForearm:
-                    armorModel = AppearanceArmor.LeftForearm;
+                    armorModel = ItemAppearanceArmorType.LeftForearm;
                     break;
                 case ColorTarget.LeftHand:
-                    armorModel = AppearanceArmor.LeftHand;
+                    armorModel = ItemAppearanceArmorType.LeftHand;
                     break;
                 case ColorTarget.LeftThigh:
-                    armorModel = AppearanceArmor.LeftThigh;
+                    armorModel = ItemAppearanceArmorType.LeftThigh;
                     break;
                 case ColorTarget.LeftShin:
-                    armorModel = AppearanceArmor.LeftShin;
+                    armorModel = ItemAppearanceArmorType.LeftShin;
                     break;
                 case ColorTarget.LeftFoot:
-                    armorModel = AppearanceArmor.LeftFoot;
+                    armorModel = ItemAppearanceArmorType.LeftFoot;
                     break;
                 case ColorTarget.RightShoulder:
-                    armorModel = AppearanceArmor.RightShoulder;
+                    armorModel = ItemAppearanceArmorType.RightShoulder;
                     break;
                 case ColorTarget.RightBicep:
-                    armorModel = AppearanceArmor.RightBicep;
+                    armorModel = ItemAppearanceArmorType.RightBicep;
                     break;
                 case ColorTarget.RightForearm:
-                    armorModel = AppearanceArmor.RightForearm;
+                    armorModel = ItemAppearanceArmorType.RightForearm;
                     break;
                 case ColorTarget.RightHand:
-                    armorModel = AppearanceArmor.RightHand;
+                    armorModel = ItemAppearanceArmorType.RightHand;
                     break;
                 case ColorTarget.RightThigh:
-                    armorModel = AppearanceArmor.RightThigh;
+                    armorModel = ItemAppearanceArmorType.RightThigh;
                     break;
                 case ColorTarget.RightShin:
-                    armorModel = AppearanceArmor.RightShin;
+                    armorModel = ItemAppearanceArmorType.RightShin;
                     break;
                 case ColorTarget.RightFoot:
-                    armorModel = AppearanceArmor.RightFoot;
+                    armorModel = ItemAppearanceArmorType.RightFoot;
                     break;
                 case ColorTarget.Neck:
-                    armorModel = AppearanceArmor.Neck;
+                    armorModel = ItemAppearanceArmorType.Neck;
                     break;
                 case ColorTarget.Chest:
-                    armorModel = AppearanceArmor.Torso;
+                    armorModel = ItemAppearanceArmorType.Torso;
                     break;
                 case ColorTarget.Belt:
-                    armorModel = AppearanceArmor.Belt;
+                    armorModel = ItemAppearanceArmorType.Belt;
                     break;
                 case ColorTarget.Pelvis:
-                    armorModel = AppearanceArmor.Pelvis;
+                    armorModel = ItemAppearanceArmorType.Pelvis;
                     break;
                 case ColorTarget.Robe:
-                    armorModel = AppearanceArmor.Robe;
+                    armorModel = ItemAppearanceArmorType.Robe;
                     break;
             }
 
             return armorModel;
         }
 
-        private int CalculatePerPartColorIndex(AppearanceArmor armorModel, AppearanceArmorColor colorChannel)
+        private int CalculatePerPartColorIndex(ItemAppearanceArmorType armorModel, ItemAppearanceArmorColorType colorChannel)
         {
-            return (int)AppearanceArmorColor.NumColors + (int)armorModel * (int)AppearanceArmorColor.NumColors + (int)colorChannel;
+            return (int)ItemAppearanceArmorColorType.NumColors + (int)armorModel * (int)ItemAppearanceArmorColorType.NumColors + (int)colorChannel;
         }
 
-        public Action OnClickColorTarget(ColorTarget target, AppearanceArmorColor channel) => () =>
+        public Action OnClickColorTarget(ColorTarget target, ItemAppearanceArmorColorType channel) => () =>
         {
             ToggleItemEquippedFlags();
             if (DoesNotHaveItemEquipped)
@@ -1954,32 +1952,32 @@ namespace SWLOR.Component.Character.UI.ViewModel
 
             // We only swap the palette if we're moving from a Cloth/Leather palette to a Metal palette or vice-versa.
             // This (slightly) works around a NUI issue where the palette will disappear when switching between Cloth/Leather and Metal.
-            if ((channel == AppearanceArmorColor.Metal1 || channel == AppearanceArmorColor.Metal2) && !_isMetalPalette)
+            if ((channel == ItemAppearanceArmorColorType.Metal1 || channel == ItemAppearanceArmorColorType.Metal2) && !_isMetalPalette)
             {
                 ChangePartialView(ArmorColorElement, ArmorColorsMetal);
                 _isMetalPalette = true;
             }
-            else if(_isMetalPalette && channel != AppearanceArmorColor.Metal1 && channel != AppearanceArmorColor.Metal2)
+            else if(_isMetalPalette && channel != ItemAppearanceArmorColorType.Metal1 && channel != ItemAppearanceArmorColorType.Metal2)
             {
                 ChangePartialView(ArmorColorElement, ArmorColorsClothLeather);
                 _isMetalPalette = false;
             }
         };
 
-        private GuiRectangle BuildColorRegion(ColorTarget target, AppearanceArmorColor colorChannel)
+        private GuiRectangle BuildColorRegion(ColorTarget target, ItemAppearanceArmorColorType colorChannel)
         {
             var item = GetItem();
             int colorId;
 
             if (target == ColorTarget.Global)
             {
-                colorId = GetItemAppearance(item, ItemAppearanceType.ArmorColor, (int)colorChannel);
+                colorId = GetItemAppearance(item, ItemModelColorType.ArmorColor, (int)colorChannel);
             }
             else
             {
                 var armorModel = GetArmorModelType(target);
                 var perPartColorIndex = CalculatePerPartColorIndex(armorModel, colorChannel);
-                colorId = GetItemAppearance(item, ItemAppearanceType.ArmorColor, perPartColorIndex);
+                colorId = GetItemAppearance(item, ItemModelColorType.ArmorColor, perPartColorIndex);
             }
 
             var (x, y) = ColorIdToCoordinates(colorId);
@@ -2072,22 +2070,22 @@ namespace SWLOR.Component.Character.UI.ViewModel
 
             switch (_selectedColorChannel)
             {
-                case AppearanceArmorColor.Leather1:
+                case ItemAppearanceArmorColorType.Leather1:
                     channelName = "Leather 1";
                     break;
-                case AppearanceArmorColor.Leather2:
+                case ItemAppearanceArmorColorType.Leather2:
                     channelName = "Leather 2";
                     break;
-                case AppearanceArmorColor.Cloth1:
+                case ItemAppearanceArmorColorType.Cloth1:
                     channelName = "Cloth 1";
                     break;
-                case AppearanceArmorColor.Cloth2:
+                case ItemAppearanceArmorColorType.Cloth2:
                     channelName = "Cloth 2";
                     break;
-                case AppearanceArmorColor.Metal1:
+                case ItemAppearanceArmorColorType.Metal1:
                     channelName = "Metal 1";
                     break;
-                case AppearanceArmorColor.Metal2:
+                case ItemAppearanceArmorColorType.Metal2:
                     channelName = "Metal 2";
                     break;
                 default:
@@ -2103,7 +2101,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
             return options.IndexOf(options.Single(x => x.Value == value));
         }
 
-        private void AdjustArmorPart(AppearanceArmor partType, int adjustBy)
+        private void AdjustArmorPart(ItemAppearanceArmorType partType, int adjustBy)
         {
             _skipAdjustArmorPart = true;
             var appearanceType = GetAppearanceType(_target);
@@ -2121,79 +2119,79 @@ namespace SWLOR.Component.Character.UI.ViewModel
 
             switch (partType)
             {
-                case AppearanceArmor.RightFoot:
+                case ItemAppearanceArmorType.RightFoot:
                     RightFootSelection = Adjust(RightFootOptions, RightFootSelection);
                     ModifyItemPart((int)partType, _armorAppearances[appearanceType].Foot[ArmorValueToIndex(RightFootOptions, RightFootSelection)]);
                     break;
-                case AppearanceArmor.LeftFoot:
+                case ItemAppearanceArmorType.LeftFoot:
                     LeftFootSelection = Adjust(LeftFootOptions, LeftFootSelection);
                     ModifyItemPart((int)partType, _armorAppearances[appearanceType].Foot[ArmorValueToIndex(LeftFootOptions, LeftFootSelection)]);
                     break;
-                case AppearanceArmor.RightShin:
+                case ItemAppearanceArmorType.RightShin:
                     RightShinSelection = Adjust(RightShinOptions, RightShinSelection);
                     ModifyItemPart((int)partType, _armorAppearances[appearanceType].Shin[ArmorValueToIndex(RightShinOptions, RightShinSelection)]);
                     break;
-                case AppearanceArmor.LeftShin:
+                case ItemAppearanceArmorType.LeftShin:
                     LeftShinSelection = Adjust(LeftShinOptions, LeftShinSelection);
                     ModifyItemPart((int)partType, _armorAppearances[appearanceType].Shin[ArmorValueToIndex(LeftShinOptions, LeftShinSelection)]);
                     break;
-                case AppearanceArmor.LeftThigh:
+                case ItemAppearanceArmorType.LeftThigh:
                     LeftThighSelection = Adjust(LeftThighOptions, LeftThighSelection);
                     ModifyItemPart((int)partType, _armorAppearances[appearanceType].Thigh[ArmorValueToIndex(LeftThighOptions, LeftThighSelection)]);
                     break;
-                case AppearanceArmor.RightThigh:
+                case ItemAppearanceArmorType.RightThigh:
                     RightThighSelection = Adjust(RightThighOptions, RightThighSelection);
                     ModifyItemPart((int)partType, _armorAppearances[appearanceType].Thigh[ArmorValueToIndex(RightThighOptions, RightThighSelection)]);
                     break;
-                case AppearanceArmor.Pelvis:
+                case ItemAppearanceArmorType.Pelvis:
                     PelvisSelection = Adjust(PelvisOptions, PelvisSelection);
                     ModifyItemPart((int)partType, _armorAppearances[appearanceType].Pelvis[ArmorValueToIndex(PelvisOptions, PelvisSelection)]);
                     break;
-                case AppearanceArmor.Torso:
+                case ItemAppearanceArmorType.Torso:
                     ChestSelection = Adjust(ChestOptions, ChestSelection);
                     ModifyItemPart((int)partType, _armorAppearances[appearanceType].Torso[ArmorValueToIndex(ChestOptions, ChestSelection)]);
                     break;
-                case AppearanceArmor.Belt:
+                case ItemAppearanceArmorType.Belt:
                     BeltSelection = Adjust(BeltOptions, BeltSelection);
                     ModifyItemPart((int)partType, _armorAppearances[appearanceType].Belt[ArmorValueToIndex(BeltOptions, BeltSelection)]);
                     break;
-                case AppearanceArmor.Neck:
+                case ItemAppearanceArmorType.Neck:
                     NeckSelection = Adjust(NeckOptions, NeckSelection);
                     ModifyItemPart((int)partType, _armorAppearances[appearanceType].Neck[ArmorValueToIndex(NeckOptions, NeckSelection)]);
                     break;
-                case AppearanceArmor.RightForearm:
+                case ItemAppearanceArmorType.RightForearm:
                     RightForearmSelection = Adjust(RightForearmOptions, RightForearmSelection);
                     ModifyItemPart((int)partType, _armorAppearances[appearanceType].Forearm[ArmorValueToIndex(RightForearmOptions, RightForearmSelection)]);
                     break;
-                case AppearanceArmor.LeftForearm:
+                case ItemAppearanceArmorType.LeftForearm:
                     LeftForearmSelection = Adjust(LeftForearmOptions, LeftForearmSelection);
                     ModifyItemPart((int)partType, _armorAppearances[appearanceType].Forearm[ArmorValueToIndex(LeftForearmOptions, LeftForearmSelection)]);
                     break;
-                case AppearanceArmor.RightBicep:
+                case ItemAppearanceArmorType.RightBicep:
                     RightBicepSelection = Adjust(RightBicepOptions, RightBicepSelection);
                     ModifyItemPart((int)partType, _armorAppearances[appearanceType].Bicep[ArmorValueToIndex(RightBicepOptions, RightBicepSelection)]);
                     break;
-                case AppearanceArmor.LeftBicep:
+                case ItemAppearanceArmorType.LeftBicep:
                     LeftBicepSelection = Adjust(LeftBicepOptions, LeftBicepSelection);
                     ModifyItemPart((int)partType, _armorAppearances[appearanceType].Bicep[ArmorValueToIndex(LeftBicepOptions, LeftBicepSelection)]);
                     break;
-                case AppearanceArmor.RightShoulder:
+                case ItemAppearanceArmorType.RightShoulder:
                     RightShoulderSelection = Adjust(RightShoulderOptions, RightShoulderSelection);
                     ModifyItemPart((int)partType, _armorAppearances[appearanceType].Shoulder[ArmorValueToIndex(RightShoulderOptions, RightShoulderSelection)]);
                     break;
-                case AppearanceArmor.LeftShoulder:
+                case ItemAppearanceArmorType.LeftShoulder:
                     LeftShoulderSelection = Adjust(LeftShoulderOptions, LeftShoulderSelection);
                     ModifyItemPart((int)partType, _armorAppearances[appearanceType].Shoulder[ArmorValueToIndex(LeftShoulderOptions, LeftShoulderSelection)]);
                     break;
-                case AppearanceArmor.RightHand:
+                case ItemAppearanceArmorType.RightHand:
                     RightHandSelection = Adjust(RightHandOptions, RightHandSelection);
                     ModifyItemPart((int)partType, _armorAppearances[appearanceType].Hand[ArmorValueToIndex(RightHandOptions, RightHandSelection)]);
                     break;
-                case AppearanceArmor.LeftHand:
+                case ItemAppearanceArmorType.LeftHand:
                     LeftHandSelection = Adjust(LeftHandOptions, LeftHandSelection);
                     ModifyItemPart((int)partType, _armorAppearances[appearanceType].Hand[ArmorValueToIndex(LeftHandOptions, LeftHandSelection)]);
                     break;
-                case AppearanceArmor.Robe:
+                case ItemAppearanceArmorType.Robe:
                     RobeSelection = Adjust(RobeOptions, RobeSelection);
                     ModifyItemPart((int)partType, _armorAppearances[appearanceType].Robe[ArmorValueToIndex(RobeOptions, RobeSelection)]);
                     break;
@@ -2202,7 +2200,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
             _skipAdjustArmorPart = false;
         }
 
-        public Action OnClickAdjustArmorPart(AppearanceArmor partType, int adjustBy) => () =>
+        public Action OnClickAdjustArmorPart(ItemAppearanceArmorType partType, int adjustBy) => () =>
         {
             ToggleItemEquippedFlags();
             if (DoesNotHaveItemEquipped)
@@ -2223,63 +2221,63 @@ namespace SWLOR.Component.Character.UI.ViewModel
             var copyTo = GetArmorModelType(copyToTarget);
 
             // Cloth 1
-            if (GetBaseItemFitsInInventory(BaseItem.Armor, _target))
+            if (GetBaseItemFitsInInventory(BaseItemType.Armor, _target))
             {
-                var copyToIndex = CalculatePerPartColorIndex(copyTo, AppearanceArmorColor.Cloth1);
-                var copyFromIndex = CalculatePerPartColorIndex(copyFrom, AppearanceArmorColor.Cloth1);
-                var newColor = GetItemAppearance(item, ItemAppearanceType.ArmorColor, copyFromIndex);
-                ChangeColor(copyToTarget, AppearanceArmorColor.Cloth1, newColor);
-                item = CopyItemAndModify(item, ItemAppearanceType.ArmorColor, copyToIndex, newColor, true);
+                var copyToIndex = CalculatePerPartColorIndex(copyTo, ItemAppearanceArmorColorType.Cloth1);
+                var copyFromIndex = CalculatePerPartColorIndex(copyFrom, ItemAppearanceArmorColorType.Cloth1);
+                var newColor = GetItemAppearance(item, ItemModelColorType.ArmorColor, copyFromIndex);
+                ChangeColor(copyToTarget, ItemAppearanceArmorColorType.Cloth1, newColor);
+                item = CopyItemAndModify(item, ItemModelColorType.ArmorColor, copyToIndex, newColor, true);
                 DestroyObject(item);
             }
             // Cloth 2
-            if (GetBaseItemFitsInInventory(BaseItem.Armor, _target))
+            if (GetBaseItemFitsInInventory(BaseItemType.Armor, _target))
             {
-                var copyToIndex = CalculatePerPartColorIndex(copyTo, AppearanceArmorColor.Cloth2);
-                var copyFromIndex = CalculatePerPartColorIndex(copyFrom, AppearanceArmorColor.Cloth2);
-                var newColor = GetItemAppearance(item, ItemAppearanceType.ArmorColor, copyFromIndex);
-                ChangeColor(copyToTarget, AppearanceArmorColor.Cloth2, newColor);
-                item = CopyItemAndModify(item, ItemAppearanceType.ArmorColor, copyToIndex, newColor, true);
+                var copyToIndex = CalculatePerPartColorIndex(copyTo, ItemAppearanceArmorColorType.Cloth2);
+                var copyFromIndex = CalculatePerPartColorIndex(copyFrom, ItemAppearanceArmorColorType.Cloth2);
+                var newColor = GetItemAppearance(item, ItemModelColorType.ArmorColor, copyFromIndex);
+                ChangeColor(copyToTarget, ItemAppearanceArmorColorType.Cloth2, newColor);
+                item = CopyItemAndModify(item, ItemModelColorType.ArmorColor, copyToIndex, newColor, true);
                 DestroyObject(item);
             }
             // Leather 1
-            if (GetBaseItemFitsInInventory(BaseItem.Armor, _target))
+            if (GetBaseItemFitsInInventory(BaseItemType.Armor, _target))
             {
-                var copyToIndex = CalculatePerPartColorIndex(copyTo, AppearanceArmorColor.Leather1);
-                var copyFromIndex = CalculatePerPartColorIndex(copyFrom, AppearanceArmorColor.Leather1);
-                var newColor = GetItemAppearance(item, ItemAppearanceType.ArmorColor, copyFromIndex);
-                ChangeColor(copyToTarget, AppearanceArmorColor.Leather1, newColor);
-                item = CopyItemAndModify(item, ItemAppearanceType.ArmorColor, copyToIndex, newColor, true);
+                var copyToIndex = CalculatePerPartColorIndex(copyTo, ItemAppearanceArmorColorType.Leather1);
+                var copyFromIndex = CalculatePerPartColorIndex(copyFrom, ItemAppearanceArmorColorType.Leather1);
+                var newColor = GetItemAppearance(item, ItemModelColorType.ArmorColor, copyFromIndex);
+                ChangeColor(copyToTarget, ItemAppearanceArmorColorType.Leather1, newColor);
+                item = CopyItemAndModify(item, ItemModelColorType.ArmorColor, copyToIndex, newColor, true);
                 DestroyObject(item);
             }
             // Leather 2
-            if (GetBaseItemFitsInInventory(BaseItem.Armor, _target))
+            if (GetBaseItemFitsInInventory(BaseItemType.Armor, _target))
             {
-                var copyToIndex = CalculatePerPartColorIndex(copyTo, AppearanceArmorColor.Leather2);
-                var copyFromIndex = CalculatePerPartColorIndex(copyFrom, AppearanceArmorColor.Leather2);
-                var newColor = GetItemAppearance(item, ItemAppearanceType.ArmorColor, copyFromIndex);
-                ChangeColor(copyToTarget, AppearanceArmorColor.Leather2, newColor);
-                item = CopyItemAndModify(item, ItemAppearanceType.ArmorColor, copyToIndex, newColor, true);
+                var copyToIndex = CalculatePerPartColorIndex(copyTo, ItemAppearanceArmorColorType.Leather2);
+                var copyFromIndex = CalculatePerPartColorIndex(copyFrom, ItemAppearanceArmorColorType.Leather2);
+                var newColor = GetItemAppearance(item, ItemModelColorType.ArmorColor, copyFromIndex);
+                ChangeColor(copyToTarget, ItemAppearanceArmorColorType.Leather2, newColor);
+                item = CopyItemAndModify(item, ItemModelColorType.ArmorColor, copyToIndex, newColor, true);
                 DestroyObject(item);
             }
             // Metal 1
-            if (GetBaseItemFitsInInventory(BaseItem.Armor, _target))
+            if (GetBaseItemFitsInInventory(BaseItemType.Armor, _target))
             {
-                var copyToIndex = CalculatePerPartColorIndex(copyTo, AppearanceArmorColor.Metal1);
-                var copyFromIndex = CalculatePerPartColorIndex(copyFrom, AppearanceArmorColor.Metal1);
-                var newColor = GetItemAppearance(item, ItemAppearanceType.ArmorColor, copyFromIndex);
-                ChangeColor(copyToTarget, AppearanceArmorColor.Metal1, newColor);
-                item = CopyItemAndModify(item, ItemAppearanceType.ArmorColor, copyToIndex, newColor, true);
+                var copyToIndex = CalculatePerPartColorIndex(copyTo, ItemAppearanceArmorColorType.Metal1);
+                var copyFromIndex = CalculatePerPartColorIndex(copyFrom, ItemAppearanceArmorColorType.Metal1);
+                var newColor = GetItemAppearance(item, ItemModelColorType.ArmorColor, copyFromIndex);
+                ChangeColor(copyToTarget, ItemAppearanceArmorColorType.Metal1, newColor);
+                item = CopyItemAndModify(item, ItemModelColorType.ArmorColor, copyToIndex, newColor, true);
                 DestroyObject(item);
             }
             // Metal 2
-            if (GetBaseItemFitsInInventory(BaseItem.Armor, _target))
+            if (GetBaseItemFitsInInventory(BaseItemType.Armor, _target))
             {
-                var copyToIndex = CalculatePerPartColorIndex(copyTo, AppearanceArmorColor.Metal2);
-                var copyFromIndex = CalculatePerPartColorIndex(copyFrom, AppearanceArmorColor.Metal2);
-                var newColor = GetItemAppearance(item, ItemAppearanceType.ArmorColor, copyFromIndex);
-                ChangeColor(copyToTarget, AppearanceArmorColor.Metal2, newColor);
-                item = CopyItemAndModify(item, ItemAppearanceType.ArmorColor, copyToIndex, newColor, true);
+                var copyToIndex = CalculatePerPartColorIndex(copyTo, ItemAppearanceArmorColorType.Metal2);
+                var copyFromIndex = CalculatePerPartColorIndex(copyFrom, ItemAppearanceArmorColorType.Metal2);
+                var newColor = GetItemAppearance(item, ItemModelColorType.ArmorColor, copyFromIndex);
+                ChangeColor(copyToTarget, ItemAppearanceArmorColorType.Metal2, newColor);
+                item = CopyItemAndModify(item, ItemModelColorType.ArmorColor, copyToIndex, newColor, true);
                 DestroyObject(item);
             }
         }
@@ -2314,37 +2312,37 @@ namespace SWLOR.Component.Character.UI.ViewModel
 
             // Part modification
             RightShoulderSelection = LeftShoulderSelection;
-            item = CopyItemAndModify(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightShoulder, _armorAppearances[appearanceType].Shoulder[ArmorValueToIndex(RightShoulderOptions, RightShoulderSelection)], true);
+            item = CopyItemAndModify(item, ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.RightShoulder, _armorAppearances[appearanceType].Shoulder[ArmorValueToIndex(RightShoulderOptions, RightShoulderSelection)], true);
             DestroyObject(item);
 
             RightBicepSelection = LeftBicepSelection;
-            item = CopyItemAndModify(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightBicep, _armorAppearances[appearanceType].Bicep[ArmorValueToIndex(RightBicepOptions, RightBicepSelection)], true);
+            item = CopyItemAndModify(item, ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.RightBicep, _armorAppearances[appearanceType].Bicep[ArmorValueToIndex(RightBicepOptions, RightBicepSelection)], true);
             DestroyObject(item);
 
             RightForearmSelection = LeftForearmSelection;
-            item = CopyItemAndModify(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightForearm, _armorAppearances[appearanceType].Forearm[ArmorValueToIndex(RightForearmOptions, RightForearmSelection)], true);
+            item = CopyItemAndModify(item, ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.RightForearm, _armorAppearances[appearanceType].Forearm[ArmorValueToIndex(RightForearmOptions, RightForearmSelection)], true);
             DestroyObject(item);
 
             RightHandSelection = LeftHandSelection;
-            item = CopyItemAndModify(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightHand, _armorAppearances[appearanceType].Hand[ArmorValueToIndex(RightHandOptions, RightHandSelection)], true);
+            item = CopyItemAndModify(item, ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.RightHand, _armorAppearances[appearanceType].Hand[ArmorValueToIndex(RightHandOptions, RightHandSelection)], true);
             DestroyObject(item);
 
             RightThighSelection = LeftThighSelection;
-            item = CopyItemAndModify(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightThigh, _armorAppearances[appearanceType].Thigh[ArmorValueToIndex(RightThighOptions, RightThighSelection)], true);
+            item = CopyItemAndModify(item, ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.RightThigh, _armorAppearances[appearanceType].Thigh[ArmorValueToIndex(RightThighOptions, RightThighSelection)], true);
             DestroyObject(item);
 
             RightShinSelection = LeftShinSelection;
-            item = CopyItemAndModify(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightShin, _armorAppearances[appearanceType].Shin[ArmorValueToIndex(RightShinOptions, RightShinSelection)], true);
+            item = CopyItemAndModify(item, ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.RightShin, _armorAppearances[appearanceType].Shin[ArmorValueToIndex(RightShinOptions, RightShinSelection)], true);
             DestroyObject(item);
 
             RightFootSelection = LeftFootSelection;
-            item = CopyItemAndModify(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightFoot, _armorAppearances[appearanceType].Foot[ArmorValueToIndex(RightFootOptions, RightFootSelection)], true);
+            item = CopyItemAndModify(item, ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.RightFoot, _armorAppearances[appearanceType].Foot[ArmorValueToIndex(RightFootOptions, RightFootSelection)], true);
 
             // Copy the item from the outfit barrel back to the player.
             var updatedItem = CopyItem(item, _target, true);
             DestroyObject(item);
             
-            AssignCommand(_target, () => ActionEquipItem(updatedItem, InventorySlot.Chest));
+            AssignCommand(_target, () => ActionEquipItem(updatedItem, InventorySlotType.Chest));
 
             DelayCommand(1f, () =>
             {
@@ -2385,37 +2383,37 @@ namespace SWLOR.Component.Character.UI.ViewModel
 
             // Part modification
             LeftShoulderSelection = RightShoulderSelection;
-            item = CopyItemAndModify(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftShoulder, _armorAppearances[appearanceType].Shoulder[ArmorValueToIndex(LeftShoulderOptions, LeftShoulderSelection)], true);
+            item = CopyItemAndModify(item, ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.LeftShoulder, _armorAppearances[appearanceType].Shoulder[ArmorValueToIndex(LeftShoulderOptions, LeftShoulderSelection)], true);
             DestroyObject(item);
 
             LeftBicepSelection = RightBicepSelection;
-            item = CopyItemAndModify(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftBicep, _armorAppearances[appearanceType].Bicep[ArmorValueToIndex(LeftBicepOptions, LeftBicepSelection)], true);
+            item = CopyItemAndModify(item, ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.LeftBicep, _armorAppearances[appearanceType].Bicep[ArmorValueToIndex(LeftBicepOptions, LeftBicepSelection)], true);
             DestroyObject(item);
 
             LeftForearmSelection = RightForearmSelection;
-            item = CopyItemAndModify(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftForearm, _armorAppearances[appearanceType].Forearm[ArmorValueToIndex(LeftForearmOptions, LeftForearmSelection)], true);
+            item = CopyItemAndModify(item, ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.LeftForearm, _armorAppearances[appearanceType].Forearm[ArmorValueToIndex(LeftForearmOptions, LeftForearmSelection)], true);
             DestroyObject(item);
 
             LeftHandSelection = RightHandSelection;
-            item = CopyItemAndModify(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftHand, _armorAppearances[appearanceType].Hand[ArmorValueToIndex(LeftHandOptions, LeftHandSelection)], true);
+            item = CopyItemAndModify(item, ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.LeftHand, _armorAppearances[appearanceType].Hand[ArmorValueToIndex(LeftHandOptions, LeftHandSelection)], true);
             DestroyObject(item);
 
             LeftThighSelection = RightThighSelection;
-            item = CopyItemAndModify(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftThigh, _armorAppearances[appearanceType].Thigh[ArmorValueToIndex(LeftThighOptions, LeftThighSelection)], true);
+            item = CopyItemAndModify(item, ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.LeftThigh, _armorAppearances[appearanceType].Thigh[ArmorValueToIndex(LeftThighOptions, LeftThighSelection)], true);
             DestroyObject(item);
 
             LeftShinSelection = RightShinSelection;
-            item = CopyItemAndModify(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftShin, _armorAppearances[appearanceType].Shin[ArmorValueToIndex(LeftShinOptions, LeftShinSelection)], true);
+            item = CopyItemAndModify(item, ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.LeftShin, _armorAppearances[appearanceType].Shin[ArmorValueToIndex(LeftShinOptions, LeftShinSelection)], true);
             DestroyObject(item);
 
             LeftFootSelection = RightFootSelection;
-            item = CopyItemAndModify(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftFoot, _armorAppearances[appearanceType].Foot[ArmorValueToIndex(LeftFootOptions, LeftFootSelection)], true);
+            item = CopyItemAndModify(item, ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.LeftFoot, _armorAppearances[appearanceType].Foot[ArmorValueToIndex(LeftFootOptions, LeftFootSelection)], true);
 
             // Copy the item from the outfit barrel back to the player.
             var updatedItem = CopyItem(item, _target, true);
             DestroyObject(item);
             
-            AssignCommand(_target, () => ActionEquipItem(updatedItem, InventorySlot.Chest));
+            AssignCommand(_target, () => ActionEquipItem(updatedItem, InventorySlotType.Chest));
 
             DelayCommand(1f, () =>
             {
@@ -2427,13 +2425,13 @@ namespace SWLOR.Component.Character.UI.ViewModel
 
         private void UpdateArmorDisplay()
         {
-            var helmet = GetItemInSlot(InventorySlot.Head, _target);
+            var helmet = GetItemInSlot(InventorySlotType.Head, _target);
             if (GetIsObjectValid(helmet))
             {
                 SetHiddenWhenEquipped(helmet, !ShowHelmet);
             }
 
-            var cloak = GetItemInSlot(InventorySlot.Cloak, _target);
+            var cloak = GetItemInSlot(InventorySlotType.Cloak, _target);
             if (GetIsObjectValid(cloak))
             {
                 SetHiddenWhenEquipped(cloak, !ShowCloak);

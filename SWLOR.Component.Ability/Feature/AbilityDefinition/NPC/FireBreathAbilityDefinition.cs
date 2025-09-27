@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Character.ValueObjects;
@@ -45,7 +44,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.NPC
                     var attackerStat = GetAbilityScore(activator, AbilityType.Perception);
                     var dmg = 3;
                     
-                    var coneTarget = GetFirstObjectInShape(Shape.SpellCone, 14.0f, location);
+                    var coneTarget = GetFirstObjectInShape(ShapeType.SpellCone, 14.0f, location);
                     while (GetIsObjectValid(coneTarget))
                     {
                         if (GetIsEnemy(coneTarget, activator))
@@ -61,11 +60,11 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.NPC
                                 defenderStat, 
                                 0);
 
-                            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Com_Hit_Fire), coneTarget);
+                            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Com_Hit_Fire), coneTarget);
                             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Fire), coneTarget);
                         }
 
-                        coneTarget = GetNextObjectInShape(Shape.SpellCone, 14.0f, location);
+                        coneTarget = GetNextObjectInShape(ShapeType.SpellCone, 14.0f, location);
                     }
                 });
         }
@@ -83,7 +82,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.NPC
                     var attackerStat = GetAbilityScore(activator, AbilityType.Perception);
                     var dmg = 120;
 
-                    var coneTarget = GetFirstObjectInShape(Shape.SpellCone, 14.0f, location);
+                    var coneTarget = GetFirstObjectInShape(ShapeType.SpellCone, 14.0f, location);
                     while (GetIsObjectValid(coneTarget))
                     {
                         if (GetIsEnemy(coneTarget, activator))
@@ -99,11 +98,11 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.NPC
                                 defenderStat,
                                 0);
 
-                            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Com_Hit_Fire), coneTarget);
+                            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Com_Hit_Fire), coneTarget);
                             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Fire), coneTarget);
                         }
 
-                        coneTarget = GetNextObjectInShape(Shape.SpellCone, 14.0f, location);
+                        coneTarget = GetNextObjectInShape(ShapeType.SpellCone, 14.0f, location);
                     }
                 });
         }

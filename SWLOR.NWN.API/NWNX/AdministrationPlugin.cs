@@ -230,7 +230,7 @@ namespace SWLOR.NWN.API.NWNX
         /// Administration options control various server behaviors and policies.
         /// Use SetPlayOption() to modify these values.
         /// </remarks>
-        public static bool GetPlayOption(AdministrationOption option)
+        public static bool GetPlayOption(AdministrationOptionType option)
         {
             int result = AdminPlugin.GetPlayOption((int)option);
             return result != 0;
@@ -246,7 +246,7 @@ namespace SWLOR.NWN.API.NWNX
         /// Changes take effect immediately and may affect all connected players.
         /// Use GetPlayOption() to query current values.
         /// </remarks>
-        public static void SetPlayOption(AdministrationOption option, bool value)
+        public static void SetPlayOption(AdministrationOptionType option, bool value)
         {
             AdminPlugin.SetPlayOption((int)option, value ? 1 : 0);
         }

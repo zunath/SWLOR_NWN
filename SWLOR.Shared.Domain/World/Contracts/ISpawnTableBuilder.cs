@@ -1,5 +1,4 @@
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Domain.AI.ValueObjects;
 using SWLOR.Shared.Domain.World.ValueObjects;
 
@@ -86,7 +85,7 @@ public interface ISpawnTableBuilder
     /// <returns>A spawn table builder with the configured settings.</returns>
     ISpawnTableBuilder ReturnsHome();
 
-    ISpawnTableBuilder PlayAnimation(DurationType duration, AnimationEvent animEvent, VisualEffect vfx);
+    ISpawnTableBuilder PlayAnimation(DurationType duration, AnimationEvent animEvent, VisualEffectType vfx);
 
     /// <summary>
     /// Adds an action to run when this particular spawn is created.

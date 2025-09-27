@@ -1,8 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Associate;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Domain.Beasts.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Character.ValueObjects;
@@ -40,7 +38,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beastmaster
                 .Name("Soothe Pet")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.Tame, 60f * 3)
-                .UsesAnimation(Animation.LoopingGetMid)
+                .UsesAnimation(AnimationType.LoopingGetMid)
                 .HasActivationDelay(1f)
                 .RequirementStamina(2)
                 .IsCastedAbility()
@@ -76,15 +74,15 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beastmaster
                     StatusEffectService.Remove(beast, StatusEffectType.Disease);
 
                     RemoveEffect(beast, 
-                        EffectTypeScript.Disease, 
-                        EffectTypeScript.Poison, 
-                        EffectTypeScript.Confused,
-                        EffectTypeScript.Paralyze,
-                        EffectTypeScript.Stunned,
-                        EffectTypeScript.Sleep,
-                        EffectTypeScript.Slow);
+                        EffectScriptType.Disease, 
+                        EffectScriptType.Poison, 
+                        EffectScriptType.Confused,
+                        EffectScriptType.Paralyze,
+                        EffectScriptType.Stunned,
+                        EffectScriptType.Sleep,
+                        EffectScriptType.Slow);
 
-                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_G), beast);
+                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Imp_Healing_G), beast);
                     EnmityService.ModifyEnmityOnAll(activator, 500);
                     CombatPointService.AddCombatPointToAllTagged(activator, SkillType.BeastMastery);
                 });

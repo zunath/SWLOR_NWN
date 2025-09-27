@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Character.ValueObjects;
 using SWLOR.Shared.Domain.Combat.Contracts;
@@ -39,7 +38,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.NPC
                 .RequirementStamina(5)
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Magenta), activator, 1.0f);
+                    ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffectType.Vfx_Dur_Aura_Magenta), activator, 1.0f);
                     StatusEffectService.Apply(activator, activator, StatusEffectType.IronShell, 45f);
                 });
         }

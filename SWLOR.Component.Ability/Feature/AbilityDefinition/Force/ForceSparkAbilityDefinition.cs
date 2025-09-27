@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Character.ValueObjects;
@@ -66,7 +65,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
             {
                 RemoveEffectByTag(target, Tier1Tag, Tier2Tag, Tier3Tag);
 
-                dc = combatService.CalculateSavingThrowDC(activator, SavingThrow.Fortitude, dc, AbilityType.Willpower);
+                dc = combatService.CalculateSavingThrowDC(activator, SavingThrowCategoryType.Fortitude, dc, AbilityType.Willpower);
                 var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
 
                 if (checkResult == SavingThrowResultType.Failed)
@@ -78,8 +77,8 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
             }
 
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), target);
-            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Starburst_Red), target);
-            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Beam_Silent_Lightning, false, 2f), target);
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Imp_Starburst_Red), target);
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Beam_Silent_Lightning, false, 2f), target);
 
             if (statService.GetCurrentFP(activator) < 2 + (tier))
             {
@@ -104,7 +103,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .HasMaxRange(10f)
                 .IsHostileAbility()
                 .BreaksStealth()
-                .UsesAnimation(Animation.LoopingConjure1)
+                .UsesAnimation(AnimationType.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level, location) =>
                 {
@@ -123,7 +122,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .HasMaxRange(10f)
                 .IsHostileAbility()
                 .BreaksStealth()
-                .UsesAnimation(Animation.LoopingConjure1)
+                .UsesAnimation(AnimationType.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level, location) =>
                 {
@@ -142,7 +141,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .HasMaxRange(10f)
                 .IsHostileAbility()
                 .BreaksStealth()
-                .UsesAnimation(Animation.LoopingConjure1)
+                .UsesAnimation(AnimationType.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level, location) =>
                 {

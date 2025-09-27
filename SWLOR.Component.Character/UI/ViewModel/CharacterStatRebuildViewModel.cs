@@ -289,13 +289,13 @@ namespace SWLOR.Component.Character.UI.ViewModel
                 AssignCommand(Player, () => ClearAllActions());
                 for (var index = 0; index < NumberOfInventorySlots; index++)
                 {
-                    var slot = (InventorySlot)index;
+                    var slot = (InventorySlotType)index;
                     var item = GetItemInSlot(slot, Player);
                     if (GetIsObjectValid(item)
-                        && slot != InventorySlot.CreatureArmor
-                        && slot != InventorySlot.CreatureBite
-                        && slot != InventorySlot.CreatureLeft
-                        && slot != InventorySlot.CreatureRight)
+                        && slot != InventorySlotType.CreatureArmor
+                        && slot != InventorySlotType.CreatureBite
+                        && slot != InventorySlotType.CreatureLeft
+                        && slot != InventorySlotType.CreatureRight)
                     {
                         AssignCommand(Player, () =>
                         {

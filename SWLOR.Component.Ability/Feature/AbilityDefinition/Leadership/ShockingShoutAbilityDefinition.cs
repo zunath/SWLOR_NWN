@@ -1,8 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Creature;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Character.ValueObjects;
@@ -42,7 +40,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Leadership
                 .HasActivationDelay(4f)
                 .UnaffectedByHeavyArmor()
                 .IsCastedAbility()
-                .UsesAnimation(Animation.FireForgetTaunt)
+                .UsesAnimation(AnimationType.FireForgetTaunt)
                 .HasImpactAction((activator, target, level, location) =>
                 {
                     const float RangeMeters = 10f;
@@ -50,7 +48,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Leadership
                     var nth = 1;
                     var count = 0;
 
-                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Sound_Burst), activator);
+                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Fnf_Sound_Burst), activator);
 
                     var nearest = GetNearestCreature(CreatureType.IsAlive, 1, activator, nth);
                     while (GetIsObjectValid(nearest))
@@ -65,7 +63,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Leadership
                         {
                             count++;
 
-                            var dc = CombatService.CalculateSavingThrowDC(activator, SavingThrow.Will, 14);
+                            var dc = CombatService.CalculateSavingThrowDC(activator, SavingThrowCategoryType.Will, 14);
                             const float BaseDuration = 2f;
                             var bonusDuration = GetAbilityModifier(AbilityType.Social, activator) * 0.5f;
                             var duration = BaseDuration + bonusDuration;
@@ -75,7 +73,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Leadership
                             {
                                 ApplyEffectToObject(DurationType.Temporary, EffectStunned(), nearest, duration);
                                 AbilityService.ApplyTemporaryImmunity(target, duration, ImmunityType.Stun);
-                                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Sonic), nearest);
+                                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Imp_Head_Sonic), nearest);
                             }
 
                             CombatPointService.AddCombatPoint(activator, nearest, SkillType.Leadership, 3);

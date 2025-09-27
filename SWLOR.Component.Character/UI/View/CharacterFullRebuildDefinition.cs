@@ -56,7 +56,7 @@ namespace SWLOR.Component.Character.UI.View
                                 row.AddOptions()
                                     .AddOption("Standard")
                                     .AddOption("Force Sensitive")
-                                    .SetDirection(NuiDirection.Horizontal)
+                                    .SetDirection(NuiDirectionType.Horizontal)
                                     .BindSelectedValue(model => model.CharacterType)
                                     .BindIsEnabled(model => model.CanDistribute);
                                 row.AddSpacer();

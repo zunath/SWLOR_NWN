@@ -31,8 +31,8 @@ namespace SWLOR.Component.Properties.UI.View
                     layout.AddRow(row =>
                     {
                         row.AddLabel()
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetVerticalAlign(NuiVerticalAlign.Middle)
+                            .SetHorizontalAlign(NuiHorizontalAlignType.Left)
+                            .SetVerticalAlign(NuiVerticalAlignType.Middle)
                             .SetHeight(25f)
                             .BindText(model => model.Instructions)
                             .BindColor(model => model.InstructionsColor);
@@ -54,8 +54,8 @@ namespace SWLOR.Component.Properties.UI.View
                                 row.AddLabel()
                                     .BindText(model => model.CityLevel)
                                     .SetHeight(25f)
-                                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                                    .SetVerticalAlign(NuiVerticalAlign.Middle);
+                                    .SetHorizontalAlign(NuiHorizontalAlignType.Left)
+                                    .SetVerticalAlign(NuiVerticalAlignType.Middle);
                             });
 
                             col.AddRow(row =>
@@ -63,15 +63,15 @@ namespace SWLOR.Component.Properties.UI.View
                                 row.AddLabel()
                                     .SetText("Upgrades")
                                     .SetHeight(25f)
-                                    .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                                    .SetVerticalAlign(NuiVerticalAlign.Middle);
+                                    .SetHorizontalAlign(NuiHorizontalAlignType.Center)
+                                    .SetVerticalAlign(NuiVerticalAlignType.Middle);
                             });
 
                             col.AddRow(row =>
                             {
                                 row.AddLabel()
-                                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                                    .SetVerticalAlign(NuiVerticalAlign.Middle)
+                                    .SetHorizontalAlign(NuiHorizontalAlignType.Left)
+                                    .SetVerticalAlign(NuiVerticalAlignType.Middle)
                                     .SetHeight(25f)
                                     .BindText(model => model.BankUpgradeLevel)
                                     .BindTooltip(model => model.BankCurrentUpgrade);
@@ -87,8 +87,8 @@ namespace SWLOR.Component.Properties.UI.View
                             col.AddRow(row =>
                             {
                                 row.AddLabel()
-                                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                                    .SetVerticalAlign(NuiVerticalAlign.Middle)
+                                    .SetHorizontalAlign(NuiHorizontalAlignType.Left)
+                                    .SetVerticalAlign(NuiVerticalAlignType.Middle)
                                     .SetHeight(25f)
                                     .BindText(model => model.MedicalCenterLevel)
                                     .BindTooltip(model => model.MedicalCenterCurrentUpgrade);
@@ -104,8 +104,8 @@ namespace SWLOR.Component.Properties.UI.View
                             col.AddRow(row =>
                             {
                                 row.AddLabel()
-                                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                                    .SetVerticalAlign(NuiVerticalAlign.Middle)
+                                    .SetHorizontalAlign(NuiHorizontalAlignType.Left)
+                                    .SetVerticalAlign(NuiVerticalAlignType.Middle)
                                     .SetHeight(25f)
                                     .BindText(model => model.StarportLevel)
                                     .BindTooltip(model => model.StarportCurrentUpgrade);
@@ -121,8 +121,8 @@ namespace SWLOR.Component.Properties.UI.View
                             col.AddRow(row =>
                             {
                                 row.AddLabel()
-                                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                                    .SetVerticalAlign(NuiVerticalAlign.Middle)
+                                    .SetHorizontalAlign(NuiHorizontalAlignType.Left)
+                                    .SetVerticalAlign(NuiVerticalAlignType.Middle)
                                     .SetHeight(25f)
                                     .BindText(model => model.CantinaLevel)
                                     .BindTooltip(model => model.CantinaCurrentUpgrade);
@@ -140,15 +140,15 @@ namespace SWLOR.Component.Properties.UI.View
                                 row.AddLabel()
                                     .SetText("Taxes & Fees")
                                     .SetHeight(25f)
-                                    .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                                    .SetVerticalAlign(NuiVerticalAlign.Middle);
+                                    .SetHorizontalAlign(NuiHorizontalAlignType.Center)
+                                    .SetVerticalAlign(NuiVerticalAlignType.Middle);
                             });
 
                             col.AddRow(row =>
                             {
                                 row.AddLabel()
-                                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                                    .SetVerticalAlign(NuiVerticalAlign.Middle)
+                                    .SetHorizontalAlign(NuiHorizontalAlignType.Left)
+                                    .SetVerticalAlign(NuiVerticalAlignType.Middle)
                                     .SetText("Transportation:")
                                     .SetHeight(25f)
                                     .SetTooltip("A percentage rate added to all transportation fees. (Range: 0%-25%)");
@@ -163,8 +163,8 @@ namespace SWLOR.Component.Properties.UI.View
                             col.AddRow(row =>
                             {
                                 row.AddLabel()
-                                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                                    .SetVerticalAlign(NuiVerticalAlign.Middle)
+                                    .SetHorizontalAlign(NuiHorizontalAlignType.Left)
+                                    .SetVerticalAlign(NuiVerticalAlignType.Middle)
                                     .SetText("Citizenship:")
                                     .SetHeight(25f)
                                     .SetTooltip("A flat rate of credits charged to each citizen once a week. (Range: 0-50000)");
@@ -248,8 +248,8 @@ namespace SWLOR.Component.Properties.UI.View
                             {
                                 row.AddLabel()
                                     .SetText("Upkeep")
-                                    .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                                    .SetVerticalAlign(NuiVerticalAlign.Middle)
+                                    .SetHorizontalAlign(NuiHorizontalAlignType.Center)
+                                    .SetVerticalAlign(NuiVerticalAlignType.Middle)
                                     .SetHeight(25f);
                             });
 

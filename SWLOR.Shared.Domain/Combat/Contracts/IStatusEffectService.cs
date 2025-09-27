@@ -102,7 +102,7 @@ namespace SWLOR.Shared.Domain.Combat.Contracts
         /// <returns>A float time remaining of the status effect</returns>
         int GetEffectDuration(uint creature, params StatusEffectType[] effectTypes);
 
-        EffectTypeScript GetEffectTypeFromIcon(EffectIconType effectIcon);
+        EffectScriptType GetEffectTypeFromIcon(EffectIconType effectIcon);
         List<StatusEffectType> GetStatusEffectTypesFromIcon(EffectIconType effectIcon);
         AbilityType GetAbilityTypeBuffed(EffectIconType effectIcon);
     }

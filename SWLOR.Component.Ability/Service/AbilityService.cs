@@ -3,7 +3,6 @@ using SWLOR.Component.Ability.Contracts;
 using SWLOR.Component.Ability.Model;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
@@ -551,7 +550,7 @@ namespace SWLOR.Component.Ability.Service
             }
 
             SendMessageToPC(activator, ColorToken.Green($"Aura '{detail.Name}' activated."));
-            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Sound_Burst), activator);
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Fnf_Sound_Burst), activator);
         }
 
         public bool ToggleAura(uint activator, StatusEffectType type)
@@ -635,16 +634,16 @@ namespace SWLOR.Component.Ability.Service
             _playerAuras.Remove(activator);
         }
 
-        private AreaOfEffect GetAuraAOE(int level)
+        private AreaOfEffectType GetAuraAOE(int level)
         {
             switch (level)
             {
                 case 1:
-                    return AreaOfEffect.AuraUpgrade1;
+                    return AreaOfEffectType.AuraUpgrade1;
                 case 2:
-                    return AreaOfEffect.AuraUpgrade2;
+                    return AreaOfEffectType.AuraUpgrade2;
                 default:
-                    return AreaOfEffect.AuraDefault;
+                    return AreaOfEffectType.AuraDefault;
             }
         }
 

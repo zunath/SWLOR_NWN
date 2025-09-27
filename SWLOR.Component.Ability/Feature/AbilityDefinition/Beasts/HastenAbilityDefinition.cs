@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Character.ValueObjects;
 using SWLOR.Shared.Domain.Combat.Contracts;
@@ -42,7 +41,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beasts
             effect = TagEffect(effect, HastenEffectTag);
 
             ApplyEffectToObject(DurationType.Temporary, effect, activator, 30f + bonusDuration);
-            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Haste), activator);
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Imp_Haste), activator);
 
             if (applyToBeastmaster)
             {
@@ -50,7 +49,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beasts
                 effect = TagEffect(effect, HastenEffectTag);
 
                 ApplyEffectToObject(DurationType.Temporary, effect, beastmaster, 30f + bonusDuration);
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Haste), beastmaster);
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Imp_Haste), beastmaster);
             }
 
             EnmityService.ModifyEnmityOnAll(activator, 300 * numAttacks);

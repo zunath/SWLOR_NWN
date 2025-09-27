@@ -2,10 +2,10 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Numerics;
 using SWLOR.Component.Properties.Service;
 using SWLOR.NWN.API.NWNX;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Component.Properties.UI.Payload;
+using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Abstractions.Models;
 using SWLOR.Shared.Domain.Properties.Entities;
@@ -289,7 +289,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
                 var permission = GetPermission();
                 var structureDetail = Property.GetStructureByType(structure.StructureType);
 
-                PlayerPlugin.ApplyLoopingVisualEffectToObject(Player, placeable, VisualEffect.Vfx_Dur_Aura_Green);
+                PlayerPlugin.ApplyLoopingVisualEffectToObject(Player, placeable, VisualEffectType.Vfx_Dur_Aura_Green);
                 _currentPosition = GetPosition(placeable);
                 _currentFacing = GetFacing(placeable);
 
@@ -306,7 +306,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
 
             var propertyId = _structurePropertyIds[SelectedStructureIndex];
             var placeable = Property.GetPlaceableByPropertyId(propertyId);
-            PlayerPlugin.ApplyLoopingVisualEffectToObject(Player, placeable, VisualEffect.None);
+            PlayerPlugin.ApplyLoopingVisualEffectToObject(Player, placeable, VisualEffectType.None);
         }
 
         public Action OnCloseWindow() => () =>

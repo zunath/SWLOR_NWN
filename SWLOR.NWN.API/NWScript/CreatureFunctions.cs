@@ -1,6 +1,5 @@
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Creature;
 
 namespace SWLOR.NWN.API.NWScript
 {
@@ -38,11 +37,11 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oCreature">The creature to get the wing type for (default: OBJECT_SELF)</param>
         /// <returns>The wing type. Returns CREATURE_WING_TYPE_NONE if used on a non-creature object, if the creature has no wings, or if the creature cannot have its wing type changed in the toolset</returns>
         /// <remarks>Possible values: CREATURE_WING_TYPE_NONE, CREATURE_WING_TYPE_DEMON, CREATURE_WING_TYPE_ANGEL, CREATURE_WING_TYPE_BAT, CREATURE_WING_TYPE_DRAGON, CREATURE_WING_TYPE_BUTTERFLY, CREATURE_WING_TYPE_BIRD</remarks>
-        public static WingType GetCreatureWingType(uint oCreature = OBJECT_INVALID)
+        public static CreatureWingType GetCreatureWingType(uint oCreature = OBJECT_INVALID)
         {
             if (oCreature == OBJECT_INVALID)
                 oCreature = OBJECT_SELF;
-            return (WingType)global::NWN.Core.NWScript.GetCreatureWingType(oCreature);
+            return (CreatureWingType)global::NWN.Core.NWScript.GetCreatureWingType(oCreature);
         }
 
         /// <summary>
@@ -51,7 +50,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nWingType">The wing type (CREATURE_WING_TYPE_* constants)</param>
         /// <param name="oCreature">The creature to change the wing type for (default: OBJECT_INVALID)</param>
         /// <remarks>Only two creature model types will support wings. The MODELTYPE for the part based (playable races) 'P' and MODELTYPE 'W' in the appearance.2da. Possible values: CREATURE_WING_TYPE_NONE, CREATURE_WING_TYPE_DEMON, CREATURE_WING_TYPE_ANGEL, CREATURE_WING_TYPE_BAT, CREATURE_WING_TYPE_DRAGON, CREATURE_WING_TYPE_BUTTERFLY, CREATURE_WING_TYPE_BIRD</remarks>
-        public static void SetCreatureWingType(WingType nWingType, uint oCreature = OBJECT_INVALID)
+        public static void SetCreatureWingType(CreatureWingType nWingType, uint oCreature = OBJECT_INVALID)
         {
             if (oCreature == OBJECT_INVALID)
                 oCreature = OBJECT_SELF;
@@ -65,7 +64,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oCreature">The creature to get the body part for (default: OBJECT_SELF)</param>
         /// <returns>The model number for the body part. Returns CREATURE_PART_INVALID if used on a non-creature object, or if the creature does not use a part based model</returns>
         /// <remarks>The model number returned is for the body part when the creature is not wearing armor (i.e. whether or not the creature is wearing armor does not affect the return value). Only works on part based creatures, which is typically restricted to the playable races (unless some new part based custom content has been added to the module). Possible body parts: CREATURE_PART_RIGHT_FOOT, CREATURE_PART_LEFT_FOOT, CREATURE_PART_RIGHT_SHIN, CREATURE_PART_LEFT_SHIN, CREATURE_PART_RIGHT_THIGH, CREATURE_PART_LEFT_THIGH, CREATURE_PART_PELVIS, CREATURE_PART_TORSO, CREATURE_PART_BELT, CREATURE_PART_NECK, CREATURE_PART_RIGHT_FOREARM, CREATURE_PART_LEFT_FOREARM, CREATURE_PART_RIGHT_BICEP, CREATURE_PART_LEFT_BICEP, CREATURE_PART_RIGHT_SHOULDER, CREATURE_PART_LEFT_SHOULDER, CREATURE_PART_RIGHT_HAND, CREATURE_PART_LEFT_HAND, CREATURE_PART_HEAD</remarks>
-        public static int GetCreatureBodyPart(CreaturePart nPart, uint oCreature = OBJECT_INVALID)
+        public static int GetCreatureBodyPart(CreaturePartType nPart, uint oCreature = OBJECT_INVALID)
         {
             if (oCreature == OBJECT_INVALID)
                 oCreature = OBJECT_SELF;
@@ -79,7 +78,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nModelNumber">The model number (CREATURE_MODEL_TYPE_* constants)</param>
         /// <param name="oCreature">The creature to change the body part for (default: OBJECT_SELF)</param>
         /// <remarks>The model names for parts need to be in the following format: p&lt;m/f&gt;&lt;race letter&gt;&lt;phenotype&gt;_&lt;body part&gt;&lt;model number&gt;.mdl. Only part based creature appearance types are supported (i.e. The model types for the playable races ('P') in the appearance.2da). Possible body parts: CREATURE_PART_RIGHT_FOOT, CREATURE_PART_LEFT_FOOT, CREATURE_PART_RIGHT_SHIN, CREATURE_PART_LEFT_SHIN, CREATURE_PART_RIGHT_THIGH, CREATURE_PART_LEFT_THIGH, CREATURE_PART_PELVIS, CREATURE_PART_TORSO, CREATURE_PART_BELT, CREATURE_PART_NECK, CREATURE_PART_RIGHT_FOREARM, CREATURE_PART_LEFT_FOREARM, CREATURE_PART_RIGHT_BICEP, CREATURE_PART_LEFT_BICEP, CREATURE_PART_RIGHT_SHOULDER, CREATURE_PART_LEFT_SHOULDER, CREATURE_PART_RIGHT_HAND, CREATURE_PART_LEFT_HAND, CREATURE_PART_HEAD. Possible model types: CREATURE_MODEL_TYPE_NONE, CREATURE_MODEL_TYPE_SKIN (not for use on shoulders, pelvis or head), CREATURE_MODEL_TYPE_TATTOO (for body parts that support tattoos, i.e. not heads/feet/hands), CREATURE_MODEL_TYPE_UNDEAD (undead model only exists for the right arm parts).</remarks>
-        public static void SetCreatureBodyPart(CreaturePart nPart, int nModelNumber, uint oCreature = OBJECT_INVALID)
+        public static void SetCreatureBodyPart(CreaturePartType nPart, int nModelNumber, uint oCreature = OBJECT_INVALID)
         {
             if (oCreature == OBJECT_INVALID)
                 oCreature = OBJECT_SELF;
@@ -92,11 +91,11 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oCreature">The creature to get the tail type for (default: OBJECT_SELF)</param>
         /// <returns>The tail type. Returns CREATURE_TAIL_TYPE_NONE if used on a non-creature object, if the creature has no tail, or if the creature cannot have its tail type changed in the toolset</returns>
         /// <remarks>Possible values: CREATURE_TAIL_TYPE_NONE, CREATURE_TAIL_TYPE_LIZARD, CREATURE_TAIL_TYPE_BONE, CREATURE_TAIL_TYPE_DEVIL</remarks>
-        public static TailType GetCreatureTailType(uint oCreature = OBJECT_INVALID)
+        public static CreatureTailType GetCreatureTailType(uint oCreature = OBJECT_INVALID)
         {
             if (oCreature == OBJECT_INVALID)
                 oCreature = OBJECT_SELF;
-            return (TailType)global::NWN.Core.NWScript.GetCreatureTailType(oCreature);
+            return (CreatureTailType)global::NWN.Core.NWScript.GetCreatureTailType(oCreature);
         }
 
         /// <summary>
@@ -105,7 +104,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nTailType">The tail type (CREATURE_TAIL_TYPE_* constants)</param>
         /// <param name="oCreature">The creature to change the tail type for (default: OBJECT_SELF)</param>
         /// <remarks>Only two creature model types will support tails. The MODELTYPE for the part based (playable) races 'P' and MODELTYPE 'T' in the appearance.2da. Possible values: CREATURE_TAIL_TYPE_NONE, CREATURE_TAIL_TYPE_LIZARD, CREATURE_TAIL_TYPE_BONE, CREATURE_TAIL_TYPE_DEVIL</remarks>
-        public static void SetCreatureTailType(TailType nTailType, uint oCreature = OBJECT_INVALID)
+        public static void SetCreatureTailType(CreatureTailType nTailType, uint oCreature = OBJECT_INVALID)
         {
             if (oCreature == OBJECT_INVALID)
                 oCreature = OBJECT_SELF;
@@ -237,7 +236,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oCreature">The creature to check the action mode for</param>
         /// <param name="nMode">The action mode to check (ACTION_MODE_* constants)</param>
         /// <returns>True if the action mode is active, false otherwise</returns>
-        public static bool GetActionMode(uint oCreature, ActionMode nMode)
+        public static bool GetActionMode(uint oCreature, ActionModeType nMode)
         {
             return global::NWN.Core.NWScript.GetActionMode(oCreature, (int)nMode) == 1;
         }
@@ -248,7 +247,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oCreature">The creature to set the action mode for</param>
         /// <param name="nMode">The action mode to set (ACTION_MODE_* constants)</param>
         /// <param name="nStatus">The status to set (true/false)</param>
-        public static void SetActionMode(uint oCreature, ActionMode nMode, bool nStatus)
+        public static void SetActionMode(uint oCreature, ActionModeType nMode, bool nStatus)
         {
             global::NWN.Core.NWScript.SetActionMode(oCreature, (int)nMode, nStatus ? 1 : 0);
         }
@@ -310,11 +309,11 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oTarget">The creature to get the AI level for (default: OBJECT_SELF)</param>
         /// <returns>One of the following: AI_LEVEL_INVALID, AI_LEVEL_VERY_LOW, AI_LEVEL_LOW, AI_LEVEL_NORMAL, AI_LEVEL_HIGH, AI_LEVEL_VERY_HIGH</returns>
-        public static AILevel GetAILevel(uint oTarget = OBJECT_INVALID)
+        public static AILevelType GetAILevel(uint oTarget = OBJECT_INVALID)
         {
             if (oTarget == OBJECT_INVALID)
                 oTarget = OBJECT_SELF;
-            return (AILevel)global::NWN.Core.NWScript.GetAILevel(oTarget);
+            return (AILevelType)global::NWN.Core.NWScript.GetAILevel(oTarget);
         }
 
         /// <summary>
@@ -323,7 +322,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oTarget">The creature to set the AI level for</param>
         /// <param name="nAILevel">The AI level to set</param>
         /// <remarks>Does not work on Players. The game by default will choose an appropriate AI level for creatures based on the circumstances that the creature is in. Explicitly setting an AI level will override the game AI settings. The new setting will last until SetAILevel is called again with the argument AI_LEVEL_DEFAULT. AI_LEVEL_DEFAULT - Default setting. The game will take over setting the appropriate AI level when required. AI_LEVEL_VERY_LOW - Very Low priority, very stupid, but low CPU usage for AI. Typically used when no players are in the area. AI_LEVEL_LOW - Low priority, mildly stupid, but slightly more CPU usage for AI. Typically used when not in combat, but a player is in the area. AI_LEVEL_NORMAL - Normal priority, average AI, but more CPU usage required for AI. Typically used when creature is in combat. AI_LEVEL_HIGH - High priority, smartest AI, but extremely high CPU usage required for AI. Avoid using this. It is most likely only ever needed for cutscenes.</remarks>
-        public static void SetAILevel(uint oTarget, AILevel nAILevel)
+        public static void SetAILevel(uint oTarget, AILevelType nAILevel)
         {
             global::NWN.Core.NWScript.SetAILevel(oTarget, (int)nAILevel);
         }
@@ -429,9 +428,9 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oCreature">The creature to get the stealth mode for</param>
         /// <returns>A constant STEALTH_MODE_*</returns>
-        public static StealthMode GetStealthMode(uint oCreature)
+        public static StealthModeType GetStealthMode(uint oCreature)
         {
-            return (StealthMode)global::NWN.Core.NWScript.GetStealthMode(oCreature);
+            return (StealthModeType)global::NWN.Core.NWScript.GetStealthMode(oCreature);
         }
 
         /// <summary>
@@ -439,9 +438,9 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oCreature">The creature to get the detection mode for</param>
         /// <returns>A constant DETECT_MODE_*</returns>
-        public static DetectMode GetDetectMode(uint oCreature)
+        public static DetectModeType GetDetectMode(uint oCreature)
         {
-            return (DetectMode)global::NWN.Core.NWScript.GetDetectMode(oCreature);
+            return (DetectModeType)global::NWN.Core.NWScript.GetDetectMode(oCreature);
         }
 
         /// <summary>
@@ -449,9 +448,9 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oCreature">The creature to get the defensive casting mode for</param>
         /// <returns>A constant DEFENSIVE_CASTING_MODE_*</returns>
-        public static CastingMode GetDefensiveCastingMode(uint oCreature)
+        public static CastingModeType GetDefensiveCastingMode(uint oCreature)
         {
-            return (CastingMode)global::NWN.Core.NWScript.GetDefensiveCastingMode(oCreature);
+            return (CastingModeType)global::NWN.Core.NWScript.GetDefensiveCastingMode(oCreature);
         }
 
         /// <summary>
@@ -495,9 +494,9 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oCreature">The creature to get the size for</param>
         /// <returns>The creature size (CREATURE_SIZE_* constants)</returns>
-        public static CreatureSize GetCreatureSize(uint oCreature)
+        public static CreatureSizeType GetCreatureSize(uint oCreature)
         {
-            return (CreatureSize)global::NWN.Core.NWScript.GetCreatureSize(oCreature);
+            return (CreatureSizeType)global::NWN.Core.NWScript.GetCreatureSize(oCreature);
         }
 
         /// <summary>
@@ -705,7 +704,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nSpell">The spell to check (SPELL_* constants)</param>
         /// <param name="oCreature">The creature to check the spell for (default: OBJECT_SELF)</param>
         /// <returns>The number of times the creature has the spell memorized</returns>
-        public static int GetHasSpell(Spell nSpell, uint oCreature = OBJECT_INVALID)
+        public static int GetHasSpell(SpellType nSpell, uint oCreature = OBJECT_INVALID)
         {
             if (oCreature == OBJECT_INVALID)
                 oCreature = OBJECT_SELF;
@@ -717,9 +716,9 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oCreature">The creature to get the gender for</param>
         /// <returns>The creature's gender</returns>
-        public static Gender GetGender(uint oCreature)
+        public static GenderType GetGender(uint oCreature)
         {
-            return (Gender)global::NWN.Core.NWScript.GetGender(oCreature);
+            return (GenderType)global::NWN.Core.NWScript.GetGender(oCreature);
         }
 
         /// <summary>
@@ -1047,11 +1046,11 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oCreature">The creature to get the last attack type for (default: OBJECT_SELF)</param>
         /// <returns>The attack type (SPECIAL_ATTACK_* constants)</returns>
         /// <remarks>This only works when the creature is in combat.</remarks>
-        public static SpecialAttack GetLastAttackType(uint oCreature = OBJECT_INVALID)
+        public static SpecialAttackType GetLastAttackType(uint oCreature = OBJECT_INVALID)
         {
             if (oCreature == OBJECT_INVALID)
                 oCreature = OBJECT_SELF;
-            return (SpecialAttack)global::NWN.Core.NWScript.GetLastAttackType(oCreature);
+            return (SpecialAttackType)global::NWN.Core.NWScript.GetLastAttackType(oCreature);
         }
 
         /// <summary>
@@ -1059,7 +1058,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oCreature">The creature to set the gender for</param>
         /// <param name="nGender">The gender to set (GENDER_* constants)</param>
-        public static void SetGender(uint oCreature, Gender nGender)
+        public static void SetGender(uint oCreature, GenderType nGender)
         {
             global::NWN.Core.NWScript.SetGender(oCreature, (int)nGender);
         }

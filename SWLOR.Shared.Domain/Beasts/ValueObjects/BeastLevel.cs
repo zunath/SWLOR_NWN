@@ -15,7 +15,7 @@ namespace SWLOR.Shared.Domain.Beasts.ValueObjects
         public int MaxAccuracyBonus { get; set; }
         public int MaxEvasionBonus { get; set; }
         public Dictionary<CombatDamageType, int> MaxDefenseBonuses { get; set; }
-        public Dictionary<SavingThrow, int> MaxSavingThrowBonuses { get; set; }
+        public Dictionary<SavingThrowCategoryType, int> MaxSavingThrowBonuses { get; set; }
 
         public BeastLevel()
         {
@@ -39,11 +39,11 @@ namespace SWLOR.Shared.Domain.Beasts.ValueObjects
                 { CombatDamageType.Ice, 0},
             };
 
-            MaxSavingThrowBonuses = new Dictionary<SavingThrow, int>
+            MaxSavingThrowBonuses = new Dictionary<SavingThrowCategoryType, int>
             {
-                { SavingThrow.Fortitude, 0},
-                { SavingThrow.Will, 0},
-                { SavingThrow.Reflex, 0},
+                { SavingThrowCategoryType.Fortitude, 0},
+                { SavingThrowCategoryType.Will, 0},
+                { SavingThrowCategoryType.Reflex, 0},
             };
         }
     }

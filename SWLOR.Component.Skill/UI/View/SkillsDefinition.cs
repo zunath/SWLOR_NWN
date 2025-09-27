@@ -53,8 +53,8 @@ namespace SWLOR.Component.Skill.UI.View
                         row.AddLabel()
                             .BindText(model => model.AvailableXP)
                             .SetHeight(20f)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetVerticalAlign(NuiVerticalAlign.Top);
+                            .SetHorizontalAlign(NuiHorizontalAlignType.Left)
+                            .SetVerticalAlign(NuiVerticalAlignType.Top);
                     });
 
                     column.AddRow(row =>
@@ -62,36 +62,36 @@ namespace SWLOR.Component.Skill.UI.View
                         row.AddLabel()
                             .BindText(model => model.XPDebt)
                             .SetHeight(20f)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetVerticalAlign(NuiVerticalAlign.Top);
+                            .SetHorizontalAlign(NuiHorizontalAlignType.Left)
+                            .SetVerticalAlign(NuiVerticalAlignType.Top);
                     });
 
                     column.AddRow(row =>
                     {
                         row.AddLabel()
                             .SetText("Skill")
-                            .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                            .SetVerticalAlign(NuiVerticalAlign.Top);
+                            .SetHorizontalAlign(NuiHorizontalAlignType.Center)
+                            .SetVerticalAlign(NuiVerticalAlignType.Top);
 
                         row.AddLabel()
                             .SetText("Level")
-                            .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                            .SetVerticalAlign(NuiVerticalAlign.Top);
+                            .SetHorizontalAlign(NuiHorizontalAlignType.Center)
+                            .SetVerticalAlign(NuiVerticalAlignType.Top);
 
                         row.AddLabel()
                             .SetText("Title")
-                            .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                            .SetVerticalAlign(NuiVerticalAlign.Top);
+                            .SetHorizontalAlign(NuiHorizontalAlignType.Center)
+                            .SetVerticalAlign(NuiVerticalAlignType.Top);
 
                         row.AddLabel()
                             .SetText("XP")
-                            .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                            .SetVerticalAlign(NuiVerticalAlign.Top);
+                            .SetHorizontalAlign(NuiHorizontalAlignType.Center)
+                            .SetVerticalAlign(NuiVerticalAlignType.Top);
 
                         row.AddLabel()
                             .SetText("Decay Lock")
-                            .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                            .SetVerticalAlign(NuiVerticalAlign.Top);
+                            .SetHorizontalAlign(NuiHorizontalAlignType.Center)
+                            .SetVerticalAlign(NuiVerticalAlignType.Top);
 
                         row.AddLabel()
                             .SetText("")

@@ -91,9 +91,9 @@ namespace SWLOR.Component.Character.Service
             const int WindowWidth = 26;
 
             var centerWindowX = GuiService.CenterStringInWindow(name, WindowX, WindowWidth);
-            PostString(player, "Achievement Unlocked", centerWindowX + 2, WindowY+1, ScreenAnchor.TopRight, 10.0f, GuiStandardColor.ColorWhite, GuiStandardColor.ColorYellow, _idReservation.StartId, GuiTextTexture.TextName);
-            PostString(player, " " + name, centerWindowX + 4, WindowY+3, ScreenAnchor.TopRight, 10.0f, GuiStandardColor.ColorWhite, GuiStandardColor.ColorYellow, _idReservation.StartId + 1, GuiTextTexture.TextName);
-            GuiService.DrawWindow(player, _idReservation.StartId + 2, ScreenAnchor.TopRight, WindowX, WindowY, WindowWidth, 4);
+            PostString(player, "Achievement Unlocked", centerWindowX + 2, WindowY+1, ScreenAnchorType.TopRight, 10.0f, GuiStandardColor.ColorWhite, GuiStandardColor.ColorYellow, _idReservation.StartId, GuiTextTexture.TextName);
+            PostString(player, " " + name, centerWindowX + 4, WindowY+3, ScreenAnchorType.TopRight, 10.0f, GuiStandardColor.ColorWhite, GuiStandardColor.ColorYellow, _idReservation.StartId + 1, GuiTextTexture.TextName);
+            GuiService.DrawWindow(player, _idReservation.StartId + 2, ScreenAnchorType.TopRight, WindowX, WindowY, WindowWidth, 4);
         }
 
         /// <summary>

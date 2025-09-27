@@ -1,6 +1,5 @@
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Domain.Character.Contracts;
@@ -46,7 +45,7 @@ namespace SWLOR.Component.Combat.Feature
         {
             var creature = OBJECT_SELF;
             var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
-            var slot = (InventorySlot)Convert.ToInt32(EventsPlugin.GetEventData("SLOT"));
+            var slot = (InventorySlotType)Convert.ToInt32(EventsPlugin.GetEventData("SLOT"));
 
             var isSwapping = IsItemSwapping(creature, item, slot);
             var canUseItem = CanItemBeUsed(creature, item);
@@ -77,13 +76,13 @@ namespace SWLOR.Component.Combat.Feature
             EventsPlugin.SkipEvent();
         }
 
-        private bool IsItemSwapping(uint creature, uint item, InventorySlot slot)
+        private bool IsItemSwapping(uint creature, uint item, InventorySlotType slot)
         {
             var itemInSlot = GetItemInSlot(slot, creature);
             var itemType = GetBaseItemType(item);
-            var rightHand = GetItemInSlot(InventorySlot.RightHand, creature);
+            var rightHand = GetItemInSlot(InventorySlotType.RightHand, creature);
             var rightHandType = GetBaseItemType(rightHand);
-            var leftHand = GetItemInSlot(InventorySlot.LeftHand, creature);
+            var leftHand = GetItemInSlot(InventorySlotType.LeftHand, creature);
             var leftHandType = GetBaseItemType(leftHand);
 
             // Two-handed weapons
@@ -119,34 +118,34 @@ namespace SWLOR.Component.Combat.Feature
         /// When an item is equipped, check if the item is going to be dual wielded. If it is, ensure player has
         /// at least level 1 of the Dual Wield perk. If they don't, skip the equip event with an error message.
         /// </summary>
-        private bool ValidateDualWield(uint item, InventorySlot slot)
+        private bool ValidateDualWield(uint item, InventorySlotType slot)
         {
             var creature = OBJECT_SELF;
 
             // Not equipping to the left hand, or there's nothing equipped in the right hand.
-            if (slot != InventorySlot.LeftHand) return true;
-            if (!GetIsObjectValid(GetItemInSlot(InventorySlot.RightHand, creature))) return true;
+            if (slot != InventorySlotType.LeftHand) return true;
+            if (!GetIsObjectValid(GetItemInSlot(InventorySlotType.RightHand, creature))) return true;
             
             var baseItem = GetBaseItemType(item);
             var dualWieldWeapons = new[]
             {
-                BaseItem.ShortSword,
-                BaseItem.Longsword,
-                BaseItem.BattleAxe,
-                BaseItem.BastardSword,
-                BaseItem.LightFlail,
-                BaseItem.LightMace,
-                BaseItem.Dagger,
-                BaseItem.Club,
-                BaseItem.HandAxe,
-                BaseItem.Kama,
-                BaseItem.Katana,
-                BaseItem.Kukri,
-                BaseItem.Rapier,
-                BaseItem.Scimitar,
-                BaseItem.Sickle,
-                BaseItem.Lightsaber,
-                BaseItem.Electroblade
+                BaseItemType.ShortSword,
+                BaseItemType.Longsword,
+                BaseItemType.BattleAxe,
+                BaseItemType.BastardSword,
+                BaseItemType.LightFlail,
+                BaseItemType.LightMace,
+                BaseItemType.Dagger,
+                BaseItemType.Club,
+                BaseItemType.HandAxe,
+                BaseItemType.Kama,
+                BaseItemType.Katana,
+                BaseItemType.Kukri,
+                BaseItemType.Rapier,
+                BaseItemType.Scimitar,
+                BaseItemType.Sickle,
+                BaseItemType.Lightsaber,
+                BaseItemType.Electroblade
             };
             if (!dualWieldWeapons.Contains(baseItem)) return true;
 
@@ -251,15 +250,15 @@ namespace SWLOR.Component.Combat.Feature
             return string.Empty;
         }
 
-        private bool IsRingSwappingPositions(uint creature, uint item, InventorySlot slot)
+        private bool IsRingSwappingPositions(uint creature, uint item, InventorySlotType slot)
         {
-            var currentRightSlot = GetItemInSlot(InventorySlot.RightRing, creature);
-            var currentLeftSlot = GetItemInSlot(InventorySlot.LeftRing, creature);
+            var currentRightSlot = GetItemInSlot(InventorySlotType.RightRing, creature);
+            var currentLeftSlot = GetItemInSlot(InventorySlotType.LeftRing, creature);
 
-            if (currentRightSlot == item && slot == InventorySlot.LeftRing)
+            if (currentRightSlot == item && slot == InventorySlotType.LeftRing)
                 return true;
 
-            if (currentLeftSlot == item && slot == InventorySlot.RightRing)
+            if (currentLeftSlot == item && slot == InventorySlotType.RightRing)
                 return true;
 
             return false;
@@ -276,7 +275,7 @@ namespace SWLOR.Component.Combat.Feature
             if (GetIsDM(player)) return;
 
             var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
-            var slot = (InventorySlot)Convert.ToInt32(EventsPlugin.GetEventData("SLOT"));
+            var slot = (InventorySlotType)Convert.ToInt32(EventsPlugin.GetEventData("SLOT"));
 
             // The unequip event doesn't fire if an item is being swapped out. 
             // If there's an item in the slot, run the unequip triggers first.

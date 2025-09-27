@@ -4,8 +4,6 @@ using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Combat.ValueObjects;
 using SWLOR.Shared.Domain.Entities;
-using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
-using SavingThrow = SWLOR.NWN.API.NWScript.Enum.SavingThrow;
 
 namespace SWLOR.Shared.Domain.Character.Contracts
 {
@@ -249,7 +247,7 @@ namespace SWLOR.Shared.Domain.Character.Contracts
         /// <returns></returns>
         int GetAttack(int level, int stat, int bonus);
 
-        int GetAttackNative(CNWSCreature creature, BaseItem itemType);
+        int GetAttackNative(CNWSCreature creature, BaseItemType itemType);
 
         /// <summary>
         /// Retrieves the total defense toward a specific type of damage.
@@ -386,7 +384,7 @@ namespace SWLOR.Shared.Domain.Character.Contracts
         /// <param name="type">The type of saving throw.</param>
         /// <param name="offHandItem">The off hand item equipped to the left hand.</param>
         /// <returns>The base saving throw value</returns>
-        int CalculateBaseSavingThrow(uint player, SavingThrow type, uint offHandItem = OBJECT_INVALID);
+        int CalculateBaseSavingThrow(uint player, SavingThrowCategoryType type, uint offHandItem = OBJECT_INVALID);
 
         /// <summary>
         /// Stores an NPC's STM and FP as local variables.

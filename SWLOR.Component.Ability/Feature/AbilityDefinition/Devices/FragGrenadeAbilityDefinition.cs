@@ -1,7 +1,6 @@
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Constants;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Character.ValueObjects;
 using SWLOR.Shared.Domain.Combat.Enums;
@@ -47,7 +46,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
 
             if (dc > 0)
             {
-                dc = CombatService.CalculateSavingThrowDC(activator, SavingThrow.Reflex, dc);
+                dc = CombatService.CalculateSavingThrowDC(activator, SavingThrowCategoryType.Reflex, dc);
                 var checkResult = ReflexSave(target, dc, SavingThrowType.None, activator);
                 if (checkResult == SavingThrowResultType.Failed)
                 {
@@ -74,7 +73,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                 .Level(1)
                 .HasRecastDelay(RecastGroup.FragGrenade, 12f)
                 .HasActivationDelay(2f)
-                .UsesAnimation(Animation.ThrowGrenade)
+                .UsesAnimation(AnimationType.ThrowGrenade)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .BreaksStealth()
@@ -82,7 +81,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                 .HasCustomValidation(ExplosiveValidation)
                 .HasImpactAction((activator, _, _, location) =>
                 {
-                    ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffect.Fnf_Fireball), "explosion2", RadiusSize.Large, (target) =>
+                    ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffectType.Fnf_Fireball), "explosion2", RadiusSize.Large, (target) =>
                     {
                         var perBonus = GetAbilityScore(activator, AbilityType.Perception);
                         Impact(activator, target, perBonus, -1, 0f);
@@ -98,7 +97,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                 .HasRecastDelay(RecastGroup.FragGrenade, 12f)
                 .HasActivationDelay(2f)
                 .RequirementStamina(2)
-                .UsesAnimation(Animation.ThrowGrenade)
+                .UsesAnimation(AnimationType.ThrowGrenade)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .BreaksStealth()
@@ -106,7 +105,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                 .HasCustomValidation(ExplosiveValidation)
                 .HasImpactAction((activator, _, _, location) =>
                 {
-                    ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffect.Fnf_Fireball), "explosion2", RadiusSize.Large, (target) =>
+                    ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffectType.Fnf_Fireball), "explosion2", RadiusSize.Large, (target) =>
                     {
                         var perBonus = GetAbilityScore(activator, AbilityType.Perception);
                         var perDMG = 20 + (perBonus * 3 / 2);
@@ -123,7 +122,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                 .HasRecastDelay(RecastGroup.FragGrenade, 12f)
                 .HasActivationDelay(2f)
                 .RequirementStamina(3)
-                .UsesAnimation(Animation.ThrowGrenade)
+                .UsesAnimation(AnimationType.ThrowGrenade)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .BreaksStealth()
@@ -131,7 +130,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                 .HasCustomValidation(ExplosiveValidation)
                 .HasImpactAction((activator, _, _, location) =>
                 {
-                    ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffect.Fnf_Fireball), "explosion2", RadiusSize.Large, (target) =>
+                    ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffectType.Fnf_Fireball), "explosion2", RadiusSize.Large, (target) =>
                     {
                         var perBonus = GetAbilityScore(activator, AbilityType.Perception);
                         var perDMG = 40 + (perBonus * 2);

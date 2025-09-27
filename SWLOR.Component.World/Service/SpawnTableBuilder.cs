@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.AI.Enums;
 using SWLOR.Shared.Domain.AI.ValueObjects;
@@ -171,7 +170,7 @@ namespace SWLOR.Component.World.Service
             return this;
         }
 
-        public ISpawnTableBuilder PlayAnimation(DurationType duration, AnimationEvent animEvent, VisualEffect vfx)
+        public ISpawnTableBuilder PlayAnimation(DurationType duration, AnimationEvent animEvent, VisualEffectType vfx)
         {
             var animation = new Animator()
             {

@@ -1,6 +1,5 @@
 using SWLOR.Component.Associate.Enums;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Log.LogGroup;
@@ -48,7 +47,7 @@ namespace SWLOR.Component.Associate.Feature.ItemDefinition
         {
             _builder.Create(_beastMasteryService.BeastEggResref)
                 .Delay(4f)
-                .PlaysAnimation(Animation.LoopingGetMid)
+                .PlaysAnimation(AnimationType.LoopingGetMid)
                 .ValidationAction((user, item, target, location, index) =>
                 {
                     var tame = _perkService.GetPerkLevel(user, PerkType.Tame);
@@ -204,11 +203,11 @@ namespace SWLOR.Component.Associate.Feature.ItemDefinition
                             { CombatDamageType.Electrical, electricDefensePurity },
                         },
 
-                        SavingThrowPurities = new Dictionary<SavingThrow, int>
+                        SavingThrowPurities = new Dictionary<SavingThrowCategoryType, int>
                         {
-                            { SavingThrow.Fortitude, fortitudePurity},
-                            { SavingThrow.Will, willPurity},
-                            { SavingThrow.Reflex, reflexPurity},
+                            { SavingThrowCategoryType.Fortitude, fortitudePurity},
+                            { SavingThrowCategoryType.Will, willPurity},
+                            { SavingThrowCategoryType.Reflex, reflexPurity},
                         }
                     };
 

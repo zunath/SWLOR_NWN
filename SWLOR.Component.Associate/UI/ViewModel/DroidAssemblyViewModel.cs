@@ -1,8 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Item;
-using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Contracts;
@@ -330,7 +328,7 @@ namespace SWLOR.Component.Associate.UI.ViewModel
             var icon = ItemService.GetIconResref(item);
             switch (part.PartType)
             {
-                case DroidPartItemPropertySubType.CPU:
+                case ItemPropertyDroidPartSubType.CPU:
 
                     if (assemblyLevel < part.Tier)
                     {
@@ -344,7 +342,7 @@ namespace SWLOR.Component.Associate.UI.ViewModel
                     IsCPUSelected = true;
                     CPUResref = icon;
                     break;
-                case DroidPartItemPropertySubType.Head:
+                case ItemPropertyDroidPartSubType.Head:
                     if (part.Tier > _tier)
                     {
                         ShowError($"Head part tier must be less than or equal to CPU tier ({_tier}).");
@@ -353,7 +351,7 @@ namespace SWLOR.Component.Associate.UI.ViewModel
                     _headItem = serialized;
                     HeadResref = icon;
                     break;
-                case DroidPartItemPropertySubType.Body:
+                case ItemPropertyDroidPartSubType.Body:
                     if (part.Tier > _tier)
                     {
                         ShowError($"Body part tier must be less than or equal to CPU tier ({_tier}).");
@@ -362,7 +360,7 @@ namespace SWLOR.Component.Associate.UI.ViewModel
                     _bodyItem = serialized;
                     BodyResref = icon;
                     break;
-                case DroidPartItemPropertySubType.Arms:
+                case ItemPropertyDroidPartSubType.Arms:
                     if (part.Tier > _tier)
                     {
                         ShowError($"Arms part tier must be less than or equal to CPU tier ({_tier}).");
@@ -371,7 +369,7 @@ namespace SWLOR.Component.Associate.UI.ViewModel
                     _armsItem = serialized;
                     ArmsResref = icon;
                     break;
-                case DroidPartItemPropertySubType.Legs:
+                case ItemPropertyDroidPartSubType.Legs:
                     if (part.Tier > _tier)
                     {
                         ShowError($"Legs part tier must be less than or equal to CPU tier ({_tier}).");
@@ -404,26 +402,26 @@ namespace SWLOR.Component.Associate.UI.ViewModel
         {
             switch (part.PartType)
             {
-                case DroidPartItemPropertySubType.CPU:
+                case ItemPropertyDroidPartSubType.CPU:
                     _cpuItem = string.Empty;
                     _level = 0;
                     _tier = 0;
                     IsCPUSelected = false;
                     CPUResref = BlankTexture;
                     break;
-                case DroidPartItemPropertySubType.Head:
+                case ItemPropertyDroidPartSubType.Head:
                     _headItem = string.Empty;
                     HeadResref = BlankTexture;
                     break;
-                case DroidPartItemPropertySubType.Body:
+                case ItemPropertyDroidPartSubType.Body:
                     _bodyItem = string.Empty;
                     BodyResref = BlankTexture;
                     break;
-                case DroidPartItemPropertySubType.Arms:
+                case ItemPropertyDroidPartSubType.Arms:
                     _armsItem = string.Empty;
                     ArmsResref = BlankTexture;
                     break;
-                case DroidPartItemPropertySubType.Legs:
+                case ItemPropertyDroidPartSubType.Legs:
                     _legsItem = string.Empty;
                     LegsResref = BlankTexture;
                     break;
@@ -490,7 +488,7 @@ namespace SWLOR.Component.Associate.UI.ViewModel
 
                     var part = Droid.LoadDroidPartItemPropertyDetails(item);
 
-                    if (part.PartType != DroidPartItemPropertySubType.CPU)
+                    if (part.PartType != ItemPropertyDroidPartSubType.CPU)
                     {
                         ShowError("Select a CPU part.");
                         return;
@@ -530,7 +528,7 @@ namespace SWLOR.Component.Associate.UI.ViewModel
 
                     var part = Droid.LoadDroidPartItemPropertyDetails(item);
 
-                    if (part.PartType != DroidPartItemPropertySubType.Head)
+                    if (part.PartType != ItemPropertyDroidPartSubType.Head)
                     {
                         ShowError("Select a Head part.");
                         return;
@@ -569,7 +567,7 @@ namespace SWLOR.Component.Associate.UI.ViewModel
 
                     var part = Droid.LoadDroidPartItemPropertyDetails(item);
 
-                    if (part.PartType != DroidPartItemPropertySubType.Body)
+                    if (part.PartType != ItemPropertyDroidPartSubType.Body)
                     {
                         ShowError("Select a Body part.");
                         return;
@@ -608,7 +606,7 @@ namespace SWLOR.Component.Associate.UI.ViewModel
 
                     var part = Droid.LoadDroidPartItemPropertyDetails(item);
 
-                    if (part.PartType != DroidPartItemPropertySubType.Arms)
+                    if (part.PartType != ItemPropertyDroidPartSubType.Arms)
                     {
                         ShowError("Select an Arms part.");
                         return;
@@ -647,7 +645,7 @@ namespace SWLOR.Component.Associate.UI.ViewModel
 
                     var part = Droid.LoadDroidPartItemPropertyDetails(item);
 
-                    if (part.PartType != DroidPartItemPropertySubType.Legs)
+                    if (part.PartType != ItemPropertyDroidPartSubType.Legs)
                     {
                         ShowError("Select a Legs part.");
                         return;
@@ -714,23 +712,23 @@ namespace SWLOR.Component.Associate.UI.ViewModel
                 constructedDroid.Name = Name;
 
                 var ipPersonality = ItemPropertyCustom(ItemPropertyType.DroidPersonality, PersonalityIndex);
-                var ipTier = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Tier, _tier);
-                var ipAISlots = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.AISlots, _aiSlots);
+                var ipTier = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)ItemPropertyDroidStatSubType.Tier, _tier);
+                var ipAISlots = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)ItemPropertyDroidStatSubType.AISlots, _aiSlots);
 
-                var ipHP = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.HP, _hp); ;
-                var ipSTM = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.STM, _stamina); ;
+                var ipHP = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)ItemPropertyDroidStatSubType.HP, _hp); ;
+                var ipSTM = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)ItemPropertyDroidStatSubType.STM, _stamina); ;
 
-                var ipAgility = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.AGI, _agility);
-                var ipMight = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.MGT, _might);
-                var ipPerception = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.PER, _perception);
-                var ipVitality = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.VIT, _vitality);
-                var ipWillpower = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.WIL, _willpower);
-                var ipSocial = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.SOC, _social);
+                var ipAgility = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)ItemPropertyDroidStatSubType.AGI, _agility);
+                var ipMight = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)ItemPropertyDroidStatSubType.MGT, _might);
+                var ipPerception = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)ItemPropertyDroidStatSubType.PER, _perception);
+                var ipVitality = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)ItemPropertyDroidStatSubType.VIT, _vitality);
+                var ipWillpower = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)ItemPropertyDroidStatSubType.WIL, _willpower);
+                var ipSocial = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)ItemPropertyDroidStatSubType.SOC, _social);
 
-                var ipOneHanded = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.OneHanded, _oneHanded);
-                var ipTwoHanded = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.TwoHanded, _twoHanded);
-                var ipMartialArts = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.MartialArts, _martialArts);
-                var ipRanged = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Ranged, _ranged);
+                var ipOneHanded = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)ItemPropertyDroidStatSubType.OneHanded, _oneHanded);
+                var ipTwoHanded = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)ItemPropertyDroidStatSubType.TwoHanded, _twoHanded);
+                var ipMartialArts = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)ItemPropertyDroidStatSubType.MartialArts, _martialArts);
+                var ipRanged = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)ItemPropertyDroidStatSubType.Ranged, _ranged);
 
                 BiowareXP2.IPSafeAddItemProperty(controller, ipPersonality, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
                 BiowareXP2.IPSafeAddItemProperty(controller, ipTier, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);

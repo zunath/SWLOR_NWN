@@ -52,7 +52,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                 .HasRecastDelay(RecastGroup.Bombs, 60f)
                 .HasActivationDelay(3f)
                 .RequirementStamina(3)
-                .UsesAnimation(Animation.ThrowGrenade)
+                .UsesAnimation(AnimationType.ThrowGrenade)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasMaxRange(15f)
@@ -62,7 +62,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                     ExplosiveAOEImpact(
                         activator, 
                         targetLocation,
-                        AreaOfEffect.FogOfBewilderment,
+                        AreaOfEffectType.FogOfBewilderment,
                         "grenade_smoke_en",
                         "grenade_smoke_hb",
                         20f);
@@ -80,7 +80,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                 .HasRecastDelay(RecastGroup.Bombs, 60f)
                 .HasActivationDelay(3f)
                 .RequirementStamina(4)
-                .UsesAnimation(Animation.ThrowGrenade)
+                .UsesAnimation(AnimationType.ThrowGrenade)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasMaxRange(20f)
@@ -90,7 +90,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                     ExplosiveAOEImpact(
                         activator,
                         targetLocation,
-                        AreaOfEffect.FogOfBewilderment,
+                        AreaOfEffectType.FogOfBewilderment,
                         "grenade_smoke_en",
                         "grenade_smoke_hb",
                         40f);
@@ -108,7 +108,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                 .HasRecastDelay(RecastGroup.Bombs, 60f)
                 .HasActivationDelay(3f)
                 .RequirementStamina(5)
-                .UsesAnimation(Animation.ThrowGrenade)
+                .UsesAnimation(AnimationType.ThrowGrenade)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasMaxRange(25f)
@@ -118,7 +118,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                     ExplosiveAOEImpact(
                         activator,
                         targetLocation,
-                        AreaOfEffect.FogOfBewilderment,
+                        AreaOfEffectType.FogOfBewilderment,
                         "grenade_smoke_en",
                         "grenade_smoke_hb",
                         60f);

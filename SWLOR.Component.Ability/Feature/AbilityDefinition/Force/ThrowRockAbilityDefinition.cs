@@ -2,7 +2,6 @@ using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Character.ValueObjects;
@@ -81,7 +80,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
             AssignCommand(activator, () => DoThrowRock(target, level));
 
             var eDMG = EffectDamage(damage, DamageType.Bludgeoning);
-            var eVFX = EffectVisualEffect(VisualEffect.Vfx_Imp_Dust_Explosion);
+            var eVFX = EffectVisualEffect(VisualEffectType.Vfx_Imp_Dust_Explosion);
 
             EnmityService.ModifyEnmity(activator, target, damage);
             CombatPointService.AddCombatPoint(activator, target, SkillType.Force, 3);
@@ -105,8 +104,8 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
-                .DisplaysVisualEffectWhenActivating(VisualEffect.None)
-                .UsesAnimation(Animation.CastOutAnimation)
+                .DisplaysVisualEffectWhenActivating(VisualEffectType.None)
+                .UsesAnimation(AnimationType.CastOutAnimation)
                 .HasImpactAction(ImpactAction);
         }
 
@@ -122,8 +121,8 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
-                .DisplaysVisualEffectWhenActivating(VisualEffect.None)
-                .UsesAnimation(Animation.CastOutAnimation)
+                .DisplaysVisualEffectWhenActivating(VisualEffectType.None)
+                .UsesAnimation(AnimationType.CastOutAnimation)
                 .HasImpactAction(ImpactAction);
         }
 
@@ -139,8 +138,8 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
-                .DisplaysVisualEffectWhenActivating(VisualEffect.None)
-                .UsesAnimation(Animation.CastOutAnimation)
+                .DisplaysVisualEffectWhenActivating(VisualEffectType.None)
+                .UsesAnimation(AnimationType.CastOutAnimation)
                 .HasImpactAction(ImpactAction);
         }
 
@@ -156,8 +155,8 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
-                .DisplaysVisualEffectWhenActivating(VisualEffect.None)
-                .UsesAnimation(Animation.CastOutAnimation)
+                .DisplaysVisualEffectWhenActivating(VisualEffectType.None)
+                .UsesAnimation(AnimationType.CastOutAnimation)
                 .HasImpactAction(ImpactAction);
         }
         private void ThrowRock5(IAbilityBuilder builder)
@@ -172,15 +171,15 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
-                .DisplaysVisualEffectWhenActivating(VisualEffect.None)
-                .UsesAnimation(Animation.CastOutAnimation)
+                .DisplaysVisualEffectWhenActivating(VisualEffectType.None)
+                .UsesAnimation(AnimationType.CastOutAnimation)
                 .HasImpactAction(ImpactAction);
         }
         private void DoThrowRock(uint target, int level)
         {
-            VisualEffect rockType = VisualEffect.Vfx_Imp_Mirv_Rock;
-            if(level >= 3 && level < 5) { rockType = VisualEffect.Vfx_Imp_Mirv_Rock3; }
-            else if(level == 5) { rockType = VisualEffect.Vfx_Imp_Mirv_Rock2;  }
+            VisualEffectType rockType = VisualEffectType.Vfx_Imp_Mirv_Rock;
+            if(level >= 3 && level < 5) { rockType = VisualEffectType.Vfx_Imp_Mirv_Rock3; }
+            else if(level == 5) { rockType = VisualEffectType.Vfx_Imp_Mirv_Rock2;  }
 
             var missile = EffectVisualEffect(rockType);
             ApplyEffectToObject(DurationType.Instant, missile, target);

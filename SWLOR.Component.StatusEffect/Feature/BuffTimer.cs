@@ -34,7 +34,7 @@ namespace SWLOR.Component.StatusEffect.Feature
             var statusTypes = _statusEffectService.GetStatusEffectTypesFromIcon((EffectIconType)buffInt);
             var effectName = "Unknown Effect";
 
-            if (buffType == EffectTypeScript.Invalideffect && statusTypes.Count == 0) return;
+            if (buffType == EffectScriptType.Invalideffect && statusTypes.Count == 0) return;
 
             if (int.TryParse(Get2DAString("effecticons", "StrRef", buffInt), out int effIconStrRef))
                 effectName = GetStringByStrRef(effIconStrRef);
@@ -44,16 +44,16 @@ namespace SWLOR.Component.StatusEffect.Feature
 
         }
 
-        public void SendBuffInfo(uint player, EffectTypeScript effectType, EffectIconType effectIcon, string effectName)
+        public void SendBuffInfo(uint player, EffectScriptType effectType, EffectIconType effectIcon, string effectName)
         {
-            if (effectType == EffectTypeScript.Invalideffect) return;
+            if (effectType == EffectScriptType.Invalideffect) return;
 
             var buffMsgs = new List<string>();
 
             for (var eff = GetFirstEffect(player); GetIsEffectValid(eff); eff = GetNextEffect(player))
             {
                 if (GetEffectType(eff) != effectType) continue;
-                if (GetEffectType(eff) == EffectTypeScript.AbilityIncrease)
+                if (GetEffectType(eff) == EffectScriptType.AbilityIncrease)
                 {
                     var abilityType = _statusEffectService.GetAbilityTypeBuffed(effectIcon);
                     if (abilityType != (AbilityType)GetEffectInteger(eff, 0)) continue;

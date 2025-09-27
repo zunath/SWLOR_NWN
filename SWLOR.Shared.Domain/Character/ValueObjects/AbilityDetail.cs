@@ -1,6 +1,5 @@
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Combat.Enums;
@@ -23,11 +22,11 @@ namespace SWLOR.Shared.Domain.Character.ValueObjects
         public AbilityRecastDelayAction RecastDelay { get; set; }
         public AbilityCustomValidationAction CustomValidation { get; set; }
         public List<IAbilityActivationRequirement> Requirements { get; set; }
-        public VisualEffect ActivationVisualEffect { get; set; }
+        public VisualEffectType ActivationVisualEffect { get; set; }
         public RecastGroup RecastGroup { get; set; }
         public AbilityActivationType ActivationType { get; set; }
         public PerkType EffectiveLevelPerkType { get; set; }
-        public Animation AnimationType { get; set; }
+        public AnimationType AnimationType { get; set; }
         public StatusEffectType ConcentrationStatusEffectType { get; set; }
         public bool CanBeUsedInSpace { get; set; }
         public bool IgnoreHeavyArmorPenalty { get; set; }
@@ -39,8 +38,8 @@ namespace SWLOR.Shared.Domain.Character.ValueObjects
 
         public AbilityDetail()
         {
-            ActivationVisualEffect = VisualEffect.None;
-            AnimationType = Animation.Invalid;
+            ActivationVisualEffect = VisualEffectType.None;
+            AnimationType = AnimationType.Invalid;
             Requirements = new List<IAbilityActivationRequirement>();
             ConcentrationStatusEffectType = StatusEffectType.Invalid;
             MaxRange = 5.0f;

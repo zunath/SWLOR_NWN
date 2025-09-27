@@ -1,5 +1,4 @@
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Domain.AI.ValueObjects;
 using SWLOR.Shared.Domain.Common.Contracts;
 
@@ -9,7 +8,7 @@ namespace SWLOR.Component.Character.Service
     {
         public void Play(uint oObject, AnimationEvent animationEvent)
         {
-            var vfx = (VisualEffect)GetLocalInt(oObject, animationEvent.IdKey);
+            var vfx = (VisualEffectType)GetLocalInt(oObject, animationEvent.IdKey);
 
             // technically 0 could be valid, but we can't differentiate between err and blur here; no blurring on death allowed
             if (vfx != 0)

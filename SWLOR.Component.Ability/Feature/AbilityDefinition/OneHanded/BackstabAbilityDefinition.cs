@@ -39,7 +39,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.OneHanded
 
         private string Validation(uint activator, uint target, int level, Location targetLocation)
         {
-            var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
+            var weapon = GetItemInSlot(InventorySlotType.RightHand, activator);
             var rightHandType = GetBaseItemType(weapon);
 
             if (ItemService.FinesseVibrobladeBaseItemTypes.Contains(rightHandType))
@@ -95,7 +95,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.OneHanded
                 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
 
-            AssignCommand(activator, () => ActionPlayAnimation(Animation.Backstab));
+            AssignCommand(activator, () => ActionPlayAnimation(AnimationType.Backstab));
             EnmityService.ModifyEnmity(activator, target, 100 * level + damage);
         }
 

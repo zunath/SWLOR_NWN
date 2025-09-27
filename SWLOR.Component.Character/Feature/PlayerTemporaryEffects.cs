@@ -48,14 +48,14 @@ namespace SWLOR.Component.Character.Feature
             var playerId = GetObjectUUID(player);
             var dbPlayer = _db.Get<Player>(playerId);
 
-            SetObjectVisualTransform(player, ObjectVisualTransform.Scale, dbPlayer.AppearanceScale);
+            SetObjectVisualTransform(player, ObjectVisualTransformType.Scale, dbPlayer.AppearanceScale);
         }
 
         private void RemoveImmobility(uint player)
         {
             for (var effect = GetFirstEffect(player); GetIsEffectValid(effect); effect = GetNextEffect(player))
             {
-                if (GetEffectType(effect) == EffectTypeScript.CutsceneImmobilize)
+                if (GetEffectType(effect) == EffectScriptType.CutsceneImmobilize)
                 {
                     RemoveEffect(player, effect);
                 }
@@ -64,12 +64,12 @@ namespace SWLOR.Component.Character.Feature
 
         private void ReapplyBAB(uint player)
         {
-            StatService.ApplyAttacksPerRound(player, GetItemInSlot(InventorySlot.RightHand, player));
+            StatService.ApplyAttacksPerRound(player, GetItemInSlot(InventorySlotType.RightHand, player));
         }
 
         private void ReapplySpeed(uint player)
         {
-            CreaturePlugin.SetMovementRate(player, MovementRate.PC);
+            CreaturePlugin.SetMovementRate(player, MovementRateType.PC);
         }
     }
 }

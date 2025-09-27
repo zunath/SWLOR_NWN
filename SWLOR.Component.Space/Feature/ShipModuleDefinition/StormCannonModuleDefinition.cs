@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Space.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Combat.Contracts;
@@ -77,8 +76,8 @@ namespace SWLOR.Component.Space.Feature.ShipModuleDefinition
                         defenderStat,
                         0);
 
-                    var effectBeam = EffectBeam(VisualEffect.Vfx_Beam_Mind, activator, BodyNode.Chest);
-                    var effectLightning = EffectBeam(VisualEffect.Vfx_Beam_Silent_Lightning, activator, BodyNode.Chest);
+                    var effectBeam = EffectBeam(VisualEffectType.Vfx_Beam_Mind, activator, BodyNodeType.Chest);
+                    var effectLightning = EffectBeam(VisualEffectType.Vfx_Beam_Silent_Lightning, activator, BodyNodeType.Chest);
 
                     for (var i = 0; i < 4; i++)
                     {
@@ -97,7 +96,7 @@ namespace SWLOR.Component.Space.Feature.ShipModuleDefinition
                                     {
                                         ApplyEffectToObject(DurationType.Temporary, effectBeam, target, 1.0f);
                                         ApplyEffectToObject(DurationType.Temporary, effectLightning, target, 1.0f);
-                                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Ion_Shot), activator);
+                                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Ion_Shot), activator);
                                     });
 
                                     DelayCommand(0.1f, () =>
@@ -110,7 +109,7 @@ namespace SWLOR.Component.Space.Feature.ShipModuleDefinition
                                             {
                                                 armorDamage = 0;
                                             }
-                                            var effect = EffectVisualEffect(VisualEffect.Vfx_Imp_Dispel, false);
+                                            var effect = EffectVisualEffect(VisualEffectType.Vfx_Imp_Dispel, false);
                                             ApplyEffectToObject(DurationType.Instant, effect, target);
                                             SpaceService.ApplyShipDamage(activator, target, shieldDamage);
                                             SpaceService.ApplyShipDamage(activator, target, armorDamage);
@@ -134,7 +133,7 @@ namespace SWLOR.Component.Space.Feature.ShipModuleDefinition
                                     {
                                         AssignCommand(activator, () =>
                                         {
-                                            var effect = EffectVisualEffect(VisualEffect.Vfx_Fnf_Electric_Explosion, true);
+                                            var effect = EffectVisualEffect(VisualEffectType.Vfx_Fnf_Electric_Explosion, true);
                                             ApplyEffectToObject(DurationType.Temporary, effectBeam, target, 1.0f);
                                             ApplyEffectToObject(DurationType.Temporary, effectLightning, target, 1.0f);
                                         });

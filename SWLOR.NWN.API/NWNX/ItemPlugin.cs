@@ -1,4 +1,4 @@
-using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.NWN.API.NWNX
 {
@@ -63,7 +63,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="oItem">The item object.</param>
         /// <param name="baseitem">The new base item.</param>
         /// <remarks>This will not be visible until the item is refreshed (e.g. drop and take the item, or logging out and back in).</remarks>
-        public static void SetBaseItemType(uint oItem, BaseItem baseitem)
+        public static void SetBaseItemType(uint oItem, BaseItemType baseitem)
         {
             global::NWN.Core.NWNX.ItemPlugin.SetBaseItemType(oItem, (int)baseitem);
         }
@@ -94,7 +94,7 @@ namespace SWLOR.NWN.API.NWNX
         /// 
         /// [1] When specifying per-part coloring, the value 255 corresponds with the logical function 'clear colour override', which clears the per-part override for that part.
         /// </remarks>
-        public static void SetItemAppearance(uint oItem, ItemAppearanceType nType, int nIndex, int nValue, bool updateCreatureAppearance = false)
+        public static void SetItemAppearance(uint oItem, ItemModelColorType nType, int nIndex, int nValue, bool updateCreatureAppearance = false)
         {
             global::NWN.Core.NWNX.ItemPlugin.SetItemAppearance(oItem, (int)nType, nIndex, nValue, updateCreatureAppearance ? 1 : 0);
         }

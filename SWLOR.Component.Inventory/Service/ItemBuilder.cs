@@ -115,7 +115,7 @@ namespace SWLOR.Component.Inventory.Service
         /// </summary>
         /// <param name="animation">The animation to play</param>
         /// <returns>An item builder with the configured options.</returns>
-        public IItemBuilder PlaysAnimation(Animation animation)
+        public IItemBuilder PlaysAnimation(AnimationType animation)
         {
             foreach (var item in _activeItems)
             {

@@ -19,7 +19,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="sStringToSpeak">The string to be spoken</param>
         /// <param name="nTalkVolume">The talk volume (TALKVOLUME_* constants) (default: TalkVolume.Talk)</param>
-        public static void ActionSpeakString(string sStringToSpeak, TalkVolume nTalkVolume = TalkVolume.Talk)
+        public static void ActionSpeakString(string sStringToSpeak, TalkVolumeType nTalkVolume = TalkVolumeType.Talk)
         {
             global::NWN.Core.NWScript.ActionSpeakString(sStringToSpeak, (int)nTalkVolume);
         }

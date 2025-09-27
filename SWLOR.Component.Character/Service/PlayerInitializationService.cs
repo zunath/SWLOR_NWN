@@ -111,7 +111,7 @@ namespace SWLOR.Component.Character.Service
         {
             for (var slot = 0; slot < NumberOfInventorySlots; slot++)
             {
-                var item = GetItemInSlot((InventorySlot)slot, player);
+                var item = GetItemInSlot((InventorySlotType)slot, player);
                 if (!GetIsObjectValid(item)) continue;
 
                 DestroyObject(item);
@@ -146,9 +146,9 @@ namespace SWLOR.Component.Character.Service
         /// <param name="player">The player to modify</param>
         public void InitializeSavingThrows(uint player)
         {
-            CreaturePlugin.SetBaseSavingThrow(player, SavingThrow.Fortitude, 0);
-            CreaturePlugin.SetBaseSavingThrow(player, SavingThrow.Will, 0);
-            CreaturePlugin.SetBaseSavingThrow(player, SavingThrow.Reflex, 0);
+            CreaturePlugin.SetBaseSavingThrow(player, SavingThrowCategoryType.Fortitude, 0);
+            CreaturePlugin.SetBaseSavingThrow(player, SavingThrowCategoryType.Will, 0);
+            CreaturePlugin.SetBaseSavingThrow(player, SavingThrowCategoryType.Reflex, 0);
         }
 
         /// <summary>
@@ -347,7 +347,7 @@ namespace SWLOR.Component.Character.Service
             AssignCommand(player, () =>
             {
                 ClearAllActions();
-                ActionEquipItem(item, InventorySlot.Chest);
+                ActionEquipItem(item, InventorySlotType.Chest);
             });
 
             GiveGoldToCreature(player, 200);
@@ -399,7 +399,7 @@ namespace SWLOR.Component.Character.Service
 
         private void ApplyMovementRate(uint player)
         {
-            CreaturePlugin.SetMovementRate(player, MovementRate.PC);
+            CreaturePlugin.SetMovementRate(player, MovementRateType.PC);
         }
 
     }

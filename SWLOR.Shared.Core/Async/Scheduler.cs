@@ -59,9 +59,18 @@ namespace SWLOR.Shared.Core.Async
         }
         private void ProcessTime()
         {
-            DeltaTime = _stopwatch.Elapsed.TotalSeconds;
-            Time += DeltaTime;
-            _stopwatch.Restart();
+            if (!_stopwatch.IsRunning)
+            {
+                _stopwatch.Start();
+                DeltaTime = 0;
+                // On first call, Time should be 0, so no need to update it
+            }
+            else
+            {
+                DeltaTime = _stopwatch.Elapsed.TotalSeconds;
+                Time += DeltaTime;
+                _stopwatch.Restart();
+            }
         }
 
         private void ProcessScheduledItems()

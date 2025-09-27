@@ -1,6 +1,6 @@
 ﻿namespace SWLOR.Shared.Core.Extension
 {
-    internal static class CollectionExtensions
+    public static class CollectionExtensions
     {
         public static void InsertOrdered<T>(this List<T> sortedList, T item, IComparer<T> comparer = null)
         {

@@ -325,6 +325,7 @@ namespace SWLOR.Shared.Core.Data
         /// <returns>A string containing escaped tokens.</returns>
         public string EscapeTokens(string str)
         {
+            if (str == null) return null;
             return str
                 .Replace("@", "\\@")
                 .Replace("!", "\\!")

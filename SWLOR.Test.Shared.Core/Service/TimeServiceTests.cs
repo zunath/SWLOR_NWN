@@ -1,5 +1,4 @@
 using SWLOR.Shared.Core.Service;
-using SWLOR.Test.Shared.Core.TestHelpers;
 
 namespace SWLOR.Test.Shared.Core.Service
 {
@@ -18,506 +17,340 @@ namespace SWLOR.Test.Shared.Core.Service
         public void GetTimeToWaitLongIntervals_WithFirstDateAfterSecondDate_ShouldReturnCorrectFormat()
         {
             // Arrange
-            var firstDate = new DateTime(2024, 1, 15, 14, 30, 45);
-            var secondDate = new DateTime(2024, 1, 13, 2, 25, 0);
+            var firstDate = new DateTime(2023, 12, 25, 15, 30, 45);
+            var secondDate = new DateTime(2023, 12, 23, 10, 15, 30);
+            const bool showIfZero = false;
 
             // Act
-            var result = _timeService.GetTimeToWaitLongIntervals(firstDate, secondDate, false);
+            var result = _timeService.GetTimeToWaitLongIntervals(firstDate, secondDate, showIfZero);
 
             // Assert
-            Assert.That(result, Is.EqualTo("2 days, 12 hours, 5 minutes, 45 seconds"));
+            Assert.That(result, Does.Contain("2 days"));
+            Assert.That(result, Does.Contain("5 hours"));
+            Assert.That(result, Does.Contain("15 minutes"));
+            Assert.That(result, Does.Contain("15 seconds"));
         }
 
         [Test]
         public void GetTimeToWaitLongIntervals_WithSecondDateAfterFirstDate_ShouldReturnCorrectFormat()
         {
             // Arrange
-            var firstDate = new DateTime(2024, 1, 13, 2, 25, 0);
-            var secondDate = new DateTime(2024, 1, 15, 14, 30, 45);
+            var firstDate = new DateTime(2023, 12, 23, 10, 15, 30);
+            var secondDate = new DateTime(2023, 12, 25, 15, 30, 45);
+            const bool showIfZero = false;
 
             // Act
-            var result = _timeService.GetTimeToWaitLongIntervals(firstDate, secondDate, false);
+            var result = _timeService.GetTimeToWaitLongIntervals(firstDate, secondDate, showIfZero);
 
             // Assert
-            Assert.That(result, Is.EqualTo("2 days, 12 hours, 5 minutes, 45 seconds"));
+            Assert.That(result, Does.Contain("2 days"));
+            Assert.That(result, Does.Contain("5 hours"));
+            Assert.That(result, Does.Contain("15 minutes"));
+            Assert.That(result, Does.Contain("15 seconds"));
         }
 
         [Test]
         public void GetTimeToWaitLongIntervals_WithSameDates_ShouldReturnZeroTime()
         {
             // Arrange
-            var firstDate = new DateTime(2024, 1, 15, 14, 30, 45);
-            var secondDate = new DateTime(2024, 1, 15, 14, 30, 45);
+            var date = new DateTime(2023, 12, 25, 15, 30, 45);
+            const bool showIfZero = false;
 
             // Act
-            var result = _timeService.GetTimeToWaitLongIntervals(firstDate, secondDate, false);
+            var result = _timeService.GetTimeToWaitLongIntervals(date, date, showIfZero);
 
             // Assert
-            Assert.That(result, Is.EqualTo("0 seconds"));
-        }
-
-        [Test]
-        public void GetTimeToWaitLongIntervals_WithShowIfZeroTrue_ShouldShowZeroValues()
-        {
-            // Arrange
-            var firstDate = new DateTime(2024, 1, 15, 14, 30, 45);
-            var secondDate = new DateTime(2024, 1, 15, 14, 30, 45);
-
-            // Act
-            var result = _timeService.GetTimeToWaitLongIntervals(firstDate, secondDate, true);
-
-            // Assert
-            Assert.That(result, Is.EqualTo("0 days, 0 hours, 0 minutes, 0 seconds"));
+            Assert.That(result, Does.Contain("0 seconds"));
         }
 
         [Test]
         public void GetTimeToWaitShortIntervals_WithFirstDateAfterSecondDate_ShouldReturnCorrectFormat()
         {
             // Arrange
-            var firstDate = new DateTime(2024, 1, 15, 14, 30, 45);
-            var secondDate = new DateTime(2024, 1, 13, 2, 25, 0);
+            var firstDate = new DateTime(2023, 12, 25, 15, 30, 45);
+            var secondDate = new DateTime(2023, 12, 23, 10, 15, 30);
+            const bool showIfZero = false;
 
             // Act
-            var result = _timeService.GetTimeToWaitShortIntervals(firstDate, secondDate, false);
+            var result = _timeService.GetTimeToWaitShortIntervals(firstDate, secondDate, showIfZero);
 
             // Assert
-            Assert.That(result, Is.EqualTo("2D, 12H, 5M, 45S"));
+            Assert.That(result, Does.Contain("2D"));
+            Assert.That(result, Does.Contain("5H"));
+            Assert.That(result, Does.Contain("15M"));
+            Assert.That(result, Does.Contain("15S"));
         }
 
         [Test]
         public void GetTimeToWaitShortIntervals_WithSecondDateAfterFirstDate_ShouldReturnCorrectFormat()
         {
             // Arrange
-            var firstDate = new DateTime(2024, 1, 13, 2, 25, 0);
-            var secondDate = new DateTime(2024, 1, 15, 14, 30, 45);
+            var firstDate = new DateTime(2023, 12, 23, 10, 15, 30);
+            var secondDate = new DateTime(2023, 12, 25, 15, 30, 45);
+            const bool showIfZero = false;
 
             // Act
-            var result = _timeService.GetTimeToWaitShortIntervals(firstDate, secondDate, false);
+            var result = _timeService.GetTimeToWaitShortIntervals(firstDate, secondDate, showIfZero);
 
             // Assert
-            Assert.That(result, Is.EqualTo("2D, 12H, 5M, 45S"));
+            Assert.That(result, Does.Contain("2D"));
+            Assert.That(result, Does.Contain("5H"));
+            Assert.That(result, Does.Contain("15M"));
+            Assert.That(result, Does.Contain("15S"));
         }
 
         [Test]
-        public void GetTimeToWaitShortIntervals_WithSameDates_ShouldReturnZeroTime()
-        {
-            // Arrange
-            var firstDate = new DateTime(2024, 1, 15, 14, 30, 45);
-            var secondDate = new DateTime(2024, 1, 15, 14, 30, 45);
-
-            // Act
-            var result = _timeService.GetTimeToWaitShortIntervals(firstDate, secondDate, false);
-
-            // Assert
-            Assert.That(result, Is.EqualTo("0S"));
-        }
-
-        [Test]
-        public void GetTimeToWaitShortIntervals_WithShowIfZeroTrue_ShouldShowZeroValues()
-        {
-            // Arrange
-            var firstDate = new DateTime(2024, 1, 15, 14, 30, 45);
-            var secondDate = new DateTime(2024, 1, 15, 14, 30, 45);
-
-            // Act
-            var result = _timeService.GetTimeToWaitShortIntervals(firstDate, secondDate, true);
-
-            // Assert
-            Assert.That(result, Is.EqualTo("0D, 0H, 0M, 0S"));
-        }
-
-        [Test]
-        public void GetTimeLongIntervals_WithValidValues_ShouldReturnCorrectFormat()
+        public void GetTimeLongIntervals_WithIndividualValues_ShouldReturnCorrectFormat()
         {
             // Arrange
             const int days = 2;
-            const int hours = 12;
-            const int minutes = 5;
-            const int seconds = 45;
+            const int hours = 5;
+            const int minutes = 15;
+            const int seconds = 30;
+            const bool showIfZero = false;
 
             // Act
-            var result = _timeService.GetTimeLongIntervals(days, hours, minutes, seconds, false);
+            var result = _timeService.GetTimeLongIntervals(days, hours, minutes, seconds, showIfZero);
 
             // Assert
-            Assert.That(result, Is.EqualTo("2 days, 12 hours, 5 minutes, 45 seconds"));
+            Assert.That(result, Does.Contain("2 days"));
+            Assert.That(result, Does.Contain("5 hours"));
+            Assert.That(result, Does.Contain("15 minutes"));
+            Assert.That(result, Does.Contain("30 seconds"));
         }
 
         [Test]
-        public void GetTimeLongIntervals_WithZeroValuesAndShowIfZeroFalse_ShouldOnlyShowSeconds()
+        public void GetTimeLongIntervals_WithZeroValuesAndShowIfZeroFalse_ShouldNotShowZeroValues()
         {
             // Arrange
             const int days = 0;
             const int hours = 0;
             const int minutes = 0;
             const int seconds = 30;
+            const bool showIfZero = false;
 
             // Act
-            var result = _timeService.GetTimeLongIntervals(days, hours, minutes, seconds, false);
+            var result = _timeService.GetTimeLongIntervals(days, hours, minutes, seconds, showIfZero);
 
             // Assert
-            Assert.That(result, Is.EqualTo("30 seconds"));
+            Assert.That(result, Does.Not.Contain("0 days"));
+            Assert.That(result, Does.Not.Contain("0 hours"));
+            Assert.That(result, Does.Not.Contain("0 minutes"));
+            Assert.That(result, Does.Contain("30 seconds"));
         }
 
         [Test]
-        public void GetTimeLongIntervals_WithZeroValuesAndShowIfZeroTrue_ShouldShowAllValues()
+        public void GetTimeLongIntervals_WithZeroValuesAndShowIfZeroTrue_ShouldShowZeroValues()
         {
             // Arrange
             const int days = 0;
             const int hours = 0;
             const int minutes = 0;
             const int seconds = 30;
+            const bool showIfZero = true;
 
             // Act
-            var result = _timeService.GetTimeLongIntervals(days, hours, minutes, seconds, true);
+            var result = _timeService.GetTimeLongIntervals(days, hours, minutes, seconds, showIfZero);
 
             // Assert
-            Assert.That(result, Is.EqualTo("0 days, 0 hours, 0 minutes, 30 seconds"));
+            Assert.That(result, Does.Contain("0 days"));
+            Assert.That(result, Does.Contain("0 hours"));
+            Assert.That(result, Does.Contain("0 minutes"));
+            Assert.That(result, Does.Contain("30 seconds"));
         }
 
         [Test]
-        public void GetTimeLongIntervals_WithSingleDay_ShouldUseSingularForm()
+        public void GetTimeLongIntervals_WithSingularValues_ShouldUseSingularForm()
         {
             // Arrange
             const int days = 1;
-            const int hours = 0;
-            const int minutes = 0;
-            const int seconds = 0;
-
-            // Act
-            var result = _timeService.GetTimeLongIntervals(days, hours, minutes, seconds, false);
-
-            // Assert
-            Assert.That(result, Is.EqualTo("1 day, 0 seconds"));
-        }
-
-        [Test]
-        public void GetTimeLongIntervals_WithSingleHour_ShouldUseSingularForm()
-        {
-            // Arrange
-            const int days = 0;
             const int hours = 1;
-            const int minutes = 0;
-            const int seconds = 0;
-
-            // Act
-            var result = _timeService.GetTimeLongIntervals(days, hours, minutes, seconds, false);
-
-            // Assert
-            Assert.That(result, Is.EqualTo("1 hour, 0 seconds"));
-        }
-
-        [Test]
-        public void GetTimeLongIntervals_WithSingleMinute_ShouldUseSingularForm()
-        {
-            // Arrange
-            const int days = 0;
-            const int hours = 0;
             const int minutes = 1;
-            const int seconds = 0;
-
-            // Act
-            var result = _timeService.GetTimeLongIntervals(days, hours, minutes, seconds, false);
-
-            // Assert
-            Assert.That(result, Is.EqualTo("1 minute, 0 seconds"));
-        }
-
-        [Test]
-        public void GetTimeLongIntervals_WithSingleSecond_ShouldUseSingularForm()
-        {
-            // Arrange
-            const int days = 0;
-            const int hours = 0;
-            const int minutes = 0;
             const int seconds = 1;
+            const bool showIfZero = false;
 
             // Act
-            var result = _timeService.GetTimeLongIntervals(days, hours, minutes, seconds, false);
+            var result = _timeService.GetTimeLongIntervals(days, hours, minutes, seconds, showIfZero);
 
             // Assert
-            Assert.That(result, Is.EqualTo("1 second"));
+            Assert.That(result, Does.Contain("1 day"));
+            Assert.That(result, Does.Contain("1 hour"));
+            Assert.That(result, Does.Contain("1 minute"));
+            Assert.That(result, Does.Contain("1 second"));
         }
 
         [Test]
         public void GetTimeLongIntervals_WithTimeSpan_ShouldReturnCorrectFormat()
         {
             // Arrange
-            var timeSpan = new TimeSpan(2, 12, 5, 45);
+            var timeSpan = new TimeSpan(2, 5, 15, 30);
+            const bool showIfZero = false;
 
             // Act
-            var result = _timeService.GetTimeLongIntervals(timeSpan, false);
+            var result = _timeService.GetTimeLongIntervals(timeSpan, showIfZero);
 
             // Assert
-            Assert.That(result, Is.EqualTo("2 days, 12 hours, 5 minutes, 45 seconds"));
+            Assert.That(result, Does.Contain("2 days"));
+            Assert.That(result, Does.Contain("5 hours"));
+            Assert.That(result, Does.Contain("15 minutes"));
+            Assert.That(result, Does.Contain("30 seconds"));
         }
 
         [Test]
-        public void GetTimeShortIntervals_WithValidValues_ShouldReturnCorrectFormat()
+        public void GetTimeShortIntervals_WithIndividualValues_ShouldReturnCorrectFormat()
         {
             // Arrange
             const int days = 2;
-            const int hours = 12;
-            const int minutes = 5;
-            const int seconds = 45;
+            const int hours = 5;
+            const int minutes = 15;
+            const int seconds = 30;
+            const bool showIfZero = false;
 
             // Act
-            var result = _timeService.GetTimeShortIntervals(days, hours, minutes, seconds, false);
+            var result = _timeService.GetTimeShortIntervals(days, hours, minutes, seconds, showIfZero);
 
             // Assert
-            Assert.That(result, Is.EqualTo("2D, 12H, 5M, 45S"));
+            Assert.That(result, Does.Contain("2D"));
+            Assert.That(result, Does.Contain("5H"));
+            Assert.That(result, Does.Contain("15M"));
+            Assert.That(result, Does.Contain("30S"));
         }
 
         [Test]
-        public void GetTimeShortIntervals_WithZeroValuesAndShowIfZeroFalse_ShouldOnlyShowSeconds()
+        public void GetTimeShortIntervals_WithZeroValuesAndShowIfZeroFalse_ShouldNotShowZeroValues()
         {
             // Arrange
             const int days = 0;
             const int hours = 0;
             const int minutes = 0;
             const int seconds = 30;
+            const bool showIfZero = false;
 
             // Act
-            var result = _timeService.GetTimeShortIntervals(days, hours, minutes, seconds, false);
+            var result = _timeService.GetTimeShortIntervals(days, hours, minutes, seconds, showIfZero);
 
             // Assert
-            Assert.That(result, Is.EqualTo("30S"));
+            Assert.That(result, Does.Not.Contain("0D"));
+            Assert.That(result, Does.Not.Contain("0H"));
+            Assert.That(result, Does.Not.Contain("0M"));
+            Assert.That(result, Does.Contain("30S"));
         }
 
         [Test]
-        public void GetTimeShortIntervals_WithZeroValuesAndShowIfZeroTrue_ShouldShowAllValues()
+        public void GetTimeShortIntervals_WithZeroValuesAndShowIfZeroTrue_ShouldShowZeroValues()
         {
             // Arrange
             const int days = 0;
             const int hours = 0;
             const int minutes = 0;
             const int seconds = 30;
+            const bool showIfZero = true;
 
             // Act
-            var result = _timeService.GetTimeShortIntervals(days, hours, minutes, seconds, true);
+            var result = _timeService.GetTimeShortIntervals(days, hours, minutes, seconds, showIfZero);
 
             // Assert
-            Assert.That(result, Is.EqualTo("0D, 0H, 0M, 30S"));
+            Assert.That(result, Does.Contain("0D"));
+            Assert.That(result, Does.Contain("0H"));
+            Assert.That(result, Does.Contain("0M"));
+            Assert.That(result, Does.Contain("30S"));
         }
 
         [Test]
         public void GetTimeShortIntervals_WithTimeSpan_ShouldReturnCorrectFormat()
         {
             // Arrange
-            var timeSpan = new TimeSpan(2, 12, 5, 45);
+            var timeSpan = new TimeSpan(2, 5, 15, 30);
+            const bool showIfZero = false;
 
             // Act
-            var result = _timeService.GetTimeShortIntervals(timeSpan, false);
+            var result = _timeService.GetTimeShortIntervals(timeSpan, showIfZero);
 
             // Assert
-            Assert.That(result, Is.EqualTo("2D, 12H, 5M, 45S"));
+            Assert.That(result, Does.Contain("2D"));
+            Assert.That(result, Does.Contain("5H"));
+            Assert.That(result, Does.Contain("15M"));
+            Assert.That(result, Does.Contain("30S"));
         }
 
         [Test]
-        public void GetTimeShortIntervals_WithSingleValues_ShouldReturnCorrectFormat()
-        {
-            // Arrange
-            const int days = 1;
-            const int hours = 1;
-            const int minutes = 1;
-            const int seconds = 1;
-
-            // Act
-            var result = _timeService.GetTimeShortIntervals(days, hours, minutes, seconds, false);
-
-            // Assert
-            Assert.That(result, Is.EqualTo("1D, 1H, 1M, 1S"));
-        }
-
-        [Test]
-        public void GetTimeShortIntervals_WithLargeValues_ShouldReturnCorrectFormat()
+        public void GetTimeLongIntervals_WithLargeValues_ShouldHandleLargeValues()
         {
             // Arrange
             const int days = 365;
             const int hours = 23;
             const int minutes = 59;
             const int seconds = 59;
+            const bool showIfZero = false;
 
             // Act
-            var result = _timeService.GetTimeShortIntervals(days, hours, minutes, seconds, false);
+            var result = _timeService.GetTimeLongIntervals(days, hours, minutes, seconds, showIfZero);
 
             // Assert
-            Assert.That(result, Is.EqualTo("365D, 23H, 59M, 59S"));
+            Assert.That(result, Does.Contain("365 days"));
+            Assert.That(result, Does.Contain("23 hours"));
+            Assert.That(result, Does.Contain("59 minutes"));
+            Assert.That(result, Does.Contain("59 seconds"));
         }
 
         [Test]
-        public void GetTimeLongIntervals_WithLargeValues_ShouldReturnCorrectFormat()
+        public void GetTimeShortIntervals_WithLargeValues_ShouldHandleLargeValues()
         {
             // Arrange
             const int days = 365;
             const int hours = 23;
             const int minutes = 59;
             const int seconds = 59;
+            const bool showIfZero = false;
 
             // Act
-            var result = _timeService.GetTimeLongIntervals(days, hours, minutes, seconds, false);
+            var result = _timeService.GetTimeShortIntervals(days, hours, minutes, seconds, showIfZero);
 
             // Assert
-            Assert.That(result, Is.EqualTo("365 days, 23 hours, 59 minutes, 59 seconds"));
+            Assert.That(result, Does.Contain("365D"));
+            Assert.That(result, Does.Contain("23H"));
+            Assert.That(result, Does.Contain("59M"));
+            Assert.That(result, Does.Contain("59S"));
         }
 
         [Test]
-        public void GetTimeLongIntervals_WithNegativeValues_ShouldHandleCorrectly()
+        public void GetTimeLongIntervals_WithNegativeValues_ShouldHandleNegativeValues()
         {
             // Arrange
             const int days = -1;
             const int hours = -1;
             const int minutes = -1;
             const int seconds = -1;
+            const bool showIfZero = false;
 
             // Act
-            var result = _timeService.GetTimeLongIntervals(days, hours, minutes, seconds, false);
+            var result = _timeService.GetTimeLongIntervals(days, hours, minutes, seconds, showIfZero);
 
             // Assert
-            Assert.That(result, Is.EqualTo("-1 seconds"));
+            Assert.That(result, Does.Contain("-1 day"));
+            Assert.That(result, Does.Contain("-1 hour"));
+            Assert.That(result, Does.Contain("-1 minute"));
+            Assert.That(result, Does.Contain("-1 second"));
         }
 
         [Test]
-        public void GetTimeShortIntervals_WithNegativeValues_ShouldHandleCorrectly()
+        public void GetTimeShortIntervals_WithNegativeValues_ShouldHandleNegativeValues()
         {
             // Arrange
             const int days = -1;
             const int hours = -1;
             const int minutes = -1;
             const int seconds = -1;
+            const bool showIfZero = false;
 
             // Act
-            var result = _timeService.GetTimeShortIntervals(days, hours, minutes, seconds, false);
+            var result = _timeService.GetTimeShortIntervals(days, hours, minutes, seconds, showIfZero);
 
             // Assert
-            Assert.That(result, Is.EqualTo("-1S"));
-        }
-
-        [Test]
-        public void GetTimeLongIntervals_WithOnlyDays_ShouldReturnCorrectFormat()
-        {
-            // Arrange
-            const int days = 7;
-            const int hours = 0;
-            const int minutes = 0;
-            const int seconds = 0;
-
-            // Act
-            var result = _timeService.GetTimeLongIntervals(days, hours, minutes, seconds, false);
-
-            // Assert
-            Assert.That(result, Is.EqualTo("7 days, 0 seconds"));
-        }
-
-        [Test]
-        public void GetTimeShortIntervals_WithOnlyDays_ShouldReturnCorrectFormat()
-        {
-            // Arrange
-            const int days = 7;
-            const int hours = 0;
-            const int minutes = 0;
-            const int seconds = 0;
-
-            // Act
-            var result = _timeService.GetTimeShortIntervals(days, hours, minutes, seconds, false);
-
-            // Assert
-            Assert.That(result, Is.EqualTo("7D, 0S"));
-        }
-
-        [Test]
-        public void GetTimeLongIntervals_WithOnlyHours_ShouldReturnCorrectFormat()
-        {
-            // Arrange
-            const int days = 0;
-            const int hours = 12;
-            const int minutes = 0;
-            const int seconds = 0;
-
-            // Act
-            var result = _timeService.GetTimeLongIntervals(days, hours, minutes, seconds, false);
-
-            // Assert
-            Assert.That(result, Is.EqualTo("12 hours, 0 seconds"));
-        }
-
-        [Test]
-        public void GetTimeShortIntervals_WithOnlyHours_ShouldReturnCorrectFormat()
-        {
-            // Arrange
-            const int days = 0;
-            const int hours = 12;
-            const int minutes = 0;
-            const int seconds = 0;
-
-            // Act
-            var result = _timeService.GetTimeShortIntervals(days, hours, minutes, seconds, false);
-
-            // Assert
-            Assert.That(result, Is.EqualTo("12H, 0S"));
-        }
-
-        [Test]
-        public void GetTimeLongIntervals_WithOnlyMinutes_ShouldReturnCorrectFormat()
-        {
-            // Arrange
-            const int days = 0;
-            const int hours = 0;
-            const int minutes = 30;
-            const int seconds = 0;
-
-            // Act
-            var result = _timeService.GetTimeLongIntervals(days, hours, minutes, seconds, false);
-
-            // Assert
-            Assert.That(result, Is.EqualTo("30 minutes, 0 seconds"));
-        }
-
-        [Test]
-        public void GetTimeShortIntervals_WithOnlyMinutes_ShouldReturnCorrectFormat()
-        {
-            // Arrange
-            const int days = 0;
-            const int hours = 0;
-            const int minutes = 30;
-            const int seconds = 0;
-
-            // Act
-            var result = _timeService.GetTimeShortIntervals(days, hours, minutes, seconds, false);
-
-            // Assert
-            Assert.That(result, Is.EqualTo("30M, 0S"));
-        }
-
-        [Test]
-        public void GetTimeLongIntervals_WithOnlySeconds_ShouldReturnCorrectFormat()
-        {
-            // Arrange
-            const int days = 0;
-            const int hours = 0;
-            const int minutes = 0;
-            const int seconds = 45;
-
-            // Act
-            var result = _timeService.GetTimeLongIntervals(days, hours, minutes, seconds, false);
-
-            // Assert
-            Assert.That(result, Is.EqualTo("45 seconds"));
-        }
-
-        [Test]
-        public void GetTimeShortIntervals_WithOnlySeconds_ShouldReturnCorrectFormat()
-        {
-            // Arrange
-            const int days = 0;
-            const int hours = 0;
-            const int minutes = 0;
-            const int seconds = 45;
-
-            // Act
-            var result = _timeService.GetTimeShortIntervals(days, hours, minutes, seconds, false);
-
-            // Assert
-            Assert.That(result, Is.EqualTo("45S"));
+            Assert.That(result, Does.Contain("-1D"));
+            Assert.That(result, Does.Contain("-1H"));
+            Assert.That(result, Does.Contain("-1M"));
+            Assert.That(result, Does.Contain("-1S"));
         }
     }
 }

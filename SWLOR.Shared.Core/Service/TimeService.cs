@@ -66,15 +66,15 @@ namespace SWLOR.Shared.Core.Service
         {
             string result = "";
 
-            if (showIfZero || days > 0)
-                result += days + (days == 1 ? " day, " : " days, ");
-            if (showIfZero || hours > 0)
-                result += hours + (hours == 1 ? " hour, " : " hours, ");
-            if (showIfZero || minutes > 0)
-                result += minutes + (minutes == 1 ? " minute, " : " minutes, ");
+            if (showIfZero || days != 0)
+                result += days + (Math.Abs(days) == 1 ? " day, " : " days, ");
+            if (showIfZero || hours != 0)
+                result += hours + (Math.Abs(hours) == 1 ? " hour, " : " hours, ");
+            if (showIfZero || minutes != 0)
+                result += minutes + (Math.Abs(minutes) == 1 ? " minute, " : " minutes, ");
 
             // Always show seconds regardless if showIfZero == false. This is due to milliseconds.
-            result += seconds + (seconds == 1 ? " second" : " seconds");
+            result += seconds + (Math.Abs(seconds) == 1 ? " second" : " seconds");
 
             return result;
         }
@@ -105,13 +105,13 @@ namespace SWLOR.Shared.Core.Service
         {
             var result = "";
 
-            if (showIfZero || days > 0)
+            if (showIfZero || days != 0)
                 result += days + "D, ";
 
-            if (showIfZero || hours > 0)
+            if (showIfZero || hours != 0)
                 result += hours + "H, ";
 
-            if (showIfZero || minutes > 0)
+            if (showIfZero || minutes != 0)
                 result += minutes + "M, ";
 
             // Always show seconds regardless if showIfZero == false. This is due to milliseconds.

@@ -20,9 +20,9 @@ namespace SWLOR.Component.Ability.Infrastructure
         public static IServiceCollection AddAbilityServices(this IServiceCollection services)
         {
                 // Register services as singletons
-                services.AddSingleton<IAbilityService, Service.Ability>();
-                services.AddSingleton<IRecastService, Recast>();
-                services.AddSingleton<IAbilityBuilder, Service.AbilityBuilder>();
+                services.AddSingleton<IAbilityService, AbilityService>();
+                services.AddSingleton<IRecastService, RecastService>();
+                services.AddSingleton<IAbilityBuilder, AbilityBuilder>();
 
             // Dynamically register all ability definition classes
             RegisterAbilityDefinitionClasses(services);

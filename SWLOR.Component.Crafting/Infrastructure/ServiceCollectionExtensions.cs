@@ -25,8 +25,8 @@ namespace SWLOR.Component.Crafting.Infrastructure
             services.AddTransient<IFishingLocationBuilder, FishingLocationBuilder>();
             
             // Register Crafting services
-            services.AddSingleton<ICraftService, Craft>();
-            services.AddSingleton<IFishingService, Fishing>();
+            services.AddSingleton<ICraftService, CraftService>();
+            services.AddSingleton<IFishingService, FishingService>();
 
             // Register feature classes
             services.AddTransient<ScavengePoint>();

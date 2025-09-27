@@ -20,14 +20,14 @@ namespace SWLOR.Component.Combat.EventHandlers
         private readonly IAttackOfOpportunityService _attackOfOpportunityService;
         private readonly ICombatPointService _combatPointService;
         private readonly IEnmityService _enmityService;
-        private readonly Death _deathService;
+        private readonly DeathService _deathService;
 
         public CombatEventHandler(
             ICombatService combatService,
             IAttackOfOpportunityService attackOfOpportunityService,
             ICombatPointService combatPointService,
             IEnmityService enmityService,
-            Death deathService)
+            DeathService deathService)
         {
             _combatService = combatService;
             _attackOfOpportunityService = attackOfOpportunityService;

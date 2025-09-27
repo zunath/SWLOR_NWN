@@ -19,7 +19,7 @@ namespace SWLOR.Component.StatusEffect.Infrastructure
         public static IServiceCollection AddStatusEffectServices(this IServiceCollection services)
         {
             // Register StatusEffect service
-            services.AddSingleton<IStatusEffectService, Service.StatusEffect>();
+            services.AddSingleton<IStatusEffectService, Service.StatusEffectService>();
             
             // Register event handlers as singletons
             services.AddSingleton<EventHandlers.StatusEffectEventHandler>();

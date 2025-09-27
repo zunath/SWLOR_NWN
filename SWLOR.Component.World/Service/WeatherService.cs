@@ -237,16 +237,16 @@ namespace SWLOR.Component.World.Service
             }
         }
 
-        public NWN.API.NWScript.Enum.Weather GetWeather()
+        public Weather GetWeather()
         {
             return GetWeather(OBJECT_SELF);
         }
 
-        public NWN.API.NWScript.Enum.Weather GetWeather(uint oArea)
+        public Weather GetWeather(uint oArea)
         {
             if (GetIsAreaInterior(oArea) || GetIsAreaAboveGround(oArea) == false)
             {
-                return NWN.API.NWScript.Enum.Weather.Invalid;
+                return Weather.Invalid;
             }
 
             var nHeat = GetHeatIndex(oArea);
@@ -255,7 +255,7 @@ namespace SWLOR.Component.World.Service
 
             if (nHumidity > 7 && nHeat > 3 && nHeat < 6 && nWind < 3)
             {
-                return NWN.API.NWScript.Enum.Weather.Foggy;
+                return Weather.Foggy;
             }
 
             // Rather unfortunately, the default method is also called GetWeather. 
@@ -366,7 +366,7 @@ namespace SWLOR.Component.World.Service
             // Apply acid rain, if applicable.  Stolen shamelessly from the Melf's Acid
             // Arrow spell.
             //--------------------------------------------------------------------------
-            if (bIsPC && NWScript.GetWeather(oArea) == NWN.API.NWScript.Enum.Weather.Rain && GetLocalInt(oArea, VAR_WEATHER_ACID_RAIN) == 1)
+            if (bIsPC && NWScript.GetWeather(oArea) == Weather.Rain && GetLocalInt(oArea, VAR_WEATHER_ACID_RAIN) == 1)
             {
                 var eEffect =
                   EffectLinkEffects(
@@ -669,7 +669,7 @@ namespace SWLOR.Component.World.Service
                 // Create new ones depending on the current weather.
                 var nWeather = GetWeather();
 
-                if (nWeather == NWN.API.NWScript.Enum.Weather.Foggy)
+                if (nWeather == Weather.Foggy)
                 {
                     // Get the size in tiles.
                     var nSizeX = GetAreaSize(Dimension.Width, oArea);

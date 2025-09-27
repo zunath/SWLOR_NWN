@@ -16,10 +16,10 @@ namespace SWLOR.Shared.Caching.Service
         private readonly Dictionary<string, Dictionary<TKey, TValue>> _filteredCaches = new();
         private readonly Dictionary<string, object> _groupedCaches = new();
         private readonly Dictionary<string, object> _filteredGroupedCaches = new();
-        private readonly IServiceProvider? _serviceProvider;
-        private Func<TInterface, Dictionary<TKey, TValue>>? _dataExtractor;
+        private readonly IServiceProvider _serviceProvider;
+        private Func<TInterface, Dictionary<TKey, TValue>> _dataExtractor;
 
-        public InterfaceCacheBuilder(IServiceProvider? serviceProvider = null)
+        public InterfaceCacheBuilder(IServiceProvider serviceProvider = null)
         {
             _serviceProvider = serviceProvider;
         }

@@ -20,15 +20,15 @@ namespace SWLOR.Component.Communication.Infrastructure
         public static IServiceCollection AddCommunicationServices(this IServiceCollection services)
         {
             // Register services as singletons
-            services.AddSingleton<IChatCommandService, ChatCommand>();
+            services.AddSingleton<IChatCommandService, ChatCommandService>();
             services.AddSingleton<ICommunicationService, CommunicationService>();
-            services.AddSingleton<ILanguageService, Language>();
+            services.AddSingleton<ILanguageService, LanguageService>();
             services.AddSingleton<IHoloComService, HoloComService>();
             services.AddSingleton<IRoleplayXPService, RoleplayXPService>();
-            services.AddSingleton<ISnippetService, Snippet>();
-            services.AddSingleton<IMessagingService, Messaging>();
-            services.AddSingleton<IDialogService, Service.Dialog>();
-            services.AddSingleton<IDialogBuilder, Service.DialogBuilder>();
+            services.AddSingleton<ISnippetService, SnippetService>();
+            services.AddSingleton<IMessagingService, MessagingService>();
+            services.AddSingleton<IDialogService, Service.DialogService>();
+            services.AddSingleton<IDialogBuilder, DialogBuilder>();
             services.AddSingleton<IChatCommandBuilder, ChatCommandBuilder>();
             services.AddSingleton<ISnippetBuilder, SnippetBuilder>();
             

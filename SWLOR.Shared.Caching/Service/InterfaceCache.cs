@@ -43,7 +43,7 @@ namespace SWLOR.Shared.Caching.Service
         /// </summary>
         /// <param name="name">The name of the filtered cache</param>
         /// <returns>The filtered cache, or null if not found</returns>
-        public Dictionary<TKey, TValue>? GetFilteredCache(string name)
+        public Dictionary<TKey, TValue> GetFilteredCache(string name)
         {
             return _filteredCaches.TryGetValue(name, out var cache) ? cache : null;
         }
@@ -54,7 +54,7 @@ namespace SWLOR.Shared.Caching.Service
         /// <typeparam name="TGroupKey">The type of the grouping key</typeparam>
         /// <param name="name">The name of the grouped cache</param>
         /// <returns>The grouped cache, or null if not found</returns>
-        public Dictionary<TGroupKey, Dictionary<TKey, TValue>>? GetGroupedCache<TGroupKey>(string name)
+        public Dictionary<TGroupKey, Dictionary<TKey, TValue>> GetGroupedCache<TGroupKey>(string name)
         {
             return _groupedCaches.TryGetValue(name, out var cache) ? (Dictionary<TGroupKey, Dictionary<TKey, TValue>>)cache : null;
         }
@@ -65,7 +65,7 @@ namespace SWLOR.Shared.Caching.Service
         /// <typeparam name="TGroupKey">The type of the grouping key</typeparam>
         /// <param name="name">The name of the cache</param>
         /// <returns>The filtered and grouped cache, or null if not found</returns>
-        public Dictionary<TGroupKey, Dictionary<TKey, TValue>>? GetFilteredGroupedCache<TGroupKey>(string name)
+        public Dictionary<TGroupKey, Dictionary<TKey, TValue>> GetFilteredGroupedCache<TGroupKey>(string name)
         {
             return _filteredGroupedCaches.TryGetValue(name, out var cache) ? (Dictionary<TGroupKey, Dictionary<TKey, TValue>>)cache : null;
         }

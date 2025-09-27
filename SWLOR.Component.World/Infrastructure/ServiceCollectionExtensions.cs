@@ -22,15 +22,15 @@ namespace SWLOR.Component.World.Infrastructure
         public static IServiceCollection AddWorldServices(this IServiceCollection services)
         {
             services.AddSingleton<ITileMagicService, TileMagicService>();
-            services.AddSingleton<ITaxiService, Taxi>();
+            services.AddSingleton<ITaxiService, TaxiService>();
             services.AddSingleton<ISpawnTableBuilder, SpawnTableBuilder>();
             services.AddSingleton<ISpawnService, SpawnService>();
             services.AddSingleton<IObjectVisibilityService, ObjectVisibilityService>();
             services.AddSingleton<IMusicService, MusicService>();
-            services.AddSingleton<IAreaService, Area>();
+            services.AddSingleton<IAreaService, AreaService>();
             services.AddSingleton<IWeatherService, WeatherService>();
             services.AddSingleton<IPlanetService, PlanetService>();
-            services.AddSingleton<IWalkmeshService, Walkmesh>();
+            services.AddSingleton<IWalkmeshService, WalkmeshService>();
             services.AddSingleton<WorldEventHandlers>();
 
             // Register feature classes

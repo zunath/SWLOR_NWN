@@ -19,7 +19,7 @@ namespace SWLOR.Component.Market.Infrastructure
         public static IServiceCollection AddMarketServices(this IServiceCollection services)
         {
             // Register services as singletons
-            services.AddSingleton<IPlayerMarketService, PlayerMarket>();
+            services.AddSingleton<IPlayerMarketService, PlayerMarketService>();
             
             // Register features as singletons
             services.AddSingleton<StoreManagement>();

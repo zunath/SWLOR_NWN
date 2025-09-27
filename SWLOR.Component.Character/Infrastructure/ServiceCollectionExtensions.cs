@@ -23,7 +23,7 @@ namespace SWLOR.Component.Character.Infrastructure
         /// <returns>The service collection for chaining</returns>
         public static IServiceCollection AddPlayerServices(this IServiceCollection services)
         {
-            services.AddSingleton<IClientVersionCheck, ClientVersionCheck>();
+            services.AddSingleton<IClientVersionCheck, ClientVersionCheckService>();
             services.AddSingleton<PlayerRestService>();
             services.AddSingleton<IRacialAppearanceService, RacialAppearanceService>();
             services.AddSingleton<IPlayerInitializationService, PlayerInitializationService>();
@@ -31,11 +31,11 @@ namespace SWLOR.Component.Character.Infrastructure
             services.AddSingleton<IFactionService, FactionService>();
             services.AddSingleton<ICurrencyService, CurrencyService>();
             services.AddSingleton<IAnimationPlayerService, AnimationPlayerService>();
-            services.AddSingleton<ITargetingService, Targeting>();
-            services.AddSingleton<IAchievementService, Achievement>();
-            services.AddSingleton<Achievement>();
-            services.AddSingleton<IRaceService, Race>();
-            services.AddSingleton<IActivityService, Activity>();
+            services.AddSingleton<ITargetingService, TargetingService>();
+            services.AddSingleton<IAchievementService, AchievementService>();
+            services.AddSingleton<AchievementService>();
+            services.AddSingleton<IRaceService, RaceService>();
+            services.AddSingleton<IActivityService, ActivityService>();
 
             // Snippet definitions are automatically registered by the Inventory component
 

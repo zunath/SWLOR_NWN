@@ -21,8 +21,8 @@ namespace SWLOR.Component.Admin.Infrastructure
         public static IServiceCollection AddAdminServices(this IServiceCollection services)
         {
             // Register services as singletons
-            services.AddSingleton<IAuditingService, Auditing>();
-            services.AddSingleton<IAuthorizationService, Service.Authorization>();
+            services.AddSingleton<IAuditingService, AuditingService>();
+            services.AddSingleton<IAuthorizationService, AuthorizationService>();
 
             // Register features as singletons
             services.AddSingleton<TlkOverrides>();

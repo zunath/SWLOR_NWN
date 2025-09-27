@@ -42,7 +42,7 @@ namespace SWLOR.Shared.UI.Component
         private string IsEncouragedBindName { get; set; }
         private bool IsEncouragedBound { get; set; }
 
-        private GuiColor? Color { get; set; }
+        private GuiColor Color { get; set; }
         private string ColorBindName { get; set; }
         private bool IsColorBound => !string.IsNullOrWhiteSpace(ColorBindName);
 

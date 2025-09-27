@@ -34,7 +34,7 @@ namespace SWLOR.Component.Quest.Infrastructure
             services.AddSingleton<IQuestObjectiveFactory, QuestObjectiveFactory>();
 
             // Quest Service
-            services.AddSingleton<IQuestService, SWLOR.Component.Quest.Service.Quest>(provider => new SWLOR.Component.Quest.Service.Quest(
+            services.AddSingleton<IQuestService, SWLOR.Component.Quest.Service.QuestService>(provider => new SWLOR.Component.Quest.Service.QuestService(
                 provider.GetRequiredService<IDatabaseService>(),
                 provider.GetRequiredService<IItemCacheService>(),
                 provider.GetRequiredService<IGenericCacheService>(),
@@ -44,7 +44,7 @@ namespace SWLOR.Component.Quest.Infrastructure
             services.AddSingleton<IGuildService, GuildService>();
             
             // Register NPCGroup service
-            services.AddSingleton<INPCGroupService, NPCGroup>();
+            services.AddSingleton<INPCGroupService, NPCGroupService>();
 
             // Snippet definitions are automatically registered by the Inventory component
 

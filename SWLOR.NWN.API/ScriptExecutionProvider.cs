@@ -6,12 +6,12 @@ namespace SWLOR.NWN.API
     /// </summary>
     public static class ScriptExecutionProvider
     {
-        private static IScriptExecutionProvider? _provider;
+        private static IScriptExecutionProvider _provider;
 
         /// <summary>
         /// Gets the current script execution provider.
         /// </summary>
-        public static IScriptExecutionProvider? Current => _provider;
+        public static IScriptExecutionProvider Current => _provider;
 
         /// <summary>
         /// Sets the script execution provider. Should only be called during server initialization.

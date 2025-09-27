@@ -23,9 +23,9 @@ namespace SWLOR.Component.Combat.Infrastructure
             services.AddSingleton<IAttackOfOpportunityService, AttackOfOpportunityService>();
             services.AddSingleton<ICombatService, CombatService>();
             services.AddSingleton<ICombatPointService, CombatPointService>();
-            services.AddSingleton<IStatService, Stat>();
-            services.AddSingleton<IEnmityService, Service.Enmity>();
-            services.AddSingleton<Death>();
+            services.AddSingleton<IStatService, StatService>();
+            services.AddSingleton<IEnmityService, EnmityService>();
+            services.AddSingleton<IDeathService, DeathService>();
 
             // Register feature classes
             services.AddTransient<EquipmentStats>();

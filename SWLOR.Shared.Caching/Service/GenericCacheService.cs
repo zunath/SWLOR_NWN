@@ -7,9 +7,9 @@ namespace SWLOR.Shared.Caching.Service
     /// </summary>
     public class GenericCacheService : IGenericCacheService
     {
-        private readonly IServiceProvider? _serviceProvider;
+        private readonly IServiceProvider _serviceProvider;
 
-        public GenericCacheService(IServiceProvider? serviceProvider = null)
+        public GenericCacheService(IServiceProvider serviceProvider = null)
         {
             _serviceProvider = serviceProvider;
             if (_serviceProvider == null)

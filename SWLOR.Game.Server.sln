@@ -84,55 +84,55 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Shared.Domain", "SWLO
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Component.Character", "SWLOR.Component.Character\SWLOR.Component.Character.csproj", "{EB75BC45-0FDA-45C6-8EAA-27C436C1D1BB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Integration.Tests", "SWLOR.Integration.Tests\SWLOR.Integration.Tests.csproj", "{FFBD8187-FD2B-41B4-96B4-6720FDA21D90}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Test.Integration", "SWLOR.Test.Integration\SWLOR.Test.Integration.csproj", "{FFBD8187-FD2B-41B4-96B4-6720FDA21D90}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Shared.Abstractions.Tests", "SWLOR.Shared.Abstractions.Tests\SWLOR.Shared.Abstractions.Tests.csproj", "{B631E01A-30E4-430D-816E-EB235B4B37D1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Test.Shared.Abstractions", "SWLOR.Test.Shared.Abstractions\SWLOR.Test.Shared.Abstractions.csproj", "{B631E01A-30E4-430D-816E-EB235B4B37D1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Shared.Caching.Tests", "SWLOR.Shared.Caching.Tests\SWLOR.Shared.Caching.Tests.csproj", "{546B8B92-7FBC-4F99-9AF2-78BCBE6C48E7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Test.Shared.Caching", "SWLOR.Test.Shared.Caching\SWLOR.Test.Shared.Caching.csproj", "{546B8B92-7FBC-4F99-9AF2-78BCBE6C48E7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Shared.Core.Tests", "SWLOR.Shared.Core.Tests\SWLOR.Shared.Core.Tests.csproj", "{C5F67365-059B-4B5F-94E6-7927F954D910}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Test.Shared.Core", "SWLOR.Test.Shared.Core\SWLOR.Test.Shared.Core.csproj", "{C5F67365-059B-4B5F-94E6-7927F954D910}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Shared.Domain.Tests", "SWLOR.Shared.Domain.Tests\SWLOR.Shared.Domain.Tests.csproj", "{F42F02C4-1184-4AF8-8DB5-01CA6EDE7122}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Test.Shared.Domain", "SWLOR.Test.Shared.Domain\SWLOR.Test.Shared.Domain.csproj", "{F42F02C4-1184-4AF8-8DB5-01CA6EDE7122}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Shared.Events.Tests", "SWLOR.Shared.Events.Tests\SWLOR.Shared.Events.Tests.csproj", "{640E3832-CCE5-4CFF-B6D0-7079FC0D545D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Test.Shared.Events", "SWLOR.Test.Shared.Events\SWLOR.Test.Shared.Events.csproj", "{640E3832-CCE5-4CFF-B6D0-7079FC0D545D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Shared.UI.Tests", "SWLOR.Shared.UI.Tests\SWLOR.Shared.UI.Tests.csproj", "{1D2BCBF3-3254-445C-9ADD-256C72B79A62}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Test.Shared.UI", "SWLOR.Test.Shared.UI\SWLOR.Test.Shared.UI.csproj", "{1D2BCBF3-3254-445C-9ADD-256C72B79A62}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Component.Ability.Tests", "SWLOR.Component.Ability.Tests\SWLOR.Component.Ability.Tests.csproj", "{A9038A5D-00FF-418C-BFC8-A2AA8F6FDFE6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Test.Component.Ability", "SWLOR.Test.Component.Ability\SWLOR.Test.Component.Ability.csproj", "{A9038A5D-00FF-418C-BFC8-A2AA8F6FDFE6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Component.Admin.Tests", "SWLOR.Component.Admin.Tests\SWLOR.Component.Admin.Tests.csproj", "{F6EE263F-C9CF-4FD5-87C4-582055368F0F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Test.Component.Admin", "SWLOR.Test.Component.Admin\SWLOR.Test.Component.Admin.csproj", "{F6EE263F-C9CF-4FD5-87C4-582055368F0F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Component.AI.Tests", "SWLOR.Component.AI.Tests\SWLOR.Component.AI.Tests.csproj", "{DBDBB468-8EB5-4BCA-AD2A-51C7A19F9BCB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Test.Component.AI", "SWLOR.Test.Component.AI\SWLOR.Test.Component.AI.csproj", "{DBDBB468-8EB5-4BCA-AD2A-51C7A19F9BCB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Component.Associate.Tests", "SWLOR.Component.Associate.Tests\SWLOR.Component.Associate.Tests.csproj", "{80C27CFB-A8B2-4A3F-B6C3-408EC4D2F6A5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Test.Component.Associate", "SWLOR.Test.Component.Associate\SWLOR.Test.Component.Associate.csproj", "{80C27CFB-A8B2-4A3F-B6C3-408EC4D2F6A5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Component.Character.Tests", "SWLOR.Component.Character.Tests\SWLOR.Component.Character.Tests.csproj", "{BFFB8D93-DE9C-4CDF-9151-6A5EE355D3FE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Test.Component.Character", "SWLOR.Test.Component.Character\SWLOR.Test.Component.Character.csproj", "{BFFB8D93-DE9C-4CDF-9151-6A5EE355D3FE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Component.Combat.Tests", "SWLOR.Component.Combat.Tests\SWLOR.Component.Combat.Tests.csproj", "{18BB9EF9-E3F8-4018-AC76-17EB516F4013}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Test.Component.Combat", "SWLOR.Test.Component.Combat\SWLOR.Test.Component.Combat.csproj", "{18BB9EF9-E3F8-4018-AC76-17EB516F4013}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Component.Communication.Tests", "SWLOR.Component.Communication.Tests\SWLOR.Component.Communication.Tests.csproj", "{F4327027-7CB4-4D38-B01E-7508D7793233}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Test.Component.Communication", "SWLOR.Test.Component.Communication\SWLOR.Test.Component.Communication.csproj", "{F4327027-7CB4-4D38-B01E-7508D7793233}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Component.Crafting.Tests", "SWLOR.Component.Crafting.Tests\SWLOR.Component.Crafting.Tests.csproj", "{1234CBB4-7816-4709-91A6-981A6CC6B538}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Test.Component.Crafting", "SWLOR.Test.Component.Crafting\SWLOR.Test.Component.Crafting.csproj", "{1234CBB4-7816-4709-91A6-981A6CC6B538}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Component.Inventory.Tests", "SWLOR.Component.Inventory.Tests\SWLOR.Component.Inventory.Tests.csproj", "{DEC5629E-68BE-408C-9B3F-7328932953B2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Test.Component.Inventory", "SWLOR.Test.Component.Inventory\SWLOR.Test.Component.Inventory.csproj", "{DEC5629E-68BE-408C-9B3F-7328932953B2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Component.Market.Tests", "SWLOR.Component.Market.Tests\SWLOR.Component.Market.Tests.csproj", "{7667DE59-8CDC-4C8A-9220-C784A65A291A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Test.Component.Market", "SWLOR.Test.Component.Market\SWLOR.Test.Component.Market.csproj", "{7667DE59-8CDC-4C8A-9220-C784A65A291A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Component.Migration.Tests", "SWLOR.Component.Migration.Tests\SWLOR.Component.Migration.Tests.csproj", "{A299F585-D976-44B3-95BC-A506B7FD9ECE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Test.Component.Migration", "SWLOR.Test.Component.Migration\SWLOR.Test.Component.Migration.csproj", "{A299F585-D976-44B3-95BC-A506B7FD9ECE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Component.Perk.Tests", "SWLOR.Component.Perk.Tests\SWLOR.Component.Perk.Tests.csproj", "{76B9C388-96F6-42CA-A942-DB3EF2364153}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Test.Component.Perk", "SWLOR.Test.Component.Perk\SWLOR.Test.Component.Perk.csproj", "{76B9C388-96F6-42CA-A942-DB3EF2364153}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Component.Properties.Tests", "SWLOR.Component.Properties.Tests\SWLOR.Component.Properties.Tests.csproj", "{5624FC87-11E3-4D11-B4D1-DEF015F84774}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Test.Component.Properties", "SWLOR.Test.Component.Properties\SWLOR.Test.Component.Properties.csproj", "{5624FC87-11E3-4D11-B4D1-DEF015F84774}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Component.Quest.Tests", "SWLOR.Component.Quest.Tests\SWLOR.Component.Quest.Tests.csproj", "{D8B86448-379D-49B5-8019-0A2D81E42B40}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Test.Component.Quest", "SWLOR.Test.Component.Quest\SWLOR.Test.Component.Quest.csproj", "{D8B86448-379D-49B5-8019-0A2D81E42B40}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Component.Skill.Tests", "SWLOR.Component.Skill.Tests\SWLOR.Component.Skill.Tests.csproj", "{FFAAA80C-6069-4765-B3A1-3C3D19C15B49}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Test.Component.Skill", "SWLOR.Test.Component.Skill\SWLOR.Test.Component.Skill.csproj", "{FFAAA80C-6069-4765-B3A1-3C3D19C15B49}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Component.Space.Tests", "SWLOR.Component.Space.Tests\SWLOR.Component.Space.Tests.csproj", "{F6319FCB-8A4B-439C-834A-83795D603A59}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Test.Component.Space", "SWLOR.Test.Component.Space\SWLOR.Test.Component.Space.csproj", "{F6319FCB-8A4B-439C-834A-83795D603A59}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Component.StatusEffect.Tests", "SWLOR.Component.StatusEffect.Tests\SWLOR.Component.StatusEffect.Tests.csproj", "{72ABFFA0-A922-464E-ADE1-03136181D87D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Test.Component.StatusEffect", "SWLOR.Test.Component.StatusEffect\SWLOR.Test.Component.StatusEffect.csproj", "{72ABFFA0-A922-464E-ADE1-03136181D87D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Component.World.Tests", "SWLOR.Component.World.Tests\SWLOR.Component.World.Tests.csproj", "{C71EE6E7-1197-4297-842E-11A304D7F7DB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Test.Component.World", "SWLOR.Test.Component.World\SWLOR.Test.Component.World.csproj", "{C71EE6E7-1197-4297-842E-11A304D7F7DB}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Component", "Component", "{59645DB3-F743-45D0-97C1-95FE3DF109F6}"
 EndProject

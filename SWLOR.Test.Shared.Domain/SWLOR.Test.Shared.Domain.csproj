@@ -24,6 +24,7 @@
       <ProjectReference Include="..\SWLOR.Shared.Domain\SWLOR.Shared.Domain.csproj" />
       <ProjectReference Include="..\SWLOR.Shared.Core\SWLOR.Shared.Core.csproj" />
       <ProjectReference Include="..\SWLOR.Test.Shared.Core\SWLOR.Test.Shared.Core.csproj" />
+      <ProjectReference Include="..\SWLOR.Test.Shared\SWLOR.Test.Shared.csproj" />
     </ItemGroup>
 
   <ItemGroup>

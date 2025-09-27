@@ -27,6 +27,7 @@
     <ProjectReference Include="..\SWLOR.Game.Server\SWLOR.Game.Server.csproj" />
     <ProjectReference Include="..\SWLOR.Shared.Core\SWLOR.Shared.Core.csproj" />
     <ProjectReference Include="..\SWLOR.Shared.Domain\SWLOR.Shared.Domain.csproj" />
+    <ProjectReference Include="..\SWLOR.Test.Shared\SWLOR.Test.Shared.csproj" />
   </ItemGroup>
 
 </Project>

@@ -30,6 +30,7 @@
       <ProjectReference Include="..\SWLOR.Shared.Core\SWLOR.Shared.Core.csproj" />
       <ProjectReference Include="..\SWLOR.Shared.Events\SWLOR.Shared.Events.csproj" />
       <ProjectReference Include="..\SWLOR.NWN.API\SWLOR.NWN.API.csproj" />
+      <ProjectReference Include="..\SWLOR.Test.Shared\SWLOR.Test.Shared.csproj" />
     </ItemGroup>
 
 </Project>

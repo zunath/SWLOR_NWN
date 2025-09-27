@@ -23,4 +23,8 @@
     <Using Include="NUnit.Framework" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\SWLOR.Test.Shared\SWLOR.Test.Shared.csproj" />
+  </ItemGroup>
+
 </Project>

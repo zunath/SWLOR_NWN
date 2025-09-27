@@ -1,4 +1,4 @@
-namespace SWLOR.NWN.API
+namespace SWLOR.NWN.API.Contracts
 {
     /// <summary>
     /// Interface for providing script execution capabilities to the NWScript extensions.

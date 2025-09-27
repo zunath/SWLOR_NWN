@@ -20,6 +20,7 @@ using SWLOR.Component.StatusEffect.Infrastructure;
 using SWLOR.Component.World.Infrastructure;
 using SWLOR.Game.Server.Server;
 using SWLOR.NWN.API;
+using SWLOR.NWN.API.Contracts;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Caching.Extensions;
 using SWLOR.Shared.Core.Async;

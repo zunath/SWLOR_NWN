@@ -3,14 +3,14 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.NWN.API.NWScript
 {
-    public partial class NWScript
+    public partial class NWScriptService
     {
         /// <summary>
         /// Checks if the talent is valid.
         /// </summary>
         /// <param name="tTalent">The talent to check</param>
         /// <returns>TRUE if the talent is valid</returns>
-        public static bool GetIsTalentValid(Talent tTalent)
+        public bool GetIsTalentValid(Talent tTalent)
         {
             return global::NWN.Core.NWScript.GetIsTalentValid(tTalent) != 0;
         }
@@ -20,7 +20,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="tTalent">The talent to get the type for</param>
         /// <returns>The talent type (TALENT_TYPE_*)</returns>
-        public static TalentType GetTypeFromTalent(Talent tTalent)
+        public TalentType GetTypeFromTalent(Talent tTalent)
         {
             return (TalentType)global::NWN.Core.NWScript.GetTypeFromTalent(tTalent);
         }
@@ -31,7 +31,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="tTalent">The talent to get the ID for</param>
         /// <returns>The ID of the talent</returns>
-        public static int GetIdFromTalent(Talent tTalent)
+        public int GetIdFromTalent(Talent tTalent)
         {
             return global::NWN.Core.NWScript.GetIdFromTalent(tTalent);
         }
@@ -41,7 +41,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nSpell">SPELL_* constant</param>
         /// <returns>The created spell talent</returns>
-        public static Talent TalentSpell(SpellType nSpell)
+        public Talent TalentSpell(SpellType nSpell)
         {
             return global::NWN.Core.NWScript.TalentSpell((int)nSpell);
         }
@@ -51,7 +51,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nFeat">FEAT_* constant</param>
         /// <returns>The created feat talent</returns>
-        public static Talent TalentFeat(FeatType nFeat)
+        public Talent TalentFeat(FeatType nFeat)
         {
             return global::NWN.Core.NWScript.TalentFeat((int)nFeat);
         }
@@ -61,7 +61,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nSkill">SKILL_* constant</param>
         /// <returns>The created skill talent</returns>
-        public static Talent TalentSkill(NWNSkillType nSkill)
+        public Talent TalentSkill(NWNSkillType nSkill)
         {
             return global::NWN.Core.NWScript.TalentSkill((int)nSkill);
         }
@@ -72,7 +72,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="tTalent">The talent to check for</param>
         /// <param name="oCreature">The creature to check (defaults to OBJECT_SELF)</param>
         /// <returns>TRUE if the creature has the talent</returns>
-        public static bool GetCreatureHasTalent(Talent tTalent, uint oCreature = OBJECT_INVALID)
+        public bool GetCreatureHasTalent(Talent tTalent, uint oCreature = OBJECT_INVALID)
         {
             if (oCreature == OBJECT_INVALID)
                 oCreature = OBJECT_SELF;
@@ -85,7 +85,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nCategory">TALENT_CATEGORY_* constant</param>
         /// <param name="oCreature">The creature to get the talent from (defaults to OBJECT_SELF)</param>
         /// <returns>A random talent from the specified category</returns>
-        public static Talent GetCreatureTalentRandom(TalentCategoryType nCategory, uint oCreature = OBJECT_INVALID)
+        public Talent GetCreatureTalentRandom(TalentCategoryType nCategory, uint oCreature = OBJECT_INVALID)
         {
             if (oCreature == OBJECT_INVALID)
                 oCreature = OBJECT_SELF;
@@ -99,7 +99,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nCRMax">Challenge Rating of the talent</param>
         /// <param name="oCreature">The creature to get the talent from (defaults to OBJECT_SELF)</param>
         /// <returns>The best talent from the specified category</returns>
-        public static Talent GetCreatureTalentBest(TalentCategoryType nCategory, int nCRMax,
+        public Talent GetCreatureTalentBest(TalentCategoryType nCategory, int nCRMax,
             uint oCreature = OBJECT_INVALID)
         {
             if (oCreature == OBJECT_INVALID)

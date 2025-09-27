@@ -1,12 +1,12 @@
 namespace SWLOR.NWN.API.NWScript
 {
-    public partial class NWScript
+    public partial class NWScriptService
     {
         /// <summary>
         /// Checks if it is currently day.
         /// </summary>
         /// <returns>TRUE if it is currently day</returns>
-        public static bool GetIsDay()
+        public bool GetIsDay()
         {
             return global::NWN.Core.NWScript.GetIsDay() != 0;
         }
@@ -15,7 +15,7 @@ namespace SWLOR.NWN.API.NWScript
         /// Checks if it is currently night.
         /// </summary>
         /// <returns>TRUE if it is currently night</returns>
-        public static bool GetIsNight()
+        public bool GetIsNight()
         {
             return global::NWN.Core.NWScript.GetIsNight() != 0;
         }
@@ -24,7 +24,7 @@ namespace SWLOR.NWN.API.NWScript
         /// Checks if it is currently dawn.
         /// </summary>
         /// <returns>TRUE if it is currently dawn</returns>
-        public static bool GetIsDawn()
+        public bool GetIsDawn()
         {
             return global::NWN.Core.NWScript.GetIsDawn() != 0;
         }
@@ -33,7 +33,7 @@ namespace SWLOR.NWN.API.NWScript
         /// Checks if it is currently dusk.
         /// </summary>
         /// <returns>TRUE if it is currently dusk</returns>
-        public static bool GetIsDusk()
+        public bool GetIsDusk()
         {
             return global::NWN.Core.NWScript.GetIsDusk() != 0;
         }
@@ -45,7 +45,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nRounds">The number of rounds to convert</param>
         /// <returns>The number of seconds</returns>
-        public static float RoundsToSeconds(int nRounds)
+        public float RoundsToSeconds(int nRounds)
         {
             return global::NWN.Core.NWScript.RoundsToSeconds(nRounds);
         }
@@ -56,7 +56,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nHours">The number of hours to convert</param>
         /// <returns>The number of seconds</returns>
-        public static float HoursToSeconds(int nHours)
+        public float HoursToSeconds(int nHours)
         {
             return global::NWN.Core.NWScript.HoursToSeconds(nHours);
         }
@@ -67,7 +67,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nTurns">The number of turns to convert</param>
         /// <returns>The number of seconds</returns>
-        public static float TurnsToSeconds(int nTurns)
+        public float TurnsToSeconds(int nTurns)
         {
             return global::NWN.Core.NWScript.TurnsToSeconds(nTurns);
         }
@@ -76,7 +76,7 @@ namespace SWLOR.NWN.API.NWScript
         /// Gets the current hour (0-23).
         /// </summary>
         /// <returns>The current hour</returns>
-        public static int GetTimeHour()
+        public int GetTimeHour()
         {
             return global::NWN.Core.NWScript.GetTimeHour();
         }
@@ -85,7 +85,7 @@ namespace SWLOR.NWN.API.NWScript
         /// Gets the current minute (0-59).
         /// </summary>
         /// <returns>The current minute</returns>
-        public static int GetTimeMinute()
+        public int GetTimeMinute()
         {
             return global::NWN.Core.NWScript.GetTimeMinute();
         }
@@ -94,7 +94,7 @@ namespace SWLOR.NWN.API.NWScript
         /// Gets the current second (0-59).
         /// </summary>
         /// <returns>The current second</returns>
-        public static int GetTimeSecond()
+        public int GetTimeSecond()
         {
             return global::NWN.Core.NWScript.GetTimeSecond();
         }
@@ -103,7 +103,7 @@ namespace SWLOR.NWN.API.NWScript
         /// Gets the current millisecond (0-999).
         /// </summary>
         /// <returns>The current millisecond</returns>
-        public static int GetTimeMillisecond()
+        public int GetTimeMillisecond()
         {
             return global::NWN.Core.NWScript.GetTimeMillisecond();
         }

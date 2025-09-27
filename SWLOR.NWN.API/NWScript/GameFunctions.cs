@@ -1,15 +1,16 @@
+using SWLOR.NWN.API.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.NWN.API.NWScript
 {
-    public partial class NWScript
+    public partial class NWScriptService : INWScriptService
     {
         /// <summary>
         /// Gets the starting location of the module.
         /// </summary>
         /// <returns>The starting location of the module</returns>
-        public static Location GetStartingLocation()
+        public Location GetStartingLocation()
         {
             return global::NWN.Core.NWScript.GetStartingLocation();
         }
@@ -18,7 +19,7 @@ namespace SWLOR.NWN.API.NWScript
         /// Gets the module's name in the language of the server that's running it.
         /// </summary>
         /// <returns>The module's name. Returns an empty string if there is no entry for the language of the server</returns>
-        public static string GetModuleName()
+        public string GetModuleName()
         {
             return global::NWN.Core.NWScript.GetModuleName();
         }
@@ -28,7 +29,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="sModuleName">The name of the new module to start</param>
         /// <remarks>Moves all currently-connected players to the starting point.</remarks>
-        public static void StartNewModule(string sModuleName)
+        public void StartNewModule(string sModuleName)
         {
             global::NWN.Core.NWScript.StartNewModule(sModuleName);
         }
@@ -37,7 +38,7 @@ namespace SWLOR.NWN.API.NWScript
         /// Auto-saves the game if we are in a single player game.
         /// </summary>
         /// <remarks>Only works in single player games.</remarks>
-        public static void DoSinglePlayerAutoSave()
+        public void DoSinglePlayerAutoSave()
         {
             global::NWN.Core.NWScript.DoSinglePlayerAutoSave();
         }
@@ -46,7 +47,7 @@ namespace SWLOR.NWN.API.NWScript
         /// Gets the game difficulty.
         /// </summary>
         /// <returns>The game difficulty (GAME_DIFFICULTY_* constants)</returns>
-        public static int GetGameDifficulty()
+        public int GetGameDifficulty()
         {
             return global::NWN.Core.NWScript.GetGameDifficulty();
         }
@@ -55,7 +56,7 @@ namespace SWLOR.NWN.API.NWScript
         /// Ends the currently running game and returns all players to the main menu.
         /// </summary>
         /// <param name="sEndMovie">The movie to play before ending the game</param>
-        public static void EndGame(string sEndMovie)
+        public void EndGame(string sEndMovie)
         {
             global::NWN.Core.NWScript.EndGame(sEndMovie);
         }
@@ -64,7 +65,7 @@ namespace SWLOR.NWN.API.NWScript
         /// Gets the XP scale being used for the module.
         /// </summary>
         /// <returns>The XP scale being used for the module</returns>
-        public static int GetModuleXPScale()
+        public int GetModuleXPScale()
         {
             return global::NWN.Core.NWScript.GetModuleXPScale();
         }
@@ -73,7 +74,7 @@ namespace SWLOR.NWN.API.NWScript
         /// Sets the XP scale used by the module.
         /// </summary>
         /// <param name="nXPScale">The XP scale to be used (must be between 0 and 200)</param>
-        public static void SetModuleXPScale(int nXPScale)
+        public void SetModuleXPScale(int nXPScale)
         {
             global::NWN.Core.NWScript.SetModuleXPScale(nXPScale);
         }
@@ -82,7 +83,7 @@ namespace SWLOR.NWN.API.NWScript
         /// Writes a timestamped entry into the log file.
         /// </summary>
         /// <param name="sLogEntry">The log entry to write</param>
-        public static void WriteTimestampedLogEntry(string sLogEntry)
+        public void WriteTimestampedLogEntry(string sLogEntry)
         {
             global::NWN.Core.NWScript.WriteTimestampedLogEntry(sLogEntry);
         }
@@ -92,7 +93,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oObject">The object to get the current action for (default: OBJECT_SELF)</param>
         /// <returns>The current action (ACTION_* constants)</returns>
-        public static ActionType GetCurrentAction(uint oObject = OBJECT_INVALID)
+        public ActionType GetCurrentAction(uint oObject = OBJECT_INVALID)
         {
             if (oObject == OBJECT_INVALID)
                 oObject = OBJECT_SELF;
@@ -104,7 +105,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="bState">The pause state to set</param>
         /// <remarks>Same as if the player requested pause.</remarks>
-        public static void SetGameActivePause(bool bState)
+        public void SetGameActivePause(bool bState)
         {
             global::NWN.Core.NWScript.SetGameActivePause(bState ? 1 : 0);
         }
@@ -113,7 +114,7 @@ namespace SWLOR.NWN.API.NWScript
         /// Returns a value greater than 0 if the game is currently paused.
         /// </summary>
         /// <returns>0: Game is not paused, 1: Timestop, 2: Active Player Pause (optionally on top of timestop)</returns>
-        public static int GetGamePauseState()
+        public int GetGamePauseState()
         {
             return global::NWN.Core.NWScript.GetGamePauseState();
         }
@@ -123,7 +124,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <returns>The current game tick rate (mainloop iterations per second)</returns>
         /// <remarks>This is equivalent to graphics frames per second when the module is running inside a client.</remarks>
-        public static int GetTickRate()
+        public int GetTickRate()
         {
             return global::NWN.Core.NWScript.GetTickRate();
         }
@@ -133,7 +134,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="szPlotID">The plot ID to get the experience for</param>
         /// <returns>The experience assigned for the plot ID</returns>
-        public static int GetJournalQuestExperience(string szPlotID)
+        public int GetJournalQuestExperience(string szPlotID)
         {
             return global::NWN.Core.NWScript.GetJournalQuestExperience(szPlotID);
         }
@@ -144,12 +145,12 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="sString">The string to hash</param>
         /// <returns>The 32-bit integer hash of the string</returns>
         /// <remarks>This hash is stable and will always have the same value for same input string, regardless of platform. The hash algorithm is the same as the one used internally for strings in case statements, so you can do: switch (HashString(sString)) { case "AAA": HandleAAA(); break; case "BBB": HandleBBB(); break; } The exact algorithm used is XXH32(sString) ^ XXH32(""). This means that HashString("") is 0.</remarks>
-        public static int HashString(string sString)
+        public int HashString(string sString)
         {
             return global::NWN.Core.NWScript.HashString(sString);
         }
 
-        public static int GetMicrosecondCounter()
+        public int GetMicrosecondCounter()
         {
             return global::NWN.Core.NWScript.GetMicrosecondCounter();
         }
@@ -170,7 +171,7 @@ namespace SWLOR.NWN.API.NWScript
         ///   allowed to save a copy of their character if they are using a local vault
         ///   character.
         /// </summary>
-        public static void ActivatePortal(uint oTarget, string sIPaddress = "", string sPassword = "",
+        public void ActivatePortal(uint oTarget, string sIPaddress = "", string sPassword = "",
             string sWaypointTag = "", bool bSeamless = false)
         {
             global::NWN.Core.NWScript.ActivatePortal(oTarget, sIPaddress, sPassword, sWaypointTag, bSeamless ? 1 : 0);

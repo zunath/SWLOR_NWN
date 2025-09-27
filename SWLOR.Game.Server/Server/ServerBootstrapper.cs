@@ -1,6 +1,7 @@
 using System;
 using NWN.Core;
 using SWLOR.NWN.API;
+using SWLOR.NWN.API.Contracts;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Core.Log.LogGroup;

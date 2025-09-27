@@ -2,7 +2,7 @@
 
 namespace SWLOR.NWN.API.NWScript
 {
-    public partial class NWScript
+    public partial class NWScriptService
     {
 
         /// <summary>
@@ -12,7 +12,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="sResRef">The resource reference</param>
         /// <param name="nResType">The resource type</param>
         /// <returns>The resource location, or empty string if the resource does not exist in the search space</returns>
-        public static string ResManGetAliasFor(string sResRef, ResType nResType)
+        public string ResManGetAliasFor(string sResRef, ResType nResType)
         {
             return global::NWN.Core.NWScript.ResManGetAliasFor(sResRef, (int)nResType);
         }
@@ -29,7 +29,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="bSearchBaseData">Whether to also search base game content (WARNING: This can be very slow)</param>
         /// <param name="sOnlyKeyTable">Specific keytable to search (e.g. "OVERRIDE:")</param>
         /// <returns>The found resref, or empty string if no such resref exists</returns>
-        public static string ResManFindPrefix(string sPrefix, ResType nResType, int nNth = 1, bool bSearchBaseData = false, string sOnlyKeyTable = "")
+        public string ResManFindPrefix(string sPrefix, ResType nResType, int nNth = 1, bool bSearchBaseData = false, string sOnlyKeyTable = "")
         {
             return global::NWN.Core.NWScript.ResManFindPrefix(sPrefix, (int)nResType, nNth, bSearchBaseData ? 1 : 0, sOnlyKeyTable);
         }
@@ -41,7 +41,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="sResRef">The resource reference</param>
         /// <param name="nResType">A RESTYPE_* constant</param>
         /// <returns>The file contents, or empty string if the file does not exist</returns>
-        public static string ResManGetFileContents(string sResRef, int nResType)
+        public string ResManGetFileContents(string sResRef, int nResType)
         {
             return global::NWN.Core.NWScript.ResManGetFileContents(sResRef, nResType);
         }

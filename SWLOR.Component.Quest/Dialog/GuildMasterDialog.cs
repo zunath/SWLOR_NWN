@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Quest.Contracts;
 using SWLOR.Component.Quest.Model;
 using SWLOR.NWN.API.NWScript;
+using SWLOR.NWN.API.Service;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Communication.Enums;
 using SWLOR.Shared.Domain.Dialog.Contracts;

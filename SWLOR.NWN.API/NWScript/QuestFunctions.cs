@@ -1,6 +1,6 @@
 namespace SWLOR.NWN.API.NWScript
 {
-    public partial class NWScript
+    public partial class NWScriptService
     {
         /// <summary>
         /// Adds a journal quest entry to the creature.
@@ -11,7 +11,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="bAllPartyMembers">If TRUE, the entry will show up in the journal of everyone in the party</param>
         /// <param name="bAllPlayers">If TRUE, the entry will show up in the journal of everyone in the world</param>
         /// <param name="bAllowOverrideHigher">If TRUE, you can set the state to a lower number than the one it is currently on</param>
-        public static void AddJournalQuestEntry(string szPlotID, int nState, uint oCreature,
+        public void AddJournalQuestEntry(string szPlotID, int nState, uint oCreature,
             bool bAllPartyMembers = true, bool bAllPlayers = false, bool bAllowOverrideHigher = false)
         {
             global::NWN.Core.NWScript.AddJournalQuestEntry(szPlotID, nState, oCreature, bAllPartyMembers ? 1 : 0, bAllPlayers ? 1 : 0, bAllowOverrideHigher ? 1 : 0);
@@ -24,7 +24,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oCreature">The creature to remove the journal entry from</param>
         /// <param name="bAllPartyMembers">If TRUE, the entry will be removed from the journal of everyone in the party</param>
         /// <param name="bAllPlayers">If TRUE, the entry will be removed from the journal of everyone in the world</param>
-        public static void RemoveJournalQuestEntry(string szPlotID, uint oCreature, bool bAllPartyMembers = true,
+        public void RemoveJournalQuestEntry(string szPlotID, uint oCreature, bool bAllPartyMembers = true,
             bool bAllPlayers = false)
         {
             global::NWN.Core.NWScript.RemoveJournalQuestEntry(szPlotID, oCreature, bAllPartyMembers ? 1 : 0, bAllPlayers ? 1 : 0);

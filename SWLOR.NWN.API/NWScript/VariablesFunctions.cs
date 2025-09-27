@@ -2,7 +2,7 @@ using SWLOR.NWN.API.Engine;
 
 namespace SWLOR.NWN.API.NWScript
 {
-    public partial class NWScript
+    public partial class NWScriptService
     {
         /// <summary>
         /// Gets the object's local integer variable.
@@ -10,7 +10,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oObject">The object to get the variable from</param>
         /// <param name="sVarName">The name of the variable</param>
         /// <returns>The integer value, or 0 on error</returns>
-        public static int GetLocalInt(uint oObject, string sVarName)
+        public int GetLocalInt(uint oObject, string sVarName)
         {
             return global::NWN.Core.NWScript.GetLocalInt(oObject, sVarName);
         }
@@ -21,7 +21,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oObject">The object to get the variable from</param>
         /// <param name="sVarName">The name of the variable</param>
         /// <returns>The boolean value, or false on error</returns>
-        public static bool GetLocalBool(uint oObject, string sVarName)
+        public bool GetLocalBool(uint oObject, string sVarName)
         {
             return Convert.ToBoolean(GetLocalInt(oObject, sVarName));
         }
@@ -32,7 +32,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oObject">The object to get the variable from</param>
         /// <param name="sVarName">The name of the variable</param>
         /// <returns>The float value, or 0.0f on error</returns>
-        public static float GetLocalFloat(uint oObject, string sVarName)
+        public float GetLocalFloat(uint oObject, string sVarName)
         {
             return global::NWN.Core.NWScript.GetLocalFloat(oObject, sVarName);
         }
@@ -43,7 +43,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oObject">The object to get the variable from</param>
         /// <param name="sVarName">The name of the variable</param>
         /// <returns>The string value, or empty string on error</returns>
-        public static string GetLocalString(uint oObject, string sVarName)
+        public string GetLocalString(uint oObject, string sVarName)
         {
             return global::NWN.Core.NWScript.GetLocalString(oObject, sVarName);
         }
@@ -54,7 +54,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oObject">The object to get the variable from</param>
         /// <param name="sVarName">The name of the variable</param>
         /// <returns>The object value, or OBJECT_INVALID on error</returns>
-        public static uint GetLocalObject(uint oObject, string sVarName)
+        public uint GetLocalObject(uint oObject, string sVarName)
         {
             return global::NWN.Core.NWScript.GetLocalObject(oObject, sVarName);
         }
@@ -65,7 +65,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oObject">The object to set the variable on</param>
         /// <param name="sVarName">The name of the variable</param>
         /// <param name="nValue">The integer value to set</param>
-        public static void SetLocalInt(uint oObject, string sVarName, int nValue)
+        public void SetLocalInt(uint oObject, string sVarName, int nValue)
         {
             global::NWN.Core.NWScript.SetLocalInt(oObject, sVarName, nValue);
         }
@@ -76,7 +76,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oObject">The object to set the variable on</param>
         /// <param name="sVarName">The name of the variable</param>
         /// <param name="nValue">The boolean value to set</param>
-        public static void SetLocalBool(uint oObject, string sVarName, bool nValue)
+        public void SetLocalBool(uint oObject, string sVarName, bool nValue)
         {
             SetLocalInt(oObject, sVarName, Convert.ToInt32(nValue));
         }
@@ -87,7 +87,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oObject">The object to set the variable on</param>
         /// <param name="sVarName">The name of the variable</param>
         /// <param name="fValue">The float value to set</param>
-        public static void SetLocalFloat(uint oObject, string sVarName, float fValue)
+        public void SetLocalFloat(uint oObject, string sVarName, float fValue)
         {
             global::NWN.Core.NWScript.SetLocalFloat(oObject, sVarName, fValue);
         }
@@ -98,7 +98,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oObject">The object to set the variable on</param>
         /// <param name="sVarName">The name of the variable</param>
         /// <param name="sValue">The string value to set</param>
-        public static void SetLocalString(uint oObject, string sVarName, string sValue)
+        public void SetLocalString(uint oObject, string sVarName, string sValue)
         {
             global::NWN.Core.NWScript.SetLocalString(oObject, sVarName, sValue);
         }
@@ -109,7 +109,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oObject">The object to set the variable on</param>
         /// <param name="sVarName">The name of the variable</param>
         /// <param name="oValue">The object value to set</param>
-        public static void SetLocalObject(uint oObject, string sVarName, uint oValue)
+        public void SetLocalObject(uint oObject, string sVarName, uint oValue)
         {
             global::NWN.Core.NWScript.SetLocalObject(oObject, sVarName, oValue);
         }
@@ -120,7 +120,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oObject">The object to set the variable on</param>
         /// <param name="sVarName">The name of the variable</param>
         /// <param name="lValue">The location value to set</param>
-        public static void SetLocalLocation(uint oObject, string sVarName, Location lValue)
+        public void SetLocalLocation(uint oObject, string sVarName, Location lValue)
         {
             global::NWN.Core.NWScript.SetLocalLocation(oObject, sVarName, lValue);
         }
@@ -131,7 +131,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oObject">The object to get the variable from</param>
         /// <param name="sVarName">The name of the variable</param>
         /// <returns>The location value</returns>
-        public static Location GetLocalLocation(uint oObject, string sVarName)
+        public Location GetLocalLocation(uint oObject, string sVarName)
         {
             return global::NWN.Core.NWScript.GetLocalLocation(oObject, sVarName);
         }
@@ -141,7 +141,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oObject">The object to delete the variable from</param>
         /// <param name="sVarName">The name of the variable to delete</param>
-        public static void DeleteLocalInt(uint oObject, string sVarName)
+        public void DeleteLocalInt(uint oObject, string sVarName)
         {
             global::NWN.Core.NWScript.DeleteLocalInt(oObject, sVarName);
         }
@@ -151,7 +151,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oObject">The object to delete the variable from</param>
         /// <param name="sVarName">The name of the variable to delete</param>
-        public static void DeleteLocalBool(uint oObject, string sVarName)
+        public void DeleteLocalBool(uint oObject, string sVarName)
         {
             DeleteLocalInt(oObject, sVarName);
         }
@@ -161,7 +161,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oObject">The object to delete the variable from</param>
         /// <param name="sVarName">The name of the variable to delete</param>
-        public static void DeleteLocalFloat(uint oObject, string sVarName)
+        public void DeleteLocalFloat(uint oObject, string sVarName)
         {
             global::NWN.Core.NWScript.DeleteLocalFloat(oObject, sVarName);
         }
@@ -171,7 +171,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oObject">The object to delete the variable from</param>
         /// <param name="sVarName">The name of the variable to delete</param>
-        public static void DeleteLocalString(uint oObject, string sVarName)
+        public void DeleteLocalString(uint oObject, string sVarName)
         {
             global::NWN.Core.NWScript.DeleteLocalString(oObject, sVarName);
         }
@@ -181,7 +181,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oObject">The object to delete the variable from</param>
         /// <param name="sVarName">The name of the variable to delete</param>
-        public static void DeleteLocalObject(uint oObject, string sVarName)
+        public void DeleteLocalObject(uint oObject, string sVarName)
         {
             global::NWN.Core.NWScript.DeleteLocalObject(oObject, sVarName);
         }
@@ -191,7 +191,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oObject">The object to delete the variable from</param>
         /// <param name="sVarName">The name of the variable to delete</param>
-        public static void DeleteLocalLocation(uint oObject, string sVarName)
+        public void DeleteLocalLocation(uint oObject, string sVarName)
         {
             global::NWN.Core.NWScript.DeleteLocalLocation(oObject, sVarName);
         }

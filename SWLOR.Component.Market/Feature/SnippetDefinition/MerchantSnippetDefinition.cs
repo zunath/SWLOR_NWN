@@ -1,5 +1,6 @@
 using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.Service;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Domain.Dialog.Contracts;

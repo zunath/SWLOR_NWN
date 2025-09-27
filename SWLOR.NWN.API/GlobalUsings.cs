@@ -1,1 +1,1 @@
-﻿global using static NWN.Core.NWScript;
+﻿global using static SWLOR.NWN.API.Service.NWScript;

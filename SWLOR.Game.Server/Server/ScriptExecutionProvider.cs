@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using SWLOR.NWN.API;
+using SWLOR.NWN.API.Contracts;
 using SWLOR.Shared.Abstractions.Contracts;
 
 namespace SWLOR.Game.Server.Server

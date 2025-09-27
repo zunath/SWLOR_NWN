@@ -2,14 +2,14 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.NWN.API.NWScript
 {
-    public partial class NWScript
+    public partial class NWScriptService
     {
         /// <summary>
         /// Returns true if the object (which is a placeable or a door) is currently open.
         /// </summary>
         /// <param name="oObject">The object to check</param>
         /// <returns>True if the object is open, false otherwise</returns>
-        public static bool GetIsOpen(uint oObject)
+        public bool GetIsOpen(uint oObject)
         {
             return global::NWN.Core.NWScript.GetIsOpen(oObject) != 0;
         }
@@ -18,7 +18,7 @@ namespace SWLOR.NWN.API.NWScript
         /// Makes the action subject unlock the target object.
         /// </summary>
         /// <param name="oTarget">The target object to unlock (can be a door or a placeable object)</param>
-        public static void ActionUnlockObject(uint oTarget)
+        public void ActionUnlockObject(uint oTarget)
         {
             global::NWN.Core.NWScript.ActionUnlockObject(oTarget);
         }
@@ -27,7 +27,7 @@ namespace SWLOR.NWN.API.NWScript
         /// Makes the action subject lock the target object.
         /// </summary>
         /// <param name="oTarget">The target object to lock (can be a door or a placeable object)</param>
-        public static void ActionLockObject(uint oTarget)
+        public void ActionLockObject(uint oTarget)
         {
             global::NWN.Core.NWScript.ActionLockObject(oTarget);
         }
@@ -37,7 +37,7 @@ namespace SWLOR.NWN.API.NWScript
         /// Makes the action subject open the specified door.
         /// </summary>
         /// <param name="oDoor">The door to open</param>
-        public static void ActionOpenDoor(uint oDoor)
+        public void ActionOpenDoor(uint oDoor)
         {
             global::NWN.Core.NWScript.ActionOpenDoor(oDoor);
         }
@@ -46,7 +46,7 @@ namespace SWLOR.NWN.API.NWScript
         /// Makes the action subject close the specified door.
         /// </summary>
         /// <param name="oDoor">The door to close</param>
-        public static void ActionCloseDoor(uint oDoor)
+        public void ActionCloseDoor(uint oDoor)
         {
             global::NWN.Core.NWScript.ActionCloseDoor(oDoor);
         }
@@ -55,7 +55,7 @@ namespace SWLOR.NWN.API.NWScript
         /// Gets the last blocking door encountered by the specified creature.
         /// </summary>
         /// <returns>The last blocking door. Returns OBJECT_INVALID if the caller is not a valid creature</returns>
-        public static uint GetBlockingDoor()
+        public uint GetBlockingDoor()
         {
             return global::NWN.Core.NWScript.GetBlockingDoor();
         }
@@ -66,7 +66,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oTargetDoor">The target door</param>
         /// <param name="nDoorAction">The door action to check (DOOR_ACTION_* constants)</param>
         /// <returns>True if the door action can be performed, false otherwise</returns>
-        public static bool GetIsDoorActionPossible(uint oTargetDoor, DoorActionType nDoorAction)
+        public bool GetIsDoorActionPossible(uint oTargetDoor, DoorActionType nDoorAction)
         {
             return global::NWN.Core.NWScript.GetIsDoorActionPossible(oTargetDoor, (int)nDoorAction) == 1;
         }
@@ -76,7 +76,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oTargetDoor">The target door</param>
         /// <param name="nDoorAction">The door action to perform (DOOR_ACTION_* constants)</param>
-        public static void DoDoorAction(uint oTargetDoor, DoorActionType nDoorAction)
+        public void DoDoorAction(uint oTargetDoor, DoorActionType nDoorAction)
         {
             global::NWN.Core.NWScript.DoDoorAction(oTargetDoor, (int)nDoorAction);
         }

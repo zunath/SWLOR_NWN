@@ -2,7 +2,7 @@ using SWLOR.NWN.API.Engine;
 
 namespace SWLOR.NWN.API.NWScript
 {
-    public partial class NWScript
+    public partial class NWScriptService
     {
         /// <summary>
         /// Causes the target object to face the specified direction.
@@ -12,7 +12,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="fDirection">The direction to face in anticlockwise degrees from Due East</param>
         /// <param name="oObject">The target object (defaults to OBJECT_SELF)</param>
-        public static void SetFacing(float fDirection, uint oObject = OBJECT_INVALID)
+        public void SetFacing(float fDirection, uint oObject = OBJECT_INVALID)
         {
             if (oObject == OBJECT_INVALID)
                 oObject = OBJECT_SELF;
@@ -25,7 +25,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oTarget">The target to get the facing direction for</param>
         /// <returns>The facing direction, or -1.0f on error</returns>
-        public static float GetFacing(uint oTarget)
+        public float GetFacing(uint oTarget)
         {
             return global::NWN.Core.NWScript.GetFacing(oTarget);
         }
@@ -36,7 +36,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="lMoveAwayFrom">The location to move away from</param>
         /// <param name="bRun">Whether to run (defaults to false)</param>
         /// <param name="fMoveAwayRange">The range to move away (defaults to 40.0f)</param>
-        public static void ActionMoveAwayFromLocation(Location lMoveAwayFrom, bool bRun = false,
+        public void ActionMoveAwayFromLocation(Location lMoveAwayFrom, bool bRun = false,
             float fMoveAwayRange = 40.0f)
         {
             global::NWN.Core.NWScript.ActionMoveAwayFromLocation(lMoveAwayFrom, bRun ? 1 : 0, fMoveAwayRange);
@@ -47,7 +47,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oToJumpTo">The object to jump to</param>
         /// <param name="nWalkStraightLineToPoint">Whether to walk in a straight line to the point (defaults to true)</param>
-        public static void JumpToObject(uint oToJumpTo, bool nWalkStraightLineToPoint = true)
+        public void JumpToObject(uint oToJumpTo, bool nWalkStraightLineToPoint = true)
         {
             global::NWN.Core.NWScript.JumpToObject(oToJumpTo, nWalkStraightLineToPoint ? 1 : 0);
         }

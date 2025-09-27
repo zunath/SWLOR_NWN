@@ -1,13 +1,13 @@
 namespace SWLOR.NWN.API.NWScript
 {
-    public partial class NWScript
+    public partial class NWScriptService
     {
         /// <summary>
         /// Gets the attack bonus limit.
         /// The default value is 20.
         /// </summary>
         /// <returns>The attack bonus limit</returns>
-        public static int GetAttackBonusLimit()
+        public int GetAttackBonusLimit()
         {
             return global::NWN.Core.NWScript.GetAttackBonusLimit();
         }
@@ -17,7 +17,7 @@ namespace SWLOR.NWN.API.NWScript
         /// The default value is 100.
         /// </summary>
         /// <returns>The damage bonus limit</returns>
-        public static int GetDamageBonusLimit()
+        public int GetDamageBonusLimit()
         {
             return global::NWN.Core.NWScript.GetDamageBonusLimit();
         }
@@ -27,7 +27,7 @@ namespace SWLOR.NWN.API.NWScript
         /// The default value is 20.
         /// </summary>
         /// <returns>The saving throw bonus limit</returns>
-        public static int GetSavingThrowBonusLimit()
+        public int GetSavingThrowBonusLimit()
         {
             return global::NWN.Core.NWScript.GetSavingThrowBonusLimit();
         }
@@ -37,7 +37,7 @@ namespace SWLOR.NWN.API.NWScript
         /// The default value is 12.
         /// </summary>
         /// <returns>The ability bonus limit</returns>
-        public static int GetAbilityBonusLimit()
+        public int GetAbilityBonusLimit()
         {
             return global::NWN.Core.NWScript.GetAbilityBonusLimit();
         }
@@ -47,7 +47,7 @@ namespace SWLOR.NWN.API.NWScript
         /// The default value is 30.
         /// </summary>
         /// <returns>The ability penalty limit</returns>
-        public static int GetAbilityPenaltyLimit()
+        public int GetAbilityPenaltyLimit()
         {
             return global::NWN.Core.NWScript.GetAbilityPenaltyLimit();
         }
@@ -57,7 +57,7 @@ namespace SWLOR.NWN.API.NWScript
         /// The default value is 50.
         /// </summary>
         /// <returns>The skill bonus limit</returns>
-        public static int GetSkillBonusLimit()
+        public int GetSkillBonusLimit()
         {
             return global::NWN.Core.NWScript.GetSkillBonusLimit();
         }
@@ -67,7 +67,7 @@ namespace SWLOR.NWN.API.NWScript
         /// The minimum value is 0.
         /// </summary>
         /// <param name="nNewLimit">The new attack bonus limit</param>
-        public static void SetAttackBonusLimit(int nNewLimit)
+        public void SetAttackBonusLimit(int nNewLimit)
         {
             global::NWN.Core.NWScript.SetAttackBonusLimit(nNewLimit);
         }
@@ -77,7 +77,7 @@ namespace SWLOR.NWN.API.NWScript
         /// The minimum value is 0.
         /// </summary>
         /// <param name="nNewLimit">The new damage bonus limit</param>
-        public static void SetDamageBonusLimit(int nNewLimit)
+        public void SetDamageBonusLimit(int nNewLimit)
         {
             global::NWN.Core.NWScript.SetDamageBonusLimit(nNewLimit);
         }
@@ -87,7 +87,7 @@ namespace SWLOR.NWN.API.NWScript
         /// The minimum value is 0.
         /// </summary>
         /// <param name="nNewLimit">The new saving throw bonus limit</param>
-        public static void SetSavingThrowBonusLimit(int nNewLimit)
+        public void SetSavingThrowBonusLimit(int nNewLimit)
         {
             global::NWN.Core.NWScript.SetSavingThrowBonusLimit(nNewLimit);
         }
@@ -97,7 +97,7 @@ namespace SWLOR.NWN.API.NWScript
         /// The minimum value is 0.
         /// </summary>
         /// <param name="nNewLimit">The new ability bonus limit</param>
-        public static void SetAbilityBonusLimit(int nNewLimit)
+        public void SetAbilityBonusLimit(int nNewLimit)
         {
             global::NWN.Core.NWScript.SetAbilityBonusLimit(nNewLimit);
         }
@@ -107,7 +107,7 @@ namespace SWLOR.NWN.API.NWScript
         /// The minimum value is 0.
         /// </summary>
         /// <param name="nNewLimit">The new ability penalty limit</param>
-        public static void SetAbilityPenaltyLimit(int nNewLimit)
+        public void SetAbilityPenaltyLimit(int nNewLimit)
         {
             global::NWN.Core.NWScript.SetAbilityPenaltyLimit(nNewLimit);
         }
@@ -117,7 +117,7 @@ namespace SWLOR.NWN.API.NWScript
         /// The minimum value is 0.
         /// </summary>
         /// <param name="nNewLimit">The new skill bonus limit</param>
-        public static void SetSkillBonusLimit(int nNewLimit)
+        public void SetSkillBonusLimit(int nNewLimit)
         {
             global::NWN.Core.NWScript.SetSkillBonusLimit(nNewLimit);
         }

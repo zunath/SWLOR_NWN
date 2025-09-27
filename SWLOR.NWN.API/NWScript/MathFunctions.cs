@@ -2,14 +2,14 @@ using System.Numerics;
 
 namespace SWLOR.NWN.API.NWScript
 {
-    public partial class NWScript
+    public partial class NWScriptService
     {
         /// <summary>
         /// Maths operation: absolute value of the value.
         /// </summary>
         /// <param name="fValue">The value to get the absolute value of</param>
         /// <returns>The absolute value</returns>
-        public static float fabs(float fValue)
+        public float fabs(float fValue)
         {
             return global::NWN.Core.NWScript.fabs(fValue);
         }
@@ -19,7 +19,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="fValue">The value to get the cosine of</param>
         /// <returns>The cosine value</returns>
-        public static float cos(float fValue)
+        public float cos(float fValue)
         {
             return global::NWN.Core.NWScript.cos(fValue);
         }
@@ -29,7 +29,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="fValue">The value to get the sine of</param>
         /// <returns>The sine value</returns>
-        public static float sin(float fValue)
+        public float sin(float fValue)
         {
             return global::NWN.Core.NWScript.sin(fValue);
         }
@@ -39,7 +39,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="fValue">The value to get the tangent of</param>
         /// <returns>The tangent value</returns>
-        public static float tan(float fValue)
+        public float tan(float fValue)
         {
             return global::NWN.Core.NWScript.tan(fValue);
         }
@@ -49,7 +49,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="fValue">The value to get the arccosine of</param>
         /// <returns>The arccosine value, or zero if fValue > 1 or fValue < -1</returns>
-        public static float acos(float fValue)
+        public float acos(float fValue)
         {
             return global::NWN.Core.NWScript.acos(fValue);
         }
@@ -59,7 +59,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="fValue">The value to get the arcsine of</param>
         /// <returns>The arcsine value, or zero if fValue > 1 or fValue < -1</returns>
-        public static float asin(float fValue)
+        public float asin(float fValue)
         {
             return global::NWN.Core.NWScript.asin(fValue);
         }
@@ -69,7 +69,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="fValue">The value to get the arctangent of</param>
         /// <returns>The arctangent value</returns>
-        public static float atan(float fValue)
+        public float atan(float fValue)
         {
             return global::NWN.Core.NWScript.atan(fValue);
         }
@@ -79,7 +79,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="fValue">The value to get the logarithm of</param>
         /// <returns>The logarithm value, or zero if fValue <= zero</returns>
-        public static float log(float fValue)
+        public float log(float fValue)
         {
             return global::NWN.Core.NWScript.log(fValue);
         }
@@ -90,7 +90,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="fValue">The base value</param>
         /// <param name="fExponent">The exponent</param>
         /// <returns>The result, or zero if fValue == 0 and fExponent < 0</returns>
-        public static float pow(float fValue, float fExponent)
+        public float pow(float fValue, float fExponent)
         {
             return global::NWN.Core.NWScript.pow(fValue, fExponent);
         }
@@ -100,7 +100,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="fValue">The value to get the square root of</param>
         /// <returns>The square root, or zero if fValue < 0</returns>
-        public static float sqrt(float fValue)
+        public float sqrt(float fValue)
         {
             return global::NWN.Core.NWScript.sqrt(fValue);
         }
@@ -110,7 +110,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nValue">The value to get the absolute value of</param>
         /// <returns>The absolute value, or 0 on error</returns>
-        public static int abs(int nValue)
+        public int abs(int nValue)
         {
             return global::NWN.Core.NWScript.abs(nValue);
         }
@@ -120,7 +120,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="vVector">The vector to normalize</param>
         /// <returns>The normalized vector</returns>
-        public static Vector3 VectorNormalize(Vector3 vVector)
+        public Vector3 VectorNormalize(Vector3 vVector)
         {
             return global::NWN.Core.NWScript.VectorNormalize(vVector);
         }
@@ -131,7 +131,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="vVector">The vector to get the magnitude of</param>
         /// <returns>The magnitude, or 0.0f on error</returns>
-        public static float VectorMagnitude(Vector3 vVector)
+        public float VectorMagnitude(Vector3 vVector)
         {
             return global::NWN.Core.NWScript.VectorMagnitude(vVector);
         }
@@ -141,7 +141,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="fFeet">The feet value to convert</param>
         /// <returns>The equivalent value in meters</returns>
-        public static float FeetToMeters(float fFeet)
+        public float FeetToMeters(float fFeet)
         {
             return global::NWN.Core.NWScript.FeetToMeters(fFeet);
         }
@@ -151,7 +151,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="fYards">The yards value to convert</param>
         /// <returns>The equivalent value in meters</returns>
-        public static float YardsToMeters(float fYards)
+        public float YardsToMeters(float fYards)
         {
             return global::NWN.Core.NWScript.YardsToMeters(fYards);
         }
@@ -162,7 +162,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oObject">The object to get the distance to</param>
         /// <param name="oFrom">The object to measure distance from (defaults to OBJECT_SELF)</param>
         /// <returns>The distance in metres, or -1.0f on error</returns>
-        public static float GetDistanceToObject(uint oObject, uint oFrom = OBJECT_INVALID)
+        public float GetDistanceToObject(uint oObject, uint oFrom = OBJECT_INVALID)
         {
             if (oFrom == OBJECT_INVALID)
                 oFrom = OBJECT_SELF;
@@ -178,7 +178,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oSource">The source object</param>
         /// <param name="oTarget">The target object</param>
         /// <returns>TRUE if there is line of sight</returns>
-        public static bool LineOfSightObject(uint oSource, uint oTarget)
+        public bool LineOfSightObject(uint oSource, uint oTarget)
         {
             return global::NWN.Core.NWScript.LineOfSightObject(oSource, oTarget) != 0;
         }
@@ -194,7 +194,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="vSource">The source vector</param>
         /// <param name="vTarget">The target vector</param>
         /// <returns>TRUE if there is line of sight</returns>
-        public static bool LineOfSightVector(Vector3 vSource, Vector3 vTarget)
+        public bool LineOfSightVector(Vector3 vSource, Vector3 vTarget)
         {
             return global::NWN.Core.NWScript.LineOfSightVector(vSource, vTarget) != 0;
         }
@@ -204,7 +204,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="fAngle">The angle to convert</param>
         /// <returns>The vector representation of the angle</returns>
-        public static Vector3 AngleToVector(float fAngle)
+        public Vector3 AngleToVector(float fAngle)
         {
             return global::NWN.Core.NWScript.AngleToVector(fAngle);
         }
@@ -214,7 +214,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="vVector">The vector to convert</param>
         /// <returns>The angle representation of the vector</returns>
-        public static float VectorToAngle(Vector3 vVector)
+        public float VectorToAngle(Vector3 vVector)
         {
             return global::NWN.Core.NWScript.VectorToAngle(vVector);
         }
@@ -225,7 +225,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nNumDice">The number of dice to roll (defaults to 1)</param>
         /// <returns>The total from rolling the dice</returns>
-        public static int d2(int nNumDice = 1)
+        public int d2(int nNumDice = 1)
         {
             return global::NWN.Core.NWScript.d2(nNumDice);
         }
@@ -236,7 +236,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nNumDice">The number of dice to roll (defaults to 1)</param>
         /// <returns>The total from rolling the dice</returns>
-        public static int d3(int nNumDice = 1)
+        public int d3(int nNumDice = 1)
         {
             return global::NWN.Core.NWScript.d3(nNumDice);
         }
@@ -247,7 +247,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nNumDice">The number of dice to roll (defaults to 1)</param>
         /// <returns>The total from rolling the dice</returns>
-        public static int d4(int nNumDice = 1)
+        public int d4(int nNumDice = 1)
         {
             return global::NWN.Core.NWScript.d4(nNumDice);
         }
@@ -258,7 +258,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nNumDice">The number of dice to roll (defaults to 1)</param>
         /// <returns>The total from rolling the dice</returns>
-        public static int d6(int nNumDice = 1)
+        public int d6(int nNumDice = 1)
         {
             return global::NWN.Core.NWScript.d6(nNumDice);
         }
@@ -269,7 +269,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nNumDice">The number of dice to roll (defaults to 1)</param>
         /// <returns>The total from rolling the dice</returns>
-        public static int d8(int nNumDice = 1)
+        public int d8(int nNumDice = 1)
         {
             return global::NWN.Core.NWScript.d8(nNumDice);
         }
@@ -280,7 +280,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nNumDice">The number of dice to roll (defaults to 1)</param>
         /// <returns>The total from rolling the dice</returns>
-        public static int d10(int nNumDice = 1)
+        public int d10(int nNumDice = 1)
         {
             return global::NWN.Core.NWScript.d10(nNumDice);
         }
@@ -291,7 +291,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nNumDice">The number of dice to roll (defaults to 1)</param>
         /// <returns>The total from rolling the dice</returns>
-        public static int d12(int nNumDice = 1)
+        public int d12(int nNumDice = 1)
         {
             return global::NWN.Core.NWScript.d12(nNumDice);
         }
@@ -302,7 +302,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nNumDice">The number of dice to roll (defaults to 1)</param>
         /// <returns>The total from rolling the dice</returns>
-        public static int d20(int nNumDice = 1)
+        public int d20(int nNumDice = 1)
         {
             return global::NWN.Core.NWScript.d20(nNumDice);
         }
@@ -313,7 +313,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nNumDice">The number of dice to roll (defaults to 1)</param>
         /// <returns>The total from rolling the dice</returns>
-        public static int d100(int nNumDice = 1)
+        public int d100(int nNumDice = 1)
         {
             return global::NWN.Core.NWScript.d100(nNumDice);
         }
@@ -323,7 +323,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="vVector">The vector to output</param>
         /// <param name="bPrepend">If TRUE, the message will be prefixed with "PRINTVECTOR:" (defaults to false)</param>
-        public static void PrintVector(Vector3 vVector, bool bPrepend = false)
+        public void PrintVector(Vector3 vVector, bool bPrepend = false)
         {
             global::NWN.Core.NWScript.PrintVector(vVector, bPrepend ? 1 : 0);
         }
@@ -335,9 +335,9 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="y">The y component (defaults to 0.0f)</param>
         /// <param name="z">The z component (defaults to 0.0f)</param>
         /// <returns>The created vector</returns>
-        public static Vector3 Vector3(float x = 0.0f, float y = 0.0f, float z = 0.0f)
+        public Vector3 Vector3(float x = 0.0f, float y = 0.0f, float z = 0.0f)
         {
-            return Vector(x, y, z);
+            return global::NWN.Core.NWScript.Vector(x, y, z);
         }
 
         /// <summary>
@@ -345,7 +345,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nInteger">The integer to convert</param>
         /// <returns>The floating point number</returns>
-        public static float IntToFloat(int nInteger)
+        public float IntToFloat(int nInteger)
         {
             return global::NWN.Core.NWScript.IntToFloat(nInteger);
         }
@@ -355,7 +355,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="fFloat">The float to convert</param>
         /// <returns>The nearest integer</returns>
-        public static int FloatToInt(float fFloat)
+        public int FloatToInt(float fFloat)
         {
             return global::NWN.Core.NWScript.FloatToInt(fFloat);
         }
@@ -365,7 +365,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="sNumber">The string to convert</param>
         /// <returns>The integer value</returns>
-        public static int StringToInt(string sNumber)
+        public int StringToInt(string sNumber)
         {
             return global::NWN.Core.NWScript.StringToInt(sNumber);
         }
@@ -375,7 +375,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="sNumber">The string to convert</param>
         /// <returns>The floating point number</returns>
-        public static float StringToFloat(string sNumber)
+        public float StringToFloat(string sNumber)
         {
             return global::NWN.Core.NWScript.StringToFloat(sNumber);
         }

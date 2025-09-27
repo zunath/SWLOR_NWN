@@ -70,7 +70,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="scriptName">The name of the script</param>
         public static void PushPerfScope(uint target, string scriptName)
         {
-            var internalObjectType = GetIsObjectValid(target) == 1
+            var internalObjectType = GetIsObjectValid(target)
                 ? ObjectPlugin.GetInternalObjectType(target) 
                 : InternalObjectType.Invalid;
             var objectTypeName = internalObjectType == InternalObjectType.Invalid 

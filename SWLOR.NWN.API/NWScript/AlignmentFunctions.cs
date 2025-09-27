@@ -2,7 +2,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.NWN.API.NWScript
 {
-    public partial class NWScript
+    public partial class NWScriptService
     {
         /// <summary>
         /// Adjusts the alignment of the specified subject.
@@ -15,7 +15,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nShift">The desired shift in alignment. The shift will at most take the alignment value to 50 and not beyond</param>
         /// <param name="bAllPartyMembers">When true, the alignment shift also has a diminished effect on all members of the subject's party (if subject is a Player). When false, the shift only affects the subject (default: true)</param>
         /// <remarks>No return value. For example, if subject has a law/chaos value of 10 (chaotic) and a good/evil value of 80 (good), then if nShift is 15, the law/chaos value will become 25 and the good/evil value will become 55.</remarks>
-        public static void AdjustAlignment(uint oSubject, AlignmentType nAlignment, int nShift,
+        public void AdjustAlignment(uint oSubject, AlignmentType nAlignment, int nShift,
             bool bAllPartyMembers = true)
         {
             global::NWN.Core.NWScript.AdjustAlignment(oSubject, (int)nAlignment, nShift, bAllPartyMembers ? 1 : 0);
@@ -26,7 +26,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oCreature">The creature to get the alignment value for</param>
         /// <returns>An integer between 0 and 100 (100=law, 0=chaos). Returns -1 if the creature is not valid</returns>
-        public static int GetLawChaosValue(uint oCreature)
+        public int GetLawChaosValue(uint oCreature)
         {
             return global::NWN.Core.NWScript.GetLawChaosValue(oCreature);
         }
@@ -36,7 +36,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oCreature">The creature to get the alignment value for</param>
         /// <returns>An integer between 0 and 100 (100=good, 0=evil). Returns -1 if the creature is not valid</returns>
-        public static int GetGoodEvilValue(uint oCreature)
+        public int GetGoodEvilValue(uint oCreature)
         {
             return global::NWN.Core.NWScript.GetGoodEvilValue(oCreature);
         }
@@ -46,7 +46,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oCreature">The creature to get the alignment for</param>
         /// <returns>An ALIGNMENT_* constant. Returns -1 if the creature is not valid</returns>
-        public static AlignmentType GetAlignmentLawChaos(uint oCreature)
+        public AlignmentType GetAlignmentLawChaos(uint oCreature)
         {
             return (AlignmentType)global::NWN.Core.NWScript.GetAlignmentLawChaos(oCreature);
         }
@@ -56,7 +56,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oCreature">The creature to get the alignment for</param>
         /// <returns>An ALIGNMENT_* constant. Returns -1 if the creature is not valid</returns>
-        public static AlignmentType GetAlignmentGoodEvil(uint oCreature)
+        public AlignmentType GetAlignmentGoodEvil(uint oCreature)
         {
             return (AlignmentType)global::NWN.Core.NWScript.GetAlignmentGoodEvil(oCreature);
         }
@@ -66,7 +66,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oTarget">The target to clear personal feelings about</param>
         /// <param name="oSource">The source whose personal feelings to clear (default: OBJECT_SELF)</param>
-        public static void ClearPersonalReputation(uint oTarget, uint oSource = OBJECT_INVALID)
+        public void ClearPersonalReputation(uint oTarget, uint oSource = OBJECT_INVALID)
         {
             if (oSource == OBJECT_INVALID)
                 oSource = OBJECT_SELF;
@@ -81,7 +81,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="bDecays">If true, the friendship decays over the specified duration; otherwise it is indefinite (default: false)</param>
         /// <param name="fDurationInSeconds">The length of time the temporary friendship lasts (default: 180.0)</param>
         /// <remarks>If bDecays is true, the personal reputation amount decreases over time. Friendship will only be in effect as long as (faction reputation + total personal reputation) >= REPUTATION_TYPE_FRIEND.</remarks>
-        public static void SetIsTemporaryFriend(uint oTarget, uint oSource = OBJECT_INVALID, bool bDecays = false,
+        public void SetIsTemporaryFriend(uint oTarget, uint oSource = OBJECT_INVALID, bool bDecays = false,
             float fDurationInSeconds = 180.0f)
         {
             if (oSource == OBJECT_INVALID)
@@ -97,7 +97,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="bDecays">If true, the enmity decays over the specified duration; otherwise it is indefinite (default: false)</param>
         /// <param name="fDurationInSeconds">The length of time the temporary enmity lasts (default: 180.0)</param>
         /// <remarks>If bDecays is true, the personal reputation amount decreases over time. Enmity will only be in effect as long as (faction reputation + total personal reputation) <= REPUTATION_TYPE_ENEMY.</remarks>
-        public static void SetIsTemporaryEnemy(uint oTarget, uint oSource = OBJECT_INVALID, bool bDecays = false,
+        public void SetIsTemporaryEnemy(uint oTarget, uint oSource = OBJECT_INVALID, bool bDecays = false,
             float fDurationInSeconds = 180.0f)
         {
             if (oSource == OBJECT_INVALID)
@@ -113,7 +113,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="bDecays">If true, the neutrality decays over the specified duration; otherwise it is indefinite (default: false)</param>
         /// <param name="fDurationInSeconds">The length of time the temporary neutrality lasts (default: 180.0)</param>
         /// <remarks>If bDecays is true, the personal reputation amount decreases over time. Neutrality will only be in effect as long as (faction reputation + total personal reputation) > REPUTATION_TYPE_ENEMY and (faction reputation + total personal reputation) < REPUTATION_TYPE_FRIEND.</remarks>
-        public static void SetIsTemporaryNeutral(uint oTarget, uint oSource = OBJECT_INVALID, bool bDecays = false,
+        public void SetIsTemporaryNeutral(uint oTarget, uint oSource = OBJECT_INVALID, bool bDecays = false,
             float fDurationInSeconds = 180.0f)
         {
             if (oSource == OBJECT_INVALID)

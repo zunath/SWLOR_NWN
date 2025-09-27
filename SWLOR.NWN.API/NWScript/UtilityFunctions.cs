@@ -1,13 +1,13 @@
 namespace SWLOR.NWN.API.NWScript
 {
-    public partial class NWScript
+    public partial class NWScriptService
     {
         /// <summary>
         /// Converts an integer to hex, returning the hex value as a string.
         /// </summary>
         /// <param name="nInteger">The integer to convert to hex</param>
         /// <returns>Hex value as a string with format "0x????????" where each ? is a hex digit (8 digits in total)</returns>
-        public static string IntToHexString(int nInteger)
+        public string IntToHexString(int nInteger)
         {
             return global::NWN.Core.NWScript.IntToHexString(nInteger);
         }
@@ -21,7 +21,7 @@ namespace SWLOR.NWN.API.NWScript
         /// If the script file isn't compiled for debugging, this command will do nothing.
         /// Remove any SpawnScriptDebugger() calls once you have finished debugging the script.
         /// </summary>
-        public static void SpawnScriptDebugger()
+        public void SpawnScriptDebugger()
         {
             global::NWN.Core.NWScript.SpawnScriptDebugger();
         }
@@ -38,7 +38,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oObject">The object to execute the script on</param>
         /// <param name="bWrapIntoMain">Whether to wrap the script chunk into void main() {}</param>
         /// <returns>Empty string on success, or the compilation error</returns>
-        public static string ExecuteScriptChunk(string sScriptChunk, uint oObject = OBJECT_INVALID, bool bWrapIntoMain = true)
+        public string ExecuteScriptChunk(string sScriptChunk, uint oObject = OBJECT_INVALID, bool bWrapIntoMain = true)
         {
             if (oObject == OBJECT_INVALID)
                 oObject = OBJECT_SELF;
@@ -51,7 +51,7 @@ namespace SWLOR.NWN.API.NWScript
         /// The generated UUID is currently a v4.
         /// </summary>
         /// <returns>A random UUID string</returns>
-        public static string GetRandomUUID()
+        public string GetRandomUUID()
         {
             return global::NWN.Core.NWScript.GetRandomUUID();
         }
@@ -76,7 +76,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oObject">The object to get the UUID for</param>
         /// <returns>The object's UUID, or empty string when the given object cannot carry a UUID</returns>
-        public static string GetObjectUUID(uint oObject)
+        public string GetObjectUUID(uint oObject)
         {
             return global::NWN.Core.NWScript.GetObjectUUID(oObject);
         }
@@ -85,7 +85,7 @@ namespace SWLOR.NWN.API.NWScript
         /// Forces the given object to receive a new UUID, discarding the current value.
         /// </summary>
         /// <param name="oObject">The object to refresh the UUID for</param>
-        public static void ForceRefreshObjectUUID(uint oObject)
+        public void ForceRefreshObjectUUID(uint oObject)
         {
             global::NWN.Core.NWScript.ForceRefreshObjectUUID(oObject);
         }
@@ -95,7 +95,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="sUUID">The UUID to look up</param>
         /// <returns>The object with the given UUID, or OBJECT_INVALID if the UUID is not on the server</returns>
-        public static uint GetObjectByUUID(string sUUID)
+        public uint GetObjectByUUID(string sUUID)
         {
             return global::NWN.Core.NWScript.GetObjectByUUID(sUUID);
         }
@@ -104,7 +104,7 @@ namespace SWLOR.NWN.API.NWScript
         /// Reserved function - do not call.
         /// This does nothing on this platform except to return an error.
         /// </summary>
-        public static void Reserved899()
+        public void Reserved899()
         {
             global::NWN.Core.NWScript.Reserved899();
         }

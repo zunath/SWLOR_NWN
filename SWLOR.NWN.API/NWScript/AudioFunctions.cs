@@ -1,13 +1,13 @@
 namespace SWLOR.NWN.API.NWScript
 {
-    public partial class NWScript
+    public partial class NWScriptService
     {
         /// <summary>
         /// Gets the duration (in seconds) of the sound attached to the specified string reference.
         /// </summary>
         /// <param name="nStrRef">The string reference to get the sound duration for</param>
         /// <returns>The duration in seconds. Returns 0.0f if no duration is stored or if no sound is attached</returns>
-        public static float GetStrRefSoundDuration(int nStrRef)
+        public float GetStrRefSoundDuration(int nStrRef)
         {
             return global::NWN.Core.NWScript.GetStrRefSoundDuration(nStrRef);
         }
@@ -18,7 +18,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nStrRef">The string reference to get the dialog sound length for</param>
         /// <returns>The length in seconds</returns>
         /// <remarks>Only works for sounds used for dialog.</remarks>
-        public static float GetDialogSoundLength(int nStrRef)
+        public float GetDialogSoundLength(int nStrRef)
         {
             return global::NWN.Core.NWScript.GetDialogSoundLength(nStrRef);
         }
@@ -28,7 +28,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nStrRef">The string reference of the sound to play</param>
         /// <param name="nRunAsAction">If false, the sound is forced to play instantly (default: true)</param>
-        public static void PlaySoundByStrRef(int nStrRef, bool nRunAsAction = true)
+        public void PlaySoundByStrRef(int nStrRef, bool nRunAsAction = true)
         {
             global::NWN.Core.NWScript.PlaySoundByStrRef(nStrRef, nRunAsAction ? 1 : 0);
         }
@@ -37,7 +37,7 @@ namespace SWLOR.NWN.API.NWScript
         /// Plays the specified sound as a mono sound from the location of the object running the command.
         /// </summary>
         /// <param name="sSoundName">The name of the sound to play</param>
-        public static void PlaySound(string sSoundName)
+        public void PlaySound(string sSoundName)
         {
             global::NWN.Core.NWScript.PlaySound(sSoundName);
         }
@@ -54,7 +54,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nStreamIdentifier">The stream identifier</param>
         /// <param name="bPaused">Whether the stream should be paused</param>
         /// <param name="fFadeTime">The fade time in seconds (default: 0.0f)</param>
-        public static void SetAudioStreamPaused(uint oPlayer, int nStreamIdentifier, bool bPaused, float fFadeTime = 0.0f)
+        public void SetAudioStreamPaused(uint oPlayer, int nStreamIdentifier, bool bPaused, float fFadeTime = 0.0f)
         {
             global::NWN.Core.NWScript.SetAudioStreamPaused(oPlayer, nStreamIdentifier, bPaused ? 1 : 0, fFadeTime);
         }
@@ -74,7 +74,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nStreamIdentifier">The stream identifier</param>
         /// <param name="fVolume">The volume level (0.0 to 1.0) (default: 1.0f)</param>
         /// <param name="fFadeTime">The fade time in seconds (default: 0.0f)</param>
-        public static void SetAudioStreamVolume(uint oPlayer, int nStreamIdentifier, float fVolume = 1.0f, float fFadeTime = 0.0f)
+        public void SetAudioStreamVolume(uint oPlayer, int nStreamIdentifier, float fVolume = 1.0f, float fFadeTime = 0.0f)
         {
             global::NWN.Core.NWScript.SetAudioStreamVolume(oPlayer, nStreamIdentifier, fVolume, fFadeTime);
         }
@@ -89,7 +89,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oPlayer">The player to seek audio stream for</param>
         /// <param name="nStreamIdentifier">The stream identifier</param>
         /// <param name="fSeconds">The offset in seconds to seek to</param>
-        public static void SeekAudioStream(uint oPlayer, int nStreamIdentifier, float fSeconds)
+        public void SeekAudioStream(uint oPlayer, int nStreamIdentifier, float fSeconds)
         {
             global::NWN.Core.NWScript.SeekAudioStream(oPlayer, nStreamIdentifier, fSeconds);
         }

@@ -2,7 +2,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.NWN.API.NWScript
 {
-    public partial class NWScript
+    public partial class NWScriptService
     {
         /// <summary>
         /// Gets the weakest member of the faction member's faction.
@@ -10,7 +10,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oFactionMember">The faction member to check (default: OBJECT_SELF)</param>
         /// <param name="bMustBeVisible">Whether the member must be visible (default: true)</param>
         /// <returns>The weakest faction member. Returns OBJECT_INVALID if the faction member's faction is invalid</returns>
-        public static uint GetFactionWeakestMember(uint oFactionMember = OBJECT_INVALID, bool bMustBeVisible = true)
+        public uint GetFactionWeakestMember(uint oFactionMember = OBJECT_INVALID, bool bMustBeVisible = true)
         {
             if (oFactionMember == OBJECT_INVALID)
                 oFactionMember = OBJECT_SELF;
@@ -23,7 +23,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oFactionMember">The faction member to check (default: OBJECT_SELF)</param>
         /// <param name="bMustBeVisible">Whether the member must be visible (default: true)</param>
         /// <returns>The strongest faction member. Returns OBJECT_INVALID if the faction member's faction is invalid</returns>
-        public static uint GetFactionStrongestMember(uint oFactionMember = OBJECT_INVALID, bool bMustBeVisible = true)
+        public uint GetFactionStrongestMember(uint oFactionMember = OBJECT_INVALID, bool bMustBeVisible = true)
         {
             if (oFactionMember == OBJECT_INVALID)
                 oFactionMember = OBJECT_SELF;
@@ -36,7 +36,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oFactionMember">The faction member to check (default: OBJECT_SELF)</param>
         /// <param name="bMustBeVisible">Whether the member must be visible (default: true)</param>
         /// <returns>The most damaged faction member. Returns OBJECT_INVALID if the faction member's faction is invalid</returns>
-        public static uint GetFactionMostDamagedMember(uint oFactionMember = OBJECT_INVALID, bool bMustBeVisible = true)
+        public uint GetFactionMostDamagedMember(uint oFactionMember = OBJECT_INVALID, bool bMustBeVisible = true)
         {
             if (oFactionMember == OBJECT_INVALID)
                 oFactionMember = OBJECT_SELF;
@@ -49,7 +49,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oFactionMember">The faction member to check (default: OBJECT_SELF)</param>
         /// <param name="bMustBeVisible">Whether the member must be visible (default: true)</param>
         /// <returns>The least damaged faction member. Returns OBJECT_INVALID if the faction member's faction is invalid</returns>
-        public static uint GetFactionLeastDamagedMember(uint oFactionMember = OBJECT_INVALID,
+        public uint GetFactionLeastDamagedMember(uint oFactionMember = OBJECT_INVALID,
             bool bMustBeVisible = true)
         {
             if (oFactionMember == OBJECT_INVALID)
@@ -62,7 +62,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oFactionMember">The faction member to check</param>
         /// <returns>The amount of gold held by the faction. Returns -1 if the faction member's faction is invalid</returns>
-        public static int GetFactionGold(uint oFactionMember)
+        public int GetFactionGold(uint oFactionMember)
         {
             return global::NWN.Core.NWScript.GetFactionGold(oFactionMember);
         }
@@ -73,7 +73,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oSourceFactionMember">The source faction member</param>
         /// <param name="oTarget">The target to check reputation for</param>
         /// <returns>An integer between 0 and 100 representing the reputation. Returns -1 on error</returns>
-        public static int GetFactionAverageReputation(uint oSourceFactionMember, uint oTarget)
+        public int GetFactionAverageReputation(uint oSourceFactionMember, uint oTarget)
         {
             return global::NWN.Core.NWScript.GetFactionAverageReputation(oSourceFactionMember, oTarget);
         }
@@ -83,7 +83,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oFactionMember">The faction member to check</param>
         /// <returns>An integer between 0 and 100 representing the average good/evil alignment. Returns -1 on error</returns>
-        public static int GetFactionAverageGoodEvilAlignment(uint oFactionMember)
+        public int GetFactionAverageGoodEvilAlignment(uint oFactionMember)
         {
             return global::NWN.Core.NWScript.GetFactionAverageGoodEvilAlignment(oFactionMember);
         }
@@ -93,7 +93,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oFactionMember">The faction member to check</param>
         /// <returns>An integer between 0 and 100 representing the average law/chaos alignment. Returns -1 on error</returns>
-        public static int GetFactionAverageLawChaosAlignment(uint oFactionMember)
+        public int GetFactionAverageLawChaosAlignment(uint oFactionMember)
         {
             return global::NWN.Core.NWScript.GetFactionAverageLawChaosAlignment(oFactionMember);
         }
@@ -103,7 +103,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oFactionMember">The faction member to check</param>
         /// <returns>The average level of the faction members. Returns -1 on error</returns>
-        public static int GetFactionAverageLevel(uint oFactionMember)
+        public int GetFactionAverageLevel(uint oFactionMember)
         {
             return global::NWN.Core.NWScript.GetFactionAverageLevel(oFactionMember);
         }
@@ -113,7 +113,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oFactionMember">The faction member to check</param>
         /// <returns>The average XP of the faction members. Returns -1 on error</returns>
-        public static int GetFactionAverageXP(uint oFactionMember)
+        public int GetFactionAverageXP(uint oFactionMember)
         {
             return global::NWN.Core.NWScript.GetFactionAverageXP(oFactionMember);
         }
@@ -123,7 +123,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oFactionMember">The faction member to check</param>
         /// <returns>The most frequent class in the faction (can be compared with CLASS_TYPE_* constants). Returns -1 on error</returns>
-        public static int GetFactionMostFrequentClass(uint oFactionMember)
+        public int GetFactionMostFrequentClass(uint oFactionMember)
         {
             return global::NWN.Core.NWScript.GetFactionMostFrequentClass(oFactionMember);
         }
@@ -134,7 +134,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oFactionMember">The faction member to check (default: OBJECT_SELF)</param>
         /// <param name="bMustBeVisible">Whether the member must be visible (default: true)</param>
         /// <returns>The faction member with the worst AC. Returns OBJECT_INVALID if the faction member's faction is invalid</returns>
-        public static uint GetFactionWorstAC(uint oFactionMember = OBJECT_INVALID, bool bMustBeVisible = true)
+        public uint GetFactionWorstAC(uint oFactionMember = OBJECT_INVALID, bool bMustBeVisible = true)
         {
             if (oFactionMember == OBJECT_INVALID)
                 oFactionMember = OBJECT_SELF;
@@ -147,7 +147,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oFactionMember">The faction member to check (default: OBJECT_SELF)</param>
         /// <param name="bMustBeVisible">Whether the member must be visible (default: true)</param>
         /// <returns>The faction member with the best AC. Returns OBJECT_INVALID if the faction member's faction is invalid</returns>
-        public static uint GetFactionBestAC(uint oFactionMember = OBJECT_INVALID, bool bMustBeVisible = true)
+        public uint GetFactionBestAC(uint oFactionMember = OBJECT_INVALID, bool bMustBeVisible = true)
         {
             if (oFactionMember == OBJECT_INVALID)
                 oFactionMember = OBJECT_SELF;
@@ -160,7 +160,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oSource">The source object</param>
         /// <param name="oTarget">The target object</param>
         /// <returns>An integer between 0 and 100 representing the reputation. 0-10 means hostile, 11-89 means neutral, 90-100 means friendly. Returns -1 if oSource or oTarget does not identify a valid object</returns>
-        public static int GetReputation(uint oSource, uint oTarget)
+        public int GetReputation(uint oSource, uint oTarget)
         {
             return global::NWN.Core.NWScript.GetReputation(oSource, oTarget);
         }
@@ -172,7 +172,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oSourceFactionMember">The source faction member</param>
         /// <param name="nAdjustment">The amount to adjust the reputation by</param>
         /// <remarks>This adjusts Faction Reputation, how the entire faction that oSourceFactionMember is in, feels about oTarget. You can't adjust a player character's (PC) faction towards NPCs, so attempting to make an NPC hostile by passing in a PC object as oSourceFactionMember in the following call will fail: AdjustReputation(oNPC,oPC,-100); Instead you should pass in the PC object as the first parameter as in the following call which should succeed: AdjustReputation(oPC,oNPC,-100); Will fail if oSourceFactionMember is a plot object.</remarks>
-        public static void AdjustReputation(uint oTarget, uint oSourceFactionMember, int nAdjustment)
+        public void AdjustReputation(uint oTarget, uint oSourceFactionMember, int nAdjustment)
         {
             global::NWN.Core.NWScript.AdjustReputation(oTarget, oSourceFactionMember, nAdjustment);
         }
@@ -183,7 +183,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oTarget">The target to check</param>
         /// <param name="oSource">The source to check from (default: OBJECT_SELF)</param>
         /// <returns>True if the source considers the target as an enemy, false otherwise</returns>
-        public static bool GetIsEnemy(uint oTarget, uint oSource = OBJECT_INVALID)
+        public bool GetIsEnemy(uint oTarget, uint oSource = OBJECT_INVALID)
         {
             if (oSource == OBJECT_INVALID)
                 oSource = OBJECT_SELF;
@@ -196,7 +196,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oTarget">The target to check</param>
         /// <param name="oSource">The source to check from (default: OBJECT_SELF)</param>
         /// <returns>True if the source considers the target as a friend, false otherwise</returns>
-        public static bool GetIsFriend(uint oTarget, uint oSource = OBJECT_INVALID)
+        public bool GetIsFriend(uint oTarget, uint oSource = OBJECT_INVALID)
         {
             if (oSource == OBJECT_INVALID)
                 oSource = OBJECT_SELF;
@@ -209,7 +209,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oTarget">The target to check</param>
         /// <param name="oSource">The source to check from (default: OBJECT_SELF)</param>
         /// <returns>True if the source considers the target as neutral, false otherwise</returns>
-        public static bool GetIsNeutral(uint oTarget, uint oSource = OBJECT_INVALID)
+        public bool GetIsNeutral(uint oTarget, uint oSource = OBJECT_INVALID)
         {
             if (oSource == OBJECT_INVALID)
                 oSource = OBJECT_SELF;
@@ -221,7 +221,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oMemberOfFaction">The faction member to check</param>
         /// <returns>The faction leader. Returns OBJECT_INVALID if the member is not a valid creature, or the member is a member of an NPC faction</returns>
-        public static uint GetFactionLeader(uint oMemberOfFaction)
+        public uint GetFactionLeader(uint oMemberOfFaction)
         {
             return global::NWN.Core.NWScript.GetFactionLeader(oMemberOfFaction);
         }
@@ -232,7 +232,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nStandardFaction">The standard faction (STANDARD_FACTION_* constants)</param>
         /// <param name="nNewReputation">The new reputation (0-100 inclusive)</param>
         /// <param name="oCreature">The creature to set the reputation for (default: OBJECT_SELF)</param>
-        public static void SetStandardFactionReputation(StandardFactionType nStandardFaction, int nNewReputation,
+        public void SetStandardFactionReputation(StandardFactionType nStandardFaction, int nNewReputation,
             uint oCreature = OBJECT_INVALID)
         {
             if (oCreature == OBJECT_INVALID)
@@ -246,7 +246,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nStandardFaction">The standard faction (STANDARD_FACTION_* constants)</param>
         /// <param name="oCreature">The creature to check the reputation for (default: OBJECT_SELF)</param>
         /// <returns>Returns -1 on an error. Returns 0-100 based on the standing of the creature within the faction. 0-10: Hostile, 11-89: Neutral, 90-100: Friendly</returns>
-        public static int GetStandardFactionReputation(StandardFactionType nStandardFaction, uint oCreature = OBJECT_INVALID)
+        public int GetStandardFactionReputation(StandardFactionType nStandardFaction, uint oCreature = OBJECT_INVALID)
         {
             if (oCreature == OBJECT_INVALID)
                 oCreature = OBJECT_SELF;
@@ -259,7 +259,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oCreatureToChange">The creature to change the faction for</param>
         /// <param name="nStandardFaction">The standard faction to join (STANDARD_FACTION_* constants)</param>
         /// <remarks>This will only work on an NPC.</remarks>
-        public static void ChangeToStandardFaction(uint oCreatureToChange, StandardFactionType nStandardFaction)
+        public void ChangeToStandardFaction(uint oCreatureToChange, StandardFactionType nStandardFaction)
         {
             global::NWN.Core.NWScript.ChangeToStandardFaction(oCreatureToChange, (int)nStandardFaction);
         }
@@ -270,7 +270,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oMemberOfFaction">The faction member to get the first member for</param>
         /// <param name="bPCOnly">Whether to only return PC members (default: true)</param>
         /// <returns>The first faction member. Returns OBJECT_INVALID if the faction member's faction is invalid</returns>
-        public static uint GetFirstFactionMember(uint oMemberOfFaction, bool bPCOnly = true)
+        public uint GetFirstFactionMember(uint oMemberOfFaction, bool bPCOnly = true)
         {
             return global::NWN.Core.NWScript.GetFirstFactionMember(oMemberOfFaction, bPCOnly ? 1 : 0);
         }
@@ -281,7 +281,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oMemberOfFaction">The faction member to get the next member for</param>
         /// <param name="bPCOnly">Whether to only return PC members (default: true)</param>
         /// <returns>The next faction member. Returns OBJECT_INVALID if the faction member's faction is invalid</returns>
-        public static uint GetNextFactionMember(uint oMemberOfFaction, bool bPCOnly = true)
+        public uint GetNextFactionMember(uint oMemberOfFaction, bool bPCOnly = true)
         {
             return global::NWN.Core.NWScript.GetNextFactionMember(oMemberOfFaction, bPCOnly ? 1 : 0);
         }
@@ -292,7 +292,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oFirstObject">The first object to compare</param>
         /// <param name="oSecondObject">The second object to compare (default: OBJECT_SELF)</param>
         /// <returns>True if the faction IDs are the same, false otherwise</returns>
-        public static bool GetFactionEqual(uint oFirstObject, uint oSecondObject = OBJECT_INVALID)
+        public bool GetFactionEqual(uint oFirstObject, uint oSecondObject = OBJECT_INVALID)
         {
             if (oSecondObject == OBJECT_INVALID)
                 oSecondObject = OBJECT_SELF;
@@ -305,7 +305,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oObjectToChangeFaction">The object to change the faction for</param>
         /// <param name="oMemberOfFactionToJoin">The faction member whose faction to join</param>
         /// <remarks>This will only work for two NPCs.</remarks>
-        public static void ChangeFaction(uint oObjectToChangeFaction, uint oMemberOfFactionToJoin)
+        public void ChangeFaction(uint oObjectToChangeFaction, uint oMemberOfFactionToJoin)
         {
             global::NWN.Core.NWScript.ChangeFaction(oObjectToChangeFaction, oMemberOfFactionToJoin);
         }

@@ -4,7 +4,7 @@ using SpellSchool = SWLOR.NWN.API.NWScript.Enum.SpellSchool;
 
 namespace SWLOR.NWN.API.NWScript
 {
-    public partial class NWScript
+    public partial class NWScriptService
     {
         /// <summary>
         /// Adds an item property to the specified item.
@@ -14,7 +14,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="ipProperty">The item property to add</param>
         /// <param name="oItem">The item to add the property to</param>
         /// <param name="fDuration">The duration in seconds (defaults to 0.0f)</param>
-        public static void AddItemProperty(DurationType nDurationType, ItemProperty ipProperty, uint oItem,
+        public void AddItemProperty(DurationType nDurationType, ItemProperty ipProperty, uint oItem,
             float fDuration = 0.0f)
         {
             global::NWN.Core.NWScript.AddItemProperty((int)nDurationType, ipProperty, oItem, fDuration);
@@ -25,7 +25,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oItem">The item to remove the property from</param>
         /// <param name="ipProperty">The item property to remove</param>
-        public static void RemoveItemProperty(uint oItem, ItemProperty ipProperty)
+        public void RemoveItemProperty(uint oItem, ItemProperty ipProperty)
         {
             global::NWN.Core.NWScript.RemoveItemProperty(oItem, ipProperty);
         }
@@ -35,7 +35,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="ipProperty">The item property to check</param>
         /// <returns>TRUE if the item property is valid</returns>
-        public static bool GetIsItemPropertyValid(ItemProperty ipProperty)
+        public bool GetIsItemPropertyValid(ItemProperty ipProperty)
         {
             return global::NWN.Core.NWScript.GetIsItemPropertyValid(ipProperty) != 0;
         }
@@ -45,7 +45,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oItem">The item to get the first property from</param>
         /// <returns>The first item property, or an invalid property if none exist</returns>
-        public static ItemProperty GetFirstItemProperty(uint oItem)
+        public ItemProperty GetFirstItemProperty(uint oItem)
         {
             return global::NWN.Core.NWScript.GetFirstItemProperty(oItem);
         }
@@ -56,7 +56,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oItem">The item to get the next property from</param>
         /// <returns>The next item property, or an invalid property if none remain</returns>
-        public static ItemProperty GetNextItemProperty(uint oItem)
+        public ItemProperty GetNextItemProperty(uint oItem)
         {
             return global::NWN.Core.NWScript.GetNextItemProperty(oItem);
         }
@@ -66,7 +66,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="ip">The item property to get the type of</param>
         /// <returns>The item property type</returns>
-        public static ItemPropertyType GetItemPropertyType(ItemProperty ip)
+        public ItemPropertyType GetItemPropertyType(ItemProperty ip)
         {
             return (ItemPropertyType)global::NWN.Core.NWScript.GetItemPropertyType(ip);
         }
@@ -76,7 +76,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="ip">The item property to get the duration type of</param>
         /// <returns>The duration type</returns>
-        public static DurationType GetItemPropertyDurationType(ItemProperty ip)
+        public DurationType GetItemPropertyDurationType(ItemProperty ip)
         {
             return (DurationType)global::NWN.Core.NWScript.GetItemPropertyDurationType(ip);
         }
@@ -89,7 +89,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nAbility">The ability type constant</param>
         /// <param name="nBonus">The bonus amount (1-12)</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyAbilityBonus(AbilityType nAbility, int nBonus)
+        public ItemProperty ItemPropertyAbilityBonus(AbilityType nAbility, int nBonus)
         {
             return global::NWN.Core.NWScript.ItemPropertyAbilityBonus((int)nAbility, nBonus);
         }
@@ -102,7 +102,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nBonus">The AC bonus amount (1-20)</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyACBonus(int nBonus)
+        public ItemProperty ItemPropertyACBonus(int nBonus)
         {
             return global::NWN.Core.NWScript.ItemPropertyACBonus(nBonus);
         }
@@ -117,7 +117,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nAlignGroup">The alignment group constant</param>
         /// <param name="ACBonus">The AC bonus amount (1-20)</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyACBonusVsAlign(ItemPropertyAlignmentGroupType nAlignGroup, int ACBonus)
+        public ItemProperty ItemPropertyACBonusVsAlign(ItemPropertyAlignmentGroupType nAlignGroup, int ACBonus)
         {
             return global::NWN.Core.NWScript.ItemPropertyACBonusVsAlign((int)nAlignGroup, ACBonus);
         }
@@ -131,7 +131,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nDamageType">The damage type constant</param>
         /// <param name="ACBonus">The AC bonus amount (1-20)</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyACBonusVsDmgType(ItemPropertyDamageType nDamageType, int ACBonus)
+        public ItemProperty ItemPropertyACBonusVsDmgType(ItemPropertyDamageType nDamageType, int ACBonus)
         {
             return global::NWN.Core.NWScript.ItemPropertyACBonusVsDmgType((int)nDamageType, ACBonus);
         }
@@ -144,7 +144,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nRace">The racial type constant</param>
         /// <param name="nACBonus">The AC bonus amount (1-20)</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyACBonusVsRace(RacialType nRace, int nACBonus)
+        public ItemProperty ItemPropertyACBonusVsRace(RacialType nRace, int nACBonus)
         {
             return global::NWN.Core.NWScript.ItemPropertyACBonusVsRace((int)nRace, nACBonus);
         }
@@ -157,7 +157,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nAlign">The alignment constant</param>
         /// <param name="nACBonus">The AC bonus amount (1-20)</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyACBonusVsSAlign(ItemPropertyAlignmentType nAlign, int nACBonus)
+        public ItemProperty ItemPropertyACBonusVsSAlign(ItemPropertyAlignmentType nAlign, int nACBonus)
         {
             return global::NWN.Core.NWScript.ItemPropertyACBonusVsSAlign((int)nAlign, nACBonus);
         }
@@ -169,7 +169,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nEnhancementBonus">The enhancement bonus amount (1-20)</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyEnhancementBonus(int nEnhancementBonus)
+        public ItemProperty ItemPropertyEnhancementBonus(int nEnhancementBonus)
         {
             return global::NWN.Core.NWScript.ItemPropertyEnhancementBonus(nEnhancementBonus);
         }
@@ -182,7 +182,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nAlignGroup">The alignment group constant</param>
         /// <param name="nBonus">The enhancement bonus amount (1-20)</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyEnhancementBonusVsAlign(ItemPropertyAlignmentGroupType nAlignGroup,
+        public ItemProperty ItemPropertyEnhancementBonusVsAlign(ItemPropertyAlignmentGroupType nAlignGroup,
             int nBonus)
         {
             return global::NWN.Core.NWScript.ItemPropertyEnhancementBonusVsAlign((int)nAlignGroup, nBonus);
@@ -196,7 +196,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nRace">The racial type constant</param>
         /// <param name="nBonus">The enhancement bonus amount (1-20)</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyEnhancementBonusVsRace(RacialType nRace, int nBonus)
+        public ItemProperty ItemPropertyEnhancementBonusVsRace(RacialType nRace, int nBonus)
         {
             return global::NWN.Core.NWScript.ItemPropertyEnhancementBonusVsRace((int)nRace, nBonus);
         }
@@ -209,7 +209,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nAlign">The alignment constant</param>
         /// <param name="nBonus">The enhancement bonus amount (1-20)</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyEnhancementBonusVsSAlign(ItemPropertyAlignmentType nAlign,
+        public ItemProperty ItemPropertyEnhancementBonusVsSAlign(ItemPropertyAlignmentType nAlign,
             int nBonus)
         {
             return global::NWN.Core.NWScript.ItemPropertyEnhancementBonusVsSAlign((int)nAlign, nBonus);
@@ -222,7 +222,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nPenalty">The enhancement penalty amount (1-5)</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyEnhancementPenalty(int nPenalty)
+        public ItemProperty ItemPropertyEnhancementPenalty(int nPenalty)
         {
             return global::NWN.Core.NWScript.ItemPropertyEnhancementPenalty(nPenalty);
         }
@@ -233,7 +233,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nReduction">The weight reduction constant</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyWeightReduction(ItemPropertyReducedWeightType nReduction)
+        public ItemProperty ItemPropertyWeightReduction(ItemPropertyReducedWeightType nReduction)
         {
             return global::NWN.Core.NWScript.ItemPropertyWeightReduction((int)nReduction);
         }
@@ -244,7 +244,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nFeat">The feat constant</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyBonusFeat(ItemPropertyFeatType nFeat)
+        public ItemProperty ItemPropertyBonusFeat(ItemPropertyFeatType nFeat)
         {
             return global::NWN.Core.NWScript.ItemPropertyBonusFeat((int)nFeat);
         }
@@ -257,7 +257,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nClass">The class constant (must be a spell casting class)</param>
         /// <param name="nSpellLevel">The spell level (0-9)</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyBonusLevelSpell(ItemPropertyClassType nClass, ItemPropertySpellLevelType nSpellLevel)
+        public ItemProperty ItemPropertyBonusLevelSpell(ItemPropertyClassType nClass, ItemPropertySpellLevelType nSpellLevel)
         {
             return global::NWN.Core.NWScript.ItemPropertyBonusLevelSpell((int)nClass, (int)nSpellLevel);
         }
@@ -275,7 +275,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nSpell">The spell constant</param>
         /// <param name="nNumUses">The number of uses constant</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyCastSpell(ItemPropertyCastSpellType nSpell, ItemPropertyCastSpellNumberUsesType nNumUses)
+        public ItemProperty ItemPropertyCastSpell(ItemPropertyCastSpellType nSpell, ItemPropertyCastSpellNumberUsesType nNumUses)
         {
             return global::NWN.Core.NWScript.ItemPropertyCastSpell((int)nSpell, (int)nNumUses);
         }
@@ -288,7 +288,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nDamageType">The damage type constant</param>
         /// <param name="nDamage">The damage bonus constant</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyDamageBonus(ItemPropertyDamageType nDamageType,
+        public ItemProperty ItemPropertyDamageBonus(ItemPropertyDamageType nDamageType,
             ItemPropertyDamageBonusType nDamage)
         {
             return global::NWN.Core.NWScript.ItemPropertyDamageBonus((int)nDamageType, (int)nDamage);
@@ -304,7 +304,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nDamageType">The damage type constant</param>
         /// <param name="nDamage">The damage bonus constant</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyDamageBonusVsAlign(ItemPropertyAlignmentGroupType nAlignGroup,
+        public ItemProperty ItemPropertyDamageBonusVsAlign(ItemPropertyAlignmentGroupType nAlignGroup,
             ItemPropertyDamageType nDamageType, ItemPropertyDamageBonusType nDamage)
         {
             return global::NWN.Core.NWScript.ItemPropertyDamageBonusVsAlign((int)nAlignGroup, (int)nDamageType, (int)nDamage);
@@ -320,7 +320,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nDamageType">The damage type constant</param>
         /// <param name="nDamage">The damage bonus constant</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyDamageBonusVsRace(RacialType nRace,
+        public ItemProperty ItemPropertyDamageBonusVsRace(RacialType nRace,
             ItemPropertyDamageType nDamageType, ItemPropertyDamageBonusType nDamage)
         {
             return global::NWN.Core.NWScript.ItemPropertyDamageBonusVsRace((int)nRace, (int)nDamageType, (int)nDamage);
@@ -336,7 +336,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nDamageType">The damage type constant</param>
         /// <param name="nDamage">The damage bonus constant</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyDamageBonusVsSAlign(ItemPropertyAlignmentType nAlign,
+        public ItemProperty ItemPropertyDamageBonusVsSAlign(ItemPropertyAlignmentType nAlign,
             ItemPropertyDamageType nDamageType, ItemPropertyDamageBonusType nDamage)
         {
             return global::NWN.Core.NWScript.ItemPropertyDamageBonusVsSAlign((int)nAlign, (int)nDamageType, (int)nDamage);
@@ -351,7 +351,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nDamageType">The damage type constant</param>
         /// <param name="nImmuneBonus">The immune bonus percentage constant</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyDamageImmunity(ItemPropertyDamageType nDamageType,
+        public ItemProperty ItemPropertyDamageImmunity(ItemPropertyDamageType nDamageType,
             ItemPropertyDamageImmunityType nImmuneBonus)
         {
             return global::NWN.Core.NWScript.ItemPropertyDamageImmunity((int)nDamageType, (int)nImmuneBonus);
@@ -365,7 +365,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nPenalty">The damage penalty amount (1-5)</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyDamagePenalty(int nPenalty)
+        public ItemProperty ItemPropertyDamagePenalty(int nPenalty)
         {
             if (nPenalty > 5) nPenalty = 5;
             return global::NWN.Core.NWScript.ItemPropertyDamagePenalty(nPenalty);
@@ -379,7 +379,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nEnhancement">The enhancement level constant</param>
         /// <param name="nHPSoak">The HP soak amount constant</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyDamageReduction(ItemPropertyDamageReductionType nEnhancement, ItemPropertyDamageSoakType nHPSoak)
+        public ItemProperty ItemPropertyDamageReduction(ItemPropertyDamageReductionType nEnhancement, ItemPropertyDamageSoakType nHPSoak)
         {
             return global::NWN.Core.NWScript.ItemPropertyDamageReduction((int)nEnhancement, (int)nHPSoak);
         }
@@ -392,7 +392,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nDamageType">The damage type constant</param>
         /// <param name="nHPResist">The HP resistance amount constant</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyDamageResistance(ItemPropertyDamageType nDamageType,
+        public ItemProperty ItemPropertyDamageResistance(ItemPropertyDamageType nDamageType,
             ItemPropertyDamageResistType nHPResist)
         {
             return global::NWN.Core.NWScript.ItemPropertyDamageResistance((int)nDamageType, (int)nHPResist);
@@ -406,7 +406,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nDamageType">The damage type constant</param>
         /// <param name="nVulnerability">The vulnerability percentage constant</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyDamageVulnerability(ItemPropertyDamageType nDamageType,
+        public ItemProperty ItemPropertyDamageVulnerability(ItemPropertyDamageType nDamageType,
             ItemPropertyDamageVulnerabilityType nVulnerability)
         {
             return global::NWN.Core.NWScript.ItemPropertyDamageVulnerability((int)nDamageType, (int)nVulnerability);
@@ -416,7 +416,7 @@ namespace SWLOR.NWN.API.NWScript
         /// Returns an item property darkvision.
         /// </summary>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyDarkvision()
+        public ItemProperty ItemPropertyDarkvision()
         {
             return global::NWN.Core.NWScript.ItemPropertyDarkvision();
         }
@@ -429,7 +429,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nAbility">The ability constant</param>
         /// <param name="nModifier">The modifier amount (1-10)</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyDecreaseAbility(ItemPropertyAbilityType nAbility, int nModifier)
+        public ItemProperty ItemPropertyDecreaseAbility(ItemPropertyAbilityType nAbility, int nModifier)
         {
             return global::NWN.Core.NWScript.ItemPropertyDecreaseAbility((int)nAbility, nModifier);
         }
@@ -442,7 +442,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nModifierType">The armor modifier type constant</param>
         /// <param name="nPenalty">The armor class penalty (1-5)</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyDecreaseAC(ItemPropertyArmorClassModiferType nModifierType, int nPenalty)
+        public ItemProperty ItemPropertyDecreaseAC(ItemPropertyArmorClassModiferType nModifierType, int nPenalty)
         {
             return global::NWN.Core.NWScript.ItemPropertyDecreaseAC((int)nModifierType, nPenalty);
         }
@@ -455,7 +455,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nSkill">The skill type constant</param>
         /// <param name="nPenalty">The skill penalty (1-10)</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyDecreaseSkill(NWNSkillType nSkill, int nPenalty)
+        public ItemProperty ItemPropertyDecreaseSkill(NWNSkillType nSkill, int nPenalty)
         {
             return global::NWN.Core.NWScript.ItemPropertyDecreaseSkill((int)nSkill, nPenalty);
         }
@@ -467,7 +467,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nContainerType">The container weight reduction type constant</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyContainerReducedWeight(ItemPropertyContainerWeightType nContainerType)
+        public ItemProperty ItemPropertyContainerReducedWeight(ItemPropertyContainerWeightType nContainerType)
         {
             return global::NWN.Core.NWScript.ItemPropertyContainerReducedWeight((int)nContainerType);
         }
@@ -480,7 +480,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nDamageType">The damage type constant</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyExtraMeleeDamageType(ItemPropertyDamageType nDamageType)
+        public ItemProperty ItemPropertyExtraMeleeDamageType(ItemPropertyDamageType nDamageType)
         {
             return global::NWN.Core.NWScript.ItemPropertyExtraMeleeDamageType((int)nDamageType);
         }
@@ -493,7 +493,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nDamageType">The damage type constant</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyExtraRangeDamageType(ItemPropertyDamageType nDamageType)
+        public ItemProperty ItemPropertyExtraRangeDamageType(ItemPropertyDamageType nDamageType)
         {
             return global::NWN.Core.NWScript.ItemPropertyExtraRangeDamageType((int)nDamageType);
         }
@@ -502,7 +502,7 @@ namespace SWLOR.NWN.API.NWScript
         /// Returns an item property haste.
         /// </summary>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyHaste()
+        public ItemProperty ItemPropertyHaste()
         {
             return global::NWN.Core.NWScript.ItemPropertyHaste();
         }
@@ -511,7 +511,7 @@ namespace SWLOR.NWN.API.NWScript
         /// Returns an item property holy avenger.
         /// </summary>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyHolyAvenger()
+        public ItemProperty ItemPropertyHolyAvenger()
         {
             return global::NWN.Core.NWScript.ItemPropertyHolyAvenger();
         }
@@ -522,7 +522,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nImmunityType">The immunity type constant</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyImmunityMisc(ItemPropertyImmunityMiscType nImmunityType)
+        public ItemProperty ItemPropertyImmunityMisc(ItemPropertyImmunityMiscType nImmunityType)
         {
             return global::NWN.Core.NWScript.ItemPropertyImmunityMisc((int)nImmunityType);
         }
@@ -531,7 +531,7 @@ namespace SWLOR.NWN.API.NWScript
         /// Returns an item property improved evasion.
         /// </summary>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyImprovedEvasion()
+        public ItemProperty ItemPropertyImprovedEvasion()
         {
             return global::NWN.Core.NWScript.ItemPropertyImprovedEvasion();
         }
@@ -542,7 +542,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nBonus">The spell resistance bonus constant</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyBonusSpellResistance(ItemPropertySpellResistanceBonusType nBonus)
+        public ItemProperty ItemPropertyBonusSpellResistance(ItemPropertySpellResistanceBonusType nBonus)
         {
             return global::NWN.Core.NWScript.ItemPropertyBonusSpellResistance((int)nBonus);
         }
@@ -555,7 +555,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nBonusType">The save type constant</param>
         /// <param name="nBonus">The bonus amount (1-20)</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyBonusSavingThrowVsX(ItemPropertySaveVsType nBonusType, int nBonus)
+        public ItemProperty ItemPropertyBonusSavingThrowVsX(ItemPropertySaveVsType nBonusType, int nBonus)
         {
             return global::NWN.Core.NWScript.ItemPropertyBonusSavingThrowVsX((int)nBonusType, nBonus);
         }
@@ -568,7 +568,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nBaseSaveType">The base save type constant</param>
         /// <param name="nBonus">The bonus amount (1-20)</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyBonusSavingThrow(ItemPropertySaveBaseType nBaseSaveType, int nBonus)
+        public ItemProperty ItemPropertyBonusSavingThrow(ItemPropertySaveBaseType nBaseSaveType, int nBonus)
         {
             return global::NWN.Core.NWScript.ItemPropertyBonusSavingThrow((int)nBaseSaveType, nBonus);
         }
@@ -578,7 +578,7 @@ namespace SWLOR.NWN.API.NWScript
         /// This means a critical threat range of 19-20 on a weapon will be increased to 17-20 etc.
         /// </summary>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyKeen()
+        public ItemProperty ItemPropertyKeen()
         {
             return global::NWN.Core.NWScript.ItemPropertyKeen();
         }
@@ -590,7 +590,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nBrightness">The light brightness constant</param>
         /// <param name="nColor">The light color constant</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyLight(ItemPropertyLightBrightnessType nBrightness, ItemPropertyLightColorType nColor)
+        public ItemProperty ItemPropertyLight(ItemPropertyLightBrightnessType nBrightness, ItemPropertyLightColorType nColor)
         {
             return global::NWN.Core.NWScript.ItemPropertyLight((int)nBrightness, (int)nColor);
         }
@@ -602,7 +602,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nModifier">The strength modifier (1-20)</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyMaxRangeStrengthMod(int nModifier)
+        public ItemProperty ItemPropertyMaxRangeStrengthMod(int nModifier)
         {
             return global::NWN.Core.NWScript.ItemPropertyMaxRangeStrengthMod(nModifier);
         }
@@ -612,7 +612,7 @@ namespace SWLOR.NWN.API.NWScript
         /// This means the weapon will do no damage in combat.
         /// </summary>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyNoDamage()
+        public ItemProperty ItemPropertyNoDamage()
         {
             return global::NWN.Core.NWScript.ItemPropertyNoDamage();
         }
@@ -644,7 +644,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nSaveDC">The save DC constant</param>
         /// <param name="nSpecial">The special parameter (defaults to 0)</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyOnHitProps(int nProperty, int nSaveDC, int nSpecial = 0)
+        public ItemProperty ItemPropertyOnHitProps(int nProperty, int nSaveDC, int nSpecial = 0)
         {
             return global::NWN.Core.NWScript.ItemPropertyOnHitProps(nProperty, nSaveDC, nSpecial);
         }
@@ -657,7 +657,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nBaseSaveType">The save type constant</param>
         /// <param name="nPenalty">The penalty amount (1-20)</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyReducedSavingThrowVsX(ItemPropertySaveVsType nBaseSaveType, int nPenalty)
+        public ItemProperty ItemPropertyReducedSavingThrowVsX(ItemPropertySaveVsType nBaseSaveType, int nPenalty)
         {
             return global::NWN.Core.NWScript.ItemPropertyReducedSavingThrowVsX((int)nBaseSaveType, nPenalty);
         }
@@ -671,7 +671,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nBonusType">The base save type constant</param>
         /// <param name="nPenalty">The penalty amount (1-20)</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyReducedSavingThrow(ItemPropertySaveBaseType nBonusType, int nPenalty)
+        public ItemProperty ItemPropertyReducedSavingThrow(ItemPropertySaveBaseType nBonusType, int nPenalty)
         {
             return global::NWN.Core.NWScript.ItemPropertyReducedSavingThrow((int)nBonusType, nPenalty);
         }
@@ -683,7 +683,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nRegenAmount">The regeneration amount (1-20)</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyRegeneration(int nRegenAmount)
+        public ItemProperty ItemPropertyRegeneration(int nRegenAmount)
         {
             return global::NWN.Core.NWScript.ItemPropertyRegeneration(nRegenAmount);
         }
@@ -696,7 +696,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nSkill">The skill type constant</param>
         /// <param name="nBonus">The bonus amount (1-50)</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertySkillBonus(NWNSkillType nSkill, int nBonus)
+        public ItemProperty ItemPropertySkillBonus(NWNSkillType nSkill, int nBonus)
         {
             return global::NWN.Core.NWScript.ItemPropertySkillBonus((int)nSkill, nBonus);
         }
@@ -707,7 +707,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nSpell">The immunity spell constant</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertySpellImmunitySpecific(ItemPropertyImmunitySpellType nSpell)
+        public ItemProperty ItemPropertySpellImmunitySpecific(ItemPropertyImmunitySpellType nSpell)
         {
             return global::NWN.Core.NWScript.ItemPropertySpellImmunitySpecific((int)nSpell);
         }
@@ -718,7 +718,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nSchool">The spell school constant</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertySpellImmunitySchool(SpellSchool nSchool)
+        public ItemProperty ItemPropertySpellImmunitySchool(SpellSchool nSchool)
         {
             return global::NWN.Core.NWScript.ItemPropertySpellImmunitySchool((int)nSchool);
         }
@@ -730,7 +730,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nModifier">The modifier amount (1-12)</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyThievesTools(int nModifier)
+        public ItemProperty ItemPropertyThievesTools(int nModifier)
         {
             return global::NWN.Core.NWScript.ItemPropertyThievesTools(nModifier);
         }
@@ -742,7 +742,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nBonus">The attack bonus amount (1-20)</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyAttackBonus(int nBonus)
+        public ItemProperty ItemPropertyAttackBonus(int nBonus)
         {
             return global::NWN.Core.NWScript.ItemPropertyAttackBonus(nBonus);
         }
@@ -755,7 +755,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nAlignGroup">The alignment group constant</param>
         /// <param name="nBonus">The attack bonus amount (1-20)</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyAttackBonusVsAlign(ItemPropertyAlignmentGroupType nAlignGroup,
+        public ItemProperty ItemPropertyAttackBonusVsAlign(ItemPropertyAlignmentGroupType nAlignGroup,
             int nBonus)
         {
             return global::NWN.Core.NWScript.ItemPropertyAttackBonusVsAlign((int)nAlignGroup, nBonus);
@@ -769,7 +769,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nRace">The racial type constant</param>
         /// <param name="nBonus">The attack bonus amount (1-20)</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyAttackBonusVsRace(RacialType nRace, int nBonus)
+        public ItemProperty ItemPropertyAttackBonusVsRace(RacialType nRace, int nBonus)
         {
             return global::NWN.Core.NWScript.ItemPropertyAttackBonusVsRace((int)nRace, nBonus);
         }
@@ -782,7 +782,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nAlignment">The alignment constant</param>
         /// <param name="nBonus">The attack bonus amount (1-20)</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyAttackBonusVsSAlign(ItemPropertyAlignmentType nAlignment, int nBonus)
+        public ItemProperty ItemPropertyAttackBonusVsSAlign(ItemPropertyAlignmentType nAlignment, int nBonus)
         {
             return global::NWN.Core.NWScript.ItemPropertyAttackBonusVsSAlign((int)nAlignment, nBonus);
         }
@@ -794,7 +794,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nPenalty">The attack penalty amount (1-5)</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyAttackPenalty(int nPenalty)
+        public ItemProperty ItemPropertyAttackPenalty(int nPenalty)
         {
             return global::NWN.Core.NWScript.ItemPropertyAttackPenalty(nPenalty);
         }
@@ -807,7 +807,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nAmmoDamage">The ammo damage type (defaults to Basic)</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyUnlimitedAmmo(ItemPropertyUnlimitedType nAmmoDamage = ItemPropertyUnlimitedType.Basic)
+        public ItemProperty ItemPropertyUnlimitedAmmo(ItemPropertyUnlimitedType nAmmoDamage = ItemPropertyUnlimitedType.Basic)
         {
             return global::NWN.Core.NWScript.ItemPropertyUnlimitedAmmo((int)nAmmoDamage);
         }
@@ -818,7 +818,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nAlignGroup">The alignment group constant</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyLimitUseByAlign(ItemPropertyAlignmentGroupType nAlignGroup)
+        public ItemProperty ItemPropertyLimitUseByAlign(ItemPropertyAlignmentGroupType nAlignGroup)
         {
             return global::NWN.Core.NWScript.ItemPropertyLimitUseByAlign((int)nAlignGroup);
         }
@@ -829,7 +829,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nClass">The class constant</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyLimitUseByClass(ItemPropertyClassType nClass)
+        public ItemProperty ItemPropertyLimitUseByClass(ItemPropertyClassType nClass)
         {
             return global::NWN.Core.NWScript.ItemPropertyLimitUseByClass((int)nClass);
         }
@@ -840,7 +840,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nRace">The racial type constant</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyLimitUseByRace(RacialType nRace)
+        public ItemProperty ItemPropertyLimitUseByRace(RacialType nRace)
         {
             return global::NWN.Core.NWScript.ItemPropertyLimitUseByRace((int)nRace);
         }
@@ -851,7 +851,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nAlignment">The alignment constant</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyLimitUseBySAlign(ItemPropertyAlignmentType nAlignment)
+        public ItemProperty ItemPropertyLimitUseBySAlign(ItemPropertyAlignmentType nAlignment)
         {
             return global::NWN.Core.NWScript.ItemPropertyLimitUseBySAlign((int)nAlignment);
         }
@@ -860,7 +860,7 @@ namespace SWLOR.NWN.API.NWScript
         /// Replace this function it does nothing.
         /// </summary>
         /// <returns>An invalid item property</returns>
-        public static ItemProperty BadBadReplaceMeThisDoesNothing()
+        public ItemProperty BadBadReplaceMeThisDoesNothing()
         {
             return global::NWN.Core.NWScript.BadBadReplaceMeThisDoesNothing();
         }
@@ -872,7 +872,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nRegenAmount">The regeneration amount (1-20)</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyVampiricRegeneration(int nRegenAmount)
+        public ItemProperty ItemPropertyVampiricRegeneration(int nRegenAmount)
         {
             return global::NWN.Core.NWScript.ItemPropertyVampiricRegeneration(nRegenAmount);
         }
@@ -884,7 +884,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nTrapLevel">The trap level constant</param>
         /// <param name="nTrapType">The trap type constant</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyTrap(ItemPropertyTrapStrengthType nTrapLevel, ItemPropertyTrapType nTrapType)
+        public ItemProperty ItemPropertyTrap(ItemPropertyTrapStrengthType nTrapLevel, ItemPropertyTrapType nTrapType)
         {
             return global::NWN.Core.NWScript.ItemPropertyTrap((int)nTrapLevel, (int)nTrapType);
         }
@@ -893,7 +893,7 @@ namespace SWLOR.NWN.API.NWScript
         /// Returns an item property true seeing.
         /// </summary>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyTrueSeeing()
+        public ItemProperty ItemPropertyTrueSeeing()
         {
             return global::NWN.Core.NWScript.ItemPropertyTrueSeeing();
         }
@@ -915,7 +915,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nProperty">The property constant</param>
         /// <param name="nSpecial">The special parameter (defaults to 0)</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyOnMonsterHitProperties(int nProperty, int nSpecial = 0)
+        public ItemProperty ItemPropertyOnMonsterHitProperties(int nProperty, int nSpecial = 0)
         {
             return global::NWN.Core.NWScript.ItemPropertyOnMonsterHitProperties(nProperty, nSpecial);
         }
@@ -927,7 +927,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nModifier">The resistance bonus (1-50)</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyTurnResistance(int nModifier)
+        public ItemProperty ItemPropertyTurnResistance(int nModifier)
         {
             return global::NWN.Core.NWScript.ItemPropertyTurnResistance(nModifier);
         }
@@ -938,7 +938,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nDamage">The damage bonus constant</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyMassiveCritical(ItemPropertyDamageBonusType nDamage)
+        public ItemProperty ItemPropertyMassiveCritical(ItemPropertyDamageBonusType nDamage)
         {
             return global::NWN.Core.NWScript.ItemPropertyMassiveCritical((int)nDamage);
         }
@@ -947,7 +947,7 @@ namespace SWLOR.NWN.API.NWScript
         /// Returns an item property free action.
         /// </summary>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyFreeAction()
+        public ItemProperty ItemPropertyFreeAction()
         {
             return global::NWN.Core.NWScript.ItemPropertyFreeAction();
         }
@@ -959,7 +959,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nDamage">The monster damage constant</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyMonsterDamage(ItemPropertyMonsterDamageType nDamage)
+        public ItemProperty ItemPropertyMonsterDamage(ItemPropertyMonsterDamageType nDamage)
         {
             return global::NWN.Core.NWScript.ItemPropertyMonsterDamage((int)nDamage);
         }
@@ -972,7 +972,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nLevel">The spell level (1-9)</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyImmunityToSpellLevel(int nLevel)
+        public ItemProperty ItemPropertyImmunityToSpellLevel(int nLevel)
         {
             return global::NWN.Core.NWScript.ItemPropertyImmunityToSpellLevel(nLevel);
         }
@@ -983,7 +983,7 @@ namespace SWLOR.NWN.API.NWScript
         /// This will apply the special walk animation to the user.
         /// </summary>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertySpecialWalk()
+        public ItemProperty ItemPropertySpecialWalk()
         {
             return global::NWN.Core.NWScript.ItemPropertySpecialWalk(0);
         }
@@ -995,7 +995,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nModifier">The kit level modifier (1-12)</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyHealersKit(int nModifier)
+        public ItemProperty ItemPropertyHealersKit(int nModifier)
         {
             return global::NWN.Core.NWScript.ItemPropertyHealersKit(nModifier);
         }
@@ -1006,7 +1006,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nWeight">The weight increase constant</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyWeightIncrease(ItemPropertyWeightIncreaseType nWeight)
+        public ItemProperty ItemPropertyWeightIncrease(ItemPropertyWeightIncreaseType nWeight)
         {
             return global::NWN.Core.NWScript.ItemPropertyWeightIncrease((int)nWeight);
         }
@@ -1017,7 +1017,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nProperty">The item property to get the tag from</param>
         /// <returns>The string tag, or empty string if no tag is set</returns>
-        public static string GetItemPropertyTag(ItemProperty nProperty)
+        public string GetItemPropertyTag(ItemProperty nProperty)
         {
             return global::NWN.Core.NWScript.GetItemPropertyTag(nProperty);
         }
@@ -1028,7 +1028,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="iProp">The item property to get the cost table from</param>
         /// <returns>The cost table number</returns>
-        public static int GetItemPropertyCostTable(ItemProperty iProp)
+        public int GetItemPropertyCostTable(ItemProperty iProp)
         {
             return global::NWN.Core.NWScript.GetItemPropertyCostTable(iProp);
         }
@@ -1039,7 +1039,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="iProp">The item property to get the cost table value from</param>
         /// <returns>The cost table value</returns>
-        public static int GetItemPropertyCostTableValue(ItemProperty iProp)
+        public int GetItemPropertyCostTableValue(ItemProperty iProp)
         {
             return global::NWN.Core.NWScript.GetItemPropertyCostTableValue(iProp);
         }
@@ -1050,7 +1050,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="iProp">The item property to get the param1 from</param>
         /// <returns>The param1 number</returns>
-        public static int GetItemPropertyParam1(ItemProperty iProp)
+        public int GetItemPropertyParam1(ItemProperty iProp)
         {
             return global::NWN.Core.NWScript.GetItemPropertyParam1(iProp);
         }
@@ -1061,7 +1061,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="iProp">The item property to get the param1 value from</param>
         /// <returns>The param1 value</returns>
-        public static int GetItemPropertyParam1Value(ItemProperty iProp)
+        public int GetItemPropertyParam1Value(ItemProperty iProp)
         {
             return global::NWN.Core.NWScript.GetItemPropertyParam1Value(iProp);
         }
@@ -1089,7 +1089,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nNewValue">The new value</param>
         /// <param name="bCopyVars">Whether to copy variables (defaults to false)</param>
         /// <returns>The new item</returns>
-        public static uint CopyItemAndModify(uint oItem, ItemModelColorType nType, int nIndex, int nNewValue,
+        public uint CopyItemAndModify(uint oItem, ItemModelColorType nType, int nIndex, int nNewValue,
             bool bCopyVars = false)
         {
             return global::NWN.Core.NWScript.CopyItemAndModify(oItem, (int)nType, nIndex, nNewValue, bCopyVars ? 1 : 0);
@@ -1103,7 +1103,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nSpellType">The spell type constant</param>
         /// <param name="nLevel">The spell level</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyOnHitCastSpell(ItemPropertyOnHitCastSpellType nSpellType, int nLevel)
+        public ItemProperty ItemPropertyOnHitCastSpell(ItemPropertyOnHitCastSpellType nSpellType, int nLevel)
         {
             return global::NWN.Core.NWScript.ItemPropertyOnHitCastSpell((int)nSpellType, nLevel);
         }
@@ -1114,7 +1114,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="iProperty">The item property to get the sub type from</param>
         /// <returns>The sub type number</returns>
-        public static int GetItemPropertySubType(ItemProperty iProperty)
+        public int GetItemPropertySubType(ItemProperty iProperty)
         {
             return global::NWN.Core.NWScript.GetItemPropertySubType(iProperty);
         }
@@ -1126,7 +1126,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nProperty">The item property to tag</param>
         /// <param name="sNewTag">The new tag string</param>
         /// <returns>The tagged item property</returns>
-        public static ItemProperty TagItemProperty(ItemProperty nProperty, string sNewTag)
+        public ItemProperty TagItemProperty(ItemProperty nProperty, string sNewTag)
         {
             return global::NWN.Core.NWScript.TagItemProperty(nProperty, sNewTag);
         }
@@ -1137,7 +1137,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nProperty">The item property to get the duration from</param>
         /// <returns>The total duration in seconds</returns>
-        public static int GetItemPropertyDuration(ItemProperty nProperty)
+        public int GetItemPropertyDuration(ItemProperty nProperty)
         {
             return global::NWN.Core.NWScript.GetItemPropertyDuration(nProperty);
         }
@@ -1148,7 +1148,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nProperty">The item property to get the remaining duration from</param>
         /// <returns>The remaining duration in seconds</returns>
-        public static int GetItemPropertyDurationRemaining(ItemProperty nProperty)
+        public int GetItemPropertyDurationRemaining(ItemProperty nProperty)
         {
             return global::NWN.Core.NWScript.GetItemPropertyDurationRemaining(nProperty);
         }
@@ -1161,7 +1161,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nMaterialType">The material type (0-77)</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyMaterial(int nMaterialType)
+        public ItemProperty ItemPropertyMaterial(int nMaterialType)
         {
             return global::NWN.Core.NWScript.ItemPropertyMaterial(nMaterialType);
         }
@@ -1175,7 +1175,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nQuality">The quality constant</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyQuality(ItemPropertyQualityType nQuality)
+        public ItemProperty ItemPropertyQuality(ItemPropertyQualityType nQuality)
         {
             return global::NWN.Core.NWScript.ItemPropertyQuality((int)nQuality);
         }
@@ -1189,7 +1189,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nAdditionalProperty">The additional property constant</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyAdditional(ItemPropertyAdditionalType nAdditionalProperty)
+        public ItemProperty ItemPropertyAdditional(ItemPropertyAdditionalType nAdditionalProperty)
         {
             return global::NWN.Core.NWScript.ItemPropertyAdditional((int)nAdditionalProperty);
         }
@@ -1200,7 +1200,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nModLevel">The arcane spell failure modification level</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyArcaneSpellFailure(ItemPropertyArcaneSpellFailureType nModLevel)
+        public ItemProperty ItemPropertyArcaneSpellFailure(ItemPropertyArcaneSpellFailureType nModLevel)
         {
             return global::NWN.Core.NWScript.ItemPropertyArcaneSpellFailure((int)nModLevel);
         }
@@ -1211,7 +1211,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nEffect">The visual effect constant</param>
         /// <returns>The item property</returns>
-        public static ItemProperty ItemPropertyVisualEffect(ItemVisualType nEffect)
+        public ItemProperty ItemPropertyVisualEffect(ItemVisualType nEffect)
         {
             return global::NWN.Core.NWScript.ItemPropertyVisualEffect((int)nEffect);
         }
@@ -1224,7 +1224,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oItem">The item to check</param>
         /// <param name="ip">The item property to check</param>
         /// <returns>The number of uses per day remaining</returns>
-        public static int GetItemPropertyUsesPerDayRemaining(uint oItem, IntPtr ip)
+        public int GetItemPropertyUsesPerDayRemaining(uint oItem, IntPtr ip)
         {
             return global::NWN.Core.NWScript.GetItemPropertyUsesPerDayRemaining(oItem, ip);
         }
@@ -1237,7 +1237,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oItem">The item to set</param>
         /// <param name="ip">The item property to set</param>
         /// <param name="nUsesPerDay">The number of uses per day</param>
-        public static void SetItemPropertyUsesPerDayRemaining(uint oItem, IntPtr ip, int nUsesPerDay)
+        public void SetItemPropertyUsesPerDayRemaining(uint oItem, IntPtr ip, int nUsesPerDay)
         {
             global::NWN.Core.NWScript.SetItemPropertyUsesPerDayRemaining(oItem, ip, nUsesPerDay);
         }
@@ -1252,7 +1252,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nCostTableValue">The cost table value (defaults to -1)</param>
         /// <param name="nParam1Value">The param1 value (defaults to -1)</param>
         /// <returns>The custom item property</returns>
-        public static ItemProperty ItemPropertyCustom(ItemPropertyType nType, int nSubType = -1, int nCostTableValue = -1, int nParam1Value = -1)
+        public ItemProperty ItemPropertyCustom(ItemPropertyType nType, int nSubType = -1, int nCostTableValue = -1, int nParam1Value = -1)
         {
             return global::NWN.Core.NWScript.ItemPropertyCustom((int)nType, nSubType, nCostTableValue, nParam1Value);
         }

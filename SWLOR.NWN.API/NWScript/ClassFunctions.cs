@@ -2,7 +2,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.NWN.API.NWScript
 {
-    public partial class NWScript
+    public partial class NWScriptService
     {
         /// <summary>
         /// Returns the creature's spell school specialization in the specified class.
@@ -11,7 +11,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="playerClass">The class to get the specialization for</param>
         /// <returns>The spell school specialization (SPELL_SCHOOL_* constants). Returns -1 on error</returns>
         /// <remarks>Unless custom content is used, only Wizards have spell schools.</remarks>
-        public static SpellSchool GetSpecialization(uint creature, ClassType playerClass)
+        public SpellSchool GetSpecialization(uint creature, ClassType playerClass)
         {
             return (SpellSchool)global::NWN.Core.NWScript.GetSpecialization(creature, (int)playerClass);
         }
@@ -24,7 +24,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="playerClass">The class to get the domain for (default: ClassType.Cleric)</param>
         /// <returns>The domain (DOMAIN_* constants). Returns -1 on error</returns>
         /// <remarks>Unless custom content is used, only Clerics have domains.</remarks>
-        public static ClericDomainType GetDomain(uint creature, int DomainIndex = 1, ClassType playerClass = ClassType.Cleric)
+        public ClericDomainType GetDomain(uint creature, int DomainIndex = 1, ClassType playerClass = ClassType.Cleric)
         {
             return (ClericDomainType)global::NWN.Core.NWScript.GetDomain(creature, DomainIndex, (int)playerClass);
         }

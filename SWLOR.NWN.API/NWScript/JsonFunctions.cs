@@ -3,7 +3,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.NWN.API.NWScript
 {
-    public partial class NWScript
+    public partial class NWScriptService
     {
         /// <summary>
         /// Parses the given string as a valid JSON value, and returns the corresponding type.
@@ -14,7 +14,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="jValue">The string to parse as JSON</param>
         /// <returns>The parsed JSON value, or JSON_TYPE_NULL on error</returns>
-        public static Json JsonParse(string jValue)
+        public Json JsonParse(string jValue)
         {
             return global::NWN.Core.NWScript.JsonParse(jValue);
         }
@@ -28,7 +28,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="jValue">The JSON value to dump</param>
         /// <param name="nIndent">The indentation level for pretty-printing (defaults to -1)</param>
         /// <returns>The JSON string, or error description on error</returns>
-        public static string JsonDump(Json jValue, int nIndent = -1)
+        public string JsonDump(Json jValue, int nIndent = -1)
         {
             return global::NWN.Core.NWScript.JsonDump(jValue, nIndent);
         }
@@ -39,7 +39,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="jValue">The JSON value to get the type of</param>
         /// <returns>The JSON type, or JSON_TYPE_NULL if the value is empty</returns>
-        public static JsonType JsonGetType(Json jValue)
+        public JsonType JsonGetType(Json jValue)
         {
             return (JsonType)global::NWN.Core.NWScript.JsonGetType(jValue);
         }
@@ -53,7 +53,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="jValue">The JSON value to get the length of</param>
         /// <returns>The length of the JSON value</returns>
-        public static int JsonGetLength(Json jValue)
+        public int JsonGetLength(Json jValue)
         {
             return global::NWN.Core.NWScript.JsonGetLength(jValue);
         }
@@ -64,7 +64,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="jValue">The JSON value to get the error for</param>
         /// <returns>The error message, or empty string if no error</returns>
-        public static string JsonGetError(Json jValue)
+        public string JsonGetError(Json jValue)
         {
             return global::NWN.Core.NWScript.JsonGetError(jValue);
         }
@@ -74,7 +74,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="sError">Optional error message (defaults to empty string)</param>
         /// <returns>A NULL JSON value</returns>
-        public static Json JsonNull(string sError = "")
+        public Json JsonNull(string sError = "")
         {
             return global::NWN.Core.NWScript.JsonNull(sError);
         }
@@ -83,7 +83,7 @@ namespace SWLOR.NWN.API.NWScript
         /// Creates an empty JSON object.
         /// </summary>
         /// <returns>An empty JSON object</returns>
-        public static Json JsonObject()
+        public Json JsonObject()
         {
             return global::NWN.Core.NWScript.JsonObject();
         }
@@ -92,7 +92,7 @@ namespace SWLOR.NWN.API.NWScript
         /// Creates an empty JSON array.
         /// </summary>
         /// <returns>An empty JSON array</returns>
-        public static Json JsonArray()
+        public Json JsonArray()
         {
             return global::NWN.Core.NWScript.JsonArray();
         }
@@ -103,7 +103,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="sValue">The string value to create</param>
         /// <returns>A JSON string value</returns>
-        public static Json JsonString(string sValue)
+        public Json JsonString(string sValue)
         {
             return global::NWN.Core.NWScript.JsonString(sValue);
         }
@@ -113,7 +113,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nValue">The integer value to create</param>
         /// <returns>A JSON integer value</returns>
-        public static Json JsonInt(int nValue)
+        public Json JsonInt(int nValue)
         {
             return global::NWN.Core.NWScript.JsonInt(nValue);
         }
@@ -123,7 +123,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="fValue">The float value to create</param>
         /// <returns>A JSON float value</returns>
-        public static Json JsonFloat(float fValue)
+        public Json JsonFloat(float fValue)
         {
             return global::NWN.Core.NWScript.JsonFloat(fValue);
         }
@@ -133,7 +133,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="bValue">The boolean value to create</param>
         /// <returns>A JSON boolean value</returns>
-        public static Json JsonBool(bool bValue)
+        public Json JsonBool(bool bValue)
         {
             return global::NWN.Core.NWScript.JsonBool(bValue ? 1 : 0);
         }
@@ -145,7 +145,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="jValue">The JSON value to get the string representation of</param>
         /// <returns>The string representation, or empty string if not representable</returns>
-        public static string JsonGetString(Json jValue)
+        public string JsonGetString(Json jValue)
         {
             return global::NWN.Core.NWScript.JsonGetString(jValue);
         }
@@ -160,7 +160,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="jValue">The JSON value to get the integer representation of</param>
         /// <returns>The integer representation, or 0 if not representable</returns>
-        public static int JsonGetInt(Json jValue)
+        public int JsonGetInt(Json jValue)
         {
             return global::NWN.Core.NWScript.JsonGetInt(jValue);
         }
@@ -174,7 +174,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="jValue">The JSON value to get the float representation of</param>
         /// <returns>The float representation, or 0.0 if not representable</returns>
-        public static float JsonGetFloat(Json jValue)
+        public float JsonGetFloat(Json jValue)
         {
             return global::NWN.Core.NWScript.JsonGetFloat(jValue);
         }
@@ -185,7 +185,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="jObject">The JSON object to get keys from</param>
         /// <returns>A JSON array of keys, or empty array on error</returns>
-        public static Json JsonObjectKeys(Json jObject)
+        public Json JsonObjectKeys(Json jObject)
         {
             return global::NWN.Core.NWScript.JsonObjectKeys(jObject);
         }
@@ -197,7 +197,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="jObject">The JSON object to get the key from</param>
         /// <param name="sKey">The key to retrieve</param>
         /// <returns>The key value, or null JSON value on error</returns>
-        public static Json JsonObjectGet(Json jObject, string sKey)
+        public Json JsonObjectGet(Json jObject, string sKey)
         {
             return global::NWN.Core.NWScript.JsonObjectGet(jObject, sKey);
         }
@@ -210,7 +210,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="sKey">The key to set</param>
         /// <param name="jValue">The value to set</param>
         /// <returns>A modified copy of the object, or null JSON value on error</returns>
-        public static Json JsonObjectSet(Json jObject, string sKey, Json jValue)
+        public Json JsonObjectSet(Json jObject, string sKey, Json jValue)
         {
             return global::NWN.Core.NWScript.JsonObjectSet(jObject, sKey, jValue);
         }
@@ -222,7 +222,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="jObject">The JSON object to modify</param>
         /// <param name="sKey">The key to delete</param>
         /// <returns>A modified copy of the object, or null JSON value on error</returns>
-        public static Json JsonObjectDel(Json jObject, string sKey)
+        public Json JsonObjectDel(Json jObject, string sKey)
         {
             return global::NWN.Core.NWScript.JsonObjectDel(jObject, sKey);
         }
@@ -234,7 +234,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="jArray">The JSON array to get from</param>
         /// <param name="nIndex">The index position</param>
         /// <returns>The JSON object at the index, or null JSON value on error</returns>
-        public static Json JsonArrayGet(Json jArray, int nIndex)
+        public Json JsonArrayGet(Json jArray, int nIndex)
         {
             return global::NWN.Core.NWScript.JsonArrayGet(jArray, nIndex);
         }
@@ -248,7 +248,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nIndex">The index position to set</param>
         /// <param name="jValue">The value to set</param>
         /// <returns>A modified copy of the array, or null JSON value on error</returns>
-        public static Json JsonArraySet(Json jArray, int nIndex, Json jValue)
+        public Json JsonArraySet(Json jArray, int nIndex, Json jValue)
         {
             return global::NWN.Core.NWScript.JsonArraySet(jArray, nIndex, jValue);
         }
@@ -265,7 +265,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="jValue">The value to insert</param>
         /// <param name="nIndex">The index position to insert at (defaults to -1)</param>
         /// <returns>A modified copy of the array, or null JSON value on error</returns>
-        public static Json JsonArrayInsert(Json jArray, Json jValue, int nIndex = -1)
+        public Json JsonArrayInsert(Json jArray, Json jValue, int nIndex = -1)
         {
             return global::NWN.Core.NWScript.JsonArrayInsert(jArray, jValue, nIndex);
         }
@@ -279,7 +279,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="jArray">The JSON array to modify</param>
         /// <param name="nIndex">The index position to remove</param>
         /// <returns>A modified copy of the array, or null JSON value on error</returns>
-        public static Json JsonArrayDel(Json jArray, int nIndex)
+        public Json JsonArrayDel(Json jArray, int nIndex)
         {
             return global::NWN.Core.NWScript.JsonArrayDel(jArray, nIndex);
         }
@@ -295,7 +295,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oObject">The object to transform</param>
         /// <param name="bSaveObjectState">Whether to save object state (defaults to false)</param>
         /// <returns>The JSON structure, or null JSON type on error</returns>
-        public static Json ObjectToJson(uint oObject, bool bSaveObjectState = false)
+        public Json ObjectToJson(uint oObject, bool bSaveObjectState = false)
         {
             return global::NWN.Core.NWScript.ObjectToJson(oObject, bSaveObjectState ? 1 : 0);
         }
@@ -312,7 +312,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oOwner">The owner of the object (defaults to OBJECT_SELF)</param>
         /// <param name="bLoadObjectState">Whether to load object state (defaults to false)</param>
         /// <returns>The created object, or OBJECT_INVALID on error</returns>
-        public static uint JsonToObject(Json jObject, Location locLocation, uint oOwner = OBJECT_INVALID, bool bLoadObjectState = false)
+        public uint JsonToObject(Json jObject, Location locLocation, uint oOwner = OBJECT_INVALID, bool bLoadObjectState = false)
         {
             return global::NWN.Core.NWScript.JsonToObject(jObject, locLocation, oOwner, bLoadObjectState ? 1 : 0);
         }
@@ -325,7 +325,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="jData">The JSON data to search</param>
         /// <param name="sPointer">The JSON pointer path</param>
         /// <returns>The element at the pointer, or null JSON value on error</returns>
-        public static Json JsonPointer(Json jData, string sPointer)
+        public Json JsonPointer(Json jData, string sPointer)
         {
             return global::NWN.Core.NWScript.JsonPointer(jData, sPointer);
         }
@@ -345,7 +345,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="jData">The JSON data to patch</param>
         /// <param name="jPatch">The patch array</param>
         /// <returns>A modified copy of the data, or null JSON value on error</returns>
-        public static Json JsonPatch(Json jData, Json jPatch)
+        public Json JsonPatch(Json jData, Json jPatch)
         {
             return global::NWN.Core.NWScript.JsonPatch(jData, jPatch);
         }
@@ -357,7 +357,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="jLHS">The left-hand side JSON object</param>
         /// <param name="jRHS">The right-hand side JSON object</param>
         /// <returns>The diff as a JSON structure, or null JSON value on error</returns>
-        public static Json JsonDiff(Json jLHS, Json jRHS)
+        public Json JsonDiff(Json jLHS, Json jRHS)
         {
             return global::NWN.Core.NWScript.JsonDiff(jLHS, jRHS);
         }
@@ -371,7 +371,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="jData">The JSON data to merge into</param>
         /// <param name="jMerge">The JSON data to merge</param>
         /// <returns>A modified copy with merged data, or null JSON value on error</returns>
-        public static Json JsonMerge(Json jData, Json jMerge)
+        public Json JsonMerge(Json jData, Json jMerge)
         {
             return global::NWN.Core.NWScript.JsonMerge(jData, jMerge);
         }
@@ -382,7 +382,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oObject">The object to get the variable from</param>
         /// <param name="sVarName">The variable name</param>
         /// <returns>The JSON variable value, or JSON null type on error</returns>
-        public static Json GetLocalJson(uint oObject, string sVarName)
+        public Json GetLocalJson(uint oObject, string sVarName)
         {
             return global::NWN.Core.NWScript.GetLocalJson(oObject, sVarName);
         }
@@ -393,7 +393,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oObject">The object to set the variable on</param>
         /// <param name="sVarName">The variable name</param>
         /// <param name="jValue">The JSON value to set</param>
-        public static void SetLocalJson(uint oObject, string sVarName, Json jValue)
+        public void SetLocalJson(uint oObject, string sVarName, Json jValue)
         {
             global::NWN.Core.NWScript.SetLocalJson(oObject, sVarName, jValue);
         }
@@ -403,7 +403,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oObject">The object to delete the variable from</param>
         /// <param name="sVarName">The variable name to delete</param>
-        public static void DeleteLocalJson(uint oObject, string sVarName)
+        public void DeleteLocalJson(uint oObject, string sVarName)
         {
             global::NWN.Core.NWScript.DeleteLocalJson(oObject, sVarName);
         }
@@ -418,7 +418,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="sResRef">The resource reference</param>
         /// <param name="nResType">The resource type</param>
         /// <returns>A valid GFF-type JSON structure, or null value on error</returns>
-        public static Json TemplateToJson(string sResRef, ResType nResType)
+        public Json TemplateToJson(string sResRef, ResType nResType)
         {
             return global::NWN.Core.NWScript.TemplateToJson(sResRef, (int)nResType);
         }
@@ -437,7 +437,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="jArray">The JSON array to transform</param>
         /// <param name="nTransform">The transformation to apply</param>
         /// <returns>A modified copy of the array</returns>
-        public static Json JsonArrayTransform(Json jArray, JsonArraySortType nTransform)
+        public Json JsonArrayTransform(Json jArray, JsonArraySortType nTransform)
         {
             return global::NWN.Core.NWScript.JsonArrayTransform(jArray, (int)nTransform);
         }
@@ -453,7 +453,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nNth">The nth match to find (defaults to 0)</param>
         /// <param name="nConditional">The conditional type for matching (defaults to Equal)</param>
         /// <returns>The index or key of the match, or null if not found</returns>
-        public static Json JsonFind(
+        public Json JsonFind(
             Json jHaystack,
             Json jNeedle,
             int nNth = 0,
@@ -476,7 +476,7 @@ namespace SWLOR.NWN.API.NWScript
         ///  JsonArrayGetRange(a, 1, 1)    // => [1]
         /// Returns a null type on error, including type mismatches.
         /// </summary>
-        public static Json JsonArrayGetRange(Json jArray, int nBeginIndex, int nEndIndex)
+        public Json JsonArrayGetRange(Json jArray, int nBeginIndex, int nEndIndex)
         {
             return global::NWN.Core.NWScript.JsonArrayGetRange(jArray, nBeginIndex, nEndIndex);
         }
@@ -495,7 +495,7 @@ namespace SWLOR.NWN.API.NWScript
         /// JSON_SET_SYMMETRIC_DIFFERENCE (v ^ o):
         ///   Returns a new array containing all elements present in either array, but not both.
         /// </summary>
-        public static Json JsonSetOp(Json jValue, JsonSetType nOp, Json jOther)
+        public Json JsonSetOp(Json jValue, JsonSetType nOp, Json jOther)
         {
             return global::NWN.Core.NWScript.JsonSetOp(jValue, (int)nOp, jOther);
         }
@@ -515,7 +515,7 @@ namespace SWLOR.NWN.API.NWScript
         /// * RegExpMatch("^test", "test value")         -> ["test"]
         /// * RegExpMatch("^(test) (.+)$", "test value") -> ["test value", "test", "value"]
         /// </summary>
-        public static Json RegExpMatch(
+        public Json RegExpMatch(
             string sRegExp,
             string sValue,
             RegularExpressionType nSyntaxFlags = RegularExpressionType.Ecmascript,
@@ -536,7 +536,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nSyntaxFlags">A mask of REGEXP_* flags (defaults to Ecmascript)</param>
         /// <param name="nMatchFlags">A mask of REGEXP_MATCH_* and REGEXP_FORMAT_* flags (defaults to Default)</param>
         /// <returns>A JSON array of match arrays, or JSON_NULL on error</returns>
-        public static Json RegExpIterate(
+        public Json RegExpIterate(
             string sRegExp,
             string sValue,
             RegularExpressionType nSyntaxFlags = RegularExpressionType.Ecmascript,

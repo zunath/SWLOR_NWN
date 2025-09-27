@@ -2,7 +2,7 @@
 
 namespace SWLOR.NWN.API.NWScript
 {
-    public partial class NWScript
+    public partial class NWScriptService
     {
 
         /// <summary>
@@ -17,7 +17,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="sResRef">The resref of the .jui file</param>
         /// <param name="sWindowId">The window ID (defaults to empty string)</param>
         /// <returns>The window token on success (>0), or 0 on error</returns>
-        public static int NuiCreateFromResRef(uint oPlayer, string sResRef, string sWindowId = "")
+        public int NuiCreateFromResRef(uint oPlayer, string sResRef, string sWindowId = "")
         {
             return global::NWN.Core.NWScript.NuiCreateFromResRef(oPlayer, sResRef, sWindowId);
         }
@@ -33,7 +33,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="jNui">The NUI JSON definition</param>
         /// <param name="sWindowId">The window ID (defaults to empty string)</param>
         /// <returns>The window token on success (>0), or 0 on error</returns>
-        public static int NuiCreate(uint oPlayer, Json jNui, string sWindowId = "")
+        public int NuiCreate(uint oPlayer, Json jNui, string sWindowId = "")
         {
             return global::NWN.Core.NWScript.NuiCreate(oPlayer, jNui, sWindowId);
         }
@@ -46,7 +46,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oPlayer">The player to look up the window for</param>
         /// <param name="sId">The window ID to look up</param>
         /// <returns>The token if found, or 0</returns>
-        public static int NuiFindWindow(uint oPlayer, string sId)
+        public int NuiFindWindow(uint oPlayer, string sId)
         {
             return global::NWN.Core.NWScript.NuiFindWindow(oPlayer, sId);
         }
@@ -59,7 +59,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oPlayer">The player to destroy the window for</param>
         /// <param name="nUiToken">The window token to destroy</param>
-        public static void NuiDestroy(uint oPlayer, int nUiToken)
+        public void NuiDestroy(uint oPlayer, int nUiToken)
         {
             global::NWN.Core.NWScript.NuiDestroy(oPlayer, nUiToken);
         }
@@ -68,7 +68,7 @@ namespace SWLOR.NWN.API.NWScript
         /// Returns the originating player of the current event.
         /// </summary>
         /// <returns>The originating player of the current event</returns>
-        public static uint NuiGetEventPlayer()
+        public uint NuiGetEventPlayer()
         {
             return global::NWN.Core.NWScript.NuiGetEventPlayer();
         }
@@ -77,7 +77,7 @@ namespace SWLOR.NWN.API.NWScript
         /// Gets the window token of the current event (or 0 if not in an event).
         /// </summary>
         /// <returns>The window token of the current event, or 0 if not in an event</returns>
-        public static int NuiGetEventWindow()
+        public int NuiGetEventWindow()
         {
             return global::NWN.Core.NWScript.NuiGetEventWindow();
         }
@@ -87,7 +87,7 @@ namespace SWLOR.NWN.API.NWScript
         /// See nw_inc_nui.nss for full documentation of all events.
         /// </summary>
         /// <returns>The event type of the current event</returns>
-        public static string NuiGetEventType()
+        public string NuiGetEventType()
         {
             return global::NWN.Core.NWScript.NuiGetEventType();
         }
@@ -96,7 +96,7 @@ namespace SWLOR.NWN.API.NWScript
         /// Returns the ID of the widget that triggered the event.
         /// </summary>
         /// <returns>The ID of the widget that triggered the event</returns>
-        public static string NuiGetEventElement()
+        public string NuiGetEventElement()
         {
             return global::NWN.Core.NWScript.NuiGetEventElement();
         }
@@ -106,7 +106,7 @@ namespace SWLOR.NWN.API.NWScript
         /// This can be used to get the index into an array, for example when rendering lists of buttons.
         /// </summary>
         /// <returns>The array index of the current event, or -1 if the event is not originating from within an array</returns>
-        public static int NuiGetEventArrayIndex()
+        public int NuiGetEventArrayIndex()
         {
             return global::NWN.Core.NWScript.NuiGetEventArrayIndex();
         }
@@ -117,7 +117,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oPlayer">The player to get the window ID for</param>
         /// <param name="nUiToken">The UI token</param>
         /// <returns>The window ID, or empty string on error or if the window has no ID</returns>
-        public static string NuiGetWindowId(uint oPlayer, int nUiToken)
+        public string NuiGetWindowId(uint oPlayer, int nUiToken)
         {
             return global::NWN.Core.NWScript.NuiGetWindowId(oPlayer, nUiToken);
         }
@@ -132,7 +132,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nUiToken">The UI token</param>
         /// <param name="sBindName">The bind name</param>
         /// <returns>A JSON value, or JSON null value if the bind does not exist</returns>
-        public static Json NuiGetBind(uint oPlayer, int nUiToken, string sBindName)
+        public Json NuiGetBind(uint oPlayer, int nUiToken, string sBindName)
         {
             return global::NWN.Core.NWScript.NuiGetBind(oPlayer, nUiToken, sBindName);
         }
@@ -153,7 +153,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nUiToken">The UI token</param>
         /// <param name="sBindName">The bind name</param>
         /// <param name="jValue">The JSON value to set</param>
-        public static void NuiSetBind(uint oPlayer, int nUiToken, string sBindName, Json jValue)
+        public void NuiSetBind(uint oPlayer, int nUiToken, string sBindName, Json jValue)
         {
             global::NWN.Core.NWScript.NuiSetBind(oPlayer, nUiToken, sBindName, jValue);
         }
@@ -166,7 +166,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nUiToken">The UI token</param>
         /// <param name="sElement">The element ID</param>
         /// <param name="jNui">The NUI JSON layout</param>
-        public static void NuiSetGroupLayout(uint oPlayer, int nUiToken, string sElement, Json jNui)
+        public void NuiSetGroupLayout(uint oPlayer, int nUiToken, string sElement, Json jNui)
         {
             global::NWN.Core.NWScript.NuiSetGroupLayout(oPlayer, nUiToken, sElement, jNui);
         }
@@ -181,7 +181,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="sBind">The bind name</param>
         /// <param name="bWatch">Whether to watch the bind</param>
         /// <returns>The result of the operation</returns>
-        public static int NuiSetBindWatch(uint oPlayer, int nUiToken, string sBind, bool bWatch)
+        public int NuiSetBindWatch(uint oPlayer, int nUiToken, string sBind, bool bWatch)
         {
             return global::NWN.Core.NWScript.NuiSetBindWatch(oPlayer, nUiToken, sBind, bWatch ? 1 : 0);
         }
@@ -194,7 +194,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oPlayer">The player to get the window for</param>
         /// <param name="nNth">The nth window (defaults to 0)</param>
         /// <returns>The nth window token, or 0</returns>
-        public static int NuiGetNthWindow(uint oPlayer, int nNth = 0)
+        public int NuiGetNthWindow(uint oPlayer, int nNth = 0)
         {
             return global::NWN.Core.NWScript.NuiGetNthWindow(oPlayer, nNth);
         }
@@ -209,7 +209,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="bWatched">Whether to iterate only watched binds</param>
         /// <param name="nNth">The nth bind (defaults to 0)</param>
         /// <returns>The nth bind name, or empty string</returns>
-        public static string NuiGetNthBind(uint oPlayer, int nToken, bool bWatched, int nNth = 0)
+        public string NuiGetNthBind(uint oPlayer, int nToken, bool bWatched, int nNth = 0)
         {
             return global::NWN.Core.NWScript.NuiGetNthBind(oPlayer, nToken, bWatched ? 1 : 0, nNth);
         }
@@ -218,7 +218,7 @@ namespace SWLOR.NWN.API.NWScript
         /// Returns the event payload, specific to the event.
         /// </summary>
         /// <returns>The event payload, or JsonNull if event has no payload</returns>
-        public static Json NuiGetEventPayload()
+        public Json NuiGetEventPayload()
         {
             return global::NWN.Core.NWScript.NuiGetEventPayload();
         }
@@ -229,7 +229,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oPlayer">The player to get the userdata for</param>
         /// <param name="nToken">The UI token</param>
         /// <returns>The userdata, or JsonNull if the window does not exist on the given player, or has no userdata set</returns>
-        public static Json NuiGetUserData(uint oPlayer, int nToken)
+        public Json NuiGetUserData(uint oPlayer, int nToken)
         {
             return global::NWN.Core.NWScript.NuiGetUserData(oPlayer, nToken);
         }
@@ -243,7 +243,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oPlayer">The player to set the userdata for</param>
         /// <param name="nToken">The UI token</param>
         /// <param name="jUserData">The JSON userdata to set</param>
-        public static void NuiSetUserData(uint oPlayer, int nToken, Json jUserData)
+        public void NuiSetUserData(uint oPlayer, int nToken, Json jUserData)
         {
             global::NWN.Core.NWScript.NuiSetUserData(oPlayer, nToken, jUserData);
         }

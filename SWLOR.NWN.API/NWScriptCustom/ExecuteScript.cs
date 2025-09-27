@@ -1,7 +1,7 @@
 // ReSharper disable once CheckNamespace
 namespace SWLOR.NWN.API.NWScript
 {
-    public partial class NWScript
+    public partial class NWScriptService
     {
         /// <summary>
         /// Make oTarget run sScript and then return execution to the calling script.
@@ -14,7 +14,7 @@ namespace SWLOR.NWN.API.NWScript
         /// This solves OBJECT_SELF corruption issues when executing C# scripts by bypassing
         /// the problematic NWScript round-trip.
         /// </summary>
-        public static void ExecuteScript(string sScript, uint oTarget)
+        public void ExecuteScript(string sScript, uint oTarget)
         {
             var provider = ScriptExecutionProvider.Current;
 

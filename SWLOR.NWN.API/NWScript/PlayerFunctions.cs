@@ -4,14 +4,14 @@ using SWLOR.NWN.API.NWScript.Constants;
 
 namespace SWLOR.NWN.API.NWScript
 {
-    public partial class NWScript
+    public partial class NWScriptService
     {
         /// <summary>
         /// Gets the current cutscene state of the player specified by the creature.
         /// </summary>
         /// <param name="oCreature">The creature to check (defaults to OBJECT_SELF)</param>
         /// <returns>TRUE if the player is in cutscene mode, FALSE if not in cutscene mode or on error</returns>
-        public static bool GetCutsceneMode(uint oCreature = OBJECT_INVALID)
+        public bool GetCutsceneMode(uint oCreature = OBJECT_INVALID)
         {
             if (oCreature == OBJECT_INVALID)
                 oCreature = OBJECT_SELF;
@@ -24,7 +24,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oPlayer">The player to set the camera height for</param>
         /// <param name="fHeight">The camera height (defaults to 0.0f)</param>
-        public static void SetCameraHeight(uint oPlayer, float fHeight = 0.0f)
+        public void SetCameraHeight(uint oPlayer, float fHeight = 0.0f)
         {
             global::NWN.Core.NWScript.SetCameraHeight(oPlayer, fHeight);
         }
@@ -34,7 +34,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oPlayer">Which player to change the lighting for</param>
         /// <param name="fTransitionTime">How long the transition should take (defaults to 0.0f)</param>
-        public static void DayToNight(uint oPlayer, float fTransitionTime = 0.0f)
+        public void DayToNight(uint oPlayer, float fTransitionTime = 0.0f)
         {
             global::NWN.Core.NWScript.DayToNight(oPlayer, fTransitionTime);
         }
@@ -44,7 +44,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oPlayer">Which player to change the lighting for</param>
         /// <param name="fTransitionTime">How long the transition should take (defaults to 0.0f)</param>
-        public static void NightToDay(uint oPlayer, float fTransitionTime = 0.0f)
+        public void NightToDay(uint oPlayer, float fTransitionTime = 0.0f)
         {
             global::NWN.Core.NWScript.NightToDay(oPlayer, fTransitionTime);
         }
@@ -55,7 +55,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oCreature">The creature to get the camera move rate for</param>
         /// <returns>The movement rate factor between 0.1 and 2.0</returns>
-        public static float GetCutsceneCameraMoveRate(uint oCreature)
+        public float GetCutsceneCameraMoveRate(uint oCreature)
         {
             return global::NWN.Core.NWScript.GetCutsceneCameraMoveRate(oCreature);
         }
@@ -66,7 +66,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oCreature">The creature to set the camera move rate for</param>
         /// <param name="fRate">The movement rate factor (between 0.1 and 2.0)</param>
-        public static void SetCutsceneCameraMoveRate(uint oCreature, float fRate)
+        public void SetCutsceneCameraMoveRate(uint oCreature, float fRate)
         {
             global::NWN.Core.NWScript.SetCutsceneCameraMoveRate(oCreature, fRate);
         }
@@ -76,7 +76,7 @@ namespace SWLOR.NWN.API.NWScript
         /// pop-up box to appear for the object specified.
         /// </summary>
         /// <param name="oExamine">The object to examine</param>
-        public static void ActionExamine(uint oExamine)
+        public void ActionExamine(uint oExamine)
         {
             global::NWN.Core.NWScript.ActionExamine(oExamine);
         }
@@ -85,7 +85,7 @@ namespace SWLOR.NWN.API.NWScript
         /// Use this to get the item last equipped by a player character in OnPlayerEquipItem.
         /// </summary>
         /// <returns>The item last equipped</returns>
-        public static uint GetPCItemLastEquipped()
+        public uint GetPCItemLastEquipped()
         {
             return global::NWN.Core.NWScript.GetPCItemLastEquipped();
         }
@@ -94,7 +94,7 @@ namespace SWLOR.NWN.API.NWScript
         /// Use this to get the player character who last equipped an item in OnPlayerEquipItem.
         /// </summary>
         /// <returns>The player character who last equipped an item</returns>
-        public static uint GetPCItemLastEquippedBy()
+        public uint GetPCItemLastEquippedBy()
         {
             return global::NWN.Core.NWScript.GetPCItemLastEquippedBy();
         }
@@ -103,7 +103,7 @@ namespace SWLOR.NWN.API.NWScript
         /// Use this to get the item last unequipped by a player character in OnPlayerEquipItem.
         /// </summary>
         /// <returns>The item last unequipped</returns>
-        public static uint GetPCItemLastUnequipped()
+        public uint GetPCItemLastUnequipped()
         {
             return global::NWN.Core.NWScript.GetPCItemLastUnequipped();
         }
@@ -112,7 +112,7 @@ namespace SWLOR.NWN.API.NWScript
         /// Use this to get the player character who last unequipped an item in OnPlayerUnEquipItem.
         /// </summary>
         /// <returns>The player character who last unequipped an item</returns>
-        public static uint GetPCItemLastUnequippedBy()
+        public uint GetPCItemLastUnequippedBy()
         {
             return global::NWN.Core.NWScript.GetPCItemLastUnequippedBy();
         }
@@ -122,7 +122,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oPlayer">The player to send the message to</param>
         /// <param name="nStrRef">The string reference to send</param>
-        public static void SendMessageToPCByStrRef(uint oPlayer, int nStrRef)
+        public void SendMessageToPCByStrRef(uint oPlayer, int nStrRef)
         {
             global::NWN.Core.NWScript.SendMessageToPCByStrRef(oPlayer, nStrRef);
         }
@@ -134,7 +134,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oCreature">Creature to view</param>
         /// <param name="oPlayer">The owner of this creature will see the panel pop up</param>
-        public static void OpenInventory(uint oCreature, uint oPlayer)
+        public void OpenInventory(uint oCreature, uint oPlayer)
         {
             global::NWN.Core.NWScript.OpenInventory(oCreature, oPlayer);
         }
@@ -142,7 +142,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <summary>
         /// Stores the current camera mode and position so that it can be restored (using RestoreCameraFacing()).
         /// </summary>
-        public static void StoreCameraFacing()
+        public void StoreCameraFacing()
         {
             global::NWN.Core.NWScript.StoreCameraFacing();
         }
@@ -151,7 +151,7 @@ namespace SWLOR.NWN.API.NWScript
         /// Restores the camera mode and position to what they were last time StoreCameraFacing was called.
         /// RestoreCameraFacing can only be called once, and must correspond to a previous call to StoreCameraFacing.
         /// </summary>
-        public static void RestoreCameraFacing()
+        public void RestoreCameraFacing()
         {
             global::NWN.Core.NWScript.RestoreCameraFacing();
         }
@@ -161,7 +161,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oCreature">Creature controlled by player that should fade from black</param>
         /// <param name="fSpeed">The fade speed (defaults to FadeSpeed.Medium)</param>
-        public static void FadeFromBlack(uint oCreature, float fSpeed = FadeSpeed.Medium)
+        public void FadeFromBlack(uint oCreature, float fSpeed = FadeSpeed.Medium)
         {
             global::NWN.Core.NWScript.FadeFromBlack(oCreature, fSpeed);
         }
@@ -171,7 +171,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oCreature">Creature controlled by player that should fade to black</param>
         /// <param name="fSpeed">The fade speed (defaults to FadeSpeed.Medium)</param>
-        public static void FadeToBlack(uint oCreature, float fSpeed = FadeSpeed.Medium)
+        public void FadeToBlack(uint oCreature, float fSpeed = FadeSpeed.Medium)
         {
             global::NWN.Core.NWScript.FadeToBlack(oCreature, fSpeed);
         }
@@ -180,7 +180,7 @@ namespace SWLOR.NWN.API.NWScript
         /// Removes any fading or black screen.
         /// </summary>
         /// <param name="oCreature">Creature controlled by player that should be cleared</param>
-        public static void StopFade(uint oCreature)
+        public void StopFade(uint oCreature)
         {
             global::NWN.Core.NWScript.StopFade(oCreature);
         }
@@ -190,7 +190,7 @@ namespace SWLOR.NWN.API.NWScript
         /// Can be cleared by either doing a FadeFromBlack, or by calling StopFade.
         /// </summary>
         /// <param name="oCreature">Creature controlled by player that should see black screen</param>
-        public static void BlackScreen(uint oCreature)
+        public void BlackScreen(uint oCreature)
         {
             global::NWN.Core.NWScript.BlackScreen(oCreature);
         }
@@ -206,7 +206,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nInCutscene">TRUE to move them into cutscene, FALSE to remove cutscene mode</param>
         /// <param name="nLeftClickingEnabled">TRUE to allow the user to interact with the game world using the left mouse button only.
         /// FALSE to stop the user from interacting with the game world</param>
-        public static void SetCutsceneMode(uint oCreature, bool nInCutscene = true, bool nLeftClickingEnabled = false)
+        public void SetCutsceneMode(uint oCreature, bool nInCutscene = true, bool nLeftClickingEnabled = false)
         {
             global::NWN.Core.NWScript.SetCutsceneMode(oCreature, nInCutscene ? 1 : 0, nLeftClickingEnabled ? 1 : 0);
         }
@@ -215,7 +215,7 @@ namespace SWLOR.NWN.API.NWScript
         /// Gets the last player character to cancel from a cutscene.
         /// </summary>
         /// <returns>The last player character to cancel from a cutscene</returns>
-        public static uint GetLastPCToCancelCutscene()
+        public uint GetLastPCToCancelCutscene()
         {
             return global::NWN.Core.NWScript.GetLastPCToCancelCutscene();
         }
@@ -226,7 +226,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oPlayer">The player to remove from the server</param>
         /// <param name="sReason">Optional reason to override the text shown to the player</param>
-        public static void BootPC(uint oPlayer, string sReason = "")
+        public void BootPC(uint oPlayer, string sReason = "")
         {
             global::NWN.Core.NWScript.BootPC(oPlayer, sReason);
         }
@@ -243,7 +243,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="bWaitForHelpButtonEnabled">If TRUE, the "Wait For Help" button will be enabled on the Death GUI</param>
         /// <param name="nHelpStringReference">Help string reference</param>
         /// <param name="sHelpString">Help string</param>
-        public static void PopUpDeathGUIPanel(uint oPC, bool bRespawnButtonEnabled = true,
+        public void PopUpDeathGUIPanel(uint oPC, bool bRespawnButtonEnabled = true,
             bool bWaitForHelpButtonEnabled = true, int nHelpStringReference = 0, string sHelpString = "")
         {
             global::NWN.Core.NWScript.PopUpDeathGUIPanel(oPC, bRespawnButtonEnabled ? 1 : 0, bWaitForHelpButtonEnabled ? 1 : 0, nHelpStringReference, sHelpString);
@@ -254,7 +254,7 @@ namespace SWLOR.NWN.API.NWScript
         /// This resets the position in the player list for GetNextPC().
         /// </summary>
         /// <returns>The first PC in the player list</returns>
-        public static uint GetFirstPC()
+        public uint GetFirstPC()
         {
             return global::NWN.Core.NWScript.GetFirstPC();
         }
@@ -264,7 +264,7 @@ namespace SWLOR.NWN.API.NWScript
         /// This picks up where the last GetFirstPC() or GetNextPC() left off.
         /// </summary>
         /// <returns>The next PC in the player list</returns>
-        public static uint GetNextPC()
+        public uint GetNextPC()
         {
             return global::NWN.Core.NWScript.GetNextPC();
         }
@@ -273,7 +273,7 @@ namespace SWLOR.NWN.API.NWScript
         /// Gets the last PC that levelled up.
         /// </summary>
         /// <returns>The last PC that levelled up</returns>
-        public static uint GetPCLevellingUp()
+        public uint GetPCLevellingUp()
         {
             return global::NWN.Core.NWScript.GetPCLevellingUp();
         }
@@ -284,7 +284,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oPlayer">The player to set the camera mode for</param>
         /// <param name="nCameraMode">CAMERA_MODE_* constant</param>
-        public static void SetCameraMode(uint oPlayer, int nCameraMode)
+        public void SetCameraMode(uint oPlayer, int nCameraMode)
         {
             global::NWN.Core.NWScript.SetCameraMode(oPlayer, nCameraMode);
         }
@@ -293,7 +293,7 @@ namespace SWLOR.NWN.API.NWScript
         /// Use this in an OnPlayerDying module script to get the last player who is dying.
         /// </summary>
         /// <returns>The last player who is dying</returns>
-        public static uint GetLastPlayerDying()
+        public uint GetLastPlayerDying()
         {
             return global::NWN.Core.NWScript.GetLastPlayerDying();
         }
@@ -305,7 +305,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oPC">The player character</param>
         /// <param name="nGUIPanel">GUI_PANEL_* constant, except GUI_PANEL_COMPASS / GUI_PANEL_LEVELUP / GUI_PANEL_GOLD_* / GUI_PANEL_EXAMINE_*</param>
-        public static void PopUpGUIPanel(uint oPC, GuiPanelType nGUIPanel)
+        public void PopUpGUIPanel(uint oPC, GuiPanelType nGUIPanel)
         {
             global::NWN.Core.NWScript.PopUpGUIPanel(oPC, (int)nGUIPanel);
         }
@@ -316,7 +316,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oPlayer">The player to get the build version for</param>
         /// <returns>The build number, or 0 if the given object isn't a player or did not advertise their build info</returns>
-        public static int GetPlayerBuildVersionMajor(uint oPlayer)
+        public int GetPlayerBuildVersionMajor(uint oPlayer)
         {
             return global::NWN.Core.NWScript.GetPlayerBuildVersionMajor(oPlayer);
         }
@@ -326,7 +326,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oPlayer">The player to get the patch revision for</param>
         /// <returns>The patch revision, or 0 if the given object isn't a player or did not advertise their build info</returns>
-        public static int GetPlayerBuildVersionMinor(uint oPlayer)
+        public int GetPlayerBuildVersionMinor(uint oPlayer)
         {
             return global::NWN.Core.NWScript.GetPlayerBuildVersionMinor(oPlayer);
         }
@@ -339,7 +339,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oCreature">The creature to check</param>
         /// <returns>TRUE if the creature has player DM privileges</returns>
-        public static bool GetIsPlayerDM(uint oCreature)
+        public bool GetIsPlayerDM(uint oCreature)
         {
             return global::NWN.Core.NWScript.GetIsPlayerDM(oCreature) != 0;
         }
@@ -348,7 +348,7 @@ namespace SWLOR.NWN.API.NWScript
         /// Gets the player that last triggered the module OnPlayerGuiEvent event.
         /// </summary>
         /// <returns>The player that last triggered the GUI event</returns>
-        public static uint GetLastGuiEventPlayer()
+        public uint GetLastGuiEventPlayer()
         {
             return global::NWN.Core.NWScript.GetLastGuiEventPlayer();
         }
@@ -357,7 +357,7 @@ namespace SWLOR.NWN.API.NWScript
         /// Gets the last triggered GUIEVENT_* in the module OnPlayerGuiEvent event.
         /// </summary>
         /// <returns>The last triggered GUI event type</returns>
-        public static GuiEventType GetLastGuiEventType()
+        public GuiEventType GetLastGuiEventType()
         {
             return (GuiEventType)global::NWN.Core.NWScript.GetLastGuiEventType();
         }
@@ -374,7 +374,7 @@ namespace SWLOR.NWN.API.NWScript
         /// GUIEVENT_EXAMINE_OBJECT: A GUI_PANEL_EXAMINE_* constant
         /// </summary>
         /// <returns>The integer value for the specific GUI event</returns>
-        public static int GetLastGuiEventInteger()
+        public int GetLastGuiEventInteger()
         {
             return global::NWN.Core.NWScript.GetLastGuiEventInteger();
         }
@@ -388,7 +388,7 @@ namespace SWLOR.NWN.API.NWScript
         /// GUIEVENT_DISABLED_PANEL_ATTEMPT_OPEN: For GUI_PANEL_CHARACTERSHEET, the owner of the character sheet.
         /// </summary>
         /// <returns>The object for the specific GUI event</returns>
-        public static uint GetLastGuiEventObject()
+        public uint GetLastGuiEventObject()
         {
             return global::NWN.Core.NWScript.GetLastGuiEventObject();
         }
@@ -405,7 +405,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nGuiPanel">A GUI_PANEL_* constant, except GUI_PANEL_PLAYER_DEATH</param>
         /// <param name="bDisabled">Whether to disable the panel</param>
         /// <param name="oTarget">The target object</param>
-        public static void SetGuiPanelDisabled(uint oPlayer, GuiPanelType nGuiPanel, bool bDisabled, uint oTarget = OBJECT_INVALID)
+        public void SetGuiPanelDisabled(uint oPlayer, GuiPanelType nGuiPanel, bool bDisabled, uint oTarget = OBJECT_INVALID)
         {
             global::NWN.Core.NWScript.SetGuiPanelDisabled(oPlayer, (int)nGuiPanel, bDisabled ? 1 : 0, oTarget);
         }
@@ -414,7 +414,7 @@ namespace SWLOR.NWN.API.NWScript
         /// Gets the ID (1..8) of the last tile action performed in OnPlayerTileAction.
         /// </summary>
         /// <returns>The ID of the last tile action</returns>
-        public static int GetLastTileActionId()
+        public int GetLastTileActionId()
         {
             return global::NWN.Core.NWScript.GetLastTileActionId();
         }
@@ -423,7 +423,7 @@ namespace SWLOR.NWN.API.NWScript
         /// Gets the target position in the module OnPlayerTileAction event.
         /// </summary>
         /// <returns>The target position of the last tile action</returns>
-        public static Vector3 GetLastTileActionPosition()
+        public Vector3 GetLastTileActionPosition()
         {
             return global::NWN.Core.NWScript.GetLastTileActionPosition();
         }
@@ -432,7 +432,7 @@ namespace SWLOR.NWN.API.NWScript
         /// Gets the player object that triggered the OnPlayerTileAction event.
         /// </summary>
         /// <returns>The player object that triggered the tile action</returns>
-        public static uint GetLastPlayerToDoTileAction()
+        public uint GetLastPlayerToDoTileAction()
         {
             return global::NWN.Core.NWScript.GetLastPlayerToDoTileAction();
         }
@@ -446,7 +446,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oPlayer">The player to get the device property for</param>
         /// <param name="sProperty">One of PLAYER_DEVICE_PROPERTY_xxx constants</param>
         /// <returns>The device property value, or -1 if unavailable</returns>
-        public static int GetPlayerDeviceProperty(uint oPlayer, string sProperty)
+        public int GetPlayerDeviceProperty(uint oPlayer, string sProperty)
         {
             return global::NWN.Core.NWScript.GetPlayerDeviceProperty(oPlayer, sProperty);
         }
@@ -456,7 +456,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oPlayer">The player to get the language for</param>
         /// <returns>The language code, or -1 if unavailable</returns>
-        public static PlayerLanguageType GetPlayerLanguage(uint oPlayer)
+        public PlayerLanguageType GetPlayerLanguage(uint oPlayer)
         {
             return (PlayerLanguageType)global::NWN.Core.NWScript.GetPlayerLanguage(oPlayer);
         }
@@ -466,7 +466,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oPlayer">The player to get the device platform for</param>
         /// <returns>The device platform type, or 0 if unavailable</returns>
-        public static PlayerDevicePlatformType GetPlayerDevicePlatform(uint oPlayer)
+        public PlayerDevicePlatformType GetPlayerDevicePlatform(uint oPlayer)
         {
             return (PlayerDevicePlatformType)global::NWN.Core.NWScript.GetPlayerDevicePlatform(oPlayer);
         }
@@ -476,7 +476,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oPlayer">The player to get the build version postfix for</param>
         /// <returns>The patch postfix, or 0 if the given object isn't a player or did not advertise their build info</returns>
-        public static int GetPlayerBuildVersionPostfix(uint oPlayer)
+        public int GetPlayerBuildVersionPostfix(uint oPlayer)
         {
             return global::NWN.Core.NWScript.GetPlayerBuildVersionPostfix(oPlayer);
         }
@@ -486,7 +486,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oPlayer">The player to get the build version commit sha1 for</param>
         /// <returns>The patch commit sha1, or empty string if unavailable</returns>
-        public static string GetPlayerBuildVersionCommitSha1(uint oPlayer)
+        public string GetPlayerBuildVersionCommitSha1(uint oPlayer)
         {
             return global::NWN.Core.NWScript.GetPlayerBuildVersionCommitSha1(oPlayer);
         }
@@ -495,7 +495,7 @@ namespace SWLOR.NWN.API.NWScript
         /// Gets the PC that is involved in the conversation.
         /// </summary>
         /// <returns>The PC involved in the conversation, or OBJECT_INVALID on error</returns>
-        public static uint GetPCSpeaker()
+        public uint GetPCSpeaker()
         {
             return global::NWN.Core.NWScript.GetPCSpeaker();
         }
@@ -504,7 +504,7 @@ namespace SWLOR.NWN.API.NWScript
         /// Use this in an OnPlayerDeath module script to get the last player that died.
         /// </summary>
         /// <returns>The last player that died</returns>
-        public static uint GetLastPlayerDied()
+        public uint GetLastPlayerDied()
         {
             return global::NWN.Core.NWScript.GetLastPlayerDied();
         }
@@ -513,7 +513,7 @@ namespace SWLOR.NWN.API.NWScript
         /// Use this in an OnItemLost script to get the item that was lost/dropped.
         /// </summary>
         /// <returns>The item that was lost/dropped, or OBJECT_INVALID if the module is not valid</returns>
-        public static uint GetModuleItemLost()
+        public uint GetModuleItemLost()
         {
             return global::NWN.Core.NWScript.GetModuleItemLost();
         }
@@ -522,7 +522,7 @@ namespace SWLOR.NWN.API.NWScript
         /// Use this in an OnItemLost script to get the creature that lost the item.
         /// </summary>
         /// <returns>The creature that lost the item, or OBJECT_INVALID if the module is not valid</returns>
-        public static uint GetModuleItemLostBy()
+        public uint GetModuleItemLostBy()
         {
             return global::NWN.Core.NWScript.GetModuleItemLostBy();
         }
@@ -533,7 +533,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oPlayer">The player to get the CD key for</param>
         /// <param name="nSinglePlayerCDKey">If TRUE, the player's public CD Key will be returned when the player is playing in single player mode (otherwise returns an empty string in single player mode)</param>
         /// <returns>The public CD key</returns>
-        public static string GetPCPublicCDKey(uint oPlayer, bool nSinglePlayerCDKey = false)
+        public string GetPCPublicCDKey(uint oPlayer, bool nSinglePlayerCDKey = false)
         {
             return global::NWN.Core.NWScript.GetPCPublicCDKey(oPlayer, nSinglePlayerCDKey ? 1 : 0);
         }
@@ -543,7 +543,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oPlayer">The player to get the IP address for</param>
         /// <returns>The IP address</returns>
-        public static string GetPCIPAddress(uint oPlayer)
+        public string GetPCIPAddress(uint oPlayer)
         {
             return global::NWN.Core.NWScript.GetPCIPAddress(oPlayer);
         }
@@ -553,7 +553,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oPlayer">The player to get the name for</param>
         /// <returns>The player name</returns>
-        public static string GetPCPlayerName(uint oPlayer)
+        public string GetPCPlayerName(uint oPlayer)
         {
             return global::NWN.Core.NWScript.GetPCPlayerName(oPlayer);
         }
@@ -563,7 +563,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oPlayer">The player</param>
         /// <param name="oTarget">The target</param>
-        public static void SetPCLike(uint oPlayer, uint oTarget)
+        public void SetPCLike(uint oPlayer, uint oTarget)
         {
             global::NWN.Core.NWScript.SetPCLike(oPlayer, oTarget);
         }
@@ -573,7 +573,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oPlayer">The player</param>
         /// <param name="oTarget">The target</param>
-        public static void SetPCDislike(uint oPlayer, uint oTarget)
+        public void SetPCDislike(uint oPlayer, uint oTarget)
         {
             global::NWN.Core.NWScript.SetPCDislike(oPlayer, oTarget);
         }
@@ -583,7 +583,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oPlayer">The player to send the message to</param>
         /// <param name="szMessage">The message to send</param>
-        public static void SendMessageToPC(uint oPlayer, string szMessage)
+        public void SendMessageToPC(uint oPlayer, string szMessage)
         {
             global::NWN.Core.NWScript.SendMessageToPC(oPlayer, szMessage);
         }
@@ -594,7 +594,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oPlayer">The player to check</param>
         /// <returns>TRUE if connected over a relay, FALSE otherwise</returns>
-        public static int GetIsPlayerConnectionRelayed(uint oPlayer)
+        public int GetIsPlayerConnectionRelayed(uint oPlayer)
         {
             return global::NWN.Core.NWScript.GetIsPlayerConnectionRelayed(oPlayer);
         }
@@ -603,7 +603,7 @@ namespace SWLOR.NWN.API.NWScript
         /// Forces all the characters of the players who are currently in the game to
         /// be exported to their respective directories i.e. LocalVault/ServerVault/ etc.
         /// </summary>
-        public static void ExportAllCharacters()
+        public void ExportAllCharacters()
         {
             global::NWN.Core.NWScript.ExportAllCharacters();
         }
@@ -613,7 +613,7 @@ namespace SWLOR.NWN.API.NWScript
         /// i.e. LocalVault/ServerVault/ etc.
         /// </summary>
         /// <param name="oPlayer">The player to export the character for</param>
-        public static void ExportSingleCharacter(uint oPlayer)
+        public void ExportSingleCharacter(uint oPlayer)
         {
             global::NWN.Core.NWScript.ExportSingleCharacter(oPlayer);
         }
@@ -623,7 +623,7 @@ namespace SWLOR.NWN.API.NWScript
         /// Can only be used in the module's OnPlayerEquip event.
         /// </summary>
         /// <returns>The inventory slot constant, or -1 on error</returns>
-        public static InventorySlotType GetPCItemLastEquippedSlot()
+        public InventorySlotType GetPCItemLastEquippedSlot()
         {
             return (InventorySlotType)global::NWN.Core.NWScript.GetPCItemLastEquippedSlot();
         }
@@ -633,7 +633,7 @@ namespace SWLOR.NWN.API.NWScript
         /// Can only be used in the module's OnPlayerUnequip event.
         /// </summary>
         /// <returns>The inventory slot constant, or -1 on error</returns>
-        public static InventorySlotType GetPCItemLastUnequippedSlot()
+        public InventorySlotType GetPCItemLastUnequippedSlot()
         {
             return (InventorySlotType)global::NWN.Core.NWScript.GetPCItemLastUnequippedSlot();
         }
@@ -644,7 +644,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oPlayer">The player to get the network latency for</param>
         /// <returns>The network latency in milliseconds, or -1 if unavailable</returns>
-        public static int GetPlayerNetworkLatency(uint oPlayer)
+        public int GetPlayerNetworkLatency(uint oPlayer)
         {
             return global::NWN.Core.NWScript.GetPlayerNetworkLatency(oPlayer);
         }
@@ -655,7 +655,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oCreature">The creature to get the body bag for</param>
         /// <returns>The body bag object, or OBJECT_INVALID if none exists</returns>
-        public static int GetBodyBag(uint oCreature)
+        public int GetBodyBag(uint oCreature)
         {
             return global::NWN.Core.NWScript.GetBodyBag(oCreature);
         }
@@ -666,7 +666,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oCreature">The creature to set the body bag for</param>
         /// <param name="oBodyBag">The body bag object to set</param>
-        public static void SetBodyBag(uint oCreature, int oBodyBag)
+        public void SetBodyBag(uint oCreature, int oBodyBag)
         {
             global::NWN.Core.NWScript.SetBodyBag(oCreature, oBodyBag);
         }

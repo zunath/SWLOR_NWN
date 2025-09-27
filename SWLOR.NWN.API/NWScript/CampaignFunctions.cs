@@ -3,7 +3,7 @@ using SWLOR.NWN.API.Engine;
 
 namespace SWLOR.NWN.API.NWScript
 {
-    public partial class NWScript
+    public partial class NWScriptService
     {
         /// <summary>
         /// Stores a float value to the specified campaign database.
@@ -12,7 +12,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="sVarName">The variable name (must be unique across the entire database, regardless of variable type)</param>
         /// <param name="flFloat">The float value to store</param>
         /// <param name="oPlayer">If you want a variable to pertain to a specific player, provide a player object (default: OBJECT_INVALID)</param>
-        public static void SetCampaignFloat(string sCampaignName, string sVarName, float flFloat,
+        public void SetCampaignFloat(string sCampaignName, string sVarName, float flFloat,
             uint oPlayer = OBJECT_INVALID)
         {
             global::NWN.Core.NWScript.SetCampaignFloat(sCampaignName, sVarName, flFloat, oPlayer);
@@ -25,7 +25,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="sVarName">The variable name (must be unique across the entire database, regardless of variable type)</param>
         /// <param name="nInt">The integer value to store</param>
         /// <param name="oPlayer">If you want a variable to pertain to a specific player, provide a player object (default: OBJECT_INVALID)</param>
-        public static void SetCampaignInt(string sCampaignName, string sVarName, int nInt,
+        public void SetCampaignInt(string sCampaignName, string sVarName, int nInt,
             uint oPlayer = OBJECT_INVALID)
         {
             global::NWN.Core.NWScript.SetCampaignInt(sCampaignName, sVarName, nInt, oPlayer);
@@ -38,7 +38,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="sVarName">The variable name (must be unique across the entire database, regardless of variable type)</param>
         /// <param name="vVector">The vector value to store</param>
         /// <param name="oPlayer">If you want a variable to pertain to a specific player, provide a player object (default: OBJECT_INVALID)</param>
-        public static void SetCampaignVector(string sCampaignName, string sVarName, Vector3 vVector,
+        public void SetCampaignVector(string sCampaignName, string sVarName, Vector3 vVector,
             uint oPlayer = OBJECT_INVALID)
         {
             global::NWN.Core.NWScript.SetCampaignVector(sCampaignName, sVarName, vVector, oPlayer);
@@ -51,7 +51,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="sVarName">The variable name (must be unique across the entire database, regardless of variable type)</param>
         /// <param name="locLocation">The location value to store</param>
         /// <param name="oPlayer">If you want a variable to pertain to a specific player, provide a player object (default: OBJECT_INVALID)</param>
-        public static void SetCampaignLocation(string sCampaignName, string sVarName, Location locLocation,
+        public void SetCampaignLocation(string sCampaignName, string sVarName, Location locLocation,
             uint oPlayer = OBJECT_INVALID)
         {
             global::NWN.Core.NWScript.SetCampaignLocation(sCampaignName, sVarName, locLocation, oPlayer);
@@ -64,7 +64,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="sVarName">The variable name (must be unique across the entire database, regardless of variable type)</param>
         /// <param name="sString">The string value to store</param>
         /// <param name="oPlayer">If you want a variable to pertain to a specific player, provide a player object (default: OBJECT_INVALID)</param>
-        public static void SetCampaignString(string sCampaignName, string sVarName, string sString,
+        public void SetCampaignString(string sCampaignName, string sVarName, string sString,
             uint oPlayer = OBJECT_INVALID)
         {
             global::NWN.Core.NWScript.SetCampaignString(sCampaignName, sVarName, sString, oPlayer);
@@ -74,7 +74,7 @@ namespace SWLOR.NWN.API.NWScript
         /// Deletes the entire campaign database if it exists.
         /// </summary>
         /// <param name="sCampaignName">The name of the campaign database to delete</param>
-        public static void DestroyCampaignDatabase(string sCampaignName)
+        public void DestroyCampaignDatabase(string sCampaignName)
         {
             global::NWN.Core.NWScript.DestroyCampaignDatabase(sCampaignName);
         }
@@ -86,7 +86,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="sVarName">The variable name (must be unique across the entire database, regardless of variable type)</param>
         /// <param name="oPlayer">If you want a variable to pertain to a specific player, provide a player object (default: OBJECT_INVALID)</param>
         /// <returns>The float value from the database</returns>
-        public static float GetCampaignFloat(string sCampaignName, string sVarName, uint oPlayer = OBJECT_INVALID)
+        public float GetCampaignFloat(string sCampaignName, string sVarName, uint oPlayer = OBJECT_INVALID)
         {
             return global::NWN.Core.NWScript.GetCampaignFloat(sCampaignName, sVarName, oPlayer);
         }
@@ -98,7 +98,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="sVarName">The variable name (must be unique across the entire database, regardless of variable type)</param>
         /// <param name="oPlayer">If you want a variable to pertain to a specific player, provide a player object (default: OBJECT_INVALID)</param>
         /// <returns>The integer value from the database</returns>
-        public static int GetCampaignInt(string sCampaignName, string sVarName, uint oPlayer = OBJECT_INVALID)
+        public int GetCampaignInt(string sCampaignName, string sVarName, uint oPlayer = OBJECT_INVALID)
         {
             return global::NWN.Core.NWScript.GetCampaignInt(sCampaignName, sVarName, oPlayer);
         }
@@ -110,7 +110,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="sVarName">The variable name (must be unique across the entire database, regardless of variable type)</param>
         /// <param name="oPlayer">If you want a variable to pertain to a specific player, provide a player object (default: OBJECT_INVALID)</param>
         /// <returns>The vector value from the database</returns>
-        public static Vector3 GetCampaignVector(string sCampaignName, string sVarName, uint oPlayer = OBJECT_INVALID)
+        public Vector3 GetCampaignVector(string sCampaignName, string sVarName, uint oPlayer = OBJECT_INVALID)
         {
             return global::NWN.Core.NWScript.GetCampaignVector(sCampaignName, sVarName, oPlayer);
         }
@@ -122,7 +122,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="sVarName">The variable name (must be unique across the entire database, regardless of variable type)</param>
         /// <param name="oPlayer">If you want a variable to pertain to a specific player, provide a player object (default: OBJECT_INVALID)</param>
         /// <returns>The location value from the database</returns>
-        public static Location GetCampaignLocation(string sCampaignName, string sVarName, uint oPlayer = OBJECT_INVALID)
+        public Location GetCampaignLocation(string sCampaignName, string sVarName, uint oPlayer = OBJECT_INVALID)
         {
             return global::NWN.Core.NWScript.GetCampaignLocation(sCampaignName, sVarName, oPlayer);
         }
@@ -134,7 +134,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="sVarName">The variable name (must be unique across the entire database, regardless of variable type)</param>
         /// <param name="oPlayer">If you want a variable to pertain to a specific player, provide a player object (default: OBJECT_INVALID)</param>
         /// <returns>The string value from the database</returns>
-        public static string GetCampaignString(string sCampaignName, string sVarName, uint oPlayer = OBJECT_INVALID)
+        public string GetCampaignString(string sCampaignName, string sVarName, uint oPlayer = OBJECT_INVALID)
         {
             return global::NWN.Core.NWScript.GetCampaignString(sCampaignName, sVarName, oPlayer);
         }
@@ -146,7 +146,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="sVarName">The variable name to delete</param>
         /// <param name="oPlayer">If the variable pertains to a specific player, provide a player object (default: OBJECT_INVALID)</param>
         /// <remarks>By normal database standards, deleting does not actually remove the entry from the database, but flags it as deleted. Do not expect the database files to shrink in size from this command. If you want to 'pack' the database, you will have to do it externally from the game.</remarks>
-        public static void DeleteCampaignVariable(string sCampaignName, string sVarName, uint oPlayer = OBJECT_INVALID)
+        public void DeleteCampaignVariable(string sCampaignName, string sVarName, uint oPlayer = OBJECT_INVALID)
         {
             global::NWN.Core.NWScript.DeleteCampaignVariable(sCampaignName, sVarName, oPlayer);
         }
@@ -160,7 +160,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oPlayer">If the object pertains to a specific player, provide a player object (default: OBJECT_INVALID)</param>
         /// <param name="bSaveObjectState">If true, local vars, effects, action queue, and transition info (triggers, doors) are saved out (except for Combined Area Format, which always has object state saved out) (default: false)</param>
         /// <returns>0 if it failed, 1 if it worked</returns>
-        public static int StoreCampaignObject(string sCampaignName, string sVarName, uint oObject, uint oPlayer = OBJECT_INVALID, bool bSaveObjectState = false)
+        public int StoreCampaignObject(string sCampaignName, string sVarName, uint oObject, uint oPlayer = OBJECT_INVALID, bool bSaveObjectState = false)
         {
             return global::NWN.Core.NWScript.StoreCampaignObject(sCampaignName, sVarName, oObject, oPlayer, bSaveObjectState ? 1 : 0);
         }
@@ -175,7 +175,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oPlayer">If the object pertains to a specific player, provide a player object (default: OBJECT_INVALID)</param>
         /// <param name="bLoadObjectState">If true, local vars, effects, action queue, and transition info (triggers, doors) are read in (default: false)</param>
         /// <returns>The retrieved object</returns>
-        public static uint RetrieveCampaignObject(string sCampaignName, string sVarName, Location locLocation, uint oOwner = OBJECT_INVALID, uint oPlayer = OBJECT_INVALID, bool bLoadObjectState = false)
+        public uint RetrieveCampaignObject(string sCampaignName, string sVarName, Location locLocation, uint oOwner = OBJECT_INVALID, uint oPlayer = OBJECT_INVALID, bool bLoadObjectState = false)
         {
             return global::NWN.Core.NWScript.RetrieveCampaignObject(sCampaignName, sVarName, locLocation, oOwner, oPlayer, bLoadObjectState ? 1 : 0);
         }
@@ -187,7 +187,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="sVarName">The variable name (must be unique across the entire database, regardless of variable type)</param>
         /// <param name="jValue">The JSON value to store</param>
         /// <param name="oPlayer">If you want a variable to pertain to a specific player, provide a player object (default: OBJECT_INVALID)</param>
-        public static void SetCampaignJson(string sCampaignName, string sVarName, Json jValue, uint oPlayer = OBJECT_INVALID)
+        public void SetCampaignJson(string sCampaignName, string sVarName, Json jValue, uint oPlayer = OBJECT_INVALID)
         {
             global::NWN.Core.NWScript.SetCampaignJson(sCampaignName, sVarName, jValue, oPlayer);
         }
@@ -199,7 +199,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="sVarName">The variable name (must be unique across the entire database, regardless of variable type)</param>
         /// <param name="oPlayer">If you want a variable to pertain to a specific player, provide a player object (default: OBJECT_INVALID)</param>
         /// <returns>The JSON value from the database</returns>
-        public static Json GetCampaignJson(string sCampaignName, string sVarName, uint oPlayer = OBJECT_INVALID)
+        public Json GetCampaignJson(string sCampaignName, string sVarName, uint oPlayer = OBJECT_INVALID)
         {
             return global::NWN.Core.NWScript.GetCampaignJson(sCampaignName, sVarName, oPlayer);
         }

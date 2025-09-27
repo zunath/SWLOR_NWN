@@ -2,13 +2,13 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.NWN.API.NWScript
 {
-    public partial class NWScript
+    public partial class NWScriptService
     {
         /// <summary>
         /// Instantly gives this creature the benefits of a rest (restored hitpoints, spells, feats, etc.).
         /// </summary>
         /// <param name="oCreature">The creature to force rest</param>
-        public static void ForceRest(uint oCreature)
+        public void ForceRest(uint oCreature)
         {
             global::NWN.Core.NWScript.ForceRest(oCreature);
         }
@@ -18,7 +18,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oCreature">The creature to check (defaults to OBJECT_SELF)</param>
         /// <returns>TRUE if the creature is resting</returns>
-        public static bool GetIsResting(uint oCreature = OBJECT_INVALID)
+        public bool GetIsResting(uint oCreature = OBJECT_INVALID)
         {
             if (oCreature == OBJECT_INVALID)
                 oCreature = OBJECT_SELF;
@@ -29,7 +29,7 @@ namespace SWLOR.NWN.API.NWScript
         /// Gets the last PC that has rested in the module.
         /// </summary>
         /// <returns>The last PC that has rested</returns>
-        public static uint GetLastPCRested()
+        public uint GetLastPCRested()
         {
             return global::NWN.Core.NWScript.GetLastPCRested();
         }
@@ -38,7 +38,7 @@ namespace SWLOR.NWN.API.NWScript
         /// Determines the type of the last rest event (as returned from the OnPCRested module event).
         /// </summary>
         /// <returns>The type (REST_EVENTTYPE_REST_*) of the last rest event</returns>
-        public static RestEventType GetLastRestEventType()
+        public RestEventType GetLastRestEventType()
         {
             return (RestEventType)global::NWN.Core.NWScript.GetLastRestEventType();
         }
@@ -52,7 +52,7 @@ namespace SWLOR.NWN.API.NWScript
         /// nearby regardless of whether or not the creature
         /// can see them, such as if an enemy is close by,
         /// but is in a different room behind a closed door</param>
-        public static void ActionRest(bool bCreatureToEnemyLineOfSightCheck = false)
+        public void ActionRest(bool bCreatureToEnemyLineOfSightCheck = false)
         {
             global::NWN.Core.NWScript.ActionRest(bCreatureToEnemyLineOfSightCheck ? 1 : 0);
         }

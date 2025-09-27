@@ -48,7 +48,7 @@ namespace SWLOR.Component.Quest.Dialog
         private void MainPageInit(DialogPage page)
         {
             var model = GetDataModel<Model>();
-            var quest = _questService.GetQuestById(model.QuestId);
+            var quest = QuestService.GetQuestById(model.QuestId);
 
             void HandleRewardSelection(IQuestReward reward)
             {

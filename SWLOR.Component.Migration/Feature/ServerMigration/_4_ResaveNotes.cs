@@ -10,7 +10,7 @@ namespace SWLOR.Component.Migration.Feature.ServerMigration
 {
     public class _4_ResaveNotes : ServerMigrationBase, IServerMigration
     {
-        public _4_ResaveNotes(ILogger logger, IDatabaseService db, ISpaceService spaceService) : base(logger, db, spaceService)
+        public _4_ResaveNotes(ILogger logger, IDatabaseService db, IServiceProvider serviceProvider) : base(logger, db, serviceProvider)
         {
         }
         

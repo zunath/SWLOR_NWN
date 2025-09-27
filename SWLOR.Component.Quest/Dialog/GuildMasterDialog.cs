@@ -78,11 +78,11 @@ namespace SWLOR.Component.Quest.Dialog
             var playerId = GetObjectUUID(player);
             var dbPlayer = _db.Get<Player>(playerId);
             var playerName = GetName(player);
-            var guild = _guildService.GetGuild(model.Guild);
+            var guild = GuildService.GetGuild(model.Guild);
             var pcGuild = dbPlayer.Guilds.ContainsKey(model.Guild)
                 ? dbPlayer.Guilds[model.Guild]
                 : new PlayerGuild();
-            var requiredPoints = _guildService.GetGPRequiredForRank(pcGuild.Rank);
+            var requiredPoints = GuildService.GetGPRequiredForRank(pcGuild.Rank);
 
             page.Header = ColorToken.Green("Guild: ") + guild.Name + "\n" +
                           ColorToken.Green("Rank: ") + pcGuild.Rank + " (" + pcGuild.Points + " / " + requiredPoints + " GP)\n" + 
@@ -133,11 +133,11 @@ namespace SWLOR.Component.Quest.Dialog
             var dbPlayer = _db.Get<Player>(playerId);
             page.Header = "The following tasks are available for you.";
 
-            var currentTasks = _questService.GetAllActiveGuildTasks(model.Guild);
+            var currentTasks = QuestService.GetAllActiveGuildTasks(model.Guild);
             // Expired quests - Quests the player accepted but are no longer offered by the guild master.
             foreach (var (questId, pcQuest) in dbPlayer.Quests)
             {
-                var task = _questService.GetQuestById(questId);
+                var task = QuestService.GetQuestById(questId);
                 if (task.GuildType != model.Guild) continue; // This quest isn't associated with this guild type.
                 if (pcQuest.DateLastCompleted != null) continue; // Has already been completed.
                 if (currentTasks.ContainsKey(questId)) continue; // This task is currently offered
@@ -156,7 +156,7 @@ namespace SWLOR.Component.Quest.Dialog
                 // If the player has completed the task during this task cycle, it will be excluded from this list.
                 // The reason for this is to prevent players from repeating the same tasks over and over without impunity.
                 if (dbPlayer.Quests.ContainsKey(task.QuestId) &&
-                    dbPlayer.Quests[task.QuestId].DateLastCompleted >= _questService.DateTasksLoaded)
+                    dbPlayer.Quests[task.QuestId].DateLastCompleted >= QuestService.DateTasksLoaded)
                     continue;
 
                 // Player doesn't have the requisite guild rank to accept this task. Skip over it.
@@ -194,7 +194,7 @@ namespace SWLOR.Component.Quest.Dialog
                 ? dbPlayer.Quests[model.QuestId]
                 : null;
 
-            var task = _questService.GetQuestById(model.QuestId);
+            var task = QuestService.GetQuestById(model.QuestId);
 
             var gpRewards = task.Rewards.Where(x => x.GetType() == typeof(GPReward)).Cast<GPReward>();
             var goldRewards = task.Rewards.Where(x => x.GetType() == typeof(GoldReward)).Cast<GoldReward>();
@@ -203,12 +203,12 @@ namespace SWLOR.Component.Quest.Dialog
 
             foreach (var gpReward in gpRewards)
             {
-                gpAmount += _guildService.CalculateGPReward(player, model.Guild, gpReward.Amount);
+                gpAmount += GuildService.CalculateGPReward(player, model.Guild, gpReward.Amount);
             }
 
             foreach (var goldReward in goldRewards)
             {
-                goldAmount += _questService.CalculateQuestGoldReward(player, true, goldReward.Amount);
+                goldAmount += QuestService.CalculateQuestGoldReward(player, true, goldReward.Amount);
             }
 
             page.Header = ColorToken.Green("Task: ") + task.Name + "\n\n" +
@@ -221,7 +221,7 @@ namespace SWLOR.Component.Quest.Dialog
             {
                 page.AddResponse("Accept Task", () =>
                 {
-                    _questService.AcceptQuest(player, model.QuestId);
+                    QuestService.AcceptQuest(player, model.QuestId);
                 });
             }
 
@@ -241,7 +241,7 @@ namespace SWLOR.Component.Quest.Dialog
             if (!dbPlayer.Quests.ContainsKey(model.QuestId)) return;
 
             var pcStatus = dbPlayer.Quests[model.QuestId];
-            var quest = _questService.GetQuestById(model.QuestId);
+            var quest = QuestService.GetQuestById(model.QuestId);
             var state = quest.States[pcStatus.CurrentState];
             var hasItemObjective =
                 state.GetObjectives().FirstOrDefault(x => x.GetType() == typeof(CollectItemObjective)) != null;
@@ -249,7 +249,7 @@ namespace SWLOR.Component.Quest.Dialog
             // Quest has at least one "collect item" objective.
             if (hasItemObjective)
             {
-                _questService.RequestItemsFromPlayer(player, model.QuestId);
+                QuestService.RequestItemsFromPlayer(player, model.QuestId);
             }
             // All other quest types
             else if (quest.CanComplete(player))
@@ -299,7 +299,7 @@ namespace SWLOR.Component.Quest.Dialog
 
             page.Header = "Which store would you like to view?";
 
-            for (var rank = 1; rank <= _guildService.MaxRank; rank++)
+            for (var rank = 1; rank <= GuildService.MaxRank; rank++)
             {
                 if (pcGuild.Rank >= rank)
                 {

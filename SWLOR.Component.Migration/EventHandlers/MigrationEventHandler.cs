@@ -20,7 +20,7 @@ namespace SWLOR.Component.Migration.EventHandlers
 
         public MigrationEventHandler(IServiceProvider serviceProvider)
         {
-            // Services are now lazy-loaded via IServiceProvider
+            _serviceProvider = serviceProvider;
         }
 
         /// <summary>

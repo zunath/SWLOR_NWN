@@ -36,8 +36,8 @@ namespace SWLOR.Component.Associate.UI.ViewModel
             ITargetingService targetingService) 
             : base(guiService)
         {
+            _serviceProvider = serviceProvider;
             _targetingService = targetingService;
-            // Services are now lazy-loaded via IServiceProvider
         }
 
         private const string BlankTexture = "Blank";

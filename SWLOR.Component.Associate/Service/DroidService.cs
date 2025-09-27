@@ -36,13 +36,7 @@ namespace SWLOR.Component.Associate.Service
         private readonly Dictionary<int, int> _levelsByTier = new();
         private readonly Dictionary<DroidPersonalityType, IDroidPersonality> _droidPersonalities = new();
 
-        private readonly IGuiService _guiService;
         private readonly IServiceProvider _serviceProvider;
-        private readonly IRaceService _raceService;
-        private readonly IStatusEffectService _statusEffectService;
-        private readonly IAIService _aiService;
-        private readonly IActivityService _activityService;
-        private readonly IRecastService _recastService;
         private readonly DroidGeekyPersonality _geekyPersonality;
         private readonly DroidPrissyPersonality _prissyPersonality;
         private readonly DroidSarcasticPersonality _sarcasticPersonality;
@@ -60,13 +54,7 @@ namespace SWLOR.Component.Associate.Service
         private const float RecastDelaySeconds = 1800f;
 
         public DroidService(
-            IGuiService guiService,
             IServiceProvider serviceProvider,
-            IRaceService raceService,
-            IStatusEffectService statusEffectService,
-            IAIService aiService,
-            IActivityService activityService,
-            IRecastService recastService,
             DroidGeekyPersonality geekyPersonality,
             DroidPrissyPersonality prissyPersonality,
             DroidSarcasticPersonality sarcasticPersonality,
@@ -74,13 +62,7 @@ namespace SWLOR.Component.Associate.Service
             DroidBlandPersonality blandPersonality,
             DroidWorshipfulPersonality worshipfulPersonality)
         {
-            _guiService = guiService;
             _serviceProvider = serviceProvider;
-            _raceService = raceService;
-            _statusEffectService = statusEffectService;
-            _aiService = aiService;
-            _activityService = activityService;
-            _recastService = recastService;
             _geekyPersonality = geekyPersonality;
             _prissyPersonality = prissyPersonality;
             _sarcasticPersonality = sarcasticPersonality;
@@ -88,11 +70,18 @@ namespace SWLOR.Component.Associate.Service
             _blandPersonality = blandPersonality;
             _worshipfulPersonality = worshipfulPersonality;
         }
-        
+
         // Lazy-loaded services to break circular dependencies
+        private IGuiService GuiService => _serviceProvider.GetRequiredService<IGuiService>();
+        private IRaceService RaceService => _serviceProvider.GetRequiredService<IRaceService>();
+        private IStatusEffectService StatusEffectService => _serviceProvider.GetRequiredService<IStatusEffectService>();
+        private IAIService AIService => _serviceProvider.GetRequiredService<IAIService>();
+        private IActivityService ActivityService => _serviceProvider.GetRequiredService<IActivityService>();
+        private IRecastService RecastService => _serviceProvider.GetRequiredService<IRecastService>();
         private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
         private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
         private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+        
 
         /// <summary>
         /// When the module loads, cache all relevant droid data into memory.
@@ -280,7 +269,7 @@ namespace SWLOR.Component.Associate.Service
                 return;
             }
 
-            _guiService.TogglePlayerWindow(player, GuiWindowType.DroidAssembly, null, OBJECT_SELF);
+            GuiService.TogglePlayerWindow(player, GuiWindowType.DroidAssembly, null, OBJECT_SELF);
         }
 
         /// <summary>
@@ -658,9 +647,9 @@ namespace SWLOR.Component.Associate.Service
         public void SpawnDroid(uint player, uint controller)
         {
             // Close AI programming if open.
-            if (_guiService.IsWindowOpen(player, GuiWindowType.DroidAI))
+            if (GuiService.IsWindowOpen(player, GuiWindowType.DroidAI))
             {
-                _guiService.CloseWindow(player, GuiWindowType.DroidAI, player);
+                GuiService.CloseWindow(player, GuiWindowType.DroidAI, player);
             }
 
             var details = LoadDroidItemPropertyDetails(controller);
@@ -762,7 +751,7 @@ namespace SWLOR.Component.Associate.Service
             }
 
             // Appearance
-            var defaultDroid = _raceService.GetDefaultAppearance(RacialType.Droid, Gender.Male);
+            var defaultDroid = RaceService.GetDefaultAppearance(RacialType.Droid, Gender.Male);
 
             SetCreatureBodyPart(CreaturePart.Head,
                 constructedDroid.AppearanceParts.ContainsKey(CreaturePart.Head)
@@ -910,7 +899,7 @@ namespace SWLOR.Component.Associate.Service
             DestroyObject(droid, 0.1f);
             ClearTemporaryData(player, droid);
 
-            _recastService.ApplyRecastDelay(player, RecastGroup.DroidController, RecastDelaySeconds, true);
+            RecastService.ApplyRecastDelay(player, RecastGroup.DroidController, RecastDelaySeconds, true);
             CloseAppearanceEditor(player);
         }
 
@@ -954,8 +943,8 @@ namespace SWLOR.Component.Associate.Service
 
         private void CloseAppearanceEditor(uint player)
         {
-            if(_guiService.IsWindowOpen(player, GuiWindowType.AppearanceEditor))
-                _guiService.CloseWindow(player, GuiWindowType.AppearanceEditor, player);
+            if(GuiService.IsWindowOpen(player, GuiWindowType.AppearanceEditor))
+                GuiService.CloseWindow(player, GuiWindowType.AppearanceEditor, player);
         }
 
         /// <summary>
@@ -1056,10 +1045,10 @@ namespace SWLOR.Component.Associate.Service
         private void DroidOnEndCombatRoundInternal()
         {
             var droid = OBJECT_SELF;
-            if (!_activityService.IsBusy(droid))
+            if (!ActivityService.IsBusy(droid))
             {
                 ExecuteScript("x0_ch_hen_combat", OBJECT_SELF);
-                _aiService.ProcessPerkAI(AIDefinitionType.Droid, droid, false);
+                AIService.ProcessPerkAI(AIDefinitionType.Droid, droid, false);
             }
         }
 
@@ -1086,7 +1075,7 @@ namespace SWLOR.Component.Associate.Service
 
             SpeakString(personality.DeathPhrase());
             ClearTemporaryData(player, droid);
-            _recastService.ApplyRecastDelay(player, RecastGroup.DroidController, RecastDelaySeconds, true);
+            RecastService.ApplyRecastDelay(player, RecastGroup.DroidController, RecastDelaySeconds, true);
             CloseAppearanceEditor(player);
         }
 
@@ -1130,7 +1119,7 @@ namespace SWLOR.Component.Associate.Service
 
             AssignCommand(droid, () => ClearAllActions());
 
-            _statusEffectService.Apply(droid, droid, StatusEffectType.Rest, 0f);
+            StatusEffectService.Apply(droid, droid, StatusEffectType.Rest, 0f);
         }
 
         public void DroidOnSpawn()

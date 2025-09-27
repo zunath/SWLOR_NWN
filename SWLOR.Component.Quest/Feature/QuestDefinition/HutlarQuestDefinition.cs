@@ -24,7 +24,7 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
 
         public Dictionary<string, IQuestDetail> BuildQuests()
         {
-            var builder = _questBuilderFactory.Create();
+            var builder = QuestBuilderFactory.Create();
             BeatTheByysk(builder);
             CullTheTundraThreat(builder);
             HutlarPowerInvestigation(builder);
@@ -109,16 +109,16 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
                 .OnAcceptAction((player, sourceObject) =>
                 {
                     // Southeast 
-                    _objectVisibilityService.AdjustVisibilityByObjectId(player, "9CD9E7D9-4F10-4A0E-B67D-293CE6EA8EF5", VisibilityType.Visible);
+                    ObjectVisibilityService.AdjustVisibilityByObjectId(player, "9CD9E7D9-4F10-4A0E-B67D-293CE6EA8EF5", VisibilityType.Visible);
                 })
                 .OnAbandonAction(player =>
                 {
-                    _objectVisibilityService.AdjustVisibilityByObjectId(player, "9CD9E7D9-4F10-4A0E-B67D-293CE6EA8EF5", VisibilityType.Hidden);
-                    _objectVisibilityService.AdjustVisibilityByObjectId(player, "989B8C42-B4EE-48B7-8426-9D5C20016AEB", VisibilityType.Hidden);
-                    _objectVisibilityService.AdjustVisibilityByObjectId(player, "4C5721F2-9241-4A6F-9A62-F28CF0525682", VisibilityType.Hidden);
-                    _objectVisibilityService.AdjustVisibilityByObjectId(player, "E9C705B1-2AC9-4F9A-B481-FF3E5E99D8FF", VisibilityType.Hidden);
-                    _objectVisibilityService.AdjustVisibilityByObjectId(player, "83652C7A-7D38-4304-AD4B-92D5783AB279", VisibilityType.Hidden);
-                    _objectVisibilityService.AdjustVisibilityByObjectId(player, "AA0E6798-38E4-4E50-8F0A-C3177FBF2717", VisibilityType.Hidden);
+                    ObjectVisibilityService.AdjustVisibilityByObjectId(player, "9CD9E7D9-4F10-4A0E-B67D-293CE6EA8EF5", VisibilityType.Hidden);
+                    ObjectVisibilityService.AdjustVisibilityByObjectId(player, "989B8C42-B4EE-48B7-8426-9D5C20016AEB", VisibilityType.Hidden);
+                    ObjectVisibilityService.AdjustVisibilityByObjectId(player, "4C5721F2-9241-4A6F-9A62-F28CF0525682", VisibilityType.Hidden);
+                    ObjectVisibilityService.AdjustVisibilityByObjectId(player, "E9C705B1-2AC9-4F9A-B481-FF3E5E99D8FF", VisibilityType.Hidden);
+                    ObjectVisibilityService.AdjustVisibilityByObjectId(player, "83652C7A-7D38-4304-AD4B-92D5783AB279", VisibilityType.Hidden);
+                    ObjectVisibilityService.AdjustVisibilityByObjectId(player, "AA0E6798-38E4-4E50-8F0A-C3177FBF2717", VisibilityType.Hidden);
                 })
                 
                 .OnAdvanceAction((player, sourceObject, state) =>
@@ -150,7 +150,7 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
                         default: return;
                     }
 
-                    _objectVisibilityService.AdjustVisibilityByObjectId(player, visibilityObject, VisibilityType.Visible);
+                    ObjectVisibilityService.AdjustVisibilityByObjectId(player, visibilityObject, VisibilityType.Visible);
                 });
         }
 

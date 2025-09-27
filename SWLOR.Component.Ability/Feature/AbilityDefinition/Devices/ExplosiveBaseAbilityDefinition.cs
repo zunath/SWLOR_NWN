@@ -31,6 +31,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
         protected ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
         protected IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
         protected IStatusEffectService StatusEffectService => _serviceProvider.GetRequiredService<IStatusEffectService>();
+        protected IAbilityService AbilityService => _serviceProvider.GetRequiredService<IAbilityService>();
         private const string ExplosiveItemResref = "explosives";
 
         public abstract Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder);

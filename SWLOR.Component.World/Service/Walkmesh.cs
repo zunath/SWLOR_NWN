@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.World.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
@@ -15,14 +16,17 @@ namespace SWLOR.Component.World.Service
     public class Walkmesh : IWalkmeshService
     {
         private readonly IDatabaseService _db;
-        private readonly IRandomService _random;
+        private readonly IServiceProvider _serviceProvider;
         private readonly Dictionary<uint, List<uint>> _noSpawnZoneTriggers = new();
 
-        public Walkmesh(IDatabaseService db, IRandomService random)
+        public Walkmesh(IDatabaseService db, IServiceProvider serviceProvider)
         {
             _db = db;
-            _random = random;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded service to break circular dependency
+        private IRandomService Random => _serviceProvider.GetRequiredService<IRandomService>();
         private Dictionary<string, List<Vector3>> _walkmeshesByArea = new();
         private const int AreaBakeStep = 2;
         private bool _bakingRan;
@@ -158,7 +162,7 @@ namespace SWLOR.Component.World.Service
             if (count <= 0) 
                 return Location(area, Vector3.Zero, 0.0f);
 
-            var index = _random.Next(count);
+            var index = Random.Next(count);
             var position = _walkmeshesByArea[resref][index];
             return Location(area, position, 0.0f);
         }

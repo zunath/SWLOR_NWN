@@ -53,7 +53,7 @@ namespace SWLOR.Component.StatusEffect.Feature.StatusEffectDefinition
 
                         dbPlayer.TemporaryFoodHP = foodEffect.HP;
 
-                        _statService.AdjustPlayerMaxHP(dbPlayer, target, foodEffect.HP);
+                        StatService.AdjustPlayerMaxHP(dbPlayer, target, foodEffect.HP);
                         _db.Set(dbPlayer);
                     }
                 })
@@ -71,7 +71,7 @@ namespace SWLOR.Component.StatusEffect.Feature.StatusEffectDefinition
 
                         dbPlayer.TemporaryFoodHP = 0;
 
-                        _statService.AdjustPlayerMaxHP(dbPlayer, target, -foodEffect.HP);
+                        StatService.AdjustPlayerMaxHP(dbPlayer, target, -foodEffect.HP);
                         _db.Set(dbPlayer);
                     }
                 });

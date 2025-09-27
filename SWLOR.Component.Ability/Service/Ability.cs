@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.Component.Ability.Model;
 using SWLOR.NWN.API.Engine;
@@ -23,17 +24,7 @@ namespace SWLOR.Component.Ability.Service
     public class Ability : IAbilityService
     {
         private readonly IDatabaseService _db;
-        private readonly IGenericCacheService _cacheService;
-        private readonly IStatService _statService;
-        private readonly ICombatPointService _combatPointService;
-        private readonly IPerkService _perkService;
-        private readonly IPartyService _partyService;
-        private readonly IActivityService _activityService;
-        private readonly IMessagingService _messagingService;
-        private readonly IRecastService _recastService;
-        private readonly IStatusEffectService _statusEffectService;
-        private readonly IAbilityBuilder _abilityBuilder;
-        private readonly ISpaceService _spaceService;
+        private readonly IServiceProvider _serviceProvider;
         
         // Cached data
         private IInterfaceCache<FeatType, AbilityDetail> _abilityCache;
@@ -48,31 +39,24 @@ namespace SWLOR.Component.Ability.Service
 
         public Ability(
             IDatabaseService db, 
-            IGenericCacheService cacheService, 
-            IStatService statService, 
-            IPerkService perkService, 
-            IPartyService partyService, 
-            ICombatPointService combatPointService, 
-            IActivityService activityService, 
-            IMessagingService messagingService, 
-            IRecastService recastService, 
-            IStatusEffectService statusEffectService, 
-            IAbilityBuilder abilityBuilder,
-            ISpaceService spaceService)
+            IServiceProvider serviceProvider)
         {
             _db = db;
-            _cacheService = cacheService;
-            _statService = statService;
-            _perkService = perkService;
-            _partyService = partyService;
-            _combatPointService = combatPointService;
-            _activityService = activityService;
-            _messagingService = messagingService;
-            _recastService = recastService;
-            _statusEffectService = statusEffectService;
-            _abilityBuilder = abilityBuilder;
-            _spaceService = spaceService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IGenericCacheService CacheService => _serviceProvider.GetRequiredService<IGenericCacheService>();
+        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+        private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
+        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
+        private IPartyService PartyService => _serviceProvider.GetRequiredService<IPartyService>();
+        private IActivityService ActivityService => _serviceProvider.GetRequiredService<IActivityService>();
+        private IMessagingService MessagingService => _serviceProvider.GetRequiredService<IMessagingService>();
+        private IRecastService RecastService => _serviceProvider.GetRequiredService<IRecastService>();
+        private IStatusEffectService StatusEffectService => _serviceProvider.GetRequiredService<IStatusEffectService>();
+        private IAbilityBuilder AbilityBuilder => _serviceProvider.GetRequiredService<IAbilityBuilder>();
+        private ISpaceService SpaceService => _serviceProvider.GetRequiredService<ISpaceService>();
 
         private const int MaxNumberOfAuras = 4;
 
@@ -87,8 +71,8 @@ namespace SWLOR.Component.Ability.Service
 
         public void CacheAbilities()
         {
-            _abilityCache = _cacheService.BuildInterfaceCache<IAbilityListDefinition, FeatType, AbilityDetail>()
-                .WithDataExtractor(instance => instance.BuildAbilities(_abilityBuilder))
+            _abilityCache = CacheService.BuildInterfaceCache<IAbilityListDefinition, FeatType, AbilityDetail>()
+                .WithDataExtractor(instance => instance.BuildAbilities(AbilityBuilder))
                 .Build();
 
             // Populate pre-computed cache
@@ -111,7 +95,7 @@ namespace SWLOR.Component.Ability.Service
                     ? ColorToken.Green("Dash enabled") 
                     : ColorToken.Red("Dash disabled");
 
-                _statService.ApplyPlayerMovementRate(player);
+                StatService.ApplyPlayerMovementRate(player);
                 SendMessageToPC(player, message);
             };
         }
@@ -161,7 +145,7 @@ namespace SWLOR.Component.Ability.Service
             var ability = GetAbilityDetail(abilityType);
 
             // Cannot use this ability in space.
-            if (_spaceService.IsPlayerInSpaceMode(activator) &&
+            if (SpaceService.IsPlayerInSpaceMode(activator) &&
                 !ability.CanBeUsedInSpace)
             {
                 SendMessageToPC(activator, "This ability cannot be used in space.");
@@ -197,7 +181,7 @@ namespace SWLOR.Component.Ability.Service
             }
 
             // Must not be busy
-            if (_activityService.IsBusy(activator))
+            if (ActivityService.IsBusy(activator))
             {
                 SendMessageToPC(activator, "You are busy.");
                 return false;
@@ -237,7 +221,7 @@ namespace SWLOR.Component.Ability.Service
             }
 
             // Check if ability is on a recast timer still.
-            var (isOnRecast, timeToWait) = _recastService.IsOnRecastDelay(activator, ability.RecastGroup);
+            var (isOnRecast, timeToWait) = RecastService.IsOnRecastDelay(activator, ability.RecastGroup);
             if (isOnRecast)
             {
                 SendMessageToPC(activator, $"This ability can be used in {timeToWait}.");
@@ -351,9 +335,9 @@ namespace SWLOR.Component.Ability.Service
         public void StartConcentrationAbility(uint creature, uint target, FeatType feat, StatusEffectType statusEffectType)
         {
             _activeConcentrationAbilities[creature] = new ActiveConcentrationAbility(target, feat, statusEffectType);
-            _statusEffectService.Apply(creature, target, statusEffectType, 0.0f, null, feat);
+            StatusEffectService.Apply(creature, target, statusEffectType, 0.0f, null, feat);
 
-            _messagingService.SendMessageNearbyToPlayers(creature, $"{GetName(creature)} begins concentrating...");
+            MessagingService.SendMessageNearbyToPlayers(creature, $"{GetName(creature)} begins concentrating...");
             SetLocalBool(creature, "CONCENTRATION_FIRST_USE", true);
         }
 
@@ -383,7 +367,7 @@ namespace SWLOR.Component.Ability.Service
             if (_activeConcentrationAbilities.ContainsKey(creature))
             {
                 var activeConcentrationEffect = _activeConcentrationAbilities[creature];
-                _statusEffectService.Remove(creature, activeConcentrationEffect.StatusEffectType);
+                StatusEffectService.Remove(creature, activeConcentrationEffect.StatusEffectType);
                 _activeConcentrationAbilities.Remove(creature);
 
                 SendMessageToPC(creature, "You stop concentrating.");
@@ -507,7 +491,7 @@ namespace SWLOR.Component.Ability.Service
             if (aura.Auras.Count <= 0)
                 return;
 
-            _combatPointService.AddCombatPoint(player, target, SkillType.Leadership);
+            CombatPointService.AddCombatPoint(player, target, SkillType.Leadership);
         }
 
         private int GetMaxNumberOfAuras(uint activator)
@@ -533,21 +517,21 @@ namespace SWLOR.Component.Ability.Service
                 return;
 
             var maxAuras = GetMaxNumberOfAuras(activator);
-            var detail = _statusEffectService.GetDetail(type);
+            var detail = StatusEffectService.GetDetail(type);
 
             while (aura.Auras.Count >= maxAuras)
             {
                 var removeType = aura.Auras[0].Type;
                 if (aura.Auras[0].TargetsSelf)
                 {
-                    _statusEffectService.Remove(activator, removeType, false);
+                    StatusEffectService.Remove(activator, removeType, false);
                 }
 
                 if (aura.Auras[0].TargetsParty)
                 {
                     foreach (var member in aura.PartyMembersInRange)
                     {
-                        _statusEffectService.Remove(member, removeType, false);
+                        StatusEffectService.Remove(member, removeType, false);
                     }
                 }
 
@@ -555,7 +539,7 @@ namespace SWLOR.Component.Ability.Service
                 {
                     foreach (var npc in aura.CreaturesInRange)
                     {
-                        _statusEffectService.Remove(npc, removeType, false);
+                        StatusEffectService.Remove(npc, removeType, false);
                     }
                 }
 
@@ -566,7 +550,7 @@ namespace SWLOR.Component.Ability.Service
 
             if (targetsSelf)
             {
-                _statusEffectService.Apply(activator, activator, type, 0f, activator);
+                StatusEffectService.Apply(activator, activator, type, 0f, activator);
             }
 
             SendMessageToPC(activator, ColorToken.Green($"Aura '{detail.Name}' activated."));
@@ -584,20 +568,20 @@ namespace SWLOR.Component.Ability.Service
             var existing = aura.Auras.FirstOrDefault(x => x.Type == type);
             if (existing != null)
             {
-                var statusEffect = _statusEffectService.GetDetail(type);
+                var statusEffect = StatusEffectService.GetDetail(type);
 
                 SendMessageToPC(activator, ColorToken.Red($"Aura '{statusEffect.Name}' deactivated."));
 
                 if (existing.TargetsSelf)
                 {
-                    _statusEffectService.Remove(activator, type, false);
+                    StatusEffectService.Remove(activator, type, false);
                 }
 
                 if (existing.TargetsParty)
                 {
                     foreach (var member in aura.PartyMembersInRange)
                     {
-                        _statusEffectService.Remove(member, type, false);
+                        StatusEffectService.Remove(member, type, false);
                     }
                 }
 
@@ -605,7 +589,7 @@ namespace SWLOR.Component.Ability.Service
                 {
                     foreach (var npc in aura.CreaturesInRange)
                     {
-                        _statusEffectService.Remove(npc, type, false);
+                        StatusEffectService.Remove(npc, type, false);
                     }
                 }
 
@@ -631,14 +615,14 @@ namespace SWLOR.Component.Ability.Service
             {
                 if (aura.TargetsSelf)
                 {
-                    _statusEffectService.Remove(activator, aura.Type);
+                    StatusEffectService.Remove(activator, aura.Type);
                 }
 
                 if (aura.TargetsParty)
                 {
                     foreach (var member in auraDetails.PartyMembersInRange)
                     {
-                        _statusEffectService.Remove(member, aura.Type, false);
+                        StatusEffectService.Remove(member, aura.Type, false);
                     }
                 }
 
@@ -646,7 +630,7 @@ namespace SWLOR.Component.Ability.Service
                 {
                     foreach (var npc in auraDetails.CreaturesInRange)
                     {
-                        _statusEffectService.Remove(npc, aura.Type, false);
+                        StatusEffectService.Remove(npc, aura.Type, false);
                     }
                 }
             }
@@ -673,7 +657,7 @@ namespace SWLOR.Component.Ability.Service
                 return;
 
             RemoveEffectByTag(player, "AURA_EFFECT");
-            var shoutRangeLevel = _perkService.GetPerkLevel(player, PerkType.ShoutRange);
+            var shoutRangeLevel = PerkService.GetPerkLevel(player, PerkType.ShoutRange);
 
             AssignCommand(player, () =>
             {
@@ -741,7 +725,7 @@ namespace SWLOR.Component.Ability.Service
                 _playerAuras.Add(self, new PlayerAura());
 
             // Party Members
-            if (_partyService.IsInParty(self, entering))
+            if (PartyService.IsInParty(self, entering))
             {
                 if (_playerAuras[self].PartyMembersInRange.Contains(entering))
                     return;
@@ -752,7 +736,7 @@ namespace SWLOR.Component.Ability.Service
                 {
                     if (detail.TargetsParty)
                     {
-                        _statusEffectService.Apply(self, entering, detail.Type, 0f, self);
+                        StatusEffectService.Apply(self, entering, detail.Type, 0f, self);
                     }
                 }
             }
@@ -769,7 +753,7 @@ namespace SWLOR.Component.Ability.Service
                 {
                     if (detail.TargetsEnemies)
                     {
-                        _statusEffectService.Apply(self, entering, detail.Type, 0f, self);
+                        StatusEffectService.Apply(self, entering, detail.Type, 0f, self);
                     }
                 }
             }
@@ -786,7 +770,7 @@ namespace SWLOR.Component.Ability.Service
             if (!_playerAuras.ContainsKey(self))
                 _playerAuras.Add(self, new PlayerAura());
 
-            if (_partyService.IsInParty(self, exiting))
+            if (PartyService.IsInParty(self, exiting))
             {
                 if (!_playerAuras[self].PartyMembersInRange.Contains(exiting))
                     return;
@@ -797,7 +781,7 @@ namespace SWLOR.Component.Ability.Service
                 {
                     if (detail.TargetsParty)
                     {
-                        _statusEffectService.Remove(exiting, detail.Type, false);
+                        StatusEffectService.Remove(exiting, detail.Type, false);
                     }
                 }
             }
@@ -813,7 +797,7 @@ namespace SWLOR.Component.Ability.Service
                 {
                     if (detail.TargetsEnemies)
                     {
-                        _statusEffectService.Remove(exiting, detail.Type, false);
+                        StatusEffectService.Remove(exiting, detail.Type, false);
                     }
                 }
             }

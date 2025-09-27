@@ -28,7 +28,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
         private PropertyService Property => _serviceProvider.GetRequiredService<PropertyService>();
         
         private bool _isCategory;
-        private PropertyType _propertyType;
+        private PropertyType PropertyType;
         private string _cityId;
 
         private string PropertyId { get; set; }
@@ -139,8 +139,8 @@ namespace SWLOR.Component.Properties.UI.ViewModel
             {
                 PropertyId = PropertyId,
                 PlayerId = targetPlayerId,
-                Permissions = _property.GetPermissionsByPropertyType(_propertyType).ToDictionary(x => x, _ => false),
-                GrantPermissions = _property.GetPermissionsByPropertyType(_propertyType).ToDictionary(x => x, _ => false)
+                Permissions = Property.GetPermissionsByPropertyType(PropertyType).ToDictionary(x => x, _ => false),
+                GrantPermissions = Property.GetPermissionsByPropertyType(PropertyType).ToDictionary(x => x, _ => false)
             };
         }
 
@@ -213,7 +213,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
 
             foreach (var type in AvailablePermissions)
             {
-                var permission = _property.GetPermissionByType(type);
+                var permission = Property.GetPermissionByType(type);
                 permissionNames.Add(permission.Name);
                 permissionDescriptions.Add(permission.Description);
 
@@ -247,11 +247,11 @@ namespace SWLOR.Component.Properties.UI.ViewModel
             SearchText = string.Empty;
             _playerIds.Clear();
             _isCategory = initialPayload.IsCategory;
-            _propertyType = initialPayload.PropertyType;
+            PropertyType = initialPayload.PropertyType;
             _cityId = initialPayload.CityId;
             IsPlayerSelected = false;
             
-            AvailablePermissions = _property.GetPermissionsByPropertyType(_propertyType);
+            AvailablePermissions = Property.GetPermissionsByPropertyType(PropertyType);
 
             if (_isCategory)
             {
@@ -269,7 +269,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
                     .First();
 
                 var property = _db.Get<WorldProperty>(PropertyId);
-                var propertyDetail = _property.GetPropertyDetail(property.PropertyType);
+                var propertyDetail = Property.GetPropertyDetail(property.PropertyType);
 
                 PropertyName = property.CustomName;
                 CanChangePublicSetting = grantorPermissions.GrantPermissions.ContainsKey(PropertyPermissionType.EnterProperty) &&
@@ -435,7 +435,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
             if (dbProperty == null)
                 return;
 
-            var propertyDetail = _property.GetPropertyDetail(dbProperty.PropertyType);
+            var propertyDetail = Property.GetPropertyDetail(dbProperty.PropertyType);
 
             if (propertyDetail.PublicSetting == PropertyPublicType.Adjustable &&
                 grantorPermissions.GrantPermissions[PropertyPermissionType.EnterProperty])

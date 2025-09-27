@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -29,37 +30,28 @@ namespace SWLOR.Component.Perk.UI.ViewModel
     {
         private readonly ILogger _logger;
         private readonly IDatabaseService _db;
-        private readonly IPerkService _perkService;
-        private readonly IAbilityService _abilityService;
-        private readonly IItemService _itemService;
-        private readonly ISkillService _skillService;
-        private readonly IBeastMasteryService _beastMastery;
-        private readonly ITimeService _timeService;
-        private readonly ICurrencyService _currencyService;
+        private readonly IServiceProvider _serviceProvider;
 
         public PerksViewModel(
             IGuiService guiService, 
             ILogger logger, 
             IDatabaseService db, 
-            IPerkService perkService, 
-            IAbilityService abilityService, 
-            IItemService itemService, 
-            ISkillService skillService,
-            IBeastMasteryService beastMastery,
-            ITimeService timeService,
-            ICurrencyService currencyService) 
+            IServiceProvider serviceProvider) 
             : base(guiService)
         {
             _logger = logger;
             _db = db;
-            _perkService = perkService;
-            _abilityService = abilityService;
-            _itemService = itemService;
-            _skillService = skillService;
-            _beastMastery = beastMastery;
-            _timeService = timeService;
-            _currencyService = currencyService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
+        private IAbilityService AbilityService => _serviceProvider.GetRequiredService<IAbilityService>();
+        private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
+        private ISkillService SkillService => _serviceProvider.GetRequiredService<ISkillService>();
+        private IBeastMasteryService BeastMastery => _serviceProvider.GetRequiredService<IBeastMasteryService>();
+        private ITimeService TimeService => _serviceProvider.GetRequiredService<ITimeService>();
+        private ICurrencyService CurrencyService => _serviceProvider.GetRequiredService<ICurrencyService>();
         
         private const int ItemsPerPage = 30;
         private int _pages;
@@ -259,7 +251,7 @@ namespace SWLOR.Component.Perk.UI.ViewModel
                 new("<All Categories>", 0)
             };
 
-            foreach (var (type, detail) in _perkService.GetAllActivePerkCategories(groupType)) 
+            foreach (var (type, detail) in PerkService.GetAllActivePerkCategories(groupType)) 
             {
                 categories.Add(new GuiComboEntry(detail.Name, (int)type));
             }
@@ -276,21 +268,21 @@ namespace SWLOR.Component.Perk.UI.ViewModel
             if (IsInMyPerksMode)
             {
                 AvailableSP = $"Available SP: {dbPlayer.UnallocatedSP}";
-                TotalSP = $"Total SP: {dbPlayer.TotalSPAcquired} / {_skillService.SkillCap}";
+                TotalSP = $"Total SP: {dbPlayer.TotalSPAcquired} / {SkillService.SkillCap}";
             }
             else if (IsInBeastPerksMode)
             {
                 var dbBeast = _db.Get<Beast>(dbPlayer.ActiveBeastId);
                 AvailableSP = $"Available SP: {dbBeast.UnallocatedSP}";
-                TotalSP = $"Total SP: {dbBeast.Level} / {_beastMastery.MaxLevel}";
+                TotalSP = $"Total SP: {dbBeast.Level} / {BeastMastery.MaxLevel}";
             }
 
             var dateRefundAvailable = dbPlayer.DatePerkRefundAvailable ?? now;
             var isRefundAvailable = dateRefundAvailable <= now;
             var dateRefundAvailableText = isRefundAvailable
                 ? "Now"
-                : _timeService.GetTimeToWaitLongIntervals(now, dateRefundAvailable, true);
-            ResetNextAvailable = $"Reset Available: {dateRefundAvailableText} [# Available: {_currencyService.GetCurrency(Player, CurrencyType.PerkRefundToken)}]";
+                : TimeService.GetTimeToWaitLongIntervals(now, dateRefundAvailable, true);
+            ResetNextAvailable = $"Reset Available: {dateRefundAvailableText} [# Available: {CurrencyService.GetCurrency(Player, CurrencyType.PerkRefundToken)}]";
             IsRefundEnabled = false;
             HasBeast = !string.IsNullOrWhiteSpace(dbPlayer.ActiveBeastId);
         }
@@ -314,8 +306,8 @@ namespace SWLOR.Component.Perk.UI.ViewModel
                 ? PerkGroupType.Player
                 : PerkGroupType.Beast;
             var perkList = SelectedPerkCategoryId == 0
-                ? _perkService.GetAllActivePerks(group)
-                : _perkService.GetActivePerksInCategory(group, (PerkCategoryType)SelectedPerkCategoryId);
+                ? PerkService.GetAllActivePerks(group)
+                : PerkService.GetActivePerksInCategory(group, (PerkCategoryType)SelectedPerkCategoryId);
 
             // Filter down to just perks with a name partially matching the search text
             if (!string.IsNullOrWhiteSpace(SearchText))
@@ -395,7 +387,7 @@ namespace SWLOR.Component.Perk.UI.ViewModel
 
         private string BuildSelectedPerkDetailText(PerkDetail detail, PerkLevel currentUpgrade, PerkLevel nextUpgrade)
         {
-            var categoryDetail = _perkService.GetPerkCategoryDetails(detail.Category);
+            var categoryDetail = PerkService.GetPerkCategoryDetails(detail.Category);
             var selectedDetails = detail.Name + "\n\n";
 
             // Perk Description
@@ -475,7 +467,7 @@ namespace SWLOR.Component.Perk.UI.ViewModel
             PerkDetailSelected[SelectedPerkIndex] = true;
             var selectedPerk = _filteredPerks[index];
 
-            var detail = _perkService.GetPerkDetails(selectedPerk);
+            var detail = PerkService.GetPerkDetails(selectedPerk);
             int unallocatedSP;
             int rank;
 
@@ -525,7 +517,7 @@ namespace SWLOR.Component.Perk.UI.ViewModel
             IsPerkSelected = true;
             IsRefundEnabled = (dbPlayer.DatePerkRefundAvailable == null ||
                                dbPlayer.DatePerkRefundAvailable <= DateTime.UtcNow) &&
-                              _currencyService.GetCurrency(Player, CurrencyType.PerkRefundToken) > 0 &&
+                              CurrencyService.GetCurrency(Player, CurrencyType.PerkRefundToken) > 0 &&
                               currentUpgrade != null;
         };
 
@@ -542,8 +534,8 @@ namespace SWLOR.Component.Perk.UI.ViewModel
 
                 // If feat isn't registered or the ability doesn't have an impact or concentration action,
                 // don't add the feat to the player's hot bar.
-                if (!_abilityService.IsFeatRegistered(feat)) continue;
-                var abilityDetail = _abilityService.GetAbilityDetail(feat);
+                if (!AbilityService.IsFeatRegistered(feat)) continue;
+                var abilityDetail = AbilityService.GetAbilityDetail(feat);
                 if (abilityDetail.ImpactAction == null && abilityDetail.ConcentrationStatusEffectType == StatusEffectType.Invalid) continue;
 
                 AddFeatToHotBar(feat);
@@ -589,7 +581,7 @@ namespace SWLOR.Component.Perk.UI.ViewModel
             if (!GetIsObjectValid(target))
                 return;
 
-            var perkDetail = _perkService.GetPerkDetails(selectedPerk);
+            var perkDetail = PerkService.GetPerkDetails(selectedPerk);
             if (perkDetail.PurchasedTriggers.Count > 0)
             {
                 foreach (var action in perkDetail.PurchasedTriggers)
@@ -623,7 +615,7 @@ namespace SWLOR.Component.Perk.UI.ViewModel
                     : 0;
             }
             
-            var detail = _perkService.GetPerkDetails(selectedPerk);
+            var detail = PerkService.GetPerkDetails(selectedPerk);
             
             var nextUpgrade = detail.PerkLevels.ContainsKey(rank + 1)
                 ? detail.PerkLevels[rank + 1]
@@ -641,7 +633,7 @@ namespace SWLOR.Component.Perk.UI.ViewModel
                     // Refresh data
                     dbPlayer = _db.Get<Player>(playerId);
                     selectedPerk = _filteredPerks[_selectedPerkIndex];
-                    detail = _perkService.GetPerkDetails(selectedPerk);
+                    detail = PerkService.GetPerkDetails(selectedPerk);
                     int unallocatedSP;
 
                     if (IsInMyPerksMode)
@@ -763,10 +755,10 @@ namespace SWLOR.Component.Perk.UI.ViewModel
                 var playerId = GetObjectUUID(Player);
                 var dbPlayer = _db.Get<Player>(playerId);
                 var selectedPerk = _filteredPerks[SelectedPerkIndex];
-                var perkDetail = _perkService.GetPerkDetails(selectedPerk);
+                var perkDetail = PerkService.GetPerkDetails(selectedPerk);
                 var target = IsInMyPerksMode ? Player : GetAssociate(AssociateType.Henchman, Player);
 
-                if (_currencyService.GetCurrency(Player, CurrencyType.PerkRefundToken) <= 0)
+                if (CurrencyService.GetCurrency(Player, CurrencyType.PerkRefundToken) <= 0)
                 {
                     FloatingTextStringOnCreature($"You do not have any refund tokens.", Player, false);
                 }
@@ -774,7 +766,7 @@ namespace SWLOR.Component.Perk.UI.ViewModel
                     dbPlayer.DatePerkRefundAvailable > DateTime.UtcNow)
                 {
                     var delta = (DateTime)dbPlayer.DatePerkRefundAvailable - DateTime.UtcNow;
-                    var time = _timeService.GetTimeLongIntervals(delta.Days, delta.Hours, delta.Minutes, delta.Seconds, false);
+                    var time = TimeService.GetTimeLongIntervals(delta.Days, delta.Hours, delta.Minutes, delta.Seconds, false);
                     FloatingTextStringOnCreature($"You can refund another perk in {time}.", Player, false);
                 }
                 else
@@ -825,7 +817,7 @@ namespace SWLOR.Component.Perk.UI.ViewModel
 
                     dbPlayer.DatePerkRefundAvailable = DateTime.UtcNow.AddHours(1);
                     _db.Set(dbPlayer);
-                    _currencyService.TakeCurrency(Player, CurrencyType.PerkRefundToken, 1);
+                    CurrencyService.TakeCurrency(Player, CurrencyType.PerkRefundToken, 1);
 
                     _guiService.PublishRefreshEvent(Player, new PerkRefundedRefreshEvent(selectedPerk));
 

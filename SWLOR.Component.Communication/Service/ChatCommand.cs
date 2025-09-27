@@ -39,7 +39,7 @@ namespace SWLOR.Component.Communication.Service
         public ChatCommand(IAppSettings appSettings, IServiceProvider serviceProvider)
         {
             _appSettings = appSettings;
-            // Services are now lazy-loaded via IServiceProvider
+            _serviceProvider = serviceProvider;
         }
 
         private const string InvalidChatCommandMessage = "Invalid chat command. Use '/help' to get a list of available commands.";
@@ -180,7 +180,7 @@ namespace SWLOR.Component.Communication.Service
 
             foreach (var type in types)
             {
-                var instance = (IChatCommandListDefinition) Activator.CreateInstance(type);
+                var instance = (IChatCommandListDefinition) _serviceProvider.GetRequiredService(type);
                 var commands = instance.BuildChatCommands();
 
                 foreach (var (key, value) in commands)

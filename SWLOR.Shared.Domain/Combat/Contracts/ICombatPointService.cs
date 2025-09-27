@@ -9,5 +9,8 @@ namespace SWLOR.Shared.Domain.Combat.Contracts
         int GetRecentEnemyLevel(uint player);
         void ClearRecentEnemyLevel(uint player);
         int GetTaggedCreatureCount(uint player);
+        void OnHitCastSpell();
+        void OnCreatureDeath();
+        void OnPlayerExit();
     }
 }

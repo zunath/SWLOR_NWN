@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -34,43 +35,29 @@ namespace SWLOR.Component.Character.UI.ViewModel
         IGuiRefreshable<BeastGainXPRefreshEvent>
     {
         private readonly IDatabaseService _db;
-        private readonly IStatService _statService;
-        private readonly ISkillService _skillService;
-        private readonly IItemService _itemService;
-        private readonly ICombatService _combatService;
-        private readonly IAbilityService _abilityService;
-        private readonly ISpaceService _spaceService;
-        private readonly IBeastMasteryService _beastMasteryService;
-        private readonly IDialogService _dialogService;
-        private readonly IStatusEffectService _statusEffectService;
-        private readonly IHoloComService _holoComService;
+        private readonly IServiceProvider _serviceProvider;
 
         public CharacterSheetViewModel(
             IGuiService guiService, 
             IDatabaseService db, 
-            IStatService statService, 
-            ISkillService skillService, 
-            IItemService itemService, 
-            ICombatService combatService, 
-            IAbilityService abilityService, 
-            ISpaceService spaceService, 
-            IBeastMasteryService beastMasteryService,
-            IDialogService dialogService,
-            IStatusEffectService statusEffectService,
-            IHoloComService holoComService) : base(guiService)
+            IServiceProvider serviceProvider) : base(guiService)
         {
             _db = db;
-            _statService = statService;
-            _skillService = skillService;
-            _itemService = itemService;
-            _combatService = combatService;
-            _abilityService = abilityService;
-            _spaceService = spaceService;
-            _beastMasteryService = beastMasteryService;
-            _dialogService = dialogService;
-            _statusEffectService = statusEffectService;
-            _holoComService = holoComService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+        private ISkillService SkillService => _serviceProvider.GetRequiredService<ISkillService>();
+        private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
+        private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
+        private IAbilityService AbilityService => _serviceProvider.GetRequiredService<IAbilityService>();
+        private ISpaceService SpaceService => _serviceProvider.GetRequiredService<ISpaceService>();
+        private IBeastMasteryService BeastMasteryService => _serviceProvider.GetRequiredService<IBeastMasteryService>();
+        private IDialogService DialogService => _serviceProvider.GetRequiredService<IDialogService>();
+        private IStatusEffectService StatusEffectService => _serviceProvider.GetRequiredService<IStatusEffectService>();
+        private IHoloComService HoloComService => _serviceProvider.GetRequiredService<IHoloComService>();
+        private IGuiService GuiService => _serviceProvider.GetRequiredService<IGuiService>();
         
         private const int MaxUpgrades = 10;
         private uint _target;
@@ -316,61 +303,60 @@ namespace SWLOR.Component.Character.UI.ViewModel
 
         public Action OnClickSkills() => () =>
         {
-            _guiService.TogglePlayerWindow(Player, GuiWindowType.Skills);
+            GuiService.TogglePlayerWindow(Player, GuiWindowType.Skills);
         };
 
         public Action OnClickPerks() => () =>
         {
-            _guiService.TogglePlayerWindow(Player, GuiWindowType.Perks);
+            GuiService.TogglePlayerWindow(Player, GuiWindowType.Perks);
         };
 
         public Action OnClickChangePortrait() => () =>
         {
             var payload = new CustomizeCharacterPayload(_target);
-            _guiService.TogglePlayerWindow(Player, GuiWindowType.CustomizeCharacter, payload);
+            GuiService.TogglePlayerWindow(Player, GuiWindowType.CustomizeCharacter, payload);
         };
 
         public Action OnClickQuests() => () =>
         {
-            _guiService.TogglePlayerWindow(Player, GuiWindowType.Quests);
+            GuiService.TogglePlayerWindow(Player, GuiWindowType.Quests);
         };
 
         public Action OnClickRecipes() => () =>
         {
             var payload = new RecipesPayload(RecipesUIMode.Recipes, SkillType.Invalid);
-            _guiService.TogglePlayerWindow(Player, GuiWindowType.Recipes, payload);
+            GuiService.TogglePlayerWindow(Player, GuiWindowType.Recipes, payload);
         };
 
         public Action OnClickHoloCom() => () =>
         {
-            var spaceService = _spaceService;
-            if (spaceService.IsPlayerInSpaceMode(Player))
+            if (SpaceService.IsPlayerInSpaceMode(Player))
             {
                 SendMessageToPC(Player, ColorToken.Red("Holocom cannot be used in space."));
                 return;
             }
 
-            _holoComService.StartHoloComDialog(Player);
+            HoloComService.StartHoloComDialog(Player);
         };
 
         public Action OnClickKeyItems() => () =>
         {
-            _guiService.TogglePlayerWindow(Player, GuiWindowType.KeyItems);
+            GuiService.TogglePlayerWindow(Player, GuiWindowType.KeyItems);
         };
 
         public Action OnClickCurrencies() => () =>
         {
-            _guiService.TogglePlayerWindow(Player, GuiWindowType.Currencies);
+            GuiService.TogglePlayerWindow(Player, GuiWindowType.Currencies);
         };
 
         public Action OnClickAchievements() => () =>
         {
-            _guiService.TogglePlayerWindow(Player, GuiWindowType.Achievements);
+            GuiService.TogglePlayerWindow(Player, GuiWindowType.Achievements);
         };
 
         public Action OnClickNotes() => () =>
         {
-            _guiService.TogglePlayerWindow(Player, GuiWindowType.Notes);
+            GuiService.TogglePlayerWindow(Player, GuiWindowType.Notes);
         };
 
         public Action OnClickOpenTrash() => () =>
@@ -384,12 +370,12 @@ namespace SWLOR.Component.Character.UI.ViewModel
         public Action OnClickAppearance() => () =>
         {
             var payload = new AppearanceEditorPayload(Player);
-            _guiService.TogglePlayerWindow(Player, GuiWindowType.AppearanceEditor, payload);
+            GuiService.TogglePlayerWindow(Player, GuiWindowType.AppearanceEditor, payload);
         };
 
         public Action OnClickSettings() => () =>
         {
-            _guiService.TogglePlayerWindow(Player, GuiWindowType.Settings);
+            GuiService.TogglePlayerWindow(Player, GuiWindowType.Settings);
         };
 
         private void UpgradeAttribute(AbilityType ability, string abilityName)
@@ -486,8 +472,8 @@ namespace SWLOR.Component.Character.UI.ViewModel
             }
             else
             {
-                var currentFP = _statService.GetCurrentFP(_target);
-                var maxFP = _statService.GetMaxFP(_target);
+                var currentFP = StatService.GetCurrentFP(_target);
+                var maxFP = StatService.GetMaxFP(_target);
                 if (currentFP < 0)
                     currentFP = 0;
                 if (maxFP < 0)
@@ -496,8 +482,8 @@ namespace SWLOR.Component.Character.UI.ViewModel
                 FP = $"{currentFP} / {maxFP}";
             }
 
-            var currentSTM = _statService.GetCurrentStamina(_target);
-            var maxSTM = _statService.GetMaxStamina(_target);
+            var currentSTM = StatService.GetCurrentStamina(_target);
+            var maxSTM = StatService.GetMaxStamina(_target);
             if (currentSTM < 0)
                 currentSTM = 0;
             if (maxSTM < 0)
@@ -536,7 +522,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
             (string, string) GetCombatInfo( uint item)
             {
                 var itemType = GetBaseItemType(item);
-                var skill = _skillService.GetSkillTypeByBaseItem(itemType);
+                var skill = SkillService.GetSkillTypeByBaseItem(itemType);
                 int skillRank;
 
                 if (GetIsPC(_target))
@@ -547,23 +533,23 @@ namespace SWLOR.Component.Character.UI.ViewModel
                 }
                 else
                 {
-                    var npcStats = _statService.GetNPCStats(_target);
+                    var npcStats = StatService.GetNPCStats(_target);
                     skillRank = npcStats.Level;
                 }
 
-                var damageAbility = _itemService.GetWeaponDamageAbilityType(itemType);
+                var damageAbility = ItemService.GetWeaponDamageAbilityType(itemType);
                 var damageStat = GetAbilityScore(_target, damageAbility);
-                var dmg = _itemService.GetDMG(item) + _combatService.GetMiscDMGBonus(_target, itemType);
+                var dmg = ItemService.GetDMG(item) + CombatService.GetMiscDMGBonus(_target, itemType);
                 var dmgText = $"{dmg} DMG";
-                var attack = _statService.GetAttack(_target, damageAbility, skill);
-                var defense = _statService.CalculateDefense(damageStat, skillRank, 0);
-                var (min, max) = _combatService.CalculateDamageRange(attack, dmg, damageStat, defense, damageStat, 0);
+                var attack = StatService.GetAttack(_target, damageAbility, skill);
+                var defense = StatService.CalculateDefense(damageStat, skillRank, 0);
+                var (min, max) = CombatService.CalculateDamageRange(attack, dmg, damageStat, defense, damageStat, 0);
                 var tooltip = $"Est. Damage: {min} - {max}";
 
                 return (dmgText, tooltip);
             }
 
-            var food = _statusEffectService.GetEffectData<FoodEffectData>(Player, StatusEffectType.Food) ?? new FoodEffectData();
+            var food = StatusEffectService.GetEffectData<FoodEffectData>(Player, StatusEffectType.Food) ?? new FoodEffectData();
             var mainHand = GetItemInSlot(InventorySlot.RightHand, _target);
             var offHand = GetItemInSlot(InventorySlot.LeftHand, _target);
             var mainHandType = GetBaseItemType(mainHand);
@@ -595,36 +581,36 @@ namespace SWLOR.Component.Character.UI.ViewModel
             AbilityType damageStat;
             AbilityType accuracyStatOverride;
 
-            if (_beastMasteryService.IsPlayerBeast(_target))
+            if (BeastMasteryService.IsPlayerBeast(_target))
             {
-                var beastType = _beastMasteryService.GetBeastType(_target);
-                var beastDetails = _beastMasteryService.GetBeastDetail(beastType);
+                var beastType = BeastMasteryService.GetBeastType(_target);
+                var beastDetails = BeastMasteryService.GetBeastDetail(beastType);
                 damageStat = beastDetails.DamageStat;
                 accuracyStatOverride = beastDetails.AccuracyStat;
                 mainHand = GetItemInSlot(InventorySlot.CreatureArmor, _target);
             }
             else
             {
-                damageStat = _itemService.GetWeaponDamageAbilityType(mainHandType);
+                damageStat = ItemService.GetWeaponDamageAbilityType(mainHandType);
                 accuracyStatOverride = AbilityType.Invalid;
 
                 // Strong Style (Lightsaber)
-                if (_itemService.LightsaberBaseItemTypes.Contains(mainHandType) &&
-                    _abilityService.IsAbilityToggled(_target, AbilityToggleType.StrongStyleLightsaber))
+                if (ItemService.LightsaberBaseItemTypes.Contains(mainHandType) &&
+                    AbilityService.IsAbilityToggled(_target, AbilityToggleType.StrongStyleLightsaber))
                 {
                     damageStat = AbilityType.Might;
                     accuracyStatOverride = AbilityType.Perception;
                 }
                 // Strong Style (Saberstaff)
-                if (_itemService.SaberstaffBaseItemTypes.Contains(mainHandType) &&
-                    _abilityService.IsAbilityToggled(_target, AbilityToggleType.StrongStyleSaberstaff))
+                if (ItemService.SaberstaffBaseItemTypes.Contains(mainHandType) &&
+                    AbilityService.IsAbilityToggled(_target, AbilityToggleType.StrongStyleSaberstaff))
                 {
                     damageStat = AbilityType.Might;
                     accuracyStatOverride = AbilityType.Perception;
                 }
 
                 // Flurry Style (Staff)
-                if (_itemService.StaffBaseItemTypes.Contains(mainHandType) &&
+                if (ItemService.StaffBaseItemTypes.Contains(mainHandType) &&
                     GetHasFeat(FeatType.FlurryStyle, _target))
                 {
                     damageStat = AbilityType.Perception;
@@ -632,10 +618,10 @@ namespace SWLOR.Component.Character.UI.ViewModel
                 }
             }
             
-            var mainHandSkill = _skillService.GetSkillTypeByBaseItem(mainHandType);
-            Attack = _statService.GetAttack(_target, damageStat, mainHandSkill);
-            DefensePhysical = _statService.GetDefense(_target, CombatDamageType.Physical, AbilityType.Vitality);
-            DefenseForce = _statService.GetDefense(_target, CombatDamageType.Force, AbilityType.Willpower);
+            var mainHandSkill = SkillService.GetSkillTypeByBaseItem(mainHandType);
+            Attack = StatService.GetAttack(_target, damageStat, mainHandSkill);
+            DefensePhysical = StatService.GetDefense(_target, CombatDamageType.Physical, AbilityType.Vitality);
+            DefenseForce = StatService.GetDefense(_target, CombatDamageType.Force, AbilityType.Willpower);
             
             if (GetIsPC(_target))
             {
@@ -651,7 +637,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
             }
             else
             {
-                var npcStats = _statService.GetNPCStats(_target);
+                var npcStats = StatService.GetNPCStats(_target);
                 var fireDefense = npcStats.Defenses.ContainsKey(CombatDamageType.Fire) ? npcStats.Defenses[CombatDamageType.Fire] : 0;
                 var poisonDefense = npcStats.Defenses.ContainsKey(CombatDamageType.Poison) ? npcStats.Defenses[CombatDamageType.Poison] : 0;
                 var electricalDefense = npcStats.Defenses.ContainsKey(CombatDamageType.Electrical) ? npcStats.Defenses[CombatDamageType.Electrical] : 0;
@@ -660,20 +646,20 @@ namespace SWLOR.Component.Character.UI.ViewModel
                 DefenseElemental = $"{fireDefense}/{poisonDefense}/{electricalDefense}/{iceDefense}";
             }
 
-            Accuracy = _statService.GetAccuracy(_target, mainHand, accuracyStatOverride, SkillType.Invalid);
-            Evasion = _statService.GetEvasion(_target, SkillType.Invalid);
+            Accuracy = StatService.GetAccuracy(_target, mainHand, accuracyStatOverride, SkillType.Invalid);
+            Evasion = StatService.GetEvasion(_target, SkillType.Invalid);
 
-            var smithery = _statService.CalculateControl(_target, SkillType.Smithery);
-            var engineering = _statService.CalculateControl(_target, SkillType.Engineering);
-            var fabrication = _statService.CalculateControl(_target, SkillType.Fabrication);
-            var agriculture = _statService.CalculateControl(_target, SkillType.Agriculture);
+            var smithery = StatService.CalculateControl(_target, SkillType.Smithery);
+            var engineering = StatService.CalculateControl(_target, SkillType.Engineering);
+            var fabrication = StatService.CalculateControl(_target, SkillType.Fabrication);
+            var agriculture = StatService.CalculateControl(_target, SkillType.Agriculture);
 
             Control = $"{smithery}/{engineering}/{fabrication}/{agriculture}";
 
-            smithery = _statService.CalculateCraftsmanship(_target, SkillType.Smithery);
-            engineering = _statService.CalculateCraftsmanship(_target, SkillType.Engineering);
-            fabrication = _statService.CalculateCraftsmanship(_target, SkillType.Fabrication);
-            agriculture = _statService.CalculateCraftsmanship(_target, SkillType.Agriculture);
+            smithery = StatService.CalculateCraftsmanship(_target, SkillType.Smithery);
+            engineering = StatService.CalculateCraftsmanship(_target, SkillType.Engineering);
+            fabrication = StatService.CalculateCraftsmanship(_target, SkillType.Fabrication);
+            agriculture = StatService.CalculateCraftsmanship(_target, SkillType.Agriculture);
             Craftsmanship = $"{smithery}/{engineering}/{fabrication}/{agriculture}";
         }
 
@@ -684,17 +670,17 @@ namespace SWLOR.Component.Character.UI.ViewModel
                 var playerId = GetObjectUUID(_target);
                 var dbPlayer = _db.Get<Player>(playerId);
 
-                SP = $"{dbPlayer.TotalSPAcquired} / {_skillService.SkillCap} ({dbPlayer.UnallocatedSP})";
-                APOrLevel = $"{dbPlayer.TotalAPAcquired} / {_skillService.APCap} ({dbPlayer.UnallocatedAP})";
+                SP = $"{dbPlayer.TotalSPAcquired} / {SkillService.SkillCap} ({dbPlayer.UnallocatedSP})";
+                APOrLevel = $"{dbPlayer.TotalAPAcquired} / {SkillService.APCap} ({dbPlayer.UnallocatedAP})";
             }
-            else if (_beastMasteryService.IsPlayerBeast(_target))
+            else if (BeastMasteryService.IsPlayerBeast(_target))
             {
-                var beastId = _beastMasteryService.GetBeastId(_target);
+                var beastId = BeastMasteryService.GetBeastId(_target);
                 var dbBeast = _db.Get<Beast>(beastId);
 
-                SP = $"{dbBeast.Level} / {_beastMasteryService.MaxLevel} ({dbBeast.UnallocatedSP})";
-                APOrLevel = $"{dbBeast.Level} / {_beastMasteryService.MaxLevel}";
-                APOrLevelTooltip = $"XP: {dbBeast.XP} / {_beastMasteryService.GetRequiredXP(dbBeast.Level, dbBeast.XPPenaltyPercent)}";
+                SP = $"{dbBeast.Level} / {BeastMasteryService.MaxLevel} ({dbBeast.UnallocatedSP})";
+                APOrLevel = $"{dbBeast.Level} / {BeastMasteryService.MaxLevel}";
+                APOrLevelTooltip = $"XP: {dbBeast.XP} / {BeastMasteryService.GetRequiredXP(dbBeast.Level, dbBeast.XPPenaltyPercent)}";
             }
         }
 
@@ -707,7 +693,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
         {
             CharacterType = GetClassByPosition(1, _target) == ClassType.Standard ? "Standard" : "Force Sensitive";
             Race = GetStringByStrRef(Convert.ToInt32(Get2DAString("racialtypes", "Name", (int)GetRacialType(_target))), GetGender(_target));
-            IsHolocomEnabled = !_spaceService.IsPlayerInSpaceMode(_target);
+            IsHolocomEnabled = !SpaceService.IsPlayerInSpaceMode(_target);
 
             if (IsPlayerMode)
             {
@@ -729,8 +715,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
         {
             _target = GetIsObjectValid(initialPayload.Target) ? initialPayload.Target : Player;
             IsPlayerMode = initialPayload.IsPlayerMode;
-            var beastMasteryService = _beastMasteryService;
-            ShowSP = IsPlayerMode || beastMasteryService.IsPlayerBeast(_target);
+            ShowSP = IsPlayerMode || BeastMasteryService.IsPlayerBeast(_target);
             ShowAPOrLevel = ShowSP;
 
             LoadData();
@@ -749,24 +734,23 @@ namespace SWLOR.Component.Character.UI.ViewModel
             var playerId = GetObjectUUID(_target);
             var dbPlayer = _db.Get<Player>(playerId);
 
-            SP = $"{dbPlayer.TotalSPAcquired} / {_skillService.SkillCap} ({dbPlayer.UnallocatedSP})";
-            APOrLevel = $"{dbPlayer.TotalAPAcquired} / {_skillService.APCap} ({dbPlayer.UnallocatedAP})";
+            SP = $"{dbPlayer.TotalSPAcquired} / {SkillService.SkillCap} ({dbPlayer.UnallocatedSP})";
+            APOrLevel = $"{dbPlayer.TotalAPAcquired} / {SkillService.APCap} ({dbPlayer.UnallocatedAP})";
             
             RefreshStats();
         }
 
         public void Refresh(BeastGainXPRefreshEvent payload)
         {
-            var beastMasteryService = _beastMasteryService;
-            if (!beastMasteryService.IsPlayerBeast(_target))
+            if (!BeastMasteryService.IsPlayerBeast(_target))
                 return;
 
-            var beastId = beastMasteryService.GetBeastId(_target);
+            var beastId = BeastMasteryService.GetBeastId(_target);
             var dbBeast = _db.Get<Beast>(beastId);
 
-            SP = $"{dbBeast.Level} / {beastMasteryService.MaxLevel} ({dbBeast.UnallocatedSP})";
-            APOrLevel = $"{dbBeast.Level} / {beastMasteryService.MaxLevel}";
-            APOrLevelTooltip = $"XP: {dbBeast.XP} / {beastMasteryService.GetRequiredXP(dbBeast.Level, dbBeast.XPPenaltyPercent)}";
+            SP = $"{dbBeast.Level} / {BeastMasteryService.MaxLevel} ({dbBeast.UnallocatedSP})";
+            APOrLevel = $"{dbBeast.Level} / {BeastMasteryService.MaxLevel}";
+            APOrLevelTooltip = $"XP: {dbBeast.XP} / {BeastMasteryService.GetRequiredXP(dbBeast.Level, dbBeast.XPPenaltyPercent)}";
         }
 
         public void Refresh(EquipItemRefreshEvent payload)

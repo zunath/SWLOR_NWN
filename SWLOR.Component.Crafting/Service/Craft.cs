@@ -59,7 +59,7 @@ namespace SWLOR.Component.Crafting.Service
             _db = db;
             _cacheService = cacheService;
             _itemCache = itemCache;
-            // Services are now lazy-loaded via IServiceProvider
+            _serviceProvider = serviceProvider;
             _timeService = timeService;
         }
         public int MaxResearchLevel => 10;

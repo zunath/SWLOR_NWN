@@ -24,7 +24,7 @@ namespace SWLOR.Component.World.Dialog
             IDialogService dialogService,
             IServiceProvider serviceProvider, IDialogBuilder dialogBuilder) : base(dialogService, dialogBuilder)
         {
-            // Services are now lazy-loaded via IServiceProvider
+            _serviceProvider = serviceProvider;
         }
 
         /// <summary>

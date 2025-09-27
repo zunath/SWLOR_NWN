@@ -1,40 +1,33 @@
-using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.AI.Enums;
 using SWLOR.Shared.Domain.Character.Contracts;
-using SWLOR.Shared.Domain.World.Contracts;
 
 namespace SWLOR.Shared.Domain.World.ValueObjects
 {
     public class SpawnTable
     {
-        private readonly IServiceProvider _serviceProvider;
         public string Name { get; set; }
         public int RespawnDelayMinutes { get; set; }
         public int ResourceDespawnMinutes { get; set; }
         public List<SpawnObject> Spawns { get; set; }
 
-        public SpawnTable(IServiceProvider serviceProvider, string name)
+        public SpawnTable(string name, int defaultRespawnMinutes = 30)
         {
-            _serviceProvider = serviceProvider;
             Name = name;
-            RespawnDelayMinutes = Spawn.DefaultRespawnMinutes;
+            RespawnDelayMinutes = defaultRespawnMinutes;
             ResourceDespawnMinutes = 180; // Default: 3 hours for resources
             Spawns = new List<SpawnObject>();
         }
 
-        // Lazy-loaded services to break circular dependencies
-        private IRandomService Random => _serviceProvider.GetRequiredService<IRandomService>();
-        private ISpawnService Spawn => _serviceProvider.GetRequiredService<ISpawnService>();
-
         /// <summary>
         /// Retrieves the next spawn resref, object type, and AI flags based on the rules for this specific spawn table.
         /// </summary>
+        /// <param name="randomService">The random service to use for weighted selection</param>
         /// <returns>The detailed spawn object to spawn.</returns>
-        public SpawnObject GetNextSpawn()
+        public SpawnObject GetNextSpawn(IRandomService randomService)
         {
-            var selectedObject = SelectRandomSpawnObject();
+            var selectedObject = SelectRandomSpawnObject(randomService);
             if (selectedObject == null)
                 return new SpawnObject
                 {
@@ -50,14 +43,15 @@ namespace SWLOR.Shared.Domain.World.ValueObjects
         /// <summary>
         /// Retrieves a random spawn object based on weight.
         /// </summary>
+        /// <param name="randomService">The random service to use for weighted selection</param>
         /// <returns></returns>
-        private SpawnObject SelectRandomSpawnObject()
+        private SpawnObject SelectRandomSpawnObject(IRandomService randomService)
         {
             var filteredList = FilterSpawnObjects();
             if (filteredList.Count <= 0) return null;
 
             var weights = filteredList.Select(s => s.Weight).ToArray();
-            var index = _random.GetRandomWeightedIndex(weights);
+            var index = randomService.GetRandomWeightedIndex(weights);
             
             // If GetRandomWeightedIndex returns -1 (no valid weights), return null
             if (index == -1 || index >= filteredList.Count)

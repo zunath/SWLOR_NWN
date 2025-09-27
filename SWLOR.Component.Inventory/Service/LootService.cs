@@ -13,7 +13,7 @@ using SWLOR.Shared.Domain.Inventory.ValueObjects;
 
 namespace SWLOR.Component.Inventory.Service
 {
-    public class Loot : ILootService
+    public class LootService : ILootService
     {
         private readonly ILogger _logger;
         private readonly IServiceProvider _serviceProvider;
@@ -23,7 +23,7 @@ namespace SWLOR.Component.Inventory.Service
         public string CorpseBodyVariable => "CORPSE_BODY";
         private const string CorpseCopyItemVariable = "CORPSE_ITEM_COPY";
 
-        public Loot(
+        public LootService(
             ILogger logger,
             IServiceProvider serviceProvider)
         {
@@ -40,11 +40,6 @@ namespace SWLOR.Component.Inventory.Service
 
         public void RegisterLootTables()
         {
-            RegisterLootTablesInternal();
-        }
-
-        private void RegisterLootTablesInternal()
-        {
             // Get all implementations of spawn table definitions.
             var types = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
@@ -52,7 +47,7 @@ namespace SWLOR.Component.Inventory.Service
 
             foreach (var type in types)
             {
-                var instance = (ILootTableDefinition)Activator.CreateInstance(type);
+                var instance = (ILootTableDefinition)_serviceProvider.GetRequiredService(type);
                 var builtTables = instance.BuildLootTables();
 
                 foreach (var table in builtTables)

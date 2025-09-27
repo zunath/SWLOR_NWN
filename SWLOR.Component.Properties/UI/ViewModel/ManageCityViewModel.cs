@@ -212,7 +212,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
         protected override void Initialize(IGuiPayload initialPayload)
         {
             var area = GetArea(TetherObject);
-            var propertyId = _property.GetPropertyId(area);
+            var propertyId = Property.GetPropertyId(area);
             var dbProperty = _db.Get<WorldProperty>(propertyId);
             var dbBuilding = _db.Get<WorldProperty>(dbProperty.ParentPropertyId);
             _cityId = dbBuilding.ParentPropertyId;
@@ -304,7 +304,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
             InstructionsColor = GuiColor.Green;
             CityName = dbCity.CustomName;
             Treasury = $"Treasury: {dbCity.Treasury} cr";
-            CityLevel = $"Level: {_property.GetCityLevelName(level)} (Lvl. {level})";
+            CityLevel = $"Level: {Property.GetCityLevelName(level)} (Lvl. {level})";
         }
         
         private void RefreshUpkeep()
@@ -480,7 +480,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
 
                     _logger.Write<PropertyLogGroup>($"City upgrade '{upgradeType}' purchased by {GetName(Player)} for property '{dbCity.CustomName}' ({dbCity.Id}).");
 
-                    var structureTypes = _property.GetStructuresByInteriorPropertyType(propertyType);
+                    var structureTypes = Property.GetStructuresByInteriorPropertyType(propertyType);
                     var structureTypeIds = structureTypes.Select(s => (int)s).ToList();
 
                     if (structureTypeIds.Count > 0)
@@ -494,8 +494,8 @@ namespace SWLOR.Component.Properties.UI.ViewModel
 
                         foreach (var propertyId in instancePropertyIds)
                         {
-                            var instance = _property.GetRegisteredInstance(propertyId);
-                            var layout = _property.GetLayoutByType(instance.LayoutType);
+                            var instance = Property.GetRegisteredInstance(propertyId);
+                            var layout = Property.GetLayoutByType(instance.LayoutType);
 
                             if (layout.OnCityUpgradeAction != null)
                             {

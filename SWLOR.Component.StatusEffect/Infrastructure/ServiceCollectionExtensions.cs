@@ -1,4 +1,9 @@
+using System;
+using System.Linq;
+using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
+using SWLOR.Component.StatusEffect.Contracts;
+using SWLOR.Component.StatusEffect.Feature;
 using SWLOR.Component.StatusEffect.Service;
 using SWLOR.Shared.Domain.Combat.Contracts;
 
@@ -18,6 +23,22 @@ namespace SWLOR.Component.StatusEffect.Infrastructure
         {
             // Register StatusEffect service
             services.AddSingleton<IStatusEffectService, Service.StatusEffect>();
+            
+            // Register event handlers as singletons
+            services.AddSingleton<EventHandlers.StatusEffectEventHandler>();
+
+            // Register feature classes
+            services.AddTransient<BuffTimer>();
+            
+            // Automatically register all IStatusEffectListDefinition implementations
+            var assembly = Assembly.GetExecutingAssembly();
+            var statusEffectDefinitionTypes = assembly.GetTypes()
+                .Where(t => t.IsClass && !t.IsAbstract && typeof(IStatusEffectListDefinition).IsAssignableFrom(t));
+            
+            foreach (var type in statusEffectDefinitionTypes)
+            {
+                services.AddTransient(type);
+            }
             
             return services;
         }

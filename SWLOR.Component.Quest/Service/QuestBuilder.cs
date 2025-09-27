@@ -25,33 +25,22 @@ namespace SWLOR.Game.Server.Service.QuestService
         private QuestDetail _activeQuest;
         private QuestStateDetail _activeState;
         
-        private readonly IItemCacheService _itemCacheService;
         private readonly IServiceProvider _serviceProvider;
         
         // Lazy-loaded services to break circular dependencies
+        private IItemCacheService ItemCacheService => _serviceProvider.GetRequiredService<IItemCacheService>();
         private IQuestService QuestService => _serviceProvider.GetRequiredService<IQuestService>();
         private IKeyItemService KeyItemService => _serviceProvider.GetRequiredService<IKeyItemService>();
         private IFactionService FactionService => _serviceProvider.GetRequiredService<IFactionService>();
-        private readonly IGuildService _guildService;
-        private readonly IDatabaseService _databaseService;
-        private readonly INPCGroupService _npcGroupService;
-        private readonly IGuiService _guiService;
-        private readonly IDialogService _dialogService;
+        private IGuildService GuildService => _serviceProvider.GetRequiredService<IGuildService>();
+        private IDatabaseService DatabaseService => _serviceProvider.GetRequiredService<IDatabaseService>();
+        private INPCGroupService NPCGroupService => _serviceProvider.GetRequiredService<INPCGroupService>();
+        private IGuiService GuiService => _serviceProvider.GetRequiredService<IGuiService>();
+        private IDialogService DialogService => _serviceProvider.GetRequiredService<IDialogService>();
 
-        public QuestBuilder(
-            IItemCacheService itemCacheService,
-            IQuestService questService,
-            IKeyItemService keyItemService,
-            IFactionService factionService,
-            IGuildService guildService,
-            IDatabaseService databaseService,
-            INPCGroupService npcGroupService,
-            IGuiService guiService,
-            IDialogService dialogService)
+        public QuestBuilder(IServiceProvider serviceProvider)
         {
-            _itemCacheService = itemCacheService;
-            _databaseService = databaseService;
-            // Services are now lazy-loaded via IServiceProvider
+            _serviceProvider = serviceProvider;
         }
 
         /// <summary>
@@ -68,7 +57,7 @@ namespace SWLOR.Game.Server.Service.QuestService
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentException($"{nameof(name)} cannot be null or whitespace.");
 
-            _activeQuest = new QuestDetail(_databaseService, _guiService, _dialogService, _questService)
+            _activeQuest = new QuestDetail(DatabaseService, GuiService, DialogService, QuestService)
             {
                 QuestId = questId,
                 Name = name
@@ -124,7 +113,7 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// <returns>A QuestBuilder with the configured options.</returns>
         public IQuestBuilder AddItemReward(string itemResref, int quantity, bool isSelectable = true)
         {
-            var reward = new ItemReward(_itemCacheService, itemResref, quantity, isSelectable);
+            var reward = new ItemReward(ItemCacheService, itemResref, quantity, isSelectable);
             _activeQuest.Rewards.Add(reward);
 
             return this;
@@ -139,7 +128,7 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// <returns>A QuestBuilder with the configured options.</returns>
         public IQuestBuilder AddGoldReward(int amount, bool isSelectable = true)
         {
-            var reward = new GoldReward(amount, isSelectable, _activeQuest.GuildType != GuildType.Invalid, _questService);
+            var reward = new GoldReward(amount, isSelectable, _activeQuest.GuildType != GuildType.Invalid, _serviceProvider);
             _activeQuest.Rewards.Add(reward);
 
             return this;
@@ -154,7 +143,7 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// <returns>A QuestBuilder with the configured options.</returns>
         public IQuestBuilder AddXPReward(int amount, bool isSelectable = true)
         {
-            var reward = new XPReward(_databaseService, _itemCacheService, amount, isSelectable);
+            var reward = new XPReward(DatabaseService, _serviceProvider, amount, isSelectable);
             _activeQuest.Rewards.Add(reward);
 
             return this;
@@ -168,7 +157,7 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// <returns>A QuestBuilder with the configured options.</returns>
         public IQuestBuilder AddKeyItemReward(KeyItemType keyItemType, bool isSelectable = true)
         {
-            var reward = new KeyItemReward(keyItemType, isSelectable, _keyItemService);
+            var reward = new KeyItemReward(keyItemType, isSelectable, _serviceProvider);
             _activeQuest.Rewards.Add(reward);
 
             return this;
@@ -183,7 +172,7 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// <returns>A QuestBuilder with the configured options.</returns>
         public IQuestBuilder AddGPReward(GuildType guild, int amount, bool isSelectable = true)
         {
-            var reward = new GPReward(_guildService, guild, amount, isSelectable);
+            var reward = new GPReward(GuildService, guild, amount, isSelectable);
             _activeQuest.Rewards.Add(reward);
 
             return this;
@@ -198,7 +187,7 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// <returns>A QuestBuilder with the configured options.</returns>
         public IQuestBuilder AddFactionStandingReward(FactionType faction, int amount, bool isSelectable = true)
         {
-            var reward = new FactionStandingReward(_factionService, faction, amount, isSelectable);
+            var reward = new FactionStandingReward(_serviceProvider, faction, amount, isSelectable);
             _activeQuest.Rewards.Add(reward);
 
             return this;
@@ -213,7 +202,7 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// <returns>A QuestBuilder with the configured options.</returns>
         public IQuestBuilder AddFactionPointsReward(FactionType faction, int amount, bool isSelectable = true)
         {
-            var reward = new FactionPointsReward(_factionService, faction, amount, isSelectable);
+            var reward = new FactionPointsReward(_serviceProvider, faction, amount, isSelectable);
             _activeQuest.Rewards.Add(reward);
 
             return this;
@@ -226,7 +215,7 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// <returns>A QuestBuilder with the configured options.</returns>
         public IQuestBuilder PrerequisiteQuest(string prerequisiteQuestId)
         {
-            var prereq = new RequiredQuestPrerequisite(_databaseService, prerequisiteQuestId);
+            var prereq = new RequiredQuestPrerequisite(DatabaseService, prerequisiteQuestId);
             _activeQuest.Prerequisites.Add(prereq);
 
             return this;
@@ -239,7 +228,7 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// <returns>A QuestBuilder with the configured options.</returns>
         public IQuestBuilder PrerequisiteKeyItem(KeyItemType keyItemType)
         {
-            var prereq = new RequiredKeyItemPrerequisite(keyItemType, _keyItemService);
+            var prereq = new RequiredKeyItemPrerequisite(keyItemType, _serviceProvider);
             _activeQuest.Prerequisites.Add(prereq);
 
             return this;
@@ -325,7 +314,7 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// <returns>A QuestBuilder with the configured options.</returns>
         public IQuestBuilder AddKillObjective(NPCGroupType group, int amount)
         {
-            var killObjective = new KillTargetObjective(_databaseService, _questService, _npcGroupService, group, amount);
+            var killObjective = new KillTargetObjective(DatabaseService, _serviceProvider, group, amount);
             _activeState.AddObjective(killObjective);
 
             return this;
@@ -339,7 +328,7 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// <returns>A QuestBuilder with the configured options.</returns>
         public IQuestBuilder AddCollectItemObjective(string resref, int amount)
         {
-            var collectItemObjective = new CollectItemObjective(_databaseService, _itemCacheService, _questService, resref, amount);
+            var collectItemObjective = new CollectItemObjective(DatabaseService, ItemCacheService, _serviceProvider, resref, amount);
             _activeState.AddObjective(collectItemObjective);
 
             return this;

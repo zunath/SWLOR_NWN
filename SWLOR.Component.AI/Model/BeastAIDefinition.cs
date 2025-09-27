@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
@@ -7,8 +8,8 @@ namespace SWLOR.Component.AI.Model
 {
     public class BeastAIDefinition: AIBase
     {
-        public BeastAIDefinition(IAbilityService abilityService, IPerkService perkService, IStatusEffectService statusEffectService) 
-            : base(abilityService, perkService, statusEffectService)
+        public BeastAIDefinition(IServiceProvider serviceProvider) 
+            : base(serviceProvider)
         {
         }
         public override (FeatType, uint) DeterminePerkAbility()

@@ -10,7 +10,7 @@ namespace SWLOR.Component.Migration.Feature.ServerMigration
 {
     public class _8_EnableServerResetReminders: ServerMigrationBase, IServerMigration
     {
-        public _8_EnableServerResetReminders(ILogger logger, IDatabaseService db, ISpaceService spaceService) : base(logger, db, spaceService)
+        public _8_EnableServerResetReminders(ILogger logger, IDatabaseService db, IServiceProvider serviceProvider) : base(logger, db, serviceProvider)
         {
         }
         

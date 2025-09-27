@@ -42,7 +42,7 @@ namespace SWLOR.Component.World.Service
             if (string.IsNullOrWhiteSpace(name))
                 name = $"Spawn Table {spawnTableId}";
 
-            ActiveTable = new SpawnTable(Random, Spawn, name);
+            ActiveTable = new SpawnTable(name, Spawn.DefaultRespawnMinutes);
             SpawnTables[spawnTableId] = ActiveTable;
 
             return this;

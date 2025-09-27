@@ -11,7 +11,7 @@ namespace SWLOR.Component.Migration.Feature.ServerMigration
 {
     public class _3_AddRacialStatsAndGrantRebuild: ServerMigrationBase, IServerMigration
     {
-        public _3_AddRacialStatsAndGrantRebuild(ILogger logger, IDatabaseService db, ISpaceService spaceService) : base(logger, db, spaceService)
+        public _3_AddRacialStatsAndGrantRebuild(ILogger logger, IDatabaseService db, IServiceProvider serviceProvider) : base(logger, db, serviceProvider)
         {
         }
         

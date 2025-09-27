@@ -17,7 +17,7 @@ namespace SWLOR.Shared.Caching.Extensions
         /// <returns>The service collection for chaining</returns>
         public static IServiceCollection AddCacheServices(this IServiceCollection services)
         {
-            services.AddSingleton<IGenericCacheService, GenericCacheService>();
+            services.AddSingleton<IGenericCacheService>(provider => new GenericCacheService(provider));
             services.AddSingleton<IItemCacheService, ItemCacheService>();
             services.AddSingleton<IPortraitCacheService, PortraitCacheService>();
             services.AddSingleton<ISoundSetCacheService, SoundSetCacheService>();

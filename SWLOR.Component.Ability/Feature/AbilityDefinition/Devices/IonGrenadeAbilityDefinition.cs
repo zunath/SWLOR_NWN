@@ -61,7 +61,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                 if (checkResult == SavingThrowResultType.Failed)
                 {
                     ApplyEffectToObject(DurationType.Temporary, EffectStunned(), target, Duration);
-                    _abilityService.ApplyTemporaryImmunity(target, Duration, ImmunityType.Stun);
+                    AbilityService.ApplyTemporaryImmunity(target, Duration, ImmunityType.Stun);
                 }
             }
 

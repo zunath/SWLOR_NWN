@@ -75,7 +75,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
             var playerId = GetObjectUUID(Player);
             var dbPlayer = _db.Get<Player>(playerId);
             var area = GetArea(TetherObject);
-            var propertyId = _property.GetPropertyId(area);
+            var propertyId = Property.GetPropertyId(area);
             var dbProperty = _db.Get<WorldProperty>(propertyId);
             var dbBuilding = _db.Get<WorldProperty>(dbProperty.ParentPropertyId);
             var dbCity = _db.Get<WorldProperty>(dbBuilding.ParentPropertyId);
@@ -92,7 +92,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
             cityDetails.Add($"City Name: {dbCity.CustomName}");
             cityDetails.Add($"Mayor: {dbMayorPlayer.Name}");
             cityDetails.Add($"# Citizens: {dbCitizenCount}");
-            cityDetails.Add($"Level: {_property.GetCityLevelName(dbCity.Upgrades[PropertyUpgradeType.CityLevel])}");
+            cityDetails.Add($"Level: {Property.GetCityLevelName(dbCity.Upgrades[PropertyUpgradeType.CityLevel])}");
             cityDetails.Add($"Established: {dbCity.DateCreated:yyyy-MM-dd hh:mm:ss}");
 
             cityDetails.Add($"Taxes & Fees:");
@@ -109,7 +109,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
             else if (dbElection.Stage == ElectionStageType.Registration)
             {
                 var openUntil = dbCity.Dates[PropertyDateType.ElectionStart]
-                    .AddDays(_property.ElectionRegistrationDays);
+                    .AddDays(Property.ElectionRegistrationDays);
                 cityDetails.Add($"Election registrations are currently OPEN to citizens until:");
                 cityDetails.Add($"    {openUntil:yyyy-MM-dd hh:mm:ss}");
             }
@@ -117,7 +117,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
             else if (dbElection.Stage == ElectionStageType.Voting)
             {
                 var openUntil = dbCity.Dates[PropertyDateType.ElectionStart]
-                    .AddDays(_property.ElectionRegistrationDays + _property.ElectionVotingDays);
+                    .AddDays(Property.ElectionRegistrationDays + Property.ElectionVotingDays);
                 cityDetails.Add($"Election voting is currently OPEN to citizens until:");
                 cityDetails.Add($"    {openUntil:yyyy-MM-dd hh:mm:ss}");
             }

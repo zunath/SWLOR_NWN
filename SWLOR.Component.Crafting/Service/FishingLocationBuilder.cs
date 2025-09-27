@@ -20,7 +20,7 @@ namespace SWLOR.Component.Crafting.Service
 
         public FishingLocationBuilder(IServiceProvider serviceProvider)
         {
-            // Services are now lazy-loaded via IServiceProvider
+            _serviceProvider = serviceProvider;
         }
 
         /// <summary>

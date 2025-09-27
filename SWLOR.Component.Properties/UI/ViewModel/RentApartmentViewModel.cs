@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Properties.Service;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Enums;
@@ -14,13 +15,16 @@ namespace SWLOR.Component.Properties.UI.ViewModel
     public class RentApartmentViewModel: GuiViewModelBase<RentApartmentViewModel, IGuiPayload>
     {
         private readonly IDatabaseService _db;
-        private readonly PropertyService _property;
+        private readonly IServiceProvider _serviceProvider;
 
-        public RentApartmentViewModel(IGuiService guiService, IDatabaseService db, PropertyService property) : base(guiService)
+        public RentApartmentViewModel(IGuiService guiService, IDatabaseService db, IServiceProvider serviceProvider) : base(guiService)
         {
             _db = db;
-            _property = property;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded service to break circular dependency
+        private PropertyService Property => _serviceProvider.GetRequiredService<PropertyService>();
         
         public string Instructions
         {
@@ -100,9 +104,9 @@ namespace SWLOR.Component.Properties.UI.ViewModel
             var layoutToggles = new GuiBindingList<bool>();
             _layoutTypes.Clear();
 
-            foreach (var layoutType in _property.GetAllLayoutsByPropertyType(PropertyType.Apartment))
+            foreach (var layoutType in Property.GetAllLayoutsByPropertyType(PropertyType.Apartment))
             {
-                var layout = _property.GetLayoutByType(layoutType);
+                var layout = Property.GetLayoutByType(layoutType);
 
                 layoutNames.Add(layout.Name);
                 layoutToggles.Add(false);
@@ -121,7 +125,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
         private void LoadLayout()
         {
             var layoutType = _layoutTypes[SelectedLayout];
-            var layout = _property.GetLayoutByType(layoutType);
+            var layout = Property.GetLayoutByType(layoutType);
 
             Name = layout.Name;
             FurnitureLimit = $"Structure Limit: {layout.StructureLimit} items";
@@ -143,7 +147,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
         public Action OnBuyApartment() => () =>
         {
             var layoutType = _layoutTypes[SelectedLayout];
-            var layout = _property.GetLayoutByType(layoutType);
+            var layout = Property.GetLayoutByType(layoutType);
 
             ShowModal($"Are you sure you want to buy this apartment layout for {layout.InitialPrice} credits? " +
                       $"Your lease will last for seven days and can be extended up to thirty days for {layout.PricePerDay} credits per day.",
@@ -174,8 +178,8 @@ namespace SWLOR.Component.Properties.UI.ViewModel
 
                     AssignCommand(Player, () => TakeGoldFromCreature(layout.InitialPrice, Player, true));
 
-                    var property = _property.CreateApartment(Player, layoutType);
-                    _property.EnterProperty(Player, property.Id);
+                    var property = Property.CreateApartment(Player, layoutType);
+                    Property.EnterProperty(Player, property.Id);
 
                     _guiService.TogglePlayerWindow(Player, GuiWindowType.RentApartment);
 
@@ -190,7 +194,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
         {
             var layoutType = _layoutTypes[SelectedLayout];
 
-            _property.PreviewProperty(Player, layoutType);
+            Property.PreviewProperty(Player, layoutType);
             _guiService.TogglePlayerWindow(Player, GuiWindowType.RentApartment);
         };
     }

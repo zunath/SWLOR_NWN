@@ -1,3 +1,5 @@
+using System.Linq;
+using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Perk.Contracts;
 using SWLOR.Component.Perk.EventHandlers;
@@ -35,6 +37,16 @@ namespace SWLOR.Component.Perk.Infrastructure
             
             // Register PerkEventHandler as singleton
             services.AddSingleton<PerkEventHandler>();
+            
+            // Automatically register all IPerkListDefinition implementations
+            var assembly = Assembly.GetExecutingAssembly();
+            var perkDefinitionTypes = assembly.GetTypes()
+                .Where(t => t.IsClass && !t.IsAbstract && typeof(IPerkListDefinition).IsAssignableFrom(t));
+            
+            foreach (var type in perkDefinitionTypes)
+            {
+                services.AddTransient(type);
+            }
             
             return services;
         }

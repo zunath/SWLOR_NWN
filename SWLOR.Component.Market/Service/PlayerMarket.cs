@@ -23,12 +23,7 @@ namespace SWLOR.Component.Market.Service
     public class PlayerMarket: IPlayerMarketService
     {
         private readonly IDatabaseService _db;
-        private readonly IGenericCacheService _cacheService;
         private readonly IServiceProvider _serviceProvider;
-        private readonly ICraftService _craftService;
-        private readonly ISpaceService _spaceService;
-        private readonly IPropertyService _propertyService;
-        private readonly IFishingService _fishingService;
         
         public const int MaxListingsPerMarket = 25;
         
@@ -44,25 +39,21 @@ namespace SWLOR.Component.Market.Service
 
         public PlayerMarket(
             IDatabaseService db, 
-            IGenericCacheService cacheService,
-            IServiceProvider serviceProvider,
-            ICraftService craftService,
-            ISpaceService spaceService,
-            IPropertyService propertyService,
-            IFishingService fishingService)
+            IServiceProvider serviceProvider)
         {
             _db = db;
-            _cacheService = cacheService;
             _serviceProvider = serviceProvider;
-            _craftService = craftService;
-            _spaceService = spaceService;
-            _propertyService = propertyService;
-            _fishingService = fishingService;
         }
 
         // Lazy-loaded services to break circular dependencies
+        private IGenericCacheService CacheService => _serviceProvider.GetRequiredService<IGenericCacheService>();
+        private ICraftService CraftService => _serviceProvider.GetRequiredService<ICraftService>();
+        private ISpaceService SpaceService => _serviceProvider.GetRequiredService<ISpaceService>();
+        private IPropertyService PropertyService => _serviceProvider.GetRequiredService<IPropertyService>();
+        private IFishingService FishingService => _serviceProvider.GetRequiredService<IFishingService>();
         private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
         private IBeastMasteryService BeastMasteryService => _serviceProvider.GetRequiredService<IBeastMasteryService>();
+
 
         public void RemoveOldListings()
         {
@@ -109,7 +100,7 @@ namespace SWLOR.Component.Market.Service
         /// </summary>
         public void LoadMarketCategories()
         {
-            _marketCategoryCache = _cacheService.BuildEnumCache<MarketCategoryType, MarketCategoryAttribute>()
+            _marketCategoryCache = CacheService.BuildEnumCache<MarketCategoryType, MarketCategoryAttribute>()
                 .WithAllItems()
                 .WithFilteredCache("Active", c => c.IsActive)
                 .Build();
@@ -131,7 +122,7 @@ namespace SWLOR.Component.Market.Service
         /// </summary>
         public void LoadMarkets()
         {
-            _marketRegionCache = _cacheService.BuildEnumCache<MarketRegionType, MarketRegionAttribute>()
+            _marketRegionCache = CacheService.BuildEnumCache<MarketRegionType, MarketRegionAttribute>()
                 .WithAllItems()
                 .WithFilteredCache("Active", r => r.IsActive)
                 .Build();
@@ -245,23 +236,23 @@ namespace SWLOR.Component.Market.Service
             }
 
             // Recipes
-            if (_craftService.IsItemRecipe(item))
+            if (CraftService.IsItemRecipe(item))
                 return MarketCategoryType.Recipe;
             // Components
-            if (_craftService.IsItemComponent(item))
+            if (CraftService.IsItemComponent(item))
                 return MarketCategoryType.Components;
             // Enhancements
-            if (_craftService.IsItemEnhancement(item))
+            if (CraftService.IsItemEnhancement(item))
                 return MarketCategoryType.Enhancement;
 
             // Ship Deeds
-            if (_spaceService.IsItemShip(item))
+            if (SpaceService.IsItemShip(item))
                 return MarketCategoryType.Starship;
-            if (_spaceService.IsItemShipModule(item))
+            if (SpaceService.IsItemShipModule(item))
                 return MarketCategoryType.StarshipParts;
 
             // Structures
-            if (_propertyService.GetStructureTypeFromItem(item) != StructureType.Invalid)
+            if (PropertyService.GetStructureTypeFromItem(item) != StructureType.Invalid)
                 return MarketCategoryType.Structure;
 
             // Food
@@ -273,7 +264,7 @@ namespace SWLOR.Component.Market.Service
                 return MarketCategoryType.PetFood;
 
             // Fishing Rods & Bait
-            if (_fishingService.IsItemFishingRod(item) || _fishingService.IsItemBait(item))
+            if (FishingService.IsItemFishingRod(item) || FishingService.IsItemBait(item))
                 return MarketCategoryType.Fishing;
 
             // Incubation
@@ -285,11 +276,11 @@ namespace SWLOR.Component.Market.Service
                 return MarketCategoryType.BeastEgg;
 
             // Blueprint
-            if (_craftService.GetBlueprintDetails(item).Recipe != RecipeType.Invalid)
+            if (CraftService.GetBlueprintDetails(item).Recipe != RecipeType.Invalid)
                 return MarketCategoryType.Blueprint;
 
             //Starship Ammo
-            if (_spaceService.IsStarshipAmmo(item))
+            if (SpaceService.IsStarshipAmmo(item))
                 return MarketCategoryType.StarshipAmmo;
             
             return MarketCategoryType.Miscellaneous;

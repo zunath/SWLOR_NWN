@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.ValueObjects;
@@ -6,14 +7,16 @@ namespace SWLOR.Component.Admin.Feature
 {
     public class TlkOverrides
     {
-        private readonly IAbilityService _abilityService;
-        private readonly IPerkService _perkService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public TlkOverrides(IAbilityService abilityService, IPerkService perkService)
+        public TlkOverrides(IServiceProvider serviceProvider)
         {
-            _abilityService = abilityService;
-            _perkService = perkService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IAbilityService AbilityService => _serviceProvider.GetRequiredService<IAbilityService>();
+        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
 
         public void OverrideTlks()
         {
@@ -180,7 +183,7 @@ namespace SWLOR.Component.Admin.Feature
                            "Recast: {3}s\n" +
                            "Description: {4}\n";
 
-            foreach (var (_, detail) in _perkService.GetAllPerks())
+            foreach (var (_, detail) in PerkService.GetAllPerks())
             {
                 var levelOneFeatDescriptionId = -1;
                 var levelOneSpellDescriptionId = -1;
@@ -194,7 +197,7 @@ namespace SWLOR.Component.Admin.Feature
                             continue;
                         if (!int.TryParse(Get2DAString("feat", "DESCRIPTION", (int)feat), out var featDescriptionId))
                             continue;
-                        if (!_abilityService.IsFeatRegistered(feat))
+                        if (!AbilityService.IsFeatRegistered(feat))
                             continue;
 
                         var spellDescriptionId = 0;
@@ -205,7 +208,7 @@ namespace SWLOR.Component.Admin.Feature
                             int.TryParse(Get2DAString("spells", "SpellDesc", spellId), out spellDescriptionId);
                         }
 
-                        var abilityDetail = _abilityService.GetAbilityDetail(feat);
+                        var abilityDetail = AbilityService.GetAbilityDetail(feat);
                         var fp = 0;
                         var stm = 0;
                         var recast = abilityDetail.RecastDelay?.Invoke(OBJECT_INVALID) ?? 0f;

@@ -64,7 +64,7 @@ namespace SWLOR.Component.Communication.Service
                 var delta = dbPlayer.RoleplayProgress.RPPoints - 50;
                 var bonusXP = delta * 25;
                 var xp = BaseXP + bonusXP + socialModifier * (BaseXP / 4);
-                var cantinaBonus = _property.GetEffectiveUpgradeLevel(dbPlayer.CitizenPropertyId, PropertyUpgradeType.CantinaLevel);
+                var cantinaBonus = PropertyService.GetEffectiveUpgradeLevel(dbPlayer.CitizenPropertyId, PropertyUpgradeType.CantinaLevel);
                 xp += (int)(BaseXP * (cantinaBonus * 0.05f));
 
                 dbPlayer.RoleplayProgress.RPPoints = 0;

@@ -25,7 +25,7 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
 
         public Dictionary<string, IQuestDetail> BuildQuests()
         {
-            var builder = _questBuilderFactory.Create();
+            var builder = QuestBuilderFactory.Create();
             SithBasementQuest(builder);
             return builder.Build();
         }
@@ -41,16 +41,16 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
 
                 .OnAcceptAction((player, sourceObject) =>
                 {
-                    _objectVisibilityService.AdjustVisibilityByObjectId(player, "7E2C4B6D9F8A35B1C0E8D7F3A4B5C6E2", VisibilityType.Hidden);
+                    ObjectVisibilityService.AdjustVisibilityByObjectId(player, "7E2C4B6D9F8A35B1C0E8D7F3A4B5C6E2", VisibilityType.Hidden);
                 })
                 .OnAbandonAction(player =>
                 {
-                    _objectVisibilityService.AdjustVisibilityByObjectId(player, "7E2C4B6D9F8A35B1C0E8D7F3A4B5C6E2", VisibilityType.Hidden);
+                    ObjectVisibilityService.AdjustVisibilityByObjectId(player, "7E2C4B6D9F8A35B1C0E8D7F3A4B5C6E2", VisibilityType.Hidden);
                 })
 
                 .OnCompleteAction((player, sourceObject) =>
                 {
-                    _objectVisibilityService.AdjustVisibilityByObjectId(player, "7E2C4B6D9F8A35B1C0E8D7F3A4B5C6E2", VisibilityType.Visible);
+                    ObjectVisibilityService.AdjustVisibilityByObjectId(player, "7E2C4B6D9F8A35B1C0E8D7F3A4B5C6E2", VisibilityType.Visible);
                 });
         }
     }

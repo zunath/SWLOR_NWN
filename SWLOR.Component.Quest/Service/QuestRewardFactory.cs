@@ -28,14 +28,14 @@ namespace SWLOR.Component.Quest.Service
         public IQuestReward CreateGoldReward(int amount, bool isSelectable = true, bool isGuildQuest = false)
         {
             var questService = _serviceProvider.GetRequiredService<IQuestService>();
-            return new GoldReward(amount, isSelectable, isGuildQuest, questService);
+            return new GoldReward(amount, isSelectable, isGuildQuest, _serviceProvider);
         }
 
         public IQuestReward CreateXPReward(int amount, bool isSelectable = true)
         {
             var db = _serviceProvider.GetRequiredService<IDatabaseService>();
             var itemCache = _serviceProvider.GetRequiredService<IItemCacheService>();
-            return new XPReward(db, itemCache, amount, isSelectable);
+            return new XPReward(db, _serviceProvider, amount, isSelectable);
         }
 
         public IQuestReward CreateItemReward(string itemResref, int quantity, bool isSelectable = true)
@@ -47,7 +47,7 @@ namespace SWLOR.Component.Quest.Service
         public IQuestReward CreateKeyItemReward(KeyItemType keyItemType, bool isSelectable = true)
         {
             var keyItemService = _serviceProvider.GetRequiredService<IKeyItemService>();
-            return new KeyItemReward(keyItemType, isSelectable, keyItemService);
+            return new KeyItemReward(keyItemType, isSelectable, _serviceProvider);
         }
 
         public IQuestReward CreateGPReward(GuildType guild, int amount, bool isSelectable = true)
@@ -59,13 +59,13 @@ namespace SWLOR.Component.Quest.Service
         public IQuestReward CreateFactionStandingReward(FactionType faction, int amount, bool isSelectable = true)
         {
             var factionService = _serviceProvider.GetRequiredService<IFactionService>();
-            return new FactionStandingReward(factionService, faction, amount, isSelectable);
+            return new FactionStandingReward(_serviceProvider, faction, amount, isSelectable);
         }
 
         public IQuestReward CreateFactionPointsReward(FactionType faction, int amount, bool isSelectable = true)
         {
             var factionService = _serviceProvider.GetRequiredService<IFactionService>();
-            return new FactionPointsReward(factionService, faction, amount, isSelectable);
+            return new FactionPointsReward(_serviceProvider, faction, amount, isSelectable);
         }
     }
 }

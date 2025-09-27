@@ -14,20 +14,8 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.FirstAid
 {
     public class ResuscitationAbilityDefinition: FirstAidBaseAbilityDefinition
     {
-        public ResuscitationAbilityDefinition(
-            IRandomService random, 
-            IPerkService perkService, 
-            ICombatPointService combatPointService, 
-            IEnmityService enmityService, 
-            IAbilityService abilityService,
-            IStatusEffectService statusEffect) 
-            : base(
-                random, 
-                perkService, 
-                combatPointService, 
-                enmityService, 
-                abilityService,
-                statusEffect)
+        public ResuscitationAbilityDefinition(IServiceProvider serviceProvider) 
+            : base(serviceProvider)
         {
         }
 

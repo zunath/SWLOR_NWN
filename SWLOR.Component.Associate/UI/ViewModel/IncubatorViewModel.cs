@@ -49,7 +49,7 @@ namespace SWLOR.Component.Associate.UI.ViewModel
             : base(guiService)
         {
             _logger = logger;
-            // Services are now lazy-loaded via IServiceProvider
+            _serviceProvider = serviceProvider;
             _targetingService = targetingService;
             _db = db;
             _timeService = timeService;

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Market.Contracts;
 using SWLOR.Component.Market.Enums;
 using SWLOR.Component.Market.UI.Payload;
@@ -22,22 +23,23 @@ namespace SWLOR.Component.Market.UI.ViewModel
     {
         private readonly ILogger _logger;
         private readonly IDatabaseService _db;
-        private readonly IItemService _itemService;
-        private readonly IPlayerMarketService _playerMarketService;
+        private readonly IServiceProvider _serviceProvider;
 
         public MarketBuyViewModel(
             IGuiService guiService, 
             ILogger logger, 
             IDatabaseService db, 
-            IItemService itemService, 
-            IPlayerMarketService playerMarketService) 
+            IServiceProvider serviceProvider) 
             : base(guiService)
         {
             _logger = logger;
             _db = db;
-            _itemService = itemService;
-            _playerMarketService = playerMarketService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
+        private IPlayerMarketService PlayerMarketService => _serviceProvider.GetRequiredService<IPlayerMarketService>();
         
         private const int ListingsPerPage = 20;
 
@@ -51,7 +53,7 @@ namespace SWLOR.Component.Market.UI.ViewModel
 
         public void LoadCategories()
         {
-            foreach (var (type, category) in _playerMarketService.GetActiveCategories())
+            foreach (var (type, category) in PlayerMarketService.GetActiveCategories())
             {
                 _categoryTypes.Add(type);
                 _categories.Add(category.Name);
@@ -157,7 +159,7 @@ namespace SWLOR.Component.Market.UI.ViewModel
             LoadCategories();
 
             _regionType = initialPayload.RegionType;
-            var regionDetail = _playerMarketService.GetMarketRegion(_regionType);
+            var regionDetail = PlayerMarketService.GetMarketRegion(_regionType);
             _skipPaginationSearch = true;
             _activeCategoryIdFilters.Clear();
             SelectedPageIndex = 0;
@@ -179,7 +181,7 @@ namespace SWLOR.Component.Market.UI.ViewModel
 
         private void Search()
         {
-            var marketDetail = _playerMarketService.GetMarketRegion(_regionType);
+            var marketDetail = PlayerMarketService.GetMarketRegion(_regionType);
             var query = new DBQuery<MarketItem>()
                 .AddFieldSearch(nameof(MarketItem.IsListed), true)
                 .AddFieldSearch(nameof(MarketItem.MarketId), marketDetail.MarketId, false);
@@ -295,7 +297,7 @@ namespace SWLOR.Component.Market.UI.ViewModel
             var dbItem = _db.Get<MarketItem>(itemId);
 
             var item = ObjectPlugin.Deserialize(dbItem.Data);
-            var payload = new ExamineItemPayload(GetName(item), GetDescription(item), _itemService.BuildItemPropertyString(item));
+            var payload = new ExamineItemPayload(GetName(item), GetDescription(item), ItemService.BuildItemPropertyString(item));
             _guiService.TogglePlayerWindow(Player, GuiWindowType.ExamineItem, payload);
             DestroyObject(item);
         };
@@ -359,7 +361,7 @@ namespace SWLOR.Component.Market.UI.ViewModel
                 _db.Delete<MarketItem>(itemId);
 
                 // Give the money to the seller.
-                var market = _playerMarketService.GetMarketRegion(_regionType);
+                var market = PlayerMarketService.GetMarketRegion(_regionType);
                 var sellerPlayerId = dbItem.PlayerId;
                 var dbSeller = _db.Get<Player>(sellerPlayerId);
                 var proceeds = (int)(price - (price * market.TaxRate));

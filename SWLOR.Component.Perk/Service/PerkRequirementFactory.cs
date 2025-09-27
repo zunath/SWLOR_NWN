@@ -18,23 +18,19 @@ namespace SWLOR.Component.Perk.Service
     {
         private readonly IDatabaseService _db;
         private readonly IServiceProvider _serviceProvider;
-        private readonly IQuestService _questService;
-        private readonly IPerkService _perkService;
-        private readonly IBeastMasteryService _beastMasteryService;
 
         public PerkRequirementFactory(
             IDatabaseService db,
-            IServiceProvider serviceProvider,
-            IQuestService questService,
-            IPerkService perkService,
-            IBeastMasteryService beastMasteryService)
+            IServiceProvider serviceProvider)
         {
             _db = db;
             _serviceProvider = serviceProvider;
-            _questService = questService;
-            _perkService = perkService;
-            _beastMasteryService = beastMasteryService;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IQuestService QuestService => _serviceProvider.GetRequiredService<IQuestService>();
+        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
+        private IBeastMasteryService BeastMasteryService => _serviceProvider.GetRequiredService<IBeastMasteryService>();
 
         public IPerkRequirement CreateSkillRequirement(SkillType skill, int requiredRank)
         {
@@ -43,12 +39,12 @@ namespace SWLOR.Component.Perk.Service
 
         public IPerkRequirement CreateQuestRequirement(string questId)
         {
-            return new PerkRequirementQuest(_db, _questService, questId);
+            return new PerkRequirementQuest(_db, _serviceProvider, questId);
         }
 
         public IPerkRequirement CreateCharacterTypeRequirement(CharacterType characterType)
         {
-            return new PerkRequirementCharacterType(_db, _perkService, characterType);
+            return new PerkRequirementCharacterType(_db, _serviceProvider, characterType);
         }
 
         public IPerkRequirement CreateUnlockRequirement(PerkType perkType)
@@ -58,12 +54,12 @@ namespace SWLOR.Component.Perk.Service
 
         public IPerkRequirement CreateMustHavePerkRequirement(PerkType mustHavePerkType, int mustHavePerkLevel = 0)
         {
-            return new PerkRequirementMustHavePerk(_db, _perkService, mustHavePerkType, mustHavePerkLevel);
+            return new PerkRequirementMustHavePerk(_db, _serviceProvider, mustHavePerkType, mustHavePerkLevel);
         }
 
         public IPerkRequirement CreateCannotHavePerkRequirement(PerkType cannotHavePerkType)
         {
-            return new PerkRequirementCannotHavePerk(_db, _perkService, cannotHavePerkType);
+            return new PerkRequirementCannotHavePerk(_db, _serviceProvider, cannotHavePerkType);
         }
 
         public IPerkRequirement CreateBeastLevelRequirement(int level)
@@ -73,7 +69,7 @@ namespace SWLOR.Component.Perk.Service
 
         public IPerkRequirement CreateBeastRoleRequirement(BeastRoleType role)
         {
-            return new PerkRequirementBeastRole(_db, role, _beastMasteryService);
+            return new PerkRequirementBeastRole(_db, role, _serviceProvider);
         }
     }
 }

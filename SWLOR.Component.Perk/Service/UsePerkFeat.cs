@@ -95,22 +95,22 @@ namespace SWLOR.Component.Perk.Service
             var targetLocation = Location(targetArea, targetPosition, 0.0f);
 
             var feat = (FeatType)Convert.ToInt32(EventsPlugin.GetEventData("FEAT_ID"));
-            if (!_abilityService.IsFeatRegistered(feat)) return;
-            var ability = _abilityService.GetAbilityDetail(feat);
+            if (!AbilityService.IsFeatRegistered(feat)) return;
+            var ability = AbilityService.GetAbilityDetail(feat);
 
             // Creature cannot use the feat.
             var effectivePerkLevel =
                 ability.EffectiveLevelPerkType == PerkType.Invalid
                     ? 1 // If there's not an associated perk, default level to 1.
-                    : _perkService.GetPerkLevel(activator, ability.EffectiveLevelPerkType);
+                    : PerkService.GetPerkLevel(activator, ability.EffectiveLevelPerkType);
 
             // Weapon abilities are queued for the next time the activator's attack lands on an enemy.
             if (ability.ActivationType == AbilityActivationType.Weapon)
             {
-                if (_abilityService.CanUseAbility(activator, target, feat, effectivePerkLevel, targetLocation))
+                if (AbilityService.CanUseAbility(activator, target, feat, effectivePerkLevel, targetLocation))
                 {
                     if(ability.DisplaysActivationMessage)
-                        _messagingService.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} queues {ability.Name} for the next attack.");
+                        MessagingService.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} queues {ability.Name} for the next attack.");
                     QueueWeaponAbility(activator, ability, feat);
                 }
             }
@@ -118,14 +118,14 @@ namespace SWLOR.Component.Perk.Service
             else if (ability.ActivationType == AbilityActivationType.Concentration)
             {
                 // Using the same concentration feat ends the effect.
-                var activeConcentrationAbility = _abilityService.GetActiveConcentration(activator);
+                var activeConcentrationAbility = AbilityService.GetActiveConcentration(activator);
                 if (activeConcentrationAbility.Feat == feat)
                 {
-                    _abilityService.EndConcentrationAbility(activator);
+                    AbilityService.EndConcentrationAbility(activator);
                 }
                 else
                 {
-                    if (_abilityService.CanUseAbility(activator, target, feat, effectivePerkLevel, targetLocation))
+                    if (AbilityService.CanUseAbility(activator, target, feat, effectivePerkLevel, targetLocation))
                     {
                         ActivateAbility(activator, target, feat, ability, targetLocation);
                     }
@@ -134,17 +134,17 @@ namespace SWLOR.Component.Perk.Service
             // All other abilities are funneled through the same process.
             else
             {
-                if (_abilityService.CanUseAbility(activator, target, feat, effectivePerkLevel, targetLocation))
+                if (AbilityService.CanUseAbility(activator, target, feat, effectivePerkLevel, targetLocation))
                 {
                     if (GetIsObjectValid(target))
                     {
                         if (ability.DisplaysActivationMessage)
-                            _messagingService.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} readies {ability.Name} on {GetName(target)}.");
+                            MessagingService.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} readies {ability.Name} on {GetName(target)}.");
                     }
                     else
                     {
                         if (ability.DisplaysActivationMessage)
-                            _messagingService.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} readies {ability.Name}.");
+                            MessagingService.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} readies {ability.Name}.");
                     }
                     
                     ActivateAbility(activator, target, feat, ability, targetLocation);
@@ -194,7 +194,7 @@ namespace SWLOR.Component.Perk.Service
                 for (var slot = 0; slot < NumberOfInventorySlots; slot++)
                 {
                     var item = GetItemInSlot((InventorySlot)slot, activator);
-                    var armorType = _itemService.GetArmorType(item);
+                    var armorType = ItemService.GetArmorType(item);
                     if (armorType == ArmorType.Heavy && !ability.IgnoreHeavyArmorPenalty)
                     {
                         armorPenalty = HeavyArmorPenalty;
@@ -261,7 +261,7 @@ namespace SWLOR.Component.Perk.Service
                 {
                     RemoveEffectByTag(activator, "ACTIVATION_VFX");
                     PlayerPlugin.StopGuiTimingBar(activator, string.Empty);
-                    _messagingService.SendMessageNearbyToPlayers(activator, $"{GetName(activator)}'s ability has been interrupted.");
+                    MessagingService.SendMessageNearbyToPlayers(activator, $"{GetName(activator)}'s ability has been interrupted.");
                     SetLocalInt(activator, activationId, (int)ActivationStatus.Interrupted);
                     return;
                 }
@@ -272,14 +272,14 @@ namespace SWLOR.Component.Perk.Service
             // This method is called after the delay of the ability has finished.
             void CompleteActivation(string activationId, float abilityRecastDelay)
             {
-                _activityService.ClearBusy(activator);
+                ActivityService.ClearBusy(activator);
 
                 // Moved during casting or activator died. Cancel the activation.
                 if (GetLocalInt(activator, activationId) == (int)ActivationStatus.Interrupted || GetCurrentHitPoints(activator) <= 0)
                     return;
                 
 
-                if (!_abilityService.CanUseAbility(activator, target, feat, ability.AbilityLevel, targetLocation))
+                if (!AbilityService.CanUseAbility(activator, target, feat, ability.AbilityLevel, targetLocation))
                     return;
 
                 DeleteLocalInt(activator, activationId);
@@ -287,15 +287,15 @@ namespace SWLOR.Component.Perk.Service
                 ApplyRequirementEffects(activator, ability);
                 HandleStealthBreaking(activator, ability);
                 ability.ImpactAction?.Invoke(activator, target, ability.AbilityLevel, targetLocation);
-                _recastService.ApplyRecastDelay(activator, ability.RecastGroup, abilityRecastDelay, false);
+                RecastService.ApplyRecastDelay(activator, ability.RecastGroup, abilityRecastDelay, false);
 
                 if (ability.ConcentrationStatusEffectType != StatusEffectType.Invalid)
                 {
-                    _abilityService.StartConcentrationAbility(activator, target, feat, ability.ConcentrationStatusEffectType);
+                    AbilityService.StartConcentrationAbility(activator, target, feat, ability.ConcentrationStatusEffectType);
                 }
 
                 // If this is an attack make the NPC react.
-                _enmityService.AttackHighestEnmityTarget(target);
+                EnmityService.AttackHighestEnmityTarget(target);
                 
                 if (!GetIsPC(activator))
                 {
@@ -327,7 +327,7 @@ namespace SWLOR.Component.Perk.Service
                     }
                 }
 
-                _activityService.SetBusy(activator, ActivityStatusType.AbilityActivation);
+                ActivityService.SetBusy(activator, ActivityStatusType.AbilityActivation);
                 DelayCommand(activationDelay, () => CompleteActivation(activationId, recastDelay));
 
                 // If currently attacking a target, re-attack it after the end of the activation period.
@@ -363,7 +363,7 @@ namespace SWLOR.Component.Perk.Service
             ApplyRequirementEffects(activator, ability);
 
             var abilityRecastDelay = ability.RecastDelay?.Invoke(activator) ?? 0.0f;
-            _recastService.ApplyRecastDelay(activator, ability.RecastGroup, abilityRecastDelay, false);
+            RecastService.ApplyRecastDelay(activator, ability.RecastGroup, abilityRecastDelay, false);
 
             // Activator must attack within 30 seconds after queueing or else it wears off.
             DelayCommand(30.0f, () =>
@@ -383,7 +383,7 @@ namespace SWLOR.Component.Perk.Service
                 return;
 
             var featType = (FeatType)featId;
-            var abilityDetail = _abilityService.GetAbilityDetail(featType);
+            var abilityDetail = AbilityService.GetAbilityDetail(featType);
 
             // Remove the local variables.
             DeleteLocalString(target, ActiveAbilityIdName);
@@ -394,7 +394,7 @@ namespace SWLOR.Component.Perk.Service
             SendMessageToPC(target, $"Your weapon ability {abilityDetail.Name} is no longer queued.");
 
             if (sendMessage)
-                _messagingService.SendMessageNearbyToPlayers(target, $"{GetName(target)} no longer has weapon ability {abilityDetail.Name} readied.");
+                MessagingService.SendMessageNearbyToPlayers(target, $"{GetName(target)} no longer has weapon ability {abilityDetail.Name} readied.");
         }
 
         /// <summary>
@@ -415,9 +415,9 @@ namespace SWLOR.Component.Perk.Service
             var activeWeaponAbility = (FeatType)GetLocalInt(activator, ActiveAbilityFeatIdName);
             var activeAbilityEffectivePerkLevel = GetLocalInt(activator, ActiveAbilityEffectivePerkLevelName);
 
-            if (!_abilityService.IsFeatRegistered(activeWeaponAbility)) return;
+            if (!AbilityService.IsFeatRegistered(activeWeaponAbility)) return;
 
-            var abilityDetail = _abilityService.GetAbilityDetail(activeWeaponAbility);
+            var abilityDetail = AbilityService.GetAbilityDetail(activeWeaponAbility);
             HandleStealthBreaking(activator, abilityDetail);
             abilityDetail.ImpactAction?.Invoke(activator, target, activeAbilityEffectivePerkLevel, targetLocation);
 

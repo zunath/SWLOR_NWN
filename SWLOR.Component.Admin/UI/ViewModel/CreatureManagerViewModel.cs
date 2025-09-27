@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Admin.Entity;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -14,13 +15,16 @@ namespace SWLOR.Component.Admin.UI.ViewModel
     public class CreatureManagerViewModel: GuiViewModelBase<CreatureManagerViewModel, IGuiPayload>
     {
         private readonly IDatabaseService _db;
-        private readonly ITargetingService _targetingService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public CreatureManagerViewModel(IGuiService guiService, IDatabaseService db, ITargetingService targetingService) : base(guiService)
+        public CreatureManagerViewModel(IGuiService guiService, IDatabaseService db, IServiceProvider serviceProvider) : base(guiService)
         {
             _db = db;
-            _targetingService = targetingService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded service to break circular dependency
+        private ITargetingService TargetingService => _serviceProvider.GetRequiredService<ITargetingService>();
         
         private readonly List<string> _creatureIds = new();        
         private const int ListingsPerPage = 20;
@@ -72,7 +76,7 @@ namespace SWLOR.Component.Admin.UI.ViewModel
 
         public Action OnClickAddNew() => () =>
         {
-            _targetingService.EnterTargetingMode(Player, ObjectType.Creature, "Please click on a creature to save.",
+            TargetingService.EnterTargetingMode(Player, ObjectType.Creature, "Please click on a creature to save.",
              creature =>
              {
                  if (!GetIsObjectValid(creature) || GetIsDM(creature) || GetIsPC(creature))

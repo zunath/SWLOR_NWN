@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Migration.Contracts;
 using SWLOR.Component.Migration.Enums;
 using SWLOR.Component.Migration.Model;
@@ -13,7 +14,7 @@ namespace SWLOR.Component.Migration.Feature.ServerMigration
 {
     public class _11_RefundMobilityAndUpdateVelesStarport: ServerMigrationBase, IServerMigration
     {
-        public _11_RefundMobilityAndUpdateVelesStarport(ILogger logger, IDatabaseService db, ISpaceService spaceService) : base(logger, db, spaceService)
+        public _11_RefundMobilityAndUpdateVelesStarport(ILogger logger, IDatabaseService db, IServiceProvider serviceProvider) : base(logger, db, serviceProvider)
         {
         }
 

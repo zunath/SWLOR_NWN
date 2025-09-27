@@ -23,7 +23,7 @@ namespace SWLOR.Component.World.Dialog
             IServiceProvider serviceProvider, 
             IDialogService dialogService, IDialogBuilder dialogBuilder) : base(dialogService, dialogBuilder)
         {
-            // Services are now lazy-loaded via IServiceProvider
+            _serviceProvider = serviceProvider;
         }
 
         public override PlayerDialog SetUp(uint player)

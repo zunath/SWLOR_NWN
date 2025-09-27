@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Communication.Contracts;
 using SWLOR.Component.Communication.Feature;
 using SWLOR.Shared.Domain.Communication.Contracts;
@@ -14,24 +15,19 @@ namespace SWLOR.Component.Communication.EventHandlers
     /// </summary>
     public class CommunicationEventHandlers
     {
-        private readonly IChatCommandService _chatCommandService;
-        private readonly ICommunicationService _communicationService;
-        private readonly ILanguageService _languageService;
-        private readonly IHoloComService _holoComService;
-        private readonly IRoleplayXPService _roleplayXP;
+        private readonly IServiceProvider _serviceProvider;
+
+        // Lazy-loaded services to break circular dependencies
+        private IChatCommandService ChatCommandService => _serviceProvider.GetRequiredService<IChatCommandService>();
+        private ICommunicationService CommunicationService => _serviceProvider.GetRequiredService<ICommunicationService>();
+        private ILanguageService LanguageService => _serviceProvider.GetRequiredService<ILanguageService>();
+        private IHoloComService HoloComService => _serviceProvider.GetRequiredService<IHoloComService>();
+        private IRoleplayXPService RoleplayXP => _serviceProvider.GetRequiredService<IRoleplayXPService>();
 
         public CommunicationEventHandlers(
-            IChatCommandService chatCommandService,
-            ICommunicationService communicationService,
-            ILanguageService languageService,
-            IHoloComService holoComService,
-            IRoleplayXPService roleplayXP)
+            IServiceProvider serviceProvider)
         {
-            _chatCommandService = chatCommandService;
-            _communicationService = communicationService;
-            _languageService = languageService;
-            _holoComService = holoComService;
-            _roleplayXP = roleplayXP;
+            _serviceProvider = serviceProvider;
         }
 
         /// <summary>
@@ -40,9 +36,9 @@ namespace SWLOR.Component.Communication.EventHandlers
         [ScriptHandler<OnModuleCacheBefore>]
         public void OnModuleLoad()
         {
-            _chatCommandService.LoadChatCommands();
-            _chatCommandService.BuildHelpText();
-            _chatCommandService.BuildEmoteUILists();
+            ChatCommandService.LoadChatCommands();
+            ChatCommandService.BuildHelpText();
+            ChatCommandService.BuildEmoteUILists();
         }
 
         /// <summary>
@@ -51,9 +47,9 @@ namespace SWLOR.Component.Communication.EventHandlers
         [ScriptHandler<OnNWNXChat>]
         public void OnNWNXChat()
         {
-            _chatCommandService.HandleChatMessage();
-            _communicationService.ProcessChatMessage();
-            _roleplayXP.ProcessRPMessage();
+            ChatCommandService.HandleChatMessage();
+            CommunicationService.ProcessChatMessage();
+            RoleplayXP.ProcessRPMessage();
         }
 
         /// <summary>
@@ -64,7 +60,7 @@ namespace SWLOR.Component.Communication.EventHandlers
         [ScriptHandler<OnDMPossessFullPowerBefore>]
         public void OnDMPossess()
         {
-            _communicationService.OnDMPossess();
+            CommunicationService.OnDMPossess();
         }
 
         /// <summary>
@@ -73,8 +69,8 @@ namespace SWLOR.Component.Communication.EventHandlers
         [ScriptHandler<OnModuleEnter>]
         public void OnModuleEnter()
         {
-            _communicationService.LoadHolonetSetting();
-            _holoComService.OnModuleEnter();
+            CommunicationService.LoadHolonetSetting();
+            HoloComService.OnModuleEnter();
         }
 
         /// <summary>
@@ -84,7 +80,7 @@ namespace SWLOR.Component.Communication.EventHandlers
         [ScriptHandler<OnModuleGuiEvent>]
         public void TypingIndicator()
         {
-            _communicationService.TypingIndicator();
+            CommunicationService.TypingIndicator();
         }
 
         /// <summary>
@@ -93,8 +89,8 @@ namespace SWLOR.Component.Communication.EventHandlers
         [ScriptHandler<OnModuleChat>]
         public void OnModuleChat()
         {
-            _communicationService.ProcessNativeChatMessage();
-            _holoComService.OnModuleChat();
+            CommunicationService.ProcessNativeChatMessage();
+            HoloComService.OnModuleChat();
         }
 
 
@@ -104,8 +100,8 @@ namespace SWLOR.Component.Communication.EventHandlers
         [ScriptHandler<OnModuleLoad>]
         public void LoadTranslators()
         {
-            _languageService.LoadTranslators();
-            _communicationService.ConfigureFeedbackMessages();
+            LanguageService.LoadTranslators();
+            CommunicationService.ConfigureFeedbackMessages();
         }
 
         /// <summary>
@@ -114,7 +110,7 @@ namespace SWLOR.Component.Communication.EventHandlers
         [ScriptHandler<OnPlayerHeartbeat>]
         public void DistributeRoleplayXP()
         {
-            _roleplayXP.DistributeRoleplayXP();
+            RoleplayXP.DistributeRoleplayXP();
         }
 
 
@@ -124,7 +120,7 @@ namespace SWLOR.Component.Communication.EventHandlers
         [ScriptHandler<OnModuleDeath>]
         public void OnModuleDeath()
         {
-            _holoComService.OnModuleDeath();
+            HoloComService.OnModuleDeath();
         }
 
 
@@ -134,7 +130,7 @@ namespace SWLOR.Component.Communication.EventHandlers
         [ScriptHandler<OnModuleExit>]
         public void OnModuleLeave()
         {
-            _holoComService.OnModuleLeave();
+            HoloComService.OnModuleLeave();
         }
 
     }

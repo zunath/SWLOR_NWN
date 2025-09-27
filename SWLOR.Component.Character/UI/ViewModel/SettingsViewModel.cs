@@ -25,7 +25,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
         public SettingsViewModel(IGuiService guiService, IDatabaseService db, IServiceProvider serviceProvider) : base(guiService)
         {
             _db = db;
-            // Services are now lazy-loaded via IServiceProvider
+            _serviceProvider = serviceProvider;
         }
         
         public const string SettingsView = "SETTINGS_VIEW";

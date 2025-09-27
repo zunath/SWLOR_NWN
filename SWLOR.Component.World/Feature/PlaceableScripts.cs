@@ -26,7 +26,7 @@ namespace SWLOR.Component.World.Feature
         public PlaceableScripts(
             IServiceProvider serviceProvider)
         {
-            // Services are now lazy-loaded via IServiceProvider
+            _serviceProvider = serviceProvider;
         }
         /// <summary>
         /// When a teleport placeable is used, send the user to the configured waypoint.

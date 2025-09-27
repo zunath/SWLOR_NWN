@@ -14,6 +14,7 @@
 
 	<ItemGroup>
 	  <PackageReference Include="NWN.Native" Version="8193.37.3" />
+	  <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.9" />
 	</ItemGroup>
 
 </Project>

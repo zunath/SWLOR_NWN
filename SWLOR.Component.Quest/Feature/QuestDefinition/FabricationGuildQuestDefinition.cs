@@ -44,7 +44,7 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
 
         public Dictionary<string, IQuestDetail> BuildQuests()
         {
-            var builder = _questBuilderFactory.Create();
+            var builder = QuestBuilderFactory.Create();
             // Tier 1 (Rank 0)
             BuildItemTask(builder, "fab_tsk_001", "structure_0085", 1, 0);
             BuildItemTask(builder, "fab_tsk_002", "structure_0045", 1, 0);
@@ -276,7 +276,7 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
             int amount,
             int guildRank)
         {
-            var itemName = _itemCache.GetItemNameByResref(resref);
+            var itemName = ItemCache.GetItemNameByResref(resref);
             var rewardDetails = _rewardDetails[guildRank];
 
             builder.Create(questId, $"{amount}x {itemName}")

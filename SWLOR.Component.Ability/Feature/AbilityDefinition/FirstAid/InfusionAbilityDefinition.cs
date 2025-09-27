@@ -15,20 +15,8 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.FirstAid
         private const string Tier1Tag = "ABILITY_INFUSION_1";
         private const string Tier2Tag = "ABILITY_INFUSION_2";
 
-        public InfusionAbilityDefinition(
-            IRandomService random, 
-            IPerkService perkService, 
-            ICombatPointService combatPointService, 
-            IEnmityService enmityService, 
-            IAbilityService abilityService,
-            IStatusEffectService statusEffect) 
-            : base(
-                random, 
-                perkService, 
-                combatPointService, 
-                enmityService, 
-                abilityService, 
-                statusEffect)
+        public InfusionAbilityDefinition(IServiceProvider serviceProvider) 
+            : base(serviceProvider)
         {
         }
 

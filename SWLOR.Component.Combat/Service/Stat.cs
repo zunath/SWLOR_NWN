@@ -35,21 +35,18 @@ namespace SWLOR.Component.Combat.Service
         // Lazy-loaded services to break circular dependencies
         private ISkillService SkillService => _serviceProvider.GetRequiredService<ISkillService>();
         private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
-        private readonly Enmity _enmityService;
+        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
 
         public Stat(
             ILogger logger, 
             IDatabaseService db, 
             IServiceProvider serviceProvider, 
-            IStatusEffectService statusEffectService, 
-            Enmity enmityService)
+            IStatusEffectService statusEffectService)
         {
             _logger = logger;
             _db = db;
-            // Services are now lazy-loaded via IServiceProvider
             _serviceProvider = serviceProvider;
             _statusEffectService = statusEffectService;
-            _enmityService = enmityService;
         }
         
         // Lazy-loaded services to break circular dependencies
@@ -1954,7 +1951,7 @@ namespace SWLOR.Component.Combat.Service
             {
                 // If out of combat - restore HP at 10% per tick.
                 if (!GetIsInCombat(self) &&
-                    !GetIsObjectValid(_enmityService.GetHighestEnmityTarget(self)) &&
+                    !GetIsObjectValid(EnmityService.GetHighestEnmityTarget(self)) &&
                     GetCurrentHitPoints(self) < GetMaxHitPoints(self))
                 {
                     var hpToHeal = GetMaxHitPoints(self) * 0.1f;

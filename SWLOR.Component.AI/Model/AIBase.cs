@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.AI.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Character.Contracts;
@@ -8,9 +9,12 @@ namespace SWLOR.Component.AI.Model
 {
     public abstract class AIBase : IAIDefinition
     {
-        protected readonly IAbilityService AbilityService;
-        protected readonly IPerkService PerkService;
-        protected readonly IStatusEffectService StatusEffectService;
+        protected readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded services to break circular dependencies
+        protected IAbilityService AbilityService => _serviceProvider.GetRequiredService<IAbilityService>();
+        protected IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
+        protected IStatusEffectService StatusEffectService => _serviceProvider.GetRequiredService<IStatusEffectService>();
 
         protected uint Self { get; private set; }
         protected uint Target { get; private set; }
@@ -24,11 +28,9 @@ namespace SWLOR.Component.AI.Model
         protected uint AllyWithTreatmentKit1StatusEffect { get; private set; }
         protected uint AllyWithTreatmentKit2StatusEffect { get; private set; }
 
-        protected AIBase(IAbilityService abilityService, IPerkService perkService, IStatusEffectService statusEffectService)
+        protected AIBase(IServiceProvider serviceProvider)
         {
-            AbilityService = abilityService;
-            PerkService = perkService;
-            StatusEffectService = statusEffectService;
+            _serviceProvider = serviceProvider;
         }
 
         private void ResetCachedData()

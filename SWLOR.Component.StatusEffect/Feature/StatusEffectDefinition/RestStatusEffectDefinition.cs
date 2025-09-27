@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.StatusEffect.Contracts;
 using SWLOR.Component.StatusEffect.Service;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -18,18 +19,18 @@ namespace SWLOR.Component.StatusEffect.Feature.StatusEffectDefinition
 {
     public class RestStatusEffectDefinition: IStatusEffectListDefinition
     {
-        private readonly IAbilityService _abilityService;
-        private readonly IStatService _statService;
-        private readonly IActivityService _activityService;
-        private readonly IStatusEffectService _statusEffectService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public RestStatusEffectDefinition(IAbilityService abilityService, IStatService statService, IActivityService activityService, IStatusEffectService statusEffectService)
+        public RestStatusEffectDefinition(IServiceProvider serviceProvider)
         {
-            _abilityService = abilityService;
-            _statService = statService;
-            _activityService = activityService;
-            _statusEffectService = statusEffectService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IAbilityService AbilityService => _serviceProvider.GetRequiredService<IAbilityService>();
+        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+        private IActivityService ActivityService => _serviceProvider.GetRequiredService<IActivityService>();
+        private IStatusEffectService StatusEffectService => _serviceProvider.GetRequiredService<IStatusEffectService>();
         public Dictionary<StatusEffectType, StatusEffectDetail> BuildStatusEffects()
         {
             var builder = new StatusEffectBuilder();
@@ -45,7 +46,7 @@ namespace SWLOR.Component.StatusEffect.Feature.StatusEffectDefinition
         public void RemoveRestOnDamage()
         {
             var player = OBJECT_SELF;
-            _statusEffectService.Remove(player, StatusEffectType.Rest);
+            StatusEffectService.Remove(player, StatusEffectType.Rest);
         }
 
         /// <summary>
@@ -57,14 +58,14 @@ namespace SWLOR.Component.StatusEffect.Feature.StatusEffectDefinition
             var player = OBJECT_SELF;
             if (!GetIsPC(player) || GetIsDM(player)) return;
             
-            _statusEffectService.Remove(player, StatusEffectType.Rest);
+            StatusEffectService.Remove(player, StatusEffectType.Rest);
         }
 
         [ScriptHandler<OnModuleEnter>]
         public void RemoveRestOnLogin()
         {
             var player = GetEnteringObject();
-            _statusEffectService.Remove(player, StatusEffectType.Rest);
+            StatusEffectService.Remove(player, StatusEffectType.Rest);
         }
 
         private void Rest(StatusEffectBuilder builder)
@@ -86,7 +87,7 @@ namespace SWLOR.Component.StatusEffect.Feature.StatusEffectDefinition
                     Math.Abs(position.Y - originalPosition.Y) > 0.1f ||
                     Math.Abs(position.Z - originalPosition.Z) > 0.1f)
                 {
-                    _statusEffectService.Remove(target, StatusEffectType.Rest);
+                    StatusEffectService.Remove(target, StatusEffectType.Rest);
                 }
 
                 DelayCommand(0.5f, () => CheckMovement(target));
@@ -109,8 +110,8 @@ namespace SWLOR.Component.StatusEffect.Feature.StatusEffectDefinition
                     SetLocalFloat(target, "REST_POSITION_Y", position.Y);
                     SetLocalFloat(target, "REST_POSITION_Z", position.Z);
 
-                    _activityService.SetBusy(target, ActivityStatusType.Resting);
-                    _abilityService.EndConcentrationAbility(target);
+                    ActivityService.SetBusy(target, ActivityStatusType.Resting);
+                    AbilityService.EndConcentrationAbility(target);
                     
                     DelayCommand(0.5f, () => CheckMovement(target));
 
@@ -134,7 +135,7 @@ namespace SWLOR.Component.StatusEffect.Feature.StatusEffectDefinition
                     if (fpAmount < 1)
                         fpAmount = 1;
 
-                    var foodEffect = _statusEffectService.GetEffectData<FoodEffectData>(target, StatusEffectType.Food);
+                    var foodEffect = StatusEffectService.GetEffectData<FoodEffectData>(target, StatusEffectType.Food);
 
                     if (foodEffect != null)
                     {
@@ -144,8 +145,8 @@ namespace SWLOR.Component.StatusEffect.Feature.StatusEffectDefinition
                     }
 
                     ApplyEffectToObject(DurationType.Instant, EffectHeal(hpAmount), target);
-                    _statService.RestoreStamina(target, stmAmount);
-                    _statService.RestoreFP(target, fpAmount);
+                    StatService.RestoreStamina(target, stmAmount);
+                    StatService.RestoreFP(target, fpAmount);
                 })
                 .RemoveAction((target, effectData) =>
                 {
@@ -154,7 +155,7 @@ namespace SWLOR.Component.StatusEffect.Feature.StatusEffectDefinition
                     DeleteLocalFloat(target, "REST_POSITION_Y");
                     DeleteLocalFloat(target, "REST_POSITION_Z");
 
-                    _activityService.ClearBusy(target);
+                    ActivityService.ClearBusy(target);
                 });
         }
     }

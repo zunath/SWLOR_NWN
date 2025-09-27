@@ -26,7 +26,7 @@ namespace SWLOR.Component.Quest.Service
             var db = _serviceProvider.GetRequiredService<IDatabaseService>();
             var itemCache = _serviceProvider.GetRequiredService<IItemCacheService>();
             var questService = _serviceProvider.GetRequiredService<IQuestService>();
-            return new CollectItemObjective(db, itemCache, questService, resref, amount);
+            return new CollectItemObjective(db, itemCache, _serviceProvider, resref, amount);
         }
 
         public IQuestObjective CreateKillTargetObjective(NPCGroupType group, int amount)
@@ -34,7 +34,7 @@ namespace SWLOR.Component.Quest.Service
             var db = _serviceProvider.GetRequiredService<IDatabaseService>();
             var questService = _serviceProvider.GetRequiredService<IQuestService>();
             var npcGroupService = _serviceProvider.GetRequiredService<INPCGroupService>();
-            return new KillTargetObjective(db, questService, npcGroupService, group, amount);
+            return new KillTargetObjective(db, _serviceProvider, group, amount);
         }
     }
 }

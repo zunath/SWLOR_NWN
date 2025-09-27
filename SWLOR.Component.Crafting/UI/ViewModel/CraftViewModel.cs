@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Crafting.Enums;
 using SWLOR.Component.Crafting.Model;
 using SWLOR.NWN.API.Engine;
@@ -32,29 +33,25 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
     {
         private readonly ILogger _logger;
         private readonly IDatabaseService _db;
-        private readonly IItemCacheService _itemCache;
-        private readonly IRandomService _random;
-        private readonly IItemService _itemService;
-        private readonly ICraftService _craftService;
-        private readonly ISkillService _skillService;
-        private readonly IPerkService _perkService;
-        private readonly IStatService _statService;
-        private readonly ITargetingService _targetingService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public CraftViewModel(IGuiService guiService, ILogger logger, IDatabaseService db, IItemCacheService itemCache, IRandomService random, IItemService itemService, ICraftService craftService, ISkillService skillService, IPerkService perkService, IStatService statService, ITargetingService targetingService) : base(guiService)
+        // Lazy-loaded services to break circular dependencies
+        private IItemCacheService ItemCache => _serviceProvider.GetRequiredService<IItemCacheService>();
+        private IRandomService Random => _serviceProvider.GetRequiredService<IRandomService>();
+        private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
+        private ICraftService CraftService => _serviceProvider.GetRequiredService<ICraftService>();
+        private ISkillService SkillService => _serviceProvider.GetRequiredService<ISkillService>();
+        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
+        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+        private ITargetingService TargetingService => _serviceProvider.GetRequiredService<ITargetingService>();
+
+        public CraftViewModel(IGuiService guiService, ILogger logger, IDatabaseService db, IServiceProvider serviceProvider) : base(guiService)
         {
             _logger = logger;
             _db = db;
-            _itemCache = itemCache;
-            _random = random;
-            _itemService = itemService;
-            _craftService = craftService;
-            _skillService = skillService;
-            _perkService = perkService;
-            _statService = statService;
-            _targetingService = targetingService;
+            _serviceProvider = serviceProvider;
 
-            _blueprintBonuses = new BlueprintBonuses(random);
+            _blueprintBonuses = new BlueprintBonuses(Random);
         }
         public const string ViewName = "CraftView";
         public const string SetUpPartialName = "SetUpPartial";
@@ -417,11 +414,11 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
 
             _recipe = initialPayload.Recipe;
             _blueprintItem = initialPayload.BlueprintItem;
-            var recipe = _craftService.GetRecipe(_recipe);
-            var blueprint = _craftService.GetBlueprintDetails(_blueprintItem);
+            var recipe = CraftService.GetRecipe(_recipe);
+            var blueprint = CraftService.GetBlueprintDetails(_blueprintItem);
             _hasBlueprint = blueprint.Recipe != RecipeType.Invalid;
             
-            var itemName = _itemCache.GetItemNameByResref(recipe.Resref);
+            var itemName = ItemCache.GetItemNameByResref(recipe.Resref);
             
             SwitchToSetUpMode();
             StatusColor = GuiColor.Green;
@@ -439,12 +436,12 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
             IsEnhancement8Visible = enhancementSlots >= 8;
 
             CraftText = _hasBlueprint 
-                ? $"Craft [{_craftService.CalculateBlueprintCraftCreditCost(_blueprintItem):N0}cr]"
+                ? $"Craft [{CraftService.CalculateBlueprintCraftCreditCost(_blueprintItem):N0}cr]"
                 : "Craft";
             RecipeName = $"Recipe: {recipe.Quantity}x {itemName}";
             RecipeLevel = $"Level: {recipe.Level}";
             
-            var (recipeDescription, recipeColors) = _craftService.BuildRecipeDetail(Player, _recipe, blueprint);
+            var (recipeDescription, recipeColors) = CraftService.BuildRecipeDetail(Player, _recipe, blueprint);
             RecipeDescription = (GuiBindingList<string>)recipeDescription;
             RecipeColors = (GuiBindingList<GuiColor>)recipeColors;
 
@@ -469,7 +466,7 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
 
         private void LoadRequiredPerks()
         {
-            var detail = _craftService.GetRecipe(_recipe);
+            var detail = CraftService.GetRecipe(_recipe);
             switch (detail.Skill)
             {
                 case SkillType.Smithery:
@@ -551,9 +548,9 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
         {
             var playerId = GetObjectUUID(Player);
             var dbPlayer = _db.Get<Player>(playerId);
-            var recipe = _craftService.GetRecipe(_recipe);
+            var recipe = CraftService.GetRecipe(_recipe);
             var skill = dbPlayer.Skills[recipe.Skill].Rank;
-            var levelDetail = _craftService.GetRecipeLevelDetail(recipe.Level);
+            var levelDetail = CraftService.GetRecipeLevelDetail(recipe.Level);
             _levelDifference = skill - recipe.Level;
             
             // 33% CP from equipment and other sources, 75% from skill. +2 per primary modifier. +1 per secondary modifier.
@@ -701,7 +698,7 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
 
         private bool IsValidEnhancement(uint item)
         {
-            var recipe = _craftService.GetRecipe(_recipe);
+            var recipe = CraftService.GetRecipe(_recipe);
             var typeIP = ItemPropertyType.Invalid;
 
             if (GetItemPossessor(item) != Player)
@@ -782,7 +779,7 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
 
         private int CalculateProgressPenaltyAndProcessItemProperties(uint item, List<ItemProperty> itemProperties)
         {
-            var recipe = _craftService.GetRecipe(_recipe);
+            var recipe = CraftService.GetRecipe(_recipe);
             var progressPenalty = 0;
 
             for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
@@ -800,43 +797,43 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
                 else if (type == ItemPropertyType.ArmorEnhancement &&
                          recipe.EnhancementType == RecipeEnhancementType.Armor)
                 {
-                    var itemProperty = _craftService.BuildItemPropertyForEnhancement(subType, amount);
+                    var itemProperty = CraftService.BuildItemPropertyForEnhancement(subType, amount);
                     itemProperties.Add(itemProperty);
                 }
                 else if (type == ItemPropertyType.WeaponEnhancement &&
                          recipe.EnhancementType == RecipeEnhancementType.Weapon)
                 {
-                    var itemProperty = _craftService.BuildItemPropertyForEnhancement(subType, amount);
+                    var itemProperty = CraftService.BuildItemPropertyForEnhancement(subType, amount);
                     itemProperties.Add(itemProperty);
                 }
                 else if (type == ItemPropertyType.StructureEnhancement &&
                          recipe.EnhancementType == RecipeEnhancementType.Structure)
                 {
-                    var itemProperty = _craftService.BuildItemPropertyForEnhancement(subType, amount);
+                    var itemProperty = CraftService.BuildItemPropertyForEnhancement(subType, amount);
                     itemProperties.Add(itemProperty);
                 }
                 else if (type == ItemPropertyType.FoodEnhancement &&
                          recipe.EnhancementType == RecipeEnhancementType.Food)
                 {
-                    var itemProperty = _craftService.BuildItemPropertyForEnhancement(subType, amount);
+                    var itemProperty = CraftService.BuildItemPropertyForEnhancement(subType, amount);
                     itemProperties.Add(itemProperty);
                 }
                 else if (type == ItemPropertyType.StarshipEnhancement &&
                          recipe.EnhancementType == RecipeEnhancementType.Starship)
                 {
-                    var itemProperty = _craftService.BuildItemPropertyForEnhancement(subType, amount);
+                    var itemProperty = CraftService.BuildItemPropertyForEnhancement(subType, amount);
                     itemProperties.Add(itemProperty);
                 }
                 else if (type == ItemPropertyType.ModuleEnhancement &&
                          recipe.EnhancementType == RecipeEnhancementType.Module)
                 {
-                    var itemProperty = _craftService.BuildItemPropertyForEnhancement(subType, amount);
+                    var itemProperty = CraftService.BuildItemPropertyForEnhancement(subType, amount);
                     itemProperties.Add(itemProperty);
                 }
                 else if (type == ItemPropertyType.DroidEnhancement &&
                          recipe.EnhancementType == RecipeEnhancementType.Droid)
                 {
-                    var itemProperty = _craftService.BuildItemPropertyForEnhancement(subType, amount);
+                    var itemProperty = CraftService.BuildItemPropertyForEnhancement(subType, amount);
                     itemProperties.Add(itemProperty);
                 }
             }
@@ -848,7 +845,7 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
         {
             if (string.IsNullOrWhiteSpace(_enhancement1))
             {
-                _targetingService.EnterTargetingMode(Player, ObjectType.Item, "Please click on an enhancement within your inventory.",
+                TargetingService.EnterTargetingMode(Player, ObjectType.Item, "Please click on an enhancement within your inventory.",
                     item =>
                 {
                     if (!IsValidEnhancement(item))
@@ -857,7 +854,7 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
                     var progressPenalty = CalculateProgressPenaltyAndProcessItemProperties(item, _itemPropertiesEnhancement1);
                     _enhancement1 = ObjectPlugin.Serialize(item);
                     Enhancement1Tooltip = GetName(item);
-                    Enhancement1Resref = _itemService.GetIconResref(item);
+                    Enhancement1Resref = ItemService.GetIconResref(item);
                     _maxProgress += progressPenalty;
 
                     DestroyObject(item);
@@ -886,7 +883,7 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
         {
             if (string.IsNullOrWhiteSpace(_enhancement2))
             {
-                _targetingService.EnterTargetingMode(Player, ObjectType.Item, "Please click on an enhancement within your inventory.",
+                TargetingService.EnterTargetingMode(Player, ObjectType.Item, "Please click on an enhancement within your inventory.",
                     item =>
                 {
                     if (!IsValidEnhancement(item))
@@ -895,7 +892,7 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
                     var progressPenalty = CalculateProgressPenaltyAndProcessItemProperties(item, _itemPropertiesEnhancement2);
                     _enhancement2 = ObjectPlugin.Serialize(item);
                     Enhancement2Tooltip = GetName(item);
-                    Enhancement2Resref = _itemService.GetIconResref(item);
+                    Enhancement2Resref = ItemService.GetIconResref(item);
                     _maxProgress += progressPenalty;
 
                     DestroyObject(item);
@@ -924,7 +921,7 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
         {
             if (string.IsNullOrWhiteSpace(_enhancement3))
             {
-                _targetingService.EnterTargetingMode(Player, ObjectType.Item, "Please click on an enhancement within your inventory.",
+                TargetingService.EnterTargetingMode(Player, ObjectType.Item, "Please click on an enhancement within your inventory.",
                     item =>
                     {
                         if (!IsValidEnhancement(item))
@@ -933,7 +930,7 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
                         var progressPenalty = CalculateProgressPenaltyAndProcessItemProperties(item, _itemPropertiesEnhancement3);
                         _enhancement3 = ObjectPlugin.Serialize(item);
                         Enhancement3Tooltip = GetName(item);
-                        Enhancement3Resref = _itemService.GetIconResref(item);
+                        Enhancement3Resref = ItemService.GetIconResref(item);
                         _maxProgress += progressPenalty;
 
                         DestroyObject(item);
@@ -962,7 +959,7 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
         {
             if (string.IsNullOrWhiteSpace(_enhancement4))
             {
-                _targetingService.EnterTargetingMode(Player, ObjectType.Item, "Please click on an enhancement within your inventory.",
+                TargetingService.EnterTargetingMode(Player, ObjectType.Item, "Please click on an enhancement within your inventory.",
                     item =>
                     {
                         if (!IsValidEnhancement(item))
@@ -971,7 +968,7 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
                         var progressPenalty = CalculateProgressPenaltyAndProcessItemProperties(item, _itemPropertiesEnhancement4);
                         _enhancement4 = ObjectPlugin.Serialize(item);
                         Enhancement4Tooltip = GetName(item);
-                        Enhancement4Resref = _itemService.GetIconResref(item);
+                        Enhancement4Resref = ItemService.GetIconResref(item);
                         _maxProgress += progressPenalty;
 
                         DestroyObject(item);
@@ -1000,7 +997,7 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
         {
             if (string.IsNullOrWhiteSpace(_enhancement5))
             {
-                _targetingService.EnterTargetingMode(Player, ObjectType.Item, "Please click on an enhancement within your inventory.",
+                TargetingService.EnterTargetingMode(Player, ObjectType.Item, "Please click on an enhancement within your inventory.",
                     item =>
                     {
                         if (!IsValidEnhancement(item))
@@ -1009,7 +1006,7 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
                         var progressPenalty = CalculateProgressPenaltyAndProcessItemProperties(item, _itemPropertiesEnhancement5);
                         _enhancement5 = ObjectPlugin.Serialize(item);
                         Enhancement5Tooltip = GetName(item);
-                        Enhancement5Resref = _itemService.GetIconResref(item);
+                        Enhancement5Resref = ItemService.GetIconResref(item);
                         _maxProgress += progressPenalty;
 
                         DestroyObject(item);
@@ -1038,7 +1035,7 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
         {
             if (string.IsNullOrWhiteSpace(_enhancement6))
             {
-                _targetingService.EnterTargetingMode(Player, ObjectType.Item, "Please click on an enhancement within your inventory.",
+                TargetingService.EnterTargetingMode(Player, ObjectType.Item, "Please click on an enhancement within your inventory.",
                     item =>
                     {
                         if (!IsValidEnhancement(item))
@@ -1047,7 +1044,7 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
                         var progressPenalty = CalculateProgressPenaltyAndProcessItemProperties(item, _itemPropertiesEnhancement6);
                         _enhancement6 = ObjectPlugin.Serialize(item);
                         Enhancement6Tooltip = GetName(item);
-                        Enhancement6Resref = _itemService.GetIconResref(item);
+                        Enhancement6Resref = ItemService.GetIconResref(item);
                         _maxProgress += progressPenalty;
 
                         DestroyObject(item);
@@ -1076,7 +1073,7 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
         {
             if (string.IsNullOrWhiteSpace(_enhancement7))
             {
-                _targetingService.EnterTargetingMode(Player, ObjectType.Item, "Please click on an enhancement within your inventory.",
+                TargetingService.EnterTargetingMode(Player, ObjectType.Item, "Please click on an enhancement within your inventory.",
                     item =>
                     {
                         if (!IsValidEnhancement(item))
@@ -1085,7 +1082,7 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
                         var progressPenalty = CalculateProgressPenaltyAndProcessItemProperties(item, _itemPropertiesEnhancement7);
                         _enhancement7 = ObjectPlugin.Serialize(item);
                         Enhancement7Tooltip = GetName(item);
-                        Enhancement7Resref = _itemService.GetIconResref(item);
+                        Enhancement7Resref = ItemService.GetIconResref(item);
                         _maxProgress += progressPenalty;
 
                         DestroyObject(item);
@@ -1114,7 +1111,7 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
         {
             if (string.IsNullOrWhiteSpace(_enhancement8))
             {
-                _targetingService.EnterTargetingMode(Player, ObjectType.Item, "Please click on an enhancement within your inventory.",
+                TargetingService.EnterTargetingMode(Player, ObjectType.Item, "Please click on an enhancement within your inventory.",
                     item =>
                     {
                         if (!IsValidEnhancement(item))
@@ -1123,7 +1120,7 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
                         var progressPenalty = CalculateProgressPenaltyAndProcessItemProperties(item, _itemPropertiesEnhancement8);
                         _enhancement8 = ObjectPlugin.Serialize(item);
                         Enhancement8Tooltip = GetName(item);
-                        Enhancement8Resref = _itemService.GetIconResref(item);
+                        Enhancement8Resref = ItemService.GetIconResref(item);
                         _maxProgress += progressPenalty;
 
                         DestroyObject(item);
@@ -1151,7 +1148,7 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
         private List<uint> GetComponents()
         {
             var components = new List<uint>();
-            var recipe = _craftService.GetRecipe(_recipe);
+            var recipe = CraftService.GetRecipe(_recipe);
 
             for (var item = GetFirstItemInInventory(Player); GetIsObjectValid(item); item = GetNextItemInInventory(Player))
             {
@@ -1170,7 +1167,7 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
         /// <returns>A list of components which will be used, an empty list if not all components are found.</returns>
         private List<uint> AggregateComponents(List<uint> components)
         {
-            var recipe = _craftService.GetRecipe(_recipe);
+            var recipe = CraftService.GetRecipe(_recipe);
             var remainingComponents = recipe.Components.ToDictionary(x => x.Key, y => y.Value);
             var result = new List<uint>();
 
@@ -1233,8 +1230,8 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
 
         private void RefreshYourSkill(Player dbPlayer)
         {
-            var detail = _craftService.GetRecipe(_recipe);
-            YourSkill = $"Your Skill: {_skillService.GetSkillDetails(detail.Skill).Name} {dbPlayer.Skills[detail.Skill].Rank}";
+            var detail = CraftService.GetRecipe(_recipe);
+            YourSkill = $"Your Skill: {SkillService.GetSkillDetails(detail.Skill).Name} {dbPlayer.Skills[detail.Skill].Rank}";
         }
 
         private void ApplyImmobility()
@@ -1310,16 +1307,16 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
         {
             if (_hasBlueprint)
             {
-                _activeBlueprint = _craftService.GetBlueprintDetails(_blueprintItem);
-                var cost = _craftService.CalculateBlueprintCraftCreditCost(_blueprintItem);
+                _activeBlueprint = CraftService.GetBlueprintDetails(_blueprintItem);
+                var cost = CraftService.CalculateBlueprintCraftCreditCost(_blueprintItem);
                 AssignCommand(Player, () => TakeGoldFromCreature(cost, Player, true));
                 
                 _activeBlueprint.LicensedRuns--;
-                _craftService.SetBlueprintDetails(_blueprintItem, _activeBlueprint);
+                CraftService.SetBlueprintDetails(_blueprintItem, _activeBlueprint);
                 
                 SendMessageToPC(Player, $"Remaining licensed runs: {_activeBlueprint.LicensedRuns}");
 
-                var (recipeDescription, recipeColors) = _craftService.BuildRecipeDetail(Player, _recipe, _activeBlueprint);
+                var (recipeDescription, recipeColors) = CraftService.BuildRecipeDetail(Player, _recipe, _activeBlueprint);
                 RecipeDescription = (GuiBindingList<string>)recipeDescription;
                 RecipeColors = (GuiBindingList<GuiColor>)recipeColors;
             }
@@ -1331,19 +1328,19 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
             IsInSetupMode = false;
             IsClosable = false;
 
-            IsRapidSynthesisEnabled = _perkService.GetPerkLevel(Player, _rapidSynthesisPerk) > 0;
-            IsCarefulSynthesisEnabled = _perkService.GetPerkLevel(Player, _carefulSynthesisPerk) > 0;
+            IsRapidSynthesisEnabled = PerkService.GetPerkLevel(Player, _rapidSynthesisPerk) > 0;
+            IsCarefulSynthesisEnabled = PerkService.GetPerkLevel(Player, _carefulSynthesisPerk) > 0;
 
-            IsBasicTouchEnabled = _perkService.GetPerkLevel(Player, _basicTouchPerk) > 0;
-            IsStandardTouchEnabled = _perkService.GetPerkLevel(Player, _standardTouchPerk) > 0;
-            IsPreciseTouchEnabled = _perkService.GetPerkLevel(Player, _preciseTouchPerk) > 0;
+            IsBasicTouchEnabled = PerkService.GetPerkLevel(Player, _basicTouchPerk) > 0;
+            IsStandardTouchEnabled = PerkService.GetPerkLevel(Player, _standardTouchPerk) > 0;
+            IsPreciseTouchEnabled = PerkService.GetPerkLevel(Player, _preciseTouchPerk) > 0;
 
-            IsMastersMendEnabled = _perkService.GetPerkLevel(Player, _mastersMendPerk) > 0;
-            IsSteadyHandEnabled = _perkService.GetPerkLevel(Player, _steadyHandPerk) > 0;
-            IsMuscleMemoryEnabled = _perkService.GetPerkLevel(Player, _muscleMemoryPerk) > 0;
+            IsMastersMendEnabled = PerkService.GetPerkLevel(Player, _mastersMendPerk) > 0;
+            IsSteadyHandEnabled = PerkService.GetPerkLevel(Player, _steadyHandPerk) > 0;
+            IsMuscleMemoryEnabled = PerkService.GetPerkLevel(Player, _muscleMemoryPerk) > 0;
 
-            IsVenerationEnabled = _perkService.GetPerkLevel(Player, _venerationPerk) > 0;
-            IsWasteNotEnabled = _perkService.GetPerkLevel(Player, _wasteNotPerk) > 0;
+            IsVenerationEnabled = PerkService.GetPerkLevel(Player, _venerationPerk) > 0;
+            IsWasteNotEnabled = PerkService.GetPerkLevel(Player, _wasteNotPerk) > 0;
 
             ApplyImmobility();
         }
@@ -1368,7 +1365,7 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
             if (!_hasBlueprint)
                 return true;
 
-            var blueprintDetails = _craftService.GetBlueprintDetails(_blueprintItem);
+            var blueprintDetails = CraftService.GetBlueprintDetails(_blueprintItem);
 
             if (blueprintDetails.LicensedRuns <= 0)
             {
@@ -1378,7 +1375,7 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
                 return false;
             }
             
-            var cost = _craftService.CalculateBlueprintCraftCreditCost(_blueprintItem);
+            var cost = CraftService.CalculateBlueprintCraftCreditCost(_blueprintItem);
             if (GetGold(Player) < cost)
             {
                 StatusText = $"Insufficient credits!";
@@ -1402,10 +1399,10 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
         {
             var playerId = GetObjectUUID(Player);
             var dbPlayer = _db.Get<Player>(playerId);
-            var recipe = _craftService.GetRecipe(_recipe);
+            var recipe = CraftService.GetRecipe(_recipe);
             var primaryModifier = GetAbilityModifier(_primaryAbility, Player);
             var secondaryModifier = GetAbilityModifier(_secondaryAbility, Player);
-            var craftsmanship = _statService.CalculateCraftsmanship(Player, recipe.Skill);
+            var craftsmanship = StatService.CalculateCraftsmanship(Player, recipe.Skill);
             var delta = dbPlayer.Skills[recipe.Skill].Rank - recipe.Level;
             var recipeDiff = 1 + 0.05f * delta;
             var progress = (int)((baseProgress + primaryModifier * 1.25f + secondaryModifier * 0.75f + craftsmanship * 0.65f) * recipeDiff);
@@ -1417,10 +1414,10 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
         {
             var playerId = GetObjectUUID(Player);
             var dbPlayer = _db.Get<Player>(playerId);
-            var recipe = _craftService.GetRecipe(_recipe);
+            var recipe = CraftService.GetRecipe(_recipe);
             var primaryModifier = GetAbilityModifier(_primaryAbility, Player);
             var secondaryModifier = GetAbilityModifier(_secondaryAbility, Player);
-            var control = _statService.CalculateControl(Player, recipe.Skill);
+            var control = StatService.CalculateControl(Player, recipe.Skill);
             var delta = dbPlayer.Skills[recipe.Skill].Rank - recipe.Level;
             var recipeDiff = delta < 0 
                 ? 1 + 0.05f * delta 
@@ -1438,7 +1435,7 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
             float qualityPercent)
         {
             var delta = recipeLevel - playerLevel;
-            var xp = _skillService.GetDeltaXP(delta);
+            var xp = SkillService.GetDeltaXP(delta);
             // 20% bonus for the first time.
             if (firstTime)
                 xp += (int)(xp * 0.20f);
@@ -1478,7 +1475,7 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
 
             var playerId = GetObjectUUID(Player);
             var dbPlayer = _db.Get<Player>(playerId);
-            var recipe = _craftService.GetRecipe(_recipe);
+            var recipe = CraftService.GetRecipe(_recipe);
             var item = CreateItemOnObject(recipe.Resref, Player, recipe.Quantity);
             var firstTime = !dbPlayer.CraftedRecipes.ContainsKey(_recipe);
             var propertyTransferChance = (int)(((float)_quality / (float)_maxQuality) * 100);
@@ -1497,7 +1494,7 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
                 .Concat(_itemPropertiesEnhancement8);
             foreach (var ip in allProperties)
             {
-                if (_random.D100(1) <= propertyTransferChance)
+                if (Random.D100(1) <= propertyTransferChance)
                 {
                     ApplyProperty(item, ip);
                     SendMessageToPC(Player, ColorToken.Green("Enhancement applied successfully."));
@@ -1539,7 +1536,7 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
                 _hasBlueprint ? _activeBlueprint.Level : 0,
                 firstTime, 
                 qualityPercent);
-            _skillService.GiveSkillXP(Player, recipe.Skill, xp, false, false);
+            SkillService.GiveSkillXP(Player, recipe.Skill, xp, false, false);
 
             // Clean up and return to the Set Up mode.
             _itemPropertiesEnhancement1.Clear();
@@ -1574,7 +1571,7 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
                 return;
 
             // Random bonuses
-            var recipe = _craftService.GetRecipe(_recipe);
+            var recipe = CraftService.GetRecipe(_recipe);
             for (var currentBonus = 1; currentBonus <= _activeBlueprint.ItemBonuses; currentBonus++)
             {
                 var tier = currentBonus;
@@ -1590,10 +1587,10 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
                 if (bonus == null)
                     continue;
 
-                var ip = _craftService.BuildItemPropertyForEnhancement(bonus.Type, bonus.Amount);
+                var ip = CraftService.BuildItemPropertyForEnhancement(bonus.Type, bonus.Amount);
                 ApplyProperty(item, ip);
 
-                var subTypeDetail = _craftService.GetEnhancementSubType(bonus.Type);
+                var subTypeDetail = CraftService.GetEnhancementSubType(bonus.Type);
                 SendMessageToPC(Player, ColorToken.Green($"Blueprint Bonus applied: {subTypeDetail.Name} +{bonus.Amount}"));
             }
             
@@ -1614,62 +1611,62 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
             if (!IsInCraftMode)
                 return;
 
-            var recipe = _craftService.GetRecipe(_recipe);
+            var recipe = CraftService.GetRecipe(_recipe);
             var playerId = GetObjectUUID(Player);
             var dbPlayer = _db.Get<Player>(playerId);
             const int ChanceToLoseItem = 65;
 
             // Process enhancements
-            if (!string.IsNullOrWhiteSpace(_enhancement1) && _random.D100(1) > ChanceToLoseItem)
+            if (!string.IsNullOrWhiteSpace(_enhancement1) && Random.D100(1) > ChanceToLoseItem)
             {
                 var item = ObjectPlugin.Deserialize(_enhancement1);
                 ObjectPlugin.AcquireItem(Player, item);
             }
             _enhancement1 = string.Empty;
 
-            if (!string.IsNullOrWhiteSpace(_enhancement2) && _random.D100(1) > ChanceToLoseItem)
+            if (!string.IsNullOrWhiteSpace(_enhancement2) && Random.D100(1) > ChanceToLoseItem)
             {
                 var item = ObjectPlugin.Deserialize(_enhancement2);
                 ObjectPlugin.AcquireItem(Player, item);
             }
             _enhancement2 = string.Empty;
 
-            if (!string.IsNullOrWhiteSpace(_enhancement3) && _random.D100(1) > ChanceToLoseItem)
+            if (!string.IsNullOrWhiteSpace(_enhancement3) && Random.D100(1) > ChanceToLoseItem)
             {
                 var item = ObjectPlugin.Deserialize(_enhancement3);
                 ObjectPlugin.AcquireItem(Player, item);
             }
             _enhancement3 = string.Empty;
 
-            if (!string.IsNullOrWhiteSpace(_enhancement4) && _random.D100(1) > ChanceToLoseItem)
+            if (!string.IsNullOrWhiteSpace(_enhancement4) && Random.D100(1) > ChanceToLoseItem)
             {
                 var item = ObjectPlugin.Deserialize(_enhancement4);
                 ObjectPlugin.AcquireItem(Player, item);
             }
             _enhancement4 = string.Empty;
 
-            if (!string.IsNullOrWhiteSpace(_enhancement5) && _random.D100(1) > ChanceToLoseItem)
+            if (!string.IsNullOrWhiteSpace(_enhancement5) && Random.D100(1) > ChanceToLoseItem)
             {
                 var item = ObjectPlugin.Deserialize(_enhancement5);
                 ObjectPlugin.AcquireItem(Player, item);
             }
             _enhancement5 = string.Empty;
 
-            if (!string.IsNullOrWhiteSpace(_enhancement6) && _random.D100(1) > ChanceToLoseItem)
+            if (!string.IsNullOrWhiteSpace(_enhancement6) && Random.D100(1) > ChanceToLoseItem)
             {
                 var item = ObjectPlugin.Deserialize(_enhancement6);
                 ObjectPlugin.AcquireItem(Player, item);
             }
             _enhancement6 = string.Empty;
 
-            if (!string.IsNullOrWhiteSpace(_enhancement7) && _random.D100(1) > ChanceToLoseItem)
+            if (!string.IsNullOrWhiteSpace(_enhancement7) && Random.D100(1) > ChanceToLoseItem)
             {
                 var item = ObjectPlugin.Deserialize(_enhancement7);
                 ObjectPlugin.AcquireItem(Player, item);
             }
             _enhancement7 = string.Empty;
 
-            if (!string.IsNullOrWhiteSpace(_enhancement8) && _random.D100(1) > ChanceToLoseItem)
+            if (!string.IsNullOrWhiteSpace(_enhancement8) && Random.D100(1) > ChanceToLoseItem)
             {
                 var item = ObjectPlugin.Deserialize(_enhancement8);
                 ObjectPlugin.AcquireItem(Player, item);
@@ -1679,7 +1676,7 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
             // Process components
             foreach (var serialized in _components)
             {
-                if (_random.D100(1) > ChanceToLoseItem)
+                if (Random.D100(1) > ChanceToLoseItem)
                 {
                     var item = ObjectPlugin.Deserialize(serialized);
                     ObjectPlugin.AcquireItem(Player, item);
@@ -1710,7 +1707,7 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
                 false, 
                 0f);
             xp = (int)(xp * 0.15f);
-            _skillService.GiveSkillXP(Player, recipe.Skill, xp, false, false);
+            SkillService.GiveSkillXP(Player, recipe.Skill, xp, false, false);
 
             _logger.Write<CraftingLogGroup>($"{GetName(Player)} ({GetObjectUUID(Player)}) failed to craft '{_recipe}'.");
         }
@@ -1744,7 +1741,7 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
 
             _cp -= cpCost;
 
-            if (_random.D100(1) <= chance)
+            if (Random.D100(1) <= chance)
             {
                 successAction();
 

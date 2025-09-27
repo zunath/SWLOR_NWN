@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Character.Service;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Abstractions.Models;
 using SWLOR.Shared.Domain.Common.Enums;
 using SWLOR.Shared.Domain.Entities;
@@ -25,7 +26,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
         }
 
         // Lazy-loaded service to break circular dependency
-        private Achievement Achievement => _serviceProvider.GetRequiredService<Achievement>();
+        private IAchievementService Achievement => _serviceProvider.GetRequiredService<IAchievementService>();
         
         private const int EntriesPerPage = 25;
         private int SelectedIndex { get; set; }

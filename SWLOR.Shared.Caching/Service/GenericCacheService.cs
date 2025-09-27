@@ -13,6 +13,14 @@ namespace SWLOR.Shared.Caching.Service
         public GenericCacheService(IServiceProvider? serviceProvider = null)
         {
             _serviceProvider = serviceProvider;
+            if (_serviceProvider == null)
+            {
+                Console.WriteLine("GenericCacheService: IServiceProvider is null!");
+            }
+            else
+            {
+                Console.WriteLine("GenericCacheService: IServiceProvider is not null");
+            }
         }
 
         /// <summary>

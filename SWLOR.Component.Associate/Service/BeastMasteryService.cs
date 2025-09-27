@@ -35,44 +35,33 @@ namespace SWLOR.Component.Associate.Service
     {
         private readonly IDatabaseService _db;
         private readonly IRandomService _random;
-        private readonly IGenericCacheService _cacheService;
         private readonly IServiceProvider _serviceProvider;
-        private readonly IGuiService _guiService;
-        private readonly IStatusEffectService _statusEffectService;
-        private readonly IPropertyService _propertyService;
-        private readonly IActivityService _activityService;
-        private readonly ITimeService _timeService;
 
         public BeastMasteryService(
             IDatabaseService db,
             IRandomService random,
-            IGenericCacheService cacheService,
-            IServiceProvider serviceProvider,
-            IGuiService guiService,
-            IStatusEffectService statusEffectService,
-            IPropertyService propertyService,
-            IActivityService activityService,
-            ITimeService timeService)
+            IServiceProvider serviceProvider)
         {
             _db = db;
             _random = random;
-            _cacheService = cacheService;
             _serviceProvider = serviceProvider;
-            _guiService = guiService;
-            _statusEffectService = statusEffectService;
-            _propertyService = propertyService;
-            _activityService = activityService;
-            _timeService = timeService;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IGenericCacheService CacheService => _serviceProvider.GetRequiredService<IGenericCacheService>();
+        private IGuiService GuiService => _serviceProvider.GetRequiredService<IGuiService>();
+        private IStatusEffectService StatusEffectService => _serviceProvider.GetRequiredService<IStatusEffectService>();
+        private IPropertyService PropertyService => _serviceProvider.GetRequiredService<IPropertyService>();
+        private IActivityService ActivityService => _serviceProvider.GetRequiredService<IActivityService>();
+        private ITimeService TimeService => _serviceProvider.GetRequiredService<ITimeService>();
+        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
+        private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
+        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
         
         // Cached data
         private IInterfaceCache<BeastType, BeastDetail> _beastCache;
         private IEnumCache<BeastRoleType, BeastRoleAttribute> _beastRoleCache;
         
-        // Lazy-loaded services to break circular dependencies
-        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
-        private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
-        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
         
         // Additional caches for complex data
         private List<BeastFoodType> _beastFoods = new();
@@ -85,20 +74,12 @@ namespace SWLOR.Component.Associate.Service
 
         public BeastMasteryService(
             IDatabaseService db,
-            IRandomService random,
-            IGenericCacheService cacheService,
-            IGuiService guiService,
-            IStatusEffectService statusEffectService,
-            IItemService itemService,
-            IStatService statService,
-            IPropertyService propertyService)
+            IServiceProvider serviceProvider,
+            IRandomService random)
         {
             _db = db;
             _random = random;
-            _cacheService = cacheService;
-            _guiService = guiService;
-            _statusEffectService = statusEffectService;
-            _propertyService = propertyService;
+            _serviceProvider = serviceProvider;
         }
 
         public string HydrolaseResrefPrefix => "hydrolase_";
@@ -123,7 +104,7 @@ namespace SWLOR.Component.Associate.Service
 
         private void LoadBeasts()
         {
-            _beastCache = _cacheService.BuildInterfaceCache<IBeastListDefinition, BeastType, BeastDetail>()
+            _beastCache = CacheService.BuildInterfaceCache<IBeastListDefinition, BeastType, BeastDetail>()
                 .WithDataExtractor(instance => instance.Build())
                 .Build();
 
@@ -132,7 +113,7 @@ namespace SWLOR.Component.Associate.Service
 
         private void LoadBeastRoles()
         {
-            _beastRoleCache = _cacheService.BuildEnumCache<BeastRoleType, BeastRoleAttribute>()
+            _beastRoleCache = CacheService.BuildEnumCache<BeastRoleType, BeastRoleAttribute>()
                 .WithAllItems()
                 .Build();
         }
@@ -217,17 +198,17 @@ namespace SWLOR.Component.Associate.Service
             if (!ignoreBonuses)
             {
                 // Food Bonus
-                if (_statusEffectService.HasStatusEffect(beast, StatusEffectType.PetFood))
+                if (StatusEffectService.HasStatusEffect(beast, StatusEffectType.PetFood))
                 {
-                    var xpBonus = _statusEffectService.GetEffectData<int>(beast, StatusEffectType.PetFood);
+                    var xpBonus = StatusEffectService.GetEffectData<int>(beast, StatusEffectType.PetFood);
 
                     bonusPercentage += xpBonus * 0.01f;
                 }
 
                 // Dedication bonus
-                if (_statusEffectService.HasStatusEffect(beast, StatusEffectType.Dedication))
+                if (StatusEffectService.HasStatusEffect(beast, StatusEffectType.Dedication))
                 {
-                    var source = _statusEffectService.GetEffectData<uint>(beast, StatusEffectType.Dedication);
+                    var source = StatusEffectService.GetEffectData<uint>(beast, StatusEffectType.Dedication);
 
                     if (GetIsObjectValid(source))
                     {
@@ -285,7 +266,7 @@ namespace SWLOR.Component.Associate.Service
             _db.Set(dbBeast);
             ApplyStats(beast);
 
-            _guiService.PublishRefreshEvent(player, new BeastGainXPRefreshEvent());
+            GuiService.PublishRefreshEvent(player, new BeastGainXPRefreshEvent());
         }
 
         public int GetRequiredXP(int level, int xpPenalty)
@@ -511,7 +492,7 @@ namespace SWLOR.Component.Associate.Service
         public void BeastOnEndCombatRound()
         {
             var beast = OBJECT_SELF;
-            if (!_activityService.IsBusy(beast))
+            if (!ActivityService.IsBusy(beast))
             {
                 ExecuteScript("x0_ch_hen_combat", OBJECT_SELF);
                 // TODO: Review this AI call - method not found in current codebase
@@ -574,7 +555,7 @@ namespace SWLOR.Component.Associate.Service
 
             AssignCommand(beast, () => ClearAllActions());
 
-            _statusEffectService.Apply(beast, beast, StatusEffectType.Rest, 0f);
+            StatusEffectService.Apply(beast, beast, StatusEffectType.Rest, 0f);
         }
 
         public void BeastOnSpawn()
@@ -610,7 +591,7 @@ namespace SWLOR.Component.Associate.Service
                 return;
             }
             
-            _guiService.TogglePlayerWindow(player, GuiWindowType.Stables, null, OBJECT_SELF);
+            GuiService.TogglePlayerWindow(player, GuiWindowType.Stables, null, OBJECT_SELF);
         }
 
         private readonly Dictionary<int, int> _beastXPRequirements = new()
@@ -758,7 +739,7 @@ namespace SWLOR.Component.Associate.Service
                 return;
             }
 
-            var incubatorPropertyId = _propertyService.GetPropertyId(incubator);
+            var incubatorPropertyId = PropertyService.GetPropertyId(incubator);
 
             if (string.IsNullOrWhiteSpace(incubatorPropertyId))
             {
@@ -776,7 +757,7 @@ namespace SWLOR.Component.Associate.Service
                 if (incubatorJob.DateCompleted > now)
                 {
                     var delta = incubatorJob.DateCompleted - now;
-                    var completionTime = _timeService.GetTimeLongIntervals(delta, false);
+                    var completionTime = TimeService.GetTimeLongIntervals(delta, false);
                     SendMessageToPC(player, $"Another player's incubation job is active. This job will complete in: {completionTime}.");
                 }
                 else
@@ -788,7 +769,7 @@ namespace SWLOR.Component.Associate.Service
             }
 
             var payload = new IncubatorPayload(incubatorPropertyId, incubatorJob?.Id ?? string.Empty);
-            _guiService.TogglePlayerWindow(player, GuiWindowType.Incubator, payload, player);
+            GuiService.TogglePlayerWindow(player, GuiWindowType.Incubator, payload, player);
         }
 
         private BeastType DetermineMutation(BeastType beastType, IncubationJob job)

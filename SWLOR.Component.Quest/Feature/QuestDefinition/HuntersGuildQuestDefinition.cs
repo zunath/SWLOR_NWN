@@ -1,5 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Quest.Contracts;
 using SWLOR.Component.Quest.Service;
 using SWLOR.Shared.Caching.Contracts;
@@ -47,7 +46,7 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
 
         public Dictionary<string, IQuestDetail> BuildQuests()
         {
-            var builder = _questBuilderFactory.Create();
+            var builder = QuestBuilderFactory.Create();
 
             // Tier 1 (Rank 0)
             BuildKillTask(builder, "hun_tsk_001", NPCGroupType.CZ220_ColicoidExperiment, 3, 0);
@@ -202,7 +201,7 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
             int amount,
             int guildRank)
         {
-            var itemName = _itemCache.GetItemNameByResref(resref);
+            var itemName = ItemCache.GetItemNameByResref(resref);
             var rewardDetails = _rewardDetails[guildRank];
 
             builder.Create(questId, $"{amount}x {itemName}")
@@ -223,7 +222,7 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
             int amount,
             int guildRank)
         {
-            var groupDetail = _npcGroupService.GetNPCGroup(group);
+            var groupDetail = NPCGroupService.GetNPCGroup(group);
             var rewardDetails = _rewardDetails[guildRank];
 
             builder.Create(questId, $"Kill {amount}x {groupDetail.Name}")

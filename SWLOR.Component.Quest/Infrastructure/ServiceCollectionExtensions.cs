@@ -1,6 +1,10 @@
+using System;
+using System.Linq;
+using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Quest.Contracts;
 using SWLOR.Component.Quest.Feature.QuestDefinition;
+using SWLOR.Component.Quest.Feature.SnippetDefinition;
 using SWLOR.Component.Quest.Service;
 using SWLOR.Game.Server.Service.QuestService;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -30,32 +34,12 @@ namespace SWLOR.Component.Quest.Infrastructure
         /// <returns>The service collection for chaining</returns>
         public static IServiceCollection AddQuestServices(this IServiceCollection services)
         {
-            // Quest Definition Services
-            services.AddSingleton<IQuestListDefinition, DantooineQuestDefinition>();
-            services.AddSingleton<IQuestListDefinition, CZ220QuestDefinition>();
-            services.AddSingleton<IQuestListDefinition, ViscaraQuestDefinition>();
-            services.AddSingleton<IQuestListDefinition, HiddenAccessQuestDefinition>();
-            services.AddSingleton<IQuestListDefinition, HutlarQuestDefinition>();
-            services.AddSingleton<IQuestListDefinition, SmitheryGuildQuestDefinition>();
-            services.AddSingleton<IQuestListDefinition, FabricationGuildQuestDefinition>();
-            services.AddSingleton<IQuestListDefinition, EngineeringGuildQuestDefinition>();
-            services.AddSingleton<IQuestListDefinition, AgricultureGuildQuestDefinition>();
-            services.AddSingleton<IQuestListDefinition, TatooineQuestDefinition>();
-            services.AddSingleton<IQuestListDefinition, HuntersGuildQuestDefinition>();
-            services.AddSingleton<IQuestListDefinition, KorribanQuestlineDefinition>();
-            services.AddSingleton<IQuestListDefinition, MonCalaQuestDefinition>();
+            // Dynamically register all quest definition classes
+            RegisterQuestDefinitionClasses(services);
 
             // Quest Builder Service
             services.AddTransient<IQuestBuilder, QuestBuilder>(provider => new QuestBuilder(
-                provider.GetRequiredService<IItemCacheService>(),
-                provider.GetRequiredService<IQuestService>(),
-                provider.GetRequiredService<IKeyItemService>(),
-                provider.GetRequiredService<IFactionService>(),
-                provider.GetRequiredService<IGuildService>(),
-                provider.GetRequiredService<IDatabaseService>(),
-                provider.GetRequiredService<INPCGroupService>(),
-                provider.GetRequiredService<IGuiService>(),
-                provider.GetRequiredService<IDialogService>()));
+                provider.GetRequiredService<IServiceProvider>()));
             services.AddSingleton<IQuestBuilderFactory, QuestBuilderFactory>();
             
             // Quest Component Factories
@@ -69,11 +53,7 @@ namespace SWLOR.Component.Quest.Infrastructure
                 provider.GetRequiredService<IDatabaseService>(),
                 provider.GetRequiredService<IItemCacheService>(),
                 provider.GetRequiredService<IGenericCacheService>(),
-                provider.GetRequiredService<IItemService>(),
-                provider.GetRequiredService<IPerkService>(),
-                provider.GetRequiredService<IEnmityService>(),
-                provider.GetRequiredService<IActivityService>(),
-                provider.GetRequiredService<IRandomService>()));
+                provider.GetRequiredService<IServiceProvider>()));
 
             // Register Guild service
             services.AddSingleton<IGuildService, GuildService>();
@@ -81,7 +61,25 @@ namespace SWLOR.Component.Quest.Infrastructure
             // Register NPCGroup service
             services.AddSingleton<INPCGroupService, NPCGroup>();
 
+            // Snippet definitions are automatically registered by the Inventory component
+
+            // Dialog classes are automatically registered by the Inventory component
+
             return services;
+        }
+
+        private static void RegisterQuestDefinitionClasses(IServiceCollection services)
+        {
+            // Find all types that implement IQuestListDefinition
+            var questDefinitionTypes = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(s => s.GetTypes())
+                .Where(w => typeof(IQuestListDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
+
+            foreach (var type in questDefinitionTypes)
+            {
+                // Register each quest definition as transient
+                services.AddTransient(type);
+            }
         }
     }
 }

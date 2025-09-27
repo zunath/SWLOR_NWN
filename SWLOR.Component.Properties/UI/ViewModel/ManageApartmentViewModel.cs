@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Properties.Service;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
@@ -16,13 +17,16 @@ namespace SWLOR.Component.Properties.UI.ViewModel
     public class ManageApartmentViewModel: GuiViewModelBase<ManageApartmentViewModel, ManageApartmentPayload>
     {
         private readonly IDatabaseService _db;
-        private readonly PropertyService _property;
+        private readonly IServiceProvider _serviceProvider;
 
-        public ManageApartmentViewModel(IGuiService guiService, IDatabaseService db, PropertyService property) : base(guiService)
+        public ManageApartmentViewModel(IGuiService guiService, IDatabaseService db, IServiceProvider serviceProvider) : base(guiService)
         {
             _db = db;
-            _property = property;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded service to break circular dependency
+        private PropertyService Property => _serviceProvider.GetRequiredService<PropertyService>();
         
         public const int MaxNameLength = 50;
         public const int MaxDescriptionLength = 200;
@@ -48,7 +52,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
 
         private int SelectedApartmentIndex { get; set; }
 
-        private readonly List<string> _propertyIds = new();
+        private readonly List<string> PropertyIds = new();
 
         public string Instruction
         {
@@ -178,7 +182,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
 
         private WorldProperty GetApartment()
         {
-            var selectedPropertyId = _propertyIds[SelectedApartmentIndex];
+            var selectedPropertyId = PropertyIds[SelectedApartmentIndex];
             var query = new DBQuery<WorldProperty>()
                 .AddFieldSearch(nameof(WorldProperty.Id), selectedPropertyId, false);
             var apartment = _db.Search(query).Single();
@@ -189,7 +193,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
         private WorldPropertyPermission GetPermissions()
         {
             var playerId = GetObjectUUID(Player);
-            var selectedPropertyId = _propertyIds[SelectedApartmentIndex];
+            var selectedPropertyId = PropertyIds[SelectedApartmentIndex];
             var query = new DBQuery<WorldPropertyPermission>()
                 .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false)
                 .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), selectedPropertyId, false);
@@ -201,7 +205,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
 
         protected override void Initialize(ManageApartmentPayload initialPayload)
         {
-            _propertyIds.Clear();
+            PropertyIds.Clear();
             var playerId = GetObjectUUID(Player);
             var apartmentNames = new GuiBindingList<string>();
             var apartmentToggles = new GuiBindingList<bool>();
@@ -212,7 +216,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
                 var property = _db.Get<WorldProperty>(initialPayload.SpecificPropertyId);
                 apartmentNames.Add(property.CustomName);
                 apartmentToggles.Add(true);
-                _propertyIds.Add(property.Id);
+                PropertyIds.Add(property.Id);
                 selectedApartmentIndex = 0;
                 IsAtTerminal = false;
             }
@@ -239,7 +243,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
 
                     foreach (var property in properties)
                     {
-                        _propertyIds.Add(property.Id);
+                        PropertyIds.Add(property.Id);
                         apartmentNames.Add(property.CustomName);
                         apartmentToggles.Add(false);
                     }
@@ -280,7 +284,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
             {
                 var apartment = GetApartment();
                 var permissions = GetPermissions();
-                var layout = _property.GetLayoutByType(apartment.Layout);
+                var layout = Property.GetLayoutByType(apartment.Layout);
                 var furnitureCount = 
                     apartment.ChildPropertyIds.ContainsKey(PropertyChildType.Structure)
                     ? apartment.ChildPropertyIds[PropertyChildType.Structure].Count
@@ -334,7 +338,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
             }
 
             var apartment = GetApartment();
-            var layout = _property.GetLayoutByType(apartment.Layout);
+            var layout = Property.GetLayoutByType(apartment.Layout);
             var leasedUntilDate = apartment.Dates[PropertyDateType.Lease];
             var dayPrice = layout.PricePerDay;
             var weekPrice = layout.PricePerDay * 7;
@@ -408,7 +412,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
             {
                 _db.Set(apartment);
 
-                var instance = _property.GetRegisteredInstance(apartment.Id);
+                var instance = Property.GetRegisteredInstance(apartment.Id);
                 SetName(instance.Area, "{PC} " + CustomName);
 
                 Instruction = $"Saved successfully.";
@@ -424,7 +428,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
             if (!permissions.Permissions[PropertyPermissionType.ExtendLease])
                 return;
 
-            var layout = _property.GetLayoutByType(apartment.Layout);
+            var layout = Property.GetLayoutByType(apartment.Layout);
             var price = days * layout.PricePerDay;
             var dayWord = days == 1 ? "day" : "days";
             var currentLease = apartment.Dates[PropertyDateType.Lease];
@@ -513,7 +517,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
                 return;
 
             var apartment = GetApartment();
-            _property.EnterProperty(Player, apartment.Id);
+            Property.EnterProperty(Player, apartment.Id);
 
             _guiService.TogglePlayerWindow(Player, GuiWindowType.ManageApartment);
         };

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -14,18 +15,18 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
 {
     public class RefineryViewModel: GuiViewModelBase<RefineryViewModel, IGuiPayload>
     {
-        private readonly IItemCacheService _itemCache;
-        private readonly IPerkService _perkService;
-        private readonly ISkillService _skillService;
-        private readonly ITargetingService _targetingService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public RefineryViewModel(IGuiService guiService, IItemCacheService itemCache, IPerkService perkService, ISkillService skillService, ITargetingService targetingService) : base(guiService)
+        public RefineryViewModel(IGuiService guiService, IServiceProvider serviceProvider) : base(guiService)
         {
-            _itemCache = itemCache;
-            _perkService = perkService;
-            _skillService = skillService;
-            _targetingService = targetingService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IItemCacheService ItemCache => _serviceProvider.GetRequiredService<IItemCacheService>();
+        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
+        private ISkillService SkillService => _serviceProvider.GetRequiredService<ISkillService>();
+        private ITargetingService TargetingService => _serviceProvider.GetRequiredService<ITargetingService>();
         private class OreDetail
         {
             public int RequiredLevel { get; }
@@ -140,7 +141,7 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
 
         private void CalculateCoresRequired()
         {
-            var refineryManagement = _perkService.GetPerkLevel(Player, PerkType.RefineryManagement);
+            var refineryManagement = PerkService.GetPerkLevel(Player, PerkType.RefineryManagement);
             var itemsPerCore = BaseItemsRefinedPerCore + refineryManagement;
             _powerCoresRequired = (int)Math.Ceiling(ItemCount / (float)itemsPerCore);
             
@@ -192,7 +193,7 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
                 }
 
                 // Player doesn't have prerequisite level.
-                var perkLevel = _perkService.GetPerkLevel(Player, PerkType.Refining);
+                var perkLevel = PerkService.GetPerkLevel(Player, PerkType.Refining);
                 if (perkLevel < _ores[resref].RequiredLevel)
                 {
                     SendMessageToPC(Player, $"Your Refining perk level must be at least {_ores[resref].RequiredLevel} to refine that item.");
@@ -202,17 +203,17 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
                 return true;
             }
 
-            _targetingService.EnterTargetingMode(Player, ObjectType.Item, "Please select a resource to refine.", (item) =>
+            TargetingService.EnterTargetingMode(Player, ObjectType.Item, "Please select a resource to refine.", (item) =>
             {
                 if (!ValidateItem(item))
                     return;
 
                 var resref = GetResRef(item);
-                var itemName = _itemCache.GetItemNameByResref(resref);
+                var itemName = ItemCache.GetItemNameByResref(resref);
                 var stackSize = GetItemStackSize(item);
                 var serialized = ObjectPlugin.Serialize(item);
                 var outputOre = _ores[resref];
-                var outputItemName = _itemCache.GetItemNameByResref(outputOre.RefinedItemResref);
+                var outputItemName = ItemCache.GetItemNameByResref(outputOre.RefinedItemResref);
 
                 InputItemNames.Add($"{stackSize}x {itemName}");
                 InputItemToggles.Add(false);
@@ -343,7 +344,7 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
                 }
 
                 DeleteLocalBool(Player, "IS_REFINING");
-                _skillService.GiveSkillXP(Player, SkillType.Gathering, xp, false, false);
+                SkillService.GiveSkillXP(Player, SkillType.Gathering, xp, false, false);
 
                 _inputItemResrefs.Clear();
                 _inputItems.Clear();

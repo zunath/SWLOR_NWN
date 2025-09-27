@@ -1,9 +1,12 @@
+using System;
+using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.Component.Ability.EventHandlers;
 using SWLOR.Component.Ability.Feature.AbilityDefinition.Devices;
 using SWLOR.Component.Ability.Feature.AbilityDefinition.Force;
 using SWLOR.Component.Ability.Feature.AbilityDefinition.General;
+using SWLOR.Component.Ability.Feature.AbilityDefinition.TwoHanded;
 using SWLOR.Component.Ability.Service;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Common.Contracts;
@@ -25,18 +28,29 @@ namespace SWLOR.Component.Ability.Infrastructure
                 // Register services as singletons
                 services.AddSingleton<IAbilityService, Service.Ability>();
                 services.AddSingleton<IRecastService, Recast>();
+                services.AddSingleton<IAbilityBuilder, Service.AbilityBuilder>();
 
-            // Register ability definition classes as singletons
-            services.AddSingleton<BurstOfSpeedAbilityDefinition>();
-            services.AddSingleton<GasBombAbilityDefinition>();
-            services.AddSingleton<StealthGeneratorAbilityDefinition>();
-            services.AddSingleton<IncendiaryBombAbilityDefinition>();
-            services.AddSingleton<DashAbilityDefinition>();
+            // Dynamically register all ability definition classes
+            RegisterAbilityDefinitionClasses(services);
 
             // Register event handlers as singletons
             services.AddSingleton<AbilityEventHandlers>();
 
             return services;
+        }
+
+        private static void RegisterAbilityDefinitionClasses(IServiceCollection services)
+        {
+            // Find all types that implement IAbilityListDefinition
+            var abilityDefinitionTypes = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(s => s.GetTypes())
+                .Where(w => typeof(IAbilityListDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
+
+            foreach (var type in abilityDefinitionTypes)
+            {
+                // Register each ability definition as singleton
+                services.AddSingleton(type);
+            }
         }
     }
 }

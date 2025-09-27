@@ -1,4 +1,8 @@
+using System;
+using System.Linq;
+using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
+using SWLOR.Component.Properties.Contracts;
 using SWLOR.Component.Properties.EventHandlers;
 using SWLOR.Component.Properties.Service;
 using SWLOR.Shared.Domain.Properties.Contracts;
@@ -23,6 +27,18 @@ namespace SWLOR.Component.Properties.Infrastructure
 
             // Register event handlers as singletons
             services.AddSingleton<PropertiesEventHandlers>();
+            
+            // Dialog classes are automatically registered by the Inventory component
+            
+            // Automatically register all IPropertyLayoutListDefinition implementations
+            var assembly = Assembly.GetExecutingAssembly();
+            var propertyLayoutDefinitionTypes = assembly.GetTypes()
+                .Where(t => t.IsClass && !t.IsAbstract && typeof(IPropertyLayoutListDefinition).IsAssignableFrom(t));
+            
+            foreach (var type in propertyLayoutDefinitionTypes)
+            {
+                services.AddTransient(type);
+            }
 
             return services;
         }

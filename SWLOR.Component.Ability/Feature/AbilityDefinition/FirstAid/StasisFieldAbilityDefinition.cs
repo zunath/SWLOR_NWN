@@ -15,20 +15,8 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.FirstAid
 {
     public class StasisFieldAbilityDefinition: FirstAidBaseAbilityDefinition
     {
-        public StasisFieldAbilityDefinition(
-            IRandomService random, 
-            IPerkService perkService, 
-            ICombatPointService combatPointService, 
-            IEnmityService enmityService, 
-            IAbilityService abilityService,
-            IStatusEffectService statusEffect) 
-            : base(
-                random, 
-                perkService, 
-                combatPointService, 
-                enmityService, 
-                abilityService,
-                statusEffect)
+        public StasisFieldAbilityDefinition(IServiceProvider serviceProvider) 
+            : base(serviceProvider)
         {
         }
 

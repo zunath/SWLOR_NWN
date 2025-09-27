@@ -1,6 +1,6 @@
-using SWLOR.Component.Admin.Service;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Domain.Common.Contracts;
 using SWLOR.Shared.Domain.Common.Enums;
 using SWLOR.Shared.Events.Constants;
 
@@ -9,9 +9,9 @@ namespace SWLOR.Component.Admin.Feature
     public class DMAuthorization
     {
         private readonly ILogger _logger;
-        private readonly Authorization _authorization;
+        private readonly IAuthorizationService _authorization;
 
-        public DMAuthorization(ILogger logger, Authorization authorization)
+        public DMAuthorization(ILogger logger, IAuthorizationService authorization)
         {
             _logger = logger;
             _authorization = authorization;

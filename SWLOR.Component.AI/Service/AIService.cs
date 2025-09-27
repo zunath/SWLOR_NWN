@@ -17,44 +17,31 @@ namespace SWLOR.Component.AI.Service
 {
     public class AIService : IAIService
     {
-        private readonly IRandomService _random;
         private readonly IServiceProvider _serviceProvider;
-        private readonly IEnmityService _enmity;
-        private readonly IStatusEffectService _statusEffectService;
-        private readonly IPartyService _partyService;
-        private readonly IActivityService _activityService;
-        private readonly IDialogService _dialogService;
         private readonly Dictionary<uint, HashSet<uint>> _creatureAllies = new();
         private readonly Dictionary<AIDefinitionType, IAIDefinition> _aiDefinitions = new();
 
-        public AIService(
-            IRandomService random, 
-            IServiceProvider serviceProvider,
-            IEnmityService enmity, 
-            IStatusEffectService statusEffectService, 
-            IPartyService partyService, 
-            IActivityService activityService,
-            IDialogService dialogService)
+        public AIService(IServiceProvider serviceProvider)
         {
-            _random = random;
             _serviceProvider = serviceProvider;
-            _enmity = enmity;
-            _statusEffectService = statusEffectService;
-            _partyService = partyService;
-            _activityService = activityService;
-            _dialogService = dialogService;
         }
         
         // Lazy-loaded services to break circular dependencies
+        private IRandomService Random => _serviceProvider.GetRequiredService<IRandomService>();
+        private IEnmityService Enmity => _serviceProvider.GetRequiredService<IEnmityService>();
+        private IStatusEffectService StatusEffectService => _serviceProvider.GetRequiredService<IStatusEffectService>();
+        private IPartyService PartyService => _serviceProvider.GetRequiredService<IPartyService>();
+        private IActivityService ActivityService => _serviceProvider.GetRequiredService<IActivityService>();
+        private IDialogService DialogService => _serviceProvider.GetRequiredService<IDialogService>();
         private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
         private IAbilityService AbilityService => _serviceProvider.GetRequiredService<IAbilityService>();
         private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
 
         public void CacheAIData()
         {
-            _aiDefinitions[AIDefinitionType.Generic] = new GenericAIDefinition(AbilityService, PerkService, _statusEffectService);
-            _aiDefinitions[AIDefinitionType.Droid] = new DroidAIDefinition(AbilityService, PerkService, _statusEffectService);
-            _aiDefinitions[AIDefinitionType.Beast] = new BeastAIDefinition(AbilityService, PerkService, _statusEffectService);
+            _aiDefinitions[AIDefinitionType.Generic] = new GenericAIDefinition(_serviceProvider);
+            _aiDefinitions[AIDefinitionType.Droid] = new DroidAIDefinition(_serviceProvider);
+            _aiDefinitions[AIDefinitionType.Beast] = new BeastAIDefinition(_serviceProvider);
         }
 
         /// <summary>
@@ -68,7 +55,7 @@ namespace SWLOR.Component.AI.Service
 
             StatService.RestoreNPCStats(true);
             ProcessFlags(creature);
-            _enmity.AttackHighestEnmityTarget(creature);
+            Enmity.AttackHighestEnmityTarget(creature);
         }
 
         /// <summary>
@@ -88,12 +75,12 @@ namespace SWLOR.Component.AI.Service
         /// <param name="creature">The creature to process</param>
         public void ProcessCreatureCombatRoundEnd(uint creature)
         {
-            if (!_activityService.IsBusy(creature))
+            if (!ActivityService.IsBusy(creature))
             {
                 ProcessPerkAI(AIDefinitionType.Generic, creature, true);
             }
 
-            _enmity.AttackHighestEnmityTarget(creature);
+            Enmity.AttackHighestEnmityTarget(creature);
         }
 
         /// <summary>
@@ -106,7 +93,7 @@ namespace SWLOR.Component.AI.Service
             if (!string.IsNullOrWhiteSpace(conversation))
             {
                 var talker = GetLastSpeaker();
-                _dialogService.StartConversation(talker, creature, conversation);
+                DialogService.StartConversation(talker, creature, conversation);
             }
         }
 
@@ -116,7 +103,7 @@ namespace SWLOR.Component.AI.Service
         /// <param name="creature">The creature to process</param>
         public void ProcessCreaturePhysicalAttacked(uint creature)
         {
-            _enmity.AttackHighestEnmityTarget(creature);
+            Enmity.AttackHighestEnmityTarget(creature);
         }
 
         /// <summary>
@@ -125,7 +112,7 @@ namespace SWLOR.Component.AI.Service
         /// <param name="creature">The creature to process</param>
         public void ProcessCreatureDamaged(uint creature)
         {
-            _enmity.AttackHighestEnmityTarget(creature);
+            Enmity.AttackHighestEnmityTarget(creature);
         }
 
         /// <summary>
@@ -143,7 +130,7 @@ namespace SWLOR.Component.AI.Service
         /// <param name="creature">The creature to process</param>
         public void ProcessCreatureDisturbed(uint creature)
         {
-            _enmity.AttackHighestEnmityTarget(creature);
+            Enmity.AttackHighestEnmityTarget(creature);
         }
 
         /// <summary>
@@ -214,18 +201,18 @@ namespace SWLOR.Component.AI.Service
 
             if (!GetIsEnemy(entering, self))
             {
-                var attackTarget = _enmity.GetHighestEnmityTarget(entering);
+                var attackTarget = Enmity.GetHighestEnmityTarget(entering);
                 // Non-enemy entered aggro range. If they're the same faction and fighting someone, help them out!
                 if (GetFactionEqual(entering, self) &&
                     GetIsEnemy(attackTarget, self))
                 {
-                    _enmity.ModifyEnmity(attackTarget, self, 1);
+                    Enmity.ModifyEnmity(attackTarget, self, 1);
                 }
 
                 return;
             }
 
-            _enmity.ModifyEnmity(entering, self, 1);
+            Enmity.ModifyEnmity(entering, self, 1);
 
             // All allies within 5m should also aggro the player if they're not already in combat.
             if (_creatureAllies.TryGetValue(self, out var allies))
@@ -235,7 +222,7 @@ namespace SWLOR.Component.AI.Service
                     if (!GetIsEnemy(entering, ally)) continue;
                     if (GetDistanceBetween(self, ally) > 5f) continue;
 
-                    _enmity.ModifyEnmity(entering, ally, 1);
+                    Enmity.ModifyEnmity(entering, ally, 1);
                 }
             }
         }
@@ -259,7 +246,7 @@ namespace SWLOR.Component.AI.Service
 
             // Attempt to target the highest enmity creature.
             // If no target can be determined, exit early.
-            var target = _enmity.GetHighestEnmityTarget(creature);
+            var target = Enmity.GetHighestEnmityTarget(creature);
             if (usesEnmity && !GetIsObjectValid(target))
             {
                 ClearAllActions();
@@ -287,7 +274,7 @@ namespace SWLOR.Component.AI.Service
 
                 if (hasPCMaster)
                 {
-                    allies = _partyService.GetAllPartyMembers(creature);
+                    allies = PartyService.GetAllPartyMembers(creature);
                 }
                 else
                 {
@@ -392,7 +379,7 @@ namespace SWLOR.Component.AI.Service
                 GetIsInCombat(creature) ||
                 GetCurrentAction(creature) == ActionType.RandomWalk ||
                 GetCurrentAction(creature) == ActionType.MoveToPoint ||
-                GetIsObjectValid(_enmity.GetHighestEnmityTarget(creature)))
+                GetIsObjectValid(Enmity.GetHighestEnmityTarget(creature)))
                 return;
 
             // Return Home flag
@@ -405,7 +392,7 @@ namespace SWLOR.Component.AI.Service
             }
             // Randomly walk flag
             else if(aiFlags.HasFlag(AIFlag.RandomWalk) &&
-                _random.D100(1) <= 40)
+                Random.D100(1) <= 40)
             {
                 AssignCommand(creature, ActionRandomWalk);
             }

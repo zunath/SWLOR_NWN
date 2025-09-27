@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Associate.Contracts;
 using SWLOR.Shared.Domain.Beasts.Contracts;
 using SWLOR.Shared.Domain.Droids.Contracts;
@@ -14,14 +15,16 @@ namespace SWLOR.Component.Associate.EventHandlers
     /// </summary>
     public class AssociateEventHandlers
     {
-        private readonly IBeastMasteryService _beastMasteryService;
-        private readonly IDroidService _droidService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public AssociateEventHandlers(IBeastMasteryService beastMasteryService, IDroidService droidService)
+        public AssociateEventHandlers(IServiceProvider serviceProvider)
         {
-            _beastMasteryService = beastMasteryService;
-            _droidService = droidService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IBeastMasteryService BeastMasteryService => _serviceProvider.GetRequiredService<IBeastMasteryService>();
+        private IDroidService DroidService => _serviceProvider.GetRequiredService<IDroidService>();
 
         /// <summary>
         /// When the module loads, cache all relevant associate data into memory.
@@ -29,8 +32,8 @@ namespace SWLOR.Component.Associate.EventHandlers
         [ScriptHandler<OnModuleCacheBefore>]
         public void CacheData()
         {
-            _beastMasteryService.CacheData();
-            _droidService.CacheData();
+            BeastMasteryService.CacheData();
+            DroidService.CacheData();
         }
 
         /// <summary>
@@ -39,7 +42,7 @@ namespace SWLOR.Component.Associate.EventHandlers
         [ScriptHandler(ScriptName.OnCombatPointXPDistribute)]
         public void CombatPointXPDistributed()
         {
-            _beastMasteryService.CombatPointXPDistributed();
+            BeastMasteryService.CombatPointXPDistributed();
         }
 
         /// <summary>
@@ -49,7 +52,7 @@ namespace SWLOR.Component.Associate.EventHandlers
         [ScriptHandler<OnAssociateRemoveBefore>]
         public void RemoveAssociate()
         {
-            _beastMasteryService.RemoveAssociate();
+            BeastMasteryService.RemoveAssociate();
         }
 
 
@@ -59,7 +62,7 @@ namespace SWLOR.Component.Associate.EventHandlers
         [ScriptHandler(ScriptName.OnBeastBlocked)]
         public void BeastOnBlocked()
         {
-            _beastMasteryService.BeastOnBlocked();
+            BeastMasteryService.BeastOnBlocked();
         }
 
         /// <summary>
@@ -68,7 +71,7 @@ namespace SWLOR.Component.Associate.EventHandlers
         [ScriptHandler(ScriptName.OnBeastRoundEnd)]
         public void BeastOnEndCombatRound()
         {
-            _beastMasteryService.BeastOnEndCombatRound();
+            BeastMasteryService.BeastOnEndCombatRound();
         }
 
         /// <summary>
@@ -77,7 +80,7 @@ namespace SWLOR.Component.Associate.EventHandlers
         [ScriptHandler(ScriptName.OnBeastConversation)]
         public void BeastOnConversation()
         {
-            _beastMasteryService.BeastOnConversation();
+            BeastMasteryService.BeastOnConversation();
         }
 
         /// <summary>
@@ -86,7 +89,7 @@ namespace SWLOR.Component.Associate.EventHandlers
         [ScriptHandler(ScriptName.OnBeastDamaged)]
         public void BeastOnDamaged()
         {
-            _beastMasteryService.BeastOnDamaged();
+            BeastMasteryService.BeastOnDamaged();
         }
 
         /// <summary>
@@ -95,7 +98,7 @@ namespace SWLOR.Component.Associate.EventHandlers
         [ScriptHandler(ScriptName.OnBeastDeath)]
         public void BeastOnDeath()
         {
-            _beastMasteryService.BeastOnDeath();
+            BeastMasteryService.BeastOnDeath();
         }
 
         /// <summary>
@@ -104,7 +107,7 @@ namespace SWLOR.Component.Associate.EventHandlers
         [ScriptHandler(ScriptName.OnBeastDisturbed)]
         public void BeastOnDisturbed()
         {
-            _beastMasteryService.BeastOnDisturbed();
+            BeastMasteryService.BeastOnDisturbed();
         }
 
         /// <summary>
@@ -113,7 +116,7 @@ namespace SWLOR.Component.Associate.EventHandlers
         [ScriptHandler(ScriptName.OnBeastHeartbeat)]
         public void BeastOnHeartbeat()
         {
-            _beastMasteryService.BeastOnHeartbeat();
+            BeastMasteryService.BeastOnHeartbeat();
         }
 
         /// <summary>
@@ -122,7 +125,7 @@ namespace SWLOR.Component.Associate.EventHandlers
         [ScriptHandler(ScriptName.OnBeastPerception)]
         public void BeastOnPerception()
         {
-            _beastMasteryService.BeastOnPerception();
+            BeastMasteryService.BeastOnPerception();
         }
 
         /// <summary>
@@ -131,7 +134,7 @@ namespace SWLOR.Component.Associate.EventHandlers
         [ScriptHandler(ScriptName.OnBeastAttacked)]
         public void BeastOnPhysicalAttacked()
         {
-            _beastMasteryService.BeastOnPhysicalAttacked();
+            BeastMasteryService.BeastOnPhysicalAttacked();
         }
 
         /// <summary>
@@ -140,7 +143,7 @@ namespace SWLOR.Component.Associate.EventHandlers
         [ScriptHandler(ScriptName.OnBeastRest)]
         public void BeastOnRested()
         {
-            _beastMasteryService.BeastOnRested();
+            BeastMasteryService.BeastOnRested();
         }
 
         /// <summary>
@@ -149,7 +152,7 @@ namespace SWLOR.Component.Associate.EventHandlers
         [ScriptHandler(ScriptName.OnBeastSpawn)]
         public void BeastOnSpawn()
         {
-            _beastMasteryService.BeastOnSpawn();
+            BeastMasteryService.BeastOnSpawn();
         }
 
         /// <summary>
@@ -158,7 +161,7 @@ namespace SWLOR.Component.Associate.EventHandlers
         [ScriptHandler(ScriptName.OnBeastSpellCast)]
         public void BeastOnSpellCastAt()
         {
-            _beastMasteryService.BeastOnSpellCastAt();
+            BeastMasteryService.BeastOnSpellCastAt();
         }
 
         /// <summary>
@@ -167,7 +170,7 @@ namespace SWLOR.Component.Associate.EventHandlers
         [ScriptHandler(ScriptName.OnBeastUserDefined)]
         public void BeastOnUserDefined()
         {
-            _beastMasteryService.BeastOnUserDefined();
+            BeastMasteryService.BeastOnUserDefined();
         }
 
         /// <summary>
@@ -176,7 +179,7 @@ namespace SWLOR.Component.Associate.EventHandlers
         [ScriptHandler(ScriptName.OnBeastTerminate)]
         public void OpenStablesMenu()
         {
-            _beastMasteryService.OpenStablesMenu();
+            BeastMasteryService.OpenStablesMenu();
         }
 
         /// <summary>
@@ -185,7 +188,7 @@ namespace SWLOR.Component.Associate.EventHandlers
         [ScriptHandler(ScriptName.OnIncubatorTerminal)]
         public void UseIncubator()
         {
-            _beastMasteryService.UseIncubator();
+            BeastMasteryService.UseIncubator();
         }
 
         /// <summary>
@@ -194,7 +197,7 @@ namespace SWLOR.Component.Associate.EventHandlers
         [ScriptHandler(ScriptName.OnSwlorDeleteProperty)]
         public void OnRemoveProperty()
         {
-            _beastMasteryService.OnRemoveProperty();
+            BeastMasteryService.OnRemoveProperty();
         }
 
         /// <summary>
@@ -203,7 +206,7 @@ namespace SWLOR.Component.Associate.EventHandlers
         [ScriptHandler(ScriptName.OnDNAExtractUsed)]
         public void UseExtractDNAObject()
         {
-            _beastMasteryService.UseExtractDNAObject();
+            BeastMasteryService.UseExtractDNAObject();
         }
 
         /// <summary>
@@ -212,7 +215,7 @@ namespace SWLOR.Component.Associate.EventHandlers
         [ScriptHandler(ScriptName.OnDroidAssociateUsed)]
         public void UseDroidAssemblyTerminal()
         {
-            _droidService.UseDroidAssemblyTerminal();
+            DroidService.UseDroidAssemblyTerminal();
         }
 
         /// <summary>
@@ -221,7 +224,7 @@ namespace SWLOR.Component.Associate.EventHandlers
         [ScriptHandler<OnModuleExit>]
         public void OnPlayerExit()
         {
-            _droidService.OnPlayerExit();
+            DroidService.OnPlayerExit();
         }
 
         /// <summary>
@@ -230,8 +233,8 @@ namespace SWLOR.Component.Associate.EventHandlers
         [ScriptHandler<OnModuleAcquire>]
         public void OnAcquireItem()
         {
-            _beastMasteryService.OnAcquireItem();
-            _droidService.OnAcquireItem();
+            BeastMasteryService.OnAcquireItem();
+            DroidService.OnAcquireItem();
         }
     }
 }

@@ -207,7 +207,7 @@ namespace SWLOR.Component.StatusEffect.Service
 
             foreach (var type in types)
             {
-                var instance = (IStatusEffectListDefinition)Activator.CreateInstance(type);
+                var instance = (IStatusEffectListDefinition)_serviceProvider.GetRequiredService(type);
                 var statusEffects = instance.BuildStatusEffects();
 
                 foreach (var (statusEffectType, detail) in statusEffects)

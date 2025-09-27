@@ -19,21 +19,21 @@ namespace SWLOR.Component.World.Service
     public class SpawnService : ISpawnService
     {
         private readonly ILogger _logger;
-        private readonly IGenericCacheService _cacheService;
-        private readonly Walkmesh _walkmesh;
+        private readonly IWalkmeshService _walkmesh;
         private readonly IServiceProvider _serviceProvider;
 
         public SpawnService(
             ILogger logger, 
-            IGenericCacheService cacheService, 
-            Walkmesh walkmesh, 
+            IWalkmeshService walkmesh, 
             IServiceProvider serviceProvider)
         {
             _logger = logger;
-            _cacheService = cacheService;
             _walkmesh = walkmesh;
             _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded service to break circular dependency
+        private IGenericCacheService CacheService => _serviceProvider.GetRequiredService<IGenericCacheService>();
 
         // Lazy-loaded services to break circular dependencies
         private IRandomService Random => _serviceProvider.GetRequiredService<IRandomService>();
@@ -97,7 +97,7 @@ namespace SWLOR.Component.World.Service
         /// </summary>
         private void LoadSpawnTables()
         {
-            _spawnTableCache = _cacheService.BuildInterfaceCache<ISpawnListDefinition, string, SpawnTable>()
+            _spawnTableCache = CacheService.BuildInterfaceCache<ISpawnListDefinition, string, SpawnTable>()
                 .WithDataExtractor(instance => instance.BuildSpawnTables())
                 .Build();
 
@@ -731,7 +731,7 @@ namespace SWLOR.Component.World.Service
             else if (!string.IsNullOrWhiteSpace(detail.SpawnTableId))
             {
                 var spawnTable = _spawnTableCache!.AllItems[detail.SpawnTableId];
-                var spawnObject = spawnTable.GetNextSpawn();
+                var spawnObject = spawnTable.GetNextSpawn(Random);
 
                 // It's possible that the rules of the spawn table don't have a spawn ready to be created.
                 // In this case, exit early.

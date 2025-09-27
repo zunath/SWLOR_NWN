@@ -1,4 +1,5 @@
 using SWLOR.Component.Character.Service;
+using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Common.Enums;
 using SWLOR.Shared.Domain.Entities;
@@ -13,9 +14,9 @@ namespace SWLOR.Component.Character.Feature
     public class AchievementProgression
     {
         private readonly IDatabaseService _db;
-        private readonly Achievement _achievement;
+        private readonly IAchievementService _achievement;
 
-        public AchievementProgression(IDatabaseService db, Achievement achievement)
+        public AchievementProgression(IDatabaseService db, IAchievementService achievement)
         {
             _db = db;
             _achievement = achievement;

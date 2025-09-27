@@ -22,12 +22,13 @@ namespace SWLOR.Component.Admin.UI.ViewModel
         // Lazy-loaded services to break circular dependencies
         private IPartyService PartyService => _serviceProvider.GetRequiredService<IPartyService>();
         private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
+        private IGuiService GuiService => _serviceProvider.GetRequiredService<IGuiService>();
 
         public void OnEnmityChanged()
         {
-            foreach (var member in _partyService.GetAllPartyMembers(OBJECT_SELF))
+            foreach (var member in PartyService.GetAllPartyMembers(OBJECT_SELF))
             {
-                _guiService.PublishRefreshEvent(member, new EnmityChangedRefreshEvent());
+                GuiService.PublishRefreshEvent(member, new EnmityChangedRefreshEvent());
             }
         }
 
@@ -41,9 +42,9 @@ namespace SWLOR.Component.Admin.UI.ViewModel
         {
             var enmityDetails = new GuiBindingList<string>();
 
-            foreach (var member in _partyService.GetAllPartyMembers(Player))
+            foreach (var member in PartyService.GetAllPartyMembers(Player))
             {
-                var enmityValues = _enmityService.GetEnmityTowardsAllEnemies(member);
+                var enmityValues = EnmityService.GetEnmityTowardsAllEnemies(member);
 
                 foreach (var (enemy, value) in enmityValues)
                 {

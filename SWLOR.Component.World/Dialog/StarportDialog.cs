@@ -36,20 +36,13 @@ namespace SWLOR.Component.World.Dialog
         public StarportDialog(
             ILogger logger, 
             IDatabaseService db, 
-            IKeyItemService keyItemService, 
-            IPropertyService propertyService, 
-            IGuiService guiService, 
-            IPlanetService planetService, 
             IDialogService dialogService,
-            IAreaService areaService, IDialogBuilder dialogBuilder) : base(dialogService, dialogBuilder)
+            IDialogBuilder dialogBuilder,
+            IServiceProvider serviceProvider) : base(dialogService, dialogBuilder)
         {
             _logger = logger;
             _db = db;
-            _keyItemService = keyItemService;
-            _propertyService = propertyService;
-            _guiService = guiService;
-            _planetService = planetService;
-            _areaService = areaService;
+            _serviceProvider = serviceProvider;
         }
 
         public override PlayerDialog SetUp(uint player)
@@ -65,7 +58,7 @@ namespace SWLOR.Component.World.Dialog
             var player = GetPC();
 
             // Must have the CZ-220 shuttle pass in order to use the ship management.
-            if (!_keyItemService.HasKeyItem(player, KeyItemType.CZ220ShuttlePass) && !GetIsDM(player))
+            if (!KeyItemService.HasKeyItem(player, KeyItemType.CZ220ShuttlePass) && !GetIsDM(player))
             {
                 page.Header = "Greetings. I am still setting up here. In the meantime, you should speak to Selan Flembek. Thank you for your patience.";
                 return;
@@ -86,13 +79,13 @@ namespace SWLOR.Component.World.Dialog
                     EndConversation();
 
                     var area = GetArea(OBJECT_SELF);
-                    var propertyId = _propertyService.GetPropertyId(area);
+                    var propertyId = PropertyService.GetPropertyId(area);
                     var planetType = PlanetType.Invalid;
 
                     // NPC starports can retrieve the planet based on the name of the planet.
                     if (string.IsNullOrWhiteSpace(propertyId))
                     {
-                        planetType = _planetService.GetPlanetType(area);
+                        planetType = PlanetService.GetPlanetType(area);
                     }
                     // PC starports need to look at the city's area to determine this.
                     else
@@ -100,9 +93,9 @@ namespace SWLOR.Component.World.Dialog
                         var dbProperty = _db.Get<WorldProperty>(propertyId);
                         var dbBuilding = _db.Get<WorldProperty>(dbProperty.ParentPropertyId);
                         var dbCity = _db.Get<WorldProperty>(dbBuilding.ParentPropertyId);
-                        var cityArea = _areaService.GetAreaByResref(dbCity.ParentPropertyId);
+                        var cityArea = AreaService.GetAreaByResref(dbCity.ParentPropertyId);
 
-                        planetType = _planetService.GetPlanetType(cityArea);
+                        planetType = PlanetService.GetPlanetType(cityArea);
                     }
 
                     if (planetType == PlanetType.Invalid)
@@ -118,7 +111,7 @@ namespace SWLOR.Component.World.Dialog
                         : GetLocation(GetWaypointByTag(landingWaypointTag));
 
                     var payload = new ShipManagementPayload(planetType, spaceLocation, landingLocation);
-                    _guiService.TogglePlayerWindow(player, GuiWindowType.ShipManagement, payload, OBJECT_SELF);
+                    GuiService.TogglePlayerWindow(player, GuiWindowType.ShipManagement, payload, OBJECT_SELF);
                 });
 
             }

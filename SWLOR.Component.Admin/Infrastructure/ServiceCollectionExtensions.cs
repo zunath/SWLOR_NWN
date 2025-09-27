@@ -22,7 +22,7 @@ namespace SWLOR.Component.Admin.Infrastructure
         {
             // Register services as singletons
             services.AddSingleton<IAuditingService, Auditing>();
-            services.AddSingleton<IAuthorizationService, Authorization>();
+            services.AddSingleton<IAuthorizationService, Service.Authorization>();
 
             // Register features as singletons
             services.AddSingleton<TlkOverrides>();

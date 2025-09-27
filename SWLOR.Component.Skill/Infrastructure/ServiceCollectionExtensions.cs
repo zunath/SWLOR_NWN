@@ -1,7 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Skill.EventHandlers;
+using SWLOR.Component.Skill.Feature.SnippetDefinition;
 using SWLOR.Component.Skill.Service;
 using SWLOR.Shared.Domain.Character.Contracts;
+using SWLOR.Shared.Domain.Dialog.Contracts;
 
 namespace SWLOR.Component.Skill.Infrastructure
 {
@@ -22,6 +24,8 @@ namespace SWLOR.Component.Skill.Infrastructure
             
             // Register event handlers as singletons
             services.AddSingleton<SkillEventHandlers>();
+
+            // Snippet definitions are automatically registered by the Inventory component
             
             return services;
         }

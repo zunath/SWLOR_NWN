@@ -27,6 +27,7 @@ namespace SWLOR.Component.Admin.UI.ViewModel
         // Lazy-loaded services to break circular dependencies
         private ISkillService SkillService => _serviceProvider.GetRequiredService<ISkillService>();
         private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
+        private IGuiService GuiService => _serviceProvider.GetRequiredService<IGuiService>();
         
         private const int MaxNotes = 50;
 
@@ -44,7 +45,7 @@ namespace SWLOR.Component.Admin.UI.ViewModel
             var payload = new DMPlayerExaminePayload(target);
 
             SetGuiPanelDisabled(dm, GuiPanel.ExamineCreature, true);
-            _guiService.TogglePlayerWindow(dm, GuiWindowType.DMPlayerExamine, payload);
+            GuiService.TogglePlayerWindow(dm, GuiWindowType.DMPlayerExamine, payload);
             DelayCommand(1f, () => SetGuiPanelDisabled(dm, GuiPanel.ExamineCreature, false));
         }
 
@@ -214,7 +215,7 @@ namespace SWLOR.Component.Admin.UI.ViewModel
 
             var skillNames = new GuiBindingList<string>();
             var skillLevels = new GuiBindingList<int>();
-            foreach (var (type, detail) in _skillService.GetAllActiveSkills())
+            foreach (var (type, detail) in SkillService.GetAllActiveSkills())
             {
                 skillNames.Add(detail.Name);
                 skillLevels.Add(dbPlayer.Skills[type].Rank);
@@ -235,7 +236,7 @@ namespace SWLOR.Component.Admin.UI.ViewModel
             var perkLevels = new GuiBindingList<int>();
             foreach (var (type, level) in dbPlayer.Perks)
             {
-                var detail = _perkService.GetPerkDetails(type);
+                var detail = PerkService.GetPerkDetails(type);
                 perkNames.Add(detail.Name);
                 perkLevels.Add(level);
             }

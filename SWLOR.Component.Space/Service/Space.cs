@@ -234,7 +234,7 @@ namespace SWLOR.Component.Space.Service
 
             foreach (var type in types)
             {
-                var instance = (IShipListDefinition)Activator.CreateInstance(type);
+                var instance = (IShipListDefinition)_serviceProvider.GetRequiredService(type);
                 var ships = instance.BuildShips();
 
                 foreach (var (shipType, shipDetail) in ships)
@@ -258,7 +258,7 @@ namespace SWLOR.Component.Space.Service
 
             foreach (var type in types)
             {
-                var instance = (IShipModuleListDefinition)Activator.CreateInstance(type);
+                var instance = (IShipModuleListDefinition)_serviceProvider.GetRequiredService(type);
                 var shipModules = instance.BuildShipModules();
 
                 foreach (var (moduleType, moduleDetail) in shipModules)
@@ -289,7 +289,7 @@ namespace SWLOR.Component.Space.Service
 
             foreach (var type in types)
             {
-                var instance = (ISpaceObjectListDefinition)Activator.CreateInstance(type);
+                var instance = (ISpaceObjectListDefinition)_serviceProvider.GetRequiredService(type);
                 var ships = instance.BuildSpaceObjects();
 
                 foreach (var (creatureTag, enemy) in ships)

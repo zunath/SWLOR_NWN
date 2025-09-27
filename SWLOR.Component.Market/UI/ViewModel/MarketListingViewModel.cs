@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Market.Contracts;
 using SWLOR.Component.Market.Enums;
 using SWLOR.Component.Market.Service;
@@ -21,23 +22,22 @@ namespace SWLOR.Component.Market.UI.ViewModel
     public class MarketListingViewModel: GuiViewModelBase<MarketListingViewModel, MarketPayload>, IGuiAcceptsPriceChange
     {
         private readonly IDatabaseService _db;
-        private readonly IItemService _itemService;
-        private readonly ITargetingService _targetingService;
-        private readonly IPlayerMarketService _playerMarket;
+        private readonly IServiceProvider _serviceProvider;
 
         public MarketListingViewModel(
             IGuiService guiService, 
             IDatabaseService db, 
-            IItemService itemService, 
-            ITargetingService targetingService,
-            IPlayerMarketService playerMarket) 
+            IServiceProvider serviceProvider) 
             : base(guiService)
         {
             _db = db;
-            _itemService = itemService;
-            _targetingService = targetingService;
-            _playerMarket = playerMarket;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
+        private ITargetingService TargetingService => _serviceProvider.GetRequiredService<ITargetingService>();
+        private IPlayerMarketService PlayerMarket => _serviceProvider.GetRequiredService<IPlayerMarketService>();
         
         private MarketRegionType _regionType;
 
@@ -123,7 +123,7 @@ namespace SWLOR.Component.Market.UI.ViewModel
             _itemIds.Clear();
             _itemPrices.Clear();
             var playerId = GetObjectUUID(Player);
-            var market = _playerMarket.GetMarketRegion(_regionType);
+            var market = PlayerMarket.GetMarketRegion(_regionType);
             var query = new DBQuery<MarketItem>()
                 .AddFieldSearch(nameof(MarketItem.PlayerId), playerId, false)
                 .AddFieldSearch(nameof(MarketItem.MarketId), market.MarketId, false)
@@ -165,14 +165,14 @@ namespace SWLOR.Component.Market.UI.ViewModel
 
         private void UpdateItemCount()
         {
-            ListCount = $"  {_itemCount} / {PlayerMarket.MaxListingsPerMarket} Items Listed";
-            IsAddItemEnabled = _itemIds.Count < PlayerMarket.MaxListingsPerMarket;
+            ListCount = $"  {_itemCount} / 25 Items Listed";
+            IsAddItemEnabled = _itemIds.Count < 25;
         }
 
         protected override void Initialize(MarketPayload initialPayload)
         {
             _regionType = initialPayload.RegionType;
-            var regionDetail = _playerMarket.GetMarketRegion(_regionType);
+            var regionDetail = PlayerMarket.GetMarketRegion(_regionType);
             var taxRate = regionDetail.TaxRate * 100;
             WindowTitle = $"  {regionDetail.Name} Market [Tax Rate {taxRate:0.#}%]";
             SearchText = string.Empty;
@@ -186,7 +186,7 @@ namespace SWLOR.Component.Market.UI.ViewModel
         {
             ClosePriceWindow();
 
-            _targetingService.EnterTargetingMode(Player, ObjectType.Item, "Please click on an item within your inventory.", AddItem);
+            TargetingService.EnterTargetingMode(Player, ObjectType.Item, "Please click on an item within your inventory.", AddItem);
             EnterTargetingMode(Player, ObjectType.Item);
             SetLocalBool(Player, "MARKET_LISTING_TARGETING_MODE", true);
         };
@@ -205,7 +205,7 @@ namespace SWLOR.Component.Market.UI.ViewModel
                 return;
             }
 
-            if (_itemIds.Count >= PlayerMarket.MaxListingsPerMarket)
+            if (_itemIds.Count >= 25)
             {
                 FloatingTextStringOnCreature("You cannot list any more items.", Player, false);
                 return;
@@ -218,13 +218,13 @@ namespace SWLOR.Component.Market.UI.ViewModel
                 return;
             }
 
-            if (_itemService.IsLegacyItem(item))
+            if (ItemService.IsLegacyItem(item))
             {
                 FloatingTextStringOnCreature($"Legacy items cannot be sold on the market.", Player, false);
                 return;
             }
 
-            var marketDetail = _playerMarket.GetMarketRegion(_regionType);
+            var marketDetail = PlayerMarket.GetMarketRegion(_regionType);
             var listing = new MarketItem
             {
                 MarketId = marketDetail.MarketId,
@@ -239,8 +239,8 @@ namespace SWLOR.Component.Market.UI.ViewModel
                 Resref = GetResRef(item),
                 Data = ObjectPlugin.Serialize(item),
                 Quantity = GetItemStackSize(item),
-                IconResref = _itemService.GetIconResref(item),
-                Category = _playerMarket.GetItemMarketCategory(item)
+                IconResref = ItemService.GetIconResref(item),
+                Category = PlayerMarket.GetItemMarketCategory(item)
             };
 
             _db.Set(listing);

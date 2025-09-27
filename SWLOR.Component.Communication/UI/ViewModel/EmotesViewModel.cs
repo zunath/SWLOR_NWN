@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Communication.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -9,12 +10,15 @@ namespace SWLOR.Component.Communication.UI.ViewModel
 {
     public class EmotesViewModel: GuiViewModelBase<EmotesViewModel, IGuiPayload>
     {
-        private readonly IChatCommandService _chatCommandService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public EmotesViewModel(IGuiService guiService, IChatCommandService chatCommandService) : base(guiService)
+        public EmotesViewModel(IGuiService guiService, IServiceProvider serviceProvider) : base(guiService)
         {
-            _chatCommandService = chatCommandService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded service to break circular dependency
+        private IChatCommandService ChatCommandService => _serviceProvider.GetRequiredService<IChatCommandService>();
 
         public GuiBindingList<string> EmoteNames
         {
@@ -44,10 +48,10 @@ namespace SWLOR.Component.Communication.UI.ViewModel
 
         protected override void Initialize(IGuiPayload initialPayload)
         {
-            var emoteNames = _chatCommandService.EmoteNames;
-            var emoteDescriptions = _chatCommandService.EmoteDescriptions;
-            var emoteAnimations = _chatCommandService.EmoteAnimations;
-            var isEmoteLoopingAnimations = _chatCommandService.EmoteIsLooping;
+            var emoteNames = ChatCommandService.EmoteNames;
+            var emoteDescriptions = ChatCommandService.EmoteDescriptions;
+            var emoteAnimations = ChatCommandService.EmoteAnimations;
+            var isEmoteLoopingAnimations = ChatCommandService.EmoteIsLooping;
 
             SelectedEmoteIndex = -1;
 

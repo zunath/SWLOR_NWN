@@ -73,7 +73,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
             var cdKey = GetPCPublicCDKey(Player);
             var playerId = GetObjectUUID(Player);
             var area = GetArea(TetherObject);
-            var propertyId = _property.GetPropertyId(area);
+            var propertyId = Property.GetPropertyId(area);
             var dbProperty = _db.Get<WorldProperty>(propertyId);
             var dbBuilding = _db.Get<WorldProperty>(dbProperty.ParentPropertyId);
             var election = _db.Search(new DBQuery<Election>()

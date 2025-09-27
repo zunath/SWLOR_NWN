@@ -71,7 +71,7 @@ namespace SWLOR.Component.Admin.Feature
                 _db.Set(dbPlayer);
                 SendMessageToPC(target, $"A DM has awarded you with {amount} roleplay XP.");
                 SendMessageToPC(dm, $"You award {GetName(target)} with {amount} roleplay XP.");
-                _guiService.PublishRefreshEvent(target, new RPXPRefreshEvent());
+                GuiService.PublishRefreshEvent(target, new RPXPRefreshEvent());
             }
             else
             {

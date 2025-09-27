@@ -20,7 +20,7 @@ namespace SWLOR.Component.World.Feature
 
         public MiniMaps(IServiceProvider serviceProvider)
         {
-            // Services are now lazy-loaded via IServiceProvider
+            _serviceProvider = serviceProvider;
         }
 
         /// <summary>

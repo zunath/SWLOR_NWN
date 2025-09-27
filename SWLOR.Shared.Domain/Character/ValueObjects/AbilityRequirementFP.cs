@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Combat.Enums;
@@ -10,22 +11,24 @@ namespace SWLOR.Shared.Domain.Character.ValueObjects
     public class AbilityRequirementFP : IAbilityActivationRequirement
     {
         public int RequiredFP { get; }
-        private readonly IStatService _statService;
-        private readonly IStatusEffectService _statusEffectService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public AbilityRequirementFP(int requiredFP, IStatService statService, IStatusEffectService statusEffectService)
+        public AbilityRequirementFP(int requiredFP, IServiceProvider serviceProvider)
         {
             RequiredFP = requiredFP;
-            _statService = statService;
-            _statusEffectService = statusEffectService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+        private IStatusEffectService StatusEffectService => _serviceProvider.GetRequiredService<IStatusEffectService>();
 
         public string CheckRequirements(uint player)
         {
             // DMs are assumed to be able to activate.
             if (GetIsDM(player)) return string.Empty;
 
-            var fp = _statService.GetCurrentFP(player);
+            var fp = StatService.GetCurrentFP(player);
 
             if (fp >= RequiredFP) return string.Empty;
             return $"Not enough FP. (Required: {RequiredFP})";
@@ -36,9 +39,9 @@ namespace SWLOR.Shared.Domain.Character.ValueObjects
             if (GetIsDM(player)) return;
 
             // Force Attunement reduces FP costs to zero.
-            if (_statusEffectService.HasStatusEffect(player, StatusEffectType.ForceAttunement)) return;
+            if (StatusEffectService.HasStatusEffect(player, StatusEffectType.ForceAttunement)) return;
 
-            _statService.ReduceFP(player, RequiredFP);
+            StatService.ReduceFP(player, RequiredFP);
         }
     }
 }

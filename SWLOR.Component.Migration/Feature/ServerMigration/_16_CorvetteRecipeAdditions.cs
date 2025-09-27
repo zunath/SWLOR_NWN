@@ -11,7 +11,7 @@ namespace SWLOR.Component.Migration.Feature.ServerMigration
 {
     public class _16_CorvetteRecipeAdditions: ServerMigrationBase, IServerMigration
     {
-        public _16_CorvetteRecipeAdditions(ILogger logger, IDatabaseService db, ISpaceService spaceService) : base(logger, db, spaceService)
+        public _16_CorvetteRecipeAdditions(ILogger logger, IDatabaseService db, IServiceProvider serviceProvider) : base(logger, db, serviceProvider)
         {
         }
         

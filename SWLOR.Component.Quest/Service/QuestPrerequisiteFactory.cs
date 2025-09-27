@@ -32,7 +32,7 @@ namespace SWLOR.Component.Quest.Service
         public IQuestPrerequisite CreateRequiredKeyItemPrerequisite(KeyItemType keyItemType)
         {
             var keyItemService = _serviceProvider.GetRequiredService<IKeyItemService>();
-            return new RequiredKeyItemPrerequisite(keyItemType, keyItemService);
+            return new RequiredKeyItemPrerequisite(keyItemType, _serviceProvider);
         }
 
         public IQuestPrerequisite CreateRequiredFactionStandingPrerequisite(FactionType faction, int requiredAmount)

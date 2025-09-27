@@ -15,15 +15,14 @@ namespace SWLOR.Component.Crafting.Service
         private RecipeDetail _activeRecipe;
         private RecipeType _activeType;
         private readonly IServiceProvider _serviceProvider;
-        private readonly IDatabaseService _databaseService;
 
-        public RecipeBuilder(IServiceProvider serviceProvider, IDatabaseService databaseService)
+        public RecipeBuilder(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
-            _databaseService = databaseService;
         }
 
-        // Lazy-loaded service to break circular dependency
+        // Lazy-loaded services to break circular dependencies
+        private IDatabaseService DatabaseService => _serviceProvider.GetRequiredService<IDatabaseService>();
         private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
 
         /// <summary>
@@ -141,7 +140,7 @@ namespace SWLOR.Component.Crafting.Service
         /// <returns>A recipe builder with the configured options</returns>
         public IRecipeBuilder RequirementPerk(PerkType perk, int requiredLevel)
         {
-            var requirement = new RecipePerkRequirement(perk, requiredLevel, _perkService);
+            var requirement = new RecipePerkRequirement(perk, requiredLevel, PerkService);
             _activeRecipe.Requirements.Add(requirement);
             return this;
         }
@@ -152,7 +151,7 @@ namespace SWLOR.Component.Crafting.Service
         /// <returns>A recipe builder with the configured options</returns>
         public IRecipeBuilder RequirementUnlocked()
         {
-            var requirement = new RecipeUnlockRequirement(_databaseService, _activeType);
+            var requirement = new RecipeUnlockRequirement(DatabaseService, _activeType);
             _activeRecipe.Requirements.Add(requirement);
             return this;
         }

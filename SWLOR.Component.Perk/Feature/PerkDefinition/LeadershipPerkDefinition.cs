@@ -22,6 +22,7 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 public LeadershipPerkDefinition(IDatabaseService db, IServiceProvider serviceProvider)
         {
             _db = db;
+            _serviceProvider = serviceProvider;
             // Services are now lazy-loaded via IServiceProvider
         }
 

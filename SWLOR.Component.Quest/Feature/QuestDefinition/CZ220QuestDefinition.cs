@@ -27,7 +27,7 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
             IServiceProvider serviceProvider)
         {
             _databaseService = databaseService;
-            // Services are now lazy-loaded via IServiceProvider
+            _serviceProvider = serviceProvider;
         }
 
         public Dictionary<string, IQuestDetail> BuildQuests()

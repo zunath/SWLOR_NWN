@@ -26,14 +26,14 @@ namespace SWLOR.Component.Quest.Service
     public class Quest : IQuestService
     {
         private readonly IDatabaseService _db;
-        private readonly IItemCacheService _itemCache;
-        private readonly IGenericCacheService _cacheService;
         private readonly IServiceProvider _serviceProvider;
-        private readonly IEnmityService _enmityService;
-        private readonly IActivityService _activityService;
-        private readonly IRandomService _randomService;
         
         // Lazy-loaded services to break circular dependencies
+        private IItemCacheService ItemCache => _serviceProvider.GetRequiredService<IItemCacheService>();
+        private IGenericCacheService CacheService => _serviceProvider.GetRequiredService<IGenericCacheService>();
+        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
+        private IActivityService ActivityService => _serviceProvider.GetRequiredService<IActivityService>();
+        private IRandomService RandomService => _serviceProvider.GetRequiredService<IRandomService>();
         private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
         private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
         
@@ -53,18 +53,11 @@ namespace SWLOR.Component.Quest.Service
             IDatabaseService db,
             IItemCacheService itemCache,
             IGenericCacheService cacheService,
-            IServiceProvider serviceProvider,
-            IEnmityService enmityService,
-            IActivityService activityService,
-            IRandomService randomService)
+            IServiceProvider serviceProvider)
         {
             _db = db;
-            _itemCache = itemCache;
-            _cacheService = cacheService;
+            _serviceProvider = serviceProvider;
             // Services are now lazy-loaded via IServiceProvider
-            _enmityService = enmityService;
-            _activityService = activityService;
-            _randomService = randomService;
         }
 
         /// <summary>
@@ -81,7 +74,7 @@ namespace SWLOR.Component.Quest.Service
         /// </summary>
         public void RegisterQuests()
         {
-            _questCache = _cacheService.BuildInterfaceCache<IQuestListDefinition, string, IQuestDetail>()
+            _questCache = CacheService.BuildInterfaceCache<IQuestListDefinition, string, IQuestDetail>()
                 .WithDataExtractor(instance => instance.BuildQuests())
                 .Build();
 
@@ -282,7 +275,7 @@ namespace SWLOR.Component.Quest.Service
             // did the most attacks).  If we can't find one for some reason, pull the nearest PC.
             // Note: this event needs to be called before the Enmity tables are cleared up after
             // creature death. 
-            var killer = _enmityService.GetHighestEnmityTarget(creature);
+            var killer = EnmityService.GetHighestEnmityTarget(creature);
             if (killer == OBJECT_INVALID) killer = GetNearestCreature(CreatureType.PlayerCharacter, 1, creature);
 
             // Iterate over every player in the killer's party.
@@ -362,13 +355,13 @@ namespace SWLOR.Component.Quest.Service
 
             foreach (var itemProgress in quest.ItemProgresses)
             {
-                var itemName = _itemCache.GetItemNameByResref(itemProgress.Key);
+                var itemName = ItemCache.GetItemNameByResref(itemProgress.Key);
                 text += $"{itemProgress.Value}x {itemName}\n";
             }
 
             SendMessageToPC(player, text);
 
-            _activityService.SetBusy(player, ActivityStatusType.Quest);
+            ActivityService.SetBusy(player, ActivityStatusType.Quest);
         }
 
         /// <summary>
@@ -388,7 +381,7 @@ namespace SWLOR.Component.Quest.Service
                 DestroyObject(OBJECT_SELF);
             });
 
-            _activityService.ClearBusy(player);
+            ActivityService.ClearBusy(player);
         }
 
         /// <summary>
@@ -438,7 +431,7 @@ namespace SWLOR.Component.Quest.Service
             _db.Set(dbPlayer);
 
             // Give the player an update and reduce the item stack.
-            var itemName = _itemCache.GetItemNameByResref(resref);
+            var itemName = ItemCache.GetItemNameByResref(resref);
             SendMessageToPC(player, $"You need {dbPlayer.Quests[questId].ItemProgresses[resref]}x {itemName} to complete this quest.");
             
             // Attempt to advance the quest.
@@ -576,7 +569,7 @@ namespace SWLOR.Component.Quest.Service
                     else
                     {
                         tasks = potentialTasks
-                            .OrderBy(o => _randomService.Next())
+                            .OrderBy(o => RandomService.Next())
                             .Take(10)
                             .ToList();
                     }

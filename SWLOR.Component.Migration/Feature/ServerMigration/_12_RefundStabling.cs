@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Migration.Contracts;
 using SWLOR.Component.Migration.Enums;
 using SWLOR.Component.Migration.Model;
@@ -9,7 +10,7 @@ namespace SWLOR.Component.Migration.Feature.ServerMigration
 {
     public class _12_RefundStabling : ServerMigrationBase, IServerMigration
     {
-        public _12_RefundStabling(ILogger logger, IDatabaseService db, ISpaceService spaceService) : base(logger, db, spaceService)
+        public _12_RefundStabling(ILogger logger, IDatabaseService db, IServiceProvider serviceProvider) : base(logger, db, serviceProvider)
         {
         }
         

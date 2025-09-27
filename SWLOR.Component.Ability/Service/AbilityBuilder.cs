@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.Component.Ability.Model;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -15,14 +16,16 @@ namespace SWLOR.Component.Ability.Service
     {
         private readonly Dictionary<FeatType, AbilityDetail> _abilities = new();
         private AbilityDetail _activeAbility;
-        private readonly IStatService _statService;
-        private readonly IStatusEffectService _statusEffectService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public AbilityBuilder(IStatService statService, IStatusEffectService statusEffectService)
+        public AbilityBuilder(IServiceProvider serviceProvider)
         {
-            _statService = statService;
-            _statusEffectService = statusEffectService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+        private IStatusEffectService StatusEffectService => _serviceProvider.GetRequiredService<IStatusEffectService>();
 
         /// <summary>
         /// Creates a new ability.
@@ -249,7 +252,7 @@ namespace SWLOR.Component.Ability.Service
         /// <returns>An ability builder with the configured options</returns>
         public IAbilityBuilder RequirementFP(int requiredFP)
         {
-            var requirement = new AbilityRequirementFP(requiredFP, _statService, _statusEffectService);
+            var requirement = new AbilityRequirementFP(requiredFP, _serviceProvider);
             _activeAbility.Requirements.Add(requirement);
 
             return this;
@@ -273,7 +276,7 @@ namespace SWLOR.Component.Ability.Service
         /// <returns>An ability builder with the configured options</returns>
         public IAbilityBuilder RequirementStamina(int requiredSTM)
         {
-            var requirement = new AbilityRequirementStamina(requiredSTM, _statService);
+            var requirement = new AbilityRequirementStamina(requiredSTM, StatService);
             _activeAbility.Requirements.Add(requirement);
 
             return this;

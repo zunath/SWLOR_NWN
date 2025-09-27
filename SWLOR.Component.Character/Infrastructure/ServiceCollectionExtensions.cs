@@ -1,10 +1,14 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Character.Contracts;
+using SWLOR.Component.Character.EventHandlers;
+using SWLOR.Component.Character.Feature;
+using SWLOR.Component.Character.Feature.SnippetDefinition;
 using SWLOR.Component.Character.Service;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Common.Contracts;
 using SWLOR.Shared.Domain.Communication.Contracts;
+using SWLOR.Shared.Domain.Dialog.Contracts;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 
 namespace SWLOR.Component.Character.Infrastructure
@@ -31,8 +35,25 @@ namespace SWLOR.Component.Character.Infrastructure
             services.AddSingleton<IAnimationPlayerService, AnimationPlayerService>();
             services.AddSingleton<ITargetingService, Targeting>();
             services.AddSingleton<IAchievementService, Achievement>();
+            services.AddSingleton<Achievement>();
             services.AddSingleton<IRaceService, Race>();
             services.AddSingleton<IActivityService, Activity>();
+
+            // Snippet definitions are automatically registered by the Inventory component
+
+            // Register feature classes
+            services.AddTransient<PlayerStatusWindow>();
+            services.AddTransient<AchievementProgression>();
+            services.AddTransient<PersistentLocation>();
+            services.AddTransient<PersistentMapProgression>();
+            services.AddTransient<PersistentMapPin>();
+            services.AddTransient<PlayerTemporaryEffects>();
+            services.AddTransient<ArmorDisplay>();
+
+            // Register event handlers as singletons
+            services.AddSingleton<UIEventHandlers>();
+
+            // Dialog classes are automatically registered by the Inventory component
 
             return services;
         }

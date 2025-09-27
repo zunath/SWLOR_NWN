@@ -28,12 +28,12 @@ namespace SWLOR.Component.Perk.Model
             var playerId = GetObjectUUID(player);
             var dbPlayer = _db.Get<Player>(playerId);
             var dbBeast = _db.Get<Beast>(dbPlayer.ActiveBeastId);
-            var roleDetail = _beastMastery.GetBeastRoleDetail(_requiredRole);
+            var roleDetail = BeastMastery.GetBeastRoleDetail(_requiredRole);
 
             if (dbBeast == null)
                 return "You do not have a beast tamed.";
 
-            var beastDetail = _beastMastery.GetBeastDetail(dbBeast.Type);
+            var beastDetail = BeastMastery.GetBeastDetail(dbBeast.Type);
             if (beastDetail.Role != _requiredRole)
             {
                 return $"Your beast must be of the following role type: {roleDetail.Name}";
@@ -46,7 +46,7 @@ namespace SWLOR.Component.Perk.Model
         {
             get
             {
-                var roleDetail = _beastMastery.GetBeastRoleDetail(_requiredRole);
+                var roleDetail = BeastMastery.GetBeastRoleDetail(_requiredRole);
                 return $"Beast Role: {roleDetail.Name}";
             }
         }

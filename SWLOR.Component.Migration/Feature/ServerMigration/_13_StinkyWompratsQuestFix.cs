@@ -10,7 +10,7 @@ namespace SWLOR.Component.Migration.Feature.ServerMigration
 {
     public class _13_StinkyWompratsQuestFix: ServerMigrationBase, IServerMigration
     {
-        public _13_StinkyWompratsQuestFix(ILogger logger, IDatabaseService db, ISpaceService spaceService) : base(logger, db, spaceService)
+        public _13_StinkyWompratsQuestFix(ILogger logger, IDatabaseService db, IServiceProvider serviceProvider) : base(logger, db, serviceProvider)
         {
         }
         

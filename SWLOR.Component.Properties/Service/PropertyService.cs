@@ -1,4 +1,5 @@
 using System.Numerics;
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Properties.Contracts;
 using SWLOR.Component.Properties.Dialog;
 using SWLOR.Component.Properties.Enums;
@@ -35,6 +36,7 @@ namespace SWLOR.Component.Properties.Service
         private readonly IPlanetService _planetService;
         private readonly IDialogService _dialogService;
         private readonly StructureChangedAction _structureChangedAction;
+        private readonly IServiceProvider _serviceProvider;
         private readonly Dictionary<StructureType, StructureAttribute> _activeStructures = new();
         private readonly Dictionary<PropertyType, PropertyTypeAttribute> _propertyTypes = new();
         private readonly Dictionary<PropertyLayoutType, PropertyLayout> _activeLayouts = new();
@@ -67,7 +69,8 @@ namespace SWLOR.Component.Properties.Service
             IAreaService areaService, 
             IPlanetService planetService, 
             IDialogService dialogService,
-            StructureChangedAction structureChangedAction)
+            StructureChangedAction structureChangedAction,
+            IServiceProvider serviceProvider)
         {
             _logger = logger;
             _db = db;
@@ -76,6 +79,7 @@ namespace SWLOR.Component.Properties.Service
             _planetService = planetService;
             _dialogService = dialogService;
             _structureChangedAction = structureChangedAction;
+            _serviceProvider = serviceProvider;
             _structureChangedActions = _structureChangedAction.BuildSpawnActions();
         }
 
@@ -142,7 +146,7 @@ namespace SWLOR.Component.Properties.Service
 
             foreach (var type in types)
             {
-                var instance = (IPropertyLayoutListDefinition)Activator.CreateInstance(type);
+                var instance = (IPropertyLayoutListDefinition)_serviceProvider.GetRequiredService(type);
                 var layouts = instance.Build();
 
                 foreach (var (layoutType, layout) in layouts)

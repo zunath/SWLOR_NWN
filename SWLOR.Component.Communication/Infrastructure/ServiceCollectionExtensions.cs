@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Communication.Contracts;
 using SWLOR.Component.Communication.EventHandlers;
@@ -29,14 +31,36 @@ namespace SWLOR.Component.Communication.Infrastructure
             services.AddSingleton<ISnippetService, Snippet>();
             services.AddSingleton<IMessagingService, Messaging>();
             services.AddSingleton<IDialogService, Service.Dialog>();
+            services.AddSingleton<IDialogBuilder, Service.DialogBuilder>();
+            services.AddSingleton<IChatCommandBuilder, ChatCommandBuilder>();
+            services.AddSingleton<ISnippetBuilder, SnippetBuilder>();
             
-            // Register dialog classes
-            services.AddTransient<Dialog.DiceDialog>();
+                // Dialog classes are automatically registered by the Inventory component
+
+            // Dynamically register all chat command definition classes
+            RegisterChatCommandDefinitionClasses(services);
 
             // Register event handlers as singletons
             services.AddSingleton<CommunicationEventHandlers>();
 
             return services;
+        }
+
+        private static void RegisterChatCommandDefinitionClasses(IServiceCollection services)
+        {
+            // Find all types that implement IChatCommandListDefinition, excluding Space component chat commands
+            var chatCommandDefinitionTypes = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(s => s.GetTypes())
+                .Where(w => typeof(IChatCommandListDefinition).IsAssignableFrom(w) && 
+                           !w.IsInterface && 
+                           !w.IsAbstract &&
+                           !w.Namespace?.Contains("SWLOR.Component.Space") == true);
+
+            foreach (var type in chatCommandDefinitionTypes)
+            {
+                // Register each chat command definition as transient
+                services.AddTransient(type);
+            }
         }
     }
 }

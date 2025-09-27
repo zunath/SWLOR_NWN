@@ -18,7 +18,7 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
 
         public DantooineQuestDefinition(IServiceProvider serviceProvider)
         {
-            // Services are now lazy-loaded via IServiceProvider
+            _serviceProvider = serviceProvider;
         }
         public Dictionary<string, IQuestDetail> BuildQuests()
         {

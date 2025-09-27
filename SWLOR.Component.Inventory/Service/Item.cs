@@ -21,11 +21,7 @@ namespace SWLOR.Component.Inventory.Service
     public class Item : IItemService
     {
         private readonly ILogger _logger;
-        private readonly IGenericCacheService _cacheService;
         private readonly IServiceProvider _serviceProvider;
-        private readonly IActivityService _activityService;
-        private readonly IRecastService _recastService;
-        private readonly IDroidService _droidService;
         
         // Cached data
         private IInterfaceCache<string, ItemDetail> _itemCache;
@@ -40,22 +36,19 @@ namespace SWLOR.Component.Inventory.Service
 
         public Item(
             ILogger logger, 
-            IGenericCacheService cacheService, 
-            IServiceProvider serviceProvider, 
-            IActivityService activityService, 
-            IRecastService recastService,
-            IDroidService droidService)
+            IServiceProvider serviceProvider)
         {
             _logger = logger;
-            _cacheService = cacheService;
             _serviceProvider = serviceProvider;
-            _activityService = activityService;
-            _recastService = recastService;
-            _droidService = droidService;
         }
-        
-        // Lazy-loaded service to break circular dependency
+
+        // Lazy-loaded services to break circular dependencies
+        private IGenericCacheService CacheService => _serviceProvider.GetRequiredService<IGenericCacheService>();
+        private IActivityService ActivityService => _serviceProvider.GetRequiredService<IActivityService>();
+        private IRecastService RecastService => _serviceProvider.GetRequiredService<IRecastService>();
+        private IDroidService DroidService => _serviceProvider.GetRequiredService<IDroidService>();
         private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
+        
 
         /// <summary>
         /// When the module loads, all item details are loaded into the cache.
@@ -68,7 +61,7 @@ namespace SWLOR.Component.Inventory.Service
         }
         public void Load2DACache()
         {
-            _itemCache = _cacheService.BuildInterfaceCache<IItemListDefinition, string, ItemDetail>()
+            _itemCache = CacheService.BuildInterfaceCache<IItemListDefinition, string, ItemDetail>()
                 .WithDataExtractor(instance => instance.BuildItems())
                 .Build();
 
@@ -284,7 +277,7 @@ namespace SWLOR.Component.Inventory.Service
                     position.Y != originalPosition.Y ||
                     position.Z != originalPosition.Z)
                 {
-                    _activityService.ClearBusy(actionUser);
+                    ActivityService.ClearBusy(actionUser);
                     SendMessageToPC(actionUser, "You move and interrupt your action.");
                     PlayerPlugin.StopGuiTimingBar(actionUser, string.Empty);
                     return;
@@ -322,7 +315,7 @@ namespace SWLOR.Component.Inventory.Service
             }
 
             // User is busy
-            if (_activityService.IsBusy(user))
+            if (ActivityService.IsBusy(user))
             {
                 SendMessageToPC(user, "You are busy.");
                 return;
@@ -331,7 +324,7 @@ namespace SWLOR.Component.Inventory.Service
             // Check recast cooldown
             if (itemDetail.RecastGroup != null && itemDetail.RecastCooldown != null)
             {
-                var (isOnRecast, timeToWait) = _recastService.IsOnRecastDelay(user, (RecastGroup)itemDetail.RecastGroup);
+                var (isOnRecast, timeToWait) = RecastService.IsOnRecastDelay(user, (RecastGroup)itemDetail.RecastGroup);
                 if (isOnRecast)
                 {
                     SendMessageToPC(user, $"This item can be used in {timeToWait}.");
@@ -403,14 +396,14 @@ namespace SWLOR.Component.Inventory.Service
             if (itemDetail.ApplyAction != null)
             {
                 var actionId = Guid.NewGuid().ToString();
-                _activityService.SetBusy(user, ActivityStatusType.UseItem);
+                ActivityService.SetBusy(user, ActivityStatusType.UseItem);
                 SetLocalBool(user, actionId, true);
                 CheckPosition(user, actionId, userPosition);
 
                 DelayCommand(delay + 0.1f, () =>
                 {
                     DeleteLocalBool(user, actionId);
-                    _activityService.ClearBusy(user);
+                    ActivityService.ClearBusy(user);
 
                     var updatedPosition = GetPosition(user);
 
@@ -434,7 +427,7 @@ namespace SWLOR.Component.Inventory.Service
 
                     if (itemDetail.RecastGroup != null && itemDetail.RecastCooldown != null)
                     {
-                        _recastService.ApplyRecastDelay(user, (RecastGroup)itemDetail.RecastGroup, (float)itemDetail.RecastCooldown, true);
+                        RecastService.ApplyRecastDelay(user, (RecastGroup)itemDetail.RecastGroup, (float)itemDetail.RecastCooldown, true);
                     }
 
                     // Reduce item charge if specified.
@@ -990,7 +983,7 @@ namespace SWLOR.Component.Inventory.Service
         public string CanBePersistentlyStored(uint player, uint item)
         {
             var resref = GetResRef(item);
-            string[] disallowedResrefs = { _droidService.DroidControlItemResref };
+            string[] disallowedResrefs = { DroidService.DroidControlItemResref };
 
             if (GetItemPossessor(item) != player)
             {

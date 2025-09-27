@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using System.Numerics;
 using SWLOR.Component.Crafting.Contracts;
 using SWLOR.Component.Crafting.Enums;
@@ -26,12 +27,7 @@ namespace SWLOR.Component.Crafting.Service
     public class Fishing : IFishingService
     {
         private readonly IDatabaseService _db;
-        private readonly IGenericCacheService _cacheService;
-        private readonly IItemCacheService _itemCache;
-        private readonly IRandomService _random;
-        private readonly ISkillService _skillService;
-        private readonly IActivityService _activityService;
-        private readonly IMessagingService _messagingService;
+        private readonly IServiceProvider _serviceProvider;
         
         // Cached data
         private IEnumCache<FishType, FishAttribute> _fishCache;
@@ -45,21 +41,19 @@ namespace SWLOR.Component.Crafting.Service
 
         public Fishing(
             IDatabaseService db,
-            IGenericCacheService cacheService,
-            IItemCacheService itemCache,
-            IRandomService random,
-            ISkillService skillService,
-            IActivityService activityService,
-            IMessagingService messagingService)
+            IServiceProvider serviceProvider)
         {
             _db = db;
-            _cacheService = cacheService;
-            _itemCache = itemCache;
-            _random = random;
-            _skillService = skillService;
-            _activityService = activityService;
-            _messagingService = messagingService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IGenericCacheService CacheService => _serviceProvider.GetRequiredService<IGenericCacheService>();
+        private IItemCacheService ItemCache => _serviceProvider.GetRequiredService<IItemCacheService>();
+        private IRandomService Random => _serviceProvider.GetRequiredService<IRandomService>();
+        private ISkillService SkillService => _serviceProvider.GetRequiredService<ISkillService>();
+        private IActivityService ActivityService => _serviceProvider.GetRequiredService<IActivityService>();
+        private IMessagingService MessagingService => _serviceProvider.GetRequiredService<IMessagingService>();
 
         public string ActiveBaitVariable => "ACTIVE_BAIT";
         public string RemainingBaitVariable => "REMAINING_BAIT";
@@ -88,7 +82,7 @@ namespace SWLOR.Component.Crafting.Service
 
         private void LoadFish()
         {
-            _fishCache = _cacheService.BuildEnumCache<FishType, FishAttribute>()
+            _fishCache = CacheService.BuildEnumCache<FishType, FishAttribute>()
                 .WithAllItems()
                 .Build();
 
@@ -97,7 +91,7 @@ namespace SWLOR.Component.Crafting.Service
 
         private void LoadRods()
         {
-            _rodCache = _cacheService.BuildEnumCache<FishingRodType, FishingRodAttribute>()
+            _rodCache = CacheService.BuildEnumCache<FishingRodType, FishingRodAttribute>()
                 .WithAllItems()
                 .Build();
 
@@ -112,7 +106,7 @@ namespace SWLOR.Component.Crafting.Service
 
         private void LoadBaits()
         {
-            _baitCache = _cacheService.BuildEnumCache<FishingBaitType, FishingBaitAttribute>()
+            _baitCache = CacheService.BuildEnumCache<FishingBaitType, FishingBaitAttribute>()
                 .WithAllItems()
                 .Build();
 
@@ -136,7 +130,7 @@ namespace SWLOR.Component.Crafting.Service
 
             foreach (var type in types)
             {
-                var instance = (IFishingLocationDefinition)Activator.CreateInstance(type);
+                var instance = (IFishingLocationDefinition)_serviceProvider.GetRequiredService(type);
                 var fishingLocations = instance.Build();
 
                 foreach (var (locationType, locationDetail) in fishingLocations)
@@ -242,7 +236,7 @@ namespace SWLOR.Component.Crafting.Service
             if (GetLocalBool(fishingPoint, FishingPointInitializedVariable))
                 return;
 
-            var attempts = 5 + _random.Next(10);
+            var attempts = 5 + Random.Next(10);
             SetLocalInt(fishingPoint, FishingPointRemainingAttemptsVariable, attempts);
 
             SetLocalBool(fishingPoint, FishingPointInitializedVariable, true);
@@ -294,7 +288,7 @@ namespace SWLOR.Component.Crafting.Service
                 return;
             }
 
-            if (_activityService.IsBusy(player))
+            if (ActivityService.IsBusy(player))
             {
                 SendMessageToPC(player, "You are busy.");
                 return;
@@ -324,7 +318,7 @@ namespace SWLOR.Component.Crafting.Service
             if (!GetIsObjectValid(fishingPoint) || GetIsDead(fishingPoint))
             {
                 // Clear any existing busy state if the fishing point is exhausted
-                _activityService.ClearBusy(player);
+                ActivityService.ClearBusy(player);
                 SendMessageToPC(player, "This fishing point has been exhausted.");
                 return;
             }
@@ -337,11 +331,11 @@ namespace SWLOR.Component.Crafting.Service
             SetLocalString(player, FishingAttemptVariable, attemptId);
             SetLocalObject(player, FishingPointVariable, fishingPoint);
 
-            var fishingDelay = 6 + _random.Next(3);
+            var fishingDelay = 6 + Random.Next(3);
             PlayerPlugin.StartGuiTimingBar(player, fishingDelay, "finish_fishing");
 
-            _activityService.SetBusy(player, ActivityStatusType.Fishing);
-            _messagingService.SendMessageNearbyToPlayers(player, $"{GetName(player)} casts a line into the water.");
+            ActivityService.SetBusy(player, ActivityStatusType.Fishing);
+            MessagingService.SendMessageNearbyToPlayers(player, $"{GetName(player)} casts a line into the water.");
 
             BiowarePosition.TurnToFaceObject(fishingPoint, player);
             CheckPosition(player, position, attemptId);
@@ -383,7 +377,7 @@ namespace SWLOR.Component.Crafting.Service
             if (!GetIsObjectValid(fishingPoint) || GetIsDead(fishingPoint))
             {
                 // Clear any existing busy state if the fishing point is exhausted
-                _activityService.ClearBusy(player);
+                ActivityService.ClearBusy(player);
                 SendMessageToPC(player, "This fishing point has been exhausted.");
                 return;
             }
@@ -423,7 +417,7 @@ namespace SWLOR.Component.Crafting.Service
 
             var rodType = _rodsByResref[rodResref];
             var baitDetail = _baitCache.AllItems[baitType];
-            var baitName = _itemCache.GetItemNameByResref(baitDetail.Resrefs.First());
+            var baitName = ItemCache.GetItemNameByResref(baitDetail.Resrefs.First());
             var locationDetail = _fishingLocations[locationId];
             var (fishType, isDefaultFish) = locationDetail.GetRandomFish(rodType, baitType);
             var fish = _fishCache.AllItems[fishType];
@@ -431,7 +425,7 @@ namespace SWLOR.Component.Crafting.Service
             // Default fish was picked - 80% to not get a bite.
             if (isDefaultFish)
             {
-                if (_random.D100(1) <= 80)
+                if (Random.D100(1) <= 80)
                 {
                     SendMessageToPC(player, "Not even a nibble...");
                     return;
@@ -459,7 +453,7 @@ namespace SWLOR.Component.Crafting.Service
             else if (chance < 0)
                 chance = 0;
 
-            if (_random.D100(1) > chance)
+            if (Random.D100(1) > chance)
             {
                 SendMessageToPC(player, ColorToken.Red("You failed to reel the fish in..."));
             }
@@ -480,20 +474,20 @@ namespace SWLOR.Component.Crafting.Service
                 SetPlotFlag(fishingPoint, false);
                 ApplyEffectToObject(DurationType.Instant, EffectDeath(), fishingPoint);
 
-                _messagingService.SendMessageNearbyToPlayers(fishingPoint, "The fishing point has been exhausted.");
+                MessagingService.SendMessageNearbyToPlayers(fishingPoint, "The fishing point has been exhausted.");
             }
             else
             {
                 SetLocalInt(fishingPoint, FishingPointRemainingAttemptsVariable, remainingAttempts);
             }
 
-            var xp = _skillService.GetDeltaXP(fish.Level - skill);
-            _skillService.GiveSkillXP(player, SkillType.Agriculture, xp, false, false);
+            var xp = SkillService.GetDeltaXP(fish.Level - skill);
+            SkillService.GiveSkillXP(player, SkillType.Agriculture, xp, false, false);
         }
 
         private void ClearFishingAttempt(uint player)
         {
-            _activityService.ClearBusy(player);
+            ActivityService.ClearBusy(player);
             DeleteLocalFloat(player, FishingPositionVariableX);
             DeleteLocalFloat(player, FishingPositionVariableY);
             DeleteLocalFloat(player, FishingPositionVariableZ);

@@ -49,14 +49,17 @@ namespace SWLOR.Shared.Caching.Service
                     {
                         instance = (TInterface)_serviceProvider.GetRequiredService(type);
                     }
-                    catch
+                    catch (Exception ex)
                     {
+                        // Log the exception for debugging
+                        Console.WriteLine($"Failed to resolve {type.Name} from DI container: {ex.Message}");
                         // Fallback to Activator if not registered in DI
                         instance = (TInterface)Activator.CreateInstance(type);
                     }
                 }
                 else
                 {
+                    Console.WriteLine($"ServiceProvider is null, using Activator for {type.Name}");
                     instance = (TInterface)Activator.CreateInstance(type);
                 }
                 

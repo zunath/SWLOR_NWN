@@ -371,7 +371,7 @@ namespace SWLOR.Component.Communication.Service
 
         public void StartHoloComDialog(uint player)
         {
-            _dialogService.StartConversation(player, player, nameof(HoloComDialog));
+            DialogService.StartConversation(player, player, nameof(HoloComDialog));
         }
     }
 }

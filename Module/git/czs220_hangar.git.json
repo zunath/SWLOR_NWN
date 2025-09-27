@@ -19679,7 +19679,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 3.783505853677006e-044
                     },
                     "XPosition": {
                       "type": "float",
@@ -19786,7 +19786,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.261168617892335e-044
                     },
                     "XPosition": {
                       "type": "float",
@@ -20000,7 +20000,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 4.203895392974451e-045
                     },
                     "XPosition": {
                       "type": "float",
@@ -20107,7 +20107,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.401298464324817e-044
                     },
                     "XPosition": {
                       "type": "float",
@@ -20214,7 +20214,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 4.282368106976641e-042
                     },
                     "XPosition": {
                       "type": "float",
@@ -20428,7 +20428,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.934887251391197e-019
                     },
                     "XPosition": {
                       "type": "float",
@@ -20924,7 +20924,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 5.42138868520059e-011
                     },
                     "XPosition": {
                       "type": "float",
@@ -21138,7 +21138,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.475592243590802e-019
                     },
                     "XPosition": {
                       "type": "float",
@@ -21352,7 +21352,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 2.747655688551249e-027
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -21457,7 +21457,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 2.286778963931669e-041
+                      "value": 4.203895392974451e-044
                     },
                     "XPosition": {
                       "type": "float",
@@ -21562,7 +21562,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 5.43098655602505e-031
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -21772,7 +21772,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.511792529794986e-038
                     },
                     "XPosition": {
                       "type": "float",
@@ -21937,7 +21937,7 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Bomber Configuration I"
+                        "0": "Basic Bomber Configuration"
                       }
                     },
                     "ModelPart1": {
@@ -22087,7 +22087,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 2.277950783606423e-041
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -22252,7 +22252,7 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Basic Industrial Configuration"
+                        "0": "Basic Logistics Configuration"
                       }
                     },
                     "ModelPart1": {
@@ -22297,7 +22297,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 2.25637078725582e-041
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -22404,7 +22404,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 3.552713678800501e-015
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",

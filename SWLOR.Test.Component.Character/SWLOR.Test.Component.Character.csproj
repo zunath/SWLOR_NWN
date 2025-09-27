@@ -14,7 +14,17 @@
     <PackageReference Include="NUnit" Version="4.3.2" />
     <PackageReference Include="NUnit.Analyzers" Version="4.7.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="5.0.0" />
+    <PackageReference Include="NSubstitute" Version="5.1.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.9" />
   </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\SWLOR.Component.Character\SWLOR.Component.Character.csproj" />
+      <ProjectReference Include="..\SWLOR.Shared.Core\SWLOR.Shared.Core.csproj" />
+      <ProjectReference Include="..\SWLOR.Shared.Domain\SWLOR.Shared.Domain.csproj" />
+      <ProjectReference Include="..\SWLOR.Shared.Abstractions\SWLOR.Shared.Abstractions.csproj" />
+      <ProjectReference Include="..\SWLOR.Test.Shared.Core\SWLOR.Test.Shared.Core.csproj" />
+    </ItemGroup>
 
   <ItemGroup>
     <Using Include="NUnit.Framework" />

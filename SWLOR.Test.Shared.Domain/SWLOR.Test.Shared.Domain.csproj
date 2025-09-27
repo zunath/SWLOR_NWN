@@ -16,6 +16,12 @@
     <PackageReference Include="NUnit3TestAdapter" Version="5.0.0" />
   </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\SWLOR.Shared.Domain\SWLOR.Shared.Domain.csproj" />
+      <ProjectReference Include="..\SWLOR.Shared.Core\SWLOR.Shared.Core.csproj" />
+      <ProjectReference Include="..\SWLOR.Test.Shared.Core\SWLOR.Test.Shared.Core.csproj" />
+    </ItemGroup>
+
   <ItemGroup>
     <Using Include="NUnit.Framework" />
   </ItemGroup>

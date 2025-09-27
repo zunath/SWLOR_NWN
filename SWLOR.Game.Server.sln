@@ -22,6 +22,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Readmes", "_Readmes", "{02
 		Readmes\Deployment.md = Readmes\Deployment.md
 		Readmes\Entities.md = Readmes\Entities.md
 		Readmes\Features.md = Readmes\Features.md
+		Readmes\nwscript.nss = Readmes\nwscript.nss
 		Readmes\ProjectStructure.md = Readmes\ProjectStructure.md
 		Readmes\README.md = Readmes\README.md
 		Readmes\Services.md = Readmes\Services.md

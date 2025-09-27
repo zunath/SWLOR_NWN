@@ -38,8 +38,10 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oObject">The object to execute the script on</param>
         /// <param name="bWrapIntoMain">Whether to wrap the script chunk into void main() {}</param>
         /// <returns>Empty string on success, or the compilation error</returns>
-        public static string ExecuteScriptChunk(string sScriptChunk, uint oObject, bool bWrapIntoMain = true)
+        public static string ExecuteScriptChunk(string sScriptChunk, uint oObject = OBJECT_INVALID, bool bWrapIntoMain = true)
         {
+            if (oObject == OBJECT_INVALID)
+                oObject = OBJECT_SELF;
             return global::NWN.Core.NWScript.ExecuteScriptChunk(sScriptChunk, oObject, bWrapIntoMain ? 1 : 0);
         }
 

@@ -213,8 +213,10 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oCreature">The creature to check the feat for</param>
         /// <returns>The number of remaining uses left, or the maximum int value if the feat has unlimited uses (e.g., FEAT_KNOCKDOWN)</returns>
         /// <remarks>Only returns a value if the creature has the feat and it is usable.</remarks>
-        public static int GetFeatRemainingUses(FeatType nFeat, uint oCreature)
+        public static int GetFeatRemainingUses(FeatType nFeat, uint oCreature = OBJECT_INVALID)
         {
+            if (oCreature == OBJECT_INVALID)
+                oCreature = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetFeatRemainingUses((int)nFeat, oCreature);
         }
     }

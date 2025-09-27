@@ -297,6 +297,8 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The hardness value, or -1 on an error or if used on an object that is neither a door nor a placeable object</returns>
         public static int GetHardness(uint oObject = OBJECT_INVALID)
         {
+            if (oObject == OBJECT_INVALID)
+                oObject = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetHardness(oObject);
         }
 
@@ -308,6 +310,8 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oObject">A door or placeable object (defaults to OBJECT_INVALID)</param>
         public static void SetHardness(int nHardness, uint oObject = OBJECT_INVALID)
         {
+            if (oObject == OBJECT_INVALID)
+                oObject = OBJECT_SELF;
             global::NWN.Core.NWScript.SetHardness(nHardness, oObject);
         }
 

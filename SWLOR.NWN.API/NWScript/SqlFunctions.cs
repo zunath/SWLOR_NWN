@@ -230,8 +230,6 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The object, or INVALID_OBJECT on error</returns>
         public static uint SqlGetObject(IntPtr sqlQuery, int nIndex, IntPtr lSpawnAt, uint oInventory = OBJECT_INVALID, bool bLoadObjectState = false)
         {
-            if (oInventory == OBJECT_INVALID)
-                oInventory = OBJECT_SELF;
             return global::NWN.Core.NWScript.SqlGetObject(sqlQuery, nIndex, lSpawnAt, oInventory, bLoadObjectState ? 1 : 0);
         }
 

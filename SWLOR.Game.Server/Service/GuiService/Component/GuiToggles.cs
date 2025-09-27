@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Beamdog;
+using SWLOR.NWN.API.Engine;
 
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {

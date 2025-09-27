@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SWLOR.Admin", "SWLOR.Admin\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Runner", "SWLOR.Runner\SWLOR.Runner.csproj", "{CAD52F45-F4DC-4EE3-8008-068CC00E27B6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.NWN.API", "SWLOR.NWN.API\SWLOR.NWN.API.csproj", "{189C46D2-B341-4C01-B87D-CB2484F2110F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{CAD52F45-F4DC-4EE3-8008-068CC00E27B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CAD52F45-F4DC-4EE3-8008-068CC00E27B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CAD52F45-F4DC-4EE3-8008-068CC00E27B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{189C46D2-B341-4C01-B87D-CB2484F2110F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{189C46D2-B341-4C01-B87D-CB2484F2110F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{189C46D2-B341-4C01-B87D-CB2484F2110F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{189C46D2-B341-4C01-B87D-CB2484F2110F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

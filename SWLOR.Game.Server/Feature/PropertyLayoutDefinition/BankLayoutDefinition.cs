@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
 {
@@ -53,7 +53,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
             }
 
             // Execute the normal bank procedure if all these additional checks are met.
-            ExecuteScript("open_bank", bank);
+            ExecuteScript(ScriptName.OnOpenBank, bank);
         }
 
         private void ProcessBank(uint area, uint waypoint, int storageCap, string bankId)
@@ -78,7 +78,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                 SetLocalInt(placeable, "STORAGE_ITEM_LIMIT", storageCap);
                 SetLocalString(placeable, "STORAGE_ID", bankId);
 
-                SetEventScript(placeable, EventScript.Placeable_OnUsed, "open_prop_bank");
+                SetEventScript(placeable, EventScript.Placeable_OnUsed, ScriptName.OnOpenPropertyBank);
             }
         }
 

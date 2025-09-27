@@ -3,10 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
-using SWLOR.Game.Server.Core.NWNX;
-using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Core.NWScript.Enum.Associate;
-using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
@@ -18,6 +14,11 @@ using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.NWN.API.Engine;
+using SWLOR.NWN.API.NWNX;
+using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Associate;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -288,23 +289,23 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Scripts
-            SetEventScript(beast, EventScript.Creature_OnBlockedByDoor, "beast_blocked");
-            SetEventScript(beast, EventScript.Creature_OnEndCombatRound, "beast_roundend");
-            SetEventScript(beast, EventScript.Creature_OnDialogue, "beast_convers");
-            SetEventScript(beast, EventScript.Creature_OnDamaged, "beast_damaged");
-            SetEventScript(beast, EventScript.Creature_OnDeath, "beast_death");
-            SetEventScript(beast, EventScript.Creature_OnDisturbed, "beast_disturbed");
-            SetEventScript(beast, EventScript.Creature_OnHeartbeat, "beast_hb");
-            SetEventScript(beast, EventScript.Creature_OnNotice, "beast_perception");
-            SetEventScript(beast, EventScript.Creature_OnMeleeAttacked, "beast_attacked");
-            SetEventScript(beast, EventScript.Creature_OnRested, "beast_rest");
-            SetEventScript(beast, EventScript.Creature_OnSpawnIn, "beast_spawn");
-            SetEventScript(beast, EventScript.Creature_OnSpellCastAt, "beast_spellcast");
-            SetEventScript(beast, EventScript.Creature_OnUserDefined, "beast_userdef");
+            SetEventScript(beast, EventScript.Creature_OnBlockedByDoor, ScriptName.OnBeastBlocked);
+            SetEventScript(beast, EventScript.Creature_OnEndCombatRound, ScriptName.OnBeastRoundEnd);
+            SetEventScript(beast, EventScript.Creature_OnDialogue, ScriptName.OnBeastConversation);
+            SetEventScript(beast, EventScript.Creature_OnDamaged, ScriptName.OnBeastDamaged);
+            SetEventScript(beast, EventScript.Creature_OnDeath, ScriptName.OnBeastDeath);
+            SetEventScript(beast, EventScript.Creature_OnDisturbed, ScriptName.OnBeastDisturbed);
+            SetEventScript(beast, EventScript.Creature_OnHeartbeat, ScriptName.OnBeastHeartbeat);
+            SetEventScript(beast, EventScript.Creature_OnNotice, ScriptName.OnBeastPerception);
+            SetEventScript(beast, EventScript.Creature_OnMeleeAttacked, ScriptName.OnBeastAttacked);
+            SetEventScript(beast, EventScript.Creature_OnRested, ScriptName.OnBeastRest);
+            SetEventScript(beast, EventScript.Creature_OnSpawnIn, ScriptName.OnBeastSpawn);
+            SetEventScript(beast, EventScript.Creature_OnSpellCastAt, ScriptName.OnBeastSpellCast);
+            SetEventScript(beast, EventScript.Creature_OnUserDefined, ScriptName.OnBeastUserDefined);
 
             // Ensure the spawn script gets called as it normally gets skipped
             // because it doesn't exist at the time of the beast being created.
-            ExecuteScriptNWScript(GetEventScript(beast, EventScript.Creature_OnSpawnIn), beast);
+            ExecuteScript(GetEventScript(beast, EventScript.Creature_OnSpawnIn), beast);
 
             AssignCommand(GetModule(), () =>
             {
@@ -457,7 +458,7 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnBeastBlocked)]
         public static void BeastOnBlocked()
         {
-            ExecuteScriptNWScript("x0_ch_hen_block", OBJECT_SELF);
+            ExecuteScript("x0_ch_hen_block", OBJECT_SELF);
         }
 
         [NWNEventHandler(ScriptName.OnBeastRoundEnd)]
@@ -466,7 +467,7 @@ namespace SWLOR.Game.Server.Service
             var beast = OBJECT_SELF;
             if (!Activity.IsBusy(beast))
             {
-                ExecuteScriptNWScript("x0_ch_hen_combat", OBJECT_SELF);
+                ExecuteScript("x0_ch_hen_combat", OBJECT_SELF);
                 AI.ProcessPerkAI(AIDefinitionType.Beast, beast, false);
             }
         }
@@ -474,20 +475,20 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnBeastConversation)]
         public static void BeastOnConversation()
         {
-            ExecuteScriptNWScript("x0_ch_hen_conv", OBJECT_SELF);
+            ExecuteScript("x0_ch_hen_conv", OBJECT_SELF);
         }
 
         [NWNEventHandler(ScriptName.OnBeastDamaged)]
         public static void BeastOnDamaged()
         {
-            ExecuteScriptNWScript("x0_ch_hen_damage", OBJECT_SELF);
+            ExecuteScript("x0_ch_hen_damage", OBJECT_SELF);
         }
 
         [NWNEventHandler(ScriptName.OnBeastDeath)]
         public static void BeastOnDeath()
         {
             var beast = OBJECT_SELF;
-            ExecuteScriptNWScript("x2_hen_death", beast);
+            ExecuteScript("x2_hen_death", beast);
 
             var beastId = GetBeastId(beast);
             var dbBeast = DB.Get<Beast>(beastId);
@@ -502,27 +503,27 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnBeastDisturbed)]
         public static void BeastOnDisturbed()
         {
-            ExecuteScriptNWScript("x0_ch_hen_distrb", OBJECT_SELF);
+            ExecuteScript("x0_ch_hen_distrb", OBJECT_SELF);
         }
 
         [NWNEventHandler(ScriptName.OnBeastHeartbeat)]
         public static void BeastOnHeartbeat()
         {
-            ExecuteScriptNWScript("x0_ch_hen_heart", OBJECT_SELF);
+            ExecuteScript("x0_ch_hen_heart", OBJECT_SELF);
             Stat.RestoreNPCStats(false);
         }
 
         [NWNEventHandler(ScriptName.OnBeastPerception)]
         public static void BeastOnPerception()
         {
-            ExecuteScriptNWScript("x0_ch_hen_percep", OBJECT_SELF);
+            ExecuteScript("x0_ch_hen_percep", OBJECT_SELF);
 
         }
 
         [NWNEventHandler(ScriptName.OnBeastAttacked)]
         public static void BeastOnPhysicalAttacked()
         {
-            ExecuteScriptNWScript("x0_ch_hen_attack", OBJECT_SELF);
+            ExecuteScript("x0_ch_hen_attack", OBJECT_SELF);
 
         }
 
@@ -530,7 +531,7 @@ namespace SWLOR.Game.Server.Service
         public static void BeastOnRested()
         {
             var beast = OBJECT_SELF;
-            ExecuteScriptNWScript("x0_ch_hen_rest", beast);
+            ExecuteScript("x0_ch_hen_rest", beast);
 
             AssignCommand(beast, () => ClearAllActions());
 
@@ -541,7 +542,7 @@ namespace SWLOR.Game.Server.Service
         public static void BeastOnSpawn()
         {
             var beast = OBJECT_SELF;
-            ExecuteScriptNWScript("x0_ch_hen_spawn", beast);
+            ExecuteScript("x0_ch_hen_spawn", beast);
             AssignCommand(beast, () =>
             {
                 SetIsDestroyable(true, false, false);
@@ -553,14 +554,14 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnBeastSpellCast)]
         public static void BeastOnSpellCastAt()
         {
-            ExecuteScriptNWScript("x2_hen_spell", OBJECT_SELF);
+            ExecuteScript("x2_hen_spell", OBJECT_SELF);
 
         }
 
         [NWNEventHandler(ScriptName.OnBeastUserDefined)]
         public static void BeastOnUserDefined()
         {
-            ExecuteScriptNWScript("x0_ch_hen_usrdef", OBJECT_SELF);
+            ExecuteScript("x0_ch_hen_usrdef", OBJECT_SELF);
         }
 
         [NWNEventHandler(ScriptName.OnBeastTerminate)]

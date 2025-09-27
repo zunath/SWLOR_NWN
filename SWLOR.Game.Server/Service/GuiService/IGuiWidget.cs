@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Reflection;
-using SWLOR.Game.Server.Core;
+using SWLOR.NWN.API.Engine;
 
 namespace SWLOR.Game.Server.Service.GuiService
 {

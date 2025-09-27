@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
@@ -12,10 +10,13 @@ using SWLOR.Game.Server.Service.ChatCommandService;
 using SWLOR.Game.Server.Service.FactionService;
 using Faction = SWLOR.Game.Server.Service.Faction;
 using ChatChannel = SWLOR.Game.Server.Core.NWNX.Enum.ChatChannel;
-using SWLOR.Game.Server.Core.NWNX;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Webhook;
+using SWLOR.NWN.API.NWNX;
+using SWLOR.NWN.API.NWScript;
+using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 {
@@ -237,7 +238,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     }
 
                     var variableName = Convert.ToString(args[0]);
-                    var value = NWScript.GetLocalFloat(target, variableName);
+                    var value = GetLocalFloat(target, variableName);
 
                     SendMessageToPC(user, variableName + " = " + value);
                 });
@@ -797,7 +798,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         BootPC(player, "The server is restarting.");
                         player = GetNextPC();
                     }
-                    Core.NWNX.AdministrationPlugin.ShutdownServer();
+                    AdministrationPlugin.ShutdownServer();
                 });
         }
 
@@ -1100,8 +1101,11 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                             dbPlayerShip.Status.Hull = targetStatus.Hull;
 
                             DB.Set(dbPlayerShip);
-                            ExecuteScript("pc_shld_adjusted", target);
-                            ExecuteScript("pc_hull_adjusted", target);
+                            
+                            // Trigger UI refresh events after database update
+                            ExecuteScript(ScriptName.OnPlayerShieldAdjusted, target);
+                            ExecuteScript(ScriptName.OnPlayerHullAdjusted, target);
+                            ExecuteScript(ScriptName.OnPlayerCapAdjusted, target);
                         }
                     }
                 });

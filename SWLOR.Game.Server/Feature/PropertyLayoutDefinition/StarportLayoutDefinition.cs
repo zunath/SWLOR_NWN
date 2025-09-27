@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
 {
@@ -59,7 +59,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
             if (!CanAccess(player))
                 return;
 
-            ExecuteScript("generic_convo", terminal);
+            ExecuteScript(ScriptName.OnPlaceableGenericConversation, terminal);
         }
 
         private void SpawnStarportFlightTerminals(uint area, PlanetType planetType)
@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                 SetName(terminal, $"{planet.Name} Starport Flights Terminal");
 
                 SetLocalInt(terminal, "CURRENT_LOCATION", (int)planetType);
-                SetEventScript(terminal, EventScript.Placeable_OnUsed, "prop_star_term");
+                SetEventScript(terminal, EventScript.Placeable_OnUsed, ScriptName.OnPropertyStarportTerminal);
             }
 
             const string WaypointTag = "STARPORT_FLIGHTS_TERMINAL";

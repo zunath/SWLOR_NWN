@@ -3,14 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
-using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWNX.Enum;
-using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Core.NWScript.Enum.Item;
-using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.LogService;
@@ -18,6 +13,10 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.SpaceService;
+using SWLOR.NWN.API.NWNX;
+using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using Vector3 = System.Numerics.Vector3;
 
 namespace SWLOR.Game.Server.Service
@@ -383,7 +382,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Handles swapping a player's target to the object they attempted to attack using NWN's combat system.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnInputAttackBefore)]
+        [NWNEventHandler(ScriptName.OnInputAttackObjectBefore)]
         public static void SelectTarget()
         {
             var player = OBJECT_SELF;
@@ -994,7 +993,7 @@ namespace SWLOR.Game.Server.Service
         /// When a ship module item is examined,
         /// append the configured description to the item's description and add prerequisite perk item properties.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnExamineBefore)]
+        [NWNEventHandler(ScriptName.OnExamineObjectBefore)]
         public static void ExamineShipModuleItem()
         {
             var item = StringToObject(EventsPlugin.GetEventData("EXAMINEE_OBJECT_ID"));
@@ -1027,7 +1026,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a ship item is examined, add the prerequisite perk item properties.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnExamineBefore)]
+        [NWNEventHandler(ScriptName.OnExamineObjectBefore)]
         public static void ExamineShipItem()
         {
             var item = StringToObject(EventsPlugin.GetEventData("EXAMINEE_OBJECT_ID"));
@@ -2113,7 +2112,7 @@ namespace SWLOR.Game.Server.Service
         /// When a player attempts to stealth while in space mode,
         /// exit the stealth mode and send an error message.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnStealthAddBefore)]
+        [NWNEventHandler(ScriptName.OnStealthEnterBefore)]
         public static void PreventSpaceStealth()
         {
             var creature = OBJECT_SELF;

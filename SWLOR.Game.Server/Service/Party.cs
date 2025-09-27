@@ -2,8 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Core.NWNX;
-using SWLOR.Game.Server.Entity;
+using SWLOR.NWN.API.NWNX;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -16,7 +15,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a member of a party accepts an invitation, add them to the caches.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnPartyAcceptBefore)]
+        [NWNEventHandler(ScriptName.OnPartyAcceptInvitationBefore)]
         public static void JoinParty()
         {
             var creature = OBJECT_SELF;
@@ -87,7 +86,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the leader of a party changes, update the caches.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnPartyChangeLeaderBefore)]
+        [NWNEventHandler(ScriptName.OnPartyTransferLeadershipBefore)]
         public static void TransferLeadership()
         {
             var creature = StringToObject(EventsPlugin.GetEventData("NEW_LEADER"));

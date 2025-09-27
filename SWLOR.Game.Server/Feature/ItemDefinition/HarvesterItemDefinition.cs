@@ -1,13 +1,13 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ItemService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.ItemDefinition
@@ -152,7 +152,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                         Skill.GiveSkillXP(user, SkillType.Gathering, deltaXP * itemsGathered, false, false);
                     }
 
-                    ExecuteScript("harvester_used", user);
+                    ExecuteScript(ScriptName.OnHarvesterUsed, user);
                 });
         }
     }

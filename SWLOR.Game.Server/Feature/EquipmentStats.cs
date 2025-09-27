@@ -2,14 +2,14 @@ using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
-using SWLOR.Game.Server.Core.NWNX;
-using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SkillService;
-using ItemProperty = SWLOR.Game.Server.Core.ItemProperty;
+using SWLOR.NWN.API.NWNX;
+using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Item;
+using ItemProperty = SWLOR.NWN.API.Engine.ItemProperty;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -77,7 +77,7 @@ namespace SWLOR.Game.Server.Feature
         /// When an item is equipped, if it has any custom status, apply them now.
         /// This should be run in the "after" event because any restrictions should be checked first.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnItemEquipBefore)]
+        [NWNEventHandler(ScriptName.OnSWLORItemEquipValidBefore)]
         public static void ApplyStats()
         {
             var creature = OBJECT_SELF;

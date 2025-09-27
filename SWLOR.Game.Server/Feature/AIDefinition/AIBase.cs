@@ -1,10 +1,10 @@
 ﻿using SWLOR.Game.Server.Service.AIService;
 using System.Collections.Generic;
 using System.Linq;
-using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service;
 using System;
 using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.AIDefinition
 {

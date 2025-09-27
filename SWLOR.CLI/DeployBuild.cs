@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 
 namespace SWLOR.CLI
 {
@@ -37,7 +36,7 @@ namespace SWLOR.CLI
 
         private void CopyBinaries()
         {
-            var binPath = "../SWLOR.Game.Server/bin/Debug/net7.0/";
+            var binPath = "../SWLOR.Game.Server/bin/Debug/net8.0/";
 
             var source = new DirectoryInfo(binPath);
             var target = new DirectoryInfo(DotnetPath);

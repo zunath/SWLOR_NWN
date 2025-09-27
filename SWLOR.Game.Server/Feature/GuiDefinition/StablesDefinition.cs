@@ -2,7 +2,6 @@
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Service.GuiService.Component;
-using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition
 {

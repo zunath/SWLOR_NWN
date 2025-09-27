@@ -2,13 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Core.NWScript.Enum.Area;
-using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.WeatherService;
 using SWLOR.Game.Server.Extension;
+using SWLOR.NWN.API.NWScript;
+using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Area;
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.NWN.API.Engine;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -235,16 +236,16 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public static Core.NWScript.Enum.Weather GetWeather()
+        public static NWN.API.NWScript.Enum.Weather GetWeather()
         {
             return GetWeather(OBJECT_SELF);
         }
 
-        public static Core.NWScript.Enum.Weather GetWeather(uint oArea)
+        public static NWN.API.NWScript.Enum.Weather GetWeather(uint oArea)
         {
             if (GetIsAreaInterior(oArea) || GetIsAreaAboveGround(oArea) == false)
             {
-                return Core.NWScript.Enum.Weather.Invalid;
+                return NWN.API.NWScript.Enum.Weather.Invalid;
             }
 
             var nHeat = GetHeatIndex(oArea);
@@ -253,7 +254,7 @@ namespace SWLOR.Game.Server.Service
 
             if (nHumidity > 7 && nHeat > 3 && nHeat < 6 && nWind < 3)
             {
-                return Core.NWScript.Enum.Weather.Foggy;
+                return NWN.API.NWScript.Enum.Weather.Foggy;
             }
 
             // Rather unfortunately, the default method is also called GetWeather. 
@@ -364,7 +365,7 @@ namespace SWLOR.Game.Server.Service
             // Apply acid rain, if applicable.  Stolen shamelessly from the Melf's Acid
             // Arrow spell.
             //--------------------------------------------------------------------------
-            if (bIsPC && NWScript.GetWeather(oArea) == Core.NWScript.Enum.Weather.Rain && GetLocalInt(oArea, VAR_WEATHER_ACID_RAIN) == 1)
+            if (bIsPC && NWScript.GetWeather(oArea) == NWN.API.NWScript.Enum.Weather.Rain && GetLocalInt(oArea, VAR_WEATHER_ACID_RAIN) == 1)
             {
                 var eEffect =
                   EffectLinkEffects(
@@ -667,7 +668,7 @@ namespace SWLOR.Game.Server.Service
                 // Create new ones depending on the current weather.
                 var nWeather = GetWeather();
 
-                if (nWeather == Core.NWScript.Enum.Weather.Foggy)
+                if (nWeather == NWN.API.NWScript.Enum.Weather.Foggy)
                 {
                     // Get the size in tiles.
                     var nSizeX = GetAreaSize(Dimension.Width, oArea);

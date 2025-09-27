@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <EnableDynamicLoading>true</EnableDynamicLoading>
     <LangVersion>10</LangVersion>
     <OutputType>Library</OutputType>
@@ -17,16 +17,21 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Discord.Net" Version="3.17.4" />
+    <PackageReference Include="Discord.Net" Version="3.18.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="NRediSearch" Version="2.2.79" />
     <PackageReference Include="NReJSON" Version="4.0.0" />
-    <PackageReference Include="NWN.Native" Version="8193.35.9" />
+    <PackageReference Include="NWN.Core" Version="8193.37.3" />
+    <PackageReference Include="NWN.Native" Version="8193.37.3" />
     <PackageReference Include="Serilog" Version="4.3.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
-    <PackageReference Include="StackExchange.Redis" Version="2.8.41" />
+    <PackageReference Include="StackExchange.Redis" Version="2.9.17" />
     <PackageReference Include="System.Reflection.Emit" Version="4.7.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SWLOR.NWN.API\SWLOR.NWN.API.csproj" />
   </ItemGroup>
 
   <Target Name="NWN" AfterTargets="Build">
@@ -39,6 +44,6 @@
   </Target>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="cd $(SolutionDir)Build\&#xD;&#xA;SWLOR.CLI.exe -o" />
+    <Exec Command="SWLOR.CLI.exe -o" WorkingDirectory="$(MSBuildProjectDirectory)\..\Build" />
   </Target>
 </Project>

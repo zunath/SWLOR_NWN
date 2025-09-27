@@ -27,7 +27,7 @@ The main deployment configuration is defined in `Docker/docker-compose.yml`. Thi
 
 - **Redis**: Caching and data storage using `redislabs/redismod:latest`
 - **Redis Commander**: Web interface for Redis management
-- **SWLOR Server**: Main game server using `swlor/server:8193.35.40-2` image
+- **SWLOR Server**: Main game server using `zunath/nwn-dotnet:8193.37.3-1` image
 - **InfluxDB**: Time-series database for metrics storage
 - **Grafana**: Monitoring and visualization dashboard
 

@@ -1,5 +1,5 @@
-﻿using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Service.StatusEffectService;
+﻿using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service.AbilityService
 {

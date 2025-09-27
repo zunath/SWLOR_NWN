@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core.Bioware;
-using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.LootService;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.LootTableDefinition

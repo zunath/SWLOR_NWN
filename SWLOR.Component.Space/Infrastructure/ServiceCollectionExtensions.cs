@@ -25,6 +25,9 @@ namespace SWLOR.Component.Space.Infrastructure
         {
             // Register Space services
             services.AddSingleton<ISpaceService, Service.Space>();
+            services.AddSingleton<IShipBuilder, Service.ShipBuilder>();
+            services.AddSingleton<IShipModuleBuilder, Service.ShipModuleBuilder>();
+            services.AddSingleton<ISpaceObjectBuilder, Service.SpaceObjectBuilder>();
             
             // Register Space EventHandlers
             services.AddSingleton<SpaceEventHandler>();

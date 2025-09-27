@@ -25,7 +25,7 @@ namespace SWLOR.Component.Character.Service
         public Achievement(IDatabaseService db, IServiceProvider serviceProvider)
         {
             _db = db;
-            // Services are now lazy-loaded via IServiceProvider
+            _serviceProvider = serviceProvider;
         }
 
         [ScriptHandler<OnModuleLoad>]

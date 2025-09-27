@@ -21,7 +21,7 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
         private readonly ILogger _logger;
         private readonly IDatabaseService _db;
         private readonly IServiceProvider _serviceProvider;
-        private readonly ItemBuilder _builder = new();
+        private IItemBuilder Builder => _serviceProvider.GetRequiredService<IItemBuilder>();
 
         public HarvesterItemDefinition(IRandomService random, ILogger logger, IDatabaseService db, IServiceProvider serviceProvider)
         {
@@ -45,7 +45,7 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
             Harvester("harvest_r_3", 4);
             Harvester("harvest_r_4", 5);
 
-            return _builder.Build();
+            return Builder.Build();
         }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
 
         private void Harvester(string tag, int requiredLevel)
         {
-            _builder.Create(tag)
+            Builder.Create(tag)
                 .Delay(5f)
                 .PlaysAnimation(Animation.LoopingGetMid)
                 .UserFacesTarget()

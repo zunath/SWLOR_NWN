@@ -1,3 +1,6 @@
+using System;
+using System.Linq;
+using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.World.Contracts;
 using SWLOR.Component.World.EventHandlers;
@@ -43,6 +46,18 @@ namespace SWLOR.Component.World.Infrastructure
             // Snippet definitions are automatically registered by the Inventory component
 
             // Dialog classes are automatically registered by the Inventory component
+
+            // Automatically register all spawn definition implementations
+            var assembly = Assembly.GetExecutingAssembly();
+            
+            // Register ISpawnListDefinition implementations
+            var spawnDefinitionTypes = assembly.GetTypes()
+                .Where(t => t.IsClass && !t.IsAbstract && typeof(ISpawnListDefinition).IsAssignableFrom(t));
+            
+            foreach (var type in spawnDefinitionTypes)
+            {
+                services.AddTransient(type);
+            }
 
             return services;
         }

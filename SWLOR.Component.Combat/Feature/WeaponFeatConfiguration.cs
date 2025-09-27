@@ -17,7 +17,7 @@ namespace SWLOR.Component.Combat.Feature
 
         public WeaponFeatConfiguration(IServiceProvider serviceProvider)
         {
-            // Services are now lazy-loaded via IServiceProvider
+            _serviceProvider = serviceProvider;
         }
 
         /// <summary>

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Inventory.Service;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
@@ -13,12 +14,18 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
 {
     public class SpeederItemDefinition: IItemListDefinition
     {
-        private readonly ItemBuilder _builder = new();
+        private readonly IServiceProvider _serviceProvider;
+        private IItemBuilder Builder => _serviceProvider.GetRequiredService<IItemBuilder>();
+
+        public SpeederItemDefinition(IServiceProvider serviceProvider)
+        {
+            _serviceProvider = serviceProvider;
+        }
 
         public Dictionary<string, ItemDetail> BuildItems()
         {
             Speeder();
-            return _builder.Build();
+            return Builder.Build();
         }
         /// <summary>
         /// Check player's pheno: 
@@ -27,7 +34,7 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
         /// </summary>
         private void Speeder()
         {
-            _builder.Create("speeder")
+            Builder.Create("speeder")
                 .Delay(2f)
                 .PlaysAnimation(Animation.LoopingGetMid)
                 .ApplyAction((user, item, target, location, itemPropertyIndex) =>

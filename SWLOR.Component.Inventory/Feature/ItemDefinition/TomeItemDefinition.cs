@@ -13,7 +13,7 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
     public class TomeItemDefinition: IItemListDefinition
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly IItemBuilder _builder;
+        private IItemBuilder Builder => _serviceProvider.GetRequiredService<IItemBuilder>();
 
         public TomeItemDefinition(
             IServiceProvider serviceProvider)
@@ -32,12 +32,12 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
             PerkRefundTome();
             StatRefundTome();
 
-            return _builder.Build();
+            return Builder.Build();
         }
 
         private void XPTomes()
         {
-            _builder.Create("xp_tome_1", "xp_tome_2", "xp_tome_3", "xp_tome_4")
+            Builder.Create("xp_tome_1", "xp_tome_2", "xp_tome_3", "xp_tome_4")
                 .ApplyAction((user, item, target, location, itemPropertyIndex) =>
                 {
                     SetLocalObject(user, "XP_TOME_OBJECT", item);
@@ -49,7 +49,7 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
 
         private void PerkRefundTome()
         {
-            _builder.Create("refund_tome")
+            Builder.Create("refund_tome")
                 .Delay(3f)
                 .ValidationAction((user, item, target, location, itemPropertyIndex) =>
                 {
@@ -76,7 +76,7 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
 
         private void StatRefundTome()
         {
-            _builder.Create("recond_tome")
+            Builder.Create("recond_tome")
                 .Delay(3f)
                 .ValidationAction((user, item, target, location, itemPropertyIndex) =>
                 {

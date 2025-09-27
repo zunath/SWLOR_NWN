@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Inventory.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -15,17 +16,19 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
     {
         private const int MaxNumberOfUpgrades = 1;
         private readonly IDatabaseService _db;
-        private readonly ItemBuilder _builder = new();
+        private readonly IServiceProvider _serviceProvider;
+        private IItemBuilder Builder => _serviceProvider.GetRequiredService<IItemBuilder>();
 
-        public SaberUpgradeItemDefinition(IDatabaseService db)
+        public SaberUpgradeItemDefinition(IDatabaseService db, IServiceProvider serviceProvider)
         {
             _db = db;
+            _serviceProvider = serviceProvider;
         }
 
         public Dictionary<string, ItemDetail> BuildItems()
         {
             UpgradeKit();
-            return _builder.Build();
+            return Builder.Build();
         }
 
         private int GetWeaponLevel(uint item)
@@ -40,7 +43,7 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
 
         private void CreateKit(string tag, string itemName, BaseItem expectedItemType, int upgradeNumber, int dmgIncrease)
         {
-            _builder.Create(tag)
+            Builder.Create(tag)
                 .Delay(12f)
                 .PlaysAnimation(Animation.LoopingGetMid)
                 .MaxDistance(0.0f)

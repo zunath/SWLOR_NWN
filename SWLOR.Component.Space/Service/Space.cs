@@ -228,14 +228,12 @@ namespace SWLOR.Component.Space.Service
         /// </summary>
         private void LoadShips()
         {
-            var types = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(s => s.GetTypes())
-                .Where(w => typeof(IShipListDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
+            // Get all registered IShipListDefinition services from the DI container
+            var shipDefinitions = _serviceProvider.GetServices<IShipListDefinition>();
 
-            foreach (var type in types)
+            foreach (var shipDefinition in shipDefinitions)
             {
-                var instance = (IShipListDefinition)_serviceProvider.GetRequiredService(type);
-                var ships = instance.BuildShips();
+                var ships = shipDefinition.BuildShips();
 
                 foreach (var (shipType, shipDetail) in ships)
                 {
@@ -252,14 +250,12 @@ namespace SWLOR.Component.Space.Service
         /// </summary>
         private void LoadShipModules()
         {
-            var types = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(s => s.GetTypes())
-                .Where(w => typeof(IShipModuleListDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
+            // Get all registered IShipModuleListDefinition services from the DI container
+            var shipModuleDefinitions = _serviceProvider.GetServices<IShipModuleListDefinition>();
 
-            foreach (var type in types)
+            foreach (var shipModuleDefinition in shipModuleDefinitions)
             {
-                var instance = (IShipModuleListDefinition)_serviceProvider.GetRequiredService(type);
-                var shipModules = instance.BuildShipModules();
+                var shipModules = shipModuleDefinition.BuildShipModules();
 
                 foreach (var (moduleType, moduleDetail) in shipModules)
                 {
@@ -283,14 +279,12 @@ namespace SWLOR.Component.Space.Service
         /// </summary>
         private void LoadShipEnemies()
         {
-            var types = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(s => s.GetTypes())
-                .Where(w => typeof(ISpaceObjectListDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
+            // Get all registered ISpaceObjectListDefinition services from the DI container
+            var spaceObjectDefinitions = _serviceProvider.GetServices<ISpaceObjectListDefinition>();
 
-            foreach (var type in types)
+            foreach (var spaceObjectDefinition in spaceObjectDefinitions)
             {
-                var instance = (ISpaceObjectListDefinition)_serviceProvider.GetRequiredService(type);
-                var ships = instance.BuildSpaceObjects();
+                var ships = spaceObjectDefinition.BuildSpaceObjects();
 
                 foreach (var (creatureTag, enemy) in ships)
                 {

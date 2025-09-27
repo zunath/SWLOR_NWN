@@ -60,7 +60,6 @@ namespace SWLOR.Component.Inventory.Service
 
                     if (_lootTables.ContainsKey(table.Key))
                     {
-                        _logger.Write<ErrorLogGroup>( $"Loot table {table.Key} has already been registered. Please make sure all spawn tables use a unique ID.");
                         continue;
                     }
 

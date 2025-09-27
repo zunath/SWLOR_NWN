@@ -19,7 +19,7 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
         private readonly IDatabaseService _db;
         private readonly IItemCacheService _itemCache;
         private readonly IServiceProvider _serviceProvider;
-        private readonly ItemBuilder _builder = new();
+        private IItemBuilder Builder => _serviceProvider.GetRequiredService<IItemBuilder>();
 
         public RecipeItemDefinition(IDatabaseService db, IItemCacheService itemCache, IServiceProvider serviceProvider)
         {
@@ -38,12 +38,12 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
         {
             Recipe();
 
-            return _builder.Build();
+            return Builder.Build();
         }
 
         private void Recipe()
         {
-            _builder.Create("RECIPE")
+            Builder.Create("RECIPE")
                 .Delay(3f)
                 .PlaysAnimation(Animation.LoopingGetMid)
                 .ValidationAction((user, item, target, location, itemPropertyIndex) =>

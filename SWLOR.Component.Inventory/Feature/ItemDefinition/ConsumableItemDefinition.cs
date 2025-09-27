@@ -25,7 +25,7 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
         private readonly IRandomService _random;
         private readonly IDatabaseService _db;
         private readonly IServiceProvider _serviceProvider;
-        private readonly ItemBuilder _builder = new();
+        
 
         public ConsumableItemDefinition(
             IRandomService random, 
@@ -42,6 +42,8 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
         private IBeastMasteryService BeastMasteryService => _serviceProvider.GetRequiredService<IBeastMasteryService>();
         private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
         private ICurrencyService CurrencyService => _serviceProvider.GetRequiredService<ICurrencyService>();
+        private IItemBuilder Builder => _serviceProvider.GetRequiredService<IItemBuilder>();
+
         public Dictionary<string, ItemDetail> BuildItems()
         {
             SlugShake();
@@ -49,12 +51,12 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
             PetFood();
             RebuildToken();
 
-            return _builder.Build();
+            return Builder.Build();
         }
 
         private void SlugShake()
         {
-            _builder.Create("slug_shake")
+            Builder.Create("slug_shake")
                 .Delay(1f)
                 .PlaysAnimation(Animation.FireForgetDrink)
                 .ReducesItemCharge()
@@ -90,7 +92,7 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
 
         private void Food()
         {
-            _builder.Create("FOOD")
+            Builder.Create("FOOD")
                 .Delay(1f)
                 .PlaysAnimation(Animation.FireForgetSalute)
                 .ReducesItemCharge()
@@ -228,7 +230,7 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
 
         private void PetFood()
         {
-            _builder.Create("PET_FOOD")
+            Builder.Create("PET_FOOD")
                 .Delay(1f)
                 .PlaysAnimation(Animation.LoopingGetLow)
                 .ValidationAction((user, item, target, location, itemPropertyIndex) =>
@@ -285,7 +287,7 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
 
         private void RebuildToken()
         {
-            _builder.Create("rebuild_token")
+            Builder.Create("rebuild_token")
                 .PlaysAnimation(Animation.LoopingGetMid)
                 .ValidationAction((user, item, target, location, itemPropertyIndex) =>
                 {

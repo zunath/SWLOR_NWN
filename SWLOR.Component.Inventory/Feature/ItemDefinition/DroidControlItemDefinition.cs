@@ -21,7 +21,7 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
     {
         private readonly IDatabaseService _db;
         private readonly IServiceProvider _serviceProvider;
-        private readonly ItemBuilder _builder = new();
+        private IItemBuilder Builder => _serviceProvider.GetRequiredService<IItemBuilder>();
 
         public DroidControlItemDefinition(
             IDatabaseService db, 
@@ -42,7 +42,7 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
         {
             DroidControlUnit();
 
-            return _builder.Build();
+            return Builder.Build();
         }
 
         private static readonly SkillType[] _skillsUsedForAverages =
@@ -79,7 +79,7 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
 
         private void DroidControlUnit()
         {
-            _builder.Create("droid_control")
+            Builder.Create("droid_control")
                 .Delay(3f)
                 .PlaysAnimation(Animation.LoopingGetMid)
                 .ValidationAction((user, item, target, location, itemPropertyIndex) =>

@@ -10,15 +10,12 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
     public class DestroyItemDefinition: IItemListDefinition
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly IItemBuilder _builder;
-
+        private IItemBuilder Builder => _serviceProvider.GetRequiredService<IItemBuilder>();
 
         public DestroyItemDefinition(
-            IServiceProvider serviceProvider,
-            IItemBuilder itemBuilder)
+            IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
-            _builder = itemBuilder;
         }
 
         // Lazy-loaded service to break circular dependency
@@ -26,14 +23,14 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
 
         public Dictionary<string, ItemDetail> BuildItems()
         {
-            _builder.Create("player_guide", "survival_knife")
+            Builder.Create("player_guide", "survival_knife")
                 .ApplyAction((user, item, target, location, itemPropertyIndex) =>
                 {
                     SetLocalObject(user, "DESTROY_ITEM", item);
                     DialogService.StartConversation(user, user, nameof(DestroyItemDialog));
                 });
 
-            return _builder.Build();
+            return Builder.Build();
         }
     }
 }

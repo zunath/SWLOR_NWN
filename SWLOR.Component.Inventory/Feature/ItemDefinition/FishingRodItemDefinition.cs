@@ -12,7 +12,7 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
     {
         private readonly IItemCacheService _itemCache;
         private readonly IServiceProvider _serviceProvider;
-        private readonly ItemBuilder _builder = new();
+        private IItemBuilder Builder => _serviceProvider.GetRequiredService<IItemBuilder>();
 
         public FishingRodItemDefinition(IItemCacheService itemCache, IServiceProvider serviceProvider)
         {
@@ -27,12 +27,12 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
         {
             FishingRod();
 
-            return _builder.Build();
+            return Builder.Build();
         }
 
         private void FishingRod()
         {
-            _builder.Create(FishingService.FishingRodTag)
+            Builder.Create(FishingService.FishingRodTag)
                 .ValidationAction((user, item, target, location, itemPropertyIndex) =>
                 {
                     if (item != target && 

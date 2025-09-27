@@ -14,7 +14,7 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
     {
         private readonly ILogger _logger;
         private readonly IServiceProvider _serviceProvider;
-        private readonly ItemBuilder _builder = new();
+        private IItemBuilder Builder => _serviceProvider.GetRequiredService<IItemBuilder>();
 
         public KeyItemDefinition(ILogger logger, IServiceProvider serviceProvider)
         {
@@ -29,12 +29,12 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
         {
             KeyItem();
 
-            return _builder.Build();
+            return Builder.Build();
         }
 
         private void KeyItem()
         {
-            _builder.Create("KEY_ITEM")
+            Builder.Create("KEY_ITEM")
                 .Delay(1f)
                 .ReducesItemCharge()
                 .ValidationAction((user, item, target, location, itemPropertyIndex) =>

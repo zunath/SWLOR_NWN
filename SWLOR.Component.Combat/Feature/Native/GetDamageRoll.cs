@@ -1,7 +1,6 @@
 using System.Runtime.InteropServices;
 using NWN.Native.API;
 using NWNX.NET;
-using SWLOR.Component.Combat.Contracts;
 using SWLOR.Component.Combat.Enums;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -13,7 +12,6 @@ using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Combat.Enums;
-using SWLOR.Shared.Domain.Common.Contracts;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;

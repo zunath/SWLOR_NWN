@@ -3,7 +3,6 @@ using SWLOR.Component.Migration.Enums;
 using SWLOR.Component.Migration.Model;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
-using SWLOR.Shared.Domain.Space.Contracts;
 using SWLOR.Shared.Domain.Crafting.Enums;
 using SWLOR.Shared.Domain.Entities;
 

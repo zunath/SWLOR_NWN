@@ -7,8 +7,6 @@ using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Character.ValueObjects;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Common.Enums;
-using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Constants;
 
 namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
 {

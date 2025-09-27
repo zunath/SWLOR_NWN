@@ -1,5 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using SWLOR.Component.Quest.Contracts;
 using SWLOR.Shared.Domain.Dialog.Contracts;
 using SWLOR.Shared.Domain.Dialog.ValueObjects;
 using SWLOR.Shared.Domain.Quest.Contracts;

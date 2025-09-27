@@ -8,7 +8,6 @@ using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Entities;
-using SWLOR.Shared.Domain.Space.Contracts;
 
 namespace SWLOR.Component.Migration.Feature.ServerMigration
 {

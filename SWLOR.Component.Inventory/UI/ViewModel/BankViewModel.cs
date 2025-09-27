@@ -6,7 +6,6 @@ using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Domain.Character.Contracts;
-using SWLOR.Shared.Domain.Common.Contracts;
 using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Events.Attributes;

@@ -1,5 +1,4 @@
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Domain.Common.Contracts;
 using SWLOR.Shared.Domain.Dialog.Contracts;
 using SWLOR.Shared.Domain.Dialog.ValueObjects;
 using SWLOR.Shared.Domain.Properties.Contracts;

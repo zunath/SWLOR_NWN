@@ -1,23 +1,20 @@
 using Microsoft.Extensions.DependencyInjection;
+using SWLOR.Component.Quest.Contracts;
 using SWLOR.Component.Quest.Model;
-using SWLOR.Component.Quest.Service;
+using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Domain.Common.Enums;
+using SWLOR.Shared.Domain.Communication.Contracts;
 using SWLOR.Shared.Domain.Communication.Enums;
+using SWLOR.Shared.Domain.Dialog.Contracts;
+using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Inventory.Enums;
+using SWLOR.Shared.Domain.Quest.Contracts;
 using SWLOR.Shared.Domain.Quest.Delegates;
 using SWLOR.Shared.Domain.Quest.ValueObjects;
-using System;
-using System.Collections.Generic;
-using SWLOR.Component.Quest.Contracts;
-using SWLOR.Shared.Domain.Quest.Contracts;
-using SWLOR.Shared.Caching.Contracts;
-using SWLOR.Shared.Domain.Communication.Contracts;
-using SWLOR.Shared.Domain.Inventory.Contracts;
-using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.UI.Contracts;
-using SWLOR.Shared.Domain.Dialog.Contracts;
 
-namespace SWLOR.Game.Server.Service.QuestService
+namespace SWLOR.Component.Quest.Service
 {
     public class QuestBuilder: IQuestBuilder
     {

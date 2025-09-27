@@ -1,6 +1,5 @@
-using SWLOR.Component.Character.Service;
 using SWLOR.Component.Quest.Contracts;
-using SWLOR.Component.Quest.Service;
+using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Common.Enums;
 using SWLOR.Shared.Domain.Quest.Contracts;
 

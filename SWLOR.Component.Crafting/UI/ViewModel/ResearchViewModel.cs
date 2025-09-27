@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Crafting.Entity;
 using SWLOR.Component.Crafting.Model;
-using SWLOR.Component.Crafting.Service;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -14,7 +13,6 @@ using SWLOR.Component.Crafting.UI.Payload;
 using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
-using SWLOR.Shared.Domain.Common.Contracts;
 using SWLOR.Shared.Domain.Crafting.Contracts;
 using SWLOR.Shared.Domain.Crafting.Enums;
 using SWLOR.Shared.Domain.Inventory.Contracts;

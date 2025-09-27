@@ -3,12 +3,6 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Communication.Contracts;
-using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Constants;
-using SWLOR.Shared.Events.Events.Area;
-using SWLOR.Shared.Events.Events.Creature;
-using SWLOR.Shared.Events.Events.Module;
-using SWLOR.Shared.Events.Events.NWNX;
 
 namespace SWLOR.Component.Combat.Service
 {

@@ -9,8 +9,6 @@ using SWLOR.Shared.Domain.Common.Contracts;
 using SWLOR.Shared.Domain.Common.Enums;
 using SWLOR.Shared.Domain.Crafting.ValueObjects;
 using SWLOR.Shared.Domain.Entities;
-using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Component.Ability.Service
 {

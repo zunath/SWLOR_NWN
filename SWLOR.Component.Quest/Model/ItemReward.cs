@@ -1,4 +1,3 @@
-using SWLOR.Component.Quest.Contracts;
 using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Domain.Quest.Contracts;
 

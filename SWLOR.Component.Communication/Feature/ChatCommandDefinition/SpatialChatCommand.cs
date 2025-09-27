@@ -1,5 +1,3 @@
-using SWLOR.Component.Communication.Contracts;
-using SWLOR.Component.Communication.Model;
 using SWLOR.Component.Communication.Service;
 using SWLOR.Shared.Domain.Common.Enums;
 using SWLOR.Shared.Domain.Communication.Contracts;

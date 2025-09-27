@@ -16,10 +16,6 @@ using SWLOR.Shared.Domain.Common.Contracts;
 using SWLOR.Shared.Domain.Common.Enums;
 using SWLOR.Shared.Domain.Communication.Contracts;
 using SWLOR.Shared.Domain.Inventory.Contracts;
-using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Constants;
-using SWLOR.Shared.Events.Events.Module;
-using SWLOR.Shared.Events.Events.NWNX;
 
 namespace SWLOR.Component.Perk.Service
 {

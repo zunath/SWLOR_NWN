@@ -1,5 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using SWLOR.Component.Communication.Contracts;
 using SWLOR.Component.Communication.Dialog;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;

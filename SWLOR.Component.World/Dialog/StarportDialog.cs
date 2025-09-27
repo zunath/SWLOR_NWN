@@ -1,6 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using SWLOR.Component.World.Contracts;
-using SWLOR.Component.World.Service;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Core.Log.LogGroup;

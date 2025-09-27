@@ -1,4 +1,3 @@
-using SWLOR.Component.Communication.Model;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Common.Enums;
 using SWLOR.Shared.Domain.Communication.Contracts;

@@ -1,17 +1,9 @@
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Character.ValueObjects;
-using SWLOR.Shared.Domain.Combat.Contracts;
-using SWLOR.Shared.Domain.Common.Contracts;
 using SWLOR.Shared.Domain.Common.Enums;
-using SWLOR.Shared.Domain.Inventory.Contracts;
-using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Constants;
 
 namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
 {

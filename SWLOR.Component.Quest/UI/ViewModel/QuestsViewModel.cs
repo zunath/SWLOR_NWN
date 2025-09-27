@@ -1,7 +1,5 @@
 using System.Text;
 using Microsoft.Extensions.DependencyInjection;
-using SWLOR.Component.Quest.Contracts;
-using SWLOR.Component.Quest.Service;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Common.Contracts;
 using SWLOR.Shared.Domain.Entities;

@@ -6,7 +6,6 @@ using SWLOR.Shared.Domain.Beasts.Contracts;
 using SWLOR.Shared.Domain.Beasts.Enums;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
-using SWLOR.Shared.Domain.Character.ValueObjects;
 using SWLOR.Shared.Domain.Quest.Contracts;
 
 namespace SWLOR.Component.Perk.Service

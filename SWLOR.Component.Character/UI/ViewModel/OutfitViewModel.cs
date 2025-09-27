@@ -1,4 +1,3 @@
-using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Character.Enums;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;

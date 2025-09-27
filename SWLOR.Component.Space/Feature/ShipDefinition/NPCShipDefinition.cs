@@ -1,5 +1,4 @@
 using SWLOR.Component.Space.Contracts;
-using SWLOR.Component.Space.Service;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Space.ValueObjects;
 

@@ -1,4 +1,3 @@
-using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Shared.Abstractions.Contracts;
 
 namespace SWLOR.Shared.Caching.Service

@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using SWLOR.Component.Associate.Contracts;
-using SWLOR.Component.Associate.Enums;
 using SWLOR.Component.Associate.Model;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;

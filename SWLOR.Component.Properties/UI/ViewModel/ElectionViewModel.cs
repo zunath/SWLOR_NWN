@@ -1,5 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using SWLOR.Component.Properties.Enums;
 using SWLOR.Component.Properties.Service;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Enums;

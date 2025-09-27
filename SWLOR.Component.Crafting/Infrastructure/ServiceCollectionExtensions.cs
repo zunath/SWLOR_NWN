@@ -3,7 +3,6 @@ using SWLOR.Component.Crafting.Contracts;
 using SWLOR.Component.Crafting.Feature;
 using SWLOR.Component.Crafting.Service;
 using System.Reflection;
-using System.Linq;
 using SWLOR.Shared.Domain.Crafting.Contracts;
 using SWLOR.Shared.Domain.Fishing.Contracts;
 

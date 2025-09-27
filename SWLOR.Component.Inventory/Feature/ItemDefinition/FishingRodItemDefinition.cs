@@ -1,5 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using SWLOR.Component.Inventory.Service;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Domain.Fishing.Contracts;

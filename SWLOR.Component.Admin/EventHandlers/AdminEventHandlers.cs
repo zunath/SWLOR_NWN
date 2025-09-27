@@ -1,6 +1,5 @@
 using SWLOR.Component.Admin.Contracts;
 using SWLOR.Component.Admin.Feature;
-using SWLOR.Component.Admin.Service;
 using SWLOR.Component.Admin.UI.ViewModel;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;

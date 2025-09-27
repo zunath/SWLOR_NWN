@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.Shared.Domain.Combat.Contracts;
-using SWLOR.Shared.Domain.Common.Enums;
 using SWLOR.Shared.Domain.Dialog.Contracts;
 using SWLOR.Shared.Domain.Dialog.ValueObjects;
 using SWLOR.Shared.Domain.Inventory.Contracts;

@@ -1,4 +1,3 @@
-using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Admin.Entity;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Abstractions.Contracts;

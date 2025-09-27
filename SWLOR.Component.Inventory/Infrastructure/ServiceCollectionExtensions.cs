@@ -1,15 +1,11 @@
-using System;
-using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Inventory.EventHandlers;
 using SWLOR.Component.Inventory.Feature;
-using SWLOR.Component.Inventory.Feature.SnippetDefinition;
 using SWLOR.Component.Inventory.Service;
 using SWLOR.Shared.Domain.Dialog.Contracts;
 using SWLOR.Shared.Domain.Dialog.ValueObjects;
 using SWLOR.Shared.Domain.Inventory.Contracts;
-using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Component.Inventory.Infrastructure
 {

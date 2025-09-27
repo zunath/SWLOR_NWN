@@ -1,5 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using SWLOR.Component.Migration.Contracts;
 using SWLOR.Component.Migration.Model;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -7,7 +6,6 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Combat.Contracts;
-using SWLOR.Shared.Domain.Common.Contracts;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 
 namespace SWLOR.Component.Migration.Feature.PlayerMigration

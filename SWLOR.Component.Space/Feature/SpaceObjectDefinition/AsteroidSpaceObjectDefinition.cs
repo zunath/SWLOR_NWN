@@ -1,6 +1,5 @@
 using SWLOR.Component.Space.Contracts;
 using SWLOR.Component.Space.Model;
-using SWLOR.Component.Space.Service;
 
 namespace SWLOR.Component.Space.Feature.SpaceObjectDefinition
 {

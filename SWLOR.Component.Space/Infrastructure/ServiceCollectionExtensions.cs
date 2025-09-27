@@ -1,10 +1,7 @@
-using System;
-using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Space.Contracts;
 using SWLOR.Component.Space.EventHandlers;
-using SWLOR.Component.Space.Service;
 using SWLOR.Shared.Domain.Communication.Contracts;
 using SWLOR.Shared.Domain.Space.Contracts;
 using SWLOR.Shared.Domain.World.Contracts;

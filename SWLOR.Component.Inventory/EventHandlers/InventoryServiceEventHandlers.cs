@@ -1,11 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using SWLOR.Component.Inventory.Service;
-using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Domain.Beasts.Contracts;
-using SWLOR.Shared.Domain.Character.Contracts;
-using SWLOR.Shared.Domain.Common.Contracts;
-using SWLOR.Shared.Domain.Droids.Contracts;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;

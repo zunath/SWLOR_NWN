@@ -1,5 +1,4 @@
 using NUnit.Framework;
-using SWLOR.Shared.Core;
 
 namespace SWLOR.Shared.Tests
 {

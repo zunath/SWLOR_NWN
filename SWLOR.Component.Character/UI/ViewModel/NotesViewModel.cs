@@ -1,4 +1,3 @@
-using SWLOR.Component.Character.Enums;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Domain.Entities;

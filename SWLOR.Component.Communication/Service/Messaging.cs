@@ -1,4 +1,3 @@
-using SWLOR.Component.Communication.Contracts;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.Shared.Domain.Communication.Contracts;
 

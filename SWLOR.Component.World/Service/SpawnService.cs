@@ -1,13 +1,11 @@
 using Microsoft.Extensions.DependencyInjection;
 using System.Numerics;
 using SWLOR.Component.World.Contracts;
-using SWLOR.Component.World.Model;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Area;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Domain.AI.Contracts;
 using SWLOR.Shared.Domain.AI.Enums;

@@ -1,4 +1,3 @@
-using SWLOR.Component.Perk.Model;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Beasts.Enums;
 using SWLOR.Shared.Domain.Character.Enums;

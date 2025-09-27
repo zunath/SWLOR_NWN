@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using System.Globalization;
-using SWLOR.Component.Combat.Contracts;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -9,15 +8,9 @@ using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Combat.Enums;
-using SWLOR.Shared.Domain.Common.Contracts;
 using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Space.Contracts;
-using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Constants;
-using SWLOR.Shared.Events.Events.Area;
-using SWLOR.Shared.Events.Events.Creature;
-using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Component.Combat.Service
 {

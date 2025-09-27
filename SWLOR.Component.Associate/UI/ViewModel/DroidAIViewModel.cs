@@ -1,12 +1,9 @@
-using SWLOR.Component.Associate.Contracts;
-using SWLOR.Component.Associate.Model;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
-using SWLOR.Component.Associate.UI.Payload;
 using SWLOR.Shared.Abstractions.Models;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;

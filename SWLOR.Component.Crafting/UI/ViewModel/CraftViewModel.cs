@@ -15,7 +15,6 @@ using SWLOR.Component.Crafting.UI.Payload;
 using SWLOR.Shared.Abstractions.Models;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
-using SWLOR.Shared.Domain.Common.Contracts;
 using SWLOR.Shared.Domain.Crafting.Contracts;
 using SWLOR.Shared.Domain.Crafting.Enums;
 using SWLOR.Shared.Domain.Crafting.ValueObjects;

@@ -2,13 +2,11 @@ using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Character.Contracts;
 using SWLOR.Component.Character.EventHandlers;
 using SWLOR.Component.Character.Feature;
-using SWLOR.Component.Character.Feature.SnippetDefinition;
 using SWLOR.Component.Character.Service;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Common.Contracts;
 using SWLOR.Shared.Domain.Communication.Contracts;
-using SWLOR.Shared.Domain.Dialog.Contracts;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 
 namespace SWLOR.Component.Character.Infrastructure

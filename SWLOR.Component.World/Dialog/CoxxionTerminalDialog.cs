@@ -1,6 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using SWLOR.Component.World.Service;
-using SWLOR.Shared.Domain.Common.Contracts;
 using SWLOR.Shared.Domain.Dialog.Contracts;
 using SWLOR.Shared.Domain.Dialog.ValueObjects;
 using SWLOR.Shared.Domain.World.Contracts;

@@ -1,9 +1,6 @@
-using System;
-using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Communication.Contracts;
 using SWLOR.Component.Communication.EventHandlers;
-using SWLOR.Component.Communication.Feature;
 using SWLOR.Component.Communication.Service;
 using SWLOR.Shared.Domain.Communication.Contracts;
 using SWLOR.Shared.Domain.Dialog.Contracts;

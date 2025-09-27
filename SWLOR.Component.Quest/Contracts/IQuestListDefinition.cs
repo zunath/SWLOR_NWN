@@ -1,4 +1,3 @@
-using SWLOR.Component.Quest.Service;
 using SWLOR.Shared.Domain.Quest.Contracts;
 
 namespace SWLOR.Component.Quest.Contracts

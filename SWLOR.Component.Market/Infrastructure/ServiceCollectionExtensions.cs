@@ -2,9 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Market.Contracts;
 using SWLOR.Component.Market.EventHandlers;
 using SWLOR.Component.Market.Feature;
-using SWLOR.Component.Market.Feature.SnippetDefinition;
 using SWLOR.Component.Market.Service;
-using SWLOR.Shared.Domain.Dialog.Contracts;
 
 namespace SWLOR.Component.Market.Infrastructure
 {

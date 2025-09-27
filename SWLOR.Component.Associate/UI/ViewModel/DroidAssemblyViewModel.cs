@@ -1,7 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using SWLOR.Component.Associate.Contracts;
-using SWLOR.Component.Associate.Model;
-using SWLOR.Component.Associate.Service;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -11,7 +8,6 @@ using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
-using SWLOR.Shared.Domain.Common.Contracts;
 using SWLOR.Shared.Domain.Crafting.ValueObjects;
 using SWLOR.Shared.Domain.Droids.Contracts;
 using SWLOR.Shared.Domain.Inventory.Contracts;

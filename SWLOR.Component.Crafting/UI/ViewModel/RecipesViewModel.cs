@@ -1,6 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using SWLOR.Component.Crafting.Enums;
-using SWLOR.Component.Crafting.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Core.Contracts;

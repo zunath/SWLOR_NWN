@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Migration.Contracts;
 using SWLOR.Component.Migration.EventHandlers;
-using SWLOR.Component.Migration.Feature.ServerMigration;
 using SWLOR.Component.Migration.Service;
 using SWLOR.Shared.Domain.Common.Contracts;
 

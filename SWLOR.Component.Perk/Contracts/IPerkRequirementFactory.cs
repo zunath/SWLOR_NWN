@@ -1,7 +1,6 @@
 using SWLOR.Shared.Domain.Beasts.Enums;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
-using SWLOR.Shared.Domain.Character.ValueObjects;
 
 namespace SWLOR.Component.Perk.Contracts
 {

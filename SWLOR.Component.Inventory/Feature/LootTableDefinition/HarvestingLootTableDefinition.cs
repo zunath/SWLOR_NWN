@@ -1,4 +1,3 @@
-using SWLOR.Component.Inventory.Service;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Inventory.ValueObjects;
 

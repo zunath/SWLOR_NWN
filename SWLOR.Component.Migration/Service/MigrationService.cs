@@ -9,7 +9,6 @@ using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Domain.Common.Contracts;
 using SWLOR.Shared.Domain.Entities;
-using SWLOR.Shared.Domain.Space.Contracts;
 using Exception = System.Exception;
 
 namespace SWLOR.Component.Migration.Service

@@ -4,8 +4,6 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Character.ValueObjects;
-using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Constants;
 
 namespace SWLOR.Component.Ability.Feature.AbilityDefinition.General
 {

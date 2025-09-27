@@ -1,9 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
-using SWLOR.Component.World.Contracts;
 using SWLOR.Component.World.Entity;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
-using SWLOR.Shared.Domain.Common.Contracts;
 using SWLOR.Shared.Domain.Properties.Contracts;
 using SWLOR.Shared.Domain.Properties.Enums;
 using SWLOR.Shared.Domain.World.Contracts;

@@ -3,12 +3,15 @@ using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Extension;
+using SWLOR.Shared.Domain.Ability.Contracts;
+using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Combat.Enums;
-using SWLOR.Shared.Domain.Common.Contracts;
-using SWLOR.Shared.Domain.Common.Enums;
 using SWLOR.Shared.Domain.Crafting.ValueObjects;
 using SWLOR.Shared.Domain.Entities;
+using SWLOR.Shared.Domain.StatusEffect.Contracts;
+using SWLOR.Shared.Domain.StatusEffect.Enums;
+using SWLOR.Shared.Domain.StatusEffect.ValueObjects;
 
 namespace SWLOR.Component.Ability.Service
 {

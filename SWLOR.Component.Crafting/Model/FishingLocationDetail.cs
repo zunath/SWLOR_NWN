@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Crafting.Enums;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Domain.Fishing.Enums;
+using SWLOR.Shared.Domain.Crafting.Enums;
 
 namespace SWLOR.Component.Crafting.Model
 {

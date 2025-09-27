@@ -1,6 +1,6 @@
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Domain.Common.Enums;
+using SWLOR.Shared.Domain.Admin.Enums;
 
 namespace SWLOR.Shared.Domain.Communication.ValueObjects
 {

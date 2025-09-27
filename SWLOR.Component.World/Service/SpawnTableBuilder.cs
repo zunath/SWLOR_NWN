@@ -2,7 +2,6 @@ using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.AI.Enums;
-using SWLOR.Shared.Domain.AI.ValueObjects;
 using SWLOR.Shared.Domain.Character.ValueObjects;
 using SWLOR.Shared.Domain.World.Contracts;
 using SWLOR.Shared.Domain.World.ValueObjects;

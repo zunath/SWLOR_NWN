@@ -3,15 +3,19 @@ using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
-using SWLOR.Shared.Domain.Beasts.Contracts;
-using SWLOR.Shared.Domain.Beasts.Enums;
+using SWLOR.Shared.Domain.Ability.Enums;
+using SWLOR.Shared.Domain.Ability.ValueObjects;
+using SWLOR.Shared.Domain.Associate.Contracts;
+using SWLOR.Shared.Domain.Associate.Enums;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Character.ValueObjects;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Combat.Enums;
-using SWLOR.Shared.Domain.Common.Enums;
 using SWLOR.Shared.Domain.Entities;
+using SWLOR.Shared.Domain.Perk.Contracts;
+using SWLOR.Shared.Domain.Perk.Enums;
+using SWLOR.Shared.Domain.Skill.Enums;
 using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beastmaster

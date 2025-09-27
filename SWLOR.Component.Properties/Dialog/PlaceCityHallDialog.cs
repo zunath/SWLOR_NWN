@@ -5,6 +5,8 @@ using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Dialog.Contracts;
 using SWLOR.Shared.Domain.Dialog.ValueObjects;
 using SWLOR.Shared.Domain.Entities;
+using SWLOR.Shared.Domain.Perk.Contracts;
+using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Properties.Contracts;
 using SWLOR.Shared.Domain.Properties.Enums;
 using SWLOR.Shared.UI.Service;

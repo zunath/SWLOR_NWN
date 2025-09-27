@@ -8,6 +8,9 @@ using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Inventory.Contracts;
+using SWLOR.Shared.Domain.Perk.Contracts;
+using SWLOR.Shared.Domain.Perk.Enums;
+using SWLOR.Shared.Domain.Skill.Contracts;
 
 namespace SWLOR.Component.Migration.Feature.PlayerMigration
 {

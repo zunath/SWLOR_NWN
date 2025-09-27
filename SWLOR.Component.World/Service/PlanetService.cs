@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Domain.Common.Contracts;
-using SWLOR.Shared.Domain.Common.Enums;
+using SWLOR.Shared.Domain.World.Contracts;
+using SWLOR.Shared.Domain.World.Enums;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 

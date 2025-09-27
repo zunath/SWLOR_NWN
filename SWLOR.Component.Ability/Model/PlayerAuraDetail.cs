@@ -1,4 +1,5 @@
 using SWLOR.Shared.Domain.Combat.Enums;
+using SWLOR.Shared.Domain.StatusEffect.Enums;
 
 namespace SWLOR.Component.Ability.Model
 {

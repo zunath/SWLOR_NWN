@@ -2,11 +2,15 @@ using SWLOR.Component.StatusEffect.Contracts;
 using SWLOR.Component.StatusEffect.Service;
 using SWLOR.NWN.API.NWScript.Constants;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Combat.ValueObjects;
 using SWLOR.Shared.Domain.Communication.Contracts;
+using SWLOR.Shared.Domain.Skill.Enums;
+using SWLOR.Shared.Domain.StatusEffect.Enums;
+using SWLOR.Shared.Domain.StatusEffect.ValueObjects;
 
 namespace SWLOR.Component.StatusEffect.Feature.StatusEffectDefinition
 {

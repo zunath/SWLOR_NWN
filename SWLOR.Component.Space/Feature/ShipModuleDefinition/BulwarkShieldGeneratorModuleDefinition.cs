@@ -6,6 +6,7 @@ using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Communication.Contracts;
 using SWLOR.Shared.Domain.Entities;
+using SWLOR.Shared.Domain.Skill.Enums;
 using SWLOR.Shared.Domain.Space.Contracts;
 using SWLOR.Shared.Domain.Space.Enums;
 using SWLOR.Shared.Domain.Space.ValueObjects;

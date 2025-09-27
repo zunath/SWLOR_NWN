@@ -4,11 +4,16 @@ using SWLOR.Component.Perk.Model;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
-using SWLOR.Shared.Domain.Beasts.Contracts;
+using SWLOR.Shared.Domain.Ability.Delegates;
+using SWLOR.Shared.Domain.Associate.Contracts;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Character.ValueObjects;
 using SWLOR.Shared.Domain.Entities;
+using SWLOR.Shared.Domain.Perk.Contracts;
+using SWLOR.Shared.Domain.Perk.Enums;
+using SWLOR.Shared.Domain.Perk.ValueObjects;
+using SWLOR.Shared.Domain.Skill.Enums;
 
 namespace SWLOR.Component.Perk.Service
 {

@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Caching.Contracts;
-using SWLOR.Shared.Domain.Fishing.Contracts;
+using SWLOR.Shared.Domain.Crafting.Contracts;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Inventory.ValueObjects;
 

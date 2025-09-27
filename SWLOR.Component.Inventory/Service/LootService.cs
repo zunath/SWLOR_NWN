@@ -2,12 +2,15 @@ using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
-using SWLOR.Shared.Domain.Beasts.Contracts;
-using SWLOR.Shared.Domain.Beasts.Enums;
+using SWLOR.Shared.Domain.Associate.Contracts;
+using SWLOR.Shared.Domain.Associate.Enums;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
+using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Inventory.ValueObjects;
+using SWLOR.Shared.Domain.Perk.Contracts;
+using SWLOR.Shared.Domain.Perk.Enums;
 
 namespace SWLOR.Component.Inventory.Service
 {

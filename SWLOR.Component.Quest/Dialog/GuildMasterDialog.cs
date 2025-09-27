@@ -8,6 +8,7 @@ using SWLOR.Shared.Domain.Dialog.Contracts;
 using SWLOR.Shared.Domain.Dialog.ValueObjects;
 using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Quest.Contracts;
+using SWLOR.Shared.Domain.Quest.Enums;
 using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Component.Quest.Dialog

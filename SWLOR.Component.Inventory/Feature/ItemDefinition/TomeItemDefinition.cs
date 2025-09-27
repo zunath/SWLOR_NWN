@@ -1,8 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Inventory.Dialog;
-using SWLOR.Shared.Domain.Common.Enums;
 using SWLOR.Shared.Domain.Dialog.Contracts;
 using SWLOR.Shared.Domain.Inventory.Contracts;
+using SWLOR.Shared.Domain.Inventory.Enums;
 using SWLOR.Shared.Domain.Inventory.ValueObjects;
 using SWLOR.Shared.Domain.UI.Events;
 using SWLOR.Shared.UI.Contracts;

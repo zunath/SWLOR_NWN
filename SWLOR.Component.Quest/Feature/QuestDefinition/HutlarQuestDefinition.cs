@@ -1,8 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Quest.Contracts;
 using SWLOR.NWN.API.NWNX.Enum;
-using SWLOR.Shared.Domain.Common.Enums;
 using SWLOR.Shared.Domain.Quest.Contracts;
+using SWLOR.Shared.Domain.Quest.Enums;
 using SWLOR.Shared.Domain.World.Contracts;
 
 namespace SWLOR.Component.Quest.Feature.QuestDefinition

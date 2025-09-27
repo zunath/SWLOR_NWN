@@ -3,7 +3,8 @@ using SWLOR.Component.Quest.Contracts;
 using SWLOR.Component.Quest.Model;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Caching.Contracts;
-using SWLOR.Shared.Domain.Common.Enums;
+using SWLOR.Shared.Domain.Character.Contracts;
+using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Communication.Contracts;
 using SWLOR.Shared.Domain.Communication.Enums;
 using SWLOR.Shared.Domain.Dialog.Contracts;
@@ -11,6 +12,7 @@ using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Inventory.Enums;
 using SWLOR.Shared.Domain.Quest.Contracts;
 using SWLOR.Shared.Domain.Quest.Delegates;
+using SWLOR.Shared.Domain.Quest.Enums;
 using SWLOR.Shared.Domain.Quest.ValueObjects;
 using SWLOR.Shared.UI.Contracts;
 

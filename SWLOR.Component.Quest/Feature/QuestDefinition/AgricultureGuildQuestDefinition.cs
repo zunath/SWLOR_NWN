@@ -3,6 +3,7 @@ using SWLOR.Component.Quest.Contracts;
 using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Domain.Communication.Enums;
 using SWLOR.Shared.Domain.Quest.Contracts;
+using SWLOR.Shared.Domain.Quest.Enums;
 
 namespace SWLOR.Component.Quest.Feature.QuestDefinition
 {

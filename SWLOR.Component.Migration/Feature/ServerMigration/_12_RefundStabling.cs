@@ -3,6 +3,7 @@ using SWLOR.Component.Migration.Enums;
 using SWLOR.Component.Migration.Model;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
+using SWLOR.Shared.Domain.Perk.Enums;
 
 namespace SWLOR.Component.Migration.Feature.ServerMigration
 {

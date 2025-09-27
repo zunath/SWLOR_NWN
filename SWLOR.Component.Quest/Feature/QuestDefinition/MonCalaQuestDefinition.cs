@@ -1,6 +1,6 @@
 using SWLOR.Component.Quest.Contracts;
 using SWLOR.Shared.Domain.Character.Contracts;
-using SWLOR.Shared.Domain.Common.Enums;
+using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Quest.Contracts;
 
 namespace SWLOR.Component.Quest.Feature.QuestDefinition

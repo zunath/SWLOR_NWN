@@ -7,12 +7,13 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.UI.Service;
 using System.Globalization;
 using System.Text;
+using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
-using SWLOR.Shared.Domain.Common.Contracts;
 using SWLOR.Shared.Domain.Communication.Constants;
 using SWLOR.Shared.Domain.Communication.Contracts;
 using SWLOR.Shared.Domain.Communication.Enums;
 using SWLOR.Shared.Domain.Entities;
+using SWLOR.Shared.Domain.Skill.Enums;
 using ChatChannelType = SWLOR.NWN.API.NWNX.Enum.ChatChannelType;
 
 namespace SWLOR.Component.Communication.Service

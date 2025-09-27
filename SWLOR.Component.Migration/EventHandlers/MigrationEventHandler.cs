@@ -1,5 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
-using SWLOR.Shared.Domain.Common.Contracts;
+using SWLOR.Shared.Domain.Migration.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Infrastructure;
 using SWLOR.Shared.Events.Events.Module;

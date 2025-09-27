@@ -3,13 +3,15 @@ using SWLOR.Component.AI.Contracts;
 using SWLOR.Component.AI.Model;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Domain.Ability.Contracts;
 using SWLOR.Shared.Domain.AI.Contracts;
 using SWLOR.Shared.Domain.AI.Enums;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
-using SWLOR.Shared.Domain.Common.Contracts;
 using SWLOR.Shared.Domain.Communication.Contracts;
 using SWLOR.Shared.Domain.Dialog.Contracts;
+using SWLOR.Shared.Domain.Perk.Contracts;
+using SWLOR.Shared.Domain.StatusEffect.Contracts;
 
 namespace SWLOR.Component.AI.Service
 {

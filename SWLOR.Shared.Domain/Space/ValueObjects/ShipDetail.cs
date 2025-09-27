@@ -1,5 +1,6 @@
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Character.Enums;
+using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Properties.Enums;
 
 namespace SWLOR.Shared.Domain.Space.ValueObjects

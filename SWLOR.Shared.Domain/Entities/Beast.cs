@@ -1,8 +1,9 @@
 ﻿using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions;
-using SWLOR.Shared.Domain.Beasts.Enums;
+using SWLOR.Shared.Domain.Associate.Enums;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Combat.Enums;
+using SWLOR.Shared.Domain.Perk.Enums;
 
 namespace SWLOR.Shared.Domain.Entities
 {

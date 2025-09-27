@@ -1,7 +1,7 @@
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Domain.Common.Delegates;
-using SWLOR.Shared.Domain.Common.Enums;
+using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Inventory.Contracts;
+using SWLOR.Shared.Domain.Inventory.Delegates;
 using SWLOR.Shared.Domain.Inventory.ValueObjects;
 
 namespace SWLOR.Component.Inventory.Service

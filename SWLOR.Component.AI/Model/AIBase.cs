@@ -1,9 +1,13 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.AI.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Domain.Ability.Contracts;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Combat.Enums;
+using SWLOR.Shared.Domain.Perk.Contracts;
+using SWLOR.Shared.Domain.StatusEffect.Contracts;
+using SWLOR.Shared.Domain.StatusEffect.Enums;
 
 namespace SWLOR.Component.AI.Model
 {

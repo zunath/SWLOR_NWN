@@ -1,4 +1,4 @@
-using SWLOR.Shared.Domain.Common.Enums;
+using SWLOR.Shared.Domain.World.Enums;
 
 namespace SWLOR.Component.World.Contracts
 {

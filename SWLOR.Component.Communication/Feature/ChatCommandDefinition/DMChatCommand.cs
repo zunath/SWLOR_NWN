@@ -8,18 +8,21 @@ using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Service;
 using System.Drawing;
-using SWLOR.Shared.Domain.Beasts.Contracts;
+using SWLOR.Shared.Domain.Ability.Contracts;
+using SWLOR.Shared.Domain.Admin.Enums;
+using SWLOR.Shared.Domain.Associate.Contracts;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
-using SWLOR.Shared.Domain.Common.Enums;
+using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Communication.Contracts;
 using SWLOR.Shared.Domain.Communication.Enums;
 using SWLOR.Shared.Domain.Communication.ValueObjects;
 using SWLOR.Shared.Domain.Entities;
+using SWLOR.Shared.Domain.Skill.Enums;
 using SWLOR.Shared.Domain.Space.Contracts;
 using SWLOR.Shared.Domain.UI.Events;
 using ChatChannelType = SWLOR.NWN.API.NWNX.Enum.ChatChannelType;
-using FactionType = SWLOR.Shared.Domain.Communication.Enums.FactionType;
+using FactionType = SWLOR.Shared.Domain.Character.Enums.FactionType;
 
 namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
 {

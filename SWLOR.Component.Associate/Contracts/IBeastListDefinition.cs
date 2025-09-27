@@ -1,5 +1,5 @@
-using SWLOR.Shared.Domain.Beasts.Enums;
-using SWLOR.Shared.Domain.Beasts.ValueObjects;
+using SWLOR.Shared.Domain.Associate.Enums;
+using SWLOR.Shared.Domain.Associate.ValueObjects;
 
 namespace SWLOR.Component.Associate.Contracts
 {

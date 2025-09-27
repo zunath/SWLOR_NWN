@@ -1,16 +1,20 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Domain.Beasts.Contracts;
-using SWLOR.Shared.Domain.Beasts.Enums;
+using SWLOR.Shared.Domain.Associate.Contracts;
+using SWLOR.Shared.Domain.Associate.Enums;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Combat.Enums;
-using SWLOR.Shared.Domain.Common.Enums;
 using SWLOR.Shared.Domain.Crafting.ValueObjects;
 using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Inventory.Contracts;
+using SWLOR.Shared.Domain.Inventory.Enums;
 using SWLOR.Shared.Domain.Inventory.ValueObjects;
+using SWLOR.Shared.Domain.Skill.Enums;
+using SWLOR.Shared.Domain.StatusEffect.Contracts;
+using SWLOR.Shared.Domain.StatusEffect.Enums;
+using SWLOR.Shared.Domain.StatusEffect.ValueObjects;
 
 namespace SWLOR.Component.Inventory.Feature.ItemDefinition
 {

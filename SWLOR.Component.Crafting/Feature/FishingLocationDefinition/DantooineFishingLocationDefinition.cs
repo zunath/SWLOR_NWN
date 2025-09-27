@@ -1,7 +1,7 @@
 using SWLOR.Component.Crafting.Contracts;
 using SWLOR.Component.Crafting.Enums;
 using SWLOR.Component.Crafting.Model;
-using SWLOR.Shared.Domain.Fishing.Enums;
+using SWLOR.Shared.Domain.Crafting.Enums;
 
 namespace SWLOR.Component.Crafting.Feature.FishingLocationDefinition
 {

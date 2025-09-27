@@ -9,6 +9,8 @@ using SWLOR.Shared.Domain.Crafting.Enums;
 using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Inventory.ValueObjects;
+using SWLOR.Shared.Domain.Perk.Contracts;
+using SWLOR.Shared.Domain.Skill.Contracts;
 
 namespace SWLOR.Component.Inventory.Feature.ItemDefinition
 {

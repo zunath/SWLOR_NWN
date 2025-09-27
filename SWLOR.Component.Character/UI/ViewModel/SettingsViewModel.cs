@@ -7,6 +7,8 @@ using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Communication.Constants;
 using SWLOR.Shared.Domain.Communication.Contracts;
 using SWLOR.Shared.Domain.Entities;
+using SWLOR.Shared.Domain.Skill.Contracts;
+using SWLOR.Shared.Domain.Skill.Enums;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;

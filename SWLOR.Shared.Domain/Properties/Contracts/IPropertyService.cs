@@ -1,9 +1,9 @@
 using System.Numerics;
 using SWLOR.NWN.API.Engine;
-using SWLOR.Shared.Domain.Common.Enums;
 using SWLOR.Shared.Domain.Properties.Entities;
 using SWLOR.Shared.Domain.Properties.Enums;
 using SWLOR.Shared.Domain.Properties.ValueObjects;
+using SWLOR.Shared.Domain.World.Enums;
 
 namespace SWLOR.Shared.Domain.Properties.Contracts
 {

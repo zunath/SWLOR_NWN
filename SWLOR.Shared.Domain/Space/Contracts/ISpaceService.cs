@@ -1,6 +1,6 @@
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Domain.Common.Enums;
 using SWLOR.Shared.Domain.Space.ValueObjects;
+using SWLOR.Shared.Domain.World.Enums;
 
 namespace SWLOR.Shared.Domain.Space.Contracts
 {

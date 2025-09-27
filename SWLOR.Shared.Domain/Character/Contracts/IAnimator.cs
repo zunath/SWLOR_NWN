@@ -1,5 +1,5 @@
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Domain.AI.ValueObjects;
+using SWLOR.Shared.Domain.Character.ValueObjects;
 
 namespace SWLOR.Shared.Domain.Character.Contracts
 {

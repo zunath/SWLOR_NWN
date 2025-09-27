@@ -2,6 +2,7 @@ using SWLOR.Component.Skill.UI.ViewModel;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Domain.Character.Contracts;
+using SWLOR.Shared.Domain.Skill.Contracts;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;

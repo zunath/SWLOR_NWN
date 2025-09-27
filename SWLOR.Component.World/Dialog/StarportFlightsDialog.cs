@@ -1,13 +1,13 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
-using SWLOR.Shared.Domain.Common.Contracts;
-using SWLOR.Shared.Domain.Common.Enums;
 using SWLOR.Shared.Domain.Dialog.Contracts;
 using SWLOR.Shared.Domain.Dialog.ValueObjects;
 using SWLOR.Shared.Domain.Properties.Contracts;
 using SWLOR.Shared.Domain.Properties.Entities;
 using SWLOR.Shared.Domain.Properties.Enums;
+using SWLOR.Shared.Domain.World.Contracts;
+using SWLOR.Shared.Domain.World.Enums;
 using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Component.World.Dialog

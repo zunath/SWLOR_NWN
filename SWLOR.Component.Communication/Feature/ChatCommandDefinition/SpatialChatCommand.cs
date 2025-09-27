@@ -1,5 +1,5 @@
 using SWLOR.Component.Communication.Service;
-using SWLOR.Shared.Domain.Common.Enums;
+using SWLOR.Shared.Domain.Admin.Enums;
 using SWLOR.Shared.Domain.Communication.Contracts;
 using SWLOR.Shared.Domain.Communication.ValueObjects;
 

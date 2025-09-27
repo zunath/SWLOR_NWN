@@ -1,4 +1,4 @@
-using SWLOR.Shared.Domain.Common.Enums;
+using SWLOR.Shared.Domain.Character.Enums;
 
 namespace SWLOR.Shared.Domain.Character.Contracts;
 

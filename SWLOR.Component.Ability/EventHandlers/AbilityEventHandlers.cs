@@ -1,8 +1,8 @@
 using SWLOR.Component.Ability.Feature.AbilityDefinition.Devices;
 using SWLOR.Component.Ability.Feature.AbilityDefinition.Force;
 using SWLOR.Component.Ability.Feature.AbilityDefinition.General;
+using SWLOR.Shared.Domain.Ability.Contracts;
 using SWLOR.Shared.Domain.Character.Contracts;
-using SWLOR.Shared.Domain.Common.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.Player;

@@ -4,6 +4,7 @@ using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Dialog.Contracts;
 using SWLOR.Shared.Domain.Dialog.ValueObjects;
 using SWLOR.Shared.Domain.Entities;
+using SWLOR.Shared.Domain.Skill.Enums;
 
 namespace SWLOR.Component.Skill.Feature.SnippetDefinition
 {

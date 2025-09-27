@@ -4,6 +4,7 @@ using SWLOR.Component.Perk.Contracts;
 using SWLOR.Component.Perk.EventHandlers;
 using SWLOR.Component.Perk.Service;
 using SWLOR.Shared.Domain.Character.Contracts;
+using SWLOR.Shared.Domain.Perk.Contracts;
 
 namespace SWLOR.Component.Perk.Infrastructure
 {

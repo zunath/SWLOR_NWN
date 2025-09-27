@@ -2,11 +2,14 @@ using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Perk.Contracts;
 using SWLOR.Component.Perk.Model;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Domain.Beasts.Contracts;
-using SWLOR.Shared.Domain.Beasts.Enums;
+using SWLOR.Shared.Domain.Associate.Contracts;
+using SWLOR.Shared.Domain.Associate.Enums;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
+using SWLOR.Shared.Domain.Perk.Contracts;
+using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Quest.Contracts;
+using SWLOR.Shared.Domain.Skill.Enums;
 
 namespace SWLOR.Component.Perk.Service
 {

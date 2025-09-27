@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
-using SWLOR.Shared.Domain.Beasts.Contracts;
-using SWLOR.Shared.Domain.Droids.Contracts;
+using SWLOR.Shared.Domain.Associate.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.NWNX;

@@ -1,8 +1,8 @@
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Caching.Contracts;
-using SWLOR.Shared.Domain.Fishing.Contracts;
-using SWLOR.Shared.Domain.Fishing.Enums;
+using SWLOR.Shared.Domain.Crafting.Contracts;
+using SWLOR.Shared.Domain.Crafting.Enums;
 using SWLOR.Shared.Domain.World.Contracts;
 using SWLOR.Shared.Domain.World.ValueObjects;
 

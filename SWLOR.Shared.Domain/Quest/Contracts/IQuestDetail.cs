@@ -1,5 +1,6 @@
 using SWLOR.Shared.Domain.Communication.Enums;
 using SWLOR.Shared.Domain.Quest.Delegates;
+using SWLOR.Shared.Domain.Quest.Enums;
 using SWLOR.Shared.Domain.Quest.ValueObjects;
 
 namespace SWLOR.Shared.Domain.Quest.Contracts;

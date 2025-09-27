@@ -1,6 +1,7 @@
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
+using SWLOR.Shared.Domain.Skill.Enums;
 
 namespace SWLOR.Component.Skill.Service
 {

@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Communication.Service;
 using SWLOR.Shared.Abstractions.Enums;
-using SWLOR.Shared.Domain.Common.Enums;
+using SWLOR.Shared.Domain.Admin.Enums;
 using SWLOR.Shared.Domain.Communication.Contracts;
 using SWLOR.Shared.Domain.Communication.ValueObjects;
 using SWLOR.Shared.UI.Contracts;

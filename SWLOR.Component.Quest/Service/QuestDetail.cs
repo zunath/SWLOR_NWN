@@ -6,6 +6,7 @@ using SWLOR.Shared.Domain.Dialog.Contracts;
 using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Quest.Contracts;
 using SWLOR.Shared.Domain.Quest.Delegates;
+using SWLOR.Shared.Domain.Quest.Enums;
 using SWLOR.Shared.Domain.Quest.ValueObjects;
 using SWLOR.Shared.Domain.UI.Events;
 using SWLOR.Shared.UI.Contracts;

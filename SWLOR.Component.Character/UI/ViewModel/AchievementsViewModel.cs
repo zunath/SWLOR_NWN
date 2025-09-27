@@ -2,7 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Abstractions.Models;
-using SWLOR.Shared.Domain.Common.Enums;
+using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.UI.Events;
 using SWLOR.Shared.UI.Component;

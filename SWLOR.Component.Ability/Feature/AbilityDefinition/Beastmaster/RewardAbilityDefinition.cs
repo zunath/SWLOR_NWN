@@ -2,12 +2,15 @@ using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Domain.Beasts.Contracts;
+using SWLOR.Shared.Domain.Ability.Enums;
+using SWLOR.Shared.Domain.Ability.ValueObjects;
+using SWLOR.Shared.Domain.Associate.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Character.ValueObjects;
 using SWLOR.Shared.Domain.Combat.Contracts;
-using SWLOR.Shared.Domain.Common.Enums;
 using SWLOR.Shared.Domain.Inventory.Contracts;
+using SWLOR.Shared.Domain.Perk.Enums;
+using SWLOR.Shared.Domain.Skill.Enums;
 using AssociateType = SWLOR.NWN.API.NWScript.Enum.AssociateType;
 
 namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beastmaster

@@ -3,8 +3,7 @@ using SWLOR.Component.Associate.EventHandlers;
 using SWLOR.Component.Associate.Service;
 using SWLOR.Component.Associate.Contracts;
 using SWLOR.Component.Associate.Feature.ItemDefinition;
-using SWLOR.Shared.Domain.Beasts.Contracts;
-using SWLOR.Shared.Domain.Droids.Contracts;
+using SWLOR.Shared.Domain.Associate.Contracts;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 
 namespace SWLOR.Component.Associate.Infrastructure

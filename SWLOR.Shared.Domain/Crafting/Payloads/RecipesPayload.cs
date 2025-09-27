@@ -1,6 +1,7 @@
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Crafting.Enums;
+using SWLOR.Shared.Domain.Skill.Enums;
 
 namespace SWLOR.Shared.Domain.Crafting.Payloads
 {

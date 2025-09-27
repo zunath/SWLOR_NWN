@@ -1,13 +1,17 @@
 ﻿using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions;
+using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Combat.Enums;
-using SWLOR.Shared.Domain.Common.Enums;
 using SWLOR.Shared.Domain.Communication.Enums;
 using SWLOR.Shared.Domain.Crafting.Enums;
 using SWLOR.Shared.Domain.Inventory.Enums;
-using FactionType = SWLOR.Shared.Domain.Communication.Enums.FactionType;
+using SWLOR.Shared.Domain.Perk.Enums;
+using SWLOR.Shared.Domain.Quest.Enums;
+using SWLOR.Shared.Domain.Skill.Enums;
+using SWLOR.Shared.Domain.World.Enums;
+using FactionType = SWLOR.Shared.Domain.Character.Enums.FactionType;
 
 namespace SWLOR.Shared.Domain.Entities
 {

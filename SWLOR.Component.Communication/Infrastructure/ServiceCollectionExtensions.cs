@@ -27,7 +27,7 @@ namespace SWLOR.Component.Communication.Infrastructure
             services.AddSingleton<IRoleplayXPService, RoleplayXPService>();
             services.AddSingleton<ISnippetService, SnippetService>();
             services.AddSingleton<IMessagingService, MessagingService>();
-            services.AddSingleton<IDialogService, Service.DialogService>();
+            services.AddSingleton<IDialogService, DialogService>();
             services.AddSingleton<IDialogBuilder, DialogBuilder>();
             services.AddSingleton<IChatCommandBuilder, ChatCommandBuilder>();
             services.AddSingleton<ISnippetBuilder, SnippetBuilder>();

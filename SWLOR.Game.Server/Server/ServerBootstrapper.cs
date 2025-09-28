@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.Server
             Environment.SetEnvironmentVariable("GAME_SERVER_CONTEXT", "true");
 
             Console.WriteLine("Registering script execution provider...");
-            NWN.API.ScriptExecutionProvider.SetProvider(_executionProvider);
+            NWN.API.Service.ScriptExecutionProvider.SetProvider(_executionProvider);
             Console.WriteLine("Script execution provider registered successfully.");
         }
 

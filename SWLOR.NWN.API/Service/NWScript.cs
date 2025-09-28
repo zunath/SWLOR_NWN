@@ -19,7 +19,7 @@ namespace SWLOR.NWN.API.Service
         {
             _service = service ?? throw new ArgumentNullException(nameof(service));
         }
-        
+
         // ReSharper disable once InconsistentNaming
         public static uint OBJECT_SELF => _service.OBJECT_SELF;
 

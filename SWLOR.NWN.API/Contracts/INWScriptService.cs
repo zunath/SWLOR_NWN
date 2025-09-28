@@ -8,31 +8,6 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 
 // InternalsVisibleTo attributes for all test projects
-[assembly: InternalsVisibleTo(TestProjectNames.ComponentAbility)]
-[assembly: InternalsVisibleTo(TestProjectNames.ComponentAdmin)]
-[assembly: InternalsVisibleTo(TestProjectNames.ComponentAI)]
-[assembly: InternalsVisibleTo(TestProjectNames.ComponentAssociate)]
-[assembly: InternalsVisibleTo(TestProjectNames.ComponentCharacter)]
-[assembly: InternalsVisibleTo(TestProjectNames.ComponentCombat)]
-[assembly: InternalsVisibleTo(TestProjectNames.ComponentCommunication)]
-[assembly: InternalsVisibleTo(TestProjectNames.ComponentCrafting)]
-[assembly: InternalsVisibleTo(TestProjectNames.ComponentInventory)]
-[assembly: InternalsVisibleTo(TestProjectNames.ComponentMarket)]
-[assembly: InternalsVisibleTo(TestProjectNames.ComponentMigration)]
-[assembly: InternalsVisibleTo(TestProjectNames.ComponentPerk)]
-[assembly: InternalsVisibleTo(TestProjectNames.ComponentProperties)]
-[assembly: InternalsVisibleTo(TestProjectNames.ComponentQuest)]
-[assembly: InternalsVisibleTo(TestProjectNames.ComponentSkill)]
-[assembly: InternalsVisibleTo(TestProjectNames.ComponentSpace)]
-[assembly: InternalsVisibleTo(TestProjectNames.ComponentStatusEffect)]
-[assembly: InternalsVisibleTo(TestProjectNames.ComponentWorld)]
-[assembly: InternalsVisibleTo(TestProjectNames.SharedAbstractions)]
-[assembly: InternalsVisibleTo(TestProjectNames.SharedCaching)]
-[assembly: InternalsVisibleTo(TestProjectNames.SharedCore)]
-[assembly: InternalsVisibleTo(TestProjectNames.SharedDomain)]
-[assembly: InternalsVisibleTo(TestProjectNames.SharedEvents)]
-[assembly: InternalsVisibleTo(TestProjectNames.SharedUI)]
-[assembly: InternalsVisibleTo(TestProjectNames.Integration)]
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
 
 namespace SWLOR.NWN.API.Contracts
@@ -6827,7 +6802,7 @@ namespace SWLOR.NWN.API.Contracts
             Json jHaystack,
             Json jNeedle,
             int nNth = 0,
-            JsonFindType nConditional = NWScript.Enum.JsonFindType.Equal);
+            JsonFindType nConditional = JsonFindType.Equal);
 
         /// <summary>
         /// Returns a copy of the range (nBeginIndex, nEndIndex) inclusive of jArray.

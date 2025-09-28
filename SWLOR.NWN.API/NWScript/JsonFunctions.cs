@@ -457,7 +457,7 @@ namespace SWLOR.NWN.API.NWScript
             Json jHaystack,
             Json jNeedle,
             int nNth = 0,
-            JsonFindType nConditional = Enum.JsonFindType.Equal)
+            JsonFindType nConditional = JsonFindType.Equal)
         {
             return global::NWN.Core.NWScript.JsonFind(jHaystack, jNeedle, nNth, (int)nConditional);
         }

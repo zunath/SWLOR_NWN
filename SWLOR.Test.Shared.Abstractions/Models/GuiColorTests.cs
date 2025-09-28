@@ -153,7 +153,7 @@ namespace SWLOR.Test.Shared.Abstractions.Models
             // Note: This method depends on NWN.API which requires initialization
             // Since this is an abstraction layer, we'll test that the method exists and is callable
             // The actual implementation depends on the NWN.API runtime environment
-            Assert.That(() => color.ToJson(), Throws.TypeOf<System.TypeInitializationException>());
+            Assert.That(() => color.ToJson(), Throws.TypeOf<TypeInitializationException>());
         }
 
         [Test]
@@ -178,9 +178,9 @@ namespace SWLOR.Test.Shared.Abstractions.Models
             var color3 = new GuiColor(128, 64, 192, 128);
 
             // Act & Assert - These should throw TypeInitializationException due to NWN.API dependency
-            Assert.That(() => color1.ToJson(), Throws.TypeOf<System.TypeInitializationException>());
-            Assert.That(() => color2.ToJson(), Throws.TypeOf<System.TypeInitializationException>());
-            Assert.That(() => color3.ToJson(), Throws.TypeOf<System.TypeInitializationException>());
+            Assert.That(() => color1.ToJson(), Throws.TypeOf<TypeInitializationException>());
+            Assert.That(() => color2.ToJson(), Throws.TypeOf<TypeInitializationException>());
+            Assert.That(() => color3.ToJson(), Throws.TypeOf<TypeInitializationException>());
         }
 
         [Test]

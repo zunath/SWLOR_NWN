@@ -1,17 +1,21 @@
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using SWLOR.Component.Combat.Service;
+using SWLOR.NWN.API.NWScript;
+using SWLOR.NWN.API.Service;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Ability.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
+using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Perk.Contracts;
+using SWLOR.Test.Shared;
+using SWLOR.Test.Shared.NWScript;
 
 namespace SWLOR.Test.Component.Combat.Service
 {
     [TestFixture]
-    public class CombatServiceTests
+    public class CombatServiceTests : TestBase
     {
         private ILogger _mockLogger;
         private IDatabaseService _mockDatabaseService;
@@ -26,6 +30,9 @@ namespace SWLOR.Test.Component.Combat.Service
         [SetUp]
         public void SetUp()
         {
+            // Initialize the mock NWScript service for all tests
+            InitializeMockNWScript();
+            
             _mockLogger = Substitute.For<ILogger>();
             _mockDatabaseService = Substitute.For<IDatabaseService>();
             _mockRandomService = Substitute.For<IRandomService>();

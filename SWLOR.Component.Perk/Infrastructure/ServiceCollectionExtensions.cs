@@ -32,7 +32,7 @@ namespace SWLOR.Component.Perk.Infrastructure
             services.AddSingleton<IPerkEffectService, PerkEffectService>();
             
             // Register Perk service as singleton
-            services.AddSingleton<IPerkService, Service.PerkService>();
+            services.AddSingleton<IPerkService, PerkService>();
             
             // Register PerkEventHandler as singleton
             services.AddSingleton<PerkEventHandler>();

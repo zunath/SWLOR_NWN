@@ -1,6 +1,6 @@
 using SWLOR.NWN.API.Contracts;
 
-namespace SWLOR.NWN.API
+namespace SWLOR.NWN.API.Service
 {
     /// <summary>
     /// Static holder for the script execution provider.

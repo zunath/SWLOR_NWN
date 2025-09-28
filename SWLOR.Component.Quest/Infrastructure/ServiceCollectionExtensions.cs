@@ -34,7 +34,7 @@ namespace SWLOR.Component.Quest.Infrastructure
             services.AddSingleton<IQuestObjectiveFactory, QuestObjectiveFactory>();
 
             // Quest Service
-            services.AddSingleton<IQuestService, SWLOR.Component.Quest.Service.QuestService>(provider => new SWLOR.Component.Quest.Service.QuestService(
+            services.AddSingleton<IQuestService, QuestService>(provider => new QuestService(
                 provider.GetRequiredService<IDatabaseService>(),
                 provider.GetRequiredService<IItemCacheService>(),
                 provider.GetRequiredService<IGenericCacheService>(),

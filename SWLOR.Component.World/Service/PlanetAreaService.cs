@@ -1,8 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.World.Contracts;
-using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Caching.Contracts;
-using SWLOR.Shared.Domain.World.Contracts;
 using SWLOR.Shared.Domain.World.Enums;
 
 namespace SWLOR.Component.World.Service

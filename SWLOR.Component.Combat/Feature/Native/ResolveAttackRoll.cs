@@ -11,8 +11,6 @@ using SWLOR.Shared.Domain.Ability.Contracts;
 using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Inventory.Contracts;
-using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.UI.Service;
 using EquipmentSlot = NWN.Native.API.EquipmentSlot;
 using FeatType = SWLOR.NWN.API.NWScript.Enum.FeatType;

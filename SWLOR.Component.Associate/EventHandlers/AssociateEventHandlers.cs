@@ -3,11 +3,9 @@ using SWLOR.Shared.Domain.Associate.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Associate;
 using SWLOR.Shared.Events.Events.Combat;
-using SWLOR.Shared.Events.Events.Crafting;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Events.Space;
-using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Properties;
 
 namespace SWLOR.Component.Associate.EventHandlers

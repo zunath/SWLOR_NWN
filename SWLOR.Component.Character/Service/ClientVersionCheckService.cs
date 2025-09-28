@@ -2,8 +2,6 @@ using SWLOR.Component.Character.Contracts;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
-using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Events.NWNX;
 
 namespace SWLOR.Component.Character.Service
 {

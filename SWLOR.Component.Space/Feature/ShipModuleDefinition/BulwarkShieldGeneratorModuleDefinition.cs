@@ -9,7 +9,6 @@ using SWLOR.Shared.Domain.Skill.Enums;
 using SWLOR.Shared.Domain.Space.Contracts;
 using SWLOR.Shared.Domain.Space.Enums;
 using SWLOR.Shared.Domain.Space.ValueObjects;
-using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Player;
 using SWLOR.Shared.Events.Events.Space;
 

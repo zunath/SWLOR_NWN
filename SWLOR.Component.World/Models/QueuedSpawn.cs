@@ -1,5 +1,3 @@
-using System;
-
 namespace SWLOR.Component.World.Models
 {
     /// <summary>

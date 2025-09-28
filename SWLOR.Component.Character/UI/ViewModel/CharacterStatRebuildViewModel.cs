@@ -9,7 +9,6 @@ using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Inventory.Enums;
 using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Character;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Service;

@@ -1,5 +1,4 @@
 using NSubstitute;
-using NUnit.Framework;
 using SWLOR.Component.World.Service;
 using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.Shared.Abstractions.Contracts;

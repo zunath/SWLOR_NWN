@@ -9,7 +9,6 @@ using SWLOR.Shared.Domain.Quest.Contracts;
 using SWLOR.Shared.Domain.Quest.Enums;
 using SWLOR.Shared.Domain.World.Contracts;
 using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Quest;
 
 namespace SWLOR.Component.Quest.Feature.QuestDefinition

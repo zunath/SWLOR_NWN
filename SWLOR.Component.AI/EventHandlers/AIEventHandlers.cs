@@ -1,6 +1,5 @@
 using SWLOR.Shared.Domain.AI.Contracts;
 using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Combat;
 using SWLOR.Shared.Events.Events.Creature;
 using SWLOR.Shared.Events.Events.Module;

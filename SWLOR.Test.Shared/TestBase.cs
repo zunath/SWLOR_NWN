@@ -1,5 +1,3 @@
-using SWLOR.NWN.API.Service;
-using System;
 using SWLOR.Test.Shared.NWScriptMocks;
 
 namespace SWLOR.Test.Shared

@@ -1,7 +1,5 @@
 using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Domain.World.ValueObjects;
-using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Shared.Caching.Service
 {

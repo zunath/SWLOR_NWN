@@ -3,8 +3,6 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Enums;
-using SWLOR.Shared.Events.Constants;
-using SWLOR.Shared.Events.Events.Player;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Service;
 using System.Drawing;

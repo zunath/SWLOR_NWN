@@ -1,5 +1,3 @@
-using System.Numerics;
-
 namespace SWLOR.Component.World.Models
 {
     /// <summary>

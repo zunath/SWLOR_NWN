@@ -1,5 +1,3 @@
-using SWLOR.NWN.API.NWNX.Enum;
-
 namespace SWLOR.Shared.Domain.World.Contracts
 {
     /// <summary>

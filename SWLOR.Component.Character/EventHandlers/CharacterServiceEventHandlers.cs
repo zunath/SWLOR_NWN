@@ -6,7 +6,6 @@ using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.NWNX;
-using SWLOR.Shared.Events.Events.Player;
 using SWLOR.Shared.Events.Events.Character;
 
 namespace SWLOR.Component.Character.EventHandlers

@@ -7,8 +7,6 @@ using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Perk.Contracts;
 using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Quest.Enums;
-using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Component.Quest.Service

@@ -1,8 +1,5 @@
-using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Events.Contracts;
 using SWLOR.Shared.Events.Events.Infrastructure;
-using SWLOR.NWN.API.Contracts;
 using NSubstitute;
 using SWLOR.Shared.Events.Service;
 using SWLOR.Shared.Events.Attributes;

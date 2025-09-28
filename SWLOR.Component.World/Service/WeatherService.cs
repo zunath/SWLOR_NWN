@@ -1,12 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.World.Contracts;
-using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Constants;
-using SWLOR.Shared.Events.Events.Area;
-using SWLOR.Shared.Events.Events.Module;
-using SWLOR.Shared.Events.Events.Server;
 using WeatherType = SWLOR.NWN.API.NWScript.Enum.WeatherType;
 
 namespace SWLOR.Component.World.Service

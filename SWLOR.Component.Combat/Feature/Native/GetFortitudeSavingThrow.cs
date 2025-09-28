@@ -4,8 +4,6 @@ using NWNX.NET;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Infrastructure;
-using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Events.Module;
 using SavingThrow = NWN.Native.API.SavingThrow;
 
 namespace SWLOR.Component.Combat.Feature.Native

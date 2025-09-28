@@ -6,10 +6,6 @@ using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Inventory.Enums;
 using SWLOR.Shared.Domain.UI.Events;
 using SWLOR.Shared.Domain.World.Contracts;
-using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Constants;
-using SWLOR.Shared.Events.Events.Inventory;
-using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.UI.Contracts;
 
 namespace SWLOR.Component.Inventory.Service

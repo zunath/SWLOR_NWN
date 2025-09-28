@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using SWLOR.Component.World.Models;
 
 namespace SWLOR.Component.World.Contracts

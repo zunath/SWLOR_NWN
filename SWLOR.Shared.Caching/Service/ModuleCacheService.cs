@@ -2,9 +2,6 @@
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Caching.Entity;
-using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Constants;
-using SWLOR.Shared.Events.Events.Infrastructure;
 using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Shared.Caching.Service

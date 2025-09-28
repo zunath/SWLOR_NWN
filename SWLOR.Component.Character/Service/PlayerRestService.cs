@@ -4,10 +4,6 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.StatusEffect.Contracts;
 using SWLOR.Shared.Domain.StatusEffect.Enums;
-using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Constants;
-using SWLOR.Shared.Events.Events.Character;
-using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.Player;
 
 namespace SWLOR.Component.Character.Service

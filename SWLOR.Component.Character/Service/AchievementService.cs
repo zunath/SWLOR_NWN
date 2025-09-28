@@ -6,8 +6,6 @@ using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Entities;
-using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 

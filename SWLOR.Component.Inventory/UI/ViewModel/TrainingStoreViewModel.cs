@@ -8,7 +8,6 @@ using SWLOR.Shared.Domain.Properties.Contracts;
 using SWLOR.Shared.Domain.Properties.Enums;
 using SWLOR.Shared.Domain.UI.Events;
 using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Inventory;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;

@@ -1,5 +1,4 @@
 using SWLOR.Component.Quest.Contracts;
-using SWLOR.Component.Quest.Service;
 using SWLOR.Shared.Domain.Quest.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;

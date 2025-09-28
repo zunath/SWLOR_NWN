@@ -1,6 +1,5 @@
 ﻿using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Eventing;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.Player;

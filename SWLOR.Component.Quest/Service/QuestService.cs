@@ -14,10 +14,6 @@ using SWLOR.Shared.Domain.Perk.Contracts;
 using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Quest.Contracts;
 using SWLOR.Shared.Domain.Quest.Enums;
-using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Constants;
-using SWLOR.Shared.Events.Events.Creature;
-using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.Quest;
 
 namespace SWLOR.Component.Quest.Service

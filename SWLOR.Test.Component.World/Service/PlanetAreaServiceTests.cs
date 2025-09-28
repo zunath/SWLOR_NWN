@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
-using NUnit.Framework;
 using SWLOR.Component.World.Service;
 using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Domain.World.Enums;

@@ -1,5 +1,4 @@
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.StatusEffect.Enums;
 using SWLOR.Shared.Domain.StatusEffect.ValueObjects;
 using SWLOR.Component.StatusEffect.Contracts;

@@ -12,7 +12,6 @@ using SWLOR.Shared.Domain.Skill.Contracts;
 using SWLOR.Shared.Domain.Skill.Enums;
 using SWLOR.Shared.Domain.World.Contracts;
 using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Character;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;

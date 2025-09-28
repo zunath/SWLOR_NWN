@@ -8,8 +8,6 @@ using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Domain.AI.Contracts;
 using SWLOR.Shared.Domain.AI.Enums;
-using SWLOR.Shared.Domain.World.Contracts;
-using SWLOR.Shared.Domain.World.ValueObjects;
 
 namespace SWLOR.Component.World.Service
 {

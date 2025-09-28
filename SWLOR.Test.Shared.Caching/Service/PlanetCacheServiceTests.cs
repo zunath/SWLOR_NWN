@@ -1,12 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
-using NUnit.Framework;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Caching.Service;
 using SWLOR.Shared.Domain.World.Enums;
-using SWLOR.Test.Shared;
-using System; // Added for IDisposable
+
+// Added for IDisposable
 
 namespace SWLOR.Test.Shared.Caching.Service
 {

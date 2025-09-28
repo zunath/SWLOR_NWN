@@ -1,5 +1,3 @@
-using SWLOR.Component.Combat.Contracts;
-using SWLOR.Component.Combat.Service;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Associate;

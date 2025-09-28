@@ -5,7 +5,6 @@ using NWNX.NET.Native;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Log.LogGroup;
-using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Infrastructure;
 using SWLOR.Shared.Events.Events.Module;
 

@@ -3,8 +3,6 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.World.Enums;
-using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Component.World.Service
 {

@@ -18,10 +18,6 @@ using SWLOR.Shared.Domain.Skill.Enums;
 using SWLOR.Shared.Domain.StatusEffect.Contracts;
 using SWLOR.Shared.Domain.StatusEffect.Enums;
 using SWLOR.Shared.Domain.StatusEffect.ValueObjects;
-using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Constants;
-using SWLOR.Shared.Events.Events.Associate;
-using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.Player;
 using EquipmentSlot = NWN.Native.API.EquipmentSlot;
 

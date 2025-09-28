@@ -1,14 +1,12 @@
 using SWLOR.Component.World.Contracts;
 using SWLOR.Shared.Domain.World.Contracts;
 using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Area;
 using SWLOR.Shared.Events.Events.Combat;
 using SWLOR.Shared.Events.Events.Creature;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Events.Server;
-using SWLOR.Shared.UI.Contracts;
 
 namespace SWLOR.Component.World.EventHandlers
 {

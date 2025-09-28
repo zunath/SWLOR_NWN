@@ -1,8 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using SWLOR.Component.Combat.Service;
-using SWLOR.NWN.API.NWScript;
-using SWLOR.NWN.API.Service;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Ability.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;

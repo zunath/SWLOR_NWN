@@ -1,6 +1,5 @@
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using SWLOR.NWN.API.Constants;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.NWScript.Constants;

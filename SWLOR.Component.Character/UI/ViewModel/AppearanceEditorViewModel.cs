@@ -9,7 +9,6 @@ using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.UI.Events;
 using SWLOR.Shared.Domain.UI.Payloads;
 using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Events.Player;

@@ -1,5 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.StatusEffect.Enums;
 using SWLOR.Shared.Domain.StatusEffect.ValueObjects;
 using SWLOR.Component.StatusEffect.Contracts;

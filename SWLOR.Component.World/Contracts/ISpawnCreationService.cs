@@ -1,5 +1,4 @@
 using System.Numerics;
-using SWLOR.Shared.Domain.AI.Enums;
 
 namespace SWLOR.Component.World.Contracts
 {

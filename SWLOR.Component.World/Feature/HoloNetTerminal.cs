@@ -1,6 +1,5 @@
 using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.World;
 using SWLOR.Shared.UI.Contracts;
 

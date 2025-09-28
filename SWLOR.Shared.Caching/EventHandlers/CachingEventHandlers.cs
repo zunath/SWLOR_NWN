@@ -1,8 +1,4 @@
-using Microsoft.Extensions.DependencyInjection;
-using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Caching.Contracts;
-using SWLOR.Shared.Domain.Properties.Contracts;
-using SWLOR.Shared.Domain.Properties.Enums;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Infrastructure;
 using SWLOR.Shared.Events.Events.Module;

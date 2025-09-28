@@ -1,5 +1,3 @@
-using System;
-
 namespace SWLOR.Shared.Events.Contracts
 {
     /// <summary>

@@ -1,7 +1,6 @@
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Inventory;
 using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.UI.Service;

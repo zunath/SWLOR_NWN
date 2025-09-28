@@ -1,7 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.StatusEffect.Enums;
 using SWLOR.Component.StatusEffect.Contracts;
 

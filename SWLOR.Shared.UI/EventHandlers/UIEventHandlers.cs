@@ -1,19 +1,9 @@
-using Microsoft.Extensions.DependencyInjection;
-using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Abstractions.Enums;
-using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Area;
-using SWLOR.Shared.Events.Events.Crafting;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.Player;
 using SWLOR.Shared.Events.Events.Skill;
-using SWLOR.Shared.UI.Component;
 using SWLOR.Shared.UI.Contracts;
-using SWLOR.Shared.UI.Entity;
-using SWLOR.Shared.UI.Model;
 
 namespace SWLOR.Shared.UI.EventHandlers
 {

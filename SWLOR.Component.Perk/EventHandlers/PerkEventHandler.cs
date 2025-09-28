@@ -1,8 +1,6 @@
 using SWLOR.Component.Perk.Contracts;
 using SWLOR.Shared.Domain.Perk.Contracts;
 using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Constants;
-using SWLOR.Shared.Events.Events.Ability;
 using SWLOR.Shared.Events.Events.Combat;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.NWNX;

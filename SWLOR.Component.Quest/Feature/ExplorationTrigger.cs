@@ -1,5 +1,4 @@
 using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Quest;
 using SWLOR.Shared.UI.Service;
 

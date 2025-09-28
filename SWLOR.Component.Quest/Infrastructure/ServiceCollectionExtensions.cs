@@ -3,7 +3,6 @@ using SWLOR.Component.Quest.Contracts;
 using SWLOR.Component.Quest.EventHandlers;
 using SWLOR.Component.Quest.Service;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Domain.Quest.Contracts;
 
 namespace SWLOR.Component.Quest.Infrastructure

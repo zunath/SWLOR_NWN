@@ -1,8 +1,5 @@
-using SWLOR.Component.Communication.Contracts;
-using SWLOR.Component.Communication.Service;
 using SWLOR.Shared.Domain.Dialog.Contracts;
 using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Dialog;
 using SWLOR.Shared.Events.Events.Module;
 

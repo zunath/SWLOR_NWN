@@ -5,11 +5,9 @@ using SWLOR.Shared.Domain.Ability.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Ability;
 using SWLOR.Shared.Events.Events.Combat;
-using SWLOR.Shared.Events.Events.Crafting;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.Player;
 using SWLOR.Shared.Events.Events.Space;
-using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Inventory;
 using SWLOR.Shared.Events.Events.Server;
 

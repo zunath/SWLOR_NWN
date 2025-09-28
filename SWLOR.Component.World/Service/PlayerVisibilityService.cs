@@ -31,7 +31,6 @@ namespace SWLOR.Component.World.Service
         /// <summary>
         /// Loads visibility objects for a player when they enter the server.
         /// </summary>
-        [ScriptHandler<OnModuleEnter>]
         public void LoadPlayerVisibilityObjects()
         {
             var player = GetEnteringObject();

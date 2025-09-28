@@ -55,7 +55,6 @@ namespace SWLOR.Component.Character.Service
         /// <summary>
         /// When a player enters the module, wipe their temporary "busy" status.
         /// </summary>
-        [ScriptHandler<OnModuleEnter>]
         public void WipeStatusOnEntry()
         {
             var player = GetEnteringObject();

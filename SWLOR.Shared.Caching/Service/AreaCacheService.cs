@@ -32,10 +32,11 @@ namespace SWLOR.Shared.Caching.Service
         private IPropertyService PropertyService => _propertyService.Value;
         private IGenericCacheService Cache => _cache.Value;
 
-        [ScriptHandler<OnModuleCacheBefore>]
-        private void LoadCache()
+        /// <summary>
+        /// Loads the area cache by iterating through all areas and storing their resrefs.
+        /// </summary>
+        public void LoadCache()
         {
-
             for (var area = GetFirstArea(); GetIsObjectValid(area); area = GetNextArea())
             {
                 var resref = GetResRef(area);
@@ -44,6 +45,7 @@ namespace SWLOR.Shared.Caching.Service
 
             Console.WriteLine($"Loaded {_areasByResref.Count} areas by resref.");
         }
+
 
         /// <summary>
         /// Retrieves an area by its resref. If the area does not exist, OBJECT_INVALID will be returned.

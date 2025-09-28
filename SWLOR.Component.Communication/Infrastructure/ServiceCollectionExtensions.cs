@@ -39,6 +39,7 @@ namespace SWLOR.Component.Communication.Infrastructure
 
             // Register event handlers as singletons
             services.AddSingleton<CommunicationEventHandlers>();
+            services.AddSingleton<CommunicationServiceEventHandlers>();
 
             return services;
         }

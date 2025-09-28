@@ -78,7 +78,6 @@ namespace SWLOR.Component.World.Service
         /// These locations can be used to spawn objects randomly throughout an area.
         /// This only runs if the module content has NOT changed since the last run.
         /// </summary>
-        [ScriptHandler<OnModuleLoad>]
         public void RetrieveWalkmeshes()
         {
             if (_bakingRan)

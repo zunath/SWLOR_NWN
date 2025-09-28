@@ -29,7 +29,6 @@ namespace SWLOR.Component.Quest.Service
         /// <summary>
         /// When the module loads, data is cached to speed up searches later.
         /// </summary>
-        [ScriptHandler<OnModuleCacheBefore>]
         public void CacheData()
         {
             RegisterNPCGroups();

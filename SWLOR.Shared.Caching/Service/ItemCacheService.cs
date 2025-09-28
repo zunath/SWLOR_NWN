@@ -24,7 +24,6 @@ namespace SWLOR.Shared.Caching.Service
             _db = db;
         }
 
-        [ScriptHandler<OnModuleContentChange>]
         public void CacheItemNamesByResref()
         {
             var resref = UtilPlugin.GetFirstResRef(ResRefType.Item);

@@ -86,7 +86,6 @@ namespace SWLOR.Component.Crafting.Service
         /// <summary>
         /// When the module loads, retrieve and organize all fishing data for quick look-ups.
         /// </summary>
-        [ScriptHandler<OnModuleCacheBefore>]
         public void CacheData()
         {
             LoadFish();

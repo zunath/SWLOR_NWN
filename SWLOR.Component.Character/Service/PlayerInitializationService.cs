@@ -56,7 +56,6 @@ namespace SWLOR.Component.Character.Service
         /// <summary>
         /// Handles 
         /// </summary>
-        [ScriptHandler<OnModuleEnter>]
         public void InitializePlayer()
         {
             var player = GetEnteringObject();

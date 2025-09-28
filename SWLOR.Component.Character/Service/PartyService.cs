@@ -97,7 +97,6 @@ namespace SWLOR.Component.Character.Service
         /// <summary>
         /// When a player leaves the server, remove them from the party caches.
         /// </summary>
-        [ScriptHandler<OnModuleExit>]
         public void LeaveServer()
         {
             var creature = GetExitingObject();

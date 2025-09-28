@@ -41,6 +41,7 @@ namespace SWLOR.Component.Combat.Infrastructure
 
             // Register event handlers as singletons
             services.AddSingleton<CombatEventHandler>();
+            services.AddSingleton<CombatServiceEventHandlers>();
             
             return services;
         }

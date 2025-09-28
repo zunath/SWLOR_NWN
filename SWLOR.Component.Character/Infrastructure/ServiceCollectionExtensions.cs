@@ -49,6 +49,7 @@ namespace SWLOR.Component.Character.Infrastructure
 
             // Register event handlers as singletons
             services.AddSingleton<UIEventHandlers>();
+            services.AddSingleton<CharacterServiceEventHandlers>();
 
             // Dialog classes are automatically registered by the Inventory component
 

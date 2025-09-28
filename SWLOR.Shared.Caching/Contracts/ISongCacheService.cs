@@ -10,7 +10,7 @@ namespace SWLOR.Shared.Caching.Contracts
         /// <summary>
         /// Loads all songs from the ambientmusic.2da file and caches them
         /// </summary>
-        void LoadSongList();
+        void LoadCache();
 
         /// <summary>
         /// Retrieves all cached songs

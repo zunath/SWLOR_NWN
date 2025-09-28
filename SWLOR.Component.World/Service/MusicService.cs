@@ -34,7 +34,7 @@ namespace SWLOR.Component.World.Service
         /// </summary>
         public void LoadSongList()
         {
-            SongCache.LoadSongList();
+            SongCache.LoadCache();
         }
 
         /// <summary>

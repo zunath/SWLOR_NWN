@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Service;
 using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.UI.EventHandlers;
 
 namespace SWLOR.Shared.UI.Infrastructure
 {
@@ -26,6 +27,9 @@ namespace SWLOR.Shared.UI.Infrastructure
             
             // Register all GUI Window Definitions that implement IGuiWindowDefinition
             AddGuiWindowDefinitions(services);
+
+            // Register event handlers as singletons
+            services.AddSingleton<UIEventHandlers>();
             
             return services;
         }

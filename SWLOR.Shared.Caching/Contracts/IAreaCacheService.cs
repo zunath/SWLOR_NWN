@@ -3,6 +3,11 @@ namespace SWLOR.Shared.Caching.Contracts
     public interface IAreaCacheService
     {
         /// <summary>
+        /// Loads the area cache by iterating through all areas and storing their resrefs.
+        /// </summary>
+        public void LoadCache();
+
+        /// <summary>
         /// Retrieves an area by its resref. If the area does not exist, OBJECT_INVALID will be returned.
         /// </summary>
         /// <param name="resref">The resref to use for the search.</param>

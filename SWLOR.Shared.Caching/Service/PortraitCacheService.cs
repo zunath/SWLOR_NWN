@@ -20,8 +20,7 @@ namespace SWLOR.Shared.Caching.Service
         /// </summary>
         public int PortraitCount => PortraitIdsByInternalId.Count;
 
-        [ScriptHandler<OnModuleCacheBefore>]
-        public void CachePortraitsById()
+        public void LoadCache()
         {
             const string Portraits2DA = "portraits";
             var twoDACount = Get2DARowCount(Portraits2DA);

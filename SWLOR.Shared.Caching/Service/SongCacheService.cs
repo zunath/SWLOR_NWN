@@ -16,8 +16,7 @@ namespace SWLOR.Shared.Caching.Service
         /// <summary>
         /// Loads all songs from the ambientmusic.2da file and caches them
         /// </summary>
-        [ScriptHandler<OnModuleCacheBefore>]
-        public void LoadSongList()
+        public void LoadCache()
         {
             const string File = "ambientmusic";
             var rowCount = Get2DARowCount(File);

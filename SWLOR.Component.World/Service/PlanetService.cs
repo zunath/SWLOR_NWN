@@ -23,7 +23,6 @@ namespace SWLOR.Component.World.Service
         /// <summary>
         /// When the module loads, cache relevant data needed by the Planet service.
         /// </summary>
-        [ScriptHandler<OnModuleCacheBefore>]
         public void CacheData()
         {
             _planetCacheService.InitializeCache();

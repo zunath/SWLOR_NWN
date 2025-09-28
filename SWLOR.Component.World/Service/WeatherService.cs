@@ -41,7 +41,6 @@ namespace SWLOR.Component.World.Service
         /// <summary>
         /// When the module loads, cache planet climates and other pertinent data.
         /// </summary>
-        [ScriptHandler<OnModuleCacheBefore>]
         public void LoadData()
         {
             WeatherClimateService.LoadData();
@@ -122,14 +121,12 @@ namespace SWLOR.Component.World.Service
             WeatherEffectsService.Thunderstorm(oArea);
         }
 
-        [ScriptHandler<OnAreaEnter>]
         public void OnAreaEnter()
         {
             WeatherVisualService.OnAreaEnter();
             DoWeatherEffects(GetEnteringObject());
         }
 
-        [ScriptHandler<OnServerHeartbeat>]
         public void OnModuleHeartbeat()
         {
             var oMod = GetModule();

@@ -29,7 +29,6 @@ namespace SWLOR.Component.Character.Service
         /// <summary>
         /// When the module caches, cache all currency details into memory.
         /// </summary>
-        [ScriptHandler<OnModuleCacheBefore>]
         public void CacheCurrencies()
         {
             var currencyTypes = Enum.GetValues(typeof(CurrencyType)).Cast<CurrencyType>();

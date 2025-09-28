@@ -12,8 +12,7 @@ namespace SWLOR.Shared.Caching.Service
     {
         private Dictionary<int, string> SoundSets { get; set; } = new();
 
-        [ScriptHandler<OnModuleCacheBefore>]
-        public void CacheSoundSets()
+        public void LoadCache()
         {
             const string SoundSets2DA = "soundset";
             var soundSetCount = Get2DARowCount(SoundSets2DA);

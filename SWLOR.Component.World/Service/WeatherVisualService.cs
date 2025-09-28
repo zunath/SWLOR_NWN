@@ -155,7 +155,6 @@ namespace SWLOR.Component.World.Service
         /// <summary>
         /// Handles weather when a player enters an area.
         /// </summary>
-        [ScriptHandler<OnAreaEnter>]
         public void OnAreaEnter()
         {
             SetWeather();

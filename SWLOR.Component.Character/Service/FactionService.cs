@@ -30,7 +30,6 @@ namespace SWLOR.Component.Character.Service
         /// <summary>
         /// When the module caches, cache all faction details into memory.
         /// </summary>
-        [ScriptHandler<OnModuleCacheBefore>]
         public void LoadFactions()
         {
             var factionTypes = Enum.GetValues(typeof(FactionType)).Cast<FactionType>();

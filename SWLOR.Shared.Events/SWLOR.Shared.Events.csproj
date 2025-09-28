@@ -31,6 +31,7 @@
 	  <Folder Include="Events\Player\" />
 	  <Folder Include="Events\Server\" />
 	  <Folder Include="Events\StatusEffect\" />
+	  <Folder Include="EventHandlers\" />
 	</ItemGroup>
 
 	<ItemGroup>

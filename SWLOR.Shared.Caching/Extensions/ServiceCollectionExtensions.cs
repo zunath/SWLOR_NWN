@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Caching.Service;
+using SWLOR.Shared.Caching.EventHandlers;
 
 namespace SWLOR.Shared.Caching.Extensions
 {
@@ -26,6 +27,9 @@ namespace SWLOR.Shared.Caching.Extensions
             services.AddSingleton<ISongCacheService, SongCacheService>();
             services.AddSingleton<IPlanetCacheService, PlanetCacheService>();
             services.AddSingleton<ISpawnCacheService, SpawnCacheService>();
+
+            // Register event handlers as singletons
+            services.AddSingleton<CachingEventHandlers>();
 
             return services;
         }

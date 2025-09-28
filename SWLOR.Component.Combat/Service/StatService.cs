@@ -77,7 +77,6 @@ namespace SWLOR.Component.Combat.Service
         /// <summary>
         /// When a player enters the server, reapply HP and temporary stats.
         /// </summary>
-        [ScriptHandler<OnModuleEnter>]
         public void ApplyPlayerStats()
         {
             ApplyTemporaryPlayerStats();

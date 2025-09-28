@@ -20,8 +20,7 @@ namespace SWLOR.Shared.Caching.Service
             _eventAggregator = eventAggregator;
         }
 
-        [ScriptHandler<OnHookEvents>]
-        public void OnEventsHooked()
+        public void LoadCache()
         {
             var serverConfig = _db.Get<ModuleCache>(ModuleCache.DefaultId) ?? new ModuleCache();
 

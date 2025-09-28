@@ -19,7 +19,6 @@ namespace SWLOR.Component.World.Service
         /// <summary>
         /// When the module loads, cache planet climates and other pertinent data.
         /// </summary>
-        [ScriptHandler<OnModuleCacheBefore>]
         public void LoadData()
         {
             _planetClimates = WeatherPlanetDefinitions.GetPlanetClimates();

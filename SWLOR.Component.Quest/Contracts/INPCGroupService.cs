@@ -4,6 +4,8 @@ namespace SWLOR.Component.Quest.Contracts
 {
     public interface INPCGroupService
     {
+        void CacheData();
+
         /// <summary>
         /// Retrieves an NPC group detail by the type.
         /// </summary>

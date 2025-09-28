@@ -29,7 +29,6 @@ namespace SWLOR.Component.Character.Service
             _serviceProvider = serviceProvider;
         }
 
-        [ScriptHandler<OnModuleLoad>]
         public void ReserveGuiIds()
         {
             _idReservation = GuiService.ReserveIds(nameof(AchievementService), 6);
@@ -38,7 +37,6 @@ namespace SWLOR.Component.Character.Service
         /// <summary>
         /// When the module caches, read all achievement types and store them into the cache.
         /// </summary>
-        [ScriptHandler<OnModuleCacheBefore>]
         public void LoadAchievements()
         {
             var achievementTypes = Enum.GetValues(typeof(AchievementType)).Cast<AchievementType>();

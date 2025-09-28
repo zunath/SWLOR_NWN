@@ -2,6 +2,6 @@
 {
     public interface IModuleCacheService
     {
-        void OnEventsHooked();
+        void LoadCache();
     }
 }

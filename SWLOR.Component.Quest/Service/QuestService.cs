@@ -150,7 +150,6 @@ namespace SWLOR.Component.Quest.Service
         /// <summary>
         /// When a player enters the module, load their quests.
         /// </summary>
-        [ScriptHandler<OnModuleEnter>]
         public void LoadPlayerQuests()
         {
             var player = GetEnteringObject();

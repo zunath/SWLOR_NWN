@@ -50,6 +50,9 @@ namespace SWLOR.Component.World.Infrastructure
             services.AddSingleton<IWalkmeshService, WalkmeshService>();
             services.AddSingleton<WorldEventHandlers>();
 
+            // Register event handlers as singletons
+            services.AddSingleton<WorldServiceEventHandlers>();
+
             // Register feature classes
             services.AddSingleton<PlaceableScripts>();
             services.AddSingleton<HoloNetTerminal>();

@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Quest.Contracts;
+using SWLOR.Component.Quest.EventHandlers;
 using SWLOR.Component.Quest.Service;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Caching.Contracts;
@@ -47,6 +48,9 @@ namespace SWLOR.Component.Quest.Infrastructure
 
             // Register feature classes
             services.AddSingleton<Feature.ExplorationTrigger>();
+
+            // Register event handlers as singletons
+            services.AddSingleton<QuestServiceEventHandlers>();
 
             // Snippet definitions are automatically registered by the Inventory component
 

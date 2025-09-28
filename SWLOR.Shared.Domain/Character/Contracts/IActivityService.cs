@@ -31,5 +31,10 @@ namespace SWLOR.Shared.Domain.Character.Contracts
         /// </summary>
         /// <param name="target">The target whose status will be cleared.</param>
         void ClearBusy(uint target);
+
+        /// <summary>
+        /// When a player enters the module, wipe their temporary "busy" status.
+        /// </summary>
+        void WipeStatusOnEntry();
     }
 }

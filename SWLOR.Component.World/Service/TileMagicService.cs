@@ -20,7 +20,6 @@ namespace SWLOR.Component.World.Service
         }
 
         /// When the module loads, load the tile magic configured on every area.
-        [ScriptHandler<OnModuleLoad>]
         public void ApplyAreaConfiguration()
         {
             for (var area = GetFirstArea(); GetIsObjectValid(area); area = GetNextArea())

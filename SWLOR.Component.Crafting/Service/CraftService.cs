@@ -101,7 +101,6 @@ namespace SWLOR.Component.Crafting.Service
         /// <summary>
         /// When the skill cache has finished loading, recipe and category data is cached.
         /// </summary>
-        [ScriptHandler<OnSkillDataCached>]
         public void CacheData()
         {
             CacheCategories();

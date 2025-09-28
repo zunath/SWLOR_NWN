@@ -8,6 +8,12 @@ namespace SWLOR.Shared.UI.Contracts
     public interface IGuiService
     {
         /// <summary>
+        /// When the player enters the server, disable default game windows.
+        /// In most cases, these windows are replaced with custom versions.
+        /// </summary>
+        void DisableWindows();
+
+        /// <summary>
         /// When the module loads, cache all of the GUI windows for later retrieval.
         /// </summary>
         void CacheData();

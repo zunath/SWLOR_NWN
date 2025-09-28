@@ -15,7 +15,6 @@ namespace SWLOR.Component.Character.Service
         /// <summary>
         /// When the module loads, cache all default race appearances.
         /// </summary>
-        [ScriptHandler<OnModuleLoad>]
         public void LoadRaces()
         {
             // Male appearances
@@ -495,7 +494,6 @@ namespace SWLOR.Component.Character.Service
         /// When a player enters the server, apply the proper scaling to their character.
         /// 
         /// </summary>
-        [ScriptHandler<OnModuleEnter>]
         public void ApplyWookieeScaling()
         {
             var player = GetEnteringObject();

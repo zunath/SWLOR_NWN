@@ -45,7 +45,6 @@ namespace SWLOR.Component.Quest.Service
         /// <summary>
         /// When the module caches, cache relevant data and load guild tasks.
         /// </summary>
-        [ScriptHandler<OnModuleCacheBefore>]
         public void LoadData()
         {
             var guildTypes = Enum.GetValues(typeof(GuildType)).Cast<GuildType>();

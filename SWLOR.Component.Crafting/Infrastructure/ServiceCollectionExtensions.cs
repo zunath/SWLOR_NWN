@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Crafting.Contracts;
+using SWLOR.Component.Crafting.EventHandlers;
 using SWLOR.Component.Crafting.Feature;
 using SWLOR.Component.Crafting.Service;
 using System.Reflection;
@@ -49,6 +50,9 @@ namespace SWLOR.Component.Crafting.Infrastructure
             {
                 services.AddSingleton(type);
             }
+
+            // Register event handlers as singletons
+            services.AddSingleton<CraftingServiceEventHandlers>();
             
             return services;
         }

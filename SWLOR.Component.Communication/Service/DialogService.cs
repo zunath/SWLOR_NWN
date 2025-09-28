@@ -67,7 +67,6 @@ namespace SWLOR.Component.Communication.Service
             Console.WriteLine($"Loaded {_conversations.Count} conversations.");
         }
 
-        [ScriptHandler<OnModuleLoad>]
         public void InitializeDialogs()
         {
             for (var x = 1; x <= NumberOfDialogs; x++)

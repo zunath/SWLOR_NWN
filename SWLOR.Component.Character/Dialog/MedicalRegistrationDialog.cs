@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Dialog.Contracts;
 using SWLOR.Shared.Domain.Dialog.ValueObjects;
@@ -9,7 +10,10 @@ namespace SWLOR.Component.Character.Dialog
     {
         private readonly IDatabaseService _db;
 
-        public MedicalRegistrationDialog(IDatabaseService db, IDialogService dialogService, IDialogBuilder dialogBuilder) : base(dialogService, dialogBuilder)
+        public MedicalRegistrationDialog(
+            IDatabaseService db,
+            IDialogService dialogService,
+            IServiceProvider serviceProvider) : base(dialogService, serviceProvider)
         {
             _db = db;
         }

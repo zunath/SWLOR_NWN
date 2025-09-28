@@ -23,7 +23,7 @@ namespace SWLOR.Component.World.Dialog
         
         private const string MainPageId = "MAIN_PAGE";
 
-        public TaxiTerminalDialog(IServiceProvider serviceProvider, IDialogService dialogService, IDialogBuilder dialogBuilder) : base(dialogService, dialogBuilder)
+        public TaxiTerminalDialog(IServiceProvider serviceProvider, IDialogService dialogService) : base(dialogService, serviceProvider)
         {
             _serviceProvider = serviceProvider;
         }

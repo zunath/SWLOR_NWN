@@ -22,7 +22,7 @@ namespace SWLOR.Component.World.Dialog
         private IPlanetService PlanetService => _serviceProvider.GetRequiredService<IPlanetService>();
         private IPropertyService PropertyService => _serviceProvider.GetRequiredService<IPropertyService>();
 
-        public StarportFlightsDialog(ILogger logger, IDatabaseService db, IServiceProvider serviceProvider, IDialogService dialogService, IDialogBuilder dialogBuilder) : base(dialogService, dialogBuilder)
+        public StarportFlightsDialog(ILogger logger, IDatabaseService db, IServiceProvider serviceProvider, IDialogService dialogService) : base(dialogService, serviceProvider)
         {
             _logger = logger;
             _db = db;

@@ -1,17 +1,23 @@
-﻿using SWLOR.Shared.Domain.Dialog.Contracts;
+﻿using Microsoft.Extensions.DependencyInjection;
+using SWLOR.Shared.Domain.Dialog.Contracts;
 
 namespace SWLOR.Shared.Domain.Dialog.ValueObjects
 {
     public abstract class DialogBase : IConversation
     {
         protected readonly IDialogService DialogService;
-        protected readonly IDialogBuilder DialogBuilder;
+        private readonly IServiceProvider _serviceProvider;
 
-        protected DialogBase(IDialogService dialogService, IDialogBuilder dialogBuilder)
+        protected DialogBase(IDialogService dialogService, IServiceProvider serviceProvider)
         {
             DialogService = dialogService ?? throw new ArgumentNullException(nameof(dialogService));
-            DialogBuilder = dialogBuilder ?? throw new ArgumentNullException(nameof(dialogBuilder));
+            _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
         }
+
+        /// <summary>
+        /// Gets a fresh DialogBuilder instance for each dialog creation.
+        /// </summary>
+        protected IDialogBuilder DialogBuilder => _serviceProvider.GetRequiredService<IDialogBuilder>();
         /// <summary>
         /// Retrieves the speaking player.
         /// </summary>

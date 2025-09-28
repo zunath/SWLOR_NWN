@@ -15,7 +15,7 @@ namespace SWLOR.Component.Communication.Dialog
         private readonly IRandomService _random;
         private readonly IServiceProvider _serviceProvider;
 
-        public DiceDialog(IDatabaseService db, IRandomService random, IServiceProvider serviceProvider, IDialogService dialogService, IDialogBuilder dialogBuilder) : base(dialogService, dialogBuilder)
+        public DiceDialog(IDatabaseService db, IRandomService random, IServiceProvider serviceProvider, IDialogService dialogService) : base(dialogService, serviceProvider)
         {
             _db = db;
             _random = random;

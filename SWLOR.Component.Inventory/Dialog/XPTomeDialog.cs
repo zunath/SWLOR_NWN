@@ -10,7 +10,7 @@ namespace SWLOR.Component.Inventory.Dialog
     {
         private readonly IServiceProvider _serviceProvider;
 
-        public XPTomeDialog(IServiceProvider serviceProvider, IDialogService dialogService, IDialogBuilder dialogBuilder) : base(dialogService, dialogBuilder)
+        public XPTomeDialog(IServiceProvider serviceProvider, IDialogService dialogService) : base(dialogService, serviceProvider)
         {
             _serviceProvider = serviceProvider;
             

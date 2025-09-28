@@ -19,7 +19,7 @@ namespace SWLOR.Component.World.Dialog
 
         public LockedDoorDialog(
             IServiceProvider serviceProvider, 
-            IDialogService dialogService, IDialogBuilder dialogBuilder) : base(dialogService, dialogBuilder)
+            IDialogService dialogService) : base(dialogService, serviceProvider)
         {
             _serviceProvider = serviceProvider;
         }

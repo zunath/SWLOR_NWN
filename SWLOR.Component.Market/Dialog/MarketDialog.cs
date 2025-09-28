@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Market.Contracts;
 using SWLOR.Component.Market.Enums;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -22,7 +23,8 @@ namespace SWLOR.Component.Market.Dialog
             IGuiService guiService, 
             ILogger logger, 
             IDialogService dialogService,
-            IPlayerMarketService playerMarket, IDialogBuilder dialogBuilder) : base(dialogService, dialogBuilder)
+            IPlayerMarketService playerMarket,
+            IServiceProvider serviceProvider) : base(dialogService, serviceProvider)
         {
             _guiService = guiService;
             _logger = logger;

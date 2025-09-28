@@ -30,9 +30,8 @@ namespace SWLOR.Component.Space.Dialog
             ILogger logger, 
             IDatabaseService db, 
             IDialogService dialogService,
-            IDialogBuilder dialogBuilder,
             IServiceProvider serviceProvider) 
-            : base(dialogService, dialogBuilder)
+            : base(dialogService, serviceProvider)
         {
             _logger = logger;
             _db = db;

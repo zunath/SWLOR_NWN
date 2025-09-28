@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.World.Contracts;
 using SWLOR.Shared.Domain.Dialog.Contracts;
 using SWLOR.Shared.Domain.Dialog.ValueObjects;
@@ -12,9 +13,9 @@ namespace SWLOR.Component.World.Dialog
 
         public JukeboxDialog(
             IDialogService dialogService,
-            IDialogBuilder dialogBuilder,
-            IMusicService musicService) 
-            : base(dialogService, dialogBuilder)
+            IMusicService musicService,
+            IServiceProvider serviceProvider) 
+            : base(dialogService, serviceProvider)
         {
             _musicService = musicService;
         }

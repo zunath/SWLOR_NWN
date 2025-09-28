@@ -17,7 +17,7 @@ namespace SWLOR.Component.Quest.Dialog
         private readonly IDatabaseService _db;
         private readonly IServiceProvider _serviceProvider;
 
-        public GuildMasterDialog(IDatabaseService db, IServiceProvider serviceProvider, IDialogService dialogService, IDialogBuilder dialogBuilder) : base(dialogService, dialogBuilder)
+        public GuildMasterDialog(IDatabaseService db, IServiceProvider serviceProvider, IDialogService dialogService) : base(dialogService, serviceProvider)
         {
             _db = db;
             _serviceProvider = serviceProvider;

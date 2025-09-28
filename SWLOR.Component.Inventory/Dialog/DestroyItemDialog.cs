@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Shared.Domain.Dialog.Contracts;
 using SWLOR.Shared.Domain.Dialog.ValueObjects;
 using SWLOR.Shared.UI.Service;
@@ -14,19 +15,17 @@ namespace SWLOR.Component.Inventory.Dialog
 
         private const string MainPageId = "MAIN_PAGE";
         private const string ConfirmPageId = "CONFIRM_PAGE";
-        private readonly IDialogBuilder _builder;
 
         public DestroyItemDialog(
             IDialogService dialogService,
-            IDialogBuilder builder) 
-            : base(dialogService, builder)
+            IServiceProvider serviceProvider) 
+            : base(dialogService, serviceProvider)
         {
-            _builder = builder;
         }
 
         public override PlayerDialog SetUp(uint player)
         {
-            var builder = _builder
+            var builder = DialogBuilder
                 .WithDataModel(new Model())
                 .AddInitializationAction(Initialization)
                 .AddPage(MainPageId, MainPageInit)

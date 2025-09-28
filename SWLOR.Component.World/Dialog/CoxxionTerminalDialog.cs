@@ -20,7 +20,7 @@ namespace SWLOR.Component.World.Dialog
 
         public CoxxionTerminalDialog(
             IDialogService dialogService,
-            IServiceProvider serviceProvider, IDialogBuilder dialogBuilder) : base(dialogService, dialogBuilder)
+            IServiceProvider serviceProvider) : base(dialogService, serviceProvider)
         {
             _serviceProvider = serviceProvider;
         }

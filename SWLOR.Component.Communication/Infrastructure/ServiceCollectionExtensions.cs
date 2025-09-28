@@ -29,7 +29,7 @@ namespace SWLOR.Component.Communication.Infrastructure
             services.AddSingleton<ISnippetService, SnippetService>();
             services.AddSingleton<IMessagingService, MessagingService>();
             services.AddSingleton<IDialogService, DialogService>();
-            services.AddSingleton<IDialogBuilder, DialogBuilder>();
+            services.AddTransient<IDialogBuilder, DialogBuilder>();
             services.AddSingleton<IChatCommandBuilder, ChatCommandBuilder>();
             services.AddSingleton<ISnippetBuilder, SnippetBuilder>();
 
@@ -66,7 +66,7 @@ namespace SWLOR.Component.Communication.Infrastructure
 
             foreach (var type in dialogTypes)
             {
-                services.AddSingleton(type);
+                services.AddTransient(type);
             }
         }
     }

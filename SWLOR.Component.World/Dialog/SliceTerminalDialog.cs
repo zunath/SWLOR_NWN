@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.Shared.Domain.Dialog.Contracts;
 using SWLOR.Shared.Domain.Dialog.ValueObjects;
@@ -16,8 +17,8 @@ namespace SWLOR.Component.World.Dialog
         public SliceTerminalDialog(
             IKeyItemService keyItemService,
             IObjectVisibilityService objectVisibilityService,
-            IDialogService dialogService, 
-            IDialogBuilder dialogBuilder) : base(dialogService, dialogBuilder)
+            IDialogService dialogService,
+            IServiceProvider serviceProvider) : base(dialogService, serviceProvider)
         {
             _keyItemService = keyItemService;
             _objectVisibilityService = objectVisibilityService;

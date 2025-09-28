@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Shared.Domain.Communication.Contracts;
 using SWLOR.Shared.Domain.Dialog.Contracts;
 using SWLOR.Shared.Domain.Dialog.ValueObjects;
@@ -15,9 +16,9 @@ namespace SWLOR.Component.Communication.Dialog
         public HoloComDialog(
             IHoloComService holoComService, 
             IDialogService dialogService,
-            IDialogBuilder dialogBuilder,
-            ISpaceService spaceService) 
-            : base(dialogService, dialogBuilder)
+            ISpaceService spaceService,
+            IServiceProvider serviceProvider) 
+            : base(dialogService, serviceProvider)
         {
             _holoComService = holoComService;
             _space = spaceService;

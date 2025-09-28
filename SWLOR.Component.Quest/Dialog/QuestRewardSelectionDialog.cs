@@ -9,7 +9,7 @@ namespace SWLOR.Component.Quest.Dialog
     {
         private readonly IServiceProvider _serviceProvider;
 
-        public QuestRewardSelectionDialog(IServiceProvider serviceProvider, IDialogService dialogService, IDialogBuilder dialogBuilder) : base(dialogService, dialogBuilder)
+        public QuestRewardSelectionDialog(IServiceProvider serviceProvider, IDialogService dialogService) : base(dialogService, serviceProvider)
         {
             _serviceProvider = serviceProvider;
         }

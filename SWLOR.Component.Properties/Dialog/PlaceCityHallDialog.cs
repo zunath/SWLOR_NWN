@@ -16,7 +16,7 @@ namespace SWLOR.Component.Properties.Dialog
         private readonly IDatabaseService _db;
         private readonly IServiceProvider _serviceProvider;
 
-        public PlaceCityHallDialog(IDatabaseService db, IServiceProvider serviceProvider, IDialogService dialogService, IDialogBuilder dialogBuilder) : base(dialogService, dialogBuilder)
+        public PlaceCityHallDialog(IDatabaseService db, IServiceProvider serviceProvider, IDialogService dialogService) : base(dialogService, serviceProvider)
         {
             _db = db;
             _serviceProvider = serviceProvider;

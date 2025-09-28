@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Dialog.Contracts;
 using SWLOR.Shared.Domain.Dialog.ValueObjects;
@@ -18,11 +19,12 @@ namespace SWLOR.Component.Properties.Dialog
         private readonly ISpaceService _spaceService;
 
         public PropertyExitDialog(
-            IDatabaseService db, 
-            IPropertyService property, 
-            IDialogService dialogService,
+            IDatabaseService db,
             IAreaService areaService,
-            ISpaceService spaceService, IDialogBuilder dialogBuilder) : base(dialogService, dialogBuilder)
+            IPropertyService property,
+            ISpaceService spaceService,
+            IDialogService dialogService,
+            IServiceProvider serviceProvider) : base(dialogService, serviceProvider)
         {
             _db = db;
             _property = property;

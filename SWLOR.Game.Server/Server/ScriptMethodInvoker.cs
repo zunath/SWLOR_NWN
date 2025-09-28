@@ -1,6 +1,7 @@
 using System;
 using System.Reflection;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Abstractions.Extensions;
 using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Core.Log.LogGroup;
 

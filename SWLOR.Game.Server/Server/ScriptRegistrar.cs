@@ -106,7 +106,6 @@ namespace SWLOR.Game.Server.Server
                         continue;
                     }
 
-                    _logger.Write<InfrastructureLogGroup>($"Registering conditional script '{scriptName}' for method {methodInfo.DeclaringType?.Name}.{methodInfo.Name}");
                     RegisterConditionalScript(conditionalScripts, scriptName, methodInfo);
                 }
             }

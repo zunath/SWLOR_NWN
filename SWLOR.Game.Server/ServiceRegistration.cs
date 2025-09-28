@@ -102,6 +102,7 @@ namespace SWLOR.Game.Server
             services.AddAdminServices();
             services.AddAIServices();
             services.AddAssociateServices();
+            services.AddCharacterServices();
             services.AddCombatServices();
             services.AddCommunicationServices();
             services.AddCraftingServices();
@@ -109,10 +110,9 @@ namespace SWLOR.Game.Server
             services.AddMarketServices();
             services.AddMigrationServices();
             services.AddPerkServices();
-            services.AddPlayerServices();
+            services.AddPropertiesServices();
             services.AddQuestServices();
             services.AddSkillServices();
-            services.AddPropertiesServices();
             services.AddSpaceServices();
             services.AddStatusEffectServices();
             services.AddWorldServices();

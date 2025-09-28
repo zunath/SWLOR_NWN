@@ -19,7 +19,7 @@ namespace SWLOR.Component.Character.Infrastructure
         /// </summary>
         /// <param name="services">The service collection to register services in</param>
         /// <returns>The service collection for chaining</returns>
-        public static IServiceCollection AddPlayerServices(this IServiceCollection services)
+        public static IServiceCollection AddCharacterServices(this IServiceCollection services)
         {
             services.AddSingleton<IClientVersionCheck, ClientVersionCheckService>();
             services.AddSingleton<PlayerRestService>();

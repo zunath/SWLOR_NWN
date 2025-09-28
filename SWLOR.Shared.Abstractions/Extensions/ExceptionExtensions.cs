@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace SWLOR.Shared.Core.Extension
+namespace SWLOR.Shared.Abstractions.Extensions
 {
     public static class ExceptionExtensions
     {

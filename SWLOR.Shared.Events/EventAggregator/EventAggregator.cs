@@ -1,5 +1,6 @@
 using SWLOR.NWN.API.Contracts;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Abstractions.Extensions;
 
 namespace SWLOR.Shared.Events.EventAggregator
 {
@@ -37,7 +38,7 @@ namespace SWLOR.Shared.Events.EventAggregator
                     }
                     catch (Exception ex)
                     {
-                        _logger.WriteError($"Error in event handler for {eventType.Name}: {ex.Message}");
+                        _logger.WriteError($"Error in event handler for {eventType.Name}: {ex.ToMessageAndCompleteStacktrace()}");
                     }
                 }
             }
@@ -59,7 +60,7 @@ namespace SWLOR.Shared.Events.EventAggregator
                     }
                     catch (Exception ex)
                     {
-                        _logger.WriteError($"Error in conditional event handler for {eventType.Name}: {ex.Message}");
+                        _logger.WriteError($"Error in conditional event handler for {eventType.Name}: {ex.ToMessageAndCompleteStacktrace()}");
                     }
                 }
             }

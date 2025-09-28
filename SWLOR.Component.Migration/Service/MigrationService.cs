@@ -5,6 +5,7 @@ using SWLOR.Component.Migration.Entity;
 using SWLOR.Component.Migration.Enums;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Abstractions.Extensions;
 using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Domain.Entities;

@@ -5,6 +5,7 @@ using NReJSON;
 using StackExchange.Redis;
 using SWLOR.Shared.Abstractions;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Abstractions.Extensions;
 using SWLOR.Shared.Core.Extension;
 
 namespace SWLOR.Shared.Core.Data

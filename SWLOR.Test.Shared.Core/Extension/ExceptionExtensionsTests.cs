@@ -1,3 +1,4 @@
+using SWLOR.Shared.Abstractions.Extensions;
 using SWLOR.Shared.Core.Extension;
 
 namespace SWLOR.Test.Shared.Core.Extension

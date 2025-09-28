@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.World.Contracts;
@@ -59,15 +60,13 @@ namespace SWLOR.Component.World.Infrastructure
             services.AddSingleton<MiniMaps>();
             services.AddSingleton<GameWorldEntry>();
 
-            // Snippet definitions are automatically registered by the Inventory component
-
-            // Dialog classes are automatically registered by the Inventory component
-
             // Automatically register all spawn definition implementations
-            var assembly = Assembly.GetExecutingAssembly();
+            // Check all assemblies instead of just the current one
+            var allAssemblies = AppDomain.CurrentDomain.GetAssemblies();
             
             // Register ISpawnListDefinition implementations
-            var spawnDefinitionTypes = assembly.GetTypes()
+            var spawnDefinitionTypes = allAssemblies
+                .SelectMany(assembly => assembly.GetTypes())
                 .Where(t => t.IsClass && !t.IsAbstract && typeof(ISpawnListDefinition).IsAssignableFrom(t));
             
             foreach (var type in spawnDefinitionTypes)

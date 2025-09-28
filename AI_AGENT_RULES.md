@@ -164,12 +164,18 @@ using SWLOR.Shared.Events.Attributes;
 ### 12. Performance Considerations
 - **RULE**: Use caching for expensive operations (perk calculations, database queries)
 - **RULE**: Avoid expensive operations in event handlers when possible
-- **RULE**: Use async/await patterns for I/O operations
 - **RULE**: Consider performance impact of singleton vs transient registrations
+
+### 13. Async/Await Restrictions
+- **RULE**: Regular C# async/await is NOT allowed in this codebase
+- **RULE**: Async operations MUST ONLY be used through the Async folder in SWLOR.Shared.Core
+- **RULE**: Use the established async infrastructure instead of standard .NET async patterns
+- **VIOLATION EXAMPLE**: `public async Task<string> GetDataAsync()`
+- **CORRECT APPROACH**: Use async utilities from `SWLOR.Shared.Core.Async`
 
 ## Anti-Patterns to AVOID
 
-### 13. Forbidden Patterns
+### 14. Forbidden Patterns
 - **NEVER**: Create circular dependencies between components
 - **NEVER**: Put business logic in event handlers
 - **NEVER**: Create wrapper methods in services for event handlers
@@ -178,18 +184,21 @@ using SWLOR.Shared.Events.Attributes;
 - **NEVER**: Put all entities in shared domain regardless of usage
 - **NEVER**: Register services with inappropriate lifetimes
 - **NEVER**: Create "God Components" that try to do everything
+- **NEVER**: Use regular C# async/await patterns
 
-### 14. Common Mistakes to Avoid
+### 15. Common Mistakes to Avoid
 - **MISTAKE**: `using SWLOR.Component.Inventory.Service;` in Perk component
 - **CORRECT**: `using SWLOR.Shared.Domain.Inventory.Contracts;`
 - **MISTAKE**: Putting `[ScriptHandler<>]` in service classes
 - **CORRECT**: Separate event handler classes
 - **MISTAKE**: Creating `OnModuleLoad()` wrapper in service
 - **CORRECT**: Event handler calls `_service.LoadData()` directly
+- **MISTAKE**: `public async Task<string> GetDataAsync()`
+- **CORRECT**: Use async utilities from `SWLOR.Shared.Core.Async`
 
 ## Testing Rules
 
-### 15. Testability Requirements
+### 16. Testability Requirements
 - **RULE**: Services MUST be testable without event infrastructure
 - **RULE**: Use dependency injection for all external dependencies
 - **RULE**: Mock interfaces, not concrete classes
@@ -197,7 +206,7 @@ using SWLOR.Shared.Events.Attributes;
 
 ## Documentation Rules
 
-### 16. Code Documentation
+### 17. Code Documentation
 - **RULE**: All public methods MUST have XML documentation
 - **RULE**: Include parameter descriptions and return value descriptions
 - **RULE**: Document complex business logic with inline comments
@@ -205,14 +214,14 @@ using SWLOR.Shared.Events.Attributes;
 
 ## Migration and Refactoring Rules
 
-### 17. When Adding New Features
+### 18. When Adding New Features
 - **RULE**: Start with component-specific implementation
 - **RULE**: Only move to shared domain when second component needs it
 - **RULE**: Create interfaces before implementations
 - **RULE**: Register services in appropriate DI container
 - **RULE**: Separate event handling from business logic from the start
 
-### 18. When Modifying Existing Code
+### 19. When Modifying Existing Code
 - **RULE**: Maintain existing architecture patterns
 - **RULE**: Don't break component boundaries
 - **RULE**: Update all references when moving entities
@@ -220,13 +229,13 @@ using SWLOR.Shared.Events.Attributes;
 
 ## Specific Component Rules
 
-### 19. Perk Component Specifics
+### 20. Perk Component Specifics
 - **RULE**: Perk services are split into focused services (Data, Level, Trigger, Cache)
 - **RULE**: Main PerkService acts as a facade
 - **RULE**: Use caching for expensive perk calculations
 - **RULE**: Perk requirements are handled by dedicated factory
 
-### 20. Event System Rules
+### 21. Event System Rules
 - **RULE**: Use `[ScriptHandler<>]` attributes for event registration
 - **RULE**: Event handlers MUST be in `EventHandlers/` folder
 - **RULE**: One event handler class per component
@@ -239,6 +248,7 @@ Before submitting any changes, verify:
 - [ ] **CRITICAL**: No component projects reference other component projects
 - [ ] **CRITICAL**: No shared/component projects reference test projects
 - [ ] No cross-component dependencies
+- [ ] No regular C# async/await usage (use SWLOR.Shared.Core.Async only)
 - [ ] Services registered as singletons (unless transient needed)
 - [ ] Event handlers separated from services
 - [ ] No wrapper methods in services for event handlers

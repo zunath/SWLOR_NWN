@@ -7,6 +7,7 @@ using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Infrastructure;
 using SWLOR.Shared.Events.Events.Player;
 using SWLOR.Shared.Events.Events.Server;
+using SWLOR.Shared.Events.Contracts;
 
 namespace SWLOR.Shared.Events.Service
 {
@@ -14,18 +15,23 @@ namespace SWLOR.Shared.Events.Service
     {
         private readonly IScheduler _scheduler;
         private readonly IEventAggregator _eventAggregator;
+        private readonly IEventHandlerDiscoveryService _eventHandlerDiscovery;
 
         public EventRegistrationService(
             IScheduler scheduler,
-            IEventAggregator eventAggregator)
+            IEventAggregator eventAggregator,
+            IEventHandlerDiscoveryService eventHandlerDiscovery)
         {
             _scheduler = scheduler;
             _eventAggregator = eventAggregator;
+            _eventHandlerDiscovery = eventHandlerDiscovery;
         }
 
-        [ScriptHandler<OnServerLoaded>]
         public void RegisterEvents()
         {
+            Console.WriteLine("Discovering and registering event handlers.");
+            _eventHandlerDiscovery.DiscoverAndRegisterHandlers();
+
             Console.WriteLine("Hooking all module events.");
             HookModuleEvents();
 

@@ -27,6 +27,7 @@ using SWLOR.Shared.Core.Configuration;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Log;
 using SWLOR.Shared.Core.Infrastructure;
+using SWLOR.Shared.Events.Contracts;
 using SWLOR.Shared.Events.Infrastructure;
 using SWLOR.Shared.Events.Service;
 using ScriptExecutionProvider = SWLOR.Game.Server.Server.ScriptExecutionProvider;
@@ -81,6 +82,7 @@ namespace SWLOR.Game.Server
             services.AddSingleton<IServerBootstrapper, ServerBootstrapper>();
             services.AddSingleton<IServerManager, ServerManager>();
             services.AddSingleton<IEventRegistrationService, EventRegistrationService>();
+            services.AddSingleton<IEventHandlerDiscoveryService, EventHandlerDiscoveryService>();
             services.AddSingleton<IScheduler, Scheduler>();
             
             // Service Initialization

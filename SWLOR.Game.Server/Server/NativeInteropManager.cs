@@ -18,14 +18,22 @@ namespace SWLOR.Game.Server.Server
         private readonly IScriptExecutor _scriptExecutor;
         private readonly IClosureManager _closureManager;
         private readonly IEventAggregator _eventAggregator;
+        private readonly IEventRegistrationService _eventRegistration;
 
-        public NativeInteropManager(ILogger logger, IMainLoopProcessor mainLoopProcessor, IScriptExecutor scriptExecutor, IClosureManager closureManager, IEventAggregator eventAggregator)
+        public NativeInteropManager(
+            ILogger logger, 
+            IMainLoopProcessor mainLoopProcessor, 
+            IScriptExecutor scriptExecutor, 
+            IClosureManager closureManager, 
+            IEventAggregator eventAggregator,
+            IEventRegistrationService eventRegistration)
         {
             _logger = logger;
             _mainLoopProcessor = mainLoopProcessor;
             _scriptExecutor = scriptExecutor;
             _closureManager = closureManager;
             _eventAggregator = eventAggregator;
+            _eventRegistration = eventRegistration;
         }
 
         public void RegisterHandlers()
@@ -107,6 +115,7 @@ namespace SWLOR.Game.Server.Server
             {
                 case "ON_MODULE_LOAD_FINISH":
                     _scriptExecutor.Initialize();
+                    _eventRegistration.RegisterEvents();
                     RunPreModuleLoadEvents();
                     break;
             }
@@ -114,7 +123,6 @@ namespace SWLOR.Game.Server.Server
 
         private void RunPreModuleLoadEvents()
         {
-            Console.WriteLine($"publishing EVENTS NOW!!!!!!!!!!!!!!");
             _eventAggregator.Publish(new OnServerLoaded(), GetModule());
             _eventAggregator.Publish(new OnModuleCacheBefore(), GetModule());
             _eventAggregator.Publish(new OnModuleCacheAfter(), GetModule());

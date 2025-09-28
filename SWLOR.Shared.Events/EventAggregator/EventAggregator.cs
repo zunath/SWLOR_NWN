@@ -71,13 +71,15 @@ namespace SWLOR.Shared.Events.EventAggregator
             
             if (_handlers.TryGetValue(eventType, out var handlers))
             {
-                // Find and remove the handler that wraps the original handler
+                // Find and remove the specific handler wrapper
+                // We need to find the wrapper that calls our specific handler
                 for (int i = handlers.Count - 1; i >= 0; i--)
                 {
-                    // We need to find the wrapper that calls our handler
-                    // This is a bit tricky since we're storing Action<object> wrappers
-                    // For now, we'll remove all handlers of this type (not ideal but works for NWN)
+                    // For now, we'll remove the last added handler of this type
+                    // This is a limitation of the current design - we can't easily track
+                    // which wrapper corresponds to which original handler
                     handlers.RemoveAt(i);
+                    break; // Remove only one handler per call
                 }
                 
                 if (handlers.Count == 0)

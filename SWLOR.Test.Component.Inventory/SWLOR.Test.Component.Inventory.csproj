@@ -24,6 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SWLOR.Component.Inventory\SWLOR.Component.Inventory.csproj" />
     <ProjectReference Include="..\SWLOR.Test.Shared\SWLOR.Test.Shared.csproj" />
   </ItemGroup>
 

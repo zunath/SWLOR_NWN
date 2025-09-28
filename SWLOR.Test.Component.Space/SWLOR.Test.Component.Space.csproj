@@ -24,6 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SWLOR.Component.Space\SWLOR.Component.Space.csproj" />
     <ProjectReference Include="..\SWLOR.Test.Shared\SWLOR.Test.Shared.csproj" />
   </ItemGroup>
 

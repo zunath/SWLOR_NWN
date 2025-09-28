@@ -6,6 +6,7 @@ using SWLOR.Shared.Events.Events.Area;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Events.Player;
+using SWLOR.Shared.Events.Events.Space;
 using SWLOR.Shared.UI.Contracts;
 
 namespace SWLOR.Component.Character.Feature

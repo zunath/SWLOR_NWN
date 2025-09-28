@@ -42,7 +42,7 @@ namespace SWLOR.Shared.Events.Service
         }
 
 
-        [ScriptHandler(ScriptName.OnServerHeartbeat)]
+        [ScriptHandler<OnServerHeartbeat>]
         public void ExecuteHeartbeatEvent()
         {
             for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())

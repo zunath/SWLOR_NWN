@@ -2,6 +2,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Inventory;
 using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.UI.Service;
 
@@ -28,7 +29,7 @@ namespace SWLOR.Component.Inventory.Feature
         /// <summary>
         /// When the trash can is opened, the player is notified anything placed inside will be destroyed.
         /// </summary>
-        [ScriptHandler(ScriptName.OnTrashOpened)]
+        [ScriptHandler<OnTrashOpened>]
         public static void AlertPlayer()
         {
             var player = GetLastOpenedBy();
@@ -38,7 +39,7 @@ namespace SWLOR.Component.Inventory.Feature
         /// <summary>
         /// When the trash can is closed, any items inside will be destroyed and then the placeable will be destroyed.
         /// </summary>
-        [ScriptHandler(ScriptName.OnTrashClosed)]
+        [ScriptHandler<OnTrashClosed>]
         public static void CleanUp()
         {
             var container = OBJECT_SELF;
@@ -53,7 +54,7 @@ namespace SWLOR.Component.Inventory.Feature
         /// <summary>
         /// When an item is added to the trash can, it will be destroyed.
         /// </summary>
-        [ScriptHandler(ScriptName.OnTrashDisturbed)]
+        [ScriptHandler<OnTrashDisturbed>]
         public static void DestroyItem()
         {
             var item = GetInventoryDisturbItem();

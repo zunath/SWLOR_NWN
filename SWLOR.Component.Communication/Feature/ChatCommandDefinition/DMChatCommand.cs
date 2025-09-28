@@ -20,6 +20,7 @@ using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Skill.Enums;
 using SWLOR.Shared.Domain.Space.Contracts;
 using SWLOR.Shared.Domain.UI.Events;
+using SWLOR.Shared.Events.Events.Space;
 using ChatChannelType = SWLOR.NWN.API.NWNX.Enum.ChatChannelType;
 using FactionType = SWLOR.Shared.Domain.Character.Enums.FactionType;
 

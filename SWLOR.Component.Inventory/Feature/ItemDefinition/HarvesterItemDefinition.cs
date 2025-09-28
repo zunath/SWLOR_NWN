@@ -12,6 +12,7 @@ using SWLOR.Shared.Domain.Skill.Enums;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Inventory;
+using SWLOR.Shared.Events.Events.World;
 
 namespace SWLOR.Component.Inventory.Feature.ItemDefinition
 {
@@ -53,7 +54,7 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
         /// <summary>
         /// Whenever a resource despawns, if it has an associated prop placeable, destroy it from the game world.
         /// </summary>
-        [ScriptHandler(ScriptName.OnSpawnDespawn)]
+        [ScriptHandler<OnSpawnDespawn>]
         public static void CleanupResourcePropPlaceables()
         {
             var resource = OBJECT_SELF;

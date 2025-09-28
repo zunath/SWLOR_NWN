@@ -4,6 +4,7 @@ using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.Area;
 using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Properties;
 
 namespace SWLOR.Component.Properties.EventHandlers
 {
@@ -49,7 +50,7 @@ namespace SWLOR.Component.Properties.EventHandlers
         /// <summary>
         /// When an apartment terminal is used, open the Apartment NUI
         /// </summary>
-        [ScriptHandler(ScriptName.OnApartmentTerminal)]
+        [ScriptHandler<OnApartmentTerminal>]
         public void StartApartmentConversation()
         {
             _propertyService.StartApartmentConversation();
@@ -95,7 +96,7 @@ namespace SWLOR.Component.Properties.EventHandlers
         /// When a building entrance is used, port the player inside the instance if they have permission
         /// or display an error message saying they don't have permission to enter.
         /// </summary>
-        [ScriptHandler(ScriptName.OnEnterProperty)]
+        [ScriptHandler<OnEnterProperty>]
         public void EnterBuilding()
         {
             _propertyService.EnterBuilding();
@@ -104,7 +105,7 @@ namespace SWLOR.Component.Properties.EventHandlers
         /// <summary>
         /// When the Citizenship terminal is used, open the Manage Citizenship UI.
         /// </summary>
-        [ScriptHandler(ScriptName.OnOpenCitizenship)]
+        [ScriptHandler<OnOpenCitizenship>]
         public void OpenCitizenshipMenu()
         {
             _propertyService.OpenCitizenshipMenu();
@@ -113,7 +114,7 @@ namespace SWLOR.Component.Properties.EventHandlers
         /// <summary>
         /// When the City Management terminal is used, open the City Management UI.
         /// </summary>
-        [ScriptHandler(ScriptName.OnOpenCityManage)]
+        [ScriptHandler<OnOpenCityManage>]
         public void OpenCityManagementMenu()
         {
             _propertyService.OpenCityManagementMenu();

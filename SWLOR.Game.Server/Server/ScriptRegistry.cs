@@ -30,25 +30,11 @@ namespace SWLOR.Game.Server.Server
             _scripts.Clear();
             _conditionalScripts.Clear();
 
-            // Load traditional script handlers
-            var traditionalScripts = _scriptRegistrar.LoadTraditionalHandlers();
-            foreach (var kvp in traditionalScripts)
-            {
-                _scripts[kvp.Key] = kvp.Value;
-            }
-
             // Load event-based handlers
             var eventScripts = _scriptRegistrar.LoadEventHandlers();
             foreach (var kvp in eventScripts)
             {
-                if (_scripts.ContainsKey(kvp.Key))
-                {
-                    _scripts[kvp.Key].AddRange(kvp.Value);
-                }
-                else
-                {
-                    _scripts[kvp.Key] = kvp.Value;
-                }
+                _scripts[kvp.Key] = kvp.Value;
             }
 
             // Load conditional script handlers

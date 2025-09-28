@@ -2,7 +2,9 @@ using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Combat;
 using SWLOR.Shared.Events.Events.Creature;
+using SWLOR.Shared.Events.Events.Inventory;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.NWNX;
 
@@ -45,13 +47,13 @@ namespace SWLOR.Component.Inventory.EventHandlers
             LootService.SpawnStealLoot();
         }
 
-        [ScriptHandler(ScriptName.OnCorpseClosed)]
+        [ScriptHandler<OnCorpseClosed>]
         public void CloseCorpseContainer()
         {
             LootService.CloseCorpseContainer();
         }
 
-        [ScriptHandler(ScriptName.OnCorpseDisturbed)]
+        [ScriptHandler<OnCorpseDisturbed>]
         public void DisturbCorpseContainer()
         {
             LootService.DisturbCorpseContainer();
@@ -63,7 +65,7 @@ namespace SWLOR.Component.Inventory.EventHandlers
             LootService.SpawnLootOnCreatureDeath();
         }
 
-        [ScriptHandler(ScriptName.OnItemHit)]
+        [ScriptHandler<OnItemHit>]
         public void MarkCreditfinderAndTreasureHunterOnTarget()
         {
             LootService.MarkCreditfinderAndTreasureHunterOnTarget();

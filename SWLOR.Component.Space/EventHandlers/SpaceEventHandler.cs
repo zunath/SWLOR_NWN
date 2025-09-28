@@ -5,6 +5,7 @@ using SWLOR.Shared.Events.Events.Area;
 using SWLOR.Shared.Events.Events.Creature;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.NWNX;
+using SWLOR.Shared.Events.Events.Space;
 
 namespace SWLOR.Component.Space.EventHandlers
 {
@@ -85,7 +86,7 @@ namespace SWLOR.Component.Space.EventHandlers
         /// If player has permission and the ship isn't currently being controlled by another player,
         /// send the player into space mode.
         /// </summary>
-        [ScriptHandler(ScriptName.OnShipComputer)]
+        [ScriptHandler<OnUseShipComputer>]
         public void UseShipComputer()
         {
             _spaceService.UseShipComputer();
@@ -114,7 +115,7 @@ namespace SWLOR.Component.Space.EventHandlers
         /// <summary>
         /// When a creature clicks on a space object, target that object.
         /// </summary>
-        [ScriptHandler(ScriptName.OnSpaceTarget)]
+        [ScriptHandler<OnSpaceTarget>]
         public void TargetSpaceObject()
         {
             _spaceService.TargetSpaceObject();

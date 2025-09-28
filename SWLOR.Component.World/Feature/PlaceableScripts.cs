@@ -6,6 +6,8 @@ using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Inventory.Enums;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Properties;
+using SWLOR.Shared.Events.Events.World;
 using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Component.World.Feature
@@ -29,7 +31,7 @@ namespace SWLOR.Component.World.Feature
         /// When a teleport placeable is used, send the user to the configured waypoint.
         /// Checks are made for required key items, if specified as local variables on the placeable.
         /// </summary>
-        [ScriptHandler(ScriptName.OnPlaceableTeleport)]
+        [ScriptHandler<OnPlaceableTeleport>]
         public void UseTeleportDevice()
         {
             var user = GetLastUsedBy();
@@ -94,7 +96,7 @@ namespace SWLOR.Component.World.Feature
         /// <summary>
         /// Applies a permanent VFX on a placeable or creature on heartbeat, then removes the heartbeat script.
         /// </summary>
-        [ScriptHandler(ScriptName.OnPlaceablePermanentVfx)]
+        [ScriptHandler<OnPlaceablePermanentVfx>]
         public void ApplyPermanentVisualEffect()
         {
             var target = OBJECT_SELF;
@@ -117,7 +119,7 @@ namespace SWLOR.Component.World.Feature
         /// <summary>
         /// Handles starting a generic conversation when a placeable is clicked or used by a player or DM.
         /// </summary>
-        [ScriptHandler(ScriptName.OnPlaceableGenericConversation)]
+        [ScriptHandler<OnPlaceableGenericConversation>]
         public void GenericConversation()
         {
             var placeable = OBJECT_SELF;
@@ -140,7 +142,7 @@ namespace SWLOR.Component.World.Feature
         /// <summary>
         /// Handle sitting on an object.        
         /// </summary>
-        [ScriptHandler(ScriptName.OnPlaceableSit)]
+        [ScriptHandler<OnPlaceableSit>]
         public void Sit()
         {
             var user = GetLastUsedBy();
@@ -159,7 +161,7 @@ namespace SWLOR.Component.World.Feature
         /// Whenever a player purchases a rebuild from the training terminal,
         /// make them spend a rebuild token and send them to the rebuild area.
         /// </summary>
-        [ScriptHandler(ScriptName.OnPlaceableBuyRebuild)]
+        [ScriptHandler<OnPlaceableBuyRebuild>]
         public void PurchaseRebuild()
         {
             var player = GetPCSpeaker();

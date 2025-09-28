@@ -10,6 +10,8 @@ using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Perk.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Inventory;
+using SWLOR.Shared.Events.Events.Properties;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
@@ -35,7 +37,7 @@ namespace SWLOR.Component.Inventory.UI.ViewModel
         /// <summary>
         /// When a bank placeable is used, display this UI view.
         /// </summary>
-        [ScriptHandler(ScriptName.OnOpenBank)]
+        [ScriptHandler<OnOpenBank>]
         public void ShowBank()
         {
             var player = GetLastUsedBy();

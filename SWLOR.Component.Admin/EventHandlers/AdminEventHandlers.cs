@@ -5,6 +5,8 @@ using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Combat;
+using SWLOR.Shared.Events.Events.Server;
 
 namespace SWLOR.Component.Admin.EventHandlers
 {
@@ -120,7 +122,7 @@ namespace SWLOR.Component.Admin.EventHandlers
         /// <summary>
         /// When the server heartbeat occurs, process auto-restart tasks.
         /// </summary>
-        [ScriptHandler(ScriptName.OnServerHeartbeat)]
+        [ScriptHandler<OnServerHeartbeat>]
         public void ProcessAutoRestart()
         {
             _serverTasks.ProcessAutoRestart();
@@ -129,7 +131,7 @@ namespace SWLOR.Component.Admin.EventHandlers
         /// <summary>
         /// When enmity changes, update debug enmity display.
         /// </summary>
-        [ScriptHandler(ScriptName.OnEnmityChanged)]
+        [ScriptHandler<OnEnmityChanged>]
         public void OnEnmityChanged()
         {
             _debugEnmityViewModel.OnEnmityChanged();

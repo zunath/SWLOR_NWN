@@ -18,6 +18,7 @@ using SWLOR.Shared.Domain.Skill.Contracts;
 using SWLOR.Shared.Domain.Skill.Enums;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Crafting;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.UI.Service;
 
@@ -244,7 +245,7 @@ namespace SWLOR.Component.Crafting.Service
         /// <summary>
         /// Runs when a player interacts with a fishing point.
         /// </summary>
-        [ScriptHandler(ScriptName.OnFishPoint)]
+        [ScriptHandler<OnFishPoint>]
         public void ClickFishingPoint()
         {
             ClickFishingPointInternal();
@@ -343,7 +344,7 @@ namespace SWLOR.Component.Crafting.Service
         /// <summary>
         /// Runs when the fishing process completes.
         /// </summary>
-        [ScriptHandler(ScriptName.OnFinishFishing)]
+        [ScriptHandler<OnFinishFishing>]
         public void FinishFishing()
         {
             FinishFishingInternal();

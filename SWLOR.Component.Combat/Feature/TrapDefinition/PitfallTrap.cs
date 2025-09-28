@@ -1,6 +1,7 @@
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Combat;
 
 namespace SWLOR.Component.Combat.Feature.TrapDefinition
 {
@@ -9,7 +10,7 @@ namespace SWLOR.Component.Combat.Feature.TrapDefinition
         /// <summary>
         /// When this trap is triggered, it'll toss the players to the designated waypoint after a delay.
         /// </summary>
-        [ScriptHandler(ScriptName.OnPitfallTrap)]
+        [ScriptHandler<OnPitfallTrap>]
         public static void TriggeringTrap()
         {
             var player = GetEnteringObject();

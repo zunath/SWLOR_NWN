@@ -25,32 +25,6 @@ namespace SWLOR.Game.Server.Server
             _nameGenerator = nameGenerator;
         }
 
-        /// <summary>
-        /// Loads traditional script handlers from all assemblies.
-        /// </summary>
-        /// <returns>Dictionary of script names to their handlers</returns>
-        public Dictionary<string, List<ActionScript>> LoadTraditionalHandlers()
-        {
-            var scripts = new Dictionary<string, List<ActionScript>>();
-
-            var handlers = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(a => a.GetTypes())
-                .SelectMany(t => t.GetMethods())
-                .Where(m => m.GetCustomAttributes(typeof(ScriptHandlerAttribute), false).Length > 0)
-                .Where(m => m.ReturnType == typeof(void)) // Only void methods for action scripts
-                .ToArray();
-
-            foreach (var methodInfo in handlers)
-            {
-                foreach (var attr in methodInfo.GetCustomAttributes(typeof(ScriptHandlerAttribute), false))
-                {
-                    var script = ((ScriptHandlerAttribute)attr).Script;
-                    RegisterScript(scripts, script, methodInfo);
-                }
-            }
-
-            return scripts;
-        }
 
         /// <summary>
         /// Loads event-based handlers from all assemblies.
@@ -108,8 +82,7 @@ namespace SWLOR.Game.Server.Server
                 .SelectMany(t => t.GetMethods())
                 .Where(m => m.ReturnType == typeof(bool))
                 .Where(m => m.GetCustomAttributes().Any(attr => 
-                    (attr is ScriptHandlerAttribute) || 
-                    (attr.GetType().IsGenericType && attr.GetType().GetGenericTypeDefinition() == typeof(ScriptHandlerAttribute<>))))
+                    attr.GetType().IsGenericType && attr.GetType().GetGenericTypeDefinition() == typeof(ScriptHandlerAttribute<>)))
                 .ToArray();
 
             foreach (var methodInfo in handlers)
@@ -250,15 +223,6 @@ namespace SWLOR.Game.Server.Server
 
         private string GetScriptNameForMethod(MethodInfo methodInfo)
         {
-            // Check for traditional ScriptHandlerAttribute
-            var traditionalAttrs = methodInfo.GetCustomAttributes<ScriptHandlerAttribute>();
-            if (traditionalAttrs.Any())
-            {
-                // If there are multiple, we'll need to handle them all
-                // For now, just return the first one
-                return traditionalAttrs.First().Script;
-            }
-
             // Check for generic ScriptHandlerAttribute
             var genericAttrs = methodInfo.GetCustomAttributes()
                 .Where(attr => attr.GetType().IsGenericType && 

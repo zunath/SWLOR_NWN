@@ -6,6 +6,7 @@ using SWLOR.Shared.Domain.StatusEffect.Contracts;
 using SWLOR.Shared.Domain.StatusEffect.Enums;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Character;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.Player;
 
@@ -102,7 +103,7 @@ namespace SWLOR.Component.Character.Service
         /// When a player enters a rest trigger, flag them and notify them they can rest.
         /// This will only occur if they are inside a dungeon because they can rest anywhere they want outside of a dungeon.
         /// </summary>
-        [ScriptHandler(ScriptName.OnRestTriggerEnter)]
+        [ScriptHandler<OnRestTriggerEnter>]
         public void EnterRestTrigger()
         {
             var player = GetEnteringObject();
@@ -116,7 +117,7 @@ namespace SWLOR.Component.Character.Service
         /// When a player exits a rest trigger, unflag them and notify them they can no longer rest.
         /// This will only occur if they are inside a dungeon.
         /// </summary>
-        [ScriptHandler(ScriptName.OnRestTriggerExit)]
+        [ScriptHandler<OnRestTriggerExit>]
         public void ExitRestTrigger()
         {
             var player = GetExitingObject();

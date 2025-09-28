@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
 
-namespace SWLOR.Test.Shared.NWScript
+namespace SWLOR.Test.Shared.NWScriptMocks
 {
     public partial class NWScriptServiceMock
     {

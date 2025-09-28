@@ -4,6 +4,7 @@ using SWLOR.Shared.Domain.Dialog.Contracts;
 using SWLOR.Shared.Domain.Dialog.ValueObjects;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Dialog;
 using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Component.Communication.Service
@@ -58,10 +59,10 @@ namespace SWLOR.Component.Communication.Service
         /// check for any conversation conditions and process them.
         /// </summary>
         /// <returns></returns>
-        [ScriptHandler(ScriptName.OnDialogAppear)]
-        [ScriptHandler(ScriptName.OnDialogAppears)]
-        [ScriptHandler(ScriptName.OnDialogCondition)]
-        [ScriptHandler(ScriptName.OnDialogConditions)]
+        [ScriptHandler<OnDialogAppear>]
+        [ScriptHandler<OnDialogAppears>]
+        [ScriptHandler<OnDialogCondition>]
+        [ScriptHandler<OnDialogConditions>]
         public bool ConversationAppearsWhen()
         {
             var player = GetPCSpeaker();
@@ -72,8 +73,8 @@ namespace SWLOR.Component.Communication.Service
         /// When a conversation node with this script assigned in the "Actions Taken" event is run,
         /// check for any conversation actions and process them.
         /// </summary>
-        [ScriptHandler(ScriptName.OnDialogAction)]
-        [ScriptHandler(ScriptName.OnDialogActions)]
+        [ScriptHandler<OnDialogAction>]
+        [ScriptHandler<OnDialogActions>]
         public void ConversationAction()
         {
             var player = GetPCSpeaker();

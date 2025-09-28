@@ -25,6 +25,9 @@ using SWLOR.Shared.Domain.Properties.Contracts;
 using SWLOR.Shared.Domain.Skill.Enums;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Crafting;
+using SWLOR.Shared.Events.Events.Properties;
+using SWLOR.Shared.Events.Events.Skill;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 using ResearchJob = SWLOR.Component.Crafting.Entity.ResearchJob;
@@ -86,7 +89,7 @@ namespace SWLOR.Component.Crafting.Service
         /// <summary>
         /// When the skill cache has finished loading, recipe and category data is cached.
         /// </summary>
-        [ScriptHandler(ScriptName.OnSwlorSkillCache)]
+        [ScriptHandler<OnSkillDataCached>]
         public void CacheData()
         {
             CacheCategories();
@@ -386,7 +389,7 @@ namespace SWLOR.Component.Crafting.Service
         /// <summary>
         /// When a crafting device is used, display the recipe menu.
         /// </summary>
-        [ScriptHandler(ScriptName.OnCraftUsed)]
+        [ScriptHandler<OnCraftUsed>]
         public void UseCraftingDevice()
         {
             var player = GetLastUsedBy();
@@ -750,14 +753,14 @@ namespace SWLOR.Component.Crafting.Service
             throw new Exception("Unsupported enhancement type.");
         }
 
-        [ScriptHandler(ScriptName.OnRefineryUsed)]
+        [ScriptHandler<OnRefineryUsed>]
         public void UseRefinery()
         {
             var player = GetLastUsedBy();
             GuiService.TogglePlayerWindow(player, GuiWindowType.Refinery, null, OBJECT_SELF);
         }
 
-        [ScriptHandler(ScriptName.OnResearchTerminal)]
+        [ScriptHandler<OnResearchTerminal>]
         public void UseResearchTerminal()
         {
             var player = GetLastUsedBy();
@@ -955,7 +958,7 @@ namespace SWLOR.Component.Crafting.Service
         /// <summary>
         /// When a property is removed, also remove any associated research jobs.
         /// </summary>
-        [ScriptHandler(ScriptName.OnSwlorDeleteProperty)]
+        [ScriptHandler<OnDeleteProperty>]
         public void OnRemoveProperty()
         {
             var propertyId = EventsPlugin.GetEventData("PROPERTY_ID");

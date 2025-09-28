@@ -10,7 +10,6 @@ using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Perk.Contracts;
 using SWLOR.Test.Shared;
-using SWLOR.Test.Shared.NWScript;
 
 namespace SWLOR.Test.Component.Combat.Service
 {

@@ -2,9 +2,12 @@ using SWLOR.Component.Perk.Contracts;
 using SWLOR.Shared.Domain.Perk.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Ability;
+using SWLOR.Shared.Events.Events.Combat;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Events.Player;
+using SWLOR.Shared.Events.Events.Skill;
 
 namespace SWLOR.Component.Perk.EventHandlers
 {
@@ -40,7 +43,7 @@ namespace SWLOR.Component.Perk.EventHandlers
         /// When a skill receives decay, any perks tied to that skill should be checked.
         /// If the player no longer meets the requirements for those perks, they should be reduced in level.
         /// </summary>
-        [ScriptHandler(ScriptName.OnSwlorLoseSkill)]
+        [ScriptHandler<OnPlayerLoseSkillRank>]
         public void RemovePerkLevelOnSkillDecay()
         {
             _perkService.RemovePerkLevelOnSkillDecay();
@@ -60,7 +63,7 @@ namespace SWLOR.Component.Perk.EventHandlers
         /// <summary>
         /// When a weapon hits, process any queued weapon abilities.
         /// </summary>
-        [ScriptHandler(ScriptName.OnItemHit)]
+        [ScriptHandler<OnItemHit>]
         public void ProcessQueuedWeaponAbility()
         {
             _usePerkFeat.ProcessQueuedWeaponAbility();
@@ -96,7 +99,7 @@ namespace SWLOR.Component.Perk.EventHandlers
         /// <summary>
         /// When a weapon hits, apply Alacrity and Clarity effects for OneHanded perks.
         /// </summary>
-        [ScriptHandler(ScriptName.OnItemHit)]
+        [ScriptHandler<OnItemHit>]
         public void ApplyAlacrityAndClarity()
         {
             _perkEffectService.ApplyAlacrityAndClarity();
@@ -105,7 +108,7 @@ namespace SWLOR.Component.Perk.EventHandlers
         /// <summary>
         /// When a weapon hits, process Force Link for Beast Force perks.
         /// </summary>
-        [ScriptHandler(ScriptName.OnItemHit)]
+        [ScriptHandler<OnItemHit>]
         public void OnForceLinkHit()
         {
             _perkEffectService.OnForceLinkHit();
@@ -114,7 +117,7 @@ namespace SWLOR.Component.Perk.EventHandlers
         /// <summary>
         /// When a weapon hits, process Endurance Link for Beast Bruiser perks.
         /// </summary>
-        [ScriptHandler(ScriptName.OnItemHit)]
+        [ScriptHandler<OnItemHit>]
         public void OnEnduranceLinkHit()
         {
             _perkEffectService.OnEnduranceLinkHit();

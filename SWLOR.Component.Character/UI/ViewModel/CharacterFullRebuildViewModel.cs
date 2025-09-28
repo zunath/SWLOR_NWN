@@ -13,6 +13,7 @@ using SWLOR.Shared.Domain.Skill.Enums;
 using SWLOR.Shared.Domain.World.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Character;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
@@ -46,7 +47,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
             _serviceProvider = serviceProvider;
             // Services are now lazy-loaded via IServiceProvider
         }
-        [ScriptHandler(ScriptName.OnCharacterRebuild)]
+        [ScriptHandler<OnCharacterRebuild>]
         public void LoadCharacterMigrationWindow()
         {
             var player = GetLastUsedBy();
@@ -63,7 +64,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
             _guiService.TogglePlayerWindow(player, GuiWindowType.CharacterMigration, null, OBJECT_SELF);
         }
 
-        [ScriptHandler(ScriptName.OnExitRebuild)]
+        [ScriptHandler<OnExitRebuild>]
         public void ExitRebuildArea()
         {
             var player = GetLastUsedBy();
@@ -91,7 +92,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
             });
         }
 
-        [ScriptHandler(ScriptName.OnExitSpending)]
+        [ScriptHandler<OnExitSpending>]
         public void ExitSpendingArea()
         {
             var player = GetLastUsedBy();

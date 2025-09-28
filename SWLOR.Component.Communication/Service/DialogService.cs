@@ -5,6 +5,7 @@ using SWLOR.Shared.Domain.Dialog.Contracts;
 using SWLOR.Shared.Domain.Dialog.ValueObjects;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Dialog;
 using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Component.Communication.Service
@@ -93,7 +94,7 @@ namespace SWLOR.Component.Communication.Service
         /// <summary>
         /// Handles when a dialog is started.
         /// </summary>
-        [ScriptHandler(ScriptName.OnDialogStart)]
+        [ScriptHandler<OnDialogStart>]
         public void Start()
         {
             var eventScript = GetCurrentlyRunningEvent();
@@ -134,187 +135,187 @@ namespace SWLOR.Component.Communication.Service
             }
         }
 
-        [ScriptHandler(ScriptName.OnDialogAction0)]
+        [ScriptHandler<OnDialogAction0>]
         public void NodeAction0()
         {
             ActionsTaken(0);
         }
 
-        [ScriptHandler(ScriptName.OnDialogAction1)]
+        [ScriptHandler<OnDialogAction1>]
         public void NodeAction1()
         {
             ActionsTaken(1);
         }
 
-        [ScriptHandler(ScriptName.OnDialogAction2)]
+        [ScriptHandler<OnDialogAction2>]
         public void NodeAction2()
         {
             ActionsTaken(2);
         }
 
-        [ScriptHandler(ScriptName.OnDialogAction3)]
+        [ScriptHandler<OnDialogAction3>]
         public void NodeAction3()
         {
             ActionsTaken(3);
         }
 
-        [ScriptHandler(ScriptName.OnDialogAction4)]
+        [ScriptHandler<OnDialogAction4>]
         public void NodeAction4()
         {
             ActionsTaken(4);
         }
 
-        [ScriptHandler(ScriptName.OnDialogAction5)]
+        [ScriptHandler<OnDialogAction5>]
         public void NodeAction5()
         {
             ActionsTaken(5);
         }
 
-        [ScriptHandler(ScriptName.OnDialogAction6)]
+        [ScriptHandler<OnDialogAction6>]
         public void NodeAction6()
         {
             ActionsTaken(6);
         }
 
-        [ScriptHandler(ScriptName.OnDialogAction7)]
+        [ScriptHandler<OnDialogAction7>]
         public void NodeAction7()
         {
             ActionsTaken(7);
         }
 
-        [ScriptHandler(ScriptName.OnDialogAction8)]
+        [ScriptHandler<OnDialogAction8>]
         public void NodeAction8()
         {
             ActionsTaken(8);
         }
 
-        [ScriptHandler(ScriptName.OnDialogAction9)]
+        [ScriptHandler<OnDialogAction9>]
         public void NodeAction9()
         {
             ActionsTaken(9);
         }
 
-        [ScriptHandler(ScriptName.OnDialogAction10)]
+        [ScriptHandler<OnDialogAction10>]
         public void NodeAction10()
         {
             ActionsTaken(10);
         }
 
-        [ScriptHandler(ScriptName.OnDialogAction11)]
+        [ScriptHandler<OnDialogAction11>]
         public void NodeAction11()
         {
             ActionsTaken(11);
         }
 
-        [ScriptHandler(ScriptName.OnDialogAppears0)]
+        [ScriptHandler<OnDialogAppears0>]
         public bool NodeAppears0()
         {
             return AppearsWhen(2, 0);
         }
 
-        [ScriptHandler(ScriptName.OnDialogAppears1)]
+        [ScriptHandler<OnDialogAppears1>]
         public bool NodeAppears1()
         {
             return AppearsWhen(2, 1);
         }
 
-        [ScriptHandler(ScriptName.OnDialogAppears2)]
+        [ScriptHandler<OnDialogAppears2>]
         public bool NodeAppears2()
         {
             return AppearsWhen(2, 2);
         }
 
-        [ScriptHandler(ScriptName.OnDialogAppears3)]
+        [ScriptHandler<OnDialogAppears3>]
         public bool NodeAppears3()
         {
             return AppearsWhen(2, 3);
         }
 
-        [ScriptHandler(ScriptName.OnDialogAppears4)]
+        [ScriptHandler<OnDialogAppears4>]
         public bool NodeAppears4()
         {
             return AppearsWhen(2, 4);
         }
 
-        [ScriptHandler(ScriptName.OnDialogAppears5)]
+        [ScriptHandler<OnDialogAppears5>]
         public bool NodeAppears5()
         {
             return AppearsWhen(2, 5);
         }
 
-        [ScriptHandler(ScriptName.OnDialogAppears6)]
+        [ScriptHandler<OnDialogAppears6>]
         public bool NodeAppears6()
         {
             return AppearsWhen(2, 6);
         }
 
-        [ScriptHandler(ScriptName.OnDialogAppears7)]
+        [ScriptHandler<OnDialogAppears7>]
         public bool NodeAppears7()
         {
             return AppearsWhen(2, 7);
         }
 
-        [ScriptHandler(ScriptName.OnDialogAppears8)]
+        [ScriptHandler<OnDialogAppears8>]
         public bool NodeAppears8()
         {
             return AppearsWhen(2, 8);
         }
 
-        [ScriptHandler(ScriptName.OnDialogAppears9)]
+        [ScriptHandler<OnDialogAppears9>]
         public bool NodeAppears9()
         {
             return AppearsWhen(2, 9);
         }
 
-        [ScriptHandler(ScriptName.OnDialogAppears10)]
+        [ScriptHandler<OnDialogAppears10>]
         public bool NodeAppears10()
         {
             return AppearsWhen(2, 10);
         }
 
-        [ScriptHandler(ScriptName.OnDialogAppears11)]
+        [ScriptHandler<OnDialogAppears11>]
         public bool NodeAppears11()
         {
             return AppearsWhen(2, 11);
         }
 
-        [ScriptHandler(ScriptName.OnDialogAppearsH)]
+        [ScriptHandler<OnDialogAppearsHeader>]
         public bool HeaderAppearsWhen()
         {
             return AppearsWhen(1, 0);
         }
 
-        [ScriptHandler(ScriptName.OnDialogAppearsN)]
+        [ScriptHandler<OnDialogAppearsNext>]
         public bool NextAppearsWhen()
         {
             return AppearsWhen(3, 12);
         }
 
-        [ScriptHandler(ScriptName.OnDialogActionN)]
+        [ScriptHandler<OnDialogActionNext>]
         public void NextAction()
         {
             ActionsTaken(12);
         }
 
-        [ScriptHandler(ScriptName.OnDialogAppearsP)]
+        [ScriptHandler<OnDialogAppearsPrevious>]
         public bool PreviousAppearsWhen()
         {
             return AppearsWhen(4, 13);
         }
 
-        [ScriptHandler(ScriptName.OnDialogActionP)]
+        [ScriptHandler<OnDialogActionPrevious>]
         public void PreviousAction()
         {
             ActionsTaken(13);
         }
 
-        [ScriptHandler(ScriptName.OnDialogAppearsB)]
+        [ScriptHandler<OnDialogAppearsB>]
         public bool BackAppearsWhen()
         {
             return AppearsWhen(5, 14);
         }
 
-        [ScriptHandler(ScriptName.OnDialogActionB)]
+        [ScriptHandler<OnDialogActionB>]
         public void BackAction()
         {
             ActionsTaken(14);
@@ -323,7 +324,7 @@ namespace SWLOR.Component.Communication.Service
         /// <summary>
         /// Fires when the "End Dialog" node is clicked.
         /// </summary>
-        [ScriptHandler(ScriptName.OnDialogEnd)]
+        [ScriptHandler<OnDialogEnd>]
         public void End()
         {
             var player = GetPCSpeaker();
@@ -515,7 +516,7 @@ namespace SWLOR.Component.Communication.Service
         /// When an object executes this script, the custom dialog specified on their local variables
         /// will be started.
         /// </summary>
-        [ScriptHandler(ScriptName.OnDialogStartConversation)]
+        [ScriptHandler<OnDialogStartConversation>]
         public void StartConversationEvent()
         {
             var self = OBJECT_SELF;

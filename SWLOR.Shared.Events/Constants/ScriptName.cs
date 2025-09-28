@@ -509,11 +509,11 @@ namespace SWLOR.Shared.Events.Constants
         public const string OnDialogAppears9 = "dialog_appears_9";
         public const string OnDialogAppears10 = "dialog_appears10";
         public const string OnDialogAppears11 = "dialog_appears11";
-        public const string OnDialogAppearsH = "dialog_appears_h";
-        public const string OnDialogAppearsN = "dialog_appears_n";
-        public const string OnDialogActionN = "dialog_action_n";
-        public const string OnDialogAppearsP = "dialog_appears_p";
-        public const string OnDialogActionP = "dialog_action_p";
+        public const string OnDialogAppearsHeader = "dialog_appears_h";
+        public const string OnDialogAppearsNext = "dialog_appears_n";
+        public const string OnDialogActionNext = "dialog_action_n";
+        public const string OnDialogAppearsPrevious = "dialog_appears_p";
+        public const string OnDialogActionPrevious = "dialog_action_p";
         public const string OnDialogAppearsB = "dialog_appears_b";
         public const string OnDialogActionB = "dialog_action_b";
         public const string OnDialogEnd = "dialog_end";
@@ -537,7 +537,7 @@ namespace SWLOR.Shared.Events.Constants
         // Space events
         public const string OnSpaceEnter = "space_enter";
         public const string OnSpaceExit = "space_exit";
-        public const string OnShipComputer = "ship_computer";
+        public const string OnUseShipComputer = "ship_computer";
         public const string OnSpaceTarget = "spc_target";
 
         // Aura events
@@ -648,13 +648,13 @@ namespace SWLOR.Shared.Events.Constants
         public const string OnAppearanceEdit = "appearance_edit";
 
         // SWLOR specific events
-        public const string OnSwlorSkillCache = "swlor_skl_cache";
-        public const string OnSwlorDeleteProperty = "swlor_del_prop";
+        public const string OnSkillDataCached = "swlor_skl_cache";
+        public const string OnDeleteProperty = "swlor_del_prop";
         public const string OnServerHeartbeat = "swlor_heartbeat";
-        public const string OnSwlorLoseSkill = "swlor_lose_skill";
-        public const string OnSwlorBuyPerk = "swlor_buy_perk";
-        public const string OnSwlorGainSkill = "swlor_gain_skill";
-        public const string OnSwlorCompleteQuest = "swlor_comp_qst";
+        public const string OnPlayerLoseSkillRank = "swlor_lose_skill";
+        public const string OnPlayerBuyPerk = "swlor_buy_perk";
+        public const string OnPlayerGainSkillRank = "swlor_gain_skill";
+        public const string OnPlayerCompletedQuest = "swlor_comp_qst";
 
         // Interval events
         public const string OnIntervalPC6Seconds = "interval_pc_6s";

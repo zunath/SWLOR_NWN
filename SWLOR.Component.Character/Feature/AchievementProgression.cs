@@ -4,9 +4,16 @@ using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Ability;
 using SWLOR.Shared.Events.Events.Area;
+using SWLOR.Shared.Events.Events.Character;
+using SWLOR.Shared.Events.Events.Combat;
+using SWLOR.Shared.Events.Events.Crafting;
 using SWLOR.Shared.Events.Events.Creature;
 using SWLOR.Shared.Events.Events.Module;
+using SWLOR.Shared.Events.Events.Perk;
+using SWLOR.Shared.Events.Events.Quest;
+using SWLOR.Shared.Events.Events.Skill;
 
 namespace SWLOR.Component.Character.Feature
 {
@@ -99,7 +106,7 @@ namespace SWLOR.Component.Character.Feature
         /// <summary>
         /// Handles the Buy Perk line of achievements.
         /// </summary>
-        [ScriptHandler(ScriptName.OnSwlorBuyPerk)]
+        [ScriptHandler<OnPlayerBuyPerk>]
         public void BuyPerk()
         {
             var player = OBJECT_SELF;
@@ -138,7 +145,7 @@ namespace SWLOR.Component.Character.Feature
         /// <summary>
         /// Handles the Gain Skill line of achievements.
         /// </summary>
-        [ScriptHandler(ScriptName.OnSwlorGainSkill)]
+        [ScriptHandler<OnPlayerGainSkillRank>]
         public void GainSkillPoint()
         {
             var player = OBJECT_SELF;
@@ -181,7 +188,7 @@ namespace SWLOR.Component.Character.Feature
         /// <summary>
         /// Handles the Complete Quests line of achievements.
         /// </summary>
-        [ScriptHandler(ScriptName.OnSwlorCompleteQuest)]
+        [ScriptHandler<OnPlayerCompletedQuest>]
         public void CompleteQuests()
         {
             var player = OBJECT_SELF;
@@ -240,7 +247,7 @@ namespace SWLOR.Component.Character.Feature
         /// <summary>
         /// Handles the Craft Item line of achievements
         /// </summary>
-        [ScriptHandler(ScriptName.OnCraftSuccess)]
+        [ScriptHandler<OnCraftSuccess>]
         public void CompleteCraftSuccessfully()
         {
             var player = OBJECT_SELF;

@@ -3,9 +3,15 @@ using SWLOR.Component.Ability.Feature.AbilityDefinition.Force;
 using SWLOR.Component.Ability.Feature.AbilityDefinition.General;
 using SWLOR.Shared.Domain.Ability.Contracts;
 using SWLOR.Shared.Events.Attributes;
+using SWLOR.Shared.Events.Events.Ability;
+using SWLOR.Shared.Events.Events.Combat;
+using SWLOR.Shared.Events.Events.Crafting;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.Player;
+using SWLOR.Shared.Events.Events.Space;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Inventory;
+using SWLOR.Shared.Events.Events.Server;
 
 namespace SWLOR.Component.Ability.EventHandlers
 {
@@ -55,7 +61,7 @@ namespace SWLOR.Component.Ability.EventHandlers
         /// Each tick, creatures with a concentration effect will be processed.
         /// This will drain FP and reapply whatever effect is associated with an ability.
         /// </summary>
-        [ScriptHandler(ScriptName.OnServerHeartbeat)]
+        [ScriptHandler<OnServerHeartbeat>]
         public void ProcessConcentrationEffects()
         {
             _abilityService.ProcessConcentrationEffects();
@@ -64,7 +70,7 @@ namespace SWLOR.Component.Ability.EventHandlers
         /// <summary>
         /// Whenever a weapon's OnHit event is fired, add a Leadership combat point if an Aura is active.
         /// </summary>
-        [ScriptHandler(ScriptName.OnItemHit)]
+        [ScriptHandler<OnItemHit>]
         public void AddLeadershipCombatPoint()
         {
             _abilityService.AddLeadershipCombatPoint();
@@ -110,7 +116,7 @@ namespace SWLOR.Component.Ability.EventHandlers
         /// <summary>
         /// When a player enters space mode, remove all of their Aura effects.
         /// </summary>
-        [ScriptHandler(ScriptName.OnSpaceEnter)]
+        [ScriptHandler<OnSpaceEnter>]
         public void OnSpaceEnter()
         {
             _abilityService.ClearAurasOnSpaceEntry();
@@ -119,7 +125,7 @@ namespace SWLOR.Component.Ability.EventHandlers
         /// <summary>
         /// Whenever a creature enters the aura, add them to the cache.
         /// </summary>
-        [ScriptHandler(ScriptName.OnAuraEnter)]
+        [ScriptHandler<OnAuraEnter>]
         public void AuraEnter()
         {
             _abilityService.AuraEnter();
@@ -128,7 +134,7 @@ namespace SWLOR.Component.Ability.EventHandlers
         /// <summary>
         /// Whenever a creature exits the aura, remove it from the cache.
         /// </summary>
-        [ScriptHandler(ScriptName.OnAuraExit)]
+        [ScriptHandler<OnAuraExit>]
         public void AuraExit()
         {
             _abilityService.AuraExit();
@@ -137,7 +143,7 @@ namespace SWLOR.Component.Ability.EventHandlers
         /// <summary>
         /// When Burst of Speed effect is applied.
         /// </summary>
-        [ScriptHandler(ScriptName.OnBurstOfSpeedApply)]
+        [ScriptHandler<OnBurstOfSpeedApply>]
         public void ApplyBurstOfSpeedEffect()
         {
             BurstOfSpeedAbilityDefinition.ApplyEffect();
@@ -146,7 +152,7 @@ namespace SWLOR.Component.Ability.EventHandlers
         /// <summary>
         /// When Burst of Speed effect is removed.
         /// </summary>
-        [ScriptHandler(ScriptName.OnBurstOfSpeedRemoved)]
+        [ScriptHandler<OnBurstOfSpeedRemoved>]
         public void RemoveBurstOfSpeedEffect()
         {
             BurstOfSpeedAbilityDefinition.RemoveEffect();
@@ -155,7 +161,7 @@ namespace SWLOR.Component.Ability.EventHandlers
         /// <summary>
         /// When Gas Bomb 1 effect is applied.
         /// </summary>
-        [ScriptHandler(ScriptName.OnGrenadeGas1Enable)]
+        [ScriptHandler<OnGrenadeGas1Enable>]
         public void GasBomb1Enter()
         {
             _gasBombAbilityDefinition.GasBomb1Enter();
@@ -164,7 +170,7 @@ namespace SWLOR.Component.Ability.EventHandlers
         /// <summary>
         /// When Gas Bomb 1 heartbeat occurs.
         /// </summary>
-        [ScriptHandler(ScriptName.OnGrenadeGas1Heartbeat)]
+        [ScriptHandler<OnGrenadeGas1Heartbeat>]
         public void GasBomb1Heartbeat()
         {
             _gasBombAbilityDefinition.GasBomb1Heartbeat();
@@ -173,7 +179,7 @@ namespace SWLOR.Component.Ability.EventHandlers
         /// <summary>
         /// When Gas Bomb 2 effect is applied.
         /// </summary>
-        [ScriptHandler(ScriptName.OnGrenadeGas2Enable)]
+        [ScriptHandler<OnGrenadeGas2Enable>]
         public void GasBomb2Enter()
         {
             _gasBombAbilityDefinition.GasBomb2Enter();
@@ -182,7 +188,7 @@ namespace SWLOR.Component.Ability.EventHandlers
         /// <summary>
         /// When Gas Bomb 2 heartbeat occurs.
         /// </summary>
-        [ScriptHandler(ScriptName.OnGrenadeGas2Heartbeat)]
+        [ScriptHandler<OnGrenadeGas2Heartbeat>]
         public void GasBomb2Heartbeat()
         {
             _gasBombAbilityDefinition.GasBomb2Heartbeat();
@@ -191,7 +197,7 @@ namespace SWLOR.Component.Ability.EventHandlers
         /// <summary>
         /// When Gas Bomb 3 effect is applied.
         /// </summary>
-        [ScriptHandler(ScriptName.OnGrenadeGas3Enable)]
+        [ScriptHandler<OnGrenadeGas3Enable>]
         public void GasBomb3Enter()
         {
             _gasBombAbilityDefinition.GasBomb3Enter();
@@ -200,7 +206,7 @@ namespace SWLOR.Component.Ability.EventHandlers
         /// <summary>
         /// When Gas Bomb 3 heartbeat occurs.
         /// </summary>
-        [ScriptHandler(ScriptName.OnGrenadeGas3Heartbeat)]
+        [ScriptHandler<OnGrenadeGas3Heartbeat>]
         public void GasBomb3Heartbeat()
         {
             _gasBombAbilityDefinition.GasBomb3Heartbeat();
@@ -209,7 +215,7 @@ namespace SWLOR.Component.Ability.EventHandlers
         /// <summary>
         /// When Stealth Generator is used or player is damaged, clear invisibility.
         /// </summary>
-        [ScriptHandler(ScriptName.OnHarvesterUsed)]
+        [ScriptHandler<OnHarvesterUsed>]
         [ScriptHandler<OnPlayerDamaged>]
         public void ClearInvisibility()
         {
@@ -219,7 +225,7 @@ namespace SWLOR.Component.Ability.EventHandlers
         /// <summary>
         /// When Incendiary Bomb 1 effect is applied.
         /// </summary>
-        [ScriptHandler(ScriptName.OnGrenadeIncendiary1Enable)]
+        [ScriptHandler<OnGrenadeIncendiary1Enable>]
         public void IncendiaryBomb1Enter()
         {
             _incendiaryBombAbilityDefinition.IncendiaryBomb1Enter();
@@ -228,7 +234,7 @@ namespace SWLOR.Component.Ability.EventHandlers
         /// <summary>
         /// When Incendiary Bomb 1 heartbeat occurs.
         /// </summary>
-        [ScriptHandler(ScriptName.OnGrenadeIncendiary1Heartbeat)]
+        [ScriptHandler<OnGrenadeIncendiary1Heartbeat>]
         public void IncendiaryBomb1Heartbeat()
         {
             _incendiaryBombAbilityDefinition.IncendiaryBomb1Heartbeat();
@@ -237,7 +243,7 @@ namespace SWLOR.Component.Ability.EventHandlers
         /// <summary>
         /// When Incendiary Bomb 2 effect is applied.
         /// </summary>
-        [ScriptHandler(ScriptName.OnGrenadeIncendiary2Enable)]
+        [ScriptHandler<OnGrenadeIncendiary2Enable>]
         public void IncendiaryBomb2Enter()
         {
             _incendiaryBombAbilityDefinition.IncendiaryBomb2Enter();
@@ -246,7 +252,7 @@ namespace SWLOR.Component.Ability.EventHandlers
         /// <summary>
         /// When Incendiary Bomb 2 heartbeat occurs.
         /// </summary>
-        [ScriptHandler(ScriptName.OnGrenadeIncendiary2Heartbeat)]
+        [ScriptHandler<OnGrenadeIncendiary2Heartbeat>]
         public void IncendiaryBomb2Heartbeat()
         {
             _incendiaryBombAbilityDefinition.IncendiaryBomb2Heartbeat();
@@ -255,7 +261,7 @@ namespace SWLOR.Component.Ability.EventHandlers
         /// <summary>
         /// When Incendiary Bomb 3 effect is applied.
         /// </summary>
-        [ScriptHandler(ScriptName.OnGrenadeIncendiary3Enable)]
+        [ScriptHandler<OnGrenadeIncendiary3Enable>]
         public void IncendiaryBomb3Enter()
         {
             _incendiaryBombAbilityDefinition.IncendiaryBomb3Enter();
@@ -264,7 +270,7 @@ namespace SWLOR.Component.Ability.EventHandlers
         /// <summary>
         /// When Incendiary Bomb 3 heartbeat occurs.
         /// </summary>
-        [ScriptHandler(ScriptName.OnGrenadeIncendiary3Heartbeat)]
+        [ScriptHandler<OnGrenadeIncendiary3Heartbeat>]
         public void IncendiaryBomb3Heartbeat()
         {
             _incendiaryBombAbilityDefinition.IncendiaryBomb3Heartbeat();

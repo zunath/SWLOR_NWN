@@ -13,6 +13,7 @@ using SWLOR.Shared.Domain.World.Enums;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Properties;
+using SWLOR.Shared.Events.Events.World;
 
 namespace SWLOR.Component.Properties.Feature.PropertyLayoutDefinition
 {
@@ -81,7 +82,7 @@ namespace SWLOR.Component.Properties.Feature.PropertyLayoutDefinition
             return true;
         }
 
-        [ScriptHandler(ScriptName.OnPropertyStarportTerminal)]
+        [ScriptHandler<OnPropertyStarportTerminal>]
         public void UsePropertyStarportTerminal()
         {
             var player = GetLastUsedBy();

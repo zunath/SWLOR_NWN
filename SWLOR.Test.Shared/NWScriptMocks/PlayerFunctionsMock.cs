@@ -1,7 +1,7 @@
 ﻿using System.Numerics;
 using SWLOR.NWN.API.NWScript.Enum;
 
-namespace SWLOR.Test.Shared.NWScript
+namespace SWLOR.Test.Shared.NWScriptMocks
 {
     public partial class NWScriptServiceMock
     {

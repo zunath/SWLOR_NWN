@@ -8,6 +8,7 @@ using SWLOR.Shared.Domain.UI.Events;
 using SWLOR.Shared.Domain.World.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Inventory;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.UI.Contracts;
 
@@ -237,7 +238,7 @@ namespace SWLOR.Component.Inventory.Service
         /// <summary>
         /// When a placeable with a key item defined is used by a player, give it to them.
         /// </summary>
-        [ScriptHandler(ScriptName.OnGetKeyItem)]
+        [ScriptHandler<OnGetKeyItem>]
         public void ObtainKeyItem()
         {
             var player = GetLastUsedBy();

@@ -1,5 +1,6 @@
 using SWLOR.NWN.API.Service;
 using System;
+using SWLOR.Test.Shared.NWScriptMocks;
 
 namespace SWLOR.Test.Shared
 {
@@ -11,7 +12,7 @@ namespace SWLOR.Test.Shared
     {
         private static bool _isInitialized;
         private static readonly Lock _lock = new();
-        private static NWScript.NWScriptServiceMock? _mockService;
+        private static NWScriptServiceMock? _mockService;
 
         /// <summary>
         /// Sets up the mock NWScript service for testing.
@@ -26,7 +27,7 @@ namespace SWLOR.Test.Shared
                 if (_isInitialized) return;
 
                 // Create and set the mock service as the active NWScript implementation
-                _mockService = new NWScript.NWScriptServiceMock();
+                _mockService = new NWScriptServiceMock();
                 SWLOR.NWN.API.Service.NWScript.SetService(_mockService); // Direct call after InternalsVisibleTo
                 
                 _isInitialized = true;
@@ -37,7 +38,7 @@ namespace SWLOR.Test.Shared
         /// Gets the mock NWScript service instance for direct access to mock data.
         /// This allows tests to verify state changes and set up specific conditions.
         /// </summary>
-        protected static NWScript.NWScriptServiceMock GetMockService()
+        protected static NWScriptServiceMock GetMockService()
         {
             InitializeMockNWScript();
             return _mockService ?? throw new InvalidOperationException("Mock service not properly initialized");

@@ -1,6 +1,6 @@
 ﻿using SWLOR.NWN.API.Contracts;
 
-namespace SWLOR.Test.Shared.NWScript
+namespace SWLOR.Test.Shared.NWScriptMocks
 {
     public partial class NWScriptServiceMock: INWScriptService
     {

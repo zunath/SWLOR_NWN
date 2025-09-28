@@ -1,9 +1,14 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Shared.Domain.Associate.Contracts;
 using SWLOR.Shared.Events.Attributes;
+using SWLOR.Shared.Events.Events.Associate;
+using SWLOR.Shared.Events.Events.Combat;
+using SWLOR.Shared.Events.Events.Crafting;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.NWNX;
+using SWLOR.Shared.Events.Events.Space;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Properties;
 
 namespace SWLOR.Component.Associate.EventHandlers
 {
@@ -37,7 +42,7 @@ namespace SWLOR.Component.Associate.EventHandlers
         /// <summary>
         /// When combat point XP is distributed, handle beast XP.
         /// </summary>
-        [ScriptHandler(ScriptName.OnCombatPointXPDistribute)]
+        [ScriptHandler<OnCombatPointXPDistribute>]
         public void CombatPointXPDistributed()
         {
             BeastMasteryService.CombatPointXPDistributed();
@@ -46,7 +51,7 @@ namespace SWLOR.Component.Associate.EventHandlers
         /// <summary>
         /// When a player enters space or forcefully removes a beast from the party, the beast gets despawned.
         /// </summary>
-        [ScriptHandler(ScriptName.OnSpaceEnter)]
+        [ScriptHandler<OnSpaceEnter>]
         [ScriptHandler<OnAssociateRemoveBefore>]
         public void RemoveAssociate()
         {
@@ -57,7 +62,7 @@ namespace SWLOR.Component.Associate.EventHandlers
         /// <summary>
         /// When a beast is blocked, execute the blocked script.
         /// </summary>
-        [ScriptHandler(ScriptName.OnBeastBlocked)]
+        [ScriptHandler<OnBeastBlocked>]
         public void BeastOnBlocked()
         {
             BeastMasteryService.BeastOnBlocked();
@@ -66,7 +71,7 @@ namespace SWLOR.Component.Associate.EventHandlers
         /// <summary>
         /// When a beast round ends, handle end combat round logic.
         /// </summary>
-        [ScriptHandler(ScriptName.OnBeastRoundEnd)]
+        [ScriptHandler<OnBeastRoundEnd>]
         public void BeastOnEndCombatRound()
         {
             BeastMasteryService.BeastOnEndCombatRound();
@@ -75,7 +80,7 @@ namespace SWLOR.Component.Associate.EventHandlers
         /// <summary>
         /// When a beast conversation starts, execute the conversation script.
         /// </summary>
-        [ScriptHandler(ScriptName.OnBeastConversation)]
+        [ScriptHandler<OnBeastConversation>]
         public void BeastOnConversation()
         {
             BeastMasteryService.BeastOnConversation();
@@ -84,7 +89,7 @@ namespace SWLOR.Component.Associate.EventHandlers
         /// <summary>
         /// When a beast is damaged, execute the damaged script.
         /// </summary>
-        [ScriptHandler(ScriptName.OnBeastDamaged)]
+        [ScriptHandler<OnBeastDamaged>]
         public void BeastOnDamaged()
         {
             BeastMasteryService.BeastOnDamaged();
@@ -93,7 +98,7 @@ namespace SWLOR.Component.Associate.EventHandlers
         /// <summary>
         /// When a beast dies, handle death logic.
         /// </summary>
-        [ScriptHandler(ScriptName.OnBeastDeath)]
+        [ScriptHandler<OnBeastDeath>]
         public void BeastOnDeath()
         {
             BeastMasteryService.BeastOnDeath();
@@ -102,7 +107,7 @@ namespace SWLOR.Component.Associate.EventHandlers
         /// <summary>
         /// When a beast is disturbed, execute the disturbed script.
         /// </summary>
-        [ScriptHandler(ScriptName.OnBeastDisturbed)]
+        [ScriptHandler<OnBeastDisturbed>]
         public void BeastOnDisturbed()
         {
             BeastMasteryService.BeastOnDisturbed();
@@ -111,7 +116,7 @@ namespace SWLOR.Component.Associate.EventHandlers
         /// <summary>
         /// When a beast heartbeat occurs, execute the heartbeat script and restore stats.
         /// </summary>
-        [ScriptHandler(ScriptName.OnBeastHeartbeat)]
+        [ScriptHandler<OnBeastHeartbeat>]
         public void BeastOnHeartbeat()
         {
             BeastMasteryService.BeastOnHeartbeat();
@@ -120,7 +125,7 @@ namespace SWLOR.Component.Associate.EventHandlers
         /// <summary>
         /// When a beast perception event occurs, execute the perception script.
         /// </summary>
-        [ScriptHandler(ScriptName.OnBeastPerception)]
+        [ScriptHandler<OnBeastPerception>]
         public void BeastOnPerception()
         {
             BeastMasteryService.BeastOnPerception();
@@ -129,7 +134,7 @@ namespace SWLOR.Component.Associate.EventHandlers
         /// <summary>
         /// When a beast is physically attacked, execute the attack script.
         /// </summary>
-        [ScriptHandler(ScriptName.OnBeastAttacked)]
+        [ScriptHandler<OnBeastAttacked>]
         public void BeastOnPhysicalAttacked()
         {
             BeastMasteryService.BeastOnPhysicalAttacked();
@@ -138,7 +143,7 @@ namespace SWLOR.Component.Associate.EventHandlers
         /// <summary>
         /// When a beast rests, handle rest logic.
         /// </summary>
-        [ScriptHandler(ScriptName.OnBeastRest)]
+        [ScriptHandler<OnBeastRest>]
         public void BeastOnRested()
         {
             BeastMasteryService.BeastOnRested();
@@ -147,7 +152,7 @@ namespace SWLOR.Component.Associate.EventHandlers
         /// <summary>
         /// When a beast spawns, handle spawn logic.
         /// </summary>
-        [ScriptHandler(ScriptName.OnBeastSpawn)]
+        [ScriptHandler<OnBeastSpawn>]
         public void BeastOnSpawn()
         {
             BeastMasteryService.BeastOnSpawn();
@@ -156,7 +161,7 @@ namespace SWLOR.Component.Associate.EventHandlers
         /// <summary>
         /// When a beast spell is cast, execute the spell cast script.
         /// </summary>
-        [ScriptHandler(ScriptName.OnBeastSpellCast)]
+        [ScriptHandler<OnBeastSpellCast>]
         public void BeastOnSpellCastAt()
         {
             BeastMasteryService.BeastOnSpellCastAt();
@@ -165,7 +170,7 @@ namespace SWLOR.Component.Associate.EventHandlers
         /// <summary>
         /// When a beast user defined event occurs, execute the user defined script.
         /// </summary>
-        [ScriptHandler(ScriptName.OnBeastUserDefined)]
+        [ScriptHandler<OnBeastUserDefined>]
         public void BeastOnUserDefined()
         {
             BeastMasteryService.BeastOnUserDefined();
@@ -174,7 +179,7 @@ namespace SWLOR.Component.Associate.EventHandlers
         /// <summary>
         /// When a beast terminates, open the stables menu.
         /// </summary>
-        [ScriptHandler(ScriptName.OnBeastTerminate)]
+        [ScriptHandler<OnBeastTerminate>]
         public void OpenStablesMenu()
         {
             BeastMasteryService.OpenStablesMenu();
@@ -183,7 +188,7 @@ namespace SWLOR.Component.Associate.EventHandlers
         /// <summary>
         /// When an incubator terminal is used, open the incubator UI.
         /// </summary>
-        [ScriptHandler(ScriptName.OnIncubatorTerminal)]
+        [ScriptHandler<OnIncubatorTerminal>]
         public void UseIncubator()
         {
             BeastMasteryService.UseIncubator();
@@ -192,7 +197,7 @@ namespace SWLOR.Component.Associate.EventHandlers
         /// <summary>
         /// When a property is removed, also remove any associated incubation jobs.
         /// </summary>
-        [ScriptHandler(ScriptName.OnSwlorDeleteProperty)]
+        [ScriptHandler<OnDeleteProperty>]
         public void OnRemoveProperty()
         {
             BeastMasteryService.OnRemoveProperty();
@@ -201,7 +206,7 @@ namespace SWLOR.Component.Associate.EventHandlers
         /// <summary>
         /// When a player clicks a "DNA Extract" object, they get a message stating to use the extractor item on it.
         /// </summary>
-        [ScriptHandler(ScriptName.OnDNAExtractUsed)]
+        [ScriptHandler<OnDNAExtractUsed>]
         public void UseExtractDNAObject()
         {
             BeastMasteryService.UseExtractDNAObject();
@@ -210,7 +215,7 @@ namespace SWLOR.Component.Associate.EventHandlers
         /// <summary>
         /// When a player uses a droid assembly terminal, displays the UI.
         /// </summary>
-        [ScriptHandler(ScriptName.OnDroidAssociateUsed)]
+        [ScriptHandler<OnDroidAssociateUsed>]
         public void UseDroidAssemblyTerminal()
         {
             DroidService.UseDroidAssemblyTerminal();

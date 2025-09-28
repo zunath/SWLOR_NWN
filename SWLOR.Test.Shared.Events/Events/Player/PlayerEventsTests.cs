@@ -1,5 +1,6 @@
 using SWLOR.Shared.Events.Events.Player;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Space;
 
 namespace SWLOR.Test.Shared.Events.Events.Player
 {

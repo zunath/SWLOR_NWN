@@ -2,6 +2,7 @@ using SWLOR.Shared.Domain.StatusEffect.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Module;
+using SWLOR.Shared.Events.Events.Server;
 
 namespace SWLOR.Component.StatusEffect.EventHandlers
 {
@@ -46,7 +47,7 @@ namespace SWLOR.Component.StatusEffect.EventHandlers
         /// <summary>
         /// When the module heartbeat runs, execute and clean up status effects on all creatures.
         /// </summary>
-        [ScriptHandler(ScriptName.OnServerHeartbeat)]
+        [ScriptHandler<OnServerHeartbeat>]
         public void TickStatusEffects()
         {
             _statusEffectService.TickStatusEffects();

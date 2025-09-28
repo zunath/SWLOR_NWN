@@ -3,6 +3,7 @@ using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Area;
+using SWLOR.Shared.Events.Events.Combat;
 using SWLOR.Shared.Events.Events.Creature;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.NWNX;
@@ -57,7 +58,7 @@ namespace SWLOR.Component.Combat.EventHandlers
         /// <summary>
         /// On module heartbeat, clear a PC's saved combat facing if they are no longer in combat.
         /// </summary>
-        [ScriptHandler(ScriptName.OnIntervalPC6Seconds)]
+        [ScriptHandler<OnIntervalPC6Seconds>]
         public void ClearCombatState()
         {
             _combatService.ClearCombatState();
@@ -76,7 +77,7 @@ namespace SWLOR.Component.Combat.EventHandlers
         /// <summary>
         /// Adds a combat point to a given NPC creature for a given player and skill type.
         /// </summary>
-        [ScriptHandler(ScriptName.OnItemHit)]
+        [ScriptHandler<OnItemHit>]
         public void OnHitCastSpell()
         {
             _combatPointService.OnHitCastSpell();
@@ -155,7 +156,7 @@ namespace SWLOR.Component.Combat.EventHandlers
         /// <summary>
         /// When a creature is destroyed with DestroyObject, remove all enmity tables it is associated with.
         /// </summary>
-        [ScriptHandler(ScriptName.OnObjectDestroyed)]
+        [ScriptHandler<OnObjectDestroyed>]
         public void CreatureDestroyed()
         {
             _enmityService.CreatureDestroyed();

@@ -6,7 +6,9 @@ using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Inventory.ValueObjects;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Combat;
 using SWLOR.Shared.Events.Events.Creature;
+using SWLOR.Shared.Events.Events.Inventory;
 
 namespace SWLOR.Component.Inventory.Feature.ItemDefinition
 {
@@ -95,7 +97,7 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
         /// When a creature acquires emnity and is mounted, dismount. 
         /// Set pheno to normal, tail to none and movement rate to normal.
         /// </summary>
-        [ScriptHandler(ScriptName.OnEnmityAcquired)]
+        [ScriptHandler<OnEnmityAcquired>]
         public static void AttackDismount()
         {
             var player = OBJECT_SELF;
@@ -114,7 +116,7 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
         /// Set pheno to normal, tail to none and movement rate to normal.
         /// Warning: This is not currently working. Need to hook the right script. *****!
         /// </summary>
-        [ScriptHandler(ScriptName.OnSpeederHook)]
+        [ScriptHandler<OnSpeederHook>]
         public static void AreaTransitionDismount()
         {
             var player = OBJECT_SELF;

@@ -20,6 +20,7 @@ using SWLOR.Shared.Domain.StatusEffect.Enums;
 using SWLOR.Shared.Domain.StatusEffect.ValueObjects;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Associate;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.Player;
 using EquipmentSlot = NWN.Native.API.EquipmentSlot;
@@ -395,7 +396,7 @@ namespace SWLOR.Component.Combat.Service
         /// After a player's status effects are reassociated,
         /// adjust any food HP if necessary.
         /// </summary>
-        [ScriptHandler(ScriptName.OnAssociateStateEffect)]
+        [ScriptHandler<OnAssociateStateEffect>]
         public void ReapplyFoodHP()
         {
             var player = OBJECT_SELF;

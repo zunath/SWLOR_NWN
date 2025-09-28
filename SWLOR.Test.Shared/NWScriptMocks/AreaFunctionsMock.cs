@@ -4,7 +4,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using ObjectType = SWLOR.NWN.API.NWScript.Enum.ObjectType;
 using WeatherType = SWLOR.NWN.API.NWScript.Enum.WeatherType;
 
-namespace SWLOR.Test.Shared.NWScript
+namespace SWLOR.Test.Shared.NWScriptMocks
 {
     public partial class NWScriptServiceMock
     {

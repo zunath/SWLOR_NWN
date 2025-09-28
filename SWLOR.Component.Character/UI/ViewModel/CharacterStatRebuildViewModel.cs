@@ -10,6 +10,7 @@ using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Inventory.Enums;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Character;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Service;
 
@@ -35,7 +36,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
             // Services are now lazy-loaded via IServiceProvider
         }
         
-        [ScriptHandler(ScriptName.OnBuyStatRebuild)]
+        [ScriptHandler<OnBuyStatRebuild>]
         public void LoadCharacterStatRebuild()
         {
             var terminal = OBJECT_SELF;

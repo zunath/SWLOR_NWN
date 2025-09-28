@@ -10,6 +10,7 @@ using SWLOR.Shared.Domain.Quest.Enums;
 using SWLOR.Shared.Domain.World.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Quest;
 
 namespace SWLOR.Component.Quest.Feature.QuestDefinition
 {
@@ -159,7 +160,7 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
         /// <summary>
         /// When a force crystal is touched, run the progression logic for the First Rites quest.
         /// </summary>
-        [ScriptHandler(ScriptName.OnQuestForceCrystal)]
+        [ScriptHandler<OnQuestForceCrystal>]
         public void FirstRitesForceCrystal()
         {
             const string InactiveQuestText = "The crystal glows quietly...";

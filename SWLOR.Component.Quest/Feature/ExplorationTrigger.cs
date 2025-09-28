@@ -1,12 +1,13 @@
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Quest;
 using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Component.Quest.Feature
 {
     public static class ExplorationTrigger
     {
-        [ScriptHandler(ScriptName.OnExploreTrigger)]
+        [ScriptHandler<OnExploreTrigger>]
         public static void EnterExplorationTrigger()
         {
             var player = GetEnteringObject();

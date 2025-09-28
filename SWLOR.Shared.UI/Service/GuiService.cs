@@ -6,8 +6,10 @@ using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Area;
+using SWLOR.Shared.Events.Events.Crafting;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.Player;
+using SWLOR.Shared.Events.Events.Skill;
 using SWLOR.Shared.UI.Component;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Entity;
@@ -32,7 +34,7 @@ namespace SWLOR.Shared.UI.Service
         /// <summary>
         /// When the module loads, cache all of the GUI windows for later retrieval.
         /// </summary>
-        [ScriptHandler(ScriptName.OnSwlorSkillCache)]
+        [ScriptHandler<OnSkillDataCached>]
         public void CacheData()
         {
             LoadWindowTemplates();

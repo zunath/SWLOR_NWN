@@ -64,7 +64,6 @@ namespace SWLOR.Component.Character.Service
         /// <summary>
         /// When a player dies, wipe their temporary "busy" status.
         /// </summary>
-        [ScriptHandler<OnModuleDeath>]
         public void WipeStatusOnDeath()
         {
             var player = GetLastPlayerDied();

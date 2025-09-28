@@ -23,7 +23,6 @@ namespace SWLOR.Component.World.Service
         /// <summary>
         /// Loads all visibility objects from areas and caches them.
         /// </summary>
-        [ScriptHandler<OnModuleCacheBefore>]
         public void LoadVisibilityObjects()
         {
             _visibilityObjects.Clear();

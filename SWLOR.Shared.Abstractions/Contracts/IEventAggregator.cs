@@ -23,6 +23,14 @@ namespace SWLOR.Shared.Abstractions.Contracts
         IDisposable Subscribe<TEvent>(Action<TEvent> handler) where TEvent : IEvent;
 
         /// <summary>
+        /// Subscribes to conditional events of a specific type that return boolean values.
+        /// </summary>
+        /// <typeparam name="TEvent">The type of event to subscribe to</typeparam>
+        /// <param name="handler">The conditional event handler that returns a boolean</param>
+        /// <returns>A subscription token for unsubscribing</returns>
+        IDisposable SubscribeConditional<TEvent>(Func<TEvent, bool> handler) where TEvent : IEvent;
+
+        /// <summary>
         /// Unsubscribes from events using a subscription token.
         /// </summary>
         /// <param name="subscription">The subscription token</param>

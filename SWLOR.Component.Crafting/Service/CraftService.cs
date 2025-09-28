@@ -400,7 +400,6 @@ namespace SWLOR.Component.Crafting.Service
         /// <summary>
         /// When a crafting device is used, display the recipe menu.
         /// </summary>
-        [ScriptHandler<OnCraftUsed>]
         public void UseCraftingDevice()
         {
             var player = GetLastUsedBy();
@@ -764,14 +763,12 @@ namespace SWLOR.Component.Crafting.Service
             throw new Exception("Unsupported enhancement type.");
         }
 
-        [ScriptHandler<OnRefineryUsed>]
         public void UseRefinery()
         {
             var player = GetLastUsedBy();
             GuiService.TogglePlayerWindow(player, GuiWindowType.Refinery, null, OBJECT_SELF);
         }
 
-        [ScriptHandler<OnResearchTerminal>]
         public void UseResearchTerminal()
         {
             var player = GetLastUsedBy();
@@ -969,7 +966,6 @@ namespace SWLOR.Component.Crafting.Service
         /// <summary>
         /// When a property is removed, also remove any associated research jobs.
         /// </summary>
-        [ScriptHandler<OnDeleteProperty>]
         public void OnRemoveProperty()
         {
             var propertyId = EventsPlugin.GetEventData("PROPERTY_ID");

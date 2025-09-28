@@ -80,7 +80,6 @@ namespace SWLOR.Component.Quest.Service
         /// <summary>
         /// When the module loads, data is cached to speed up searches later.
         /// </summary>
-        [ScriptHandler<OnModuleCacheBefore>]
         public void CacheData()
         {
             RegisterQuests();
@@ -277,7 +276,6 @@ namespace SWLOR.Component.Quest.Service
         /// <summary>
         /// When an NPC is killed, any objectives for quests a player currently has active will be updated.
         /// </summary>
-        [ScriptHandler<OnCreatureDeathBefore>]
         public void ProgressKillTargetObjectives()
         {
             var creature = OBJECT_SELF;
@@ -346,7 +344,6 @@ namespace SWLOR.Component.Quest.Service
         /// <summary>
         /// When an item collector placeable is opened, 
         /// </summary>
-        [ScriptHandler<OnQuestCollectOpen>]
         public void OpenItemCollector()
         {
             var container = OBJECT_SELF;
@@ -383,7 +380,6 @@ namespace SWLOR.Component.Quest.Service
         /// <summary>
         /// When an item collector placeable is closed, clear its inventory and destroy it.
         /// </summary>
-        [ScriptHandler<OnQuestCollectClosed>]
         public void CloseItemCollector()
         {
             var player = GetLastClosedBy();
@@ -403,7 +399,6 @@ namespace SWLOR.Component.Quest.Service
         /// <summary>
         /// When an item collector placeable is disturbed, 
         /// </summary>
-        [ScriptHandler<OnQuestCollectDisturbed>]
         public void DisturbItemCollector()
         {
             var type = GetInventoryDisturbType();
@@ -466,7 +461,6 @@ namespace SWLOR.Component.Quest.Service
         /// <summary>
         /// When a player uses a quest placeable, handle the progression.
         /// </summary>
-        [ScriptHandler<OnQuestPlaceable>]
         public void UseQuestPlaceable()
         {
             var player = GetLastUsedBy();
@@ -478,7 +472,6 @@ namespace SWLOR.Component.Quest.Service
         /// <summary>
         /// When a player enters a quest trigger, handle the progression.
         /// </summary>
-        [ScriptHandler<OnQuestTrigger>]
         public void EnterQuestTrigger()
         {
             var player = GetEnteringObject();
@@ -559,7 +552,6 @@ namespace SWLOR.Component.Quest.Service
         /// <summary>
         /// After quests are registered, refresh the available guild tasks.
         /// </summary>
-        [ScriptHandler<OnQuestsRegistered>]
         public void RefreshGuildTasks()
         {
             if (DateTasksLoaded != null) return;

@@ -113,5 +113,32 @@ namespace SWLOR.Component.World.EventHandlers
         {
             _planetService.CacheData();
         }
+
+        /// <summary>
+        /// When the module content changes, rerun the baking process.
+        /// </summary>
+        [ScriptHandler<OnModuleContentChange>]
+        public void LoadWalkmeshes()
+        {
+            _walkmeshService.LoadWalkmeshes();
+        }
+
+        /// <summary>
+        /// Loads all visibility objects from areas and caches them.
+        /// </summary>
+        [ScriptHandler<OnModuleCacheBefore>]
+        public void LoadVisibilityObjects()
+        {
+            _visibilityObjectCacheService.LoadVisibilityObjects();
+        }
+
+        /// <summary>
+        /// When the module loads, cache all taxi destinations.
+        /// </summary>
+        [ScriptHandler<OnModuleCacheBefore>]
+        public void LoadTaxiDestinations()
+        {
+            _taxiService.LoadTaxiDestinations();
+        }
     }
 }

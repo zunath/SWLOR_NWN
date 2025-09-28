@@ -15,7 +15,6 @@ namespace SWLOR.Component.Character.Service
         /// <summary>
         /// When a member of a party accepts an invitation, add them to the caches.
         /// </summary>
-        [ScriptHandler<OnPartyAcceptInvitationBefore>]
         public void JoinParty()
         {
             var creature = OBJECT_SELF;
@@ -54,7 +53,6 @@ namespace SWLOR.Component.Character.Service
         /// <summary>
         /// When an associate (droid, pet, henchman, etc.) joins a party, add them to the caches.
         /// </summary>
-        [ScriptHandler<OnAssociateAddBefore>]
         public void AssociateJoinParty()
         {
             var owner = OBJECT_SELF;
@@ -66,7 +64,6 @@ namespace SWLOR.Component.Character.Service
         /// <summary>
         /// When an associate (droid, pet, henchman, etc.) is removed from the party or leaves, remove them from the caches.
         /// </summary>
-        [ScriptHandler<OnAssociateRemoveBefore>]
         public void AssociateLeaveParty()
         {
             var associate = StringToObject(EventsPlugin.GetEventData("ASSOCIATE_OBJECT_ID"));
@@ -76,7 +73,6 @@ namespace SWLOR.Component.Character.Service
         /// <summary>
         /// When a member of a party leaves, update the caches.
         /// </summary>
-        [ScriptHandler<OnPartyLeaveBefore>]
         public void LeaveParty()
         {
             var creature = StringToObject(EventsPlugin.GetEventData("LEAVING"));
@@ -86,7 +82,6 @@ namespace SWLOR.Component.Character.Service
         /// <summary>
         /// When the leader of a party changes, update the caches.
         /// </summary>
-        [ScriptHandler<OnPartyTransferLeadershipBefore>]
         public void TransferLeadership()
         {
             var creature = StringToObject(EventsPlugin.GetEventData("NEW_LEADER"));

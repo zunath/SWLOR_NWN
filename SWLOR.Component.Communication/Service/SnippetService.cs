@@ -38,7 +38,6 @@ namespace SWLOR.Component.Communication.Service
         /// <summary>
         /// When the module loads, all available conversation snippets are loaded into the cache.
         /// </summary>
-        [ScriptHandler<OnModuleCacheBefore>]
         public void CacheData()
         {
             _snippetCache = CacheService.BuildInterfaceCache<ISnippetListDefinition, string, SnippetDetail>()
@@ -67,10 +66,6 @@ namespace SWLOR.Component.Communication.Service
         /// check for any conversation conditions and process them.
         /// </summary>
         /// <returns></returns>
-        [ScriptHandler<OnDialogAppear>]
-        [ScriptHandler<OnDialogAppears>]
-        [ScriptHandler<OnDialogCondition>]
-        [ScriptHandler<OnDialogConditions>]
         public bool ConversationAppearsWhen()
         {
             var player = GetPCSpeaker();
@@ -81,8 +76,6 @@ namespace SWLOR.Component.Communication.Service
         /// When a conversation node with this script assigned in the "Actions Taken" event is run,
         /// check for any conversation actions and process them.
         /// </summary>
-        [ScriptHandler<OnDialogAction>]
-        [ScriptHandler<OnDialogActions>]
         public void ConversationAction()
         {
             var player = GetPCSpeaker();

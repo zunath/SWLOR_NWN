@@ -30,7 +30,6 @@ namespace SWLOR.Component.Communication.Service
         /// When the module is loaded, the assembly will be searched for conversations.
         /// These will be added to the cache for use at a later time.
         /// </summary>
-        [ScriptHandler<OnModuleCacheBefore>]
         public void RegisterConversations()
         {
             // Use reflection to get all of the conversation implementations.
@@ -93,7 +92,6 @@ namespace SWLOR.Component.Communication.Service
         /// <summary>
         /// Handles when a dialog is started.
         /// </summary>
-        [ScriptHandler<OnDialogStart>]
         public void Start()
         {
             var eventScript = GetCurrentlyRunningEvent();
@@ -134,187 +132,156 @@ namespace SWLOR.Component.Communication.Service
             }
         }
 
-        [ScriptHandler<OnDialogAction0>]
         public void NodeAction0()
         {
             ActionsTaken(0);
         }
 
-        [ScriptHandler<OnDialogAction1>]
         public void NodeAction1()
         {
             ActionsTaken(1);
         }
 
-        [ScriptHandler<OnDialogAction2>]
         public void NodeAction2()
         {
             ActionsTaken(2);
         }
 
-        [ScriptHandler<OnDialogAction3>]
         public void NodeAction3()
         {
             ActionsTaken(3);
         }
 
-        [ScriptHandler<OnDialogAction4>]
         public void NodeAction4()
         {
             ActionsTaken(4);
         }
 
-        [ScriptHandler<OnDialogAction5>]
         public void NodeAction5()
         {
             ActionsTaken(5);
         }
 
-        [ScriptHandler<OnDialogAction6>]
         public void NodeAction6()
         {
             ActionsTaken(6);
         }
 
-        [ScriptHandler<OnDialogAction7>]
         public void NodeAction7()
         {
             ActionsTaken(7);
         }
 
-        [ScriptHandler<OnDialogAction8>]
         public void NodeAction8()
         {
             ActionsTaken(8);
         }
 
-        [ScriptHandler<OnDialogAction9>]
         public void NodeAction9()
         {
             ActionsTaken(9);
         }
 
-        [ScriptHandler<OnDialogAction10>]
         public void NodeAction10()
         {
             ActionsTaken(10);
         }
 
-        [ScriptHandler<OnDialogAction11>]
         public void NodeAction11()
         {
             ActionsTaken(11);
         }
 
-        [ScriptHandler<OnDialogAppears0>]
         public bool NodeAppears0()
         {
             return AppearsWhen(2, 0);
         }
 
-        [ScriptHandler<OnDialogAppears1>]
         public bool NodeAppears1()
         {
             return AppearsWhen(2, 1);
         }
 
-        [ScriptHandler<OnDialogAppears2>]
         public bool NodeAppears2()
         {
             return AppearsWhen(2, 2);
         }
 
-        [ScriptHandler<OnDialogAppears3>]
         public bool NodeAppears3()
         {
             return AppearsWhen(2, 3);
         }
 
-        [ScriptHandler<OnDialogAppears4>]
         public bool NodeAppears4()
         {
             return AppearsWhen(2, 4);
         }
 
-        [ScriptHandler<OnDialogAppears5>]
         public bool NodeAppears5()
         {
             return AppearsWhen(2, 5);
         }
 
-        [ScriptHandler<OnDialogAppears6>]
         public bool NodeAppears6()
         {
             return AppearsWhen(2, 6);
         }
 
-        [ScriptHandler<OnDialogAppears7>]
         public bool NodeAppears7()
         {
             return AppearsWhen(2, 7);
         }
 
-        [ScriptHandler<OnDialogAppears8>]
         public bool NodeAppears8()
         {
             return AppearsWhen(2, 8);
         }
 
-        [ScriptHandler<OnDialogAppears9>]
         public bool NodeAppears9()
         {
             return AppearsWhen(2, 9);
         }
 
-        [ScriptHandler<OnDialogAppears10>]
         public bool NodeAppears10()
         {
             return AppearsWhen(2, 10);
         }
 
-        [ScriptHandler<OnDialogAppears11>]
         public bool NodeAppears11()
         {
             return AppearsWhen(2, 11);
         }
 
-        [ScriptHandler<OnDialogAppearsHeader>]
         public bool HeaderAppearsWhen()
         {
             return AppearsWhen(1, 0);
         }
 
-        [ScriptHandler<OnDialogAppearsNext>]
         public bool NextAppearsWhen()
         {
             return AppearsWhen(3, 12);
         }
 
-        [ScriptHandler<OnDialogActionNext>]
         public void NextAction()
         {
             ActionsTaken(12);
         }
 
-        [ScriptHandler<OnDialogAppearsPrevious>]
         public bool PreviousAppearsWhen()
         {
             return AppearsWhen(4, 13);
         }
 
-        [ScriptHandler<OnDialogActionPrevious>]
         public void PreviousAction()
         {
             ActionsTaken(13);
         }
 
-        [ScriptHandler<OnDialogAppearsB>]
         public bool BackAppearsWhen()
         {
             return AppearsWhen(5, 14);
         }
 
-        [ScriptHandler<OnDialogActionB>]
         public void BackAction()
         {
             ActionsTaken(14);
@@ -323,7 +290,6 @@ namespace SWLOR.Component.Communication.Service
         /// <summary>
         /// Fires when the "End Dialog" node is clicked.
         /// </summary>
-        [ScriptHandler<OnDialogEnd>]
         public void End()
         {
             var player = GetPCSpeaker();
@@ -515,7 +481,6 @@ namespace SWLOR.Component.Communication.Service
         /// When an object executes this script, the custom dialog specified on their local variables
         /// will be started.
         /// </summary>
-        [ScriptHandler<OnDialogStartConversation>]
         public void StartConversationEvent()
         {
             var self = OBJECT_SELF;

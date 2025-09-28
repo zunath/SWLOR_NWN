@@ -22,7 +22,6 @@ namespace SWLOR.Component.World.Service
         /// <summary>
         /// When the module loads, cache all taxi destinations.
         /// </summary>
-        [ScriptHandler<OnModuleCacheBefore>]
         public void LoadTaxiDestinations()
         {
             var taxiDestinationTypes = Enum.GetValues(typeof(TaxiDestinationType)).Cast<TaxiDestinationType>();

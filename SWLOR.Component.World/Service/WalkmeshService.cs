@@ -32,7 +32,6 @@ namespace SWLOR.Component.World.Service
         /// <summary>
         /// When the module content changes, rerun the baking process.
         /// </summary>
-        [ScriptHandler<OnModuleContentChange>]
         public void LoadWalkmeshes()
         {
             StoreNoSpawnZoneTriggers();

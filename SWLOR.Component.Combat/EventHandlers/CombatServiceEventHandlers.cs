@@ -2,6 +2,7 @@ using SWLOR.Component.Combat.Contracts;
 using SWLOR.Component.Combat.Service;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Events.Attributes;
+using SWLOR.Shared.Events.Events.Associate;
 using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Component.Combat.EventHandlers
@@ -22,6 +23,16 @@ namespace SWLOR.Component.Combat.EventHandlers
         public void ApplyPlayerStats()
         {
             _statService.ApplyPlayerStats();
+        }
+
+        /// <summary>
+        /// After a player's status effects are reassociated,
+        /// adjust any food HP if necessary.
+        /// </summary>
+        [ScriptHandler<OnAssociateStateEffect>]
+        public void ReapplyFoodHP()
+        {
+            _statService.ReapplyFoodHP();
         }
     }
 }

@@ -36,5 +36,10 @@ namespace SWLOR.Shared.Domain.Character.Contracts
         /// When a player enters the module, wipe their temporary "busy" status.
         /// </summary>
         void WipeStatusOnEntry();
+
+        /// <summary>
+        /// When a player dies, wipe their temporary "busy" status.
+        /// </summary>
+        void WipeStatusOnDeath();
     }
 }

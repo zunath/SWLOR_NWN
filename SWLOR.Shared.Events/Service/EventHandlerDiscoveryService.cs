@@ -125,9 +125,21 @@ namespace SWLOR.Shared.Events.Service
                 if (methodDelegate == null)
                     return;
 
-                // Subscribe to the event
-                var subscribeMethod = typeof(IEventAggregator).GetMethod(nameof(IEventAggregator.Subscribe))
-                    .MakeGenericMethod(eventType);
+                // Subscribe to the event - use conditional subscription for boolean return types
+                var returnType = method.ReturnType;
+                MethodInfo subscribeMethod;
+                
+                if (returnType == typeof(bool))
+                {
+                    subscribeMethod = typeof(IEventAggregator).GetMethod(nameof(IEventAggregator.SubscribeConditional))
+                        .MakeGenericMethod(eventType);
+                }
+                else
+                {
+                    subscribeMethod = typeof(IEventAggregator).GetMethod(nameof(IEventAggregator.Subscribe))
+                        .MakeGenericMethod(eventType);
+                }
+                
                 var subscription = subscribeMethod.Invoke(_eventAggregator, new object[] { methodDelegate }) as IDisposable;
 
                 if (subscription != null)
@@ -147,19 +159,53 @@ namespace SWLOR.Shared.Events.Service
             {
                 // Check if the method takes the event parameter
                 var parameters = method.GetParameters();
+                var returnType = method.ReturnType;
+                
                 if (parameters.Length == 0)
                 {
-                    // Method takes no parameters - create a wrapper that ignores the event parameter
-                    var actionDelegate = Delegate.CreateDelegate(typeof(Action), instance, method);
-                    // Create a wrapper that takes the event parameter but ignores it
-                    return new Action<object>(_ => actionDelegate.DynamicInvoke());
+                    // Method takes no parameters
+                    if (returnType == typeof(void))
+                    {
+                        // Void return - create Action delegate
+                        var actionDelegate = Delegate.CreateDelegate(typeof(Action), instance, method);
+                        // Create a wrapper that takes the event parameter but ignores it
+                        return new Action<object>(_ => actionDelegate.DynamicInvoke());
+                    }
+                    else if (returnType == typeof(bool))
+                    {
+                        // Boolean return - create Func<bool> delegate
+                        var funcDelegate = Delegate.CreateDelegate(typeof(Func<bool>), instance, method);
+                        // Create a wrapper that takes the event parameter but ignores it
+                        return new Func<object, bool>(_ => (bool)funcDelegate.DynamicInvoke());
+                    }
+                    else
+                    {
+                        _logger.WriteError($"Method {method.Name} has unsupported return type {returnType.Name}. Expected void or bool.");
+                        return null;
+                    }
                 }
                 else if (parameters.Length == 1 && parameters[0].ParameterType == eventType)
                 {
-                    // Method takes the event parameter - create Action<T> delegate directly
-                    var delegateType = typeof(Action<>).MakeGenericType(eventType);
-                    var methodDelegate = Delegate.CreateDelegate(delegateType, instance, method);
-                    return methodDelegate;
+                    // Method takes the event parameter
+                    if (returnType == typeof(void))
+                    {
+                        // Void return - create Action<T> delegate
+                        var delegateType = typeof(Action<>).MakeGenericType(eventType);
+                        var methodDelegate = Delegate.CreateDelegate(delegateType, instance, method);
+                        return methodDelegate;
+                    }
+                    else if (returnType == typeof(bool))
+                    {
+                        // Boolean return - create Func<T, bool> delegate
+                        var delegateType = typeof(Func<,>).MakeGenericType(eventType, typeof(bool));
+                        var methodDelegate = Delegate.CreateDelegate(delegateType, instance, method);
+                        return methodDelegate;
+                    }
+                    else
+                    {
+                        _logger.WriteError($"Method {method.Name} has unsupported return type {returnType.Name}. Expected void or bool.");
+                        return null;
+                    }
                 }
                 else
                 {

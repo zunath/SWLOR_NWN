@@ -407,7 +407,6 @@ namespace SWLOR.Component.Combat.Service
         /// After a player's status effects are reassociated,
         /// adjust any food HP if necessary.
         /// </summary>
-        [ScriptHandler<OnAssociateStateEffect>]
         public void ReapplyFoodHP()
         {
             var player = OBJECT_SELF;

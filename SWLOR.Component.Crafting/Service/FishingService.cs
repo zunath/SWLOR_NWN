@@ -259,7 +259,6 @@ namespace SWLOR.Component.Crafting.Service
         /// <summary>
         /// Runs when a player interacts with a fishing point.
         /// </summary>
-        [ScriptHandler<OnFishPoint>]
         public void ClickFishingPoint()
         {
             ClickFishingPointInternal();
@@ -358,7 +357,6 @@ namespace SWLOR.Component.Crafting.Service
         /// <summary>
         /// Runs when the fishing process completes.
         /// </summary>
-        [ScriptHandler<OnFinishFishing>]
         public void FinishFishing()
         {
             FinishFishingInternal();

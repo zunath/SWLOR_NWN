@@ -20,7 +20,6 @@ namespace SWLOR.Component.Character.Service
         /// All of the NUI window features require version 8193.33 or higher but we restrict to 8193.34 or higher
         /// due to fixes applied in .34.
         /// </summary>
-        [ScriptHandler<OnClientConnectBefore>]
         public void CheckVersion()
         {
             const int RequiredMajorVersion = 8193;

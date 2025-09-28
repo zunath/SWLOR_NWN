@@ -37,7 +37,6 @@ namespace SWLOR.Component.Character.Service
         /// <summary>
         /// When a player targets an object, execute the assigned action.
         /// </summary>
-        [ScriptHandler<OnModulePlayerTarget>]
         public void RunTargetedItemAction()
         {
             var player = GetLastPlayerToSelectTarget();

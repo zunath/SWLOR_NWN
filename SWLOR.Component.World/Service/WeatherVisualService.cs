@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.World.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
 using AreaWeatherType = SWLOR.NWN.API.NWScript.Enum.AreaWeatherType;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Area;
@@ -16,8 +18,11 @@ namespace SWLOR.Component.World.Service
     /// </summary>
     public class WeatherVisualService : IWeatherVisualService
     {
-        private readonly IWeatherCalculationService _weatherCalculationService;
-        private readonly IWeatherClimateService _weatherClimateService;
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded services to break circular dependencies
+        private readonly Lazy<IWeatherCalculationService> _weatherCalculationService;
+        private readonly Lazy<IWeatherClimateService> _weatherClimateService;
         private readonly Dictionary<uint, List<uint>> _areaWeatherPlaceables = new();
 
         // Module and area variables.
@@ -29,13 +34,18 @@ namespace SWLOR.Component.World.Service
         private const string VAR_FOG_C_SUN = "VAR_WH_FOG_C_SUN";
         private const string VAR_FOG_C_MOON = "VAR_WH_FOG_C_MOON";
 
-        public WeatherVisualService(
-            IWeatherCalculationService weatherCalculationService,
-            IWeatherClimateService weatherClimateService)
+        public WeatherVisualService(IServiceProvider serviceProvider)
         {
-            _weatherCalculationService = weatherCalculationService;
-            _weatherClimateService = weatherClimateService;
+            _serviceProvider = serviceProvider;
+            
+            // Initialize lazy services
+            _weatherCalculationService = new Lazy<IWeatherCalculationService>(() => _serviceProvider.GetRequiredService<IWeatherCalculationService>());
+            _weatherClimateService = new Lazy<IWeatherClimateService>(() => _serviceProvider.GetRequiredService<IWeatherClimateService>());
         }
+        
+        // Lazy-loaded services to break circular dependencies
+        private IWeatherCalculationService WeatherCalculationService => _weatherCalculationService.Value;
+        private IWeatherClimateService WeatherClimateService => _weatherClimateService.Value;
 
         /// <summary>
         /// Sets the weather for the current area.
@@ -64,9 +74,9 @@ namespace SWLOR.Component.World.Service
                 SetLocalInt(oArea, VAR_INITIALIZED, 1);
             }
 
-            var nHeat = _weatherCalculationService.GetHeatIndex(oArea);
-            var nHumidity = _weatherCalculationService.GetHumidity(oArea);
-            var nWind = _weatherCalculationService.GetWindStrength(oArea);
+            var nHeat = WeatherCalculationService.GetHeatIndex(oArea);
+            var nHumidity = WeatherCalculationService.GetHumidity(oArea);
+            var nWind = WeatherCalculationService.GetWindStrength(oArea);
             var bStormy = GetSkyBox(oArea) == SkyboxType.GrassStorm;
             var bDustStorm = (GetLocalInt(oArea, "DUST_STORM") == 1);
             var bSandStorm = (GetLocalInt(oArea, "SAND_STORM") == 1);
@@ -109,7 +119,7 @@ namespace SWLOR.Component.World.Service
             if (!bStormy && nWind >= 9 && d3() == 1)
             {
                 // Dust storm - low visibility but no damage.
-                if (_weatherClimateService.GetAreaClimate(oArea).HasSandStorms)
+                if (WeatherClimateService.GetAreaClimate(oArea).HasSandStorms)
                 {
                     SetFogColor(FogType.Sun, FogColorType.OrangeDark, oArea);
                     SetFogColor(FogType.Moon, FogColorType.OrangeDark, oArea);
@@ -118,7 +128,7 @@ namespace SWLOR.Component.World.Service
 
                     SetLocalInt(oArea, "SAND_STORM", 1);
                 }
-                else if (_weatherClimateService.GetAreaClimate(oArea).HasSnowStorms)
+                else if (WeatherClimateService.GetAreaClimate(oArea).HasSnowStorms)
                 {
                     SetFogColor(FogType.Sun, FogColorType.White, oArea);
                     SetFogColor(FogType.Moon, FogColorType.White, oArea);
@@ -170,7 +180,7 @@ namespace SWLOR.Component.World.Service
                 }
 
                 // Create new ones depending on the current weather.
-                var nWeather = _weatherCalculationService.GetWeather();
+                var nWeather = WeatherCalculationService.GetWeather();
 
                 if (nWeather == WeatherType.Foggy)
                 {

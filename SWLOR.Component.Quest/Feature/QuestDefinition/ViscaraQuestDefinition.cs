@@ -18,18 +18,30 @@ namespace SWLOR.Component.Quest.Feature.QuestDefinition
     {
         private readonly IDatabaseService _db;
         private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded services to break circular dependencies
+        private readonly Lazy<IKeyItemService> _keyItemService;
+        private readonly Lazy<IObjectVisibilityService> _objectVisibilityService;
+        private readonly Lazy<IQuestService> _questService;
+        private readonly Lazy<IQuestBuilderFactory> _questBuilderFactory;
 
         public ViscaraQuestDefinition(IDatabaseService db, IServiceProvider serviceProvider)
         {
             _db = db;
             _serviceProvider = serviceProvider;
+            
+            // Initialize lazy services
+            _keyItemService = new Lazy<IKeyItemService>(() => _serviceProvider.GetRequiredService<IKeyItemService>());
+            _objectVisibilityService = new Lazy<IObjectVisibilityService>(() => _serviceProvider.GetRequiredService<IObjectVisibilityService>());
+            _questService = new Lazy<IQuestService>(() => _serviceProvider.GetRequiredService<IQuestService>());
+            _questBuilderFactory = new Lazy<IQuestBuilderFactory>(() => _serviceProvider.GetRequiredService<IQuestBuilderFactory>());
         }
 
         // Lazy-loaded services to break circular dependencies
-        private IKeyItemService KeyItemService => _serviceProvider.GetRequiredService<IKeyItemService>();
-        private IObjectVisibilityService ObjectVisibilityService => _serviceProvider.GetRequiredService<IObjectVisibilityService>();
-        private IQuestService QuestService => _serviceProvider.GetRequiredService<IQuestService>();
-        private IQuestBuilderFactory QuestBuilderFactory => _serviceProvider.GetRequiredService<IQuestBuilderFactory>();
+        private IKeyItemService KeyItemService => _keyItemService.Value;
+        private IObjectVisibilityService ObjectVisibilityService => _objectVisibilityService.Value;
+        private IQuestService QuestService => _questService.Value;
+        private IQuestBuilderFactory QuestBuilderFactory => _questBuilderFactory.Value;
 
         public Dictionary<string, IQuestDetail> BuildQuests()
         {

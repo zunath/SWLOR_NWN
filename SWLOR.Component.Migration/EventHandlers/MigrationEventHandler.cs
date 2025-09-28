@@ -14,14 +14,19 @@ namespace SWLOR.Component.Migration.EventHandlers
     public class MigrationEventHandler
     {
         private readonly IServiceProvider _serviceProvider;
-        
-        // Lazy-loaded services to break circular dependencies
-        private IMigrationService MigrationService => _serviceProvider.GetRequiredService<IMigrationService>();
 
         public MigrationEventHandler(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
+            
+            // Initialize lazy services
+            _migrationService = new Lazy<IMigrationService>(() => _serviceProvider.GetRequiredService<IMigrationService>());
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private readonly Lazy<IMigrationService> _migrationService;
+        
+        private IMigrationService MigrationService => _migrationService.Value;
 
         /// <summary>
         /// When the server loads, run database-related migrations.

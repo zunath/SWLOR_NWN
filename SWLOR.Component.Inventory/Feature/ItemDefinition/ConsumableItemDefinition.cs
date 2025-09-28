@@ -29,14 +29,27 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
             _random = random;
             _db = db;
             _serviceProvider = serviceProvider;
+            
+            // Initialize lazy services
+            _statusEffectService = new Lazy<IStatusEffectService>(() => _serviceProvider.GetRequiredService<IStatusEffectService>());
+            _beastMasteryService = new Lazy<IBeastMasteryService>(() => _serviceProvider.GetRequiredService<IBeastMasteryService>());
+            _itemService = new Lazy<IItemService>(() => _serviceProvider.GetRequiredService<IItemService>());
+            _currencyService = new Lazy<ICurrencyService>(() => _serviceProvider.GetRequiredService<ICurrencyService>());
+            _builder = new Lazy<IItemBuilder>(() => _serviceProvider.GetRequiredService<IItemBuilder>());
         }
 
         // Lazy-loaded services to break circular dependencies
-        private IStatusEffectService StatusEffectService => _serviceProvider.GetRequiredService<IStatusEffectService>();
-        private IBeastMasteryService BeastMasteryService => _serviceProvider.GetRequiredService<IBeastMasteryService>();
-        private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
-        private ICurrencyService CurrencyService => _serviceProvider.GetRequiredService<ICurrencyService>();
-        private IItemBuilder Builder => _serviceProvider.GetRequiredService<IItemBuilder>();
+        private readonly Lazy<IStatusEffectService> _statusEffectService;
+        private readonly Lazy<IBeastMasteryService> _beastMasteryService;
+        private readonly Lazy<IItemService> _itemService;
+        private readonly Lazy<ICurrencyService> _currencyService;
+        private readonly Lazy<IItemBuilder> _builder;
+        
+        private IStatusEffectService StatusEffectService => _statusEffectService.Value;
+        private IBeastMasteryService BeastMasteryService => _beastMasteryService.Value;
+        private IItemService ItemService => _itemService.Value;
+        private ICurrencyService CurrencyService => _currencyService.Value;
+        private IItemBuilder Builder => _builder.Value;
 
         public Dictionary<string, ItemDetail> BuildItems()
         {

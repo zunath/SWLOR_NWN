@@ -23,17 +23,28 @@ namespace SWLOR.Component.Space.Feature.ShipModuleDefinition
         private readonly IEventAggregator _eventAggregator;
         
         // Lazy-loaded services to break circular dependencies
-        private ISpaceService SpaceService => _serviceProvider.GetRequiredService<ISpaceService>();
-        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
-        private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
-        private IMessagingService MessagingService => _serviceProvider.GetRequiredService<IMessagingService>();
+        private readonly Lazy<ISpaceService> _spaceService;
+        private readonly Lazy<IEnmityService> _enmityService;
+        private readonly Lazy<ICombatPointService> _combatPointService;
+        private readonly Lazy<IMessagingService> _messagingService;
+        
+        private ISpaceService SpaceService => _spaceService.Value;
+        private IEnmityService EnmityService => _enmityService.Value;
+        private ICombatPointService CombatPointService => _combatPointService.Value;
+        private IMessagingService MessagingService => _messagingService.Value;
 
         public RepairFieldGeneratorModuleDefinition(IDatabaseService db, IServiceProvider serviceProvider, IShipModuleBuilder builder, IEventAggregator eventAggregator)
         {
             _db = db;
-            // Services are now lazy-loaded via IServiceProvider
+            _serviceProvider = serviceProvider;
             _builder = builder;
             _eventAggregator = eventAggregator;
+            
+            // Initialize lazy services
+            _spaceService = new Lazy<ISpaceService>(() => _serviceProvider.GetRequiredService<ISpaceService>());
+            _enmityService = new Lazy<IEnmityService>(() => _serviceProvider.GetRequiredService<IEnmityService>());
+            _combatPointService = new Lazy<ICombatPointService>(() => _serviceProvider.GetRequiredService<ICombatPointService>());
+            _messagingService = new Lazy<IMessagingService>(() => _serviceProvider.GetRequiredService<IMessagingService>());
         }
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()

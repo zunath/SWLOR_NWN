@@ -13,15 +13,23 @@ namespace SWLOR.Component.Inventory.EventHandlers
     public class InventoryServiceEventHandlers
     {
         private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded services to break circular dependencies
+        private readonly Lazy<IItemService> _itemService;
+        private readonly Lazy<ILootService> _lootService;
 
         public InventoryServiceEventHandlers(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
+            
+            // Initialize lazy services
+            _itemService = new Lazy<IItemService>(() => _serviceProvider.GetRequiredService<IItemService>());
+            _lootService = new Lazy<ILootService>(() => _serviceProvider.GetRequiredService<ILootService>());
         }
 
         // Lazy-loaded services to break circular dependencies
-        private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
-        private ILootService LootService => _serviceProvider.GetRequiredService<ILootService>();
+        private IItemService ItemService => _itemService.Value;
+        private ILootService LootService => _lootService.Value;
 
         [ScriptHandler<OnModuleCacheBefore>]
         public void CacheItemData()

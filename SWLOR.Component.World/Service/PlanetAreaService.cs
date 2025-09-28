@@ -1,4 +1,6 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.World.Contracts;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Domain.World.Contracts;
 using SWLOR.Shared.Domain.World.Enums;
@@ -7,19 +9,28 @@ namespace SWLOR.Component.World.Service
 {
     public class PlanetAreaService : IPlanetAreaService
     {
-        private readonly IPlanetCacheService _planetCacheService;
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded service to break circular dependency
+        private readonly Lazy<IPlanetCacheService> _planetCacheService;
 
-        public PlanetAreaService(IPlanetCacheService planetCacheService)
+        public PlanetAreaService(IServiceProvider serviceProvider)
         {
-            _planetCacheService = planetCacheService;
+            _serviceProvider = serviceProvider;
+            
+            // Initialize lazy services
+            _planetCacheService = new Lazy<IPlanetCacheService>(() => _serviceProvider.GetRequiredService<IPlanetCacheService>());
         }
+        
+        // Lazy-loaded service to break circular dependency
+        private IPlanetCacheService PlanetCacheService => _planetCacheService.Value;
 
         /// <summary>
         /// When the module loads, assign a planet Id to every area that is considered to be a planet.
         /// </summary>
         public void RegisterAreaPlanetIds()
         {
-            var planets = _planetCacheService.GetAllPlanets();
+            var planets = PlanetCacheService.GetAllPlanets();
 
             for (var area = GetFirstArea(); GetIsObjectValid(area); area = GetNextArea())
             {
@@ -69,7 +80,7 @@ namespace SWLOR.Component.World.Service
         public List<uint> GetAreasForPlanet(PlanetType planetType)
         {
             var areas = new List<uint>();
-            var planets = _planetCacheService.GetAllPlanets();
+            var planets = PlanetCacheService.GetAllPlanets();
             
             if (!planets.TryGetValue(planetType, out var planetDetail))
                 return areas;

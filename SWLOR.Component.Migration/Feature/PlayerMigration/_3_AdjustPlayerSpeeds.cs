@@ -17,7 +17,9 @@ namespace SWLOR.Component.Migration.Feature.PlayerMigration
         private readonly IServiceProvider _serviceProvider;
         
         // Lazy-loaded services to break circular dependencies
-        private IAbilityService AbilityService => _serviceProvider.GetRequiredService<IAbilityService>();
+        private readonly Lazy<IAbilityService> _abilityService;
+        
+        private IAbilityService AbilityService => _abilityService.Value;
 
         public _3_AdjustPlayerSpeeds(
             ILogger logger, 
@@ -30,7 +32,10 @@ namespace SWLOR.Component.Migration.Feature.PlayerMigration
             IServiceProvider serviceProvider) 
             : base(logger, database, statService, skillService, combatService, perkService, itemService)
         {
-            // Services are now lazy-loaded via IServiceProvider
+            _serviceProvider = serviceProvider;
+            
+            // Initialize lazy services
+            _abilityService = new Lazy<IAbilityService>(() => _serviceProvider.GetRequiredService<IAbilityService>());
         }
 
         public override int Version => 3;

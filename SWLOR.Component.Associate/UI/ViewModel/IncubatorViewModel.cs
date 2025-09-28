@@ -32,9 +32,13 @@ namespace SWLOR.Component.Associate.UI.ViewModel
         private readonly ITimeService _timeService;
         
         // Lazy-loaded services to break circular dependencies
-        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
-        private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
-        private IBeastMasteryService BeastMasteryService => _serviceProvider.GetRequiredService<IBeastMasteryService>();
+        private readonly Lazy<IPerkService> _perkService;
+        private readonly Lazy<IItemService> _itemService;
+        private readonly Lazy<IBeastMasteryService> _beastMasteryService;
+        
+        private IPerkService PerkService => _perkService.Value;
+        private IItemService ItemService => _itemService.Value;
+        private IBeastMasteryService BeastMasteryService => _beastMasteryService.Value;
 
         public IncubatorViewModel(
             IGuiService guiService, 
@@ -50,6 +54,11 @@ namespace SWLOR.Component.Associate.UI.ViewModel
             _targetingService = targetingService;
             _db = db;
             _timeService = timeService;
+            
+            // Initialize lazy services
+            _perkService = new Lazy<IPerkService>(() => _serviceProvider.GetRequiredService<IPerkService>());
+            _itemService = new Lazy<IItemService>(() => _serviceProvider.GetRequiredService<IItemService>());
+            _beastMasteryService = new Lazy<IBeastMasteryService>(() => _serviceProvider.GetRequiredService<IBeastMasteryService>());
         }
         public const string PartialElement = "PARTIAL_VIEW";
         public const string NewJobPartial = "NEW_JOB_PARTIAL";

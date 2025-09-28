@@ -17,12 +17,21 @@ namespace SWLOR.Component.StatusEffect.Feature.StatusEffectDefinition
         public ForceHealStatusEffectDefinition(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
+            
+            // Initialize lazy services
+            _random = new Lazy<IRandomService>(() => _serviceProvider.GetRequiredService<IRandomService>());
+            _combatPointService = new Lazy<ICombatPointService>(() => _serviceProvider.GetRequiredService<ICombatPointService>());
+            _enmityService = new Lazy<IEnmityService>(() => _serviceProvider.GetRequiredService<IEnmityService>());
         }
 
         // Lazy-loaded services to break circular dependencies
-        private IRandomService Random => _serviceProvider.GetRequiredService<IRandomService>();
-        private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
-        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
+        private readonly Lazy<IRandomService> _random;
+        private readonly Lazy<ICombatPointService> _combatPointService;
+        private readonly Lazy<IEnmityService> _enmityService;
+        
+        private IRandomService Random => _random.Value;
+        private ICombatPointService CombatPointService => _combatPointService.Value;
+        private IEnmityService EnmityService => _enmityService.Value;
         public Dictionary<StatusEffectType, StatusEffectDetail> BuildStatusEffects()
         {
             var builder = new StatusEffectBuilder();

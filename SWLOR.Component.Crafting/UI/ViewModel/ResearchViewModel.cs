@@ -35,18 +35,35 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
         {
             _db = db;
             _serviceProvider = serviceProvider;
+            
+            // Initialize lazy services
+            _itemCache = new Lazy<IItemCacheService>(() => _serviceProvider.GetRequiredService<IItemCacheService>());
+            _random = new Lazy<IRandomService>(() => _serviceProvider.GetRequiredService<IRandomService>());
+            _perkService = new Lazy<IPerkService>(() => _serviceProvider.GetRequiredService<IPerkService>());
+            _itemService = new Lazy<IItemService>(() => _serviceProvider.GetRequiredService<IItemService>());
+            _skillService = new Lazy<ISkillService>(() => _serviceProvider.GetRequiredService<ISkillService>());
+            _craftService = new Lazy<ICraftService>(() => _serviceProvider.GetRequiredService<ICraftService>());
+            _timeService = new Lazy<ITimeService>(() => _serviceProvider.GetRequiredService<ITimeService>());
 
             _blueprintBonuses = new BlueprintBonuses(Random);
         }
 
         // Lazy-loaded services to break circular dependencies
-        private IItemCacheService ItemCache => _serviceProvider.GetRequiredService<IItemCacheService>();
-        private IRandomService Random => _serviceProvider.GetRequiredService<IRandomService>();
-        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
-        private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
-        private ISkillService SkillService => _serviceProvider.GetRequiredService<ISkillService>();
-        private ICraftService CraftService => _serviceProvider.GetRequiredService<ICraftService>();
-        private ITimeService TimeService => _serviceProvider.GetRequiredService<ITimeService>();
+        private readonly Lazy<IItemCacheService> _itemCache;
+        private readonly Lazy<IRandomService> _random;
+        private readonly Lazy<IPerkService> _perkService;
+        private readonly Lazy<IItemService> _itemService;
+        private readonly Lazy<ISkillService> _skillService;
+        private readonly Lazy<ICraftService> _craftService;
+        private readonly Lazy<ITimeService> _timeService;
+        
+        private IItemCacheService ItemCache => _itemCache.Value;
+        private IRandomService Random => _random.Value;
+        private IPerkService PerkService => _perkService.Value;
+        private IItemService ItemService => _itemService.Value;
+        private ISkillService SkillService => _skillService.Value;
+        private ICraftService CraftService => _craftService.Value;
+        private ITimeService TimeService => _timeService.Value;
         
         private class ResearchJobDetails
         {

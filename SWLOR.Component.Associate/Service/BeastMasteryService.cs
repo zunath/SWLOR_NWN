@@ -44,18 +44,39 @@ namespace SWLOR.Component.Associate.Service
             _db = db;
             _random = random;
             _serviceProvider = serviceProvider;
+            
+            // Initialize lazy services
+            _cacheService = new Lazy<IGenericCacheService>(() => _serviceProvider.GetRequiredService<IGenericCacheService>());
+            _guiService = new Lazy<IGuiService>(() => _serviceProvider.GetRequiredService<IGuiService>());
+            _statusEffectService = new Lazy<IStatusEffectService>(() => _serviceProvider.GetRequiredService<IStatusEffectService>());
+            _propertyService = new Lazy<IPropertyService>(() => _serviceProvider.GetRequiredService<IPropertyService>());
+            _activityService = new Lazy<IActivityService>(() => _serviceProvider.GetRequiredService<IActivityService>());
+            _timeService = new Lazy<ITimeService>(() => _serviceProvider.GetRequiredService<ITimeService>());
+            _perkService = new Lazy<IPerkService>(() => _serviceProvider.GetRequiredService<IPerkService>());
+            _itemService = new Lazy<IItemService>(() => _serviceProvider.GetRequiredService<IItemService>());
+            _statService = new Lazy<IStatService>(() => _serviceProvider.GetRequiredService<IStatService>());
         }
 
         // Lazy-loaded services to break circular dependencies
-        private IGenericCacheService CacheService => _serviceProvider.GetRequiredService<IGenericCacheService>();
-        private IGuiService GuiService => _serviceProvider.GetRequiredService<IGuiService>();
-        private IStatusEffectService StatusEffectService => _serviceProvider.GetRequiredService<IStatusEffectService>();
-        private IPropertyService PropertyService => _serviceProvider.GetRequiredService<IPropertyService>();
-        private IActivityService ActivityService => _serviceProvider.GetRequiredService<IActivityService>();
-        private ITimeService TimeService => _serviceProvider.GetRequiredService<ITimeService>();
-        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
-        private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
-        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+        private readonly Lazy<IGenericCacheService> _cacheService;
+        private readonly Lazy<IGuiService> _guiService;
+        private readonly Lazy<IStatusEffectService> _statusEffectService;
+        private readonly Lazy<IPropertyService> _propertyService;
+        private readonly Lazy<IActivityService> _activityService;
+        private readonly Lazy<ITimeService> _timeService;
+        private readonly Lazy<IPerkService> _perkService;
+        private readonly Lazy<IItemService> _itemService;
+        private readonly Lazy<IStatService> _statService;
+        
+        private IGenericCacheService CacheService => _cacheService.Value;
+        private IGuiService GuiService => _guiService.Value;
+        private IStatusEffectService StatusEffectService => _statusEffectService.Value;
+        private IPropertyService PropertyService => _propertyService.Value;
+        private IActivityService ActivityService => _activityService.Value;
+        private ITimeService TimeService => _timeService.Value;
+        private IPerkService PerkService => _perkService.Value;
+        private IItemService ItemService => _itemService.Value;
+        private IStatService StatService => _statService.Value;
         
         // Cached data
         private IInterfaceCache<BeastType, BeastDetail> _beastCache;

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Domain.Properties.Contracts;
@@ -10,16 +11,26 @@ namespace SWLOR.Shared.Caching.Service
 
     public class AreaCacheService : IAreaCacheService
     {
-        private readonly IPropertyService _propertyService;
-        private readonly IGenericCacheService _cache;
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded services to break circular dependencies
+        private readonly Lazy<IPropertyService> _propertyService;
+        private readonly Lazy<IGenericCacheService> _cache;
         private readonly Dictionary<string, uint> _areasByResref = new();
         private readonly Dictionary<uint, List<uint>> _playersByArea = new();
 
-        public AreaCacheService(IPropertyService propertyService, IGenericCacheService cache)
+        public AreaCacheService(IServiceProvider serviceProvider)
         {
-            _propertyService = propertyService;
-            _cache = cache;
+            _serviceProvider = serviceProvider;
+            
+            // Initialize lazy services
+            _propertyService = new Lazy<IPropertyService>(() => _serviceProvider.GetRequiredService<IPropertyService>());
+            _cache = new Lazy<IGenericCacheService>(() => _serviceProvider.GetRequiredService<IGenericCacheService>());
         }
+        
+        // Lazy-loaded services to break circular dependencies
+        private IPropertyService PropertyService => _propertyService.Value;
+        private IGenericCacheService Cache => _cache.Value;
 
         [ScriptHandler<OnModuleCacheBefore>]
         private void LoadCache()
@@ -108,10 +119,10 @@ namespace SWLOR.Shared.Caching.Service
         /// </summary>
         public void RemoveInstancesFromCache()
         {
-            var propertyLayouts = _propertyService.GetAllLayoutsByPropertyType(PropertyType.Apartment);
+            var propertyLayouts = PropertyService.GetAllLayoutsByPropertyType(PropertyType.Apartment);
             foreach (var type in propertyLayouts)
             {
-                var layout = _propertyService.GetLayoutByType(type);
+                var layout = PropertyService.GetLayoutByType(type);
                 if (_areasByResref.ContainsKey(layout.AreaInstanceResref))
                     _areasByResref.Remove(layout.AreaInstanceResref);
             }

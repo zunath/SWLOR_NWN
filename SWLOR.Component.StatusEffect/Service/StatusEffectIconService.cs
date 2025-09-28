@@ -1,4 +1,6 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.StatusEffect.Enums;
 using SWLOR.Component.StatusEffect.Contracts;
@@ -10,12 +12,21 @@ namespace SWLOR.Component.StatusEffect.Service
     /// </summary>
     public class StatusEffectIconService : IStatusEffectIconService
     {
-        private readonly IStatusEffectDataService _dataService;
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded service to break circular dependency
+        private readonly Lazy<IStatusEffectDataService> _dataService;
 
-        public StatusEffectIconService(IStatusEffectDataService dataService)
+        public StatusEffectIconService(IServiceProvider serviceProvider)
         {
-            _dataService = dataService;
+            _serviceProvider = serviceProvider;
+            
+            // Initialize lazy services
+            _dataService = new Lazy<IStatusEffectDataService>(() => _serviceProvider.GetRequiredService<IStatusEffectDataService>());
         }
+        
+        // Lazy-loaded service to break circular dependency
+        private IStatusEffectDataService DataService => _dataService.Value;
 
         /// <summary>
         /// Gets the effect script type from an effect icon type.
@@ -24,7 +35,7 @@ namespace SWLOR.Component.StatusEffect.Service
         /// <returns>The corresponding effect script type.</returns>
         public EffectScriptType GetEffectTypeFromIcon(EffectIconType effectIcon)
         {
-            if (!_dataService.EffectIconToEffectType.TryGetValue(effectIcon, out EffectScriptType effectType))
+            if (!DataService.EffectIconToEffectType.TryGetValue(effectIcon, out EffectScriptType effectType))
                 return EffectScriptType.Invalideffect;
 
             return effectType;
@@ -37,7 +48,7 @@ namespace SWLOR.Component.StatusEffect.Service
         /// <returns>List of status effect types associated with the icon.</returns>
         public List<StatusEffectType> GetStatusEffectTypesFromIcon(EffectIconType effectIcon)
         {
-            if (!_dataService.EffectIconToStatusEffects.TryGetValue(effectIcon, out List<StatusEffectType> statusTypes))
+            if (!DataService.EffectIconToStatusEffects.TryGetValue(effectIcon, out List<StatusEffectType> statusTypes))
                 return new List<StatusEffectType>();
 
             return statusTypes;
@@ -50,7 +61,7 @@ namespace SWLOR.Component.StatusEffect.Service
         /// <returns>The ability type that is buffed, or Invalid if none.</returns>
         public AbilityType GetAbilityTypeBuffed(EffectIconType effectIcon)
         {
-            if (!_dataService.AbilityIncreaseIconType.TryGetValue(effectIcon, out AbilityType abilityType))
+            if (!DataService.AbilityIncreaseIconType.TryGetValue(effectIcon, out AbilityType abilityType))
                 return AbilityType.Invalid;
 
             return abilityType;

@@ -20,11 +20,18 @@ namespace SWLOR.Component.Properties.Dialog
         {
             _db = db;
             _serviceProvider = serviceProvider;
+            
+            // Initialize lazy services
+            _propertyService = new Lazy<IPropertyService>(() => _serviceProvider.GetRequiredService<IPropertyService>());
+            _perkService = new Lazy<IPerkService>(() => _serviceProvider.GetRequiredService<IPerkService>());
         }
 
         // Lazy-loaded services to break circular dependencies
-        private IPropertyService PropertyService => _serviceProvider.GetRequiredService<IPropertyService>();
-        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
+        private readonly Lazy<IPropertyService> _propertyService;
+        private readonly Lazy<IPerkService> _perkService;
+        
+        private IPropertyService PropertyService => _propertyService.Value;
+        private IPerkService PerkService => _perkService.Value;
         
         private class Model
         {

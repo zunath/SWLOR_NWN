@@ -31,12 +31,21 @@ namespace SWLOR.Component.Associate.UI.ViewModel
         {
             _db = db;
             _serviceProvider = serviceProvider;
+            
+            // Initialize lazy services
+            _statService = new Lazy<IStatService>(() => _serviceProvider.GetRequiredService<IStatService>());
+            _perkService = new Lazy<IPerkService>(() => _serviceProvider.GetRequiredService<IPerkService>());
+            _beastMasteryService = new Lazy<IBeastMasteryService>(() => _serviceProvider.GetRequiredService<IBeastMasteryService>());
         }
 
         // Lazy-loaded services to break circular dependencies
-        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
-        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
-        private IBeastMasteryService BeastMasteryService => _serviceProvider.GetRequiredService<IBeastMasteryService>();
+        private readonly Lazy<IStatService> _statService;
+        private readonly Lazy<IPerkService> _perkService;
+        private readonly Lazy<IBeastMasteryService> _beastMasteryService;
+        
+        private IStatService StatService => _statService.Value;
+        private IPerkService PerkService => _perkService.Value;
+        private IBeastMasteryService BeastMasteryService => _beastMasteryService.Value;
         
         public const string BeastDetailsPartial = "BEAST_DETAILS_PARTIAL";
         public const string PartialViewStats = "PARTIAL_VIEW_STATS";

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
@@ -12,19 +13,28 @@ namespace SWLOR.Shared.Caching.Service
     public class SpawnCacheService : ISpawnCacheService
     {
         private readonly ILogger _logger;
-        private readonly IGenericCacheService _cacheService;
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded service to break circular dependency
+        private readonly Lazy<IGenericCacheService> _cacheService;
 
-        public SpawnCacheService(ILogger logger, IGenericCacheService cacheService)
+        public SpawnCacheService(ILogger logger, IServiceProvider serviceProvider)
         {
             _logger = logger;
-            _cacheService = cacheService;
+            _serviceProvider = serviceProvider;
+            
+            // Initialize lazy services
+            _cacheService = new Lazy<IGenericCacheService>(() => _serviceProvider.GetRequiredService<IGenericCacheService>());
         }
+        
+        // Lazy-loaded service to break circular dependency
+        private IGenericCacheService CacheService => _cacheService.Value;
 
         public IInterfaceCache<string, SpawnTable> SpawnTableCache { get; private set; }
 
         public void LoadSpawnTables()
         {
-            SpawnTableCache = _cacheService.BuildInterfaceCache<ISpawnListDefinition, string, SpawnTable>()
+            SpawnTableCache = CacheService.BuildInterfaceCache<ISpawnListDefinition, string, SpawnTable>()
                 .WithDataExtractor(instance => instance.BuildSpawnTables())
                 .Build();
 

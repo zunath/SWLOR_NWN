@@ -17,16 +17,28 @@ namespace SWLOR.Component.World.Feature
         private readonly IServiceProvider _serviceProvider;
         
         // Lazy-loaded services to break circular dependencies
-        private IKeyItemService KeyItemService => _serviceProvider.GetRequiredService<IKeyItemService>();
-        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
-        private ICurrencyService CurrencyService => _serviceProvider.GetRequiredService<ICurrencyService>();
-        private IDialogService DialogService => _serviceProvider.GetRequiredService<IDialogService>();
+        private readonly Lazy<IKeyItemService> _keyItemService;
+        private readonly Lazy<IEnmityService> _enmityService;
+        private readonly Lazy<ICurrencyService> _currencyService;
+        private readonly Lazy<IDialogService> _dialogService;
 
         public PlaceableScripts(
             IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
+            
+            // Initialize lazy services
+            _keyItemService = new Lazy<IKeyItemService>(() => _serviceProvider.GetRequiredService<IKeyItemService>());
+            _enmityService = new Lazy<IEnmityService>(() => _serviceProvider.GetRequiredService<IEnmityService>());
+            _currencyService = new Lazy<ICurrencyService>(() => _serviceProvider.GetRequiredService<ICurrencyService>());
+            _dialogService = new Lazy<IDialogService>(() => _serviceProvider.GetRequiredService<IDialogService>());
         }
+        
+        // Lazy-loaded services to break circular dependencies
+        private IKeyItemService KeyItemService => _keyItemService.Value;
+        private IEnmityService EnmityService => _enmityService.Value;
+        private ICurrencyService CurrencyService => _currencyService.Value;
+        private IDialogService DialogService => _dialogService.Value;
         /// <summary>
         /// When a teleport placeable is used, send the user to the configured waypoint.
         /// Checks are made for required key items, if specified as local variables on the placeable.

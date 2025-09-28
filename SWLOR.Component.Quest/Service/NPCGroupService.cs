@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Quest.Contracts;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Quest.Enums;
@@ -8,13 +9,22 @@ namespace SWLOR.Component.Quest.Service
 {
     public class NPCGroupService : INPCGroupService
     {
-        private readonly IGenericCacheService _cacheService;
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded service to break circular dependency
+        private readonly Lazy<IGenericCacheService> _cacheService;
         private static IEnumCache<NPCGroupType, NPCGroupAttribute> _npcGroupCache;
 
-        public NPCGroupService(IGenericCacheService cacheService)
+        public NPCGroupService(IServiceProvider serviceProvider)
         {
-            _cacheService = cacheService;
+            _serviceProvider = serviceProvider;
+            
+            // Initialize lazy services
+            _cacheService = new Lazy<IGenericCacheService>(() => _serviceProvider.GetRequiredService<IGenericCacheService>());
         }
+        
+        // Lazy-loaded service to break circular dependency
+        private IGenericCacheService CacheService => _cacheService.Value;
 
         /// <summary>
         /// When the module loads, data is cached to speed up searches later.
@@ -41,7 +51,7 @@ namespace SWLOR.Component.Quest.Service
         /// </summary>
         private void RegisterNPCGroups()
         {
-            _npcGroupCache = _cacheService.BuildEnumCache<NPCGroupType, NPCGroupAttribute>()
+            _npcGroupCache = CacheService.BuildEnumCache<NPCGroupType, NPCGroupAttribute>()
                 .WithAllItems()
                 .Build();
 

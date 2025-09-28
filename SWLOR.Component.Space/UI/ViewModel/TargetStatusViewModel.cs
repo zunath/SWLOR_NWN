@@ -21,10 +21,15 @@ namespace SWLOR.Component.Space.UI.ViewModel
             : base(guiService)
         {
             _serviceProvider = serviceProvider;
+            
+            // Initialize lazy services
+            _space = new Lazy<ISpaceService>(() => _serviceProvider.GetRequiredService<ISpaceService>());
         }
 
         // Lazy-loaded service to break circular dependency
-        private ISpaceService Space => _serviceProvider.GetRequiredService<ISpaceService>();
+        private readonly Lazy<ISpaceService> _space;
+        
+        private ISpaceService Space => _space.Value;
 
         private int _screenHeight;
         private int _screenWidth;

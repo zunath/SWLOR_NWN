@@ -23,10 +23,15 @@ namespace SWLOR.Component.Combat.Feature
         {
             _db = db;
             _serviceProvider = serviceProvider;
+            
+            // Initialize lazy services
+            _statService = new Lazy<IStatService>(() => _serviceProvider.GetRequiredService<IStatService>());
         }
 
         // Lazy-loaded service to break circular dependency
-        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+        private readonly Lazy<IStatService> _statService;
+        
+        private IStatService StatService => _statService.Value;
         
         private delegate void ApplyStatChangeDelegate(uint player, uint item, ItemProperty ip, bool isAdding);
         private readonly Dictionary<ItemPropertyType, ApplyStatChangeDelegate> _statChangeActions = new();

@@ -32,12 +32,22 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
             _db = db;
             _serviceProvider = serviceProvider;
             _eventAggregator = eventAggregator;
+            
+            // Initialize lazy services
+            _perkService = new Lazy<IPerkService>(() => _serviceProvider.GetRequiredService<IPerkService>());
+            _lootService = new Lazy<ILootService>(() => _serviceProvider.GetRequiredService<ILootService>());
+            _skillService = new Lazy<ISkillService>(() => _serviceProvider.GetRequiredService<ISkillService>());
         }
 
         // Lazy-loaded services to break circular dependencies
-        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
-        private ILootService LootService => _serviceProvider.GetRequiredService<ILootService>();
-        private ISkillService SkillService => _serviceProvider.GetRequiredService<ISkillService>();
+        private readonly Lazy<IPerkService> _perkService;
+        private readonly Lazy<ILootService> _lootService;
+        private readonly Lazy<ISkillService> _skillService;
+        
+        // Lazy-loaded services to break circular dependencies
+        private IPerkService PerkService => _perkService.Value;
+        private ILootService LootService => _lootService.Value;
+        private ISkillService SkillService => _skillService.Value;
 
         public Dictionary<string, ItemDetail> BuildItems()
         {

@@ -47,20 +47,46 @@ namespace SWLOR.Component.Character.UI.ViewModel
         {
             _db = db;
             _serviceProvider = serviceProvider;
+            
+            // Initialize lazy services
+            _statService = new Lazy<IStatService>(() => _serviceProvider.GetRequiredService<IStatService>());
+            _skillService = new Lazy<ISkillService>(() => _serviceProvider.GetRequiredService<ISkillService>());
+            _itemService = new Lazy<IItemService>(() => _serviceProvider.GetRequiredService<IItemService>());
+            _combatService = new Lazy<ICombatService>(() => _serviceProvider.GetRequiredService<ICombatService>());
+            _abilityService = new Lazy<IAbilityService>(() => _serviceProvider.GetRequiredService<IAbilityService>());
+            _spaceService = new Lazy<ISpaceService>(() => _serviceProvider.GetRequiredService<ISpaceService>());
+            _beastMasteryService = new Lazy<IBeastMasteryService>(() => _serviceProvider.GetRequiredService<IBeastMasteryService>());
+            _dialogService = new Lazy<IDialogService>(() => _serviceProvider.GetRequiredService<IDialogService>());
+            _statusEffectService = new Lazy<IStatusEffectService>(() => _serviceProvider.GetRequiredService<IStatusEffectService>());
+            _holoComService = new Lazy<IHoloComService>(() => _serviceProvider.GetRequiredService<IHoloComService>());
+            _guiService = new Lazy<IGuiService>(() => _serviceProvider.GetRequiredService<IGuiService>());
         }
 
         // Lazy-loaded services to break circular dependencies
-        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
-        private ISkillService SkillService => _serviceProvider.GetRequiredService<ISkillService>();
-        private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
-        private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
-        private IAbilityService AbilityService => _serviceProvider.GetRequiredService<IAbilityService>();
-        private ISpaceService SpaceService => _serviceProvider.GetRequiredService<ISpaceService>();
-        private IBeastMasteryService BeastMasteryService => _serviceProvider.GetRequiredService<IBeastMasteryService>();
-        private IDialogService DialogService => _serviceProvider.GetRequiredService<IDialogService>();
-        private IStatusEffectService StatusEffectService => _serviceProvider.GetRequiredService<IStatusEffectService>();
-        private IHoloComService HoloComService => _serviceProvider.GetRequiredService<IHoloComService>();
-        private IGuiService GuiService => _serviceProvider.GetRequiredService<IGuiService>();
+        private readonly Lazy<IStatService> _statService;
+        private readonly Lazy<ISkillService> _skillService;
+        private readonly Lazy<IItemService> _itemService;
+        private readonly Lazy<ICombatService> _combatService;
+        private readonly Lazy<IAbilityService> _abilityService;
+        private readonly Lazy<ISpaceService> _spaceService;
+        private readonly Lazy<IBeastMasteryService> _beastMasteryService;
+        private readonly Lazy<IDialogService> _dialogService;
+        
+        private IStatService StatService => _statService.Value;
+        private ISkillService SkillService => _skillService.Value;
+        private IItemService ItemService => _itemService.Value;
+        private ICombatService CombatService => _combatService.Value;
+        private IAbilityService AbilityService => _abilityService.Value;
+        private ISpaceService SpaceService => _spaceService.Value;
+        private IBeastMasteryService BeastMasteryService => _beastMasteryService.Value;
+        private IDialogService DialogService => _dialogService.Value;
+        private readonly Lazy<IStatusEffectService> _statusEffectService;
+        private readonly Lazy<IHoloComService> _holoComService;
+        private readonly Lazy<IGuiService> _guiService;
+        
+        private IStatusEffectService StatusEffectService => _statusEffectService.Value;
+        private IHoloComService HoloComService => _holoComService.Value;
+        private IGuiService GuiService => _guiService.Value;
         
         private const int MaxUpgrades = 10;
         private uint _target;

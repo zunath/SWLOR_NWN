@@ -68,18 +68,39 @@ namespace SWLOR.Component.Associate.Service
             _slangPersonality = slangPersonality;
             _blandPersonality = blandPersonality;
             _worshipfulPersonality = worshipfulPersonality;
+            
+            // Initialize lazy services
+            _guiService = new Lazy<IGuiService>(() => _serviceProvider.GetRequiredService<IGuiService>());
+            _raceService = new Lazy<IRaceService>(() => _serviceProvider.GetRequiredService<IRaceService>());
+            _statusEffectService = new Lazy<IStatusEffectService>(() => _serviceProvider.GetRequiredService<IStatusEffectService>());
+            _aiService = new Lazy<IAIService>(() => _serviceProvider.GetRequiredService<IAIService>());
+            _activityService = new Lazy<IActivityService>(() => _serviceProvider.GetRequiredService<IActivityService>());
+            _recastService = new Lazy<IRecastService>(() => _serviceProvider.GetRequiredService<IRecastService>());
+            _itemService = new Lazy<IItemService>(() => _serviceProvider.GetRequiredService<IItemService>());
+            _perkService = new Lazy<IPerkService>(() => _serviceProvider.GetRequiredService<IPerkService>());
+            _statService = new Lazy<IStatService>(() => _serviceProvider.GetRequiredService<IStatService>());
         }
 
         // Lazy-loaded services to break circular dependencies
-        private IGuiService GuiService => _serviceProvider.GetRequiredService<IGuiService>();
-        private IRaceService RaceService => _serviceProvider.GetRequiredService<IRaceService>();
-        private IStatusEffectService StatusEffectService => _serviceProvider.GetRequiredService<IStatusEffectService>();
-        private IAIService AIService => _serviceProvider.GetRequiredService<IAIService>();
-        private IActivityService ActivityService => _serviceProvider.GetRequiredService<IActivityService>();
-        private IRecastService RecastService => _serviceProvider.GetRequiredService<IRecastService>();
-        private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
-        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
-        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+        private readonly Lazy<IGuiService> _guiService;
+        private readonly Lazy<IRaceService> _raceService;
+        private readonly Lazy<IStatusEffectService> _statusEffectService;
+        private readonly Lazy<IAIService> _aiService;
+        private readonly Lazy<IActivityService> _activityService;
+        private readonly Lazy<IRecastService> _recastService;
+        private readonly Lazy<IItemService> _itemService;
+        private readonly Lazy<IPerkService> _perkService;
+        private readonly Lazy<IStatService> _statService;
+        
+        private IGuiService GuiService => _guiService.Value;
+        private IRaceService RaceService => _raceService.Value;
+        private IStatusEffectService StatusEffectService => _statusEffectService.Value;
+        private IAIService AIService => _aiService.Value;
+        private IActivityService ActivityService => _activityService.Value;
+        private IRecastService RecastService => _recastService.Value;
+        private IItemService ItemService => _itemService.Value;
+        private IPerkService PerkService => _perkService.Value;
+        private IStatService StatService => _statService.Value;
         
 
         /// <summary>

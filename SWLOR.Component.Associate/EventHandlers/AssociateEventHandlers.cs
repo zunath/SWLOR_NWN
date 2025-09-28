@@ -19,15 +19,23 @@ namespace SWLOR.Component.Associate.EventHandlers
     public class AssociateEventHandlers
     {
         private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded services to break circular dependencies
+        private readonly Lazy<IBeastMasteryService> _beastMasteryService;
+        private readonly Lazy<IDroidService> _droidService;
 
         public AssociateEventHandlers(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
+            
+            // Initialize lazy services
+            _beastMasteryService = new Lazy<IBeastMasteryService>(() => _serviceProvider.GetRequiredService<IBeastMasteryService>());
+            _droidService = new Lazy<IDroidService>(() => _serviceProvider.GetRequiredService<IDroidService>());
         }
 
         // Lazy-loaded services to break circular dependencies
-        private IBeastMasteryService BeastMasteryService => _serviceProvider.GetRequiredService<IBeastMasteryService>();
-        private IDroidService DroidService => _serviceProvider.GetRequiredService<IDroidService>();
+        private IBeastMasteryService BeastMasteryService => _beastMasteryService.Value;
+        private IDroidService DroidService => _droidService.Value;
 
         /// <summary>
         /// When the module loads, cache all relevant associate data into memory.

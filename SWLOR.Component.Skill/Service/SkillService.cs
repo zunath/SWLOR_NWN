@@ -23,9 +23,6 @@ namespace SWLOR.Component.Skill.Service
         private readonly IServiceProvider _serviceProvider;
         private readonly IGenericCacheService _cacheService;
         private readonly IStatusEffectService _statusEffectService;
-        
-        // Lazy-loaded services to break circular dependencies
-        private IGuiService GuiService => _serviceProvider.GetRequiredService<IGuiService>();
 
         public SkillService(
             IDatabaseService db, 
@@ -37,13 +34,20 @@ namespace SWLOR.Component.Skill.Service
             _db = db;
             _random = random;
             _serviceProvider = serviceProvider;
-            // Services are now lazy-loaded via IServiceProvider
             _cacheService = cacheService;
             _statusEffectService = statusEffectService;
+            
+            // Initialize lazy services
+            _guiService = new Lazy<IGuiService>(() => _serviceProvider.GetRequiredService<IGuiService>());
+            _perkService = new Lazy<IPerkService>(() => _serviceProvider.GetRequiredService<IPerkService>());
         }
 
-        // Lazy-loaded service to break circular dependency
-        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
+        // Lazy-loaded services to break circular dependencies
+        private readonly Lazy<IGuiService> _guiService;
+        private readonly Lazy<IPerkService> _perkService;
+        
+        private IGuiService GuiService => _guiService.Value;
+        private IPerkService PerkService => _perkService.Value;
 
         /// <summary>
         /// This is the maximum number of skill points a single character can have at any time.

@@ -22,6 +22,10 @@ namespace SWLOR.Component.Perk.Service
         private readonly IGenericCacheService _cacheService;
         private readonly IServiceProvider _serviceProvider;
         
+        // Lazy-loaded services to break circular dependencies
+        private readonly Lazy<IBeastMasteryService> _beastMasteryService;
+        private readonly Lazy<IPerkBuilder> _perkBuilder;
+        
         // Cached data
         private IEnumCache<PerkCategoryType, PerkCategoryAttribute> _categoryCache;
         private IInterfaceCache<PerkType, PerkDetail> _perkCache;
@@ -44,11 +48,15 @@ namespace SWLOR.Component.Perk.Service
             _db = db;
             _cacheService = cacheService;
             _serviceProvider = serviceProvider;
+            
+            // Initialize lazy services
+            _beastMasteryService = new Lazy<IBeastMasteryService>(() => _serviceProvider.GetRequiredService<IBeastMasteryService>());
+            _perkBuilder = new Lazy<IPerkBuilder>(() => _serviceProvider.GetRequiredService<IPerkBuilder>());
         }
 
         // Lazy-loaded services to break circular dependencies
-        private IBeastMasteryService BeastMasteryService => _serviceProvider.GetRequiredService<IBeastMasteryService>();
-        private IPerkBuilder PerkBuilder => _serviceProvider.GetRequiredService<IPerkBuilder>();
+        private IBeastMasteryService BeastMasteryService => _beastMasteryService.Value;
+        private IPerkBuilder PerkBuilder => _perkBuilder.Value;
 
         /// <summary>
         /// Gets the list of heavy armor perks

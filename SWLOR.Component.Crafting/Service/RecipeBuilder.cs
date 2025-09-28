@@ -20,11 +20,18 @@ namespace SWLOR.Component.Crafting.Service
         public RecipeBuilder(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
+            
+            // Initialize lazy services
+            _databaseService = new Lazy<IDatabaseService>(() => _serviceProvider.GetRequiredService<IDatabaseService>());
+            _perkService = new Lazy<IPerkService>(() => _serviceProvider.GetRequiredService<IPerkService>());
         }
 
         // Lazy-loaded services to break circular dependencies
-        private IDatabaseService DatabaseService => _serviceProvider.GetRequiredService<IDatabaseService>();
-        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
+        private readonly Lazy<IDatabaseService> _databaseService;
+        private readonly Lazy<IPerkService> _perkService;
+        
+        private IDatabaseService DatabaseService => _databaseService.Value;
+        private IPerkService PerkService => _perkService.Value;
 
         /// <summary>
         /// Creates a new recipe.

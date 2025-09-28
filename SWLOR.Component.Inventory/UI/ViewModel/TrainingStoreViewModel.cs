@@ -33,10 +33,16 @@ namespace SWLOR.Component.Inventory.UI.ViewModel
             _db = db;
             _itemCache = itemCache;
             _serviceProvider = serviceProvider;
+            
+            // Initialize lazy services
+            _propertyService = new Lazy<IPropertyService>(() => _serviceProvider.GetRequiredService<IPropertyService>());
         }
 
         // Lazy-loaded service to break circular dependency
-        private IPropertyService PropertyService => _serviceProvider.GetRequiredService<IPropertyService>();
+        private readonly Lazy<IPropertyService> _propertyService;
+        
+        // Lazy-loaded service to break circular dependency
+        private IPropertyService PropertyService => _propertyService.Value;
         
         [ScriptHandler<OnOpenTrainingStore>]
         public void OpenTrainingStore()

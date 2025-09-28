@@ -29,11 +29,11 @@ namespace SWLOR.Component.Character.UI.ViewModel
         private readonly IServiceProvider _serviceProvider;
         
         // Lazy-loaded services to break circular dependencies
-        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
-        private ISkillService SkillService => _serviceProvider.GetRequiredService<ISkillService>();
-        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
-        private IAbilityService AbilityService => _serviceProvider.GetRequiredService<IAbilityService>();
-        private IAreaService AreaService => _serviceProvider.GetRequiredService<IAreaService>();
+        private readonly Lazy<IStatService> _statService;
+        private readonly Lazy<ISkillService> _skillService;
+        private readonly Lazy<IPerkService> _perkService;
+        private readonly Lazy<IAbilityService> _abilityService;
+        private readonly Lazy<IAreaService> _areaService;
 
         public CharacterFullRebuildViewModel(
             IGuiService guiService, 
@@ -45,8 +45,21 @@ namespace SWLOR.Component.Character.UI.ViewModel
             _logger = logger;
             _db = db;
             _serviceProvider = serviceProvider;
-            // Services are now lazy-loaded via IServiceProvider
+            
+            // Initialize lazy services
+            _statService = new Lazy<IStatService>(() => _serviceProvider.GetRequiredService<IStatService>());
+            _skillService = new Lazy<ISkillService>(() => _serviceProvider.GetRequiredService<ISkillService>());
+            _perkService = new Lazy<IPerkService>(() => _serviceProvider.GetRequiredService<IPerkService>());
+            _abilityService = new Lazy<IAbilityService>(() => _serviceProvider.GetRequiredService<IAbilityService>());
+            _areaService = new Lazy<IAreaService>(() => _serviceProvider.GetRequiredService<IAreaService>());
         }
+        
+        // Lazy-loaded services to break circular dependencies
+        private IStatService StatService => _statService.Value;
+        private ISkillService SkillService => _skillService.Value;
+        private IPerkService PerkService => _perkService.Value;
+        private IAbilityService AbilityService => _abilityService.Value;
+        private IAreaService AreaService => _areaService.Value;
         [ScriptHandler<OnCharacterRebuild>]
         public void LoadCharacterMigrationWindow()
         {

@@ -21,17 +21,29 @@ namespace SWLOR.Component.Crafting.Feature
         private readonly IServiceProvider _serviceProvider;
         
         // Lazy-loaded services to break circular dependencies
-        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
-        private ISkillService SkillService => _serviceProvider.GetRequiredService<ISkillService>();
-        private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
-        private ILootService LootService => _serviceProvider.GetRequiredService<ILootService>();
+        private readonly Lazy<IPerkService> _perkService;
+        private readonly Lazy<ISkillService> _skillService;
+        private readonly Lazy<IItemService> _itemService;
+        private readonly Lazy<ILootService> _lootService;
 
         public ScavengePoint(IDatabaseService db, IRandomService random, IServiceProvider serviceProvider)
         {
             _db = db;
             _random = random;
-            // Services are now lazy-loaded via IServiceProvider
+            _serviceProvider = serviceProvider;
+            
+            // Initialize lazy services
+            _perkService = new Lazy<IPerkService>(() => _serviceProvider.GetRequiredService<IPerkService>());
+            _skillService = new Lazy<ISkillService>(() => _serviceProvider.GetRequiredService<ISkillService>());
+            _itemService = new Lazy<IItemService>(() => _serviceProvider.GetRequiredService<IItemService>());
+            _lootService = new Lazy<ILootService>(() => _serviceProvider.GetRequiredService<ILootService>());
         }
+        
+        // Lazy-loaded services to break circular dependencies
+        private IPerkService PerkService => _perkService.Value;
+        private ISkillService SkillService => _skillService.Value;
+        private IItemService ItemService => _itemService.Value;
+        private ILootService LootService => _lootService.Value;
         /// <summary>
         /// 
         /// </summary>

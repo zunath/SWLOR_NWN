@@ -18,18 +18,32 @@ namespace SWLOR.Component.Space.Feature.ShipModuleDefinition
         private readonly IShipModuleBuilder _builder;
         
         // Lazy-loaded services to break circular dependencies
-        private IRandomService Random => _serviceProvider.GetRequiredService<IRandomService>();
-        private ISpaceService SpaceService => _serviceProvider.GetRequiredService<ISpaceService>();
-        private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
-        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
-        private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
-        private IMessagingService MessagingService => _serviceProvider.GetRequiredService<IMessagingService>();
+        private readonly Lazy<IRandomService> _random;
+        private readonly Lazy<ISpaceService> _spaceService;
+        private readonly Lazy<ICombatService> _combatService;
+        private readonly Lazy<IEnmityService> _enmityService;
+        private readonly Lazy<ICombatPointService> _combatPointService;
+        private readonly Lazy<IMessagingService> _messagingService;
+        
+        private IRandomService Random => _random.Value;
+        private ISpaceService SpaceService => _spaceService.Value;
+        private ICombatService CombatService => _combatService.Value;
+        private IEnmityService EnmityService => _enmityService.Value;
+        private ICombatPointService CombatPointService => _combatPointService.Value;
+        private IMessagingService MessagingService => _messagingService.Value;
 
         public QuadLaserCannonModuleDefinition(IServiceProvider serviceProvider, IShipModuleBuilder builder)
         {
             _serviceProvider = serviceProvider;
-            // Services are now lazy-loaded via IServiceProvider
             _builder = builder;
+            
+            // Initialize lazy services
+            _random = new Lazy<IRandomService>(() => _serviceProvider.GetRequiredService<IRandomService>());
+            _spaceService = new Lazy<ISpaceService>(() => _serviceProvider.GetRequiredService<ISpaceService>());
+            _combatService = new Lazy<ICombatService>(() => _serviceProvider.GetRequiredService<ICombatService>());
+            _enmityService = new Lazy<IEnmityService>(() => _serviceProvider.GetRequiredService<IEnmityService>());
+            _combatPointService = new Lazy<ICombatPointService>(() => _serviceProvider.GetRequiredService<ICombatPointService>());
+            _messagingService = new Lazy<IMessagingService>(() => _serviceProvider.GetRequiredService<IMessagingService>());
         }
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()

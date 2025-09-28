@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.World.Contracts;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -10,13 +11,22 @@ namespace SWLOR.Component.World.Service
     public class MusicService : IMusicService
     {
         private readonly IDatabaseService _db;
-        private readonly ISongCacheService _songCache;
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded service to break circular dependency
+        private readonly Lazy<ISongCacheService> _songCache;
 
-        public MusicService(IDatabaseService db, ISongCacheService songCache)
+        public MusicService(IDatabaseService db, IServiceProvider serviceProvider)
         {
             _db = db;
-            _songCache = songCache;
+            _serviceProvider = serviceProvider;
+            
+            // Initialize lazy services
+            _songCache = new Lazy<ISongCacheService>(() => _serviceProvider.GetRequiredService<ISongCacheService>());
         }
+        
+        // Lazy-loaded service to break circular dependency
+        private ISongCacheService SongCache => _songCache.Value;
 
         /// <summary>
         /// When the module loads, read the ambientmusic.2da file for all active songs.
@@ -24,7 +34,7 @@ namespace SWLOR.Component.World.Service
         /// </summary>
         public void LoadSongList()
         {
-            _songCache.LoadSongList();
+            SongCache.LoadSongList();
         }
 
         /// <summary>
@@ -57,7 +67,7 @@ namespace SWLOR.Component.World.Service
         /// <returns>A list of available songs.</returns>
         public List<Song> GetAllSongs()
         {
-            return _songCache.GetAllSongs();
+            return SongCache.GetAllSongs();
         }
 
         /// <summary>
@@ -67,7 +77,7 @@ namespace SWLOR.Component.World.Service
         /// <returns>A list of available battle songs players can pick from.</returns>
         public Dictionary<int, Song> GetBattleSongs()
         {
-            return _songCache.GetBattleSongs();
+            return SongCache.GetBattleSongs();
         }
     }
 }

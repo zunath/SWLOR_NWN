@@ -19,6 +19,7 @@ namespace SWLOR.Shared.Events.Infrastructure
         {
             services.AddSingleton<ModuleEventHandlers>();
             services.AddSingleton<IEventRegistrationService, EventRegistrationService>();
+            services.AddSingleton<IEventAggregator, EventAggregator.EventAggregator>();
             services.AddSingleton<IEventService, EventService>();
 
             return services;

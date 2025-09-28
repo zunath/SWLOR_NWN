@@ -20,11 +20,18 @@ namespace SWLOR.Component.Combat.Feature
         {
             _db = db;
             _serviceProvider = serviceProvider;
+            
+            // Initialize lazy services
+            _statService = new Lazy<IStatService>(() => _serviceProvider.GetRequiredService<IStatService>());
+            _statusEffectService = new Lazy<IStatusEffectService>(() => _serviceProvider.GetRequiredService<IStatusEffectService>());
         }
 
         // Lazy-loaded services to break circular dependencies
-        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
-        private IStatusEffectService StatusEffectService => _serviceProvider.GetRequiredService<IStatusEffectService>();
+        private readonly Lazy<IStatService> _statService;
+        private readonly Lazy<IStatusEffectService> _statusEffectService;
+        
+        private IStatService StatService => _statService.Value;
+        private IStatusEffectService StatusEffectService => _statusEffectService.Value;
         
         /// <summary>
         /// On module heartbeat, process a player's HP/FP/STM regeneration.

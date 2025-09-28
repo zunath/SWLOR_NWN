@@ -29,13 +29,13 @@ namespace SWLOR.Component.Quest.Service
         private readonly IEventAggregator _eventAggregator;
         
         // Lazy-loaded services to break circular dependencies
-        private IItemCacheService ItemCache => _serviceProvider.GetRequiredService<IItemCacheService>();
-        private IGenericCacheService CacheService => _serviceProvider.GetRequiredService<IGenericCacheService>();
-        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
-        private IActivityService ActivityService => _serviceProvider.GetRequiredService<IActivityService>();
-        private IRandomService RandomService => _serviceProvider.GetRequiredService<IRandomService>();
-        private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
-        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
+        private readonly Lazy<IItemCacheService> _itemCache;
+        private readonly Lazy<IGenericCacheService> _cacheService;
+        private readonly Lazy<IEnmityService> _enmityService;
+        private readonly Lazy<IActivityService> _activityService;
+        private readonly Lazy<IRandomService> _randomService;
+        private readonly Lazy<IItemService> _itemService;
+        private readonly Lazy<IPerkService> _perkService;
         
         // Cached data
         private IInterfaceCache<string, IQuestDetail> _questCache;
@@ -51,16 +51,31 @@ namespace SWLOR.Component.Quest.Service
 
         public QuestService(
             IDatabaseService db,
-            IItemCacheService itemCache,
-            IGenericCacheService cacheService,
             IServiceProvider serviceProvider,
             IEventAggregator eventAggregator)
         {
             _db = db;
             _serviceProvider = serviceProvider;
             _eventAggregator = eventAggregator;
-            // Services are now lazy-loaded via IServiceProvider
+            
+            // Initialize lazy services
+            _itemCache = new Lazy<IItemCacheService>(() => _serviceProvider.GetRequiredService<IItemCacheService>());
+            _cacheService = new Lazy<IGenericCacheService>(() => _serviceProvider.GetRequiredService<IGenericCacheService>());
+            _enmityService = new Lazy<IEnmityService>(() => _serviceProvider.GetRequiredService<IEnmityService>());
+            _activityService = new Lazy<IActivityService>(() => _serviceProvider.GetRequiredService<IActivityService>());
+            _randomService = new Lazy<IRandomService>(() => _serviceProvider.GetRequiredService<IRandomService>());
+            _itemService = new Lazy<IItemService>(() => _serviceProvider.GetRequiredService<IItemService>());
+            _perkService = new Lazy<IPerkService>(() => _serviceProvider.GetRequiredService<IPerkService>());
         }
+        
+        // Lazy-loaded services to break circular dependencies
+        private IItemCacheService ItemCache => _itemCache.Value;
+        private IGenericCacheService CacheService => _cacheService.Value;
+        private IEnmityService EnmityService => _enmityService.Value;
+        private IActivityService ActivityService => _activityService.Value;
+        private IRandomService RandomService => _randomService.Value;
+        private IItemService ItemService => _itemService.Value;
+        private IPerkService PerkService => _perkService.Value;
 
         /// <summary>
         /// When the module loads, data is cached to speed up searches later.

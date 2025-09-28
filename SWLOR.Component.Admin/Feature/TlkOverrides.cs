@@ -13,11 +13,18 @@ namespace SWLOR.Component.Admin.Feature
         public TlkOverrides(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
+            
+            // Initialize lazy services
+            _abilityService = new Lazy<IAbilityService>(() => _serviceProvider.GetRequiredService<IAbilityService>());
+            _perkService = new Lazy<IPerkService>(() => _serviceProvider.GetRequiredService<IPerkService>());
         }
 
         // Lazy-loaded services to break circular dependencies
-        private IAbilityService AbilityService => _serviceProvider.GetRequiredService<IAbilityService>();
-        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
+        private readonly Lazy<IAbilityService> _abilityService;
+        private readonly Lazy<IPerkService> _perkService;
+        
+        private IAbilityService AbilityService => _abilityService.Value;
+        private IPerkService PerkService => _perkService.Value;
 
         public void OverrideTlks()
         {

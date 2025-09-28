@@ -17,12 +17,21 @@ namespace SWLOR.Component.Admin.UI.ViewModel
         public DebugEnmityViewModel(IGuiService guiService, IServiceProvider serviceProvider) : base(guiService)
         {
             _serviceProvider = serviceProvider;
+            
+            // Initialize lazy services
+            _partyService = new Lazy<IPartyService>(() => _serviceProvider.GetRequiredService<IPartyService>());
+            _enmityService = new Lazy<IEnmityService>(() => _serviceProvider.GetRequiredService<IEnmityService>());
+            _guiService = new Lazy<IGuiService>(() => _serviceProvider.GetRequiredService<IGuiService>());
         }
 
         // Lazy-loaded services to break circular dependencies
-        private IPartyService PartyService => _serviceProvider.GetRequiredService<IPartyService>();
-        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
-        private IGuiService GuiService => _serviceProvider.GetRequiredService<IGuiService>();
+        private readonly Lazy<IPartyService> _partyService;
+        private readonly Lazy<IEnmityService> _enmityService;
+        private readonly Lazy<IGuiService> _guiService;
+        
+        private IPartyService PartyService => _partyService.Value;
+        private IEnmityService EnmityService => _enmityService.Value;
+        private IGuiService GuiService => _guiService.Value;
 
         public void OnEnmityChanged()
         {

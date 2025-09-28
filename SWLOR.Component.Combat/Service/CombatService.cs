@@ -25,6 +25,12 @@ namespace SWLOR.Component.Combat.Service
         private readonly IRandomService _random;
         private readonly IServiceProvider _serviceProvider;
         private readonly List<CombatDamageType> _allValidDamageTypes = new();
+        
+        // Lazy-loaded services to break circular dependencies
+        private readonly Lazy<IAbilityService> _abilityService;
+        private readonly Lazy<IStatService> _statService;
+        private readonly Lazy<IItemService> _itemService;
+        private readonly Lazy<IPerkService> _perkService;
 
         public CombatService(ILogger logger, IDatabaseService db, IRandomService random, IServiceProvider serviceProvider)
         {
@@ -32,15 +38,19 @@ namespace SWLOR.Component.Combat.Service
             _db = db;
             _random = random;
             _serviceProvider = serviceProvider;
+            
+            // Initialize lazy services
+            _abilityService = new Lazy<IAbilityService>(() => _serviceProvider.GetRequiredService<IAbilityService>());
+            _statService = new Lazy<IStatService>(() => _serviceProvider.GetRequiredService<IStatService>());
+            _itemService = new Lazy<IItemService>(() => _serviceProvider.GetRequiredService<IItemService>());
+            _perkService = new Lazy<IPerkService>(() => _serviceProvider.GetRequiredService<IPerkService>());
         }
 
         // Lazy-loaded services to break circular dependencies
-        private IAbilityService AbilityService => _serviceProvider.GetRequiredService<IAbilityService>();
-        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
-
-        // Lazy-loaded services to break circular dependencies
-        private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
-        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
+        private IAbilityService AbilityService => _abilityService.Value;
+        private IStatService StatService => _statService.Value;
+        private IItemService ItemService => _itemService.Value;
+        private IPerkService PerkService => _perkService.Value;
 
         /// <summary>
         /// When the module loads, add all valid damage types to the cache.

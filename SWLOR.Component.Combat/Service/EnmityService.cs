@@ -18,15 +18,21 @@ namespace SWLOR.Component.Combat.Service
 
         // Creature -> EnemyList mapping
         private readonly Dictionary<uint, List<uint>> _creatureToEnemies = new();
+        
+        // Lazy-loaded service to break circular dependency
+        private readonly Lazy<IPartyService> _partyService;
 
         public EnmityService(IServiceProvider serviceProvider, IEventAggregator eventAggregator)
         {
             _serviceProvider = serviceProvider;
             _eventAggregator = eventAggregator;
+            
+            // Initialize lazy services
+            _partyService = new Lazy<IPartyService>(() => _serviceProvider.GetRequiredService<IPartyService>());
         }
 
         // Lazy-loaded service to break circular dependency
-        private IPartyService PartyService => _serviceProvider.GetRequiredService<IPartyService>();
+        private IPartyService PartyService => _partyService.Value;
 
         /// <summary>
         /// When an enemy is damaged, increase enmity toward that creature by the amount of damage dealt.

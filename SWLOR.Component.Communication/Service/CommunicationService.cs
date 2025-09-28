@@ -24,6 +24,11 @@ namespace SWLOR.Component.Communication.Service
         private readonly IServiceProvider _serviceProvider;
         private const string DMPossessedCreature = "COMMUNICATION_DM_POSSESSED_CREATURE";
         private const int HolonetDelayMinutes = 5;
+        
+        // Lazy-loaded services to break circular dependencies
+        private readonly Lazy<IActivityService> _activityService;
+        private readonly Lazy<IHoloComService> _holoComService;
+        private readonly Lazy<ILanguageService> _languageService;
 
         public (byte, byte, byte) OOCChatColor => CommunicationConstants.OOCChatColor;
         public (byte, byte, byte) EmoteChatColor => CommunicationConstants.EmoteChatColor;
@@ -32,12 +37,17 @@ namespace SWLOR.Component.Communication.Service
         {
             _db = db;
             _serviceProvider = serviceProvider;
+            
+            // Initialize lazy services
+            _activityService = new Lazy<IActivityService>(() => _serviceProvider.GetRequiredService<IActivityService>());
+            _holoComService = new Lazy<IHoloComService>(() => _serviceProvider.GetRequiredService<IHoloComService>());
+            _languageService = new Lazy<ILanguageService>(() => _serviceProvider.GetRequiredService<ILanguageService>());
         }
 
         // Lazy-loaded services to break circular dependencies
-        private IActivityService ActivityService => _serviceProvider.GetRequiredService<IActivityService>();
-        private IHoloComService HoloComService => _serviceProvider.GetRequiredService<IHoloComService>();
-        private ILanguageService LanguageService => _serviceProvider.GetRequiredService<ILanguageService>();
+        private IActivityService ActivityService => _activityService.Value;
+        private IHoloComService HoloComService => _holoComService.Value;
+        private ILanguageService LanguageService => _languageService.Value;
 
         private class CommunicationComponent
         {

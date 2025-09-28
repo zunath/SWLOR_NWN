@@ -1,9 +1,11 @@
 using System;
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.World.Contracts;
 using SWLOR.Component.World.Model;
 using SWLOR.NWN.API;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
 using WeatherType = SWLOR.NWN.API.NWScript.Enum.WeatherType;
 
 namespace SWLOR.Component.World.Service
@@ -13,20 +15,28 @@ namespace SWLOR.Component.World.Service
     /// </summary>
     public class WeatherEffectsService : IWeatherEffectsService
     {
-        private readonly IWeatherCalculationService _weatherCalculationService;
-        private readonly IWeatherClimateService _weatherClimateService;
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded services to break circular dependencies
+        private readonly Lazy<IWeatherCalculationService> _weatherCalculationService;
+        private readonly Lazy<IWeatherClimateService> _weatherClimateService;
 
         // Module and area variables.
         private const string VAR_WEATHER_ACID_RAIN = "VAR_WEATHER_ACID_RAIN";
         private const string VAR_INITIALIZED = "VAR_WH_INITIALIZED";
 
-        public WeatherEffectsService(
-            IWeatherCalculationService weatherCalculationService,
-            IWeatherClimateService weatherClimateService)
+        public WeatherEffectsService(IServiceProvider serviceProvider)
         {
-            _weatherCalculationService = weatherCalculationService;
-            _weatherClimateService = weatherClimateService;
+            _serviceProvider = serviceProvider;
+            
+            // Initialize lazy services
+            _weatherCalculationService = new Lazy<IWeatherCalculationService>(() => _serviceProvider.GetRequiredService<IWeatherCalculationService>());
+            _weatherClimateService = new Lazy<IWeatherClimateService>(() => _serviceProvider.GetRequiredService<IWeatherClimateService>());
         }
+        
+        // Lazy-loaded services to break circular dependencies
+        private IWeatherCalculationService WeatherCalculationService => _weatherCalculationService.Value;
+        private IWeatherClimateService WeatherClimateService => _weatherClimateService.Value;
 
         /// <summary>
         /// Applies weather effects to a creature.
@@ -37,13 +47,13 @@ namespace SWLOR.Component.World.Service
             var oArea = GetArea(oCreature);
             if (GetIsAreaInterior(oArea) || GetIsAreaAboveGround(oArea) == false) return;
 
-            var nHeat = _weatherCalculationService.GetHeatIndex(oArea);
-            var nHumidity = _weatherCalculationService.GetHumidity(oArea);
-            var nWind = _weatherCalculationService.GetWindStrength(oArea);
+            var nHeat = WeatherCalculationService.GetHeatIndex(oArea);
+            var nHumidity = WeatherCalculationService.GetHumidity(oArea);
+            var nWind = WeatherCalculationService.GetWindStrength(oArea);
             var bStormy = GetSkyBox(oArea) == SkyboxType.GrassStorm;
             var bIsPC = GetIsPC(oCreature);
             string sMessage;
-            var climate = _weatherClimateService.GetAreaClimate(oArea);
+            var climate = WeatherClimateService.GetAreaClimate(oArea);
 
             //--------------------------------------------------------------------------
             // Apply acid rain, if applicable.  Stolen shamelessly from the Melf's Acid
@@ -263,7 +273,7 @@ namespace SWLOR.Component.World.Service
             if (GetLocalInt(oArea, VAR_INITIALIZED) == 0)
                 return;
 
-            var nWind = _weatherCalculationService.GetWindStrength(oArea);
+            var nWind = WeatherCalculationService.GetWindStrength(oArea);
 
             if (nWind > 9) _DoWindKnockdown(oCreature);
         }

@@ -25,13 +25,24 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
             _db = db;
             _itemCache = itemCache;
             _serviceProvider = serviceProvider;
+            
+            // Initialize lazy services
+            _perkService = new Lazy<IPerkService>(() => _serviceProvider.GetRequiredService<IPerkService>());
+            _craftService = new Lazy<ICraftService>(() => _serviceProvider.GetRequiredService<ICraftService>());
+            _skillService = new Lazy<ISkillService>(() => _serviceProvider.GetRequiredService<ISkillService>());
+            _itemService = new Lazy<IItemService>(() => _serviceProvider.GetRequiredService<IItemService>());
         }
 
         // Lazy-loaded services to break circular dependencies
-        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
-        private ICraftService CraftService => _serviceProvider.GetRequiredService<ICraftService>();
-        private ISkillService SkillService => _serviceProvider.GetRequiredService<ISkillService>();
-        private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
+        private readonly Lazy<IPerkService> _perkService;
+        private readonly Lazy<ICraftService> _craftService;
+        private readonly Lazy<ISkillService> _skillService;
+        private readonly Lazy<IItemService> _itemService;
+        
+        private IPerkService PerkService => _perkService.Value;
+        private ICraftService CraftService => _craftService.Value;
+        private ISkillService SkillService => _skillService.Value;
+        private IItemService ItemService => _itemService.Value;
 
         public Dictionary<string, ItemDetail> BuildItems()
         {

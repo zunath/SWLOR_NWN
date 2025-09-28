@@ -19,11 +19,18 @@ namespace SWLOR.Component.StatusEffect.Feature.StatusEffectDefinition
         public AuraStatusEffectDefinition(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
+            
+            // Initialize lazy services
+            _perkService = new Lazy<IPerkService>(() => _serviceProvider.GetRequiredService<IPerkService>());
+            _statService = new Lazy<IStatService>(() => _serviceProvider.GetRequiredService<IStatService>());
         }
 
         // Lazy-loaded services to break circular dependencies
-        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
-        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+        private readonly Lazy<IPerkService> _perkService;
+        private readonly Lazy<IStatService> _statService;
+        
+        private IPerkService PerkService => _perkService.Value;
+        private IStatService StatService => _statService.Value;
 
         public Dictionary<StatusEffectType, StatusEffectDetail> BuildStatusEffects()
         {

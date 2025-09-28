@@ -1,7 +1,9 @@
 using System;
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.World.Contracts;
 using SWLOR.NWN.API;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Module;
@@ -14,7 +16,10 @@ namespace SWLOR.Component.World.Service
     /// </summary>
     public class WeatherCalculationService : IWeatherCalculationService
     {
-        private readonly IWeatherClimateService _weatherClimateService;
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded service to break circular dependency
+        private readonly Lazy<IWeatherClimateService> _weatherClimateService;
 
         // Module and area variables.
         private const string VAR_WEATHER_CHANGE = "VAR_WEATHER_CHANGE";
@@ -24,10 +29,16 @@ namespace SWLOR.Component.World.Service
         private const string VAR_WEATHER_ACID_RAIN = "VAR_WEATHER_ACID_RAIN";
         private const string VAR_INITIALIZED = "VAR_WH_INITIALIZED";
 
-        public WeatherCalculationService(IWeatherClimateService weatherClimateService)
+        public WeatherCalculationService(IServiceProvider serviceProvider)
         {
-            _weatherClimateService = weatherClimateService;
+            _serviceProvider = serviceProvider;
+            
+            // Initialize lazy services
+            _weatherClimateService = new Lazy<IWeatherClimateService>(() => _serviceProvider.GetRequiredService<IWeatherClimateService>());
         }
+        
+        // Lazy-loaded service to break circular dependency
+        private IWeatherClimateService WeatherClimateService => _weatherClimateService.Value;
 
         /// <summary>
         /// Adjusts the weather based on current conditions and time.
@@ -112,7 +123,7 @@ namespace SWLOR.Component.World.Service
             if (GetIsObjectValid(oArea))
             {
                 nHeat += GetLocalInt(oArea, VAR_WEATHER_HEAT);
-                nHeat += _weatherClimateService.GetAreaClimate(oArea).HeatModifier;
+                nHeat += WeatherClimateService.GetAreaClimate(oArea).HeatModifier;
             }
 
             nHeat = (GetIsNight()) ? nHeat - 2 : nHeat + 2;
@@ -138,7 +149,7 @@ namespace SWLOR.Component.World.Service
             if (GetIsObjectValid(oArea))
             {
                 nHumidity += GetLocalInt(oArea, VAR_WEATHER_HUMIDITY);
-                nHumidity += _weatherClimateService.GetAreaClimate(oArea).HumidityModifier;
+                nHumidity += WeatherClimateService.GetAreaClimate(oArea).HumidityModifier;
             }
 
             if (nHumidity > 10) nHumidity = 10;
@@ -162,7 +173,7 @@ namespace SWLOR.Component.World.Service
             if (GetIsObjectValid(oArea))
             {
                 nWind += GetLocalInt(oArea, VAR_WEATHER_WIND);
-                nWind += _weatherClimateService.GetAreaClimate(oArea).WindModifier;
+                nWind += WeatherClimateService.GetAreaClimate(oArea).WindModifier;
 
                 //----------------------------------------------------------------------
                 // Automatic cover bonus for artificial areas such as cities (lots of

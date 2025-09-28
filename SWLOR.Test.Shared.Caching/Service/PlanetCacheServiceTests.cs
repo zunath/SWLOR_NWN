@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using NUnit.Framework;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -5,6 +6,7 @@ using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Caching.Service;
 using SWLOR.Shared.Domain.World.Enums;
 using SWLOR.Test.Shared;
+using System; // Added for IDisposable
 
 namespace SWLOR.Test.Shared.Caching.Service
 {
@@ -13,6 +15,7 @@ namespace SWLOR.Test.Shared.Caching.Service
     {
         private IGenericCacheService _mockCacheService;
         private IEnumCache<PlanetType, PlanetAttribute> _mockEnumCache;
+        private IServiceProvider _mockServiceProvider;
         private PlanetCacheService _service;
 
         [SetUp]
@@ -20,7 +23,20 @@ namespace SWLOR.Test.Shared.Caching.Service
         {
             _mockCacheService = Substitute.For<IGenericCacheService>();
             _mockEnumCache = Substitute.For<IEnumCache<PlanetType, PlanetAttribute>>();
-            _service = new PlanetCacheService(_mockCacheService);
+            
+            // Create a real service collection and register our mock
+            var services = new ServiceCollection();
+            services.AddSingleton(_mockCacheService);
+            _mockServiceProvider = services.BuildServiceProvider();
+            
+            // Create the service after setting up the mocks
+            _service = new PlanetCacheService(_mockServiceProvider);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            (_mockServiceProvider as IDisposable)?.Dispose();
         }
 
         [Test]

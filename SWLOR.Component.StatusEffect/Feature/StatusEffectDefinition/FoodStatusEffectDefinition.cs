@@ -20,10 +20,15 @@ namespace SWLOR.Component.StatusEffect.Feature.StatusEffectDefinition
         {
             _db = db;
             _serviceProvider = serviceProvider;
+            
+            // Initialize lazy services
+            _statService = new Lazy<IStatService>(() => _serviceProvider.GetRequiredService<IStatService>());
         }
 
         // Lazy-loaded service to break circular dependency
-        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+        private readonly Lazy<IStatService> _statService;
+        
+        private IStatService StatService => _statService.Value;
 
         public Dictionary<StatusEffectType, StatusEffectDetail> BuildStatusEffects()
         {

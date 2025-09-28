@@ -22,13 +22,24 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
         public RefineryViewModel(IGuiService guiService, IServiceProvider serviceProvider) : base(guiService)
         {
             _serviceProvider = serviceProvider;
+            
+            // Initialize lazy services
+            _itemCache = new Lazy<IItemCacheService>(() => _serviceProvider.GetRequiredService<IItemCacheService>());
+            _perkService = new Lazy<IPerkService>(() => _serviceProvider.GetRequiredService<IPerkService>());
+            _skillService = new Lazy<ISkillService>(() => _serviceProvider.GetRequiredService<ISkillService>());
+            _targetingService = new Lazy<ITargetingService>(() => _serviceProvider.GetRequiredService<ITargetingService>());
         }
 
         // Lazy-loaded services to break circular dependencies
-        private IItemCacheService ItemCache => _serviceProvider.GetRequiredService<IItemCacheService>();
-        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
-        private ISkillService SkillService => _serviceProvider.GetRequiredService<ISkillService>();
-        private ITargetingService TargetingService => _serviceProvider.GetRequiredService<ITargetingService>();
+        private readonly Lazy<IItemCacheService> _itemCache;
+        private readonly Lazy<IPerkService> _perkService;
+        private readonly Lazy<ISkillService> _skillService;
+        private readonly Lazy<ITargetingService> _targetingService;
+        
+        private IItemCacheService ItemCache => _itemCache.Value;
+        private IPerkService PerkService => _perkService.Value;
+        private ISkillService SkillService => _skillService.Value;
+        private ITargetingService TargetingService => _targetingService.Value;
         private class OreDetail
         {
             public int RequiredLevel { get; }

@@ -30,11 +30,17 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
         private readonly IServiceProvider _serviceProvider;
         
         // Lazy-loaded services to break circular dependencies
-        private ISkillService SkillService => _serviceProvider.GetRequiredService<ISkillService>();
-        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
-        private IPropertyService PropertyService => _serviceProvider.GetRequiredService<IPropertyService>();
-        private ITargetingService TargetingService => _serviceProvider.GetRequiredService<ITargetingService>();
-        private ICraftService CraftService => _serviceProvider.GetRequiredService<ICraftService>();
+        private readonly Lazy<ISkillService> _skillService;
+        private readonly Lazy<IPerkService> _perkService;
+        private readonly Lazy<IPropertyService> _propertyService;
+        private readonly Lazy<ITargetingService> _targetingService;
+        private readonly Lazy<ICraftService> _craftService;
+        
+        private ISkillService SkillService => _skillService.Value;
+        private IPerkService PerkService => _perkService.Value;
+        private IPropertyService PropertyService => _propertyService.Value;
+        private ITargetingService TargetingService => _targetingService.Value;
+        private ICraftService CraftService => _craftService.Value;
 
         public RecipesViewModel(
             IGuiService guiService, 
@@ -44,7 +50,13 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
         {
             _itemCache = itemCache;
             _serviceProvider = serviceProvider;
-            // Services are now lazy-loaded via IServiceProvider
+            
+            // Initialize lazy services
+            _skillService = new Lazy<ISkillService>(() => _serviceProvider.GetRequiredService<ISkillService>());
+            _perkService = new Lazy<IPerkService>(() => _serviceProvider.GetRequiredService<IPerkService>());
+            _propertyService = new Lazy<IPropertyService>(() => _serviceProvider.GetRequiredService<IPropertyService>());
+            _targetingService = new Lazy<ITargetingService>(() => _serviceProvider.GetRequiredService<ITargetingService>());
+            _craftService = new Lazy<ICraftService>(() => _serviceProvider.GetRequiredService<ICraftService>());
         }
 
         private int _currentRecipeIndex;

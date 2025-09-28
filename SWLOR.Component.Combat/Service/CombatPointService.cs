@@ -36,14 +36,27 @@ namespace SWLOR.Component.Combat.Service
         {
             _db = db;
             _serviceProvider = serviceProvider;
+            
+            // Initialize lazy services
+            _skillService = new Lazy<ISkillService>(() => _serviceProvider.GetRequiredService<ISkillService>());
+            _itemService = new Lazy<IItemService>(() => _serviceProvider.GetRequiredService<IItemService>());
+            _statService = new Lazy<IStatService>(() => _serviceProvider.GetRequiredService<IStatService>());
+            _beastMastery = new Lazy<IBeastMasteryService>(() => _serviceProvider.GetRequiredService<IBeastMasteryService>());
+            _spaceService = new Lazy<ISpaceService>(() => _serviceProvider.GetRequiredService<ISpaceService>());
         }
 
         // Lazy-loaded services to break circular dependencies
-        private ISkillService SkillService => _serviceProvider.GetRequiredService<ISkillService>();
-        private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
-        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
-        private IBeastMasteryService BeastMastery => _serviceProvider.GetRequiredService<IBeastMasteryService>();
-        private ISpaceService SpaceService => _serviceProvider.GetRequiredService<ISpaceService>();
+        private readonly Lazy<ISkillService> _skillService;
+        private readonly Lazy<IItemService> _itemService;
+        private readonly Lazy<IStatService> _statService;
+        private readonly Lazy<IBeastMasteryService> _beastMastery;
+        private readonly Lazy<ISpaceService> _spaceService;
+        
+        private ISkillService SkillService => _skillService.Value;
+        private IItemService ItemService => _itemService.Value;
+        private IStatService StatService => _statService.Value;
+        private IBeastMasteryService BeastMastery => _beastMastery.Value;
+        private ISpaceService SpaceService => _spaceService.Value;
 
         /// <summary>
         /// Adds a combat point to a given NPC creature for a given player and skill type.

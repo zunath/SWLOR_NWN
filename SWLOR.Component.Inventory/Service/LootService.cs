@@ -28,14 +28,27 @@ namespace SWLOR.Component.Inventory.Service
         {
             _logger = logger;
             _serviceProvider = serviceProvider;
+            
+            // Initialize lazy services
+            _random = new Lazy<IRandomService>(() => _serviceProvider.GetRequiredService<IRandomService>());
+            _perkService = new Lazy<IPerkService>(() => _serviceProvider.GetRequiredService<IPerkService>());
+            _statService = new Lazy<IStatService>(() => _serviceProvider.GetRequiredService<IStatService>());
+            _beastMasteryService = new Lazy<IBeastMasteryService>(() => _serviceProvider.GetRequiredService<IBeastMasteryService>());
+            _itemService = new Lazy<IItemService>(() => _serviceProvider.GetRequiredService<IItemService>());
         }
 
         // Lazy-loaded services to break circular dependencies
-        private IRandomService Random => _serviceProvider.GetRequiredService<IRandomService>();
-        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
-        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
-        private IBeastMasteryService BeastMasteryService => _serviceProvider.GetRequiredService<IBeastMasteryService>();
-        private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
+        private readonly Lazy<IRandomService> _random;
+        private readonly Lazy<IPerkService> _perkService;
+        private readonly Lazy<IStatService> _statService;
+        private readonly Lazy<IBeastMasteryService> _beastMasteryService;
+        private readonly Lazy<IItemService> _itemService;
+        
+        private IRandomService Random => _random.Value;
+        private IPerkService PerkService => _perkService.Value;
+        private IStatService StatService => _statService.Value;
+        private IBeastMasteryService BeastMasteryService => _beastMasteryService.Value;
+        private IItemService ItemService => _itemService.Value;
 
         public void RegisterLootTables()
         {

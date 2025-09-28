@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using NUnit.Framework;
 using SWLOR.Component.World.Service;
@@ -11,6 +12,7 @@ namespace SWLOR.Test.Component.World.Service
     public class PlanetAreaServiceTests : TestBase
     {
         private IPlanetCacheService _mockPlanetCacheService;
+        private IServiceProvider _mockServiceProvider;
         private PlanetAreaService _service;
 
         [SetUp]
@@ -24,7 +26,19 @@ namespace SWLOR.Test.Component.World.Service
             mockService.ResetMockState();
             
             _mockPlanetCacheService = Substitute.For<IPlanetCacheService>();
-            _service = new PlanetAreaService(_mockPlanetCacheService);
+            
+            // Create a real service collection and register our mock
+            var services = new ServiceCollection();
+            services.AddSingleton(_mockPlanetCacheService);
+            _mockServiceProvider = services.BuildServiceProvider();
+            
+            _service = new PlanetAreaService(_mockServiceProvider);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            (_mockServiceProvider as IDisposable)?.Dispose();
         }
 
         [Test]

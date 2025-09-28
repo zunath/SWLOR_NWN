@@ -23,12 +23,21 @@ namespace SWLOR.Component.Admin.UI.ViewModel
         {
             _db = db;
             _serviceProvider = serviceProvider;
+            
+            // Initialize lazy services
+            _skillService = new Lazy<ISkillService>(() => _serviceProvider.GetRequiredService<ISkillService>());
+            _perkService = new Lazy<IPerkService>(() => _serviceProvider.GetRequiredService<IPerkService>());
+            _guiService = new Lazy<IGuiService>(() => _serviceProvider.GetRequiredService<IGuiService>());
         }
 
         // Lazy-loaded services to break circular dependencies
-        private ISkillService SkillService => _serviceProvider.GetRequiredService<ISkillService>();
-        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
-        private IGuiService GuiService => _serviceProvider.GetRequiredService<IGuiService>();
+        private readonly Lazy<ISkillService> _skillService;
+        private readonly Lazy<IPerkService> _perkService;
+        private readonly Lazy<IGuiService> _guiService;
+        
+        private ISkillService SkillService => _skillService.Value;
+        private IPerkService PerkService => _perkService.Value;
+        private IGuiService GuiService => _guiService.Value;
         
         private const int MaxNotes = 50;
 

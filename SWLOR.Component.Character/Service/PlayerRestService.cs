@@ -18,14 +18,22 @@ namespace SWLOR.Component.Character.Service
         private readonly IEventAggregator _eventAggregator;
         
         // Lazy-loaded services to break circular dependencies
-        private IStatusEffectService StatusEffectService => _serviceProvider.GetRequiredService<IStatusEffectService>();
-        private IPartyService PartyService => _serviceProvider.GetRequiredService<IPartyService>();
+        private readonly Lazy<IStatusEffectService> _statusEffectService;
+        private readonly Lazy<IPartyService> _partyService;
 
         public PlayerRestService(IServiceProvider serviceProvider, IEventAggregator eventAggregator)
         {
             _serviceProvider = serviceProvider;
             _eventAggregator = eventAggregator;
+            
+            // Initialize lazy services
+            _statusEffectService = new Lazy<IStatusEffectService>(() => _serviceProvider.GetRequiredService<IStatusEffectService>());
+            _partyService = new Lazy<IPartyService>(() => _serviceProvider.GetRequiredService<IPartyService>());
         }
+        
+        // Lazy-loaded services to break circular dependencies
+        private IStatusEffectService StatusEffectService => _statusEffectService.Value;
+        private IPartyService PartyService => _partyService.Value;
 
         /// <summary>
         /// When a player rests, cancel the NWN resting mechanic and apply our custom Rest status effect

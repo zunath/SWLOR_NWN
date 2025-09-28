@@ -29,14 +29,27 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
         {
             _db = db;
             _serviceProvider = serviceProvider;
+            
+            // Initialize lazy services
+            _droidService = new Lazy<IDroidService>(() => _serviceProvider.GetRequiredService<IDroidService>());
+            _spaceService = new Lazy<ISpaceService>(() => _serviceProvider.GetRequiredService<ISpaceService>());
+            _recastService = new Lazy<IRecastService>(() => _serviceProvider.GetRequiredService<IRecastService>());
+            _perkService = new Lazy<IPerkService>(() => _serviceProvider.GetRequiredService<IPerkService>());
+            _guiService = new Lazy<IGuiService>(() => _serviceProvider.GetRequiredService<IGuiService>());
         }
 
         // Lazy-loaded services to break circular dependencies
-        private IDroidService DroidService => _serviceProvider.GetRequiredService<IDroidService>();
-        private ISpaceService SpaceService => _serviceProvider.GetRequiredService<ISpaceService>();
-        private IRecastService RecastService => _serviceProvider.GetRequiredService<IRecastService>();
-        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
-        private IGuiService GuiService => _serviceProvider.GetRequiredService<IGuiService>();
+        private readonly Lazy<IDroidService> _droidService;
+        private readonly Lazy<ISpaceService> _spaceService;
+        private readonly Lazy<IRecastService> _recastService;
+        private readonly Lazy<IPerkService> _perkService;
+        private readonly Lazy<IGuiService> _guiService;
+        
+        private IDroidService DroidService => _droidService.Value;
+        private ISpaceService SpaceService => _spaceService.Value;
+        private IRecastService RecastService => _recastService.Value;
+        private IPerkService PerkService => _perkService.Value;
+        private IGuiService GuiService => _guiService.Value;
 
         public Dictionary<string, ItemDetail> BuildItems()
         {

@@ -24,17 +24,34 @@ namespace SWLOR.Component.Perk.Service
         private readonly IServiceProvider _serviceProvider;
         
         // Lazy-loaded services to break circular dependencies
-        private IAbilityService AbilityService => _serviceProvider.GetRequiredService<IAbilityService>();
-        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
-        private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
-        private IRecastService RecastService => _serviceProvider.GetRequiredService<IRecastService>();
-        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
-        private IActivityService ActivityService => _serviceProvider.GetRequiredService<IActivityService>();
-        private IMessagingService MessagingService => _serviceProvider.GetRequiredService<IMessagingService>();
+        private readonly Lazy<IAbilityService> _abilityService;
+        private readonly Lazy<IPerkService> _perkService;
+        private readonly Lazy<IItemService> _itemService;
+        private readonly Lazy<IRecastService> _recastService;
+        private readonly Lazy<IEnmityService> _enmityService;
+        private readonly Lazy<IActivityService> _activityService;
+        private readonly Lazy<IMessagingService> _messagingService;
+        
+        private IAbilityService AbilityService => _abilityService.Value;
+        private IPerkService PerkService => _perkService.Value;
+        private IItemService ItemService => _itemService.Value;
+        private IRecastService RecastService => _recastService.Value;
+        private IEnmityService EnmityService => _enmityService.Value;
+        private IActivityService ActivityService => _activityService.Value;
+        private IMessagingService MessagingService => _messagingService.Value;
 
         public UsePerkFeat(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
+            
+            // Initialize lazy services
+            _abilityService = new Lazy<IAbilityService>(() => _serviceProvider.GetRequiredService<IAbilityService>());
+            _perkService = new Lazy<IPerkService>(() => _serviceProvider.GetRequiredService<IPerkService>());
+            _itemService = new Lazy<IItemService>(() => _serviceProvider.GetRequiredService<IItemService>());
+            _recastService = new Lazy<IRecastService>(() => _serviceProvider.GetRequiredService<IRecastService>());
+            _enmityService = new Lazy<IEnmityService>(() => _serviceProvider.GetRequiredService<IEnmityService>());
+            _activityService = new Lazy<IActivityService>(() => _serviceProvider.GetRequiredService<IActivityService>());
+            _messagingService = new Lazy<IMessagingService>(() => _serviceProvider.GetRequiredService<IMessagingService>());
         }
         private enum ActivationStatus
         {

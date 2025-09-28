@@ -27,10 +27,15 @@ namespace SWLOR.Component.Properties.UI.ViewModel
             _logger = logger;
             _db = db;
             _serviceProvider = serviceProvider;
+            
+            // Initialize lazy services
+            _property = new Lazy<PropertyService>(() => _serviceProvider.GetRequiredService<PropertyService>());
         }
 
         // Lazy-loaded service to break circular dependency
-        private PropertyService Property => _serviceProvider.GetRequiredService<PropertyService>();
+        private readonly Lazy<PropertyService> _property;
+        
+        private PropertyService Property => _property.Value;
         
         private const int MaxUpgradeLevel = 5;
         private string _cityId;

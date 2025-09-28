@@ -22,8 +22,8 @@ namespace SWLOR.Component.Character.UI.ViewModel
         private readonly IServiceProvider _serviceProvider;
         
         // Lazy-loaded services to break circular dependencies
-        private IRecastService RecastService => _serviceProvider.GetRequiredService<IRecastService>();
-        private ICurrencyService CurrencyService => _serviceProvider.GetRequiredService<ICurrencyService>();
+        private readonly Lazy<IRecastService> _recastService;
+        private readonly Lazy<ICurrencyService> _currencyService;
 
         public CharacterStatRebuildViewModel(
             IGuiService guiService, 
@@ -33,8 +33,15 @@ namespace SWLOR.Component.Character.UI.ViewModel
         {
             _db = db;
             _serviceProvider = serviceProvider;
-            // Services are now lazy-loaded via IServiceProvider
+            
+            // Initialize lazy services
+            _recastService = new Lazy<IRecastService>(() => _serviceProvider.GetRequiredService<IRecastService>());
+            _currencyService = new Lazy<ICurrencyService>(() => _serviceProvider.GetRequiredService<ICurrencyService>());
         }
+        
+        // Lazy-loaded services to break circular dependencies
+        private IRecastService RecastService => _recastService.Value;
+        private ICurrencyService CurrencyService => _currencyService.Value;
         
         [ScriptHandler<OnBuyStatRebuild>]
         public void LoadCharacterStatRebuild()

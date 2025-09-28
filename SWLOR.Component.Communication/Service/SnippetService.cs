@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Dialog.Contracts;
@@ -11,8 +12,10 @@ namespace SWLOR.Component.Communication.Service
 {
     public class SnippetService : ISnippetService
     {
-        private readonly IGenericCacheService _cacheService;
         private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded services to break circular dependencies
+        private readonly Lazy<IGenericCacheService> _cacheService;
         
         // Cached data
         private IInterfaceCache<string, SnippetDetail> _snippetCache;
@@ -21,11 +24,16 @@ namespace SWLOR.Component.Communication.Service
         private readonly Dictionary<string, SnippetDetail> _appearsWhenCommands = new();
         private readonly Dictionary<string, SnippetDetail> _actionsTakenCommands = new();
 
-        public SnippetService(IGenericCacheService cacheService, IServiceProvider serviceProvider)
+        public SnippetService(IServiceProvider serviceProvider)
         {
-            _cacheService = cacheService;
             _serviceProvider = serviceProvider;
+            
+            // Initialize lazy services
+            _cacheService = new Lazy<IGenericCacheService>(() => _serviceProvider.GetRequiredService<IGenericCacheService>());
         }
+        
+        // Lazy-loaded services to break circular dependencies
+        private IGenericCacheService CacheService => _cacheService.Value;
 
         /// <summary>
         /// When the module loads, all available conversation snippets are loaded into the cache.
@@ -33,7 +41,7 @@ namespace SWLOR.Component.Communication.Service
         [ScriptHandler<OnModuleCacheBefore>]
         public void CacheData()
         {
-            _snippetCache = _cacheService.BuildInterfaceCache<ISnippetListDefinition, string, SnippetDetail>()
+            _snippetCache = CacheService.BuildInterfaceCache<ISnippetListDefinition, string, SnippetDetail>()
                 .WithDataExtractor(instance => instance.BuildSnippets())
                 .Build();
 

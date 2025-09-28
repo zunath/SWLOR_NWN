@@ -27,13 +27,24 @@ namespace SWLOR.Component.StatusEffect.Feature.StatusEffectDefinition
         {
             _serviceProvider = serviceProvider;
             _eventAggregator = eventAggregator;
+            
+            // Initialize lazy services
+            _abilityService = new Lazy<IAbilityService>(() => _serviceProvider.GetRequiredService<IAbilityService>());
+            _statService = new Lazy<IStatService>(() => _serviceProvider.GetRequiredService<IStatService>());
+            _activityService = new Lazy<IActivityService>(() => _serviceProvider.GetRequiredService<IActivityService>());
+            _statusEffectService = new Lazy<IStatusEffectService>(() => _serviceProvider.GetRequiredService<IStatusEffectService>());
         }
 
         // Lazy-loaded services to break circular dependencies
-        private IAbilityService AbilityService => _serviceProvider.GetRequiredService<IAbilityService>();
-        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
-        private IActivityService ActivityService => _serviceProvider.GetRequiredService<IActivityService>();
-        private IStatusEffectService StatusEffectService => _serviceProvider.GetRequiredService<IStatusEffectService>();
+        private readonly Lazy<IAbilityService> _abilityService;
+        private readonly Lazy<IStatService> _statService;
+        private readonly Lazy<IActivityService> _activityService;
+        private readonly Lazy<IStatusEffectService> _statusEffectService;
+        
+        private IAbilityService AbilityService => _abilityService.Value;
+        private IStatService StatService => _statService.Value;
+        private IActivityService ActivityService => _activityService.Value;
+        private IStatusEffectService StatusEffectService => _statusEffectService.Value;
         public Dictionary<StatusEffectType, StatusEffectDetail> BuildStatusEffects()
         {
             var builder = new StatusEffectBuilder();

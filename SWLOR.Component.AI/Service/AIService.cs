@@ -23,18 +23,39 @@ namespace SWLOR.Component.AI.Service
         public AIService(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
+            
+            // Initialize lazy services
+            _random = new Lazy<IRandomService>(() => _serviceProvider.GetRequiredService<IRandomService>());
+            _enmity = new Lazy<IEnmityService>(() => _serviceProvider.GetRequiredService<IEnmityService>());
+            _statusEffectService = new Lazy<IStatusEffectService>(() => _serviceProvider.GetRequiredService<IStatusEffectService>());
+            _partyService = new Lazy<IPartyService>(() => _serviceProvider.GetRequiredService<IPartyService>());
+            _activityService = new Lazy<IActivityService>(() => _serviceProvider.GetRequiredService<IActivityService>());
+            _dialogService = new Lazy<IDialogService>(() => _serviceProvider.GetRequiredService<IDialogService>());
+            _statService = new Lazy<IStatService>(() => _serviceProvider.GetRequiredService<IStatService>());
+            _abilityService = new Lazy<IAbilityService>(() => _serviceProvider.GetRequiredService<IAbilityService>());
+            _perkService = new Lazy<IPerkService>(() => _serviceProvider.GetRequiredService<IPerkService>());
         }
         
         // Lazy-loaded services to break circular dependencies
-        private IRandomService Random => _serviceProvider.GetRequiredService<IRandomService>();
-        private IEnmityService Enmity => _serviceProvider.GetRequiredService<IEnmityService>();
-        private IStatusEffectService StatusEffectService => _serviceProvider.GetRequiredService<IStatusEffectService>();
-        private IPartyService PartyService => _serviceProvider.GetRequiredService<IPartyService>();
-        private IActivityService ActivityService => _serviceProvider.GetRequiredService<IActivityService>();
-        private IDialogService DialogService => _serviceProvider.GetRequiredService<IDialogService>();
-        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
-        private IAbilityService AbilityService => _serviceProvider.GetRequiredService<IAbilityService>();
-        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
+        private readonly Lazy<IRandomService> _random;
+        private readonly Lazy<IEnmityService> _enmity;
+        private readonly Lazy<IStatusEffectService> _statusEffectService;
+        private readonly Lazy<IPartyService> _partyService;
+        private readonly Lazy<IActivityService> _activityService;
+        private readonly Lazy<IDialogService> _dialogService;
+        private readonly Lazy<IStatService> _statService;
+        private readonly Lazy<IAbilityService> _abilityService;
+        private readonly Lazy<IPerkService> _perkService;
+        
+        private IRandomService Random => _random.Value;
+        private IEnmityService Enmity => _enmity.Value;
+        private IStatusEffectService StatusEffectService => _statusEffectService.Value;
+        private IPartyService PartyService => _partyService.Value;
+        private IActivityService ActivityService => _activityService.Value;
+        private IDialogService DialogService => _dialogService.Value;
+        private IStatService StatService => _statService.Value;
+        private IAbilityService AbilityService => _abilityService.Value;
+        private IPerkService PerkService => _perkService.Value;
 
         public void CacheAIData()
         {

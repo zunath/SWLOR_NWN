@@ -45,15 +45,30 @@ namespace SWLOR.Component.Crafting.Service
         {
             _db = db;
             _serviceProvider = serviceProvider;
+            
+            // Initialize lazy services
+            _cacheService = new Lazy<IGenericCacheService>(() => _serviceProvider.GetRequiredService<IGenericCacheService>());
+            _itemCache = new Lazy<IItemCacheService>(() => _serviceProvider.GetRequiredService<IItemCacheService>());
+            _random = new Lazy<IRandomService>(() => _serviceProvider.GetRequiredService<IRandomService>());
+            _skillService = new Lazy<ISkillService>(() => _serviceProvider.GetRequiredService<ISkillService>());
+            _activityService = new Lazy<IActivityService>(() => _serviceProvider.GetRequiredService<IActivityService>());
+            _messagingService = new Lazy<IMessagingService>(() => _serviceProvider.GetRequiredService<IMessagingService>());
         }
 
         // Lazy-loaded services to break circular dependencies
-        private IGenericCacheService CacheService => _serviceProvider.GetRequiredService<IGenericCacheService>();
-        private IItemCacheService ItemCache => _serviceProvider.GetRequiredService<IItemCacheService>();
-        private IRandomService Random => _serviceProvider.GetRequiredService<IRandomService>();
-        private ISkillService SkillService => _serviceProvider.GetRequiredService<ISkillService>();
-        private IActivityService ActivityService => _serviceProvider.GetRequiredService<IActivityService>();
-        private IMessagingService MessagingService => _serviceProvider.GetRequiredService<IMessagingService>();
+        private readonly Lazy<IGenericCacheService> _cacheService;
+        private readonly Lazy<IItemCacheService> _itemCache;
+        private readonly Lazy<IRandomService> _random;
+        private readonly Lazy<ISkillService> _skillService;
+        private readonly Lazy<IActivityService> _activityService;
+        private readonly Lazy<IMessagingService> _messagingService;
+        
+        private IGenericCacheService CacheService => _cacheService.Value;
+        private IItemCacheService ItemCache => _itemCache.Value;
+        private IRandomService Random => _random.Value;
+        private ISkillService SkillService => _skillService.Value;
+        private IActivityService ActivityService => _activityService.Value;
+        private IMessagingService MessagingService => _messagingService.Value;
 
         public string ActiveBaitVariable => "ACTIVE_BAIT";
         public string RemainingBaitVariable => "REMAINING_BAIT";

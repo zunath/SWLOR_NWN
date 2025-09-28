@@ -36,9 +36,11 @@ namespace SWLOR.Component.Combat.Service
         private readonly IEventAggregator _eventAggregator;
         
         // Lazy-loaded services to break circular dependencies
-        private ISkillService SkillService => _serviceProvider.GetRequiredService<ISkillService>();
-        private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
-        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
+        private readonly Lazy<ISkillService> _skillService;
+        private readonly Lazy<IItemService> _itemService;
+        private readonly Lazy<IEnmityService> _enmityService;
+        private readonly Lazy<IAbilityService> _abilityService;
+        private readonly Lazy<IPerkService> _perkService;
 
         public StatService(
             ILogger logger, 
@@ -52,11 +54,21 @@ namespace SWLOR.Component.Combat.Service
             _serviceProvider = serviceProvider;
             _statusEffectService = statusEffectService;
             _eventAggregator = eventAggregator;
+            
+            // Initialize lazy services
+            _skillService = new Lazy<ISkillService>(() => _serviceProvider.GetRequiredService<ISkillService>());
+            _itemService = new Lazy<IItemService>(() => _serviceProvider.GetRequiredService<IItemService>());
+            _enmityService = new Lazy<IEnmityService>(() => _serviceProvider.GetRequiredService<IEnmityService>());
+            _abilityService = new Lazy<IAbilityService>(() => _serviceProvider.GetRequiredService<IAbilityService>());
+            _perkService = new Lazy<IPerkService>(() => _serviceProvider.GetRequiredService<IPerkService>());
         }
         
         // Lazy-loaded services to break circular dependencies
-        private IAbilityService AbilityService => _serviceProvider.GetRequiredService<IAbilityService>();
-        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
+        private ISkillService SkillService => _skillService.Value;
+        private IItemService ItemService => _itemService.Value;
+        private IEnmityService EnmityService => _enmityService.Value;
+        private IAbilityService AbilityService => _abilityService.Value;
+        private IPerkService PerkService => _perkService.Value;
         
         public int BaseHP => 70;
         public int BaseFP => 10;

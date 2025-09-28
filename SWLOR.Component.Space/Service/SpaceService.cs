@@ -41,16 +41,6 @@ namespace SWLOR.Component.Space.Service
         private readonly IRandomService _random;
         private readonly IServiceProvider _serviceProvider;
         private readonly IEventAggregator _eventAggregator;
-        // Lazy-loaded services to break circular dependencies
-        private IAbilityService AbilityService => _serviceProvider.GetRequiredService<IAbilityService>();
-        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
-        private IGuiService GuiService => _serviceProvider.GetRequiredService<IGuiService>();
-        private IPropertyService PropertyService => _serviceProvider.GetRequiredService<IPropertyService>();
-        private IPlanetService PlanetService => _serviceProvider.GetRequiredService<IPlanetService>();
-        private IAreaService AreaService => _serviceProvider.GetRequiredService<IAreaService>();
-        private IMessagingService MessagingService => _serviceProvider.GetRequiredService<IMessagingService>();
-        private IStatusEffectService StatusEffectService => _serviceProvider.GetRequiredService<IStatusEffectService>();
-        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
 
         public SpaceService(
             ILogger logger,
@@ -66,12 +56,45 @@ namespace SWLOR.Component.Space.Service
             _random = random;
             _serviceProvider = serviceProvider;
             _eventAggregator = eventAggregator;
-            // Services are now lazy-loaded via IServiceProvider
+            
+            // Initialize lazy services
+            _abilityService = new Lazy<IAbilityService>(() => _serviceProvider.GetRequiredService<IAbilityService>());
+            _statService = new Lazy<IStatService>(() => _serviceProvider.GetRequiredService<IStatService>());
+            _guiService = new Lazy<IGuiService>(() => _serviceProvider.GetRequiredService<IGuiService>());
+            _propertyService = new Lazy<IPropertyService>(() => _serviceProvider.GetRequiredService<IPropertyService>());
+            _planetService = new Lazy<IPlanetService>(() => _serviceProvider.GetRequiredService<IPlanetService>());
+            _areaService = new Lazy<IAreaService>(() => _serviceProvider.GetRequiredService<IAreaService>());
+            _messagingService = new Lazy<IMessagingService>(() => _serviceProvider.GetRequiredService<IMessagingService>());
+            _statusEffectService = new Lazy<IStatusEffectService>(() => _serviceProvider.GetRequiredService<IStatusEffectService>());
+            _enmityService = new Lazy<IEnmityService>(() => _serviceProvider.GetRequiredService<IEnmityService>());
+            _combatService = new Lazy<ICombatService>(() => _serviceProvider.GetRequiredService<ICombatService>());
+            _perkService = new Lazy<IPerkService>(() => _serviceProvider.GetRequiredService<IPerkService>());
         }
 
         // Lazy-loaded services to break circular dependencies
-        private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
-        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
+        private readonly Lazy<IAbilityService> _abilityService;
+        private readonly Lazy<IStatService> _statService;
+        private readonly Lazy<IGuiService> _guiService;
+        private readonly Lazy<IPropertyService> _propertyService;
+        private readonly Lazy<IPlanetService> _planetService;
+        private readonly Lazy<IAreaService> _areaService;
+        private readonly Lazy<IMessagingService> _messagingService;
+        private readonly Lazy<IStatusEffectService> _statusEffectService;
+        private readonly Lazy<IEnmityService> _enmityService;
+        private readonly Lazy<ICombatService> _combatService;
+        private readonly Lazy<IPerkService> _perkService;
+        
+        private IAbilityService AbilityService => _abilityService.Value;
+        private IStatService StatService => _statService.Value;
+        private IGuiService GuiService => _guiService.Value;
+        private IPropertyService PropertyService => _propertyService.Value;
+        private IPlanetService PlanetService => _planetService.Value;
+        private IAreaService AreaService => _areaService.Value;
+        private IMessagingService MessagingService => _messagingService.Value;
+        private IStatusEffectService StatusEffectService => _statusEffectService.Value;
+        private IEnmityService EnmityService => _enmityService.Value;
+        private ICombatService CombatService => _combatService.Value;
+        private IPerkService PerkService => _perkService.Value;
 
         public int MaxRegisteredShips => 10;
 

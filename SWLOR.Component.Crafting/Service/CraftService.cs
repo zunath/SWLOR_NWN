@@ -43,10 +43,10 @@ namespace SWLOR.Component.Crafting.Service
         private readonly ITimeService _timeService;
         
         // Lazy-loaded services to break circular dependencies
-        private IGuiService GuiService => _serviceProvider.GetRequiredService<IGuiService>();
-        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
-        private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
-        private IPropertyService PropertyService => _serviceProvider.GetRequiredService<IPropertyService>();
+        private readonly Lazy<IGuiService> _guiService;
+        private readonly Lazy<IPerkService> _perkService;
+        private readonly Lazy<IItemService> _itemService;
+        private readonly Lazy<IPropertyService> _propertyService;
 
         public CraftService(
             ILogger logger, 
@@ -62,7 +62,19 @@ namespace SWLOR.Component.Crafting.Service
             _itemCache = itemCache;
             _serviceProvider = serviceProvider;
             _timeService = timeService;
+            
+            // Initialize lazy services
+            _guiService = new Lazy<IGuiService>(() => _serviceProvider.GetRequiredService<IGuiService>());
+            _perkService = new Lazy<IPerkService>(() => _serviceProvider.GetRequiredService<IPerkService>());
+            _itemService = new Lazy<IItemService>(() => _serviceProvider.GetRequiredService<IItemService>());
+            _propertyService = new Lazy<IPropertyService>(() => _serviceProvider.GetRequiredService<IPropertyService>());
         }
+        
+        // Lazy-loaded services to break circular dependencies
+        private IGuiService GuiService => _guiService.Value;
+        private IPerkService PerkService => _perkService.Value;
+        private IItemService ItemService => _itemService.Value;
+        private IPropertyService PropertyService => _propertyService.Value;
         public int MaxResearchLevel => 10;
 
         // Cached data

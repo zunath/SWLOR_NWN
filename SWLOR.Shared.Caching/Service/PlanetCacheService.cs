@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Domain.World.Contracts;
@@ -7,21 +8,30 @@ namespace SWLOR.Shared.Caching.Service
 {
     public class PlanetCacheService : IPlanetCacheService
     {
-        private readonly IGenericCacheService _cacheService;
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded service to break circular dependency
+        private readonly Lazy<IGenericCacheService> _cacheService;
         private IEnumCache<PlanetType, PlanetAttribute> _planetCache;
         private readonly Dictionary<PlanetType, PlanetAttribute> _allPlanets = new();
 
-        public PlanetCacheService(IGenericCacheService cacheService)
+        public PlanetCacheService(IServiceProvider serviceProvider)
         {
-            _cacheService = cacheService;
+            _serviceProvider = serviceProvider;
+            
+            // Initialize lazy services
+            _cacheService = new Lazy<IGenericCacheService>(() => _serviceProvider.GetRequiredService<IGenericCacheService>());
         }
+        
+        // Lazy-loaded service to break circular dependency
+        private IGenericCacheService CacheService => _cacheService.Value;
 
         /// <summary>
         /// Initializes the planet cache with all planet data.
         /// </summary>
         public void InitializeCache()
         {
-            _planetCache = _cacheService.BuildEnumCache<PlanetType, PlanetAttribute>()
+            _planetCache = CacheService.BuildEnumCache<PlanetType, PlanetAttribute>()
                 .WithAllItems()
                 .WithFilteredCache("Active", p => p.IsActive)
                 .Build();

@@ -1,5 +1,7 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.World.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Area;
@@ -11,22 +13,30 @@ namespace SWLOR.Component.World.Service
 {
     public class WeatherService : IWeatherService
     {
-        private readonly IWeatherCalculationService _weatherCalculationService;
-        private readonly IWeatherEffectsService _weatherEffectsService;
-        private readonly IWeatherVisualService _weatherVisualService;
-        private readonly IWeatherClimateService _weatherClimateService;
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded services to break circular dependencies
+        private readonly Lazy<IWeatherCalculationService> _weatherCalculationService;
+        private readonly Lazy<IWeatherEffectsService> _weatherEffectsService;
+        private readonly Lazy<IWeatherVisualService> _weatherVisualService;
+        private readonly Lazy<IWeatherClimateService> _weatherClimateService;
 
-        public WeatherService(
-            IWeatherCalculationService weatherCalculationService,
-            IWeatherEffectsService weatherEffectsService,
-            IWeatherVisualService weatherVisualService,
-            IWeatherClimateService weatherClimateService)
+        public WeatherService(IServiceProvider serviceProvider)
         {
-            _weatherCalculationService = weatherCalculationService;
-            _weatherEffectsService = weatherEffectsService;
-            _weatherVisualService = weatherVisualService;
-            _weatherClimateService = weatherClimateService;
+            _serviceProvider = serviceProvider;
+            
+            // Initialize lazy services
+            _weatherCalculationService = new Lazy<IWeatherCalculationService>(() => _serviceProvider.GetRequiredService<IWeatherCalculationService>());
+            _weatherEffectsService = new Lazy<IWeatherEffectsService>(() => _serviceProvider.GetRequiredService<IWeatherEffectsService>());
+            _weatherVisualService = new Lazy<IWeatherVisualService>(() => _serviceProvider.GetRequiredService<IWeatherVisualService>());
+            _weatherClimateService = new Lazy<IWeatherClimateService>(() => _serviceProvider.GetRequiredService<IWeatherClimateService>());
         }
+        
+        // Lazy-loaded services to break circular dependencies
+        private IWeatherCalculationService WeatherCalculationService => _weatherCalculationService.Value;
+        private IWeatherEffectsService WeatherEffectsService => _weatherEffectsService.Value;
+        private IWeatherVisualService WeatherVisualService => _weatherVisualService.Value;
+        private IWeatherClimateService WeatherClimateService => _weatherClimateService.Value;
 
         /// <summary>
         /// When the module loads, cache planet climates and other pertinent data.
@@ -34,88 +44,88 @@ namespace SWLOR.Component.World.Service
         [ScriptHandler<OnModuleCacheBefore>]
         public void LoadData()
         {
-            _weatherClimateService.LoadData();
+            WeatherClimateService.LoadData();
         }
 
         public bool AdjustWeather()
         {
-            return _weatherCalculationService.AdjustWeather();
+            return WeatherCalculationService.AdjustWeather();
         }
 
         public void SetWeather()
         {
-            _weatherVisualService.SetWeather();
+            WeatherVisualService.SetWeather();
         }
 
         public void SetWeather(uint oArea)
         {
-            _weatherVisualService.SetWeather(oArea);
+            WeatherVisualService.SetWeather(oArea);
         }
 
         public WeatherType GetWeather()
         {
-            return _weatherCalculationService.GetWeather();
+            return WeatherCalculationService.GetWeather();
         }
 
         public WeatherType GetWeather(uint oArea)
         {
-            return _weatherCalculationService.GetWeather(oArea);
+            return WeatherCalculationService.GetWeather(oArea);
         }
 
         public void OnCombatRoundEnd(uint oCreature)
         {
-            _weatherEffectsService.OnCombatRoundEnd(oCreature);
+            WeatherEffectsService.OnCombatRoundEnd(oCreature);
         }
 
         public void ApplyAcid(uint oTarget, uint oArea)
         {
-            _weatherEffectsService.ApplyAcid(oTarget, oArea);
+            WeatherEffectsService.ApplyAcid(oTarget, oArea);
         }
 
         public void ApplyCold(uint oTarget, uint oArea)
         {
-            _weatherEffectsService.ApplyCold(oTarget, oArea);
+            WeatherEffectsService.ApplyCold(oTarget, oArea);
         }
 
         public void ApplySandstorm(uint oTarget, uint oArea)
         {
-            _weatherEffectsService.ApplySandstorm(oTarget, oArea);
+            WeatherEffectsService.ApplySandstorm(oTarget, oArea);
         }
 
         public void ApplySnowstorm(uint oTarget, uint oArea)
         {
-            _weatherEffectsService.ApplySnowstorm(oTarget, oArea);
+            WeatherEffectsService.ApplySnowstorm(oTarget, oArea);
         }
 
         public void DoWeatherEffects(uint oCreature)
         {
-            _weatherEffectsService.DoWeatherEffects(oCreature);
+            WeatherEffectsService.DoWeatherEffects(oCreature);
         }
 
         public int GetHeatIndex(uint oArea)
         {
-            return _weatherCalculationService.GetHeatIndex(oArea);
+            return WeatherCalculationService.GetHeatIndex(oArea);
         }
 
         public int GetHumidity(uint oArea)
         {
-            return _weatherCalculationService.GetHumidity(oArea);
+            return WeatherCalculationService.GetHumidity(oArea);
         }
 
         public int GetWindStrength(uint oArea)
         {
-            return _weatherCalculationService.GetWindStrength(oArea);
+            return WeatherCalculationService.GetWindStrength(oArea);
         }
 
         public void Thunderstorm(uint oArea)
         {
-            _weatherEffectsService.Thunderstorm(oArea);
+            WeatherEffectsService.Thunderstorm(oArea);
         }
 
         [ScriptHandler<OnAreaEnter>]
         public void OnAreaEnter()
         {
-            _weatherVisualService.OnAreaEnter();
+            WeatherVisualService.OnAreaEnter();
             DoWeatherEffects(GetEnteringObject());
         }
 
@@ -142,22 +152,22 @@ namespace SWLOR.Component.World.Service
 
         public void SetAreaHeatModifier(uint oArea, int nModifier)
         {
-            _weatherCalculationService.SetAreaHeatModifier(oArea, nModifier);
+            WeatherCalculationService.SetAreaHeatModifier(oArea, nModifier);
         }
 
         public void SetAreaWindModifier(uint oArea, int nModifier)
         {
-            _weatherCalculationService.SetAreaWindModifier(oArea, nModifier);
+            WeatherCalculationService.SetAreaWindModifier(oArea, nModifier);
         }
 
         public void SetAreaHumidityModifier(uint oArea, int nModifier)
         {
-            _weatherCalculationService.SetAreaHumidityModifier(oArea, nModifier);
+            WeatherCalculationService.SetAreaHumidityModifier(oArea, nModifier);
         }
 
         public void SetAreaAcidRain(uint oArea, int nModifier)
         {
-            _weatherCalculationService.SetAreaAcidRain(oArea, nModifier);
+            WeatherCalculationService.SetAreaAcidRain(oArea, nModifier);
         }
     }
 }

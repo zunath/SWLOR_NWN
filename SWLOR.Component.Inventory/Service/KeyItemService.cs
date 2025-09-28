@@ -29,12 +29,21 @@ namespace SWLOR.Component.Inventory.Service
         {
             _db = db;
             _serviceProvider = serviceProvider;
+            
+            // Initialize lazy services
+            _cacheService = new Lazy<IGenericCacheService>(() => _serviceProvider.GetRequiredService<IGenericCacheService>());
+            _guiService = new Lazy<IGuiService>(() => _serviceProvider.GetRequiredService<IGuiService>());
+            _objectVisibilityService = new Lazy<IObjectVisibilityService>(() => _serviceProvider.GetRequiredService<IObjectVisibilityService>());
         }
 
         // Lazy-loaded services to break circular dependencies
-        private IGenericCacheService CacheService => _serviceProvider.GetRequiredService<IGenericCacheService>();
-        private IGuiService GuiService => _serviceProvider.GetRequiredService<IGuiService>();
-        private IObjectVisibilityService ObjectVisibilityService => _serviceProvider.GetRequiredService<IObjectVisibilityService>();
+        private readonly Lazy<IGenericCacheService> _cacheService;
+        private readonly Lazy<IGuiService> _guiService;
+        private readonly Lazy<IObjectVisibilityService> _objectVisibilityService;
+        
+        private IGenericCacheService CacheService => _cacheService.Value;
+        private IGuiService GuiService => _guiService.Value;
+        private IObjectVisibilityService ObjectVisibilityService => _objectVisibilityService.Value;
 
         /// <summary>
         /// When the module loads, cache all key item data.

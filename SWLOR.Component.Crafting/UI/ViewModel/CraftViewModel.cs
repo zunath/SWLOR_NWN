@@ -36,20 +36,39 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
         private readonly IServiceProvider _serviceProvider;
 
         // Lazy-loaded services to break circular dependencies
-        private IItemCacheService ItemCache => _serviceProvider.GetRequiredService<IItemCacheService>();
-        private IRandomService Random => _serviceProvider.GetRequiredService<IRandomService>();
-        private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
-        private ICraftService CraftService => _serviceProvider.GetRequiredService<ICraftService>();
-        private ISkillService SkillService => _serviceProvider.GetRequiredService<ISkillService>();
-        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
-        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
-        private ITargetingService TargetingService => _serviceProvider.GetRequiredService<ITargetingService>();
+        private readonly Lazy<IItemCacheService> _itemCache;
+        private readonly Lazy<IRandomService> _random;
+        private readonly Lazy<IItemService> _itemService;
+        private readonly Lazy<ICraftService> _craftService;
+        private readonly Lazy<ISkillService> _skillService;
+        private readonly Lazy<IPerkService> _perkService;
+        private readonly Lazy<IStatService> _statService;
+        private readonly Lazy<ITargetingService> _targetingService;
+        
+        private IItemCacheService ItemCache => _itemCache.Value;
+        private IRandomService Random => _random.Value;
+        private IItemService ItemService => _itemService.Value;
+        private ICraftService CraftService => _craftService.Value;
+        private ISkillService SkillService => _skillService.Value;
+        private IPerkService PerkService => _perkService.Value;
+        private IStatService StatService => _statService.Value;
+        private ITargetingService TargetingService => _targetingService.Value;
 
         public CraftViewModel(IGuiService guiService, ILogger logger, IDatabaseService db, IServiceProvider serviceProvider) : base(guiService)
         {
             _logger = logger;
             _db = db;
             _serviceProvider = serviceProvider;
+            
+            // Initialize lazy services
+            _itemCache = new Lazy<IItemCacheService>(() => _serviceProvider.GetRequiredService<IItemCacheService>());
+            _random = new Lazy<IRandomService>(() => _serviceProvider.GetRequiredService<IRandomService>());
+            _itemService = new Lazy<IItemService>(() => _serviceProvider.GetRequiredService<IItemService>());
+            _craftService = new Lazy<ICraftService>(() => _serviceProvider.GetRequiredService<ICraftService>());
+            _skillService = new Lazy<ISkillService>(() => _serviceProvider.GetRequiredService<ISkillService>());
+            _perkService = new Lazy<IPerkService>(() => _serviceProvider.GetRequiredService<IPerkService>());
+            _statService = new Lazy<IStatService>(() => _serviceProvider.GetRequiredService<IStatService>());
+            _targetingService = new Lazy<ITargetingService>(() => _serviceProvider.GetRequiredService<ITargetingService>());
 
             _blueprintBonuses = new BlueprintBonuses(Random);
         }

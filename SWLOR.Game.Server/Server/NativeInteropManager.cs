@@ -114,6 +114,7 @@ namespace SWLOR.Game.Server.Server
 
         private void RunPreModuleLoadEvents()
         {
+            Console.WriteLine($"publishing EVENTS NOW!!!!!!!!!!!!!!");
             _eventAggregator.Publish(new OnServerLoaded(), GetModule());
             _eventAggregator.Publish(new OnModuleCacheBefore(), GetModule());
             _eventAggregator.Publish(new OnModuleCacheAfter(), GetModule());

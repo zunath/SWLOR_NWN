@@ -13,10 +13,15 @@ namespace SWLOR.Component.Inventory.Dialog
         public XPTomeDialog(IServiceProvider serviceProvider, IDialogService dialogService, IDialogBuilder dialogBuilder) : base(dialogService, dialogBuilder)
         {
             _serviceProvider = serviceProvider;
+            
+            // Initialize lazy services
+            _skillService = new Lazy<ISkillService>(() => _serviceProvider.GetRequiredService<ISkillService>());
         }
 
         // Lazy-loaded service to break circular dependency
-        private ISkillService SkillService => _serviceProvider.GetRequiredService<ISkillService>();
+        private readonly Lazy<ISkillService> _skillService;
+        
+        private ISkillService SkillService => _skillService.Value;
 
         private class Model
         {

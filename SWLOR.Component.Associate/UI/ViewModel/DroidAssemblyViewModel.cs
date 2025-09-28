@@ -20,9 +20,13 @@ namespace SWLOR.Component.Associate.UI.ViewModel
         private readonly ITargetingService _targetingService;
         
         // Lazy-loaded services to break circular dependencies
-        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
-        private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
-        private IDroidService Droid => _serviceProvider.GetRequiredService<IDroidService>();
+        private readonly Lazy<IPerkService> _perkService;
+        private readonly Lazy<IItemService> _itemService;
+        private readonly Lazy<IDroidService> _droid;
+        
+        private IPerkService PerkService => _perkService.Value;
+        private IItemService ItemService => _itemService.Value;
+        private IDroidService Droid => _droid.Value;
 
         public DroidAssemblyViewModel(
             IGuiService guiService, 
@@ -32,6 +36,11 @@ namespace SWLOR.Component.Associate.UI.ViewModel
         {
             _serviceProvider = serviceProvider;
             _targetingService = targetingService;
+            
+            // Initialize lazy services
+            _perkService = new Lazy<IPerkService>(() => _serviceProvider.GetRequiredService<IPerkService>());
+            _itemService = new Lazy<IItemService>(() => _serviceProvider.GetRequiredService<IItemService>());
+            _droid = new Lazy<IDroidService>(() => _serviceProvider.GetRequiredService<IDroidService>());
         }
 
         private const string BlankTexture = "Blank";

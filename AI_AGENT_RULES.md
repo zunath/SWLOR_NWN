@@ -173,9 +173,31 @@ using SWLOR.Shared.Events.Attributes;
 - **VIOLATION EXAMPLE**: `public async Task<string> GetDataAsync()`
 - **CORRECT APPROACH**: Use async utilities from `SWLOR.Shared.Core.Async`
 
+### 14. Data Hardcoding Restrictions
+- **RULE**: NO hardcoded data values in business logic or service implementations
+- **RULE**: Data values MUST be stored in database, configuration, or constants files
+- **ALLOWED EXCEPTIONS**: 
+  - Enum values and their attributes
+  - Magic numbers that are truly constant (like array indices, mathematical constants)
+  - Default values in constructors or optional parameters
+- **VIOLATION EXAMPLES**:
+  ```csharp
+  // ❌ FORBIDDEN: Hardcoded business values
+  if (player.Level > 50) // Should be in config
+  var maxItems = 25; // Should be in database/config
+  var skillId = 15; // Should be enum or database lookup
+  ```
+- **CORRECT APPROACH**:
+  ```csharp
+  // ✅ CORRECT: Using configuration/constants
+  if (player.Level > _config.MaxPlayerLevel)
+  var maxItems = _config.MaxInventoryItems;
+  var skillId = SkillType.OneHanded; // Using enum
+  ```
+
 ## Anti-Patterns to AVOID
 
-### 14. Forbidden Patterns
+### 15. Forbidden Patterns
 - **NEVER**: Create circular dependencies between components
 - **NEVER**: Put business logic in event handlers
 - **NEVER**: Create wrapper methods in services for event handlers
@@ -185,8 +207,9 @@ using SWLOR.Shared.Events.Attributes;
 - **NEVER**: Register services with inappropriate lifetimes
 - **NEVER**: Create "God Components" that try to do everything
 - **NEVER**: Use regular C# async/await patterns
+- **NEVER**: Hardcode data values in business logic (use config/database instead)
 
-### 15. Common Mistakes to Avoid
+### 16. Common Mistakes to Avoid
 - **MISTAKE**: `using SWLOR.Component.Inventory.Service;` in Perk component
 - **CORRECT**: `using SWLOR.Shared.Domain.Inventory.Contracts;`
 - **MISTAKE**: Putting `[ScriptHandler<>]` in service classes
@@ -195,10 +218,12 @@ using SWLOR.Shared.Events.Attributes;
 - **CORRECT**: Event handler calls `_service.LoadData()` directly
 - **MISTAKE**: `public async Task<string> GetDataAsync()`
 - **CORRECT**: Use async utilities from `SWLOR.Shared.Core.Async`
+- **MISTAKE**: `if (player.Level > 50)` (hardcoded value)
+- **CORRECT**: `if (player.Level > _config.MaxPlayerLevel)` (using config)
 
 ## Testing Rules
 
-### 16. Testability Requirements
+### 17. Testability Requirements
 - **RULE**: Services MUST be testable without event infrastructure
 - **RULE**: Use dependency injection for all external dependencies
 - **RULE**: Mock interfaces, not concrete classes
@@ -206,7 +231,7 @@ using SWLOR.Shared.Events.Attributes;
 
 ## Documentation Rules
 
-### 17. Code Documentation
+### 18. Code Documentation
 - **RULE**: All public methods MUST have XML documentation
 - **RULE**: Include parameter descriptions and return value descriptions
 - **RULE**: Document complex business logic with inline comments
@@ -214,14 +239,14 @@ using SWLOR.Shared.Events.Attributes;
 
 ## Migration and Refactoring Rules
 
-### 18. When Adding New Features
+### 19. When Adding New Features
 - **RULE**: Start with component-specific implementation
 - **RULE**: Only move to shared domain when second component needs it
 - **RULE**: Create interfaces before implementations
 - **RULE**: Register services in appropriate DI container
 - **RULE**: Separate event handling from business logic from the start
 
-### 19. When Modifying Existing Code
+### 20. When Modifying Existing Code
 - **RULE**: Maintain existing architecture patterns
 - **RULE**: Don't break component boundaries
 - **RULE**: Update all references when moving entities
@@ -229,13 +254,13 @@ using SWLOR.Shared.Events.Attributes;
 
 ## Specific Component Rules
 
-### 20. Perk Component Specifics
+### 21. Perk Component Specifics
 - **RULE**: Perk services are split into focused services (Data, Level, Trigger, Cache)
 - **RULE**: Main PerkService acts as a facade
 - **RULE**: Use caching for expensive perk calculations
 - **RULE**: Perk requirements are handled by dedicated factory
 
-### 21. Event System Rules
+### 22. Event System Rules
 - **RULE**: Use `[ScriptHandler<>]` attributes for event registration
 - **RULE**: Event handlers MUST be in `EventHandlers/` folder
 - **RULE**: One event handler class per component
@@ -249,6 +274,7 @@ Before submitting any changes, verify:
 - [ ] **CRITICAL**: No shared/component projects reference test projects
 - [ ] No cross-component dependencies
 - [ ] No regular C# async/await usage (use SWLOR.Shared.Core.Async only)
+- [ ] No hardcoded data values (use config/database/enums instead)
 - [ ] Services registered as singletons (unless transient needed)
 - [ ] Event handlers separated from services
 - [ ] No wrapper methods in services for event handlers

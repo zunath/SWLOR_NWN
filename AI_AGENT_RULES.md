@@ -268,6 +268,10 @@ namespace SWLOR.Component.Perk.Service
 - **CORRECT**: `if (player.Level > _config.MaxPlayerLevel)` (using config)
 - **MISTAKE**: Missing using statements causing compilation errors
 - **CORRECT**: Add all required using statements at the top of the file
+- **MISTAKE**: Using Moq or other mocking frameworks instead of NSubstitute
+- **CORRECT**: Use NSubstitute for all mocking in unit tests
+- **MISTAKE**: Using MSTest or xUnit instead of NUnit
+- **CORRECT**: Use NUnit for all unit testing
 
 ## Testing Rules
 
@@ -276,6 +280,8 @@ namespace SWLOR.Component.Perk.Service
 - **RULE**: Use dependency injection for all external dependencies
 - **RULE**: Mock interfaces, not concrete classes
 - **RULE**: Write unit tests for business logic, integration tests for event handling
+- **RULE**: Use NSubstitute for mocking and NUnit for unit testing framework
+- **RULE**: All unit tests MUST be in corresponding Test projects (e.g., `SWLOR.Test.Component.Perk`)
 
 ## Documentation Rules
 
@@ -324,6 +330,7 @@ Before submitting any changes, verify:
 - [ ] No regular C# async/await usage (use SWLOR.Shared.Core.Async only)
 - [ ] No hardcoded data values (use config/database/enums instead)
 - [ ] All using statements added correctly and in proper order
+- [ ] Unit tests use NSubstitute for mocking and NUnit for testing framework
 - [ ] Services registered as singletons (unless transient needed)
 - [ ] Event handlers separated from services
 - [ ] No wrapper methods in services for event handlers

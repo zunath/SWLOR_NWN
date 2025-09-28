@@ -39,9 +39,6 @@ namespace SWLOR.Component.Inventory.Infrastructure
             services.AddSingleton<InstantItemUse>();
             services.AddSingleton<StandardItemConfigurations>();
             
-            // Automatically register all dialog classes
-            RegisterDialogClasses(services);
-
             // Register item definition classes
             services.AddSingleton<Feature.ItemDefinition.FishingRodItemDefinition>();
             services.AddSingleton<Feature.ItemDefinition.DestroyItemDefinition>();
@@ -91,18 +88,5 @@ namespace SWLOR.Component.Inventory.Infrastructure
             }
         }
 
-        private static void RegisterDialogClasses(IServiceCollection services)
-        {
-            // Find all types that inherit from DialogBase across all assemblies
-            var dialogTypes = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(s => s.GetTypes())
-                .Where(w => typeof(DialogBase).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
-
-            foreach (var type in dialogTypes)
-            {
-                // Register each dialog class as transient
-                services.AddSingleton(type);
-            }
-        }
     }
 }

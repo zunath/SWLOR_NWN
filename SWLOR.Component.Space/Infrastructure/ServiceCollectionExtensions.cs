@@ -2,7 +2,6 @@ using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Space.Contracts;
 using SWLOR.Component.Space.EventHandlers;
-using SWLOR.Shared.Domain.Communication.Contracts;
 using SWLOR.Shared.Domain.Space.Contracts;
 using SWLOR.Shared.Domain.World.Contracts;
 
@@ -66,15 +65,6 @@ namespace SWLOR.Component.Space.Infrastructure
                 .Where(t => t.IsClass && !t.IsAbstract && typeof(ISpawnListDefinition).IsAssignableFrom(t));
             
             foreach (var type in spawnDefinitionTypes)
-            {
-                services.AddSingleton(type);
-            }
-            
-            // Register Space chat command definitions
-            var chatCommandDefinitionTypes = assembly.GetTypes()
-                .Where(t => t.IsClass && !t.IsAbstract && typeof(IChatCommandListDefinition).IsAssignableFrom(t));
-            
-            foreach (var type in chatCommandDefinitionTypes)
             {
                 services.AddSingleton(type);
             }

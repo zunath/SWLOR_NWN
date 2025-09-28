@@ -4,6 +4,7 @@ using SWLOR.Component.Communication.EventHandlers;
 using SWLOR.Component.Communication.Service;
 using SWLOR.Shared.Domain.Communication.Contracts;
 using SWLOR.Shared.Domain.Dialog.Contracts;
+using SWLOR.Shared.Domain.Dialog.ValueObjects;
 
 namespace SWLOR.Component.Communication.Infrastructure
 {
@@ -31,10 +32,8 @@ namespace SWLOR.Component.Communication.Infrastructure
             services.AddSingleton<IDialogBuilder, DialogBuilder>();
             services.AddSingleton<IChatCommandBuilder, ChatCommandBuilder>();
             services.AddSingleton<ISnippetBuilder, SnippetBuilder>();
-            
-                // Dialog classes are automatically registered by the Inventory component
 
-            // Dynamically register all chat command definition classes
+            RegisterDialogClasses(services);
             RegisterChatCommandDefinitionClasses(services);
 
             // Register event handlers as singletons
@@ -46,17 +45,27 @@ namespace SWLOR.Component.Communication.Infrastructure
 
         private static void RegisterChatCommandDefinitionClasses(IServiceCollection services)
         {
-            // Find all types that implement IChatCommandListDefinition, excluding Space component chat commands
             var chatCommandDefinitionTypes = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
                 .Where(w => typeof(IChatCommandListDefinition).IsAssignableFrom(w) && 
                            !w.IsInterface && 
-                           !w.IsAbstract &&
-                           !w.Namespace?.Contains("SWLOR.Component.Space") == true);
+                           !w.IsAbstract);
 
             foreach (var type in chatCommandDefinitionTypes)
             {
-                // Register each chat command definition as transient
+                services.AddSingleton(type);
+            }
+        }
+
+        private static void RegisterDialogClasses(IServiceCollection services)
+        {
+            // Find all types that inherit from DialogBase across all assemblies
+            var dialogTypes = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(s => s.GetTypes())
+                .Where(w => typeof(DialogBase).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
+
+            foreach (var type in dialogTypes)
+            {
                 services.AddSingleton(type);
             }
         }

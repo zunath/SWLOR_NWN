@@ -1,5 +1,4 @@
 using SWLOR.Component.Combat.Contracts;
-using SWLOR.Component.Combat.Service;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
@@ -20,14 +19,14 @@ namespace SWLOR.Component.Combat.EventHandlers
         private readonly IAttackOfOpportunityService _attackOfOpportunityService;
         private readonly ICombatPointService _combatPointService;
         private readonly IEnmityService _enmityService;
-        private readonly DeathService _deathService;
+        private readonly IDeathService _deathService;
 
         public CombatEventHandler(
             ICombatService combatService,
             IAttackOfOpportunityService attackOfOpportunityService,
             ICombatPointService combatPointService,
             IEnmityService enmityService,
-            DeathService deathService)
+            IDeathService deathService)
         {
             _combatService = combatService;
             _attackOfOpportunityService = attackOfOpportunityService;

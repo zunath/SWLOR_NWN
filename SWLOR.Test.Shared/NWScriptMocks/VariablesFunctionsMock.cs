@@ -134,5 +134,9 @@ namespace SWLOR.Test.Shared.NWScript
         }
 
         // Helper methods for testing
+        public void ResetLocalVariables()
+        {
+            _localVariables.Clear();
+        }
     }
 }

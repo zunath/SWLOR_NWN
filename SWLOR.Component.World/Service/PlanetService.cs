@@ -1,5 +1,5 @@
-using Microsoft.Extensions.DependencyInjection;
-using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Component.World.Contracts;
+using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Domain.World.Contracts;
 using SWLOR.Shared.Domain.World.Enums;
 using SWLOR.Shared.Events.Attributes;
@@ -9,22 +9,16 @@ namespace SWLOR.Component.World.Service
 {
     public class PlanetService : IPlanetService
     {
-        private readonly IServiceProvider _serviceProvider;
-        private IEnumCache<PlanetType, PlanetAttribute> _planetCache;
-        
-        // Additional cache for backward compatibility
-        private readonly Dictionary<PlanetType, PlanetAttribute> _planets = new();
-        
-        // Pre-computed cache for fast retrieval
-        private readonly Dictionary<PlanetType, PlanetAttribute> _allPlanets = new();
+        private readonly IPlanetCacheService _planetCacheService;
+        private readonly IPlanetAreaService _planetAreaService;
 
-        public PlanetService(IServiceProvider serviceProvider)
+        public PlanetService(
+            IPlanetCacheService planetCacheService,
+            IPlanetAreaService planetAreaService)
         {
-            _serviceProvider = serviceProvider;
+            _planetCacheService = planetCacheService;
+            _planetAreaService = planetAreaService;
         }
-
-        // Lazy-loaded service to break circular dependency
-        private IGenericCacheService CacheService => _serviceProvider.GetRequiredService<IGenericCacheService>();
 
         /// <summary>
         /// When the module loads, cache relevant data needed by the Planet service.
@@ -32,46 +26,8 @@ namespace SWLOR.Component.World.Service
         [ScriptHandler<OnModuleCacheBefore>]
         public void CacheData()
         {
-            CachePlanets();
-            RegisterAreaPlanetIds();
-        }
-
-        /// <summary>
-        /// When the module loads, cache all the different planet types.
-        /// </summary>
-        private void CachePlanets()
-        {
-            _planetCache = CacheService.BuildEnumCache<PlanetType, PlanetAttribute>()
-                .WithAllItems()
-                .WithFilteredCache("Active", p => p.IsActive)
-                .Build();
-
-            // Populate the _planets dictionary for backward compatibility
-            foreach (var (planetType, planetAttribute) in _planetCache.AllItems)
-            {
-                _planets[planetType] = planetAttribute;
-                _allPlanets[planetType] = planetAttribute;
-            }
-        }
-
-        /// <summary>
-        /// When the module loads, assign a planet Id to every area that is considered to be a planet.
-        /// </summary>
-        private void RegisterAreaPlanetIds()
-        {
-            for (var area = GetFirstArea(); GetIsObjectValid(area); area = GetNextArea())
-            {
-                var areaName = GetName(area);
-
-                foreach (var (type, detail) in _planets)
-                {
-                    if (areaName.StartsWith(detail.Prefix))
-                    {
-                        SetLocalInt(area, "PLANET_TYPE_ID", (int)type);
-                        break;
-                    }
-                }
-            }
+            _planetCacheService.InitializeCache();
+            _planetAreaService.RegisterAreaPlanetIds();
         }
 
         /// <summary>
@@ -84,9 +40,7 @@ namespace SWLOR.Component.World.Service
         /// <returns>A planet type. Returns PlanetType.Invalid on failure.</returns>
         public PlanetType GetPlanetType(uint area)
         {
-            var planetTypeId = GetLocalInt(area, "PLANET_TYPE_ID");
-
-            return (PlanetType)planetTypeId;
+            return _planetAreaService.GetPlanetType(area);
         }
 
         /// <summary>
@@ -97,7 +51,7 @@ namespace SWLOR.Component.World.Service
         /// <returns>A planet detail object.</returns>
         public PlanetAttribute GetPlanetByType(PlanetType type)
         {
-            return _planetCache?.AllItems[type] ?? throw new KeyNotFoundException($"Planet {type} not found in cache");
+            return _planetCacheService.GetPlanetByType(type);
         }
 
         /// <summary>
@@ -106,7 +60,7 @@ namespace SWLOR.Component.World.Service
         /// <returns>A dictionary containing the active planets.</returns>
         public Dictionary<PlanetType, PlanetAttribute> GetAllPlanets()
         {
-            return _allPlanets;
+            return _planetCacheService.GetAllPlanets();
         }
     }
 }

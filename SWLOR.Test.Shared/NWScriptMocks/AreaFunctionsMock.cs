@@ -162,6 +162,10 @@ namespace SWLOR.Test.Shared.NWScript
             var newArea = (uint)(_areaData.Count + 1000); // Generate unique ID
             var areaData = GetOrCreateAreaData(newArea);
             areaData.TilesetResRef = sSourceResRef;
+            
+            // Mark the area as valid so GetIsObjectValid works
+            _objectIsValid[newArea] = true;
+            
             return newArea;
         }
 
@@ -448,6 +452,29 @@ namespace SWLOR.Test.Shared.NWScript
         {
             var area = GetOrCreateAreaData(oArea);
             area.LightDirections[nLightType] = vDirection;
+        }
+
+        /// <summary>
+        /// Resets the mock state for testing. This clears all area data and resets iterators.
+        /// </summary>
+        public void ResetMockState()
+        {
+            _areaData.Clear();
+            _objectPositions.Clear();
+            _objectAreas.Clear();
+            _locationData.Clear();
+            _areaObjects.Clear();
+            _exploredTiles.Clear();
+            _creatureExploresMinimap.Clear();
+            _tileData.Clear();
+            _enteringObject = OBJECT_INVALID;
+            _exitingObject = OBJECT_INVALID;
+            _currentAreaIterator = OBJECT_INVALID;
+            _currentObjectIterator = OBJECT_INVALID;
+            _currentPersistentObjectIterator = OBJECT_INVALID;
+            
+            // Clear local variables
+            ResetLocalVariables();
         }
 
         public void SetTile(Location locTile, int nTileID, int nOrientation, int nHeight = 0,

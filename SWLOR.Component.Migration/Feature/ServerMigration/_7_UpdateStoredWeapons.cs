@@ -26,7 +26,7 @@ namespace SWLOR.Component.Migration.Feature.ServerMigration
             IServiceProvider serviceProvider)
             : base(logger, db, serviceProvider)
         {
-            // Services are now lazy-loaded via IServiceProvider
+            _serviceProvider = serviceProvider;
         }
         
         public int Version => 7;

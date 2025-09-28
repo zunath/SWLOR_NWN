@@ -24,7 +24,7 @@ namespace SWLOR.Component.Character.Feature
         {
             _logger = logger;
             _db = db;
-            // Services are now lazy-loaded via IServiceProvider
+            _serviceProvider = serviceProvider;
         }
         /// <summary>
         /// Saves a player's area map progression when exiting an area.

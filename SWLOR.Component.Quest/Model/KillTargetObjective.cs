@@ -22,7 +22,7 @@ namespace SWLOR.Component.Quest.Model
         public KillTargetObjective(IDatabaseService db, IServiceProvider serviceProvider, NPCGroupType group, int amount)
         {
             _db = db;
-            // Services are now lazy-loaded via IServiceProvider
+            _serviceProvider = serviceProvider;
             Group = group;
             _amount = amount;
         }

@@ -23,7 +23,7 @@ namespace SWLOR.Component.Perk.Model
             int mustHavePerkLevel = 1)
         {
             _db = db;
-            // Services are now lazy-loaded via IServiceProvider
+            _serviceProvider = serviceProvider;
             _mustHavePerkType = mustHavePerkType;
             _mustHavePerkLevel = mustHavePerkLevel;
         }

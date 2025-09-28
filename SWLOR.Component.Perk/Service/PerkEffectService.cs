@@ -25,7 +25,7 @@ namespace SWLOR.Component.Perk.Service
 
         public PerkEffectService(IServiceProvider serviceProvider)
         {
-            // Services are now lazy-loaded via IServiceProvider
+            _serviceProvider = serviceProvider;
         }
 
         /// <summary>

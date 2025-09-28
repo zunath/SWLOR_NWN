@@ -21,7 +21,7 @@ namespace SWLOR.Component.Perk.Model
             PerkType cannotHavePerkType)
         {
             _db = db;
-            // Services are now lazy-loaded via IServiceProvider
+            _serviceProvider = serviceProvider;
             _cannotHavePerkType = cannotHavePerkType;
         }
 

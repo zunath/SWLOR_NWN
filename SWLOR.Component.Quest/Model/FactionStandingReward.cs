@@ -18,7 +18,7 @@ namespace SWLOR.Component.Quest.Model
 
         public FactionStandingReward(IServiceProvider serviceProvider, FactionType faction, int amount, bool isSelectable)
         {
-            // Services are now lazy-loaded via IServiceProvider
+            _serviceProvider = serviceProvider;
             IsSelectable = isSelectable;
             Faction = faction;
             Amount = amount;

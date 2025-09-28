@@ -28,7 +28,7 @@ namespace SWLOR.Component.Migration.Feature.PlayerMigration
             IServiceProvider serviceProvider)
         {
             _db = db;
-            // Services are now lazy-loaded via IServiceProvider
+            _serviceProvider = serviceProvider;
         }
 
         public int Version => 1;

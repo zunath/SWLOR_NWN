@@ -23,7 +23,7 @@ namespace SWLOR.Component.Quest.Model
         {
             _db = db;
             _itemCache = itemCache;
-            // Services are now lazy-loaded via IServiceProvider
+            _serviceProvider = serviceProvider;
             _resref = resref;
             _quantity = quantity;
         }

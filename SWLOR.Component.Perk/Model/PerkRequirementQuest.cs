@@ -18,7 +18,7 @@ namespace SWLOR.Component.Perk.Model
         public PerkRequirementQuest(IDatabaseService db, IServiceProvider serviceProvider, string questId)
         {
             _db = db;
-            // Services are now lazy-loaded via IServiceProvider
+            _serviceProvider = serviceProvider;
             _questId = questId;
         }
 

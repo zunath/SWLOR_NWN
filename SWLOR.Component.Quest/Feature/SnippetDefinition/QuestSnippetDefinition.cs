@@ -26,7 +26,7 @@ namespace SWLOR.Component.Quest.Feature.SnippetDefinition
         {
             _db = db;
             _logger = logger;
-            // Services are now lazy-loaded via IServiceProvider
+            _serviceProvider = serviceProvider;
             _builder = builder;
         }
 

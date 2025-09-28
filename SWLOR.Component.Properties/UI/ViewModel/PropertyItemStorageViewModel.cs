@@ -31,7 +31,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
         public PropertyItemStorageViewModel(IGuiService guiService, IDatabaseService db, IServiceProvider serviceProvider) : base(guiService)
         {
             _db = db;
-            // Services are now lazy-loaded via IServiceProvider
+            _serviceProvider = serviceProvider;
         }
         
         private const int MaxNumberOfCategories = 20;

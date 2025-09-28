@@ -28,7 +28,7 @@ namespace SWLOR.Component.Character.Feature
             IServiceProvider serviceProvider)
         {
             _db = db;
-            // Services are now lazy-loaded via IServiceProvider
+            _serviceProvider = serviceProvider;
         }
 
         /// <summary>

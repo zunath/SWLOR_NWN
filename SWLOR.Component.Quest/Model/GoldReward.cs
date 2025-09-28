@@ -19,7 +19,7 @@ namespace SWLOR.Component.Quest.Model
             Amount = amount;
             IsSelectable = isSelectable;
             IsGuildQuest = isGuildQuest;
-            // Services are now lazy-loaded via IServiceProvider
+            _serviceProvider = serviceProvider;
         }
 
         public void GiveReward(uint player)

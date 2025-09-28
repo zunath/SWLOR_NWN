@@ -23,7 +23,7 @@ namespace SWLOR.Component.Inventory.Feature.SnippetDefinition
             ISnippetBuilder snippetBuilder)
         {
             _logger = logger;
-            // Services are now lazy-loaded via IServiceProvider
+            _serviceProvider = serviceProvider;
             _builder = snippetBuilder;
         }
 

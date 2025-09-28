@@ -16,7 +16,7 @@ namespace SWLOR.Component.Quest.Model
         public RequiredKeyItemPrerequisite(KeyItemType keyItemType, IServiceProvider serviceProvider)
         {
             _keyItemType = keyItemType;
-            // Services are now lazy-loaded via IServiceProvider
+            _serviceProvider = serviceProvider;
         }
 
         public bool MeetsPrerequisite(uint player)

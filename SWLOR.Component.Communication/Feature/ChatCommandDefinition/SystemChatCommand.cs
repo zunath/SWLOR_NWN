@@ -27,7 +27,7 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
         public SystemChatCommand(IAppSettings appSettings, IServiceProvider serviceProvider)
         {
             _appSettings = appSettings;
-            // Services are now lazy-loaded via IServiceProvider
+            _serviceProvider = serviceProvider;
         }
 
         public Dictionary<string, ChatCommandDetail> BuildChatCommands()

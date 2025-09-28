@@ -24,7 +24,7 @@ namespace SWLOR.Component.Space.Service
             IServiceProvider serviceProvider)
         {
             _logger = logger;
-            // Services are now lazy-loaded via IServiceProvider
+            _serviceProvider = serviceProvider;
         }
 
         /// <summary>

@@ -23,7 +23,7 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
         public DebuggingChatCommand(IDatabaseService db, IServiceProvider serviceProvider)
         {
             _db = db;
-            // Services are now lazy-loaded via IServiceProvider
+            _serviceProvider = serviceProvider;
         }
 
         public Dictionary<string, ChatCommandDetail> BuildChatCommands()

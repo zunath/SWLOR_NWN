@@ -23,7 +23,14 @@ namespace SWLOR.Component.World.Infrastructure
             services.AddSingleton<ITileMagicService, TileMagicService>();
             services.AddSingleton<ITaxiService, TaxiService>();
             services.AddSingleton<ISpawnTableBuilder, SpawnTableBuilder>();
+            
+            // Spawn-related services
+            services.AddSingleton<ISpawnCalculationService, SpawnCalculationService>();
+            services.AddSingleton<ISpawnCreationService, SpawnCreationService>();
+            services.AddSingleton<ISpawnManagementService, SpawnManagementService>();
+            services.AddSingleton<ISpawnProcessingService, SpawnProcessingService>();
             services.AddSingleton<ISpawnService, SpawnService>();
+            
             services.AddSingleton<IVisibilityObjectCacheService, VisibilityObjectCacheService>();
             services.AddSingleton<IPlayerVisibilityService, PlayerVisibilityService>();
             services.AddSingleton<IObjectVisibilityService, ObjectVisibilityService>();

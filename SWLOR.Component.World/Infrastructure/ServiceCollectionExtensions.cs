@@ -37,7 +37,14 @@ namespace SWLOR.Component.World.Infrastructure
             services.AddSingleton<IMusicService, MusicService>();
             services.AddSingleton<IAreaService, AreaService>();
             services.AddSingleton<IAreaNoteService, AreaNoteService>();
+            
+            // Weather-related services
+            services.AddSingleton<IWeatherClimateService, WeatherClimateService>();
+            services.AddSingleton<IWeatherCalculationService, WeatherCalculationService>();
+            services.AddSingleton<IWeatherEffectsService, WeatherEffectsService>();
+            services.AddSingleton<IWeatherVisualService, WeatherVisualService>();
             services.AddSingleton<IWeatherService, WeatherService>();
+            
             services.AddSingleton<IPlanetAreaService, PlanetAreaService>();
             services.AddSingleton<IPlanetService, PlanetService>();
             services.AddSingleton<IWalkmeshService, WalkmeshService>();

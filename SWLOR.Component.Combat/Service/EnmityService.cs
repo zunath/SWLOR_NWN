@@ -1,14 +1,17 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
+using SWLOR.Shared.Events.Events.Combat;
 
 namespace SWLOR.Component.Combat.Service
 {
     public class EnmityService : IEnmityService
     {
         private readonly IServiceProvider _serviceProvider;
+        private readonly IEventAggregator _eventAggregator;
         
         // Enemy -> Creature -> EnmityAmount mapping
         private readonly Dictionary<uint, Dictionary<uint, int>> _enemyEnmityTables = new();
@@ -16,9 +19,10 @@ namespace SWLOR.Component.Combat.Service
         // Creature -> EnemyList mapping
         private readonly Dictionary<uint, List<uint>> _creatureToEnemies = new();
 
-        public EnmityService(IServiceProvider serviceProvider)
+        public EnmityService(IServiceProvider serviceProvider, IEventAggregator eventAggregator)
         {
             _serviceProvider = serviceProvider;
+            _eventAggregator = eventAggregator;
         }
 
         // Lazy-loaded service to break circular dependency
@@ -170,7 +174,7 @@ namespace SWLOR.Component.Combat.Service
             // Fire off an event if this creature isn't currently on
             // any enmity lists already.
             if (enemyList.Count <= 0)
-                ExecuteScript("enmity_acquired", creature);
+                _eventAggregator.Publish(new OnEnmityAcquired(), creature);
 
             // Enemy isn't on the creature's list. Add it now.
             if (!enemyList.Contains(enemy))
@@ -203,7 +207,7 @@ namespace SWLOR.Component.Combat.Service
 
             AttackHighestEnmityTarget(enemy);
 
-            ExecuteScript("enmity_changed", creature);
+            _eventAggregator.Publish(new OnEnmityChanged(), creature);
         }
 
         /// <summary>

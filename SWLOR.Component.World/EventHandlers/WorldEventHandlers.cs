@@ -87,7 +87,7 @@ namespace SWLOR.Component.World.EventHandlers
             _spawnService.QueueRespawn();
         }
 
-        [ScriptHandler(ScriptName.OnSwlorHeartbeat)]
+        [ScriptHandler(ScriptName.OnServerHeartbeat)]
         public void OnSwlorHeartbeat()
         {
             _spawnService.ProcessSpawnSystem();

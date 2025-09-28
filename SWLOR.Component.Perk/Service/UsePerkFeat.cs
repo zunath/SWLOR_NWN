@@ -296,7 +296,7 @@ namespace SWLOR.Component.Perk.Service
                 if (!GetIsPC(activator))
                 {
                     var combatRoundEndScript = GetEventScript(activator, EventScriptType.Creature_OnEndCombatRound);
-                    ExecuteScript(combatRoundEndScript, activator);
+                    ExecuteNWScript(combatRoundEndScript, activator);
                 }
             }
 

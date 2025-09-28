@@ -9583,7 +9583,7 @@ namespace SWLOR.NWN.API.Contracts
         /// This solves OBJECT_SELF corruption issues when executing C# scripts by bypassing
         /// the problematic NWScript round-trip.
         /// </summary>
-        void ExecuteScript(string sScript, uint oTarget);
+        void ExecuteNWScript(string sScript, uint oTarget);
 
         /// <summary>
         /// Destroy oObject (irrevocably).

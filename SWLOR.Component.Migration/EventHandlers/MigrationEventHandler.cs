@@ -4,6 +4,7 @@ using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Infrastructure;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.NWNX;
+using SWLOR.Shared.Events.Events.Player;
 
 namespace SWLOR.Component.Migration.EventHandlers
 {
@@ -43,7 +44,7 @@ namespace SWLOR.Component.Migration.EventHandlers
         /// <summary>
         /// When a player logs into the server and after initialization has run, run the migration process on their character.
         /// </summary>
-        [ScriptHandler<OnCharacterInitAfter>]
+        [ScriptHandler<OnPlayerInitialized>]
         public void RunPlayerMigrations()
         {
             MigrationService.RunPlayerMigrations();

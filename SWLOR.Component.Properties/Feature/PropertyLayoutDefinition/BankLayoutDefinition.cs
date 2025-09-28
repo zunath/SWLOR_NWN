@@ -8,6 +8,7 @@ using SWLOR.Shared.Domain.Properties.Enums;
 using SWLOR.Shared.Domain.Properties.ValueObjects;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Properties;
 
 namespace SWLOR.Component.Properties.Feature.PropertyLayoutDefinition
 {
@@ -16,11 +17,13 @@ namespace SWLOR.Component.Properties.Feature.PropertyLayoutDefinition
         private readonly IDatabaseService _db;
         private readonly PropertyLayoutBuilder _builder = new();
         private readonly PropertyService _property;
+        private readonly IEventAggregator _eventAggregator;
 
-        public BankLayoutDefinition(IDatabaseService db, PropertyService property)
+        public BankLayoutDefinition(IDatabaseService db, PropertyService property, IEventAggregator eventAggregator)
         {
             _db = db;
             _property = property;
+            _eventAggregator = eventAggregator;
         }
 
         public Dictionary<PropertyLayoutType, PropertyLayout> Build()
@@ -65,7 +68,7 @@ namespace SWLOR.Component.Properties.Feature.PropertyLayoutDefinition
             }
 
             // Execute the normal bank procedure if all these additional checks are met.
-            ExecuteScript(ScriptName.OnOpenBank, bank);
+            _eventAggregator.Publish(new OnOpenBank(), bank);
         }
 
         private void ProcessBank(uint area, uint waypoint, int storageCap, string bankId)

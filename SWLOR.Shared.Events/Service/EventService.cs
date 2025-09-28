@@ -1,4 +1,5 @@
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Events.Contracts;
 using SWLOR.Shared.Events.Model;
 
 namespace SWLOR.Shared.Events.Service
@@ -7,7 +8,7 @@ namespace SWLOR.Shared.Events.Service
     /// Implementation of IEventSystem that provides an abstracted event system.
     /// This hides NWN script implementation details from consumers.
     /// </summary>
-    public class EventService : IEventService
+    internal class EventService : IEventService
     {
         private readonly IEventAggregator _eventAggregator;
         private readonly Dictionary<string, List<Action<object>>> _namedEventHandlers = new();
@@ -18,9 +19,9 @@ namespace SWLOR.Shared.Events.Service
             _eventAggregator = eventAggregator ?? throw new ArgumentNullException(nameof(eventAggregator));
         }
 
-        public void Publish<T>(T eventData) where T : IEvent
+        public void Publish<T>(T eventData, uint target) where T : IEvent
         {
-            _eventAggregator.Publish(eventData);
+            _eventAggregator.Publish(eventData, target);
         }
 
         public IDisposable Subscribe<T>(Action<T> handler) where T : IEvent

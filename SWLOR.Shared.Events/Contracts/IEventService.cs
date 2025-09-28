@@ -1,17 +1,20 @@
-namespace SWLOR.Shared.Abstractions.Contracts
+using SWLOR.Shared.Abstractions.Contracts;
+
+namespace SWLOR.Shared.Events.Contracts
 {
     /// <summary>
     /// Interface for the abstracted event system that hides NWN script implementation details.
     /// This provides a clean API for components to publish and subscribe to events.
     /// </summary>
-    public interface IEventService
+    internal interface IEventService
     {
         /// <summary>
         /// Publishes an event to all subscribers.
         /// </summary>
         /// <typeparam name="T">The type of event to publish</typeparam>
         /// <param name="eventData">The event data to publish</param>
-        void Publish<T>(T eventData) where T : IEvent;
+        /// <param name="target">The target of the event</param>
+        void Publish<T>(T eventData, uint target) where T : IEvent;
 
         /// <summary>
         /// Subscribes to events of a specific type.

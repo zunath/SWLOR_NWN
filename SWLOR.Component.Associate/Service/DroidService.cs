@@ -858,7 +858,7 @@ namespace SWLOR.Component.Associate.Service
 
             // Ensure the spawn script gets called as it normally gets skipped
             // because it doesn't exist at the time of the droid being created.
-            ExecuteScript(GetEventScript(droid, EventScriptType.Creature_OnSpawnIn), droid);
+            ExecuteNWScript(GetEventScript(droid, EventScriptType.Creature_OnSpawnIn), droid);
 
             AssignCommand(GetModule(), () =>
             {
@@ -1033,7 +1033,7 @@ namespace SWLOR.Component.Associate.Service
         
         public void DroidOnBlocked()
         {
-            ExecuteScript("x0_ch_hen_block", OBJECT_SELF);
+            ExecuteNWScript("x0_ch_hen_block", OBJECT_SELF);
         }
 
         public void DroidOnEndCombatRound()
@@ -1046,19 +1046,19 @@ namespace SWLOR.Component.Associate.Service
             var droid = OBJECT_SELF;
             if (!ActivityService.IsBusy(droid))
             {
-                ExecuteScript("x0_ch_hen_combat", OBJECT_SELF);
+                ExecuteNWScript("x0_ch_hen_combat", OBJECT_SELF);
                 AIService.ProcessPerkAI(AIDefinitionType.Droid, droid, false);
             }
         }
 
         public void DroidOnConversation()
         {
-            ExecuteScript("x0_ch_hen_conv", OBJECT_SELF);
+            ExecuteNWScript("x0_ch_hen_conv", OBJECT_SELF);
         }
 
         public void DroidOnDamaged()
         {
-            ExecuteScript("x0_ch_hen_damage", OBJECT_SELF);
+            ExecuteNWScript("x0_ch_hen_damage", OBJECT_SELF);
 
         }
 
@@ -1066,7 +1066,7 @@ namespace SWLOR.Component.Associate.Service
         {
             var droid = OBJECT_SELF;
             var player = GetMaster(droid);
-            ExecuteScript("x2_hen_death", droid);
+            ExecuteNWScript("x2_hen_death", droid);
 
             var item = GetControllerItem(droid);
             var droidDetail = LoadDroidItemPropertyDetails(item);
@@ -1080,7 +1080,7 @@ namespace SWLOR.Component.Associate.Service
 
         public void DroidOnDisturbed()
         {
-            ExecuteScript("x0_ch_hen_distrb", OBJECT_SELF);
+            ExecuteNWScript("x0_ch_hen_distrb", OBJECT_SELF);
         }
 
         public void DroidOnHeartbeat()
@@ -1090,19 +1090,19 @@ namespace SWLOR.Component.Associate.Service
 
         private void DroidOnHeartbeatInternal()
         {
-            ExecuteScript("x0_ch_hen_heart", OBJECT_SELF);
+            ExecuteNWScript("x0_ch_hen_heart", OBJECT_SELF);
             StatService.RestoreNPCStats(false);
         }
 
         public void DroidOnPerception()
         {
-            ExecuteScript("x0_ch_hen_percep", OBJECT_SELF);
+            ExecuteNWScript("x0_ch_hen_percep", OBJECT_SELF);
 
         }
 
         public void DroidOnPhysicalAttacked()
         {
-            ExecuteScript("x0_ch_hen_attack", OBJECT_SELF);
+            ExecuteNWScript("x0_ch_hen_attack", OBJECT_SELF);
 
         }
 
@@ -1114,7 +1114,7 @@ namespace SWLOR.Component.Associate.Service
         private void DroidOnRestedInternal()
         {
             var droid = OBJECT_SELF;
-            ExecuteScript("x0_ch_hen_rest", droid);
+            ExecuteNWScript("x0_ch_hen_rest", droid);
 
             AssignCommand(droid, () => ClearAllActions());
 
@@ -1129,7 +1129,7 @@ namespace SWLOR.Component.Associate.Service
         private void DroidOnSpawnInternal()
         {
             var droid = OBJECT_SELF;
-            ExecuteScript("x0_ch_hen_spawn", droid);
+            ExecuteNWScript("x0_ch_hen_spawn", droid);
             AssignCommand(droid, () =>
             {
                 SetIsDestroyable(true, false, false);
@@ -1139,13 +1139,13 @@ namespace SWLOR.Component.Associate.Service
 
         public void DroidOnSpellCastAt()
         {
-            ExecuteScript("x2_hen_spell", OBJECT_SELF);
+            ExecuteNWScript("x2_hen_spell", OBJECT_SELF);
 
         }
 
         public void DroidOnUserDefined()
         {
-            ExecuteScript("x0_ch_hen_usrdef", OBJECT_SELF);
+            ExecuteNWScript("x0_ch_hen_usrdef", OBJECT_SELF);
 
         }
 

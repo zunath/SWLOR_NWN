@@ -121,7 +121,7 @@ namespace SWLOR.Component.Communication.Service
         // Register DMFI Voice Command Handler which lives in nwscript land.
         public void ProcessNativeChatMessage()
         {
-            ExecuteScript("dmfi_onplychat", OBJECT_SELF);
+            ExecuteNWScript("dmfi_onplychat", OBJECT_SELF);
         }
 
         public void ProcessChatMessage()

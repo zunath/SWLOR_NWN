@@ -4,6 +4,7 @@ using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.NWNX;
+using SWLOR.Shared.Events.Events.Player;
 
 namespace SWLOR.Component.Perk.EventHandlers
 {
@@ -77,7 +78,7 @@ namespace SWLOR.Component.Perk.EventHandlers
         /// <summary>
         /// When a player starts resting, clear any temporary queued variables.
         /// </summary>
-        [ScriptHandler(ScriptName.OnRestStarted)]
+        [ScriptHandler<OnPlayerRestStarted>]
         public void ClearTemporaryQueuedVariablesOnRest()
         {
             _usePerkFeat.ClearTemporaryQueuedVariablesOnRest();

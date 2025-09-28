@@ -6,6 +6,8 @@ using SWLOR.Shared.Domain.StatusEffect.Enums;
 using SWLOR.Shared.Domain.UI.Events;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Component.StatusEffect.Contracts;
+using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Events.Events.Associate;
 
 namespace SWLOR.Component.StatusEffect.Service
 {
@@ -19,19 +21,22 @@ namespace SWLOR.Component.StatusEffect.Service
         private readonly IGuiService _guiService;
         private readonly IMessagingService _messagingService;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IEventAggregator _eventAggregator;
 
         public StatusEffectManagementService(
             IStatusEffectDataService dataService,
             IStatusEffectQueryService queryService,
             IGuiService guiService,
             IMessagingService messagingService,
-            IServiceProvider serviceProvider)
+            IServiceProvider serviceProvider,
+            IEventAggregator eventAggregator)
         {
             _dataService = dataService;
             _queryService = queryService;
             _guiService = guiService;
             _messagingService = messagingService;
             _serviceProvider = serviceProvider;
+            _eventAggregator = eventAggregator;
         }
 
         /// <summary>
@@ -75,7 +80,7 @@ namespace SWLOR.Component.StatusEffect.Service
                 _dataService.LoggedOutPlayersWithEffects.Remove(player);
             }
 
-            ExecuteScript("assoc_stateffect", player);
+            _eventAggregator.Publish(new OnAssociateStateEffect(), player);
         }
 
         /// <summary>

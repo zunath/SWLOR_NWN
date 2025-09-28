@@ -337,7 +337,7 @@ namespace SWLOR.Component.Associate.Service
 
             // Ensure the spawn script gets called as it normally gets skipped
             // because it doesn't exist at the time of the beast being created.
-            ExecuteScript(GetEventScript(beast, EventScriptType.Creature_OnSpawnIn), beast);
+            ExecuteNWScript(GetEventScript(beast, EventScriptType.Creature_OnSpawnIn), beast);
 
             AssignCommand(GetModule(), () =>
             {
@@ -485,7 +485,7 @@ namespace SWLOR.Component.Associate.Service
 
         public void BeastOnBlocked()
         {
-            ExecuteScript("x0_ch_hen_block", OBJECT_SELF);
+            ExecuteNWScript("x0_ch_hen_block", OBJECT_SELF);
         }
 
         public void BeastOnEndCombatRound()
@@ -493,7 +493,7 @@ namespace SWLOR.Component.Associate.Service
             var beast = OBJECT_SELF;
             if (!ActivityService.IsBusy(beast))
             {
-                ExecuteScript("x0_ch_hen_combat", OBJECT_SELF);
+                ExecuteNWScript("x0_ch_hen_combat", OBJECT_SELF);
                 // TODO: Review this AI call - method not found in current codebase
                 // _ai.ProcessPerkAI(AIDefinitionType.Beast, beast, false);
             }
@@ -501,18 +501,18 @@ namespace SWLOR.Component.Associate.Service
 
         public void BeastOnConversation()
         {
-            ExecuteScript("x0_ch_hen_conv", OBJECT_SELF);
+            ExecuteNWScript("x0_ch_hen_conv", OBJECT_SELF);
         }
 
         public void BeastOnDamaged()
         {
-            ExecuteScript("x0_ch_hen_damage", OBJECT_SELF);
+            ExecuteNWScript("x0_ch_hen_damage", OBJECT_SELF);
         }
 
         public void BeastOnDeath()
         {
             var beast = OBJECT_SELF;
-            ExecuteScript("x2_hen_death", beast);
+            ExecuteNWScript("x2_hen_death", beast);
 
             var beastId = GetBeastId(beast);
             var dbBeast = _db.Get<Beast>(beastId);
@@ -526,31 +526,31 @@ namespace SWLOR.Component.Associate.Service
 
         public void BeastOnDisturbed()
         {
-            ExecuteScript("x0_ch_hen_distrb", OBJECT_SELF);
+            ExecuteNWScript("x0_ch_hen_distrb", OBJECT_SELF);
         }
 
         public void BeastOnHeartbeat()
         {
-            ExecuteScript("x0_ch_hen_heart", OBJECT_SELF);
+            ExecuteNWScript("x0_ch_hen_heart", OBJECT_SELF);
             StatService.RestoreNPCStats(false);
         }
 
         public void BeastOnPerception()
         {
-            ExecuteScript("x0_ch_hen_percep", OBJECT_SELF);
+            ExecuteNWScript("x0_ch_hen_percep", OBJECT_SELF);
 
         }
 
         public void BeastOnPhysicalAttacked()
         {
-            ExecuteScript("x0_ch_hen_attack", OBJECT_SELF);
+            ExecuteNWScript("x0_ch_hen_attack", OBJECT_SELF);
 
         }
 
         public void BeastOnRested()
         {
             var beast = OBJECT_SELF;
-            ExecuteScript("x0_ch_hen_rest", beast);
+            ExecuteNWScript("x0_ch_hen_rest", beast);
 
             AssignCommand(beast, () => ClearAllActions());
 
@@ -560,7 +560,7 @@ namespace SWLOR.Component.Associate.Service
         public void BeastOnSpawn()
         {
             var beast = OBJECT_SELF;
-            ExecuteScript("x0_ch_hen_spawn", beast);
+            ExecuteNWScript("x0_ch_hen_spawn", beast);
             AssignCommand(beast, () =>
             {
                 SetIsDestroyable(true, false, false);
@@ -571,13 +571,13 @@ namespace SWLOR.Component.Associate.Service
 
         public void BeastOnSpellCastAt()
         {
-            ExecuteScript("x2_hen_spell", OBJECT_SELF);
+            ExecuteNWScript("x2_hen_spell", OBJECT_SELF);
 
         }
 
         public void BeastOnUserDefined()
         {
-            ExecuteScript("x0_ch_hen_usrdef", OBJECT_SELF);
+            ExecuteNWScript("x0_ch_hen_usrdef", OBJECT_SELF);
         }
 
         public void OpenStablesMenu()

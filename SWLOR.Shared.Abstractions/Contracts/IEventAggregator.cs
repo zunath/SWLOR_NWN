@@ -11,7 +11,8 @@ namespace SWLOR.Shared.Abstractions.Contracts
         /// </summary>
         /// <typeparam name="TEvent">The type of event to publish</typeparam>
         /// <param name="eventData">The event data to publish</param>
-        void Publish<TEvent>(TEvent eventData) where TEvent : IEvent;
+        /// <param name="target">The target of the event</param>
+        void Publish<TEvent>(TEvent eventData, uint target) where TEvent : IEvent;
 
         /// <summary>
         /// Subscribes to events of a specific type.

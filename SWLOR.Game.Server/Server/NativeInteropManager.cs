@@ -6,6 +6,8 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Infrastructure;
+using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Server
 {
@@ -15,13 +17,15 @@ namespace SWLOR.Game.Server.Server
         private readonly IMainLoopProcessor _mainLoopProcessor;
         private readonly IScriptExecutor _scriptExecutor;
         private readonly IClosureManager _closureManager;
+        private readonly IEventAggregator _eventAggregator;
 
-        public NativeInteropManager(ILogger logger, IMainLoopProcessor mainLoopProcessor, IScriptExecutor scriptExecutor, IClosureManager closureManager)
+        public NativeInteropManager(ILogger logger, IMainLoopProcessor mainLoopProcessor, IScriptExecutor scriptExecutor, IClosureManager closureManager, IEventAggregator eventAggregator)
         {
             _logger = logger;
             _mainLoopProcessor = mainLoopProcessor;
             _scriptExecutor = scriptExecutor;
             _closureManager = closureManager;
+            _eventAggregator = eventAggregator;
         }
 
         public void RegisterHandlers()
@@ -110,9 +114,9 @@ namespace SWLOR.Game.Server.Server
 
         private void RunPreModuleLoadEvents()
         {
-            ExecuteScript(ScriptName.OnServerLoaded, GetModule());
-            ExecuteScript(ScriptName.OnModuleCacheBefore, GetModule());
-            ExecuteScript(ScriptName.OnModuleCacheAfter, GetModule());
+            _eventAggregator.Publish(new OnServerLoaded(), GetModule());
+            _eventAggregator.Publish(new OnModuleCacheBefore(), GetModule());
+            _eventAggregator.Publish(new OnModuleCacheAfter(), GetModule());
         }
     }
 }

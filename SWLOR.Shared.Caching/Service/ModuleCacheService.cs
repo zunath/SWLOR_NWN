@@ -5,16 +5,19 @@ using SWLOR.Shared.Caching.Entity;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Infrastructure;
+using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Shared.Caching.Service
 {
     public class ModuleCacheService : IModuleCacheService
     {
         private readonly IDatabaseService _db;
+        private readonly IEventAggregator _eventAggregator;
 
-        public ModuleCacheService(IDatabaseService db)
+        public ModuleCacheService(IDatabaseService db, IEventAggregator eventAggregator)
         {
             _db = db;
+            _eventAggregator = eventAggregator;
         }
 
         [ScriptHandler<OnEventsHooked>]
@@ -33,7 +36,7 @@ namespace SWLOR.Shared.Caching.Service
                 serverConfig.LastModuleMTime = UtilPlugin.GetModuleMTime();
                 _db.Set(serverConfig);
 
-                ExecuteScript(ScriptName.OnModuleContentChange, GetModule());
+                _eventAggregator.Publish(new OnModuleContentChange(), GetModule());
             }
         }
     }

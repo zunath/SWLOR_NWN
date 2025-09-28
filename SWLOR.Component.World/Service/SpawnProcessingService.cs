@@ -8,6 +8,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Events.Events.World;
 
 namespace SWLOR.Component.World.Service
 {
@@ -20,6 +21,7 @@ namespace SWLOR.Component.World.Service
         private readonly IRandomService _random;
         private readonly ISpawnCreationService _spawnCreation;
         private readonly ISpawnCacheService _spawnCache;
+        private readonly IEventAggregator _eventAggregator;
 
         public int DespawnMinutes => 20;
         public int ResourceDespawnMinutes => 180;
@@ -35,12 +37,14 @@ namespace SWLOR.Component.World.Service
             ILogger logger,
             IRandomService random,
             ISpawnCreationService spawnCreation,
-            ISpawnCacheService spawnCache)
+            ISpawnCacheService spawnCache,
+            IEventAggregator eventAggregator)
         {
             _logger = logger;
             _random = random;
             _spawnCreation = spawnCreation;
             _spawnCache = spawnCache;
+            _eventAggregator = eventAggregator;
         }
 
         public void ProcessSpawnSystem()
@@ -218,7 +222,7 @@ namespace SWLOR.Component.World.Service
                     {
                         foreach (var activeSpawn in _activeSpawnsByArea[area])
                         {
-                            ExecuteScript("spawn_despawn", activeSpawn.SpawnObject);
+                            _eventAggregator.Publish(new OnSpawnDespawn(), activeSpawn.SpawnObject);
                             DestroyObject(activeSpawn.SpawnObject);
                         }
                     }
@@ -262,7 +266,7 @@ namespace SWLOR.Component.World.Service
                 if (now > resourceDespawn.DespawnTime)
                 {
                     // Execute the despawn script and remove the resource
-                    ExecuteScript("spawn_despawn", resourceDespawn.ResourceObject);
+                    _eventAggregator.Publish(new OnSpawnDespawn(), resourceDespawn.ResourceObject);
                     SetPlotFlag(resourceDespawn.ResourceObject, false);
                     ApplyEffectToObject(DurationType.Instant, EffectDeath(), resourceDespawn.ResourceObject);
 

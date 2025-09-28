@@ -13,6 +13,8 @@ using SWLOR.Shared.Domain.Skill.Enums;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Module;
+using SWLOR.Shared.Events.Events.NWNX;
+using SWLOR.Shared.Events.Events.Player;
 
 namespace SWLOR.Component.Character.Service
 {
@@ -21,15 +23,18 @@ namespace SWLOR.Component.Character.Service
         private readonly ILogger _logger;
         private readonly IDatabaseService _db;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IEventAggregator _eventAggregator;
 
         public PlayerInitializationService(
             ILogger logger, 
             IDatabaseService db, 
-            IServiceProvider serviceProvider)
+            IServiceProvider serviceProvider,
+            IEventAggregator eventAggregator)
         {
             _logger = logger;
             _db = db;
             _serviceProvider = serviceProvider;
+            _eventAggregator = eventAggregator;
         }
 
         // Lazy-loaded services to break circular dependencies
@@ -53,7 +58,7 @@ namespace SWLOR.Component.Character.Service
             // Already been initialized. Don't do it again.
             if (dbPlayer.Version >= 1 || dbPlayer.Version == -1) // Note: -1 signifies legacy characters. The Migration service handles upgrading legacy characters.
             {
-                ExecuteScript(ScriptName.OnCharacterInitAfter, OBJECT_SELF);
+                _eventAggregator.Publish(new OnPlayerInitialized(), player);
                 return;
             }
 
@@ -76,7 +81,7 @@ namespace SWLOR.Component.Character.Service
 
             _db.Set(dbPlayer);
 
-            ExecuteScript(ScriptName.OnCharacterInitAfter, OBJECT_SELF);
+            _eventAggregator.Publish(new OnPlayerInitialized(), player);
         }
 
         private void AutoLevelPlayer(uint player)

@@ -145,7 +145,7 @@ namespace SWLOR.Component.World.Service
                 // already on the creature, we need to run the normal spawn script to ensure it gets created appropriately.
                 if (string.IsNullOrWhiteSpace(originalSpawnScript))
                 {
-                    ExecuteScript("x2_def_spawn", spawn);
+                    ExecuteNWScript("x2_def_spawn", spawn);
                 }
             }
             else if (type == ObjectType.Placeable)

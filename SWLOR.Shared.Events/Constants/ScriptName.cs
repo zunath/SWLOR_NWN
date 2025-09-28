@@ -67,7 +67,7 @@ namespace SWLOR.Shared.Events.Constants
         public const string OnEventsHooked = "events_hooked";
 
         // Character events
-        public const string OnCharacterInitAfter = "char_init_after";
+        public const string OnPlayerInitialized = "char_init_after";
         public const string OnCharacterRebuild = "char_rebuild";
         public const string OnExitRebuild = "exit_rebuild";
         public const string OnExitSpending = "exit_spending";
@@ -532,10 +532,11 @@ namespace SWLOR.Shared.Events.Constants
         public const string OnAssociateStateEffect = "assoc_stateffect";
 
         // Combat events
-        public const string OnRestStarted = "rest_started";
+        public const string OnPlayerRestStarted = "rest_started";
 
         // Space events
         public const string OnSpaceEnter = "space_enter";
+        public const string OnSpaceExit = "space_exit";
         public const string OnShipComputer = "ship_computer";
         public const string OnSpaceTarget = "spc_target";
 
@@ -649,7 +650,7 @@ namespace SWLOR.Shared.Events.Constants
         // SWLOR specific events
         public const string OnSwlorSkillCache = "swlor_skl_cache";
         public const string OnSwlorDeleteProperty = "swlor_del_prop";
-        public const string OnSwlorHeartbeat = "swlor_heartbeat";
+        public const string OnServerHeartbeat = "swlor_heartbeat";
         public const string OnSwlorLoseSkill = "swlor_lose_skill";
         public const string OnSwlorBuyPerk = "swlor_buy_perk";
         public const string OnSwlorGainSkill = "swlor_gain_skill";

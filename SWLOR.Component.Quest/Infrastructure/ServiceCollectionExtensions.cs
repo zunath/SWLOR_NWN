@@ -38,7 +38,8 @@ namespace SWLOR.Component.Quest.Infrastructure
                 provider.GetRequiredService<IDatabaseService>(),
                 provider.GetRequiredService<IItemCacheService>(),
                 provider.GetRequiredService<IGenericCacheService>(),
-                provider.GetRequiredService<IServiceProvider>()));
+                provider.GetRequiredService<IServiceProvider>(),
+                provider.GetRequiredService<IEventAggregator>()));
 
             // Register Guild service
             services.AddSingleton<IGuildService, GuildService>();

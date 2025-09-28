@@ -12,6 +12,7 @@ using SWLOR.Shared.Domain.World.Contracts;
 using SWLOR.Shared.Domain.World.Enums;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Properties;
 
 namespace SWLOR.Component.Properties.Feature.PropertyLayoutDefinition
 {
@@ -23,19 +24,22 @@ namespace SWLOR.Component.Properties.Feature.PropertyLayoutDefinition
         private readonly IAreaService _areaService;
         private readonly ISpaceService _spaceService;
         private readonly PropertyLayoutBuilder _builder = new();
+        private readonly IEventAggregator _eventAggregator;
 
         public StarportLayoutDefinition(
             IDatabaseService db, 
             IPlanetService planetService, 
             IPropertyService propertyService,
             IAreaService areaService,
-            ISpaceService spaceService)
+            ISpaceService spaceService,
+            IEventAggregator eventAggregator)
         {
             _db = db;
             _planetService = planetService;
             _propertyService = propertyService;
             _areaService = areaService;
             _spaceService = spaceService;
+            _eventAggregator = eventAggregator;
         }
 
         public Dictionary<PropertyLayoutType, PropertyLayout> Build()
@@ -85,7 +89,7 @@ namespace SWLOR.Component.Properties.Feature.PropertyLayoutDefinition
             if (!CanAccess(player))
                 return;
 
-            ExecuteScript(ScriptName.OnPlaceableGenericConversation, terminal);
+            _eventAggregator.Publish(new OnPlaceableGenericConversation(), terminal);
         }
 
         private void SpawnStarportFlightTerminals(uint area, PlanetType planetType)

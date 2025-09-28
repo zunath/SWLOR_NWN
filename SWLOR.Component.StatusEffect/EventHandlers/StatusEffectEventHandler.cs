@@ -46,7 +46,7 @@ namespace SWLOR.Component.StatusEffect.EventHandlers
         /// <summary>
         /// When the module heartbeat runs, execute and clean up status effects on all creatures.
         /// </summary>
-        [ScriptHandler(ScriptName.OnSwlorHeartbeat)]
+        [ScriptHandler(ScriptName.OnServerHeartbeat)]
         public void TickStatusEffects()
         {
             _statusEffectService.TickStatusEffects();

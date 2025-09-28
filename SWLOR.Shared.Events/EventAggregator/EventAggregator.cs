@@ -1,3 +1,4 @@
+using SWLOR.NWN.API.Contracts;
 using SWLOR.Shared.Abstractions.Contracts;
 
 namespace SWLOR.Shared.Events.EventAggregator
@@ -9,13 +10,15 @@ namespace SWLOR.Shared.Events.EventAggregator
     {
         private readonly Dictionary<Type, List<Action<object>>> _handlers = new();
         private readonly ILogger _logger;
+        private readonly IScriptExecutionProvider _executionProvider;
 
-        public EventAggregator(ILogger logger)
+        public EventAggregator(ILogger logger, IScriptExecutionProvider executionProvider)
         {
             _logger = logger;
+            _executionProvider = executionProvider;
         }
 
-        public void Publish<TEvent>(TEvent eventData) where TEvent : IEvent
+        public void Publish<TEvent>(TEvent eventData, uint target) where TEvent : IEvent
         {
             var eventType = typeof(TEvent);
             
@@ -28,7 +31,10 @@ namespace SWLOR.Shared.Events.EventAggregator
             {
                 try
                 {
-                    handler(eventData);
+                    _executionProvider.ExecuteInScriptContext(() =>
+                    {
+                        handler(eventData);
+                    }, target);
                 }
                 catch (Exception ex)
                 {

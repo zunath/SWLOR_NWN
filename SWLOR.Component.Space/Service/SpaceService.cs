@@ -25,6 +25,8 @@ using SWLOR.Shared.Domain.Space.ValueObjects;
 using SWLOR.Shared.Domain.StatusEffect.Contracts;
 using SWLOR.Shared.Domain.World.Contracts;
 using SWLOR.Shared.Domain.World.Enums;
+using SWLOR.Shared.Events.Events.Player;
+using SWLOR.Shared.Events.Events.Space;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Service;
 using Vector3 = System.Numerics.Vector3;
@@ -38,6 +40,7 @@ namespace SWLOR.Component.Space.Service
         private readonly IScheduler _scheduler;
         private readonly IRandomService _random;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IEventAggregator _eventAggregator;
         // Lazy-loaded services to break circular dependencies
         private IAbilityService AbilityService => _serviceProvider.GetRequiredService<IAbilityService>();
         private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
@@ -54,13 +57,15 @@ namespace SWLOR.Component.Space.Service
             IDatabaseService db,
             IScheduler scheduler,
             IRandomService random,
-            IServiceProvider serviceProvider)
+            IServiceProvider serviceProvider,
+            IEventAggregator eventAggregator)
         {
             _logger = logger;
             _db = db;
             _scheduler = scheduler;
             _random = random;
             _serviceProvider = serviceProvider;
+            _eventAggregator = eventAggregator;
             // Services are now lazy-loaded via IServiceProvider
         }
 
@@ -778,7 +783,7 @@ namespace SWLOR.Component.Space.Service
             if(!_playersInSpace.Contains(player))
                 _playersInSpace.Add(player);
 
-            ExecuteScript("space_enter", player);
+            _eventAggregator.Publish(new OnSpaceEnter(), player);
         }
 
         /// <summary>
@@ -909,7 +914,7 @@ namespace SWLOR.Component.Space.Service
             if (_playersInSpace.Contains(player))
                 _playersInSpace.Remove(player);
 
-            ExecuteScript("space_exit", player);
+            _eventAggregator.Publish(new OnSpaceExit(), player);
         }
 
         private void CloneShip(uint player)
@@ -1203,7 +1208,7 @@ namespace SWLOR.Component.Space.Service
                 dbShip.Status = activatorShipStatus;
                 
                 _db.Set(dbShip);
-                ExecuteScript("pc_target_upd", activator);
+                _eventAggregator.Publish(new OnPlayerTargetUpdated(), activator);
             }
 
             if (GetIsPC(target))
@@ -1214,7 +1219,7 @@ namespace SWLOR.Component.Space.Service
                 dbShip.Status = targetShipStatus;
 
                 _db.Set(dbShip);
-                ExecuteScript("pc_target_upd", target);
+                _eventAggregator.Publish(new OnPlayerTargetUpdated(), target);
             }
         }
 
@@ -1236,7 +1241,7 @@ namespace SWLOR.Component.Space.Service
             RestoreCapacitor(player, shipStatus, 1);
 
             if(GetIsPC(player))
-                ExecuteScript("pc_target_upd", player);
+                _eventAggregator.Publish(new OnPlayerTargetUpdated(), player);
         }
 
         /// <summary>
@@ -1267,7 +1272,7 @@ namespace SWLOR.Component.Space.Service
             if (shipStatus.Shield > shipStatus.MaxShield)
                 shipStatus.Shield = shipStatus.MaxShield;
 
-            ExecuteScript("pc_shld_adjusted", creature);
+            _eventAggregator.Publish(new OnPlayerShieldAdjusted(), creature);
         }
 
         public void ReduceShield(uint creature, ShipStatus shipStatus, int amount)
@@ -1276,7 +1281,7 @@ namespace SWLOR.Component.Space.Service
             if (shipStatus.Shield < 0)
                 shipStatus.Shield = 0;
 
-            ExecuteScript("pc_shld_adjusted", creature);
+            _eventAggregator.Publish(new OnPlayerShieldAdjusted(), creature);
         }
 
         public void RestoreHull(uint creature, ShipStatus shipStatus, int amount)
@@ -1285,7 +1290,7 @@ namespace SWLOR.Component.Space.Service
             if (shipStatus.Hull > shipStatus.MaxHull)
                 shipStatus.Hull = shipStatus.MaxHull;
 
-            ExecuteScript("pc_hull_adjusted", creature);
+            _eventAggregator.Publish(new OnPlayerHullAdjusted(), creature);
         }
 
         public void ReduceHull(uint creature, ShipStatus shipStatus, int amount)
@@ -1299,7 +1304,7 @@ namespace SWLOR.Component.Space.Service
                 AssignCommand(OBJECT_SELF, () => ApplyEffectToObject(DurationType.Instant, EffectDeath(), creature));
             }
 
-            ExecuteScript("pc_hull_adjusted", creature);
+            _eventAggregator.Publish(new OnPlayerHullAdjusted(), creature);
         }
 
         public void RestoreCapacitor(uint creature, ShipStatus shipStatus, int amount)
@@ -1308,7 +1313,7 @@ namespace SWLOR.Component.Space.Service
             if (shipStatus.Capacitor > shipStatus.MaxCapacitor)
                 shipStatus.Capacitor = shipStatus.MaxCapacitor;
 
-            ExecuteScript("pc_cap_adjusted", creature);
+            _eventAggregator.Publish(new OnPlayerCapAdjusted(), creature);
         }
 
         public void ReduceCapacitor(uint creature, ShipStatus shipStatus, int amount)
@@ -1317,7 +1322,7 @@ namespace SWLOR.Component.Space.Service
             if (shipStatus.Capacitor < 0)
                 shipStatus.Capacitor = 0;
 
-            ExecuteScript("pc_cap_adjusted", creature);
+            _eventAggregator.Publish(new OnPlayerCapAdjusted(), creature);
         }
 
         /// <summary>
@@ -1676,8 +1681,8 @@ namespace SWLOR.Component.Space.Service
                     dbPlayerShip.Status.Hull = targetShipStatus.Hull;
 
                     _db.Set(dbPlayerShip);
-                    ExecuteScript("pc_shld_adjusted", target);
-                    ExecuteScript("pc_hull_adjusted", target);
+                    _eventAggregator.Publish(new OnPlayerShieldAdjusted(), target);
+                    _eventAggregator.Publish(new OnPlayerHullAdjusted(), target);
                 }
                 else
                 {
@@ -1690,7 +1695,7 @@ namespace SWLOR.Component.Space.Service
             MessagingService.SendMessageNearbyToPlayers(attacker, $"{GetName(attacker)} deals {amount} damage to {GetName(target)}.");
             
             if(GetIsPC(attacker))
-                ExecuteScript("pc_target_upd", attacker);
+                _eventAggregator.Publish(new OnPlayerTargetUpdated(), attacker);
 
         }
 
@@ -1743,8 +1748,8 @@ namespace SWLOR.Component.Space.Service
                     dbPlayerShip.Status.Hull = targetShipStatus.Hull;
 
                     _db.Set(dbPlayerShip);
-                    ExecuteScript("pc_shld_adjusted", target);
-                    ExecuteScript("pc_hull_adjusted", target);
+                    _eventAggregator.Publish(new OnPlayerShieldAdjusted(), target);
+                    _eventAggregator.Publish(new OnPlayerHullAdjusted(), target);
                 }
                 else
                 {
@@ -1757,7 +1762,7 @@ namespace SWLOR.Component.Space.Service
             MessagingService.SendMessageNearbyToPlayers(attacker, $"{GetName(attacker)} deals {amount} damage directly to hull of {GetName(target)}.");
 
             if (GetIsPC(attacker))
-                ExecuteScript("pc_target_upd", attacker);
+                _eventAggregator.Publish(new OnPlayerTargetUpdated(), attacker);
 
         }
 

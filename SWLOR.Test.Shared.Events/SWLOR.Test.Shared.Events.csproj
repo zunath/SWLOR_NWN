@@ -32,4 +32,8 @@
     <ProjectReference Include="..\SWLOR.Test.Shared\SWLOR.Test.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Model\" />
+  </ItemGroup>
+
 </Project>

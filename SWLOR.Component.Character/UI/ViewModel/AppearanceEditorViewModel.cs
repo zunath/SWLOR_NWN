@@ -12,6 +12,7 @@ using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.NWNX;
+using SWLOR.Shared.Events.Events.Player;
 using SWLOR.Shared.UI.Component;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
@@ -24,10 +25,12 @@ namespace SWLOR.Component.Character.UI.ViewModel
         IGuiRefreshable<EquipItemRefreshEvent>
     {
         private readonly IDatabaseService _db;
+        private readonly IEventAggregator _eventAggregator;
 
-        public AppearanceEditorViewModel(IGuiService guiService, IDatabaseService db) : base(guiService)
+        public AppearanceEditorViewModel(IGuiService guiService, IDatabaseService db, IEventAggregator eventAggregator) : base(guiService)
         {
             _db = db;
+            _eventAggregator = eventAggregator;
         }
         
         public enum ColorTarget
@@ -1666,7 +1669,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
                     throw new ArgumentOutOfRangeException(nameof(SelectedPartIndex));
             }
 
-            ExecuteScript(ScriptName.OnAppearanceEdit, _target);
+            _eventAggregator.Publish(new OnAppearanceEdit(), _target);
         }
 
         private void LoadArmorPart()

@@ -1,142 +1,152 @@
-﻿using SWLOR.Shared.Events.Attributes;
+﻿using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Eventing;
+using SWLOR.Shared.Events.Events.Module;
+using SWLOR.Shared.Events.Events.Player;
 
 namespace SWLOR.Shared.Events.Service
 {
     internal class ModuleEventHandlers
     {
+        private readonly IEventAggregator _eventAggregator;
+
+        public ModuleEventHandlers(IEventAggregator eventAggregator)
+        {
+            _eventAggregator = eventAggregator;
+        }
+
         [ScriptHandler<OnEventingModuleLoad>]
         public void RunModuleLoad()
         {
-            ExecuteScript(ScriptName.OnModuleLoad, OBJECT_SELF);
+            _eventAggregator.Publish(new OnModuleLoad(), GetModule());
         }
          
         [ScriptHandler<OnEventingModuleEnter>]
         public void RunModuleEnter()
         {
-            ExecuteScript(ScriptName.OnPlayerCacheData, OBJECT_SELF);
-            ExecuteScript(ScriptName.OnModuleEnter, OBJECT_SELF);
+            _eventAggregator.Publish(new OnPlayerCacheData(), GetModule());
+            _eventAggregator.Publish(new OnModuleEnter(), GetModule());
         }
 
         [ScriptHandler<OnEventingModuleExit>]
         public void RunModuleExit()
         {
-            ExecuteScript(ScriptName.OnModuleExit, OBJECT_SELF);
+            _eventAggregator.Publish(new OnModuleExit(), GetModule());
         }
 
         [ScriptHandler<OnEventingModuleDeath>]
         public void RunModuleDeath()
         {
-            ExecuteScript(ScriptName.OnModuleDeath, OBJECT_SELF);
+            _eventAggregator.Publish(new OnModuleDeath(), GetModule());
         }
 
         [ScriptHandler<OnEventingModuleDying>]
         public void RunModuleDying()
         {
-            ExecuteScript(ScriptName.OnModuleDying, OBJECT_SELF);
+            _eventAggregator.Publish(new OnModuleDying(), GetModule());
         }
 
         [ScriptHandler<OnEventingModuleRespawn>]
         public void RunModuleRespawn()
         {
-            ExecuteScript(ScriptName.OnModuleRespawn, OBJECT_SELF);
+            _eventAggregator.Publish(new OnModuleRespawn(), GetModule());
         }
 
         [ScriptHandler<OnEventingModuleAcquire>]
         public void RunModuleAcquire()
         {
-            ExecuteScript(ScriptName.OnModuleAcquire, OBJECT_SELF);
+            _eventAggregator.Publish(new OnModuleAcquire(), GetModule());
         }
 
         [ScriptHandler<OnEventingModuleUnacquire>]
         public void RunModuleUnacquire()
         {
-            ExecuteScript(ScriptName.OnModuleUnacquire, OBJECT_SELF);
+            _eventAggregator.Publish(new OnModuleUnacquire(), GetModule());
         }
 
         [ScriptHandler<OnEventingModulePreload>]
         public void RunModulePreload()
         {
-            ExecuteScript(ScriptName.OnModulePreload, OBJECT_SELF);
+            _eventAggregator.Publish(new OnModulePreload(), GetModule());
         }
 
         [ScriptHandler<OnEventingModuleGuiEvent>]
         public void RunModuleGuiEvent()
         {
-            ExecuteScript(ScriptName.OnModuleGuiEvent, OBJECT_SELF);
+            _eventAggregator.Publish(new OnModuleGuiEvent(), GetModule());
         }
 
         [ScriptHandler<OnEventingModuleChat>]
         public void RunModuleChat()
         {
-            ExecuteScript(ScriptName.OnModuleChat, OBJECT_SELF);
+            _eventAggregator.Publish(new OnModuleChat(), GetModule());
         }
 
         [ScriptHandler<OnEventingModuleNuiEvent>]
         public void RunModuleNuiEvent()
         {
-            ExecuteScript(ScriptName.OnModuleNuiEvent, OBJECT_SELF);
+            _eventAggregator.Publish(new OnModuleNuiEvent(), GetModule());
         }
 
         [ScriptHandler<OnEventingModuleEquip>]
         public void RunModuleEquip()
         {
-            ExecuteScript(ScriptName.OnModuleEquip, OBJECT_SELF);
+            _eventAggregator.Publish(new OnModuleEquip(), GetModule());
         }
 
         [ScriptHandler<OnEventingModuleUnequip>]
         public void RunModuleUnequip()
         {
-            ExecuteScript(ScriptName.OnModuleUnequip, OBJECT_SELF);
+            _eventAggregator.Publish(new OnModuleUnequip(), GetModule());
         }
 
         [ScriptHandler<OnEventingModuleRest>]
         public void RunModuleRest()
         {
-            ExecuteScript(ScriptName.OnModuleRest, OBJECT_SELF);
+            _eventAggregator.Publish(new OnModuleRest(), GetModule());
         }
 
         [ScriptHandler<OnEventingModulePlayerTarget>]
         public void RunModulePlayerTarget()
         {
-            ExecuteScript(ScriptName.OnModulePlayerTarget, OBJECT_SELF);
+            _eventAggregator.Publish(new OnModulePlayerTarget(), GetModule());
         }
 
         [ScriptHandler<OnEventingModuleActivate>]
         public void RunModuleActivate()
         {
-            ExecuteScript(ScriptName.OnModuleActivate, OBJECT_SELF);
+            _eventAggregator.Publish(new OnModuleActivate(), GetModule());
         }
 
         [ScriptHandler<OnEventingModulePlayerCancelCutscene>]
         public void RunModulePlayerCancelCutscene()
         {
-            ExecuteScript(ScriptName.OnModulePlayerCancelCutscene, OBJECT_SELF);
+            _eventAggregator.Publish(new OnModulePlayerCancelCutscene(), GetModule());
         }
 
         [ScriptHandler<OnEventingModuleHeartbeat>]
         public void RunModuleHeartbeat()
         {
-            ExecuteScript(ScriptName.OnModuleHeartbeat, OBJECT_SELF);
+            _eventAggregator.Publish(new OnModuleHeartbeat(), GetModule());
         }
 
         [ScriptHandler<OnEventingModuleLevelUp>]
         public void RunModuleLevelUp()
         {
-            ExecuteScript(ScriptName.OnModuleLevelUp, OBJECT_SELF);
+            _eventAggregator.Publish(new OnModuleLevelUp(), GetModule());
         }
 
         [ScriptHandler<OnEventingModuleUserDefined>]
         public void RunModuleUserDefined()
         {
-            ExecuteScript(ScriptName.OnModuleUserDefined, OBJECT_SELF);
+            _eventAggregator.Publish(new OnModuleUserDefined(), GetModule());
         }
 
         [ScriptHandler<OnEventingModuleTileEvent>]
         public void RunModuleTileEvent()
         {
-            ExecuteScript(ScriptName.OnModuleTileEvent, OBJECT_SELF);
+            _eventAggregator.Publish(new OnModuleTileEvent(), GetModule());
         }
     }
 }

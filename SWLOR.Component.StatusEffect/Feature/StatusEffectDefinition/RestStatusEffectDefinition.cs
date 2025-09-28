@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.StatusEffect.Contracts;
 using SWLOR.Component.StatusEffect.Service;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Ability.Contracts;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
@@ -20,10 +21,12 @@ namespace SWLOR.Component.StatusEffect.Feature.StatusEffectDefinition
     public class RestStatusEffectDefinition: IStatusEffectListDefinition
     {
         private readonly IServiceProvider _serviceProvider;
+        private readonly IEventAggregator _eventAggregator;
 
-        public RestStatusEffectDefinition(IServiceProvider serviceProvider)
+        public RestStatusEffectDefinition(IServiceProvider serviceProvider, IEventAggregator eventAggregator)
         {
             _serviceProvider = serviceProvider;
+            _eventAggregator = eventAggregator;
         }
 
         // Lazy-loaded services to break circular dependencies
@@ -115,7 +118,7 @@ namespace SWLOR.Component.StatusEffect.Feature.StatusEffectDefinition
                     
                     DelayCommand(0.5f, () => CheckMovement(target));
 
-                    ExecuteScript(ScriptName.OnRestStarted, target);
+                    _eventAggregator.Publish(new OnPlayerRestStarted(), target);
                 })
                 .TickAction((source, target, effectData) =>
                 {

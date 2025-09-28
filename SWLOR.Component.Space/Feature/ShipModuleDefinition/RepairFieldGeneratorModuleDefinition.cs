@@ -10,6 +10,7 @@ using SWLOR.Shared.Domain.Space.Contracts;
 using SWLOR.Shared.Domain.Space.Enums;
 using SWLOR.Shared.Domain.Space.ValueObjects;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Player;
 
 namespace SWLOR.Component.Space.Feature.ShipModuleDefinition
 {
@@ -18,6 +19,7 @@ namespace SWLOR.Component.Space.Feature.ShipModuleDefinition
         private readonly IDatabaseService _db;
         private readonly IServiceProvider _serviceProvider;
         private readonly IShipModuleBuilder _builder;
+        private readonly IEventAggregator _eventAggregator;
         
         // Lazy-loaded services to break circular dependencies
         private ISpaceService SpaceService => _serviceProvider.GetRequiredService<ISpaceService>();
@@ -25,11 +27,12 @@ namespace SWLOR.Component.Space.Feature.ShipModuleDefinition
         private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
         private IMessagingService MessagingService => _serviceProvider.GetRequiredService<IMessagingService>();
 
-        public RepairFieldGeneratorModuleDefinition(IDatabaseService db, IServiceProvider serviceProvider, IShipModuleBuilder builder)
+        public RepairFieldGeneratorModuleDefinition(IDatabaseService db, IServiceProvider serviceProvider, IShipModuleBuilder builder, IEventAggregator eventAggregator)
         {
             _db = db;
             // Services are now lazy-loaded via IServiceProvider
             _builder = builder;
+            _eventAggregator = eventAggregator;
         }
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
@@ -90,8 +93,8 @@ namespace SWLOR.Component.Space.Feature.ShipModuleDefinition
                                     dbShip.Status = nearbyStatus;
                                     _db.Set(dbShip);
 
-                                    ExecuteScript(ScriptName.OnPlayerHullAdjusted, nearby);
-                                    ExecuteScript(ScriptName.OnPlayerTargetUpdated, nearby);
+                                    _eventAggregator.Publish(new OnPlayerHullAdjusted(), nearby);
+                                    _eventAggregator.Publish(new OnPlayerTargetUpdated(), nearby);
                                 }
                             }
 

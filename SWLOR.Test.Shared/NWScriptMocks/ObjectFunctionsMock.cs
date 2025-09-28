@@ -78,7 +78,7 @@ namespace SWLOR.Test.Shared.NWScript
             _objectIsValid[oDestroy] = false;
         }
         
-        public void ExecuteScript(string sScript, uint oTarget) 
+        public void ExecuteNWScript(string sScript, uint oTarget) 
         { 
             // Mock implementation - no-op for testing
         }

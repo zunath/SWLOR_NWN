@@ -1,25 +1,29 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.StatusEffect.Contracts;
 using SWLOR.Shared.Domain.StatusEffect.Enums;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Module;
+using SWLOR.Shared.Events.Events.Player;
 
 namespace SWLOR.Component.Character.Service
 {
     public class PlayerRestService
     {
         private readonly IServiceProvider _serviceProvider;
+        private readonly IEventAggregator _eventAggregator;
         
         // Lazy-loaded services to break circular dependencies
         private IStatusEffectService StatusEffectService => _serviceProvider.GetRequiredService<IStatusEffectService>();
         private IPartyService PartyService => _serviceProvider.GetRequiredService<IPartyService>();
 
-        public PlayerRestService(IServiceProvider serviceProvider)
+        public PlayerRestService(IServiceProvider serviceProvider, IEventAggregator eventAggregator)
         {
-            // Services are now lazy-loaded via IServiceProvider
+            _serviceProvider = serviceProvider;
+            _eventAggregator = eventAggregator;
         }
 
         /// <summary>
@@ -91,7 +95,7 @@ namespace SWLOR.Component.Character.Service
                 StatusEffectService.Apply(henchman, henchman, StatusEffectType.Rest, 0f);
             }
 
-            ExecuteScript(ScriptName.OnRestStarted, player);
+            _eventAggregator.Publish(new OnPlayerRestStarted(), player);
         }
 
         /// <summary>

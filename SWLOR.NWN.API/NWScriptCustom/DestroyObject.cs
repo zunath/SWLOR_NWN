@@ -17,7 +17,7 @@ namespace SWLOR.NWN.API.NWScript
         public void DestroyObject(uint oDestroy, float fDelay = 0.0f)
         {
             global::NWN.Core.NWScript.DestroyObject(oDestroy, fDelay);
-            ExecuteScript("object_destroyed", oDestroy);
+            ExecuteNWScript("object_destroyed", oDestroy);
         }
     }
 }

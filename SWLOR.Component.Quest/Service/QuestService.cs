@@ -18,6 +18,7 @@ using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Creature;
 using SWLOR.Shared.Events.Events.Module;
+using SWLOR.Shared.Events.Events.Quest;
 
 namespace SWLOR.Component.Quest.Service
 {
@@ -25,6 +26,7 @@ namespace SWLOR.Component.Quest.Service
     {
         private readonly IDatabaseService _db;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IEventAggregator _eventAggregator;
         
         // Lazy-loaded services to break circular dependencies
         private IItemCacheService ItemCache => _serviceProvider.GetRequiredService<IItemCacheService>();
@@ -51,10 +53,12 @@ namespace SWLOR.Component.Quest.Service
             IDatabaseService db,
             IItemCacheService itemCache,
             IGenericCacheService cacheService,
-            IServiceProvider serviceProvider)
+            IServiceProvider serviceProvider,
+            IEventAggregator eventAggregator)
         {
             _db = db;
             _serviceProvider = serviceProvider;
+            _eventAggregator = eventAggregator;
             // Services are now lazy-loaded via IServiceProvider
         }
 
@@ -110,7 +114,7 @@ namespace SWLOR.Component.Quest.Service
             }
 
             Console.WriteLine($"Loaded {_questCache.AllItems.Count} quests.");
-            ExecuteScript("qsts_registered", GetModule());
+            _eventAggregator.Publish(new OnQuestsRegistered(), GetModule());
         }
 
         /// <summary>

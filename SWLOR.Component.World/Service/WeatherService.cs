@@ -118,7 +118,7 @@ namespace SWLOR.Component.World.Service
             DoWeatherEffects(GetEnteringObject());
         }
 
-        [ScriptHandler(ScriptName.OnSwlorHeartbeat)]
+        [ScriptHandler(ScriptName.OnServerHeartbeat)]
         public void OnModuleHeartbeat()
         {
             var oMod = GetModule();

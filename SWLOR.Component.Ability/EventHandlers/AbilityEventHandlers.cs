@@ -55,7 +55,7 @@ namespace SWLOR.Component.Ability.EventHandlers
         /// Each tick, creatures with a concentration effect will be processed.
         /// This will drain FP and reapply whatever effect is associated with an ability.
         /// </summary>
-        [ScriptHandler(ScriptName.OnSwlorHeartbeat)]
+        [ScriptHandler(ScriptName.OnServerHeartbeat)]
         public void ProcessConcentrationEffects()
         {
             _abilityService.ProcessConcentrationEffects();

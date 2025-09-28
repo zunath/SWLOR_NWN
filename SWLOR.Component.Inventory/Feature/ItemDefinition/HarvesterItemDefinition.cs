@@ -11,6 +11,7 @@ using SWLOR.Shared.Domain.Skill.Contracts;
 using SWLOR.Shared.Domain.Skill.Enums;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Inventory;
 
 namespace SWLOR.Component.Inventory.Feature.ItemDefinition
 {
@@ -20,14 +21,16 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
         private readonly ILogger _logger;
         private readonly IDatabaseService _db;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IEventAggregator _eventAggregator;
         private IItemBuilder Builder => _serviceProvider.GetRequiredService<IItemBuilder>();
 
-        public HarvesterItemDefinition(IRandomService random, ILogger logger, IDatabaseService db, IServiceProvider serviceProvider)
+        public HarvesterItemDefinition(IRandomService random, ILogger logger, IDatabaseService db, IServiceProvider serviceProvider, IEventAggregator eventAggregator)
         {
             _random = random;
             _logger = logger;
             _db = db;
             _serviceProvider = serviceProvider;
+            _eventAggregator = eventAggregator;
         }
 
         // Lazy-loaded services to break circular dependencies
@@ -171,7 +174,7 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
                         SkillService.GiveSkillXP(user, SkillType.Gathering, deltaXP * itemsGathered, false, false);
                     }
 
-                    ExecuteScript(ScriptName.OnHarvesterUsed, user);
+                    _eventAggregator.Publish(new OnHarvesterUsed(), user);
                 });
         }
     }

@@ -5,17 +5,22 @@ using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Infrastructure;
+using SWLOR.Shared.Events.Events.Player;
+using SWLOR.Shared.Events.Events.Server;
 
 namespace SWLOR.Shared.Events.Service
 {
     public class EventRegistrationService : IEventRegistrationService
     {
         private readonly IScheduler _scheduler;
+        private readonly IEventAggregator _eventAggregator;
 
         public EventRegistrationService(
-            IScheduler scheduler)
+            IScheduler scheduler,
+            IEventAggregator eventAggregator)
         {
             _scheduler = scheduler;
+            _eventAggregator = eventAggregator;
         }
 
         [ScriptHandler<OnServerLoaded>]
@@ -33,16 +38,16 @@ namespace SWLOR.Shared.Events.Service
             Console.WriteLine("Hooking all application-specific events");
             HookApplicationEvents();
 
-            ExecuteScript(ScriptName.OnEventsHooked, GetModule());
+            _eventAggregator.Publish(new OnEventsHooked(), GetModule());
         }
 
 
-        [ScriptHandler(ScriptName.OnSwlorHeartbeat)]
-        public static void ExecuteHeartbeatEvent()
+        [ScriptHandler(ScriptName.OnServerHeartbeat)]
+        public void ExecuteHeartbeatEvent()
         {
             for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
             {
-                ExecuteScript(ScriptName.OnIntervalPC6Seconds, player);
+                _eventAggregator.Publish(new OnPlayerHeartbeat(), player);
             }
         }
 
@@ -568,7 +573,7 @@ namespace SWLOR.Shared.Events.Service
 
             _scheduler.ScheduleRepeating(() =>
             {
-                ExecuteScript(ScriptName.OnSwlorHeartbeat, GetModule());
+                _eventAggregator.Publish(new OnServerHeartbeat(), GetModule());
             }, TimeSpan.FromSeconds(6));
         }
 

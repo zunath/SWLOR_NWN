@@ -36,7 +36,7 @@ namespace SWLOR.Component.Admin.Feature
             }
 
             LogDMAuthorization(true);
-            ExecuteScript(ScriptName.OnDMFIClientEnter, OBJECT_SELF);
+            ExecuteNWScript(ScriptName.OnDMFIClientEnter, OBJECT_SELF);
         }
 
         /// <summary>

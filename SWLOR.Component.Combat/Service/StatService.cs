@@ -21,6 +21,7 @@ using SWLOR.Shared.Domain.StatusEffect.ValueObjects;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Module;
+using SWLOR.Shared.Events.Events.Player;
 using EquipmentSlot = NWN.Native.API.EquipmentSlot;
 
 namespace SWLOR.Component.Combat.Service
@@ -31,6 +32,7 @@ namespace SWLOR.Component.Combat.Service
         private readonly IDatabaseService _db;
         private readonly IServiceProvider _serviceProvider;
         private readonly IStatusEffectService _statusEffectService;
+        private readonly IEventAggregator _eventAggregator;
         
         // Lazy-loaded services to break circular dependencies
         private ISkillService SkillService => _serviceProvider.GetRequiredService<ISkillService>();
@@ -41,12 +43,14 @@ namespace SWLOR.Component.Combat.Service
             ILogger logger, 
             IDatabaseService db, 
             IServiceProvider serviceProvider, 
-            IStatusEffectService statusEffectService)
+            IStatusEffectService statusEffectService,
+            IEventAggregator eventAggregator)
         {
             _logger = logger;
             _db = db;
             _serviceProvider = serviceProvider;
             _statusEffectService = statusEffectService;
+            _eventAggregator = eventAggregator;
         }
         
         // Lazy-loaded services to break circular dependencies
@@ -263,7 +267,7 @@ namespace SWLOR.Component.Combat.Service
                 SetLocalInt(creature, "FP", fp);
             }
             
-            ExecuteScript("pc_fp_adjusted", creature);
+            _eventAggregator.Publish(new OnPlayerFPAdjusted(), creature);
         }
 
         /// <summary>
@@ -302,7 +306,7 @@ namespace SWLOR.Component.Combat.Service
                 SetLocalInt(creature, "FP", fp);
             }
 
-            ExecuteScript("pc_fp_adjusted", creature);
+            _eventAggregator.Publish(new OnPlayerFPAdjusted(), creature);
         }
 
         /// <summary>
@@ -345,7 +349,7 @@ namespace SWLOR.Component.Combat.Service
                 SetLocalInt(creature, "STAMINA", fp);
             }
 
-            ExecuteScript("pc_stm_adjusted", creature);
+            _eventAggregator.Publish(new OnPlayerStaminaAdjusted(), creature);
         }
 
         /// <summary>
@@ -384,7 +388,7 @@ namespace SWLOR.Component.Combat.Service
                 SetLocalInt(creature, "STAMINA", stamina);
             }
 
-            ExecuteScript("pc_stm_adjusted", creature);
+            _eventAggregator.Publish(new OnPlayerStaminaAdjusted(), creature);
         }
 
         /// <summary>

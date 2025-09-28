@@ -9551,7 +9551,7 @@ namespace SWLOR.NWN.API.Service
         /// This solves OBJECT_SELF corruption issues when executing C# scripts by bypassing
         /// the problematic NWScript round-trip.
         /// </summary>
-        public static void ExecuteScript(string sScript, uint oTarget) => _service.ExecuteScript(sScript, oTarget);
+        public static void ExecuteNWScript(string sScript, uint oTarget) => _service.ExecuteNWScript(sScript, oTarget);
 
         /// <summary>
         /// Destroy oObject (irrevocably).

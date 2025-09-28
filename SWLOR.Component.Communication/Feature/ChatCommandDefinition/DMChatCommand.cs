@@ -4,6 +4,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Player;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Service;
 using System.Drawing;
@@ -35,6 +36,7 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
         private readonly IFactionService _faction;
         private readonly ISpaceService _space;
         private readonly IDiscordNotificationService _discord;
+        private readonly IEventAggregator _eventAggregator;
         
 
         public DMChatCommand(
@@ -45,7 +47,8 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
             IBeastMasteryService beastMastery,
             IFactionService faction,
             ISpaceService space,
-            IDiscordNotificationService discord)
+            IDiscordNotificationService discord,
+            IEventAggregator eventAggregator)
         {
             _guiService = guiService;
             _db = db;
@@ -55,6 +58,7 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
             _faction = faction;
             _space = space;
             _discord = discord;
+            _eventAggregator = eventAggregator;
         }
 
         public Dictionary<string, ChatCommandDetail> BuildChatCommands()
@@ -1118,9 +1122,9 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
                             _db.Set(dbPlayerShip);
                             
                             // Trigger UI refresh events after database update
-                            ExecuteScript(ScriptName.OnPlayerShieldAdjusted, target);
-                            ExecuteScript(ScriptName.OnPlayerHullAdjusted, target);
-                            ExecuteScript(ScriptName.OnPlayerCapAdjusted, target);
+                            _eventAggregator.Publish(new OnPlayerShieldAdjusted(), target);
+                            _eventAggregator.Publish(new OnPlayerHullAdjusted(), target);
+                            _eventAggregator.Publish(new OnPlayerCapAdjusted(), target);
                         }
                     }
                 });

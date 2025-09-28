@@ -22,7 +22,7 @@ namespace SWLOR.Component.Inventory.Feature
 
             EventsPlugin.SkipEvent();
             EventsPlugin.SetEventResult("0"); // Prevents the "You cannot use that item" error message from being sent.
-            ExecuteScript(script, creature);
+            ExecuteNWScript(script, creature);
         }
     }
 }

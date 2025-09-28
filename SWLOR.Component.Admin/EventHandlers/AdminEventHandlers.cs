@@ -120,7 +120,7 @@ namespace SWLOR.Component.Admin.EventHandlers
         /// <summary>
         /// When the server heartbeat occurs, process auto-restart tasks.
         /// </summary>
-        [ScriptHandler(ScriptName.OnSwlorHeartbeat)]
+        [ScriptHandler(ScriptName.OnServerHeartbeat)]
         public void ProcessAutoRestart()
         {
             _serverTasks.ProcessAutoRestart();

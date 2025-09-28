@@ -1,5 +1,6 @@
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Events.Events.Infrastructure;
+using SWLOR.NWN.API.Contracts;
 using NSubstitute;
 
 namespace SWLOR.Test.Shared.Events.EventAggregator
@@ -8,13 +9,25 @@ namespace SWLOR.Test.Shared.Events.EventAggregator
     public class EventAggregatorTests
     {
         private ILogger _mockLogger;
+        private IScriptExecutionProvider _mockExecutionProvider;
         private SWLOR.Shared.Events.EventAggregator.EventAggregator _eventAggregator;
 
         [SetUp]
         public void SetUp()
         {
             _mockLogger = Substitute.For<ILogger>();
-            _eventAggregator = new SWLOR.Shared.Events.EventAggregator.EventAggregator(_mockLogger);
+            _mockExecutionProvider = Substitute.For<IScriptExecutionProvider>();
+            
+            // Configure the mock to actually execute the action when ExecuteInScriptContext is called
+            _mockExecutionProvider
+                .When(x => x.ExecuteInScriptContext(Arg.Any<Action>(), Arg.Any<uint>(), Arg.Any<int>()))
+                .Do(callInfo =>
+                {
+                    var action = callInfo.Arg<Action>();
+                    action?.Invoke();
+                });
+            
+            _eventAggregator = new SWLOR.Shared.Events.EventAggregator.EventAggregator(_mockLogger, _mockExecutionProvider);
         }
 
         [Test]
@@ -22,9 +35,10 @@ namespace SWLOR.Test.Shared.Events.EventAggregator
         {
             // Arrange
             var testEvent = new OnServerLoaded();
+            const uint target = 0x7F000000;
 
             // Act & Assert
-            Assert.DoesNotThrow(() => _eventAggregator.Publish(testEvent));
+            Assert.DoesNotThrow(() => _eventAggregator.Publish(testEvent, target));
         }
 
         [Test]
@@ -32,6 +46,7 @@ namespace SWLOR.Test.Shared.Events.EventAggregator
         {
             // Arrange
             var testEvent = new OnServerLoaded();
+            const uint target = 0x7F000000;
             var handler1Called = false;
             var handler2Called = false;
 
@@ -39,7 +54,7 @@ namespace SWLOR.Test.Shared.Events.EventAggregator
             var subscription2 = _eventAggregator.Subscribe<OnServerLoaded>(e => handler2Called = true);
 
             // Act
-            _eventAggregator.Publish(testEvent);
+            _eventAggregator.Publish(testEvent, target);
 
             // Assert
             Assert.That(handler1Called, Is.True);
@@ -55,12 +70,13 @@ namespace SWLOR.Test.Shared.Events.EventAggregator
         {
             // Arrange
             var testEvent = new OnServerLoaded();
+            const uint target = 0x7F000000;
             var exceptionMessage = "Test exception";
 
             _eventAggregator.Subscribe<OnServerLoaded>(e => throw new Exception(exceptionMessage));
 
             // Act
-            _eventAggregator.Publish(testEvent);
+            _eventAggregator.Publish(testEvent, target);
 
             // Assert
             _mockLogger.Received(1).WriteError($"Error in event handler for {typeof(OnServerLoaded).Name}: {exceptionMessage}");
@@ -85,6 +101,7 @@ namespace SWLOR.Test.Shared.Events.EventAggregator
         {
             // Arrange
             var testEvent = new OnServerLoaded();
+            const uint target = 0x7F000000;
             var handler1Called = false;
             var handler2Called = false;
 
@@ -92,7 +109,7 @@ namespace SWLOR.Test.Shared.Events.EventAggregator
             var subscription1 = _eventAggregator.Subscribe<OnServerLoaded>(e => handler1Called = true);
             var subscription2 = _eventAggregator.Subscribe<OnServerLoaded>(e => handler2Called = true);
 
-            _eventAggregator.Publish(testEvent);
+            _eventAggregator.Publish(testEvent, target);
 
             // Assert
             Assert.That(handler1Called, Is.True);
@@ -108,13 +125,14 @@ namespace SWLOR.Test.Shared.Events.EventAggregator
         {
             // Arrange
             var testEvent = new OnServerLoaded();
+            const uint target = 0x7F000000;
             var handlerCalled = false;
 
             var subscription = _eventAggregator.Subscribe<OnServerLoaded>(e => handlerCalled = true);
 
             // Act
             _eventAggregator.Unsubscribe(subscription);
-            _eventAggregator.Publish(testEvent);
+            _eventAggregator.Publish(testEvent, target);
 
             // Assert
             Assert.That(handlerCalled, Is.False);
@@ -133,6 +151,7 @@ namespace SWLOR.Test.Shared.Events.EventAggregator
             // Arrange
             var serverLoadedEvent = new OnServerLoaded();
             var eventsHookedEvent = new OnEventsHooked();
+            const uint target = 0x7F000000;
             var serverLoadedCalled = false;
             var eventsHookedCalled = false;
 
@@ -140,7 +159,7 @@ namespace SWLOR.Test.Shared.Events.EventAggregator
             var subscription2 = _eventAggregator.Subscribe<OnEventsHooked>(e => eventsHookedCalled = true);
 
             // Act
-            _eventAggregator.Publish(serverLoadedEvent);
+            _eventAggregator.Publish(serverLoadedEvent, target);
 
             // Assert
             Assert.That(serverLoadedCalled, Is.True);

@@ -23,7 +23,7 @@ namespace SWLOR.Component.Space.Feature.ShipModuleDefinition
 
         public HypermatterInjectorModuleDefinition(IServiceProvider serviceProvider, IShipModuleBuilder builder)
         {
-            // Services are now lazy-loaded via IServiceProvider
+            _serviceProvider = serviceProvider;
             _builder = builder;
         }
 

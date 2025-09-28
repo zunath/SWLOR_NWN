@@ -1,6 +1,8 @@
 # Star Wars: Legends of the Old Republic
 Server-side C# code used in the Neverwinter Nights Star Wars: Legends of the Old Republic module.
 
+> **⚠️ AI AGENTS: READ `AI_AGENT_RULES.md` BEFORE MAKING ANY CHANGES ⚠️**
+
 Game: Neverwinter Nights: Enhanced Edition
 
 Website: https://starwarsnwn.com/

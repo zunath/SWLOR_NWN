@@ -1,0 +1,32 @@
+# Cursor AI Rules for SWLOR Codebase
+
+## MANDATORY: Read AI_AGENT_RULES.md Before Any Changes
+
+This project has strict architectural rules that MUST be followed. Before making any changes:
+
+1. **READ `AI_AGENT_RULES.md`** - Contains all mandatory rules
+2. **READ `RULES_SUMMARY.md`** - Quick reference for critical rules
+
+## Most Critical Rules (NON-NEGOTIABLE):
+- NEVER let shared projects reference component projects
+- NEVER let component projects reference other component projects  
+- NEVER let shared/component projects reference test projects
+- NEVER use regular C# async/await (use SWLOR.Shared.Core.Async only)
+- NEVER hardcode data values (use config/database/enums)
+- ALWAYS separate event handlers from services
+- ALWAYS register services as singletons
+- ALWAYS use NSubstitute + NUnit for testing
+
+## Architecture:
+- Component-based with shared domain boundaries
+- C# .NET 8 with Neverwinter Nights integration
+- Uses NWNX_DotNet plugin instead of NWScript
+
+## Before Making Changes:
+1. Read AI_AGENT_RULES.md completely
+2. Follow the validation checklist
+3. Ensure no architectural violations
+4. Use proper dependency injection patterns
+5. Maintain component separation
+
+FAILURE TO FOLLOW THESE RULES WILL RESULT IN BROKEN CODE AND ARCHITECTURAL VIOLATIONS.

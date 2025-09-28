@@ -1,5 +1,20 @@
 # AI Agent Rules for SWLOR Codebase
 
+> **⚠️ CRITICAL: AI AGENTS MUST READ THIS FILE BEFORE MAKING ANY CHANGES ⚠️**
+> 
+> This file contains MANDATORY rules that prevent architectural violations and maintain code quality.
+> **FAILURE TO FOLLOW THESE RULES WILL RESULT IN BROKEN CODE AND ARCHITECTURAL VIOLATIONS.**
+
+## 🚨 QUICK REFERENCE - MOST CRITICAL RULES 🚨
+1. **NEVER** let shared projects reference component projects
+2. **NEVER** let component projects reference other component projects  
+3. **NEVER** let shared/component projects reference test projects
+4. **NEVER** use regular C# async/await (use SWLOR.Shared.Core.Async only)
+5. **NEVER** hardcode data values (use config/database/enums)
+6. **ALWAYS** separate event handlers from services
+7. **ALWAYS** register services as singletons
+8. **ALWAYS** use NSubstitute + NUnit for testing
+
 ## Overview
 This document provides comprehensive rules and guidelines for AI agents working on the Star Wars: Legends of the Old Republic (SWLOR) codebase. These rules are designed to prevent common mistakes and ensure consistency with the established architecture patterns.
 
@@ -354,3 +369,28 @@ In exceptional circumstances where these rules cannot be followed:
 These rules are designed to maintain the architectural integrity of the SWLOR codebase while enabling productive development. When in doubt, follow the established patterns in the existing codebase and prioritize maintainability over quick fixes.
 
 Remember: The goal is to create a modular, testable, and maintainable codebase that supports independent component development while maintaining clear domain boundaries.
+
+---
+
+## 📁 Related Files
+- **`RULES_SUMMARY.md`** - Quick reference for critical rules
+- **`.cursorrules`** - Cursor AI specific rules
+- **`README.md`** - Project overview with AI agent warning
+
+## 🔄 How to Ensure AI Agents Read This File
+
+### For Cursor Users:
+1. The `.cursorrules` file will automatically load these rules
+2. Always mention "Read AI_AGENT_RULES.md" in your prompts
+3. The rules are now referenced in README.md
+
+### For Other AI Tools:
+1. Always start prompts with: "Before making changes, read AI_AGENT_RULES.md"
+2. Reference the RULES_SUMMARY.md for quick checks
+3. Use the validation checklist before committing changes
+
+### For Code Reviews:
+1. Check that changes follow the architectural rules
+2. Verify no cross-component dependencies
+3. Ensure proper service registration patterns
+4. Validate using statement organization

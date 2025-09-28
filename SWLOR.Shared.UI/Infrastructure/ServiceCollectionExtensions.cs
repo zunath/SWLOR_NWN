@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Service;
+using SWLOR.Shared.Core.Contracts;
 
 namespace SWLOR.Shared.UI.Infrastructure
 {
@@ -47,6 +48,12 @@ namespace SWLOR.Shared.UI.Infrastructure
             foreach (var viewModelType in viewModelTypes)
             {
                 services.AddTransient(viewModelType);
+                
+                // If the ViewModel also implements IServiceInitializer, register it as such
+                if (typeof(IServiceInitializer).IsAssignableFrom(viewModelType))
+                {
+                    services.AddTransient<IServiceInitializer>(provider => (IServiceInitializer)provider.GetRequiredService(viewModelType));
+                }
             }
 
             return services;

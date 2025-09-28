@@ -21,6 +21,7 @@ namespace SWLOR.Shared.Core.Log
             { typeof(DMLogGroup), new DMLogGroup() },
             { typeof(ErrorLogGroup), new ErrorLogGroup() },
             { typeof(IncubationLogGroup), new IncubationLogGroup() },
+            { typeof(InfrastructureLogGroup), new InfrastructureLogGroup() },
             { typeof(MigrationLogGroup), new MigrationLogGroup() },
             { typeof(PerkRefundLogGroup), new PerkRefundLogGroup() },
             { typeof(PlayerMarketLogGroup), new PlayerMarketLogGroup() },

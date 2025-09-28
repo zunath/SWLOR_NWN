@@ -83,6 +83,9 @@ namespace SWLOR.Game.Server
             services.AddSingleton<IEventService, EventService>();
             services.AddSingleton<IEventRegistrationService, EventRegistrationService>();
             services.AddSingleton<IScheduler, Scheduler>();
+            
+            // Service Initialization
+            services.AddSingleton<ServiceInitializationManager>();
         }
 
         private static void AddGameServices(IServiceCollection services)

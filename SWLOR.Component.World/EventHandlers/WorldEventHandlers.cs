@@ -17,7 +17,8 @@ namespace SWLOR.Component.World.EventHandlers
         private readonly IMusicService _musicService;
         private readonly IPlanetService _planetService;
         private readonly IWeatherService _weatherService;
-        private readonly IObjectVisibilityService _objectVisibilityService;
+        private readonly IVisibilityObjectCacheService _visibilityObjectCacheService;
+        private readonly IPlayerVisibilityService _playerVisibilityService;
         private readonly ITaxiService _taxiService;
 
         public WorldEventHandlers(
@@ -26,7 +27,8 @@ namespace SWLOR.Component.World.EventHandlers
             IMusicService musicService,
             IPlanetService planetService,
             IWeatherService weatherService,
-            IObjectVisibilityService objectVisibilityService,
+            IVisibilityObjectCacheService visibilityObjectCacheService,
+            IPlayerVisibilityService playerVisibilityService,
             ITaxiService taxiService)
         {
             _spawnService = spawnService;
@@ -34,7 +36,8 @@ namespace SWLOR.Component.World.EventHandlers
             _musicService = musicService;
             _planetService = planetService;
             _weatherService = weatherService;
-            _objectVisibilityService = objectVisibilityService;
+            _visibilityObjectCacheService = visibilityObjectCacheService;
+            _playerVisibilityService = playerVisibilityService;
             _taxiService = taxiService;
         }
 
@@ -45,7 +48,7 @@ namespace SWLOR.Component.World.EventHandlers
             _musicService.LoadSongList();
             _planetService.CacheData();
             _weatherService.LoadData();
-            _objectVisibilityService.LoadVisibilityObjects();
+            _visibilityObjectCacheService.LoadVisibilityObjects();
             _taxiService.LoadTaxiDestinations();
         }
 
@@ -58,7 +61,7 @@ namespace SWLOR.Component.World.EventHandlers
         [ScriptHandler<OnModuleEnter>]
         public void OnModuleEnter()
         {
-            _objectVisibilityService.LoadPlayerVisibilityObjects();
+            _playerVisibilityService.LoadPlayerVisibilityObjects();
         }
 
         [ScriptHandler<OnAreaEnter>]

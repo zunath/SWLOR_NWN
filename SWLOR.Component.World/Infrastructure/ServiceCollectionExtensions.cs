@@ -24,6 +24,8 @@ namespace SWLOR.Component.World.Infrastructure
             services.AddSingleton<ITaxiService, TaxiService>();
             services.AddSingleton<ISpawnTableBuilder, SpawnTableBuilder>();
             services.AddSingleton<ISpawnService, SpawnService>();
+            services.AddSingleton<IVisibilityObjectCacheService, VisibilityObjectCacheService>();
+            services.AddSingleton<IPlayerVisibilityService, PlayerVisibilityService>();
             services.AddSingleton<IObjectVisibilityService, ObjectVisibilityService>();
             services.AddSingleton<IMusicService, MusicService>();
             services.AddSingleton<IAreaService, AreaService>();

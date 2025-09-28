@@ -1,4 +1,3 @@
-using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.Shared.Domain.Dialog.Contracts;
 using SWLOR.Shared.Domain.Dialog.ValueObjects;
@@ -11,17 +10,17 @@ namespace SWLOR.Component.World.Dialog
     public class SliceTerminalDialog: DialogBase
     {
         private const string MainPageId = "MAIN_PAGE";
-        private readonly IServiceProvider _serviceProvider;
-        
-        // Lazy-loaded services to break circular dependencies
-        private IKeyItemService KeyItemService => _serviceProvider.GetRequiredService<IKeyItemService>();
-        private IObjectVisibilityService ObjectVisibilityService => _serviceProvider.GetRequiredService<IObjectVisibilityService>();
+        private readonly IKeyItemService _keyItemService;
+        private readonly IObjectVisibilityService _objectVisibilityService;
 
         public SliceTerminalDialog(
-            IServiceProvider serviceProvider, 
-            IDialogService dialogService, IDialogBuilder dialogBuilder) : base(dialogService, dialogBuilder)
+            IKeyItemService keyItemService,
+            IObjectVisibilityService objectVisibilityService,
+            IDialogService dialogService, 
+            IDialogBuilder dialogBuilder) : base(dialogService, dialogBuilder)
         {
-            _serviceProvider = serviceProvider;
+            _keyItemService = keyItemService;
+            _objectVisibilityService = objectVisibilityService;
         }
 
         public override PlayerDialog SetUp(uint player)
@@ -49,8 +48,8 @@ namespace SWLOR.Component.World.Dialog
                 }
 
                 var keyItemType = (KeyItemType) keyItemId;
-                KeyItemService.GiveKeyItem(player, keyItemType);
-                ObjectVisibilityService.AdjustVisibility(player, self, VisibilityType.Hidden);
+                _keyItemService.GiveKeyItem(player, keyItemType);
+                _objectVisibilityService.AdjustVisibility(player, self, VisibilityType.Hidden);
                 
                 EndConversation();
             });

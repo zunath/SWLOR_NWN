@@ -36,7 +36,7 @@ namespace SWLOR.Component.Properties.Infrastructure
             
             foreach (var type in propertyLayoutDefinitionTypes)
             {
-                services.AddTransient(type);
+                services.AddSingleton(type);
             }
 
             return services;

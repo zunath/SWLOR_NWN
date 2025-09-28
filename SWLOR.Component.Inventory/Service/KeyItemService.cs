@@ -14,6 +14,7 @@ using SWLOR.Shared.UI.Contracts;
 
 namespace SWLOR.Component.Inventory.Service
 {
+
     public class KeyItemService : IKeyItemService
     {
         private readonly IDatabaseService _db;
@@ -48,8 +49,7 @@ namespace SWLOR.Component.Inventory.Service
         /// <summary>
         /// When the module loads, cache all key item data.
         /// </summary>
-        [ScriptHandler<OnModuleCacheBefore>]
-        public void LoadData()
+        public void CacheData()
         {
             // Build key item cache with all items and filtered caches
             _keyItemCache = CacheService
@@ -247,7 +247,7 @@ namespace SWLOR.Component.Inventory.Service
         /// <summary>
         /// When a placeable with a key item defined is used by a player, give it to them.
         /// </summary>
-        [ScriptHandler<OnGetKeyItem>]
+        
         public void ObtainKeyItem()
         {
             var player = GetLastUsedBy();

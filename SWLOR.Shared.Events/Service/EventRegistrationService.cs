@@ -29,8 +29,12 @@ namespace SWLOR.Shared.Events.Service
 
         public void RegisterEvents()
         {
+
             Console.WriteLine("Discovering and registering event handlers.");
             _eventHandlerDiscovery.DiscoverAndRegisterHandlers();
+
+            Console.WriteLine($"Hooking native overrides.");
+            _eventAggregator.Publish(new OnHookNativeOverrides(), GetModule());
 
             Console.WriteLine("Hooking all module events.");
             HookModuleEvents();
@@ -44,7 +48,7 @@ namespace SWLOR.Shared.Events.Service
             Console.WriteLine("Hooking all application-specific events");
             HookApplicationEvents();
 
-            _eventAggregator.Publish(new OnEventsHooked(), GetModule());
+            _eventAggregator.Publish(new OnHookEvents(), GetModule());
         }
 
 
@@ -62,12 +66,12 @@ namespace SWLOR.Shared.Events.Service
         /// Also add them to a UI processor list.
         /// </summary>
         [ScriptHandler<OnModuleEnter>]
-        public static void EnterServer()
+        public void EnterServer()
         {
             HookPlayerEvents();
         }
 
-        private static void HookPlayerEvents()
+        private void HookPlayerEvents()
         {
             var player = GetEnteringObject();
             if (!GetIsPC(player) || GetIsDM(player)) 

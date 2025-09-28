@@ -5,7 +5,7 @@ using SWLOR.Shared.Events.Events.Player;
 
 namespace SWLOR.Component.Character.Feature
 {
-    public static class SaveCharacters
+    public class SaveCharacters
     {
         private const string SaveCharactersVariable = "SAVE_CHARACTERS_TICK";
         private const string IsBarteringVariable = "IS_BARTERING";
@@ -14,7 +14,7 @@ namespace SWLOR.Component.Character.Feature
         /// Saves characters every minute unless they're currently preoccupied (barter)
         /// </summary>
         [ScriptHandler<OnPlayerHeartbeat>]
-        public static void HandleSaveCharacters()
+        public void HandleSaveCharacters()
         {
             var player = OBJECT_SELF;
             var tick = GetLocalInt(player, SaveCharactersVariable) + 1;
@@ -35,7 +35,7 @@ namespace SWLOR.Component.Character.Feature
         /// Marks players as bartering. This is used to ensure the PCs are not exported during this process.
         /// </summary>
         [ScriptHandler<OnBartenderStartBefore>]
-        public static void SetBarteringFlag()
+        public void SetBarteringFlag()
         {
             var player1 = OBJECT_SELF;
             var player2 = StringToObject(EventsPlugin.GetEventData("BARTER_TARGET"));
@@ -48,7 +48,7 @@ namespace SWLOR.Component.Character.Feature
         /// Removes the bartering flag from PCs involved in a trade. This will ensure their files are exported on the next save occurrence.
         /// </summary>
         [ScriptHandler<OnBartenderEndBefore>]
-        public static void RemoveBarteringFlag()
+        public void RemoveBarteringFlag()
         {
             var player1 = OBJECT_SELF;
             var player2 = StringToObject(EventsPlugin.GetEventData("BARTER_TARGET"));

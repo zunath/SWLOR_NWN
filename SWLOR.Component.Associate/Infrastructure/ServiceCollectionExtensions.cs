@@ -25,20 +25,20 @@ namespace SWLOR.Component.Associate.Infrastructure
             services.AddSingleton<IDroidService, DroidService>();
 
             // Register droid personality classes
-            services.AddTransient<Model.DroidGeekyPersonality>();
-            services.AddTransient<Model.DroidPrissyPersonality>();
-            services.AddTransient<Model.DroidSarcasticPersonality>();
-            services.AddTransient<Model.DroidSlangPersonality>();
-            services.AddTransient<Model.DroidBlandPersonality>();
-            services.AddTransient<Model.DroidWorshipfulPersonality>();
+            services.AddSingleton<Model.DroidGeekyPersonality>();
+            services.AddSingleton<Model.DroidPrissyPersonality>();
+            services.AddSingleton<Model.DroidSarcasticPersonality>();
+            services.AddSingleton<Model.DroidSlangPersonality>();
+            services.AddSingleton<Model.DroidBlandPersonality>();
+            services.AddSingleton<Model.DroidWorshipfulPersonality>();
 
             // Register event handlers as singletons
             services.AddSingleton<AssociateEventHandlers>();
 
             // Register item definitions
-            services.AddTransient<IItemListDefinition, BeastEggItemDefinition>();
-            services.AddTransient<BeastEggItemDefinition>();
-            services.AddTransient<DNAExtractorItemDefinition>();
+            services.AddSingleton<IItemListDefinition, BeastEggItemDefinition>();
+            services.AddSingleton<BeastEggItemDefinition>();
+            services.AddSingleton<DNAExtractorItemDefinition>();
 
             // Dynamically register all loot table definition classes
             RegisterLootTableDefinitionClasses(services);
@@ -62,7 +62,7 @@ namespace SWLOR.Component.Associate.Infrastructure
             foreach (var type in lootTableDefinitionTypes)
             {
                 // Register each loot table definition as transient
-                services.AddTransient(type);
+                services.AddSingleton(type);
             }
         }
 
@@ -76,7 +76,7 @@ namespace SWLOR.Component.Associate.Infrastructure
             foreach (var type in beastDefinitionTypes)
             {
                 // Register each beast definition as transient
-                services.AddTransient(type);
+                services.AddSingleton(type);
             }
         }
 
@@ -90,7 +90,7 @@ namespace SWLOR.Component.Associate.Infrastructure
             foreach (var type in itemDefinitionTypes)
             {
                 // Register each item definition as transient
-                services.AddTransient(type);
+                services.AddSingleton(type);
             }
         }
     }

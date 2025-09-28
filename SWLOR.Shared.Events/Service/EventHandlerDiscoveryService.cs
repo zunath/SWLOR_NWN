@@ -85,13 +85,7 @@ namespace SWLOR.Shared.Events.Service
                     try
                     {
                         // Try to resolve the type from the DI container first
-                        handlerInstance = _serviceProvider.GetService(handlerType);
-                        
-                        // If not registered in DI, try to create with just the event aggregator
-                        if (handlerInstance == null)
-                        {
-                            handlerInstance = Activator.CreateInstance(handlerType, _eventAggregator);
-                        }
+                        handlerInstance = _serviceProvider.GetRequiredService(handlerType);
                     }
                     catch (Exception ex)
                     {

@@ -40,7 +40,7 @@ namespace SWLOR.Component.Migration.Infrastructure
             foreach (var migrationType in serverMigrationTypes)
             {
                 // Register each server migration as transient
-                services.AddTransient(migrationType);
+                services.AddSingleton(migrationType);
             }
 
             // Find all types that implement IPlayerMigration
@@ -51,7 +51,7 @@ namespace SWLOR.Component.Migration.Infrastructure
             foreach (var migrationType in playerMigrationTypes)
             {
                 // Register each player migration as transient
-                services.AddTransient(migrationType);
+                services.AddSingleton(migrationType);
             }
         }
     }

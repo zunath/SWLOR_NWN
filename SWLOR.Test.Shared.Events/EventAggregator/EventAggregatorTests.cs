@@ -150,13 +150,13 @@ namespace SWLOR.Test.Shared.Events.EventAggregator
         {
             // Arrange
             var serverLoadedEvent = new OnServerLoaded();
-            var eventsHookedEvent = new OnEventsHooked();
+            var eventsHookedEvent = new OnHookEvents();
             const uint target = 0x7F000000;
             var serverLoadedCalled = false;
             var eventsHookedCalled = false;
 
             var subscription1 = _eventAggregator.Subscribe<OnServerLoaded>(e => serverLoadedCalled = true);
-            var subscription2 = _eventAggregator.Subscribe<OnEventsHooked>(e => eventsHookedCalled = true);
+            var subscription2 = _eventAggregator.Subscribe<OnHookEvents>(e => eventsHookedCalled = true);
 
             // Act
             _eventAggregator.Publish(serverLoadedEvent, target);

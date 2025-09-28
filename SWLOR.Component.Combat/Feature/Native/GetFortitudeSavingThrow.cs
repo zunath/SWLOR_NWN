@@ -12,7 +12,7 @@ namespace SWLOR.Component.Combat.Feature.Native
 {
     public static unsafe class GetFortitudeSavingThrow
     {
-        private static IScriptExecutor _executor = ServiceContainer.GetService<IScriptExecutor>();
+        private static readonly IScriptExecutor _executor = ServiceContainer.GetService<IScriptExecutor>();
 
         // Hash constants for ruleset entries (computed using djb2 hash algorithm)
         private const uint LUCKOFHEROES_SAVE_BONUS_HASH = 0x390339C3; // djb2 hash of "LUCKOFHEROES_SAVE_BONUS"
@@ -28,7 +28,6 @@ namespace SWLOR.Component.Combat.Feature.Native
         // ReSharper disable once NotAccessedField.Local
         private static GetFortitudeSavingThrowHook _callOriginal;
 
-        [ScriptHandler<OnModuleLoad>]
         public static void RegisterHook()
         {
             delegate* unmanaged<void*, int, sbyte> pHook = &OnGetFortitudeSavingThrow;

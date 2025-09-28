@@ -35,7 +35,7 @@ namespace SWLOR.Component.StatusEffect.Infrastructure
             services.AddSingleton<EventHandlers.StatusEffectEventHandler>();
 
             // Register feature classes
-            services.AddTransient<BuffTimer>();
+            services.AddSingleton<BuffTimer>();
             
             // Automatically register all IStatusEffectListDefinition implementations
             var assembly = Assembly.GetExecutingAssembly();
@@ -44,7 +44,7 @@ namespace SWLOR.Component.StatusEffect.Infrastructure
             
             foreach (var type in statusEffectDefinitionTypes)
             {
-                services.AddTransient(type);
+                services.AddSingleton(type);
             }
             
             return services;

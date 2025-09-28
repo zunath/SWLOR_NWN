@@ -11,7 +11,7 @@ namespace SWLOR.Component.Combat.Feature.TrapDefinition
         /// When this trap is triggered, it'll toss the players to the designated waypoint after a delay.
         /// </summary>
         [ScriptHandler<OnPitfallTrap>]
-        public static void TriggeringTrap()
+        public void TriggeringTrap()
         {
             var player = GetEnteringObject();
             var destination = GetLocalString(OBJECT_SELF, "DESTINATION");

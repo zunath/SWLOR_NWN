@@ -20,15 +20,16 @@ namespace SWLOR.Component.Crafting.Infrastructure
         public static IServiceCollection AddCraftingServices(this IServiceCollection services)
         {
             // Register RecipeBuilder as transient since each recipe definition needs its own instance
-            services.AddTransient<IRecipeBuilder, RecipeBuilder>();
-            services.AddTransient<IFishingLocationBuilder, FishingLocationBuilder>();
+            services.AddSingleton<IRecipeBuilder, RecipeBuilder>();
+            services.AddSingleton<IFishingLocationBuilder, FishingLocationBuilder>();
             
             // Register Crafting services
             services.AddSingleton<ICraftService, CraftService>();
             services.AddSingleton<IFishingService, FishingService>();
 
             // Register feature classes
-            services.AddTransient<ScavengePoint>();
+            services.AddSingleton<ScavengePoint>();
+            services.AddSingleton<Resource>();
             
             // Automatically register all IRecipeListDefinition implementations
             var assembly = Assembly.GetExecutingAssembly();
@@ -37,7 +38,7 @@ namespace SWLOR.Component.Crafting.Infrastructure
             
             foreach (var type in recipeDefinitionTypes)
             {
-                services.AddTransient(type);
+                services.AddSingleton(type);
             }
             
             // Automatically register all IFishingLocationDefinition implementations
@@ -46,7 +47,7 @@ namespace SWLOR.Component.Crafting.Infrastructure
             
             foreach (var type in fishingLocationDefinitionTypes)
             {
-                services.AddTransient(type);
+                services.AddSingleton(type);
             }
             
             return services;

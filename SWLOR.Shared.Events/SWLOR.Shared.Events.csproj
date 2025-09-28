@@ -24,7 +24,6 @@
 	  <Folder Include="Events\Creature\" />
 	  <Folder Include="Events\Crafting\" />
 	  <Folder Include="Events\Eventing\" />
-	  <Folder Include="Events\Infrastructure\" />
 	  <Folder Include="Events\Market\" />
 	  <Folder Include="Events\Migration\" />
 	  <Folder Include="Events\Module\" />

@@ -8,6 +8,11 @@ namespace SWLOR.Shared.Domain.Inventory.Contracts
     public interface IKeyItemService
     {
         /// <summary>
+        /// When the module loads, cache all key item data.
+        /// </summary>
+        void CacheData();
+
+        /// <summary>
         /// Gets a key item category's detail by its type.
         /// </summary>
         /// <param name="type">The type of key item category to retrieve.</param>
@@ -85,5 +90,10 @@ namespace SWLOR.Shared.Domain.Inventory.Contracts
         /// <param name="keyItems">Required key items.</param>
         /// <returns>true if player has all key items, false otherwise</returns>
         bool HasAllKeyItems(uint player, List<KeyItemType> keyItems);
+
+        /// <summary>
+        /// When a placeable with a key item defined is used by a player, give it to them.
+        /// </summary>
+        void ObtainKeyItem();
     }
 }

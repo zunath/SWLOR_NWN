@@ -5,7 +5,7 @@ using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Component.Inventory.Feature
 {
-    public static class StandardItemConfigurations
+    public class StandardItemConfigurations
     {
         /// <summary>
         /// These are valid item types which will receive the OnHitCastSpell item property.
@@ -77,7 +77,7 @@ namespace SWLOR.Component.Inventory.Feature
         /// Arrows, bolts, and bullets will also receive this item property if they're equipped.
         /// </summary>
         [ScriptHandler<OnModuleEquip>]
-        public static void AddOnHitProperty()
+        public void AddOnHitProperty()
         {
             var player = GetPCItemLastEquippedBy();
             if (!GetIsPC(player) || GetIsDM(player)) return;

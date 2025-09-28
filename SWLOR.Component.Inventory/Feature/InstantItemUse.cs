@@ -4,14 +4,14 @@ using SWLOR.Shared.Events.Events.NWNX;
 
 namespace SWLOR.Component.Inventory.Feature
 {
-    public static class InstantItemUse
+    public class InstantItemUse
     {
         /// <summary>
         /// Before an item is used, if the item has a script specified, it will be run instantly.
         /// This will bypass the "Use Item" animation items normally have.
         /// </summary>
         [ScriptHandler<OnItemUseBefore>]
-        public static void OnUseItem()
+        public void OnUseItem()
         {
             var creature = OBJECT_SELF;
             var item = StringToObject(EventsPlugin.GetEventData("ITEM_OBJECT_ID"));

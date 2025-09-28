@@ -5,13 +5,13 @@ using SWLOR.Shared.Events.Events.World;
 
 namespace SWLOR.Component.Crafting.Feature
 {
-    public static class Resource
+    public class Resource
     {
         /// <summary>
         /// When a resource is used, display an error message indicating that a harvester is needed.
         /// </summary>
         [ScriptHandler<OnResourceUsed>]
-        public static void OnUsed()
+        public void OnUsed()
         {
             var user = GetLastUsedBy();
             SendMessageToPC(user, "Use a harvester to retrieve resources from this object.");
@@ -21,7 +21,7 @@ namespace SWLOR.Component.Crafting.Feature
         /// When a resource's heartbeat fires for the first time, spawn a prop object if specified.
         /// </summary>
         [ScriptHandler<OnResourceHeartbeat>]
-        public static void OnHeartbeat()
+        public void OnHeartbeat()
         {
             var placeable = OBJECT_SELF;
 

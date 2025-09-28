@@ -85,7 +85,6 @@ namespace SWLOR.Component.Combat.Feature.Native
         // ReSharper disable once NotAccessedField.Local
         private static GetDamageRollHook _callOriginal;
 
-        [ScriptHandler<OnModuleLoad>]
         public static void RegisterHook()
         {
             delegate* unmanaged<void*, void*, int, int, int, int, int, int> pHook = &OnGetDamageRoll;

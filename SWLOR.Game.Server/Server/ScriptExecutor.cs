@@ -94,6 +94,11 @@ namespace SWLOR.Game.Server.Server
                     if (result)
                         result = actionResult;
                 }
+                catch (Exception ex)
+                {
+                    // Error is already logged by ScriptMethodInvoker, no need to log again
+                    result = false; // If any conditional script fails, return false
+                }
                 finally
                 {
                     ProfilerPlugin.PopPerfScope();
@@ -111,10 +116,6 @@ namespace SWLOR.Game.Server.Server
                 {
                     ProfilerPlugin.PushPerfScope(OBJECT_SELF, name);
                     action();
-                }
-                catch (Exception ex)
-                {
-                    _logger.Write<ErrorLogGroup>($"C# Script '{script}' threw an exception. Details: {Environment.NewLine}{Environment.NewLine}{ex.ToMessageAndCompleteStacktrace()}", true);
                 }
                 finally
                 {

@@ -88,7 +88,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
         private ColorTarget _colorTarget;
 
         [ScriptHandler<OnModuleLoad>]
-        public static void LoadAppearances()
+        public void LoadAppearances()
         {
             LoadRacialAppearances();
             LoadArmorAppearances();

@@ -1,12 +1,15 @@
 using SWLOR.Component.Combat.Contracts;
+using SWLOR.Component.Combat.Feature.Native;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Area;
 using SWLOR.Shared.Events.Events.Combat;
 using SWLOR.Shared.Events.Events.Creature;
+using SWLOR.Shared.Events.Events.Infrastructure;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.NWNX;
+using GetFortitudeSavingThrow = SWLOR.Component.Combat.Feature.Native.GetFortitudeSavingThrow;
 
 namespace SWLOR.Component.Combat.EventHandlers
 {
@@ -169,6 +172,14 @@ namespace SWLOR.Component.Combat.EventHandlers
         public void CreatureLimbo()
         {
             _enmityService.CreatureLimbo();
+        }
+
+        [ScriptHandler<OnHookNativeOverrides>]
+        public void HookNativeOverrides()
+        {
+            GetDamageRoll.RegisterHook();
+            GetFortitudeSavingThrow.RegisterHook();
+            ResolveAttackRoll.RegisterHook();
         }
     }
 }

@@ -5,10 +5,10 @@ using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Component.Quest.Feature
 {
-    public static class ExplorationTrigger
+    public class ExplorationTrigger
     {
         [ScriptHandler<OnExploreTrigger>]
-        public static void EnterExplorationTrigger()
+        public void EnterExplorationTrigger()
         {
             var player = GetEnteringObject();
             if (!GetIsPC(player) || GetIsDM(player)) return;

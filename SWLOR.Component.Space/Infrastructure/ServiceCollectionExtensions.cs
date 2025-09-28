@@ -40,7 +40,7 @@ namespace SWLOR.Component.Space.Infrastructure
             
             foreach (var type in shipDefinitionTypes)
             {
-                services.AddTransient(type);
+                services.AddSingleton(type);
             }
             
             // Register IShipModuleListDefinition implementations
@@ -49,7 +49,7 @@ namespace SWLOR.Component.Space.Infrastructure
             
             foreach (var type in shipModuleDefinitionTypes)
             {
-                services.AddTransient(type);
+                services.AddSingleton(type);
             }
             
             // Register ISpaceObjectListDefinition implementations
@@ -58,7 +58,7 @@ namespace SWLOR.Component.Space.Infrastructure
             
             foreach (var type in spaceObjectDefinitionTypes)
             {
-                services.AddTransient(type);
+                services.AddSingleton(type);
             }
             
             // Register ISpawnListDefinition implementations
@@ -67,7 +67,7 @@ namespace SWLOR.Component.Space.Infrastructure
             
             foreach (var type in spawnDefinitionTypes)
             {
-                services.AddTransient(type);
+                services.AddSingleton(type);
             }
             
             // Register Space chat command definitions
@@ -76,7 +76,7 @@ namespace SWLOR.Component.Space.Infrastructure
             
             foreach (var type in chatCommandDefinitionTypes)
             {
-                services.AddTransient(type);
+                services.AddSingleton(type);
             }
             
             return services;

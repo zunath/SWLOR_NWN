@@ -4,23 +4,23 @@ using SWLOR.Shared.Events.Constants;
 namespace SWLOR.Test.Shared.Events.Events.Infrastructure
 {
     [TestFixture]
-    public class OnEventsHookedTests
+    public class OnHookEventsTests
     {
         [Test]
         public void Script_ShouldReturnCorrectScriptName()
         {
             // Arrange & Act
-            var eventInstance = new OnEventsHooked();
+            var eventInstance = new OnHookEvents();
 
             // Assert
-            Assert.That(eventInstance.Script, Is.EqualTo(ScriptName.OnEventsHooked));
+            Assert.That(eventInstance.Script, Is.EqualTo(ScriptName.OnHookEvents));
         }
 
         [Test]
         public void Constructor_ShouldInitializeBaseEventProperties()
         {
             // Arrange & Act
-            var eventInstance = new OnEventsHooked();
+            var eventInstance = new OnHookEvents();
 
             // Assert
             Assert.That(eventInstance.Timestamp, Is.Not.EqualTo(DateTime.MinValue));
@@ -34,7 +34,7 @@ namespace SWLOR.Test.Shared.Events.Events.Infrastructure
             var beforeCreation = DateTime.UtcNow;
 
             // Act
-            var eventInstance = new OnEventsHooked();
+            var eventInstance = new OnHookEvents();
 
             // Assert
             var afterCreation = DateTime.UtcNow;
@@ -46,8 +46,8 @@ namespace SWLOR.Test.Shared.Events.Events.Infrastructure
         public void Constructor_ShouldGenerateUniqueEventIds()
         {
             // Arrange & Act
-            var event1 = new OnEventsHooked();
-            var event2 = new OnEventsHooked();
+            var event1 = new OnHookEvents();
+            var event2 = new OnHookEvents();
 
             // Assert
             Assert.That(event1.EventId, Is.Not.EqualTo(event2.EventId));

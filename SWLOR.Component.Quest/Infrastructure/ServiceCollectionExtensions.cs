@@ -23,7 +23,7 @@ namespace SWLOR.Component.Quest.Infrastructure
             RegisterQuestDefinitionClasses(services);
 
             // Quest Builder Service
-            services.AddTransient<IQuestBuilder, QuestBuilder>(provider => new QuestBuilder(
+            services.AddSingleton<IQuestBuilder, QuestBuilder>(provider => new QuestBuilder(
                 provider.GetRequiredService<IServiceProvider>()));
             services.AddSingleton<IQuestBuilderFactory, QuestBuilderFactory>();
             
@@ -45,6 +45,9 @@ namespace SWLOR.Component.Quest.Infrastructure
             // Register NPCGroup service
             services.AddSingleton<INPCGroupService, NPCGroupService>();
 
+            // Register feature classes
+            services.AddSingleton<Feature.ExplorationTrigger>();
+
             // Snippet definitions are automatically registered by the Inventory component
 
             // Dialog classes are automatically registered by the Inventory component
@@ -62,7 +65,7 @@ namespace SWLOR.Component.Quest.Infrastructure
             foreach (var type in questDefinitionTypes)
             {
                 // Register each quest definition as transient
-                services.AddTransient(type);
+                services.AddSingleton(type);
             }
         }
     }

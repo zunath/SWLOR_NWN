@@ -65,7 +65,7 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
         /// Whenever a resource despawns, if it has an associated prop placeable, destroy it from the game world.
         /// </summary>
         [ScriptHandler<OnSpawnDespawn>]
-        public static void CleanupResourcePropPlaceables()
+        public void CleanupResourcePropPlaceables()
         {
             var resource = OBJECT_SELF;
             DestroyProp(resource);

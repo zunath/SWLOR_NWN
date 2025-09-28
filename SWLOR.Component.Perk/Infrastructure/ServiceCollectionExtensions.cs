@@ -20,10 +20,10 @@ namespace SWLOR.Component.Perk.Infrastructure
         public static IServiceCollection AddPerkServices(this IServiceCollection services)
         {
             // Register PerkBuilder as transient since it's a builder pattern
-            services.AddTransient<IPerkBuilder, PerkBuilder>();
+            services.AddSingleton<IPerkBuilder, PerkBuilder>();
             
             // Register PerkRequirementFactory as transient
-            services.AddTransient<IPerkRequirementFactory, PerkRequirementFactory>();
+            services.AddSingleton<IPerkRequirementFactory, PerkRequirementFactory>();
             
             // Register UsePerkFeat as singleton
             services.AddSingleton<IUsePerkFeat, UsePerkFeat>();
@@ -44,7 +44,7 @@ namespace SWLOR.Component.Perk.Infrastructure
             
             foreach (var type in perkDefinitionTypes)
             {
-                services.AddTransient(type);
+                services.AddSingleton(type);
             }
             
             return services;

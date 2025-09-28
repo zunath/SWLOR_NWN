@@ -47,12 +47,12 @@ namespace SWLOR.Shared.UI.Infrastructure
 
             foreach (var viewModelType in viewModelTypes)
             {
-                services.AddTransient(viewModelType);
+                services.AddSingleton(viewModelType);
                 
                 // If the ViewModel also implements IServiceInitializer, register it as such
                 if (typeof(IServiceInitializer).IsAssignableFrom(viewModelType))
                 {
-                    services.AddTransient<IServiceInitializer>(provider => (IServiceInitializer)provider.GetRequiredService(viewModelType));
+                    services.AddSingleton<IServiceInitializer>(provider => (IServiceInitializer)provider.GetRequiredService(viewModelType));
                 }
             }
 
@@ -76,7 +76,7 @@ namespace SWLOR.Shared.UI.Infrastructure
 
             foreach (var windowDefinitionType in windowDefinitionTypes)
             {
-                services.AddTransient(windowDefinitionType);
+                services.AddSingleton(windowDefinitionType);
             }
 
             return services;

@@ -3,8 +3,8 @@ using SWLOR.Shared.Events.Constants;
 
 namespace SWLOR.Shared.Events.Events.Infrastructure
 {
-    public class OnEventsHooked: BaseEvent
+    public class OnHookEvents: BaseEvent
     {
-        public override string Script => ScriptName.OnEventsHooked;
+        public override string Script => ScriptName.OnHookEvents;
     }
 }

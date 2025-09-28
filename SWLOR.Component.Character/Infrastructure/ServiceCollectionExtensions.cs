@@ -38,13 +38,14 @@ namespace SWLOR.Component.Character.Infrastructure
             // Snippet definitions are automatically registered by the Inventory component
 
             // Register feature classes
-            services.AddTransient<PlayerStatusWindow>();
-            services.AddTransient<AchievementProgression>();
-            services.AddTransient<PersistentLocation>();
-            services.AddTransient<PersistentMapProgression>();
-            services.AddTransient<PersistentMapPin>();
-            services.AddTransient<PlayerTemporaryEffects>();
-            services.AddTransient<ArmorDisplay>();
+            services.AddSingleton<PlayerStatusWindow>();
+            services.AddSingleton<AchievementProgression>();
+            services.AddSingleton<PersistentLocation>();
+            services.AddSingleton<PersistentMapProgression>();
+            services.AddSingleton<PersistentMapPin>();
+            services.AddSingleton<PlayerTemporaryEffects>();
+            services.AddSingleton<ArmorDisplay>();
+            services.AddSingleton<SaveCharacters>();
 
             // Register event handlers as singletons
             services.AddSingleton<UIEventHandlers>();

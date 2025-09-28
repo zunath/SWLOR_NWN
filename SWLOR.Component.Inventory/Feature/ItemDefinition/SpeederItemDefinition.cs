@@ -70,7 +70,7 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
         /// Set pheno to normal, tailtype to none and movement rate back to normal after.
         /// </summary>
         [ScriptHandler<OnCreatureDamagedBefore>]
-        public static void AttackedDismount()
+        public void AttackedDismount()
         {
             var player = OBJECT_SELF; ;
 
@@ -98,7 +98,7 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
         /// Set pheno to normal, tail to none and movement rate to normal.
         /// </summary>
         [ScriptHandler<OnEnmityAcquired>]
-        public static void AttackDismount()
+        public void AttackDismount()
         {
             var player = OBJECT_SELF;
 
@@ -117,7 +117,7 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
         /// Warning: This is not currently working. Need to hook the right script. *****!
         /// </summary>
         [ScriptHandler<OnSpeederHook>]
-        public static void AreaTransitionDismount()
+        public void AreaTransitionDismount()
         {
             var player = OBJECT_SELF;
             var targetAreaTag = GetLocalString(player, "spdr_hook_t_tag");

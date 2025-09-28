@@ -27,15 +27,17 @@ namespace SWLOR.Component.Combat.Infrastructure
             services.AddSingleton<IDeathService, DeathService>();
 
             // Register feature classes
-            services.AddTransient<EquipmentStats>();
-            services.AddTransient<EquipmentRestrictions>();
-            services.AddTransient<WeaponFeatConfiguration>();
-            services.AddTransient<NaturalRegeneration>();
-            services.AddTransient<PersistentHitPoints>();
-            services.AddTransient<CreatureDeathAnimation>();
+            services.AddSingleton<EquipmentStats>();
+            services.AddSingleton<EquipmentRestrictions>();
+            services.AddSingleton<WeaponFeatConfiguration>();
+            services.AddSingleton<NaturalRegeneration>();
+            services.AddSingleton<PersistentHitPoints>();
+            services.AddSingleton<CreatureDeathAnimation>();
+            services.AddSingleton<FeatConfiguration>();
+            services.AddSingleton<Feature.TrapDefinition.PitfallTrap>();
             
             // Register script handler classes
-            services.AddTransient<Feature.TrapDefinition.SpawnLarvaeOnSlugDeath>();
+            services.AddSingleton<Feature.TrapDefinition.SpawnLarvaeOnSlugDeath>();
 
             // Register event handlers as singletons
             services.AddSingleton<CombatEventHandler>();

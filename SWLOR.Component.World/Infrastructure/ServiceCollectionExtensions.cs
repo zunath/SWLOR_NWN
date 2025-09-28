@@ -51,10 +51,10 @@ namespace SWLOR.Component.World.Infrastructure
             services.AddSingleton<WorldEventHandlers>();
 
             // Register feature classes
-            services.AddTransient<PlaceableScripts>();
-            services.AddTransient<HoloNetTerminal>();
-            services.AddTransient<MiniMaps>();
-            services.AddTransient<GameWorldEntry>();
+            services.AddSingleton<PlaceableScripts>();
+            services.AddSingleton<HoloNetTerminal>();
+            services.AddSingleton<MiniMaps>();
+            services.AddSingleton<GameWorldEntry>();
 
             // Snippet definitions are automatically registered by the Inventory component
 
@@ -69,7 +69,7 @@ namespace SWLOR.Component.World.Infrastructure
             
             foreach (var type in spawnDefinitionTypes)
             {
-                services.AddTransient(type);
+                services.AddSingleton(type);
             }
 
             return services;

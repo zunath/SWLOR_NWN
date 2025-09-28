@@ -33,22 +33,26 @@ namespace SWLOR.Component.Inventory.Infrastructure
             RegisterSnippetDefinitionClasses(services);
 
             // Register feature classes
-            services.AddTransient<LightsaberAudio>();
+            services.AddSingleton<LightsaberAudio>();
+            services.AddSingleton<TrashCan>();
+            services.AddSingleton<StackDecrementPrevention>();
+            services.AddSingleton<InstantItemUse>();
+            services.AddSingleton<StandardItemConfigurations>();
             
             // Automatically register all dialog classes
             RegisterDialogClasses(services);
 
             // Register item definition classes
-            services.AddTransient<Feature.ItemDefinition.FishingRodItemDefinition>();
-            services.AddTransient<Feature.ItemDefinition.DestroyItemDefinition>();
-            services.AddTransient<Feature.ItemDefinition.ConsumableItemDefinition>();
-            services.AddTransient<Feature.ItemDefinition.TomeItemDefinition>();
-            services.AddTransient<Feature.ItemDefinition.DroidControlItemDefinition>();
-            services.AddTransient<Feature.ItemDefinition.KeyItemDefinition>();
-            services.AddTransient<Feature.ItemDefinition.HarvesterItemDefinition>();
-            services.AddTransient<Feature.ItemDefinition.RecipeItemDefinition>();
-            services.AddTransient<Feature.ItemDefinition.SpeederItemDefinition>();
-            services.AddTransient<Feature.ItemDefinition.SaberUpgradeItemDefinition>();
+            services.AddSingleton<Feature.ItemDefinition.FishingRodItemDefinition>();
+            services.AddSingleton<Feature.ItemDefinition.DestroyItemDefinition>();
+            services.AddSingleton<Feature.ItemDefinition.ConsumableItemDefinition>();
+            services.AddSingleton<Feature.ItemDefinition.TomeItemDefinition>();
+            services.AddSingleton<Feature.ItemDefinition.DroidControlItemDefinition>();
+            services.AddSingleton<Feature.ItemDefinition.KeyItemDefinition>();
+            services.AddSingleton<Feature.ItemDefinition.HarvesterItemDefinition>();
+            services.AddSingleton<Feature.ItemDefinition.RecipeItemDefinition>();
+            services.AddSingleton<Feature.ItemDefinition.SpeederItemDefinition>();
+            services.AddSingleton<Feature.ItemDefinition.SaberUpgradeItemDefinition>();
             
             // Automatically register all ILootTableDefinition implementations
             var assembly = Assembly.GetExecutingAssembly();
@@ -57,7 +61,7 @@ namespace SWLOR.Component.Inventory.Infrastructure
             
             foreach (var type in lootTableDefinitionTypes)
             {
-                services.AddTransient(type);
+                services.AddSingleton(type);
             }
 
             // Automatically register all IItemListDefinition implementations
@@ -66,7 +70,7 @@ namespace SWLOR.Component.Inventory.Infrastructure
             
             foreach (var type in itemDefinitionTypes)
             {
-                services.AddTransient(type);
+                services.AddSingleton(type);
             }
 
             return services;
@@ -82,8 +86,8 @@ namespace SWLOR.Component.Inventory.Infrastructure
             foreach (var type in snippetDefinitionTypes)
             {
                 // Register each snippet definition class as transient
-                services.AddTransient(type);
-                services.AddTransient(typeof(ISnippetListDefinition), type);
+                services.AddSingleton(type);
+                services.AddSingleton(typeof(ISnippetListDefinition), type);
             }
         }
 
@@ -97,7 +101,7 @@ namespace SWLOR.Component.Inventory.Infrastructure
             foreach (var type in dialogTypes)
             {
                 // Register each dialog class as transient
-                services.AddTransient(type);
+                services.AddSingleton(type);
             }
         }
     }

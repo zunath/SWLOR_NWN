@@ -64,7 +64,8 @@ namespace SWLOR.Shared.Events.Constants
 
         // Infrastructure events
         public const string OnServerLoaded = "server_loaded";
-        public const string OnEventsHooked = "events_hooked";
+        public const string OnHookEvents = "events_hooked";
+        public const string OnHookNativeOverrides = "native_hooked";
 
         // Character events
         public const string OnPlayerInitialized = "char_init_after";

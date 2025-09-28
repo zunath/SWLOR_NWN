@@ -22,7 +22,7 @@ namespace SWLOR.Runner
                 })
                 .ConfigureServices(services =>
                 {
-                    services.AddTransient<Server>();
+                    services.AddSingleton<Server>();
                 })
                 .ConfigureLogging(builder =>
                 {

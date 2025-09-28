@@ -56,7 +56,7 @@ namespace SWLOR.Component.Communication.Infrastructure
             foreach (var type in chatCommandDefinitionTypes)
             {
                 // Register each chat command definition as transient
-                services.AddTransient(type);
+                services.AddSingleton(type);
             }
         }
     }

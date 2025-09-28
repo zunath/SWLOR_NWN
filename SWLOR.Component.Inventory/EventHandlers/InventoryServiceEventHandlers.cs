@@ -17,6 +17,7 @@ namespace SWLOR.Component.Inventory.EventHandlers
         // Lazy-loaded services to break circular dependencies
         private readonly Lazy<IItemService> _itemService;
         private readonly Lazy<ILootService> _lootService;
+        private readonly Lazy<IKeyItemService> _keyItemService;
 
         public InventoryServiceEventHandlers(IServiceProvider serviceProvider)
         {
@@ -25,16 +26,19 @@ namespace SWLOR.Component.Inventory.EventHandlers
             // Initialize lazy services
             _itemService = new Lazy<IItemService>(() => _serviceProvider.GetRequiredService<IItemService>());
             _lootService = new Lazy<ILootService>(() => _serviceProvider.GetRequiredService<ILootService>());
+            _keyItemService = new Lazy<IKeyItemService>(() => _serviceProvider.GetRequiredService<IKeyItemService>());
         }
 
         // Lazy-loaded services to break circular dependencies
         private IItemService ItemService => _itemService.Value;
         private ILootService LootService => _lootService.Value;
+        private IKeyItemService KeyItemService => _keyItemService.Value;
 
         [ScriptHandler<OnModuleCacheBefore>]
         public void CacheItemData()
         {
             ItemService.CacheData();
+            KeyItemService.CacheData();
         }
 
         [ScriptHandler<OnItemUseBefore>]
@@ -83,6 +87,12 @@ namespace SWLOR.Component.Inventory.EventHandlers
         public void ProcessCorpse()
         {
             LootService.ProcessCorpse();
+        }
+
+        [ScriptHandler<OnGetKeyItem>]
+        public void ObtainKeyItem()
+        {
+            KeyItemService.ObtainKeyItem();
         }
     }
 }

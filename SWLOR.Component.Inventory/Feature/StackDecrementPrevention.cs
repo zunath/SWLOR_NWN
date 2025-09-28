@@ -5,13 +5,13 @@ using SWLOR.Shared.Events.Events.NWNX;
 
 namespace SWLOR.Component.Inventory.Feature
 {
-    public static class StackDecrementPrevention
+    public class StackDecrementPrevention
     {
         /// <summary>
         /// When a throwing item (shuriken, dart, throwing axe) is thrown, prevent the stack from decrementing.
         /// </summary>
         [ScriptHandler<OnItemDecrementBefore>]
-        public static void PreventStackDecrement()
+        public void PreventStackDecrement()
         {
             var item = OBJECT_SELF;
             if (!GetIsObjectValid(item)) return;

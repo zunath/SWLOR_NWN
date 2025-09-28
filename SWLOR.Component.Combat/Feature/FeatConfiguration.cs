@@ -6,13 +6,13 @@ using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Component.Combat.Feature
 {
-    public static class FeatConfiguration
+    public class FeatConfiguration
     {
         /// <summary>
         /// When the module loads, configure all custom feats.
         /// </summary>
         [ScriptHandler<OnModuleLoad>]
-        public static void ConfigureFeats()
+        public void ConfigureFeats()
         {
             FeatPlugin.SetFeatModifier(FeatType.ShieldConcealment1, FeatModifierType.Concealment, 5);
             FeatPlugin.SetFeatModifier(FeatType.ShieldConcealment2, FeatModifierType.Concealment, 10);

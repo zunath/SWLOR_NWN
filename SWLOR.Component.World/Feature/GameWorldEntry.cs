@@ -7,7 +7,7 @@ namespace SWLOR.Component.World.Feature
     public class GameWorldEntry
     {
         [ScriptHandler<OnEnterWorld>]
-        public static void EnterGameWorld()
+        public void EnterGameWorld()
         {
             var player = GetPCSpeaker();
             var waypoint = GetObjectByTag("ENTRY_STARTING_WP");

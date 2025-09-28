@@ -1,4 +1,3 @@
-using SWLOR.Shared.Domain.Contracts;
 using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Domain.World.ValueObjects;
 using SWLOR.Shared.Events.Attributes;
@@ -11,14 +10,8 @@ namespace SWLOR.Shared.Caching.Service
     /// </summary>
     public class SongCacheService : ISongCacheService
     {
-        private readonly IData2DAService _data2DAService;
         private readonly Dictionary<int, Song> _songs = new();
         private readonly Dictionary<int, Song> _playerBattleSongs = new();
-
-        public SongCacheService(IData2DAService data2DAService)
-        {
-            _data2DAService = data2DAService;
-        }
 
         /// <summary>
         /// Loads all songs from the ambientmusic.2da file and caches them
@@ -27,13 +20,13 @@ namespace SWLOR.Shared.Caching.Service
         public void LoadSongList()
         {
             const string File = "ambientmusic";
-            var rowCount = _data2DAService.GetRowCount(File);
+            var rowCount = Get2DARowCount(File);
 
             for (var row = 0; row < rowCount; row++)
             {
-                var description = _data2DAService.GetStringValue(File, "Description", row);
-                var displayName = _data2DAService.GetStringValue(File, "DisplayName", row);
-                var isAvailableAsBattleSong = _data2DAService.GetStringValue(File, "PlayerBattleSong", row) == "1";
+                var description = Get2DAString(File, "Description", row);
+                var displayName = Get2DAString(File, "DisplayName", row);
+                var isAvailableAsBattleSong = Get2DAString(File, "PlayerBattleSong", row) == "1";
 
                 // Skip record if a name cannot be determined.
                 if (string.IsNullOrWhiteSpace(description) &&
@@ -41,7 +34,7 @@ namespace SWLOR.Shared.Caching.Service
 
                 string name = string.IsNullOrWhiteSpace(description) ?
                     displayName :
-                    _data2DAService.GetStringByStrRef(Convert.ToInt32(description));
+                    GetStringByStrRef(Convert.ToInt32(description));
 
                 var song = new Song(row, name, isAvailableAsBattleSong);
                 _songs[row] = song;

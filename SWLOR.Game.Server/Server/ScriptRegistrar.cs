@@ -87,13 +87,29 @@ namespace SWLOR.Game.Server.Server
 
             foreach (var methodInfo in handlers)
             {
-                var scriptName = GetScriptNameForMethod(methodInfo);
-                if (!string.IsNullOrEmpty(scriptName))
+                var eventHandlerAttributes = GetEventHandlerAttributes(methodInfo);
+                
+                foreach (var attr in eventHandlerAttributes)
                 {
+                    var eventType = GetEventTypeFromAttribute(attr);
+                    var scriptName = _nameGenerator.GetScriptNameFromEventType(eventType);
+
+                    if (string.IsNullOrEmpty(scriptName))
+                    {
+                        _logger.Write<ErrorLogGroup>($"No script name found for event type '{eventType.Name}' on method {methodInfo.Name}. This handler was NOT loaded.");
+                        continue;
+                    }
+
+                    if (!_nameGenerator.IsValidScriptName(scriptName))
+                    {
+                        _logger.Write<ErrorLogGroup>($"Script name '{scriptName}' is too long for event type '{eventType.Name}' on method {methodInfo.Name}. This handler was NOT loaded.");
+                        continue;
+                    }
+
+                    _logger.Write<InfrastructureLogGroup>($"Registering conditional script '{scriptName}' for method {methodInfo.DeclaringType?.Name}.{methodInfo.Name}");
                     RegisterConditionalScript(conditionalScripts, scriptName, methodInfo);
                 }
             }
-
             return conditionalScripts;
         }
 
@@ -198,7 +214,11 @@ namespace SWLOR.Game.Server.Server
                 {
                     del = (ConditionalScriptDelegate)methodInfo.CreateDelegate(typeof(ConditionalScriptDelegate));
                 }
-                // For non-static methods, we'll handle them differently
+                else
+                {
+                    // For non-static methods, create a wrapper that will be handled by ScriptMethodInvoker
+                    del = () => _methodInvoker.InvokeInstanceMethodBool(methodInfo);
+                }
             }
             else if (parameters.Length == 1)
             {
@@ -221,23 +241,6 @@ namespace SWLOR.Game.Server.Server
             };
         }
 
-        private string GetScriptNameForMethod(MethodInfo methodInfo)
-        {
-            // Check for generic ScriptHandlerAttribute
-            var genericAttrs = methodInfo.GetCustomAttributes()
-                .Where(attr => attr.GetType().IsGenericType && 
-                              attr.GetType().GetGenericTypeDefinition() == typeof(ScriptHandlerAttribute<>));
-            
-            if (genericAttrs.Any())
-            {
-                // If there are multiple, we'll need to handle them all
-                // For now, just return the first one
-                var eventType = GetEventTypeFromAttribute(genericAttrs.First());
-                return _nameGenerator.GetScriptNameFromEventType(eventType);
-            }
-
-            return null;
-        }
 
         private bool HasEventHandlerAttribute(MethodInfo method)
         {

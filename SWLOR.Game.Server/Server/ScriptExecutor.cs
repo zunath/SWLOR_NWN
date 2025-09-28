@@ -26,7 +26,6 @@ namespace SWLOR.Game.Server.Server
             _logger = logger;
             _closureManager = closureManager;
             _scriptRegistry = scriptRegistry;
-            Console.WriteLine($"{nameof(ScriptExecutor)} initialized.");
         }
 
         public void Initialize()
@@ -64,19 +63,10 @@ namespace SWLOR.Game.Server.Server
             // Execute conditional scripts first if they exist
             if (hasConditionalScripts)
             {
-                var conditionalResult = ExecuteConditionalScripts(script);
-                // If conditional scripts return false, don't execute action scripts
-                if (conditionalResult == 0)
-                {
-                    return 0;
-                }
+                return ExecuteConditionalScripts(script);
             }
 
-            // Execute action scripts if they exist
-            if (hasActionScripts)
-            {
-                ExecuteActionScripts(script);
-            }
+            ExecuteActionScripts(script);
 
             return ScriptHandled;
         }

@@ -147,33 +147,79 @@ using SWLOR.Shared.Domain.Perk.Contracts;
 using SWLOR.Shared.Events.Attributes;
 ```
 
+### 10. Using Statements Rules
+- **RULE**: Add using statements for ALL types used in the file
+- **RULE**: Place using statements at the top of the file, before namespace declaration
+- **RULE**: Group using statements in this order:
+  1. System namespaces (e.g., `using System;`, `using System.Collections.Generic;`)
+  2. Third-party namespaces (e.g., `using Microsoft.Extensions.DependencyInjection;`)
+  3. SWLOR namespaces (e.g., `using SWLOR.Shared.Core;`)
+- **RULE**: Remove unused using statements to keep code clean
+- **RULE**: Use fully qualified names only when there are naming conflicts
+- **VIOLATION EXAMPLES**:
+```csharp
+// ❌ FORBIDDEN: Missing using statements
+public class PerkService
+{
+    public List<PerkType> GetPerks() // List<> needs using System.Collections.Generic;
+    {
+        return new List<PerkType>();
+    }
+}
+
+// ❌ FORBIDDEN: Using statements in wrong order
+using SWLOR.Shared.Core;
+using System; // Should be before SWLOR namespaces
+```
+- **CORRECT APPROACH**:
+```csharp
+// ✅ CORRECT: Proper using statement organization
+using System;
+using System.Collections.Generic;
+using Microsoft.Extensions.DependencyInjection;
+using SWLOR.Component.Perk.Contracts;
+using SWLOR.Shared.Core;
+using SWLOR.Shared.Domain.Perk.Contracts;
+
+namespace SWLOR.Component.Perk.Service
+{
+    public class PerkService
+    {
+        public List<PerkType> GetPerks()
+        {
+            return new List<PerkType>();
+        }
+    }
+}
+```
+
 ## Code Quality Rules
 
-### 10. Dependency Direction
+### 11. Dependency Direction
 - **RULE**: Components depend on shared projects, NOT on each other
 - **RULE**: Shared projects MUST NOT depend on components
 - **RULE**: Infrastructure supports domain, does NOT drive it
 - **RULE**: Always inject dependencies through constructor injection
 
-### 11. Error Handling
+### 12. Error Handling
 - **RULE**: Use proper exception handling with meaningful messages
 - **RULE**: Log errors using the shared logging infrastructure
 - **RULE**: Never swallow exceptions silently
 - **RULE**: Validate inputs at service boundaries
 
-### 12. Performance Considerations
+### 13. Performance Considerations
 - **RULE**: Use caching for expensive operations (perk calculations, database queries)
 - **RULE**: Avoid expensive operations in event handlers when possible
 - **RULE**: Consider performance impact of singleton vs transient registrations
 
-### 13. Async/Await Restrictions
+### 14. Async/Await Restrictions
 - **RULE**: Regular C# async/await is NOT allowed in this codebase
 - **RULE**: Async operations MUST ONLY be used through the Async folder in SWLOR.Shared.Core
 - **RULE**: Use the established async infrastructure instead of standard .NET async patterns
 - **VIOLATION EXAMPLE**: `public async Task<string> GetDataAsync()`
 - **CORRECT APPROACH**: Use async utilities from `SWLOR.Shared.Core.Async`
 
-### 14. Data Hardcoding Restrictions
+### 15. Data Hardcoding Restrictions
 - **RULE**: NO hardcoded data values in business logic or service implementations
 - **RULE**: Data values MUST be stored in database, configuration, or constants files
 - **ALLOWED EXCEPTIONS**: 
@@ -197,7 +243,7 @@ using SWLOR.Shared.Events.Attributes;
 
 ## Anti-Patterns to AVOID
 
-### 15. Forbidden Patterns
+### 16. Forbidden Patterns
 - **NEVER**: Create circular dependencies between components
 - **NEVER**: Put business logic in event handlers
 - **NEVER**: Create wrapper methods in services for event handlers
@@ -209,7 +255,7 @@ using SWLOR.Shared.Events.Attributes;
 - **NEVER**: Use regular C# async/await patterns
 - **NEVER**: Hardcode data values in business logic (use config/database instead)
 
-### 16. Common Mistakes to Avoid
+### 17. Common Mistakes to Avoid
 - **MISTAKE**: `using SWLOR.Component.Inventory.Service;` in Perk component
 - **CORRECT**: `using SWLOR.Shared.Domain.Inventory.Contracts;`
 - **MISTAKE**: Putting `[ScriptHandler<>]` in service classes
@@ -220,10 +266,12 @@ using SWLOR.Shared.Events.Attributes;
 - **CORRECT**: Use async utilities from `SWLOR.Shared.Core.Async`
 - **MISTAKE**: `if (player.Level > 50)` (hardcoded value)
 - **CORRECT**: `if (player.Level > _config.MaxPlayerLevel)` (using config)
+- **MISTAKE**: Missing using statements causing compilation errors
+- **CORRECT**: Add all required using statements at the top of the file
 
 ## Testing Rules
 
-### 17. Testability Requirements
+### 18. Testability Requirements
 - **RULE**: Services MUST be testable without event infrastructure
 - **RULE**: Use dependency injection for all external dependencies
 - **RULE**: Mock interfaces, not concrete classes
@@ -231,7 +279,7 @@ using SWLOR.Shared.Events.Attributes;
 
 ## Documentation Rules
 
-### 18. Code Documentation
+### 19. Code Documentation
 - **RULE**: All public methods MUST have XML documentation
 - **RULE**: Include parameter descriptions and return value descriptions
 - **RULE**: Document complex business logic with inline comments
@@ -239,14 +287,14 @@ using SWLOR.Shared.Events.Attributes;
 
 ## Migration and Refactoring Rules
 
-### 19. When Adding New Features
+### 20. When Adding New Features
 - **RULE**: Start with component-specific implementation
 - **RULE**: Only move to shared domain when second component needs it
 - **RULE**: Create interfaces before implementations
 - **RULE**: Register services in appropriate DI container
 - **RULE**: Separate event handling from business logic from the start
 
-### 20. When Modifying Existing Code
+### 21. When Modifying Existing Code
 - **RULE**: Maintain existing architecture patterns
 - **RULE**: Don't break component boundaries
 - **RULE**: Update all references when moving entities
@@ -254,13 +302,13 @@ using SWLOR.Shared.Events.Attributes;
 
 ## Specific Component Rules
 
-### 21. Perk Component Specifics
+### 22. Perk Component Specifics
 - **RULE**: Perk services are split into focused services (Data, Level, Trigger, Cache)
 - **RULE**: Main PerkService acts as a facade
 - **RULE**: Use caching for expensive perk calculations
 - **RULE**: Perk requirements are handled by dedicated factory
 
-### 22. Event System Rules
+### 23. Event System Rules
 - **RULE**: Use `[ScriptHandler<>]` attributes for event registration
 - **RULE**: Event handlers MUST be in `EventHandlers/` folder
 - **RULE**: One event handler class per component
@@ -275,6 +323,7 @@ Before submitting any changes, verify:
 - [ ] No cross-component dependencies
 - [ ] No regular C# async/await usage (use SWLOR.Shared.Core.Async only)
 - [ ] No hardcoded data values (use config/database/enums instead)
+- [ ] All using statements added correctly and in proper order
 - [ ] Services registered as singletons (unless transient needed)
 - [ ] Event handlers separated from services
 - [ ] No wrapper methods in services for event handlers

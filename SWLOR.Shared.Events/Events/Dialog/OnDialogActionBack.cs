@@ -3,8 +3,8 @@ using SWLOR.Shared.Events.EventAggregator;
 
 namespace SWLOR.Shared.Events.Events.Dialog
 {
-    public class OnDialogActionB : BaseEvent
+    public class OnDialogActionBack : BaseEvent
     {
-        public override string Script => ScriptName.OnDialogActionB;
+        public override string Script => ScriptName.OnDialogActionBack;
     }
 }

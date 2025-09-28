@@ -516,7 +516,7 @@ namespace SWLOR.Shared.Events.Constants
         public const string OnDialogAppearsPrevious = "dialog_appears_p";
         public const string OnDialogActionPrevious = "dialog_action_p";
         public const string OnDialogAppearsB = "dialog_appears_b";
-        public const string OnDialogActionB = "dialog_action_b";
+        public const string OnDialogActionBack = "dialog_action_b";
         public const string OnDialogEnd = "dialog_end";
         public const string OnDialogStartConversation = "start_convo";
         public const string OnDialogAppear = "appear";

@@ -139,7 +139,7 @@ namespace SWLOR.Component.Communication.EventHandlers
             _dialogService.PreviousAction();
         }
 
-        [ScriptHandler<OnDialogActionB>]
+        [ScriptHandler<OnDialogActionBack>]
         public void BackAction()
         {
             _dialogService.BackAction();

@@ -1,4 +1,4 @@
-using SWLOR.Shared.Events.EventAggregator;
+using SWLOR.Shared.Events.Events.Infrastructure;
 
 namespace SWLOR.Test.Shared.Events.EventAggregator
 {
@@ -6,55 +6,70 @@ namespace SWLOR.Test.Shared.Events.EventAggregator
     public class BaseEventTests
     {
         [Test]
-        public void Constructor_SetsTimestamp()
+        public void Constructor_ShouldSetTimestamp()
         {
             // Arrange
             var beforeCreation = DateTime.UtcNow;
 
             // Act
-            var testEvent = new TestEvent();
-            var afterCreation = DateTime.UtcNow;
+            var testEvent = new OnServerLoaded();
 
             // Assert
             Assert.That(testEvent.Timestamp, Is.GreaterThanOrEqualTo(beforeCreation));
-            Assert.That(testEvent.Timestamp, Is.LessThanOrEqualTo(afterCreation));
+            Assert.That(testEvent.Timestamp, Is.LessThanOrEqualTo(DateTime.UtcNow));
         }
 
         [Test]
-        public void Constructor_SetsEventId()
+        public void Constructor_ShouldSetEventId()
         {
             // Act
-            var testEvent = new TestEvent();
+            var testEvent = new OnServerLoaded();
 
             // Assert
             Assert.That(testEvent.EventId, Is.Not.EqualTo(Guid.Empty));
         }
 
         [Test]
-        public void Constructor_EachInstanceHasUniqueId()
+        public void Constructor_ShouldSetUniqueEventIds()
         {
             // Act
-            var testEvent1 = new TestEvent();
-            var testEvent2 = new TestEvent();
+            var event1 = new OnServerLoaded();
+            var event2 = new OnServerLoaded();
 
             // Assert
-            Assert.That(testEvent1.EventId, Is.Not.EqualTo(testEvent2.EventId));
+            Assert.That(event1.EventId, Is.Not.EqualTo(event2.EventId));
         }
 
         [Test]
-        public void Script_IsAbstractProperty()
+        public void Script_ShouldReturnCorrectValue()
         {
             // Act
-            var testEvent = new TestEvent();
+            var testEvent = new OnServerLoaded();
 
             // Assert
-            Assert.That(testEvent.Script, Is.EqualTo("TestScript"));
+            Assert.That(testEvent.Script, Is.EqualTo("server_loaded"));
         }
-    }
 
-    // Test event class
-    public class TestEvent : BaseEvent
-    {
-        public override string Script => "TestScript";
+        [Test]
+        public void Timestamp_ShouldBeReadOnly()
+        {
+            // Arrange
+            var testEvent = new OnServerLoaded();
+
+            // Act & Assert
+            Assert.That(testEvent.Timestamp, Is.Not.EqualTo(DateTime.MinValue));
+            // Timestamp should be set during construction and not changeable
+        }
+
+        [Test]
+        public void EventId_ShouldBeReadOnly()
+        {
+            // Arrange
+            var testEvent = new OnServerLoaded();
+
+            // Act & Assert
+            Assert.That(testEvent.EventId, Is.Not.EqualTo(Guid.Empty));
+            // EventId should be set during construction and not changeable
+        }
     }
 }

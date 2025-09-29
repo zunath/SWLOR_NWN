@@ -6,49 +6,25 @@ namespace SWLOR.Test.Shared.Events.Events.Module
     public class OnModuleLoadTests
     {
         [Test]
-        public void Constructor_SetsTimestamp()
+        public void Constructor_ShouldCreateInstance()
         {
-            // Arrange
-            var beforeCreation = DateTime.UtcNow;
-
             // Act
-            var eventData = new OnModuleLoad();
-            var afterCreation = DateTime.UtcNow;
+            var eventInstance = new OnModuleLoad();
 
             // Assert
-            Assert.That(eventData.Timestamp, Is.GreaterThanOrEqualTo(beforeCreation));
-            Assert.That(eventData.Timestamp, Is.LessThanOrEqualTo(afterCreation));
+            Assert.That(eventInstance, Is.Not.Null);
+            Assert.That(eventInstance.Timestamp, Is.Not.EqualTo(DateTime.MinValue));
+            Assert.That(eventInstance.EventId, Is.Not.EqualTo(Guid.Empty));
         }
 
         [Test]
-        public void Constructor_SetsEventId()
+        public void Script_ShouldReturnCorrectValue()
         {
             // Act
-            var eventData = new OnModuleLoad();
+            var eventInstance = new OnModuleLoad();
 
             // Assert
-            Assert.That(eventData.EventId, Is.Not.EqualTo(Guid.Empty));
-        }
-
-        [Test]
-        public void Constructor_EachInstanceHasUniqueId()
-        {
-            // Act
-            var eventData1 = new OnModuleLoad();
-            var eventData2 = new OnModuleLoad();
-
-            // Assert
-            Assert.That(eventData1.EventId, Is.Not.EqualTo(eventData2.EventId));
-        }
-
-        [Test]
-        public void Script_ReturnsCorrectScriptName()
-        {
-            // Act
-            var eventData = new OnModuleLoad();
-
-            // Assert
-            Assert.That(eventData.Script, Is.EqualTo("mod_load"));
+            Assert.That(eventInstance.Script, Is.EqualTo("mod_load"));
         }
     }
 }

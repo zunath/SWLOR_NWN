@@ -8,7 +8,7 @@ namespace SWLOR.Test.Shared.Abstractions.Enums
         [Test]
         public void EnumValues_ShouldBeCorrect()
         {
-            // Assert key values
+            // Assert
             Assert.That((int)GuiWindowType.Invalid, Is.EqualTo(0));
             Assert.That((int)GuiWindowType.CharacterSheet, Is.EqualTo(1));
             Assert.That((int)GuiWindowType.CustomizeCharacter, Is.EqualTo(2));
@@ -76,6 +76,85 @@ namespace SWLOR.Test.Shared.Abstractions.Enums
 
             // Assert
             Assert.That(values, Is.Unique);
+        }
+
+        [Test]
+        public void EnumValues_ShouldBeSequentialForMainRange()
+        {
+            // Arrange
+            var mainValues = new[]
+            {
+                GuiWindowType.Invalid,
+                GuiWindowType.CharacterSheet,
+                GuiWindowType.CustomizeCharacter,
+                GuiWindowType.Quests,
+                GuiWindowType.Recipes,
+                GuiWindowType.KeyItems,
+                GuiWindowType.Achievements,
+                GuiWindowType.Skills,
+                GuiWindowType.Perks,
+                GuiWindowType.Settings,
+                GuiWindowType.AppearanceEditor,
+                GuiWindowType.Bank,
+                GuiWindowType.CharacterMigration,
+                GuiWindowType.Outfits,
+                GuiWindowType.MarketListing,
+                GuiWindowType.MarketBuying,
+                GuiWindowType.PriceSelection,
+                GuiWindowType.ExamineItem,
+                GuiWindowType.Notes,
+                GuiWindowType.DistributeRPXP,
+                GuiWindowType.ShipManagement,
+                GuiWindowType.ChangeDescription,
+                GuiWindowType.Craft,
+                GuiWindowType.ManageStaff,
+                GuiWindowType.ManageCitizenship,
+                GuiWindowType.ManageCity,
+                GuiWindowType.Election,
+                GuiWindowType.RentApartment,
+                GuiWindowType.ManageApartment,
+                GuiWindowType.RenameItem,
+                GuiWindowType.PermissionManagement,
+                GuiWindowType.ManageStructures,
+                GuiWindowType.PropertyItemStorage,
+                GuiWindowType.BugReport,
+                GuiWindowType.DMTools,
+                GuiWindowType.PlayerStatus,
+                GuiWindowType.TargetStatus,
+                GuiWindowType.ManageBans,
+                GuiWindowType.Refinery,
+                GuiWindowType.DMPlayerExamine,
+                GuiWindowType.AreaNotes,
+                GuiWindowType.CreatureManager,
+                GuiWindowType.AreaManager,
+                GuiWindowType.Emotes,
+                GuiWindowType.DroidAssembly,
+                GuiWindowType.DroidAI,
+                GuiWindowType.Currencies,
+                GuiWindowType.StatRebuild,
+                GuiWindowType.AssociateCharacterSheet,
+                GuiWindowType.HoloNet,
+                GuiWindowType.Stables,
+                GuiWindowType.TrainingStore,
+                GuiWindowType.Incubator,
+                GuiWindowType.Research,
+                GuiWindowType.TargetDescription
+            };
+
+            // Assert
+            for (int i = 0; i < mainValues.Length; i++)
+            {
+                Assert.That((int)mainValues[i], Is.EqualTo(i), 
+                    $"Value {mainValues[i]} should have value {i}");
+            }
+        }
+
+        [Test]
+        public void EnumValues_ShouldHaveCorrectSpecialValues()
+        {
+            // Assert
+            Assert.That((int)GuiWindowType.DebugEnmity, Is.EqualTo(900));
+            Assert.That((int)GuiWindowType.ChangePortrait, Is.EqualTo(9999));
         }
 
         [Test]
@@ -202,6 +281,189 @@ namespace SWLOR.Test.Shared.Abstractions.Enums
             Assert.That(Enum.Parse<GuiWindowType>("TargetDescription"), Is.EqualTo(GuiWindowType.TargetDescription));
             Assert.That(Enum.Parse<GuiWindowType>("DebugEnmity"), Is.EqualTo(GuiWindowType.DebugEnmity));
             Assert.That(Enum.Parse<GuiWindowType>("ChangePortrait"), Is.EqualTo(GuiWindowType.ChangePortrait));
+        }
+
+        [Test]
+        public void EnumParse_ShouldBeCaseInsensitive()
+        {
+            // Assert
+            Assert.That(Enum.Parse<GuiWindowType>("invalid", true), Is.EqualTo(GuiWindowType.Invalid));
+            Assert.That(Enum.Parse<GuiWindowType>("CHARACTERSHEET", true), Is.EqualTo(GuiWindowType.CharacterSheet));
+            Assert.That(Enum.Parse<GuiWindowType>("customizecharacter", true), Is.EqualTo(GuiWindowType.CustomizeCharacter));
+            Assert.That(Enum.Parse<GuiWindowType>("Quests", true), Is.EqualTo(GuiWindowType.Quests));
+        }
+
+        [Test]
+        public void EnumParse_ShouldThrowOnInvalidValue()
+        {
+            // Act & Assert
+            Assert.That(() => Enum.Parse<GuiWindowType>("InvalidValue"), Throws.TypeOf<ArgumentException>());
+            Assert.That(() => Enum.Parse<GuiWindowType>(""), Throws.TypeOf<ArgumentException>());
+            Assert.That(() => Enum.Parse<GuiWindowType>(null), Throws.TypeOf<ArgumentNullException>());
+        }
+
+        [Test]
+        public void EnumTryParse_ShouldWorkCorrectly()
+        {
+            // Arrange
+            GuiWindowType result;
+
+            // Act & Assert
+            Assert.That(Enum.TryParse<GuiWindowType>("Invalid", out result), Is.True);
+            Assert.That(result, Is.EqualTo(GuiWindowType.Invalid));
+
+            Assert.That(Enum.TryParse<GuiWindowType>("CharacterSheet", out result), Is.True);
+            Assert.That(result, Is.EqualTo(GuiWindowType.CharacterSheet));
+
+            Assert.That(Enum.TryParse<GuiWindowType>("InvalidValue", out result), Is.False);
+            Assert.That(result, Is.EqualTo(default(GuiWindowType)));
+
+            Assert.That(Enum.TryParse<GuiWindowType>("", out result), Is.False);
+            Assert.That(result, Is.EqualTo(default(GuiWindowType)));
+        }
+
+        [Test]
+        public void EnumTryParse_ShouldBeCaseInsensitive()
+        {
+            // Arrange
+            GuiWindowType result;
+
+            // Act & Assert
+            Assert.That(Enum.TryParse<GuiWindowType>("invalid", true, out result), Is.True);
+            Assert.That(result, Is.EqualTo(GuiWindowType.Invalid));
+
+            Assert.That(Enum.TryParse<GuiWindowType>("CHARACTERSHEET", true, out result), Is.True);
+            Assert.That(result, Is.EqualTo(GuiWindowType.CharacterSheet));
+
+            Assert.That(Enum.TryParse<GuiWindowType>("invalid", false, out result), Is.False);
+            Assert.That(result, Is.EqualTo(default(GuiWindowType)));
+        }
+
+        [Test]
+        public void EnumGetValues_ShouldReturnAllValues()
+        {
+            // Act
+            var values = Enum.GetValues<GuiWindowType>();
+
+            // Assert
+            Assert.That(values, Is.Not.Null);
+            Assert.That(values.Length, Is.EqualTo(57)); // Total number of enum values
+        }
+
+        [Test]
+        public void EnumGetNames_ShouldReturnAllNames()
+        {
+            // Act
+            var names = Enum.GetNames<GuiWindowType>();
+
+            // Assert
+            Assert.That(names, Is.Not.Null);
+            Assert.That(names.Length, Is.EqualTo(57)); // Total number of enum values
+            Assert.That(names, Does.Contain("Invalid"));
+            Assert.That(names, Does.Contain("CharacterSheet"));
+            Assert.That(names, Does.Contain("ChangePortrait"));
+        }
+
+        [Test]
+        public void EnumIsDefined_ShouldWorkCorrectly()
+        {
+            // Assert
+            Assert.That(Enum.IsDefined<GuiWindowType>(GuiWindowType.Invalid), Is.True);
+            Assert.That(Enum.IsDefined<GuiWindowType>(GuiWindowType.CharacterSheet), Is.True);
+            Assert.That(Enum.IsDefined<GuiWindowType>(GuiWindowType.ChangePortrait), Is.True);
+            Assert.That(Enum.IsDefined<GuiWindowType>((GuiWindowType)999), Is.False);
+            Assert.That(Enum.IsDefined<GuiWindowType>((GuiWindowType)(-1)), Is.False);
+        }
+
+        [Test]
+        public void EnumHasFlag_ShouldWorkCorrectly()
+        {
+            // Arrange
+            var windowType = GuiWindowType.CharacterSheet;
+
+            // Act & Assert
+            Assert.That(windowType.HasFlag(GuiWindowType.CharacterSheet), Is.True);
+            Assert.That(windowType.HasFlag(GuiWindowType.Invalid), Is.True); // Invalid = 0, so HasFlag returns true
+        }
+
+        [Test]
+        public void EnumCompareTo_ShouldWorkCorrectly()
+        {
+            // Arrange
+            var windowType1 = GuiWindowType.CharacterSheet;
+            var windowType2 = GuiWindowType.Quests;
+            var windowType3 = GuiWindowType.CharacterSheet;
+
+            // Act & Assert
+            Assert.That(windowType1.CompareTo(windowType2), Is.LessThan(0));
+            Assert.That(windowType2.CompareTo(windowType1), Is.GreaterThan(0));
+            Assert.That(windowType1.CompareTo(windowType3), Is.EqualTo(0));
+        }
+
+        [Test]
+        public void EnumEquals_ShouldWorkCorrectly()
+        {
+            // Arrange
+            var windowType1 = GuiWindowType.CharacterSheet;
+            var windowType2 = GuiWindowType.Quests;
+            var windowType3 = GuiWindowType.CharacterSheet;
+
+            // Act & Assert
+            Assert.That(windowType1.Equals(windowType2), Is.False);
+            Assert.That(windowType1.Equals(windowType3), Is.True);
+            Assert.That(windowType1.Equals((object)windowType3), Is.True);
+            Assert.That(windowType1.Equals((object)windowType2), Is.False);
+        }
+
+        [Test]
+        public void EnumGetHashCode_ShouldWorkCorrectly()
+        {
+            // Arrange
+            var windowType1 = GuiWindowType.CharacterSheet;
+            var windowType2 = GuiWindowType.Quests;
+            var windowType3 = GuiWindowType.CharacterSheet;
+
+            // Act & Assert
+            Assert.That(windowType1.GetHashCode(), Is.EqualTo(windowType3.GetHashCode()));
+            Assert.That(windowType1.GetHashCode(), Is.Not.EqualTo(windowType2.GetHashCode()));
+        }
+
+        [Test]
+        public void EnumToString_WithFormat_ShouldWorkCorrectly()
+        {
+            // Arrange
+            var windowType = GuiWindowType.CharacterSheet;
+
+            // Act & Assert
+            Assert.That(windowType.ToString("G"), Is.EqualTo("CharacterSheet"));
+            Assert.That(windowType.ToString("D"), Is.EqualTo("1"));
+            Assert.That(windowType.ToString("X"), Is.EqualTo("00000001"));
+        }
+
+        [Test]
+        public void EnumGetType_ShouldReturnCorrectType()
+        {
+            // Arrange
+            var windowType = GuiWindowType.CharacterSheet;
+
+            // Act
+            var type = windowType.GetType();
+
+            // Assert
+            Assert.That(type, Is.EqualTo(typeof(GuiWindowType)));
+        }
+
+        [Test]
+        public void EnumGetTypeCode_ShouldReturnCorrectTypeCode()
+        {
+            // Arrange
+            var windowType = GuiWindowType.CharacterSheet;
+
+            // Act
+            var typeCode = windowType.GetTypeCode();
+
+            // Assert
+            Assert.That(typeCode, Is.EqualTo(TypeCode.Int32));
         }
     }
 }

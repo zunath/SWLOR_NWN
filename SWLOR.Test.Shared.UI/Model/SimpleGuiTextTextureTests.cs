@@ -1,10 +1,18 @@
+using NUnit.Framework;
 using SWLOR.Shared.UI.Model;
+using SWLOR.Test.Shared;
 
 namespace SWLOR.Test.Shared.UI.Model
 {
     [TestFixture]
-    public class SimpleGuiTextTextureTests
+    public class SimpleGuiTextTextureTests : TestBase
     {
+        [SetUp]
+        public void SetUp()
+        {
+            InitializeMockNWScript();
+        }
+
         [Test]
         public void GuiFontName_ReturnsCorrectValue()
         {
@@ -94,6 +102,35 @@ namespace SWLOR.Test.Shared.UI.Model
         {
             // Assert
             Assert.That(GuiTextTexture.BlankWhite, Is.EqualTo("k"));
+        }
+
+        [Test]
+        public void AllConstants_AreNotNullOrEmpty()
+        {
+            // Arrange
+            var constants = new[]
+            {
+                GuiTextTexture.GuiFontName,
+                GuiTextTexture.TextName,
+                GuiTextTexture.WindowTopLeft,
+                GuiTextTexture.WindowTopMiddle,
+                GuiTextTexture.WindowTopRight,
+                GuiTextTexture.WindowMiddleLeft,
+                GuiTextTexture.WindowMiddleRight,
+                GuiTextTexture.WindowMiddleBlank,
+                GuiTextTexture.WindowBottomLeft,
+                GuiTextTexture.WindowBottomRight,
+                GuiTextTexture.WindowBottomMiddle,
+                GuiTextTexture.Arrow,
+                GuiTextTexture.BlankWhite
+            };
+
+            // Act & Assert
+            foreach (var constant in constants)
+            {
+                Assert.That(constant, Is.Not.Null);
+                Assert.That(constant, Is.Not.Empty);
+            }
         }
     }
 }

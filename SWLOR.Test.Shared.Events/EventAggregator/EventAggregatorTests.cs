@@ -79,7 +79,11 @@ namespace SWLOR.Test.Shared.Events.EventAggregator
             _eventAggregator.Publish(testEvent, target);
 
             // Assert
-            _mockLogger.Received(1).WriteError($"Error in event handler for {typeof(OnServerLoaded).Name}: {exceptionMessage}");
+            _mockLogger.Received(1).WriteError(Arg.Is<string>(msg => 
+                msg.Contains($"Error in event handler for {typeof(OnServerLoaded).Name}:") &&
+                msg.Contains("Exception type: System.Exception") &&
+                msg.Contains($"Message       : {exceptionMessage}") &&
+                msg.Contains("Stacktrace:")));
         }
 
         [Test]

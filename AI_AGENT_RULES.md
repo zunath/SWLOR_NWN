@@ -297,6 +297,7 @@ namespace SWLOR.Component.Perk.Service
 - **RULE**: Write unit tests for business logic, integration tests for event handling
 - **RULE**: Use NSubstitute for mocking and NUnit for unit testing framework
 - **RULE**: All unit tests MUST be in corresponding Test projects (e.g., `SWLOR.Test.Component.Perk`)
+- **RULE**: NEVER add mocks to NWScriptServiceMock that don't have equivalent methods in the production NWScriptService
 
 ## Documentation Rules
 

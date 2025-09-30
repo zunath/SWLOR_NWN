@@ -125,6 +125,8 @@ namespace SWLOR.Game.Server.Service.NPCService
         Byysk_Guardian = 57,
         [NPCGroup("Korriban Initiates")]
         Korriban_RogueInitiates = 58,
+        [NPCGroup("Dantari Shaman")]
+        Dantooine_Dantarishaman = 59,
 
     }
 

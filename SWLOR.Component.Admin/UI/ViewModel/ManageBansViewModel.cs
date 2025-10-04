@@ -1,6 +1,5 @@
 using SWLOR.Component.Admin.Entity;
 using SWLOR.NWN.API.NWNX;
-using SWLOR.NWN.API.Service;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Models;
 using SWLOR.Shared.Core.Data;
@@ -15,11 +14,13 @@ namespace SWLOR.Component.Admin.UI.ViewModel
     {
         private readonly ILogger _logger;
         private readonly IDatabaseService _db;
+        private readonly IAdministrationPluginService _administrationPlugin;
 
-        public ManageBansViewModel(IGuiService guiService, ILogger logger, IDatabaseService db) : base(guiService)
+        public ManageBansViewModel(IGuiService guiService, ILogger logger, IDatabaseService db, IAdministrationPluginService administrationPlugin) : base(guiService)
         {
             _logger = logger;
             _db = db;
+            _administrationPlugin = administrationPlugin;
         }
         
         private int SelectedUserIndex { get; set; }
@@ -152,7 +153,7 @@ namespace SWLOR.Component.Admin.UI.ViewModel
                 StatusText = "User ban deleted successfully.";
                 StatusColor = GuiColor.Green;
 
-                AdministrationPlugin.RemoveBannedCDKey(dbUser.CDKey);
+                _administrationPlugin.RemoveBannedCDKey(dbUser.CDKey);
 
                 _logger.Write<ServerLogGroup>($"User deleted from ban list. CDKey: {dbUser.CDKey}, Reason: {dbUser.Reason}");
             });
@@ -170,14 +171,14 @@ namespace SWLOR.Component.Admin.UI.ViewModel
             var userId = _userIds[SelectedUserIndex];
             var dbUser = _db.Get<PlayerBan>(userId);
 
-            AdministrationPlugin.RemoveBannedCDKey(dbUser.CDKey);
+            _administrationPlugin.RemoveBannedCDKey(dbUser.CDKey);
 
             dbUser.Reason = ActiveBanReason;
             dbUser.CDKey = ActiveUserCDKey;
 
             _db.Set(dbUser);
 
-            AdministrationPlugin.AddBannedCDKey(dbUser.CDKey);
+            _administrationPlugin.AddBannedCDKey(dbUser.CDKey);
 
             CDKeys[SelectedUserIndex] = dbUser.CDKey;
 

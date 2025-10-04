@@ -32,6 +32,7 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
         private readonly IHoloComService _holoComService;
         private readonly IRecastService _recastService;
         private readonly ILanguageService _language;
+        private readonly IAdministrationPluginService _administrationPlugin;
 
         public CharacterChatCommand(
             IDatabaseService db, 
@@ -40,7 +41,8 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
             ICommunicationService communication, 
             IHoloComService holoComService, 
             IRecastService recastService,
-            ILanguageService languageService)
+            ILanguageService languageService,
+            IAdministrationPluginService administrationPlugin)
         {
             _db = db;
             _abilityService = abilityService;
@@ -49,6 +51,7 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
             _holoComService = holoComService;
             _recastService = recastService;
             _language = languageService;
+            _administrationPlugin = administrationPlugin;
         }
 
         public Dictionary<string, ChatCommandDetail> BuildChatCommands()
@@ -334,8 +337,8 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
 
                         var playerName = GetPCPlayerName(user);
                         var characterName = GetName(user);
-                        AdministrationPlugin.DeletePlayerCharacter(user, true, "Your character has been deleted.");
-                        AdministrationPlugin.DeleteTURD(playerName, characterName);
+                        _administrationPlugin.DeletePlayerCharacter(user, true, "Your character has been deleted.");
+                        _administrationPlugin.DeleteTURD(playerName, characterName);
                     }
                 });
         }

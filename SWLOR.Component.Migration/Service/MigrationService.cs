@@ -4,7 +4,6 @@ using SWLOR.Component.Migration.Contracts;
 using SWLOR.Component.Migration.Entity;
 using SWLOR.Component.Migration.Enums;
 using SWLOR.NWN.API.NWNX;
-using SWLOR.NWN.API.Service;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Extensions;
 using SWLOR.Shared.Core.Extension;
@@ -20,17 +19,19 @@ namespace SWLOR.Component.Migration.Service
         private readonly ILogger _logger;
         private readonly IDatabaseService _db;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IAdministrationPluginService _administrationPlugin;
         private static int _currentMigrationVersion;
         private static int _newMigrationVersion;
         private static readonly Dictionary<int, IServerMigration> _serverMigrationsPostDatabase = new();
         private static readonly Dictionary<int, IServerMigration> _serverMigrationsPostCache = new();
         private static readonly Dictionary<int, IPlayerMigration> _playerMigrations = new();
 
-        public MigrationService(ILogger logger, IDatabaseService db, IServiceProvider serviceProvider)
+        public MigrationService(ILogger logger, IDatabaseService db, IServiceProvider serviceProvider, IAdministrationPluginService administrationPlugin)
         {
             _logger = logger;
             _db = db;
             _serviceProvider = serviceProvider;
+            _administrationPlugin = administrationPlugin;
         }
 
         public void AfterDatabaseLoaded()
@@ -110,7 +111,7 @@ namespace SWLOR.Component.Migration.Service
                 {
                     // It's dangerous to proceed without a successful migration. Shut down the server in this situation.
                     _logger.Write<ErrorLogGroup>($"Server migration ({executionType}) #{migration.Version} failed to apply. Exception: {ex.ToMessageAndCompleteStacktrace()}. Shutting down server.");
-                    AdministrationPlugin.ShutdownServer();
+                    _administrationPlugin.ShutdownServer();
                     break;
                 }
             }

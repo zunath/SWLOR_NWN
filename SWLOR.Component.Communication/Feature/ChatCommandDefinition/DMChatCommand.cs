@@ -36,6 +36,7 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
         private readonly ISpaceService _space;
         private readonly IDiscordNotificationService _discord;
         private readonly IEventAggregator _eventAggregator;
+        private readonly IAdministrationPluginService _administrationPlugin;
         
 
         public DMChatCommand(
@@ -47,7 +48,8 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
             IFactionService faction,
             ISpaceService space,
             IDiscordNotificationService discord,
-            IEventAggregator eventAggregator)
+            IEventAggregator eventAggregator,
+            IAdministrationPluginService administrationPlugin)
         {
             _guiService = guiService;
             _db = db;
@@ -58,6 +60,7 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
             _space = space;
             _discord = discord;
             _eventAggregator = eventAggregator;
+            _administrationPlugin = administrationPlugin;
         }
 
         public Dictionary<string, ChatCommandDetail> BuildChatCommands()
@@ -834,7 +837,7 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
                         BootPC(player, "The server is restarting.");
                         player = GetNextPC();
                     }
-                    AdministrationPlugin.ShutdownServer();
+                    _administrationPlugin.ShutdownServer();
                 });
         }
 

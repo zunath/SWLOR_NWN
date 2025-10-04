@@ -32,6 +32,7 @@ using SWLOR.Shared.Events.Infrastructure;
 using SWLOR.Shared.Events.Service;
 using ScriptExecutionProvider = SWLOR.Game.Server.Server.ScriptExecutionProvider;
 using SWLOR.Shared.UI.Infrastructure;
+using SWLOR.NWN.API.NWNX;
 
 namespace SWLOR.Game.Server
 {
@@ -123,6 +124,8 @@ namespace SWLOR.Game.Server
 
         private static void AddGameSpecificServices(IServiceCollection services)
         {
+            // Register NWNX Plugin Services
+            services.AddSingleton<IAdministrationPluginService, AdministrationPluginService>();
         }
 
     }

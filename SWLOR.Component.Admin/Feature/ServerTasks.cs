@@ -1,7 +1,6 @@
 using SWLOR.Component.Admin.Entity;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWNX.Enum;
-using SWLOR.NWN.API.Service;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data;
@@ -18,17 +17,20 @@ namespace SWLOR.Component.Admin.Feature
         private readonly IDatabaseService _db;
         private readonly ITimeService _timeService;
         private readonly IScheduler _scheduler;
+        private readonly IAdministrationPluginService _administrationPlugin;
 
         public ServerTasks(
             ILogger logger, 
             IDatabaseService db, 
             IScheduler scheduler,
-            ITimeService timeService)
+            ITimeService timeService,
+            IAdministrationPluginService administrationPlugin)
         {
             _logger = logger;
             _db = db;
             _scheduler = scheduler;
             _timeService = timeService;
+            _administrationPlugin = administrationPlugin;
         }
 
         // This determines what time the server will restart.
@@ -62,7 +64,7 @@ namespace SWLOR.Component.Admin.Feature
                 
                 DelayCommand(0.1f, () =>
                 {
-                    AdministrationPlugin.ShutdownServer();
+                    _administrationPlugin.ShutdownServer();
                 });
             }
         }
@@ -80,8 +82,8 @@ namespace SWLOR.Component.Admin.Feature
 
         private void ConfigureServerSettings()
         {
-            AdministrationPlugin.SetPlayOption(AdministrationOptionType.ExamineChallengeRating, false);
-            AdministrationPlugin.SetPlayOption(AdministrationOptionType.UseMaxHitpoints, true);
+            _administrationPlugin.SetPlayOption(AdministrationOptionType.ExamineChallengeRating, false);
+            _administrationPlugin.SetPlayOption(AdministrationOptionType.UseMaxHitpoints, true);
         }
 
         private void ApplyBans()
@@ -93,7 +95,7 @@ namespace SWLOR.Component.Admin.Feature
 
             foreach (var ban in dbBans)
             {
-                AdministrationPlugin.AddBannedCDKey(ban.CDKey);
+                _administrationPlugin.AddBannedCDKey(ban.CDKey);
             }
         }
 

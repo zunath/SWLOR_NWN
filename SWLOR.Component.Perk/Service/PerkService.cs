@@ -23,6 +23,7 @@ namespace SWLOR.Component.Perk.Service
         private readonly IGenericCacheService _cacheService;
         private readonly IServiceProvider _serviceProvider;
         private readonly ICreaturePluginService _creaturePlugin;
+        private readonly IEventsPluginService _eventsPlugin;
         
         // Lazy-loaded services to break circular dependencies
         private readonly Lazy<IBeastMasteryService> _beastMasteryService;
@@ -44,13 +45,14 @@ namespace SWLOR.Component.Perk.Service
         private readonly Dictionary<PerkType, Dictionary<int, int>> _perkLevelTiers = new();
         private readonly Dictionary<SkillType, List<PerkType>> _perksWithSkillRequirement = new();
 
-        public PerkService(ILogger logger, IDatabaseService db, IGenericCacheService cacheService, IServiceProvider serviceProvider, ICreaturePluginService creaturePlugin)
+        public PerkService(ILogger logger, IDatabaseService db, IGenericCacheService cacheService, IServiceProvider serviceProvider, ICreaturePluginService creaturePlugin, IEventsPluginService eventsPlugin)
         {
             _logger = logger;
             _db = db;
             _cacheService = cacheService;
             _serviceProvider = serviceProvider;
             _creaturePlugin = creaturePlugin;
+            _eventsPlugin = eventsPlugin;
             
             // Initialize lazy services
             _beastMasteryService = new Lazy<IBeastMasteryService>(() => _serviceProvider.GetRequiredService<IBeastMasteryService>());
@@ -689,7 +691,7 @@ namespace SWLOR.Component.Perk.Service
         /// </summary>
         public void RemovePerkLevelOnSkillDecay()
         {
-            var skillType = (SkillType)Convert.ToInt32(EventsPlugin.GetEventData("SKILL_TYPE_ID"));
+            var skillType = (SkillType)Convert.ToInt32(_eventsPlugin.GetEventData("SKILL_TYPE_ID"));
             
             // Early exit - if no perks are tied to this skill, then it doesn't matter. There's nothing to remove.
             if (!_perksWithSkillRequirement.ContainsKey(skillType))

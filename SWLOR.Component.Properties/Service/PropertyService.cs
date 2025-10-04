@@ -35,6 +35,7 @@ namespace SWLOR.Component.Properties.Service
         private readonly IDialogService _dialogService;
         private readonly StructureChangedAction _structureChangedAction;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IEventsPluginService _eventsPlugin;
         private readonly Dictionary<StructureType, StructureAttribute> _activeStructures = new();
         private readonly Dictionary<PropertyType, PropertyTypeAttribute> _propertyTypes = new();
         private readonly Dictionary<PropertyLayoutType, PropertyLayout> _activeLayouts = new();
@@ -68,7 +69,8 @@ namespace SWLOR.Component.Properties.Service
             IPlanetService planetService, 
             IDialogService dialogService,
             StructureChangedAction structureChangedAction,
-            IServiceProvider serviceProvider)
+            IServiceProvider serviceProvider,
+            IEventsPluginService eventsPlugin)
         {
             _logger = logger;
             _db = db;
@@ -78,6 +80,7 @@ namespace SWLOR.Component.Properties.Service
             _dialogService = dialogService;
             _structureChangedAction = structureChangedAction;
             _serviceProvider = serviceProvider;
+            _eventsPlugin = eventsPlugin;
             _structureChangedActions = _structureChangedAction.BuildSpawnActions();
         }
 
@@ -969,8 +972,8 @@ namespace SWLOR.Component.Properties.Service
             _db.Delete<WorldProperty>(property.Id);
             _logger.Write<PropertyLogGroup>( $"Property '{property.CustomName}' deleted.");
 
-            EventsPlugin.PushEventData("PROPERTY_ID", property.Id);
-            EventsPlugin.SignalEvent("SWLOR_DELETE_PROPERTY", GetModule());
+            _eventsPlugin.PushEventData("PROPERTY_ID", property.Id);
+            _eventsPlugin.SignalEvent("SWLOR_DELETE_PROPERTY", GetModule());
         }
 
         /// <summary>
@@ -1858,7 +1861,7 @@ namespace SWLOR.Component.Properties.Service
         /// </summary>
         public void PropertyMenu()
         {
-            var feat = (FeatType)Convert.ToInt32(EventsPlugin.GetEventData("FEAT_ID"));
+            var feat = (FeatType)Convert.ToInt32(_eventsPlugin.GetEventData("FEAT_ID"));
 
             if (feat != FeatType.PropertyMenu) return;
 
@@ -1940,11 +1943,11 @@ namespace SWLOR.Component.Properties.Service
         /// </summary>
         public void PlaceStructure()
         {
-            var item = StringToObject(EventsPlugin.GetEventData("ITEM_OBJECT_ID"));
+            var item = StringToObject(_eventsPlugin.GetEventData("ITEM_OBJECT_ID"));
             if (!GetResRef(item).StartsWith("structure_"))
                 return;
 
-            EventsPlugin.SkipEvent();
+            _eventsPlugin.SkipEvent();
 
             var player = OBJECT_SELF;
             var area = GetArea(player);
@@ -1952,9 +1955,9 @@ namespace SWLOR.Component.Properties.Service
             var playerId = GetObjectUUID(player);
             var structureType = GetStructureTypeFromItem(item);
             var position = Vector3(
-                (float)Convert.ToDouble(EventsPlugin.GetEventData("TARGET_POSITION_X")),
-                (float)Convert.ToDouble(EventsPlugin.GetEventData("TARGET_POSITION_Y")),
-                (float)Convert.ToDouble(EventsPlugin.GetEventData("TARGET_POSITION_Z")));
+                (float)Convert.ToDouble(_eventsPlugin.GetEventData("TARGET_POSITION_X")),
+                (float)Convert.ToDouble(_eventsPlugin.GetEventData("TARGET_POSITION_Y")),
+                (float)Convert.ToDouble(_eventsPlugin.GetEventData("TARGET_POSITION_Z")));
 
             // Special case: City Hall pulls up a menu with details about the land and an option to place it down, claiming the land.
             if (structureType == StructureType.CityHall)

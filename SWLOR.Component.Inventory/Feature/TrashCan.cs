@@ -10,6 +10,13 @@ namespace SWLOR.Component.Inventory.Feature
 {
     public class TrashCan
     {
+        private readonly IEventsPluginService _eventsPlugin;
+
+        public TrashCan(IEventsPluginService eventsPlugin)
+        {
+            _eventsPlugin = eventsPlugin;
+        }
+
         /// <summary>
         /// When a player attempts to drop an item, prevent them from doing so and send a message to use the trash can.
         /// DMs are exempt from this rule.
@@ -21,7 +28,7 @@ namespace SWLOR.Component.Inventory.Feature
             if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                 return;
 
-            EventsPlugin.SkipEvent();
+            _eventsPlugin.SkipEvent();
             
             SendMessageToPC(player, ColorToken.Red("Please use the trash can option in your character menu to discard items."));
         }

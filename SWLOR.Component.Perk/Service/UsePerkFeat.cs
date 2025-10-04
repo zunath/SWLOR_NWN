@@ -23,6 +23,7 @@ namespace SWLOR.Component.Perk.Service
     public class UsePerkFeat : IUsePerkFeat
     {
         private readonly IServiceProvider _serviceProvider;
+        private readonly IEventsPluginService _eventsPlugin;
         
         // Lazy-loaded services to break circular dependencies
         private readonly Lazy<IAbilityService> _abilityService;
@@ -41,9 +42,10 @@ namespace SWLOR.Component.Perk.Service
         private IActivityService ActivityService => _activityService.Value;
         private IMessagingService MessagingService => _messagingService.Value;
 
-        public UsePerkFeat(IServiceProvider serviceProvider)
+        public UsePerkFeat(IServiceProvider serviceProvider, IEventsPluginService eventsPlugin)
         {
             _serviceProvider = serviceProvider;
+            _eventsPlugin = eventsPlugin;
             
             // Initialize lazy services
             _abilityService = new Lazy<IAbilityService>(() => _serviceProvider.GetRequiredService<IAbilityService>());
@@ -92,12 +94,12 @@ namespace SWLOR.Component.Perk.Service
         public void UseFeat()
         {
             var activator = OBJECT_SELF;
-            var target = StringToObject(EventsPlugin.GetEventData("TARGET_OBJECT_ID"));
-            var targetArea = StringToObject(EventsPlugin.GetEventData("AREA_OBJECT_ID"));
+            var target = StringToObject(_eventsPlugin.GetEventData("TARGET_OBJECT_ID"));
+            var targetArea = StringToObject(_eventsPlugin.GetEventData("AREA_OBJECT_ID"));
             var targetPosition = Vector3(
-                (float)Convert.ToDouble(EventsPlugin.GetEventData("TARGET_POSITION_X")),
-                (float)Convert.ToDouble(EventsPlugin.GetEventData("TARGET_POSITION_Y")),
-                (float)Convert.ToDouble(EventsPlugin.GetEventData("TARGET_POSITION_Z"))
+                (float)Convert.ToDouble(_eventsPlugin.GetEventData("TARGET_POSITION_X")),
+                (float)Convert.ToDouble(_eventsPlugin.GetEventData("TARGET_POSITION_Y")),
+                (float)Convert.ToDouble(_eventsPlugin.GetEventData("TARGET_POSITION_Z"))
             );
 
             // If we have a valid target, use its position
@@ -108,7 +110,7 @@ namespace SWLOR.Component.Perk.Service
 
             var targetLocation = Location(targetArea, targetPosition, 0.0f);
 
-            var feat = (FeatType)Convert.ToInt32(EventsPlugin.GetEventData("FEAT_ID"));
+            var feat = (FeatType)Convert.ToInt32(_eventsPlugin.GetEventData("FEAT_ID"));
             if (!AbilityService.IsFeatRegistered(feat)) return;
             var ability = AbilityService.GetAbilityDetail(feat);
 

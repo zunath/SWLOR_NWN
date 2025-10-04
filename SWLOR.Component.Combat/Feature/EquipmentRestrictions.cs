@@ -22,19 +22,22 @@ namespace SWLOR.Component.Combat.Feature
         private readonly IPerkService _perkService;
         private readonly IDroidService _droidService;
         private readonly IGuiService _guiService;
+        private readonly IEventsPluginService _eventsPlugin;
 
         public EquipmentRestrictions(
             IDatabaseService db, 
             IItemService itemService, 
             IPerkService perkService, 
             IDroidService droidService, 
-            IGuiService guiService)
+            IGuiService guiService,
+            IEventsPluginService eventsPlugin)
         {
             _db = db;
             _itemService = itemService;
             _perkService = perkService;
             _droidService = droidService;
             _guiService = guiService;
+            _eventsPlugin = eventsPlugin;
         }
         
         /// <summary>
@@ -45,8 +48,8 @@ namespace SWLOR.Component.Combat.Feature
         public void ValidateItemEquip()
         {
             var creature = OBJECT_SELF;
-            var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
-            var slot = (InventorySlotType)Convert.ToInt32(EventsPlugin.GetEventData("SLOT"));
+            var item = StringToObject(_eventsPlugin.GetEventData("ITEM"));
+            var slot = (InventorySlotType)Convert.ToInt32(_eventsPlugin.GetEventData("SLOT"));
 
             var isSwapping = IsItemSwapping(creature, item, slot);
             var canUseItem = CanItemBeUsed(creature, item);
@@ -58,9 +61,9 @@ namespace SWLOR.Component.Combat.Feature
                 !isSwapping &&
                 !isRingSwappingPositions)
             {
-                EventsPlugin.PushEventData("ITEM", ObjectToString(item));
-                EventsPlugin.PushEventData("SLOT", Convert.ToString((int)slot));
-                EventsPlugin.SignalEvent("SWLOR_ITEM_EQUIP_VALID_BEFORE", creature);
+                _eventsPlugin.PushEventData("ITEM", ObjectToString(item));
+                _eventsPlugin.PushEventData("SLOT", Convert.ToString((int)slot));
+                _eventsPlugin.SignalEvent("SWLOR_ITEM_EQUIP_VALID_BEFORE", creature);
                 return;
             }
 
@@ -74,7 +77,7 @@ namespace SWLOR.Component.Combat.Feature
                 SendMessageToPC(messageTarget, ColorToken.Red(canUseItem));
             }
             
-            EventsPlugin.SkipEvent();
+            _eventsPlugin.SkipEvent();
         }
 
         private bool IsItemSwapping(uint creature, uint item, InventorySlotType slot)
@@ -154,7 +157,7 @@ namespace SWLOR.Component.Combat.Feature
             if (dualWieldLevel <= 0)
             {
                 SendMessageToPC(creature, ColorToken.Red("Equipping two weapons requires the Dual Wield perk."));
-                EventsPlugin.SkipEvent();
+                _eventsPlugin.SkipEvent();
 
                 return false;
             }
@@ -275,8 +278,8 @@ namespace SWLOR.Component.Combat.Feature
             var player = OBJECT_SELF;
             if (GetIsDM(player)) return;
 
-            var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
-            var slot = (InventorySlotType)Convert.ToInt32(EventsPlugin.GetEventData("SLOT"));
+            var item = StringToObject(_eventsPlugin.GetEventData("ITEM"));
+            var slot = (InventorySlotType)Convert.ToInt32(_eventsPlugin.GetEventData("SLOT"));
 
             // The unequip event doesn't fire if an item is being swapped out. 
             // If there's an item in the slot, run the unequip triggers first.
@@ -323,7 +326,7 @@ namespace SWLOR.Component.Combat.Feature
             var player = OBJECT_SELF;
             if (GetIsDM(player)) return;
 
-            var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
+            var item = StringToObject(_eventsPlugin.GetEventData("ITEM"));
             RunUnequipTriggers(player, item);
         }
     }

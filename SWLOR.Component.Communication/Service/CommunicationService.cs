@@ -24,6 +24,7 @@ namespace SWLOR.Component.Communication.Service
         private readonly IDatabaseService _db;
         private readonly IServiceProvider _serviceProvider;
         private readonly IChatPluginService _chatPlugin;
+        private readonly IEventsPluginService _eventsPlugin;
         private const string DMPossessedCreature = "COMMUNICATION_DM_POSSESSED_CREATURE";
         private const int HolonetDelayMinutes = 5;
         
@@ -35,11 +36,12 @@ namespace SWLOR.Component.Communication.Service
         public (byte, byte, byte) OOCChatColor => CommunicationConstants.OOCChatColor;
         public (byte, byte, byte) EmoteChatColor => CommunicationConstants.EmoteChatColor;
 
-        public CommunicationService(IDatabaseService db, IServiceProvider serviceProvider, IChatPluginService chatPlugin)
+        public CommunicationService(IDatabaseService db, IServiceProvider serviceProvider, IChatPluginService chatPlugin, IEventsPluginService eventsPlugin)
         {
             _db = db;
             _serviceProvider = serviceProvider;
             _chatPlugin = chatPlugin;
+            _eventsPlugin = eventsPlugin;
             
             // Initialize lazy services
             _activityService = new Lazy<IActivityService>(() => _serviceProvider.GetRequiredService<IActivityService>());
@@ -77,7 +79,7 @@ namespace SWLOR.Component.Communication.Service
         public void OnDMPossess()
         {
             var dm = OBJECT_SELF;
-            var target = StringToObject(EventsPlugin.GetEventData("TARGET"));
+            var target = StringToObject(_eventsPlugin.GetEventData("TARGET"));
             
             // Unpossession - Remove the variable
             if (!GetIsObjectValid(target))

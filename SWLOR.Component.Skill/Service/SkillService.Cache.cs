@@ -81,7 +81,7 @@ namespace SWLOR.Component.Skill.Service
             // Pre-compute caches for fast retrieval
             PopulatePreComputedCaches();
 
-            EventsPlugin.SignalEvent("SWLOR_CACHE_SKILLS_LOADED", GetModule());
+            _eventsPlugin.SignalEvent("SWLOR_CACHE_SKILLS_LOADED", GetModule());
             Console.WriteLine($"Loaded {_categoryCache.GetFilteredCache("Active")?.Count ?? 0} skill categories.");
             Console.WriteLine($"Loaded {_skillCache.AllItems.Count} skills.");
             Console.WriteLine("Skill.Cache.CacheData() completed successfully!");

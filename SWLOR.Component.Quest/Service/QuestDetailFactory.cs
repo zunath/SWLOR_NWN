@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Quest.Contracts;
+using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Dialog.Contracts;
 using SWLOR.Shared.Domain.Quest.Contracts;
@@ -26,8 +27,9 @@ namespace SWLOR.Component.Quest.Service
             var gui = _serviceProvider.GetRequiredService<IGuiService>();
             var dialog = _serviceProvider.GetRequiredService<IDialogService>();
             var quest = _serviceProvider.GetRequiredService<IQuestService>();
+            var eventsPlugin = _serviceProvider.GetRequiredService<IEventsPluginService>();
             
-            var questDetail = new QuestDetail(db, gui, dialog, quest)
+            var questDetail = new QuestDetail(db, gui, dialog, quest, eventsPlugin)
             {
                 QuestId = questId,
                 Name = name

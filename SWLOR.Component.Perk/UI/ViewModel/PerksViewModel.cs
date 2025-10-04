@@ -33,19 +33,22 @@ namespace SWLOR.Component.Perk.UI.ViewModel
         private readonly IDatabaseService _db;
         private readonly IServiceProvider _serviceProvider;
         private readonly ICreaturePluginService _creaturePlugin;
+        private readonly IEventsPluginService _eventsPlugin;
 
         public PerksViewModel(
             IGuiService guiService, 
             ILogger logger, 
             IDatabaseService db, 
             IServiceProvider serviceProvider,
-            ICreaturePluginService creaturePlugin) 
+            ICreaturePluginService creaturePlugin,
+            IEventsPluginService eventsPlugin) 
             : base(guiService)
         {
             _logger = logger;
             _db = db;
             _serviceProvider = serviceProvider;
             _creaturePlugin = creaturePlugin;
+            _eventsPlugin = eventsPlugin;
             _filteredPerks = new List<PerkType>();
         }
 
@@ -721,7 +724,7 @@ namespace SWLOR.Component.Perk.UI.ViewModel
 
                     FloatingTextStringOnCreature(ColorToken.Green($"You purchase '{detail.Name}' rank {newRank}."), Player, false);
 
-                    EventsPlugin.SignalEvent("SWLOR_BUY_PERK", Player);
+                    _eventsPlugin.SignalEvent("SWLOR_BUY_PERK", Player);
                     _guiService.PublishRefreshEvent(Player, new PerkAcquiredRefreshEvent(selectedPerk));
 
                     ExportSingleCharacter(Player);

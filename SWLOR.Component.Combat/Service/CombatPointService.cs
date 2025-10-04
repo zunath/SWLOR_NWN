@@ -20,6 +20,7 @@ namespace SWLOR.Component.Combat.Service
     {
         private readonly IDatabaseService _db;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IEventsPluginService _eventsPlugin;
         
         /// <summary>
         /// Tracks the combat points earned by players during combat.
@@ -33,10 +34,12 @@ namespace SWLOR.Component.Combat.Service
 
         public CombatPointService(
             IDatabaseService db,
-            IServiceProvider serviceProvider)
+            IServiceProvider serviceProvider,
+            IEventsPluginService eventsPlugin)
         {
             _db = db;
             _serviceProvider = serviceProvider;
+            _eventsPlugin = eventsPlugin;
             
             // Initialize lazy services
             _skillService = new Lazy<ISkillService>(() => _serviceProvider.GetRequiredService<ISkillService>());
@@ -205,8 +208,8 @@ namespace SWLOR.Component.Combat.Service
                         }
                     }
 
-                    EventsPlugin.PushEventData("NPC", ObjectToString(npc));
-                    EventsPlugin.SignalEvent("SWLOR_COMBAT_POINT_DISTRIBUTED", player);
+                    _eventsPlugin.PushEventData("NPC", ObjectToString(npc));
+                    _eventsPlugin.SignalEvent("SWLOR_COMBAT_POINT_DISTRIBUTED", player);
                 }
             }
 

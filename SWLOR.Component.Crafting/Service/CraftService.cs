@@ -37,6 +37,7 @@ namespace SWLOR.Component.Crafting.Service
         private readonly IGenericCacheService _cacheService;
         private readonly IServiceProvider _serviceProvider;
         private readonly ITimeService _timeService;
+        private readonly IEventsPluginService _eventsPlugin;
         
         // Lazy-loaded services to break circular dependencies
         private readonly Lazy<IGuiService> _guiService;
@@ -50,7 +51,8 @@ namespace SWLOR.Component.Crafting.Service
             IGenericCacheService cacheService, 
             IItemCacheService itemCache, 
             IServiceProvider serviceProvider,
-            ITimeService timeService)
+            ITimeService timeService,
+            IEventsPluginService eventsPlugin)
         {
             _logger = logger;
             _db = db;
@@ -58,6 +60,7 @@ namespace SWLOR.Component.Crafting.Service
             _itemCache = itemCache;
             _serviceProvider = serviceProvider;
             _timeService = timeService;
+            _eventsPlugin = eventsPlugin;
             
             // Initialize lazy services
             _guiService = new Lazy<IGuiService>(() => _serviceProvider.GetRequiredService<IGuiService>());
@@ -964,7 +967,7 @@ namespace SWLOR.Component.Crafting.Service
         /// </summary>
         public void OnRemoveProperty()
         {
-            var propertyId = EventsPlugin.GetEventData("PROPERTY_ID");
+            var propertyId = _eventsPlugin.GetEventData("PROPERTY_ID");
             var dbQuery = new DBQuery<ResearchJob>()
                 .AddFieldSearch(nameof(ResearchJob.ParentPropertyId), propertyId, false);
             var dbJobs = _db.Search(dbQuery).ToList();

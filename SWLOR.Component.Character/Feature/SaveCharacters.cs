@@ -10,6 +10,12 @@ namespace SWLOR.Component.Character.Feature
     {
         private const string SaveCharactersVariable = "SAVE_CHARACTERS_TICK";
         private const string IsBarteringVariable = "IS_BARTERING";
+        private readonly IEventsPluginService _eventsPlugin;
+
+        public SaveCharacters(IEventsPluginService eventsPlugin)
+        {
+            _eventsPlugin = eventsPlugin;
+        }
 
         /// <summary>
         /// Saves characters every minute unless they're currently preoccupied (barter)
@@ -39,7 +45,7 @@ namespace SWLOR.Component.Character.Feature
         public void SetBarteringFlag()
         {
             var player1 = OBJECT_SELF;
-            var player2 = StringToObject(EventsPlugin.GetEventData("BARTER_TARGET"));
+            var player2 = StringToObject(_eventsPlugin.GetEventData("BARTER_TARGET"));
 
             SetLocalBool(player1, IsBarteringVariable, true);
             SetLocalBool(player2, IsBarteringVariable, true);
@@ -52,7 +58,7 @@ namespace SWLOR.Component.Character.Feature
         public void RemoveBarteringFlag()
         {
             var player1 = OBJECT_SELF;
-            var player2 = StringToObject(EventsPlugin.GetEventData("BARTER_TARGET"));
+            var player2 = StringToObject(_eventsPlugin.GetEventData("BARTER_TARGET"));
 
             DeleteLocalBool(player1, IsBarteringVariable);
             DeleteLocalBool(player2, IsBarteringVariable);

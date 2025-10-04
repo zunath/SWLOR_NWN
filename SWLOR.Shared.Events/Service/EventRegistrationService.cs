@@ -15,17 +15,20 @@ namespace SWLOR.Shared.Events.Service
         private readonly IEventAggregator _eventAggregator;
         private readonly IEventHandlerDiscoveryService _eventHandlerDiscovery;
         private readonly IChatPluginService _chatPlugin;
+        private readonly IEventsPluginService _eventsPlugin;
 
         public EventRegistrationService(
             IScheduler scheduler,
             IEventAggregator eventAggregator,
             IEventHandlerDiscoveryService eventHandlerDiscovery,
-            IChatPluginService chatPlugin)
+            IChatPluginService chatPlugin,
+            IEventsPluginService eventsPlugin)
         {
             _scheduler = scheduler;
             _eventAggregator = eventAggregator;
             _eventHandlerDiscovery = eventHandlerDiscovery;
             _chatPlugin = chatPlugin;
+            _eventsPlugin = eventsPlugin;
         }
 
         public void RegisterEvents()
@@ -107,417 +110,417 @@ namespace SWLOR.Shared.Events.Service
             // Events Plugin Events start here.
 
             // Associate events
-            EventsPlugin.SubscribeEvent("NWNX_ON_ADD_ASSOCIATE_BEFORE", ScriptName.OnAssociateAddBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_ADD_ASSOCIATE_AFTER", ScriptName.OnAssociateAddAfter);
-            EventsPlugin.SubscribeEvent("NWNX_ON_REMOVE_ASSOCIATE_BEFORE", ScriptName.OnAssociateRemoveBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_REMOVE_ASSOCIATE_AFTER", ScriptName.OnAssociateRemoveAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_ADD_ASSOCIATE_BEFORE", ScriptName.OnAssociateAddBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_ADD_ASSOCIATE_AFTER", ScriptName.OnAssociateAddAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_REMOVE_ASSOCIATE_BEFORE", ScriptName.OnAssociateRemoveBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_REMOVE_ASSOCIATE_AFTER", ScriptName.OnAssociateRemoveAfter);
 
             // Stealth events
-            EventsPlugin.SubscribeEvent("NWNX_ON_STEALTH_ENTER_BEFORE", ScriptName.OnStealthEnterBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_STEALTH_ENTER_AFTER", ScriptName.OnStealthEnterAfter);
-            EventsPlugin.SubscribeEvent("NWNX_ON_STEALTH_EXIT_BEFORE", ScriptName.OnStealthExitBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_STEALTH_EXIT_AFTER", ScriptName.OnStealthExitAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_STEALTH_ENTER_BEFORE", ScriptName.OnStealthEnterBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_STEALTH_ENTER_AFTER", ScriptName.OnStealthEnterAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_STEALTH_EXIT_BEFORE", ScriptName.OnStealthExitBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_STEALTH_EXIT_AFTER", ScriptName.OnStealthExitAfter);
 
             // Examine events
-            EventsPlugin.SubscribeEvent("NWNX_ON_EXAMINE_OBJECT_BEFORE", ScriptName.OnExamineObjectBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_EXAMINE_OBJECT_AFTER", ScriptName.OnExamineObjectAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_EXAMINE_OBJECT_BEFORE", ScriptName.OnExamineObjectBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_EXAMINE_OBJECT_AFTER", ScriptName.OnExamineObjectAfter);
 
             // Validate Use Item events
-            EventsPlugin.SubscribeEvent("NWNX_ON_VALIDATE_USE_ITEM_BEFORE", ScriptName.OnValidateUseItemBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_VALIDATE_USE_ITEM_AFTER", ScriptName.OnValidateUseItemAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_VALIDATE_USE_ITEM_BEFORE", ScriptName.OnValidateUseItemBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_VALIDATE_USE_ITEM_AFTER", ScriptName.OnValidateUseItemAfter);
 
             // Use Item events
-            EventsPlugin.SubscribeEvent("NWNX_ON_USE_ITEM_BEFORE", ScriptName.OnUseItemBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_USE_ITEM_AFTER", ScriptName.OnUseItemAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_USE_ITEM_BEFORE", ScriptName.OnUseItemBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_USE_ITEM_AFTER", ScriptName.OnUseItemAfter);
 
             // Item Container events
-            EventsPlugin.SubscribeEvent("NWNX_ON_ITEM_INVENTORY_OPEN_BEFORE", ScriptName.OnInventoryOpenBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_ITEM_INVENTORY_OPEN_AFTER", ScriptName.OnInventoryOpenAfter);
-            EventsPlugin.SubscribeEvent("NWNX_ON_ITEM_INVENTORY_CLOSE_BEFORE", ScriptName.OnItemInventoryCloseBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_ITEM_INVENTORY_CLOSE_AFTER", ScriptName.OnItemInventoryCloseAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_ITEM_INVENTORY_OPEN_BEFORE", ScriptName.OnInventoryOpenBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_ITEM_INVENTORY_OPEN_AFTER", ScriptName.OnInventoryOpenAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_ITEM_INVENTORY_CLOSE_BEFORE", ScriptName.OnItemInventoryCloseBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_ITEM_INVENTORY_CLOSE_AFTER", ScriptName.OnItemInventoryCloseAfter);
 
             // Ammunition Reload events
-            EventsPlugin.SubscribeEvent("NWNX_ON_ITEM_AMMO_RELOAD_BEFORE", ScriptName.OnItemAmmoReloadBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_ITEM_AMMO_RELOAD_AFTER", ScriptName.OnItemAmmoReloadAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_ITEM_AMMO_RELOAD_BEFORE", ScriptName.OnItemAmmoReloadBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_ITEM_AMMO_RELOAD_AFTER", ScriptName.OnItemAmmoReloadAfter);
 
             // Scroll Learn events
-            EventsPlugin.SubscribeEvent("NWNX_ON_ITEM_SCROLL_LEARN_BEFORE", ScriptName.OnItemScrollLearnBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_ITEM_SCROLL_LEARN_AFTER", ScriptName.OnItemScrollLearnAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_ITEM_SCROLL_LEARN_BEFORE", ScriptName.OnItemScrollLearnBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_ITEM_SCROLL_LEARN_AFTER", ScriptName.OnItemScrollLearnAfter);
 
             // Validate Item Equip events
-            EventsPlugin.SubscribeEvent("NWNX_ON_VALIDATE_ITEM_EQUIP_BEFORE", ScriptName.OnValidateItemEquipBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_VALIDATE_ITEM_EQUIP_AFTER", ScriptName.OnValidateItemEquipAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_VALIDATE_ITEM_EQUIP_BEFORE", ScriptName.OnValidateItemEquipBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_VALIDATE_ITEM_EQUIP_AFTER", ScriptName.OnValidateItemEquipAfter);
 
             // Item Equip events
-            EventsPlugin.SubscribeEvent("NWNX_ON_ITEM_EQUIP_BEFORE", ScriptName.OnItemEquipValidateBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_ITEM_EQUIP_AFTER", ScriptName.OnItemEquipValidateAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_ITEM_EQUIP_BEFORE", ScriptName.OnItemEquipValidateBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_ITEM_EQUIP_AFTER", ScriptName.OnItemEquipValidateAfter);
 
             // Item Unequip events
-            EventsPlugin.SubscribeEvent("NWNX_ON_ITEM_UNEQUIP_BEFORE", ScriptName.OnItemUnequipBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_ITEM_UNEQUIP_AFTER", ScriptName.OnItemUnequipAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_ITEM_UNEQUIP_BEFORE", ScriptName.OnItemUnequipBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_ITEM_UNEQUIP_AFTER", ScriptName.OnItemUnequipAfter);
 
             // Item Destroy events
-            EventsPlugin.SubscribeEvent("NWNX_ON_ITEM_DESTROY_OBJECT_BEFORE", ScriptName.OnItemDestroyObjectBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_ITEM_DESTROY_OBJECT_AFTER", ScriptName.OnItemDestroyObjectAfter);
-            EventsPlugin.SubscribeEvent("NWNX_ON_ITEM_DECREMENT_STACKSIZE_BEFORE", ScriptName.OnItemDecrementStackSizeBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_ITEM_DECREMENT_STACKSIZE_AFTER", ScriptName.OnItemDecrementStackSizeAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_ITEM_DESTROY_OBJECT_BEFORE", ScriptName.OnItemDestroyObjectBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_ITEM_DESTROY_OBJECT_AFTER", ScriptName.OnItemDestroyObjectAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_ITEM_DECREMENT_STACKSIZE_BEFORE", ScriptName.OnItemDecrementStackSizeBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_ITEM_DECREMENT_STACKSIZE_AFTER", ScriptName.OnItemDecrementStackSizeAfter);
 
             // Item Use Lore to Identify events
-            EventsPlugin.SubscribeEvent("NWNX_ON_ITEM_USE_LORE_BEFORE", ScriptName.OnItemUseLoreBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_ITEM_USE_LORE_AFTER", ScriptName.OnItemUseLoreAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_ITEM_USE_LORE_BEFORE", ScriptName.OnItemUseLoreBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_ITEM_USE_LORE_AFTER", ScriptName.OnItemUseLoreAfter);
 
             // Item Pay to Identify events
-            EventsPlugin.SubscribeEvent("NWNX_ON_ITEM_PAY_TO_IDENTIFY_BEFORE", ScriptName.OnItemPayToIdentifyBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_ITEM_PAY_TO_IDENTIFY_AFTER", ScriptName.OnItemPayToIdentifyAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_ITEM_PAY_TO_IDENTIFY_BEFORE", ScriptName.OnItemPayToIdentifyBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_ITEM_PAY_TO_IDENTIFY_AFTER", ScriptName.OnItemPayToIdentifyAfter);
 
             // Item Split events
-            EventsPlugin.SubscribeEvent("NWNX_ON_ITEM_SPLIT_BEFORE", ScriptName.OnItemSplitBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_ITEM_SPLIT_AFTER", ScriptName.OnItemSplitAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_ITEM_SPLIT_BEFORE", ScriptName.OnItemSplitBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_ITEM_SPLIT_AFTER", ScriptName.OnItemSplitAfter);
 
             // Item Merge events
-            EventsPlugin.SubscribeEvent("NWNX_ON_ITEM_MERGE_BEFORE", ScriptName.OnItemMergeBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_ITEM_MERGE_AFTER", ScriptName.OnItemMergeAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_ITEM_MERGE_BEFORE", ScriptName.OnItemMergeBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_ITEM_MERGE_AFTER", ScriptName.OnItemMergeAfter);
 
             // Acquire Item events
-            EventsPlugin.SubscribeEvent("NWNX_ON_ITEM_ACQUIRE_BEFORE", ScriptName.OnItemAcquireBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_ITEM_ACQUIRE_AFTER", ScriptName.OnItemAcquireAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_ITEM_ACQUIRE_BEFORE", ScriptName.OnItemAcquireBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_ITEM_ACQUIRE_AFTER", ScriptName.OnItemAcquireAfter);
 
             // Feat Use events
-            EventsPlugin.SubscribeEvent("NWNX_ON_USE_FEAT_BEFORE", ScriptName.OnUseFeatBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_USE_FEAT_AFTER", ScriptName.OnUseFeatAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_USE_FEAT_BEFORE", ScriptName.OnUseFeatBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_USE_FEAT_AFTER", ScriptName.OnUseFeatAfter);
 
             // DM Give events
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_GIVE_GOLD_BEFORE", ScriptName.OnDMGiveGoldBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_GIVE_GOLD_AFTER", ScriptName.OnDMGiveGoldAfter);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_GIVE_XP_BEFORE", ScriptName.OnDMGiveXPBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_GIVE_XP_AFTER", ScriptName.OnDMGiveXPAfter);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_GIVE_LEVEL_BEFORE", ScriptName.OnDMGiveLevelBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_GIVE_LEVEL_AFTER", ScriptName.OnDMGiveLevelAfter);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_GIVE_ALIGNMENT_BEFORE", ScriptName.OnDMGiveAlignmentBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_GIVE_ALIGNMENT_AFTER", ScriptName.OnDMGiveAlignmentAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_GIVE_GOLD_BEFORE", ScriptName.OnDMGiveGoldBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_GIVE_GOLD_AFTER", ScriptName.OnDMGiveGoldAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_GIVE_XP_BEFORE", ScriptName.OnDMGiveXPBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_GIVE_XP_AFTER", ScriptName.OnDMGiveXPAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_GIVE_LEVEL_BEFORE", ScriptName.OnDMGiveLevelBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_GIVE_LEVEL_AFTER", ScriptName.OnDMGiveLevelAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_GIVE_ALIGNMENT_BEFORE", ScriptName.OnDMGiveAlignmentBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_GIVE_ALIGNMENT_AFTER", ScriptName.OnDMGiveAlignmentAfter);
 
             // DM Spawn events
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_SPAWN_OBJECT_BEFORE", ScriptName.OnDMSpawnObjectBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_SPAWN_OBJECT_AFTER", ScriptName.OnDMSpawnObjectAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_SPAWN_OBJECT_BEFORE", ScriptName.OnDMSpawnObjectBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_SPAWN_OBJECT_AFTER", ScriptName.OnDMSpawnObjectAfter);
 
             // DM Give Item events
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_GIVE_ITEM_BEFORE", ScriptName.OnDMGiveItemBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_GIVE_ITEM_AFTER", ScriptName.OnDMGiveItemAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_GIVE_ITEM_BEFORE", ScriptName.OnDMGiveItemBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_GIVE_ITEM_AFTER", ScriptName.OnDMGiveItemAfter);
 
             // DM Multiple Object Action events
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_HEAL_BEFORE", ScriptName.OnDMHealBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_HEAL_AFTER", ScriptName.OnDMHealAfter);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_KILL_BEFORE", ScriptName.OnDMKillBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_KILL_AFTER", ScriptName.OnDMKillAfter);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_TOGGLE_INVULNERABLE_BEFORE", ScriptName.OnDMToggleInvulnerableBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_TOGGLE_INVULNERABLE_AFTER", ScriptName.OnDMToggleInvulnerableAfter);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_FORCE_REST_BEFORE", ScriptName.OnDMForceRestBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_FORCE_REST_AFTER", ScriptName.OnDMForceRestAfter);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_LIMBO_BEFORE", ScriptName.OnDMLimboBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_LIMBO_AFTER", ScriptName.OnDMLimboAfter);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_TOGGLE_AI_BEFORE", ScriptName.OnDMToggleAIBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_TOGGLE_AI_AFTER", ScriptName.OnDMToggleAIAfter);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_TOGGLE_IMMORTAL_BEFORE", ScriptName.OnDMToggleImmortalBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_TOGGLE_IMMORTAL_AFTER", ScriptName.OnDMToggleImmortalAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_HEAL_BEFORE", ScriptName.OnDMHealBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_HEAL_AFTER", ScriptName.OnDMHealAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_KILL_BEFORE", ScriptName.OnDMKillBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_KILL_AFTER", ScriptName.OnDMKillAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_TOGGLE_INVULNERABLE_BEFORE", ScriptName.OnDMToggleInvulnerableBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_TOGGLE_INVULNERABLE_AFTER", ScriptName.OnDMToggleInvulnerableAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_FORCE_REST_BEFORE", ScriptName.OnDMForceRestBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_FORCE_REST_AFTER", ScriptName.OnDMForceRestAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_LIMBO_BEFORE", ScriptName.OnDMLimboBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_LIMBO_AFTER", ScriptName.OnDMLimboAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_TOGGLE_AI_BEFORE", ScriptName.OnDMToggleAIBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_TOGGLE_AI_AFTER", ScriptName.OnDMToggleAIAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_TOGGLE_IMMORTAL_BEFORE", ScriptName.OnDMToggleImmortalBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_TOGGLE_IMMORTAL_AFTER", ScriptName.OnDMToggleImmortalAfter);
 
             // DM Single Object Action events
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_GOTO_BEFORE", ScriptName.OnDMGotoBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_GOTO_AFTER", ScriptName.OnDMGotoAfter);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_POSSESS_BEFORE", ScriptName.OnDMPossessBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_POSSESS_AFTER", ScriptName.OnDMPossessAfter);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_POSSESS_FULL_POWER_BEFORE", ScriptName.OnDMPossessFullPowerBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_POSSESS_FULL_POWER_AFTER", ScriptName.OnDMPossessFullPowerAfter);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_TOGGLE_LOCK_BEFORE", ScriptName.OnDMToggleLockBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_TOGGLE_LOCK_AFTER", ScriptName.OnDMToggleLockAfter);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_DISABLE_TRAP_BEFORE", ScriptName.OnDMDisableTrapBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_DISABLE_TRAP_AFTER", ScriptName.OnDMDisableTrapAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_GOTO_BEFORE", ScriptName.OnDMGotoBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_GOTO_AFTER", ScriptName.OnDMGotoAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_POSSESS_BEFORE", ScriptName.OnDMPossessBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_POSSESS_AFTER", ScriptName.OnDMPossessAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_POSSESS_FULL_POWER_BEFORE", ScriptName.OnDMPossessFullPowerBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_POSSESS_FULL_POWER_AFTER", ScriptName.OnDMPossessFullPowerAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_TOGGLE_LOCK_BEFORE", ScriptName.OnDMToggleLockBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_TOGGLE_LOCK_AFTER", ScriptName.OnDMToggleLockAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_DISABLE_TRAP_BEFORE", ScriptName.OnDMDisableTrapBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_DISABLE_TRAP_AFTER", ScriptName.OnDMDisableTrapAfter);
 
             // DM Jump events
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_JUMP_TO_POINT_BEFORE", ScriptName.OnDMJumpToPointBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_JUMP_TO_POINT_AFTER", ScriptName.OnDMJumpToPointAfter);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_JUMP_TARGET_TO_POINT_BEFORE", ScriptName.OnDMJumpTargetToPointBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_JUMP_TARGET_TO_POINT_AFTER", ScriptName.OnDMJumpTargetToPointAfter);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_JUMP_ALL_PLAYERS_TO_POINT_BEFORE", ScriptName.OnDMJumpAllPlayersToPointBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_JUMP_ALL_PLAYERS_TO_POINT_AFTER", ScriptName.OnDMJumpAllPlayersToPointAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_JUMP_TO_POINT_BEFORE", ScriptName.OnDMJumpToPointBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_JUMP_TO_POINT_AFTER", ScriptName.OnDMJumpToPointAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_JUMP_TARGET_TO_POINT_BEFORE", ScriptName.OnDMJumpTargetToPointBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_JUMP_TARGET_TO_POINT_AFTER", ScriptName.OnDMJumpTargetToPointAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_JUMP_ALL_PLAYERS_TO_POINT_BEFORE", ScriptName.OnDMJumpAllPlayersToPointBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_JUMP_ALL_PLAYERS_TO_POINT_AFTER", ScriptName.OnDMJumpAllPlayersToPointAfter);
 
             // DM Change Difficulty events
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_CHANGE_DIFFICULTY_BEFORE", ScriptName.OnDMChangeDifficultyBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_CHANGE_DIFFICULTY_AFTER", ScriptName.OnDMChangeDifficultyAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_CHANGE_DIFFICULTY_BEFORE", ScriptName.OnDMChangeDifficultyBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_CHANGE_DIFFICULTY_AFTER", ScriptName.OnDMChangeDifficultyAfter);
 
             // DM View Inventory events
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_VIEW_INVENTORY_BEFORE", ScriptName.OnDMViewInventoryBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_VIEW_INVENTORY_AFTER", ScriptName.OnDMViewInventoryAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_VIEW_INVENTORY_BEFORE", ScriptName.OnDMViewInventoryBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_VIEW_INVENTORY_AFTER", ScriptName.OnDMViewInventoryAfter);
 
             // DM Spawn Trap events
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_SPAWN_TRAP_ON_OBJECT_BEFORE", ScriptName.OnDMSpawnTrapOnObjectBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_SPAWN_TRAP_ON_OBJECT_AFTER", ScriptName.OnDMSpawnTrapOnObjectAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_SPAWN_TRAP_ON_OBJECT_BEFORE", ScriptName.OnDMSpawnTrapOnObjectBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_SPAWN_TRAP_ON_OBJECT_AFTER", ScriptName.OnDMSpawnTrapOnObjectAfter);
 
             // DM Dump Locals events
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_DUMP_LOCALS_BEFORE", ScriptName.OnDMDumpLocalsBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_DUMP_LOCALS_AFTER", ScriptName.OnDMDumpLocalsAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_DUMP_LOCALS_BEFORE", ScriptName.OnDMDumpLocalsBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_DUMP_LOCALS_AFTER", ScriptName.OnDMDumpLocalsAfter);
 
             // DM Other events
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_APPEAR_BEFORE", ScriptName.OnDMAppearBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_APPEAR_AFTER", ScriptName.OnDMAppearAfter);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_DISAPPEAR_BEFORE", ScriptName.OnDMDisappearBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_DISAPPEAR_AFTER", ScriptName.OnDMDisappearAfter);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_SET_FACTION_BEFORE", ScriptName.OnDMSetFactionBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_SET_FACTION_AFTER", ScriptName.OnDMSetFactionAfter);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_TAKE_ITEM_BEFORE", ScriptName.OnDMTakeItemBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_TAKE_ITEM_AFTER", ScriptName.OnDMTakeItemAfter);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_SET_STAT_BEFORE", ScriptName.OnDMSetStatBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_SET_STAT_AFTER", ScriptName.OnDMSetStatAfter);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_GET_VARIABLE_BEFORE", ScriptName.OnDMGetVariableBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_GET_VARIABLE_AFTER", ScriptName.OnDMGetVariableAfter);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_SET_VARIABLE_BEFORE", ScriptName.OnDMSetVariableBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_SET_VARIABLE_AFTER", ScriptName.OnDMSetVariableAfter);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_SET_TIME_BEFORE", ScriptName.OnDMSetTimeBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_SET_TIME_AFTER", ScriptName.OnDMSetTimeAfter);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_SET_DATE_BEFORE", ScriptName.OnDMSetDateBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_SET_DATE_AFTER", ScriptName.OnDMSetDateAfter);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_SET_FACTION_REPUTATION_BEFORE", ScriptName.OnDMSetFactionReputationBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_SET_FACTION_REPUTATION_AFTER", ScriptName.OnDMSetFactionReputationAfter);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_GET_FACTION_REPUTATION_BEFORE", ScriptName.OnDMGetFactionReputationBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DM_GET_FACTION_REPUTATION_AFTER", ScriptName.OnDMGetFactionReputationAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_APPEAR_BEFORE", ScriptName.OnDMAppearBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_APPEAR_AFTER", ScriptName.OnDMAppearAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_DISAPPEAR_BEFORE", ScriptName.OnDMDisappearBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_DISAPPEAR_AFTER", ScriptName.OnDMDisappearAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_SET_FACTION_BEFORE", ScriptName.OnDMSetFactionBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_SET_FACTION_AFTER", ScriptName.OnDMSetFactionAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_TAKE_ITEM_BEFORE", ScriptName.OnDMTakeItemBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_TAKE_ITEM_AFTER", ScriptName.OnDMTakeItemAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_SET_STAT_BEFORE", ScriptName.OnDMSetStatBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_SET_STAT_AFTER", ScriptName.OnDMSetStatAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_GET_VARIABLE_BEFORE", ScriptName.OnDMGetVariableBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_GET_VARIABLE_AFTER", ScriptName.OnDMGetVariableAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_SET_VARIABLE_BEFORE", ScriptName.OnDMSetVariableBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_SET_VARIABLE_AFTER", ScriptName.OnDMSetVariableAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_SET_TIME_BEFORE", ScriptName.OnDMSetTimeBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_SET_TIME_AFTER", ScriptName.OnDMSetTimeAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_SET_DATE_BEFORE", ScriptName.OnDMSetDateBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_SET_DATE_AFTER", ScriptName.OnDMSetDateAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_SET_FACTION_REPUTATION_BEFORE", ScriptName.OnDMSetFactionReputationBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_SET_FACTION_REPUTATION_AFTER", ScriptName.OnDMSetFactionReputationAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_GET_FACTION_REPUTATION_BEFORE", ScriptName.OnDMGetFactionReputationBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DM_GET_FACTION_REPUTATION_AFTER", ScriptName.OnDMGetFactionReputationAfter);
 
             // Client Disconnect events
-            EventsPlugin.SubscribeEvent("NWNX_ON_CLIENT_DISCONNECT_BEFORE", ScriptName.OnClientDisconnectBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_CLIENT_DISCONNECT_AFTER", ScriptName.OnClientDisconnectAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_CLIENT_DISCONNECT_BEFORE", ScriptName.OnClientDisconnectBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_CLIENT_DISCONNECT_AFTER", ScriptName.OnClientDisconnectAfter);
 
             // Client Connect events
-            EventsPlugin.SubscribeEvent("NWNX_ON_CLIENT_CONNECT_BEFORE", ScriptName.OnClientConnectBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_CLIENT_CONNECT_AFTER", ScriptName.OnClientConnectAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_CLIENT_CONNECT_BEFORE", ScriptName.OnClientConnectBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_CLIENT_CONNECT_AFTER", ScriptName.OnClientConnectAfter);
 
             // Combat Round Start events
-            EventsPlugin.SubscribeEvent("NWNX_ON_START_COMBAT_ROUND_BEFORE", ScriptName.OnStartCombatRoundBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_START_COMBAT_ROUND_AFTER", ScriptName.OnStartCombatRoundAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_START_COMBAT_ROUND_BEFORE", ScriptName.OnStartCombatRoundBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_START_COMBAT_ROUND_AFTER", ScriptName.OnStartCombatRoundAfter);
 
             // Cast Spell events
-            EventsPlugin.SubscribeEvent("NWNX_ON_CAST_SPELL_BEFORE", ScriptName.OnCastSpellBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_CAST_SPELL_AFTER", ScriptName.OnCastSpellAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_CAST_SPELL_BEFORE", ScriptName.OnCastSpellBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_CAST_SPELL_AFTER", ScriptName.OnCastSpellAfter);
 
             // Set Memorized Spell Slot events
-            EventsPlugin.SubscribeEvent("NWNX_SET_MEMORIZED_SPELL_SLOT_BEFORE", ScriptName.OnSetMemorizedSpellSlotBefore);
-            EventsPlugin.SubscribeEvent("NWNX_SET_MEMORIZED_SPELL_SLOT_AFTER", ScriptName.OnSetMemorizedSpellSlotAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_SET_MEMORIZED_SPELL_SLOT_BEFORE", ScriptName.OnSetMemorizedSpellSlotBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_SET_MEMORIZED_SPELL_SLOT_AFTER", ScriptName.OnSetMemorizedSpellSlotAfter);
 
             // Clear Memorized Spell Slot events
-            EventsPlugin.SubscribeEvent("NWNX_CLEAR_MEMORIZED_SPELL_SLOT_BEFORE", ScriptName.OnClearMemorizedSpellSlotBefore);
-            EventsPlugin.SubscribeEvent("NWNX_CLEAR_MEMORIZED_SPELL_SLOT_AFTER", ScriptName.OnClearMemorizedSpellSlotAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_CLEAR_MEMORIZED_SPELL_SLOT_BEFORE", ScriptName.OnClearMemorizedSpellSlotBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_CLEAR_MEMORIZED_SPELL_SLOT_AFTER", ScriptName.OnClearMemorizedSpellSlotAfter);
 
             // Healer Kit Use events
-            EventsPlugin.SubscribeEvent("NWNX_ON_HEALER_KIT_BEFORE", ScriptName.OnHealerKitBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_HEALER_KIT_AFTER", ScriptName.OnHealerKitAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_HEALER_KIT_BEFORE", ScriptName.OnHealerKitBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_HEALER_KIT_AFTER", ScriptName.OnHealerKitAfter);
 
             // Healing events
-            EventsPlugin.SubscribeEvent("NWNX_ON_HEAL_BEFORE", ScriptName.OnHealBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_HEAL_AFTER", ScriptName.OnHealAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_HEAL_BEFORE", ScriptName.OnHealBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_HEAL_AFTER", ScriptName.OnHealAfter);
 
             // Party Action events
-            EventsPlugin.SubscribeEvent("NWNX_ON_PARTY_LEAVE_BEFORE", ScriptName.OnPartyLeaveBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_PARTY_LEAVE_AFTER", ScriptName.OnPartyLeaveAfter);
-            EventsPlugin.SubscribeEvent("NWNX_ON_PARTY_KICK_BEFORE", ScriptName.OnPartyKickBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_PARTY_KICK_AFTER", ScriptName.OnPartyKickAfter);
-            EventsPlugin.SubscribeEvent("NWNX_ON_PARTY_TRANSFER_LEADERSHIP_BEFORE", ScriptName.OnPartyTransferLeadershipBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_PARTY_TRANSFER_LEADERSHIP_AFTER", ScriptName.OnPartyTransferLeadershipAfter);
-            EventsPlugin.SubscribeEvent("NWNX_ON_PARTY_INVITE_BEFORE", ScriptName.OnPartyInviteBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_PARTY_INVITE_AFTER", ScriptName.OnPartyInviteAfter);
-            EventsPlugin.SubscribeEvent("NWNX_ON_PARTY_IGNORE_INVITATION_BEFORE", ScriptName.OnPartyIgnoreInvitationBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_PARTY_IGNORE_INVITATION_AFTER", ScriptName.OnPartyIgnoreInvitationAfter);
-            EventsPlugin.SubscribeEvent("NWNX_ON_PARTY_ACCEPT_INVITATION_BEFORE", ScriptName.OnPartyAcceptInvitationBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_PARTY_ACCEPT_INVITATION_AFTER", ScriptName.OnPartyAcceptInvitationAfter);
-            EventsPlugin.SubscribeEvent("NWNX_ON_PARTY_REJECT_INVITATION_BEFORE", ScriptName.OnPartyRejectInvitationBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_PARTY_REJECT_INVITATION_AFTER", ScriptName.OnPartyRejectInvitationAfter);
-            EventsPlugin.SubscribeEvent("NWNX_ON_PARTY_KICK_HENCHMAN_BEFORE", ScriptName.OnPartyKickHenchmanBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_PARTY_KICK_HENCHMAN_AFTER", ScriptName.OnPartyKickHenchmanAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_PARTY_LEAVE_BEFORE", ScriptName.OnPartyLeaveBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_PARTY_LEAVE_AFTER", ScriptName.OnPartyLeaveAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_PARTY_KICK_BEFORE", ScriptName.OnPartyKickBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_PARTY_KICK_AFTER", ScriptName.OnPartyKickAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_PARTY_TRANSFER_LEADERSHIP_BEFORE", ScriptName.OnPartyTransferLeadershipBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_PARTY_TRANSFER_LEADERSHIP_AFTER", ScriptName.OnPartyTransferLeadershipAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_PARTY_INVITE_BEFORE", ScriptName.OnPartyInviteBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_PARTY_INVITE_AFTER", ScriptName.OnPartyInviteAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_PARTY_IGNORE_INVITATION_BEFORE", ScriptName.OnPartyIgnoreInvitationBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_PARTY_IGNORE_INVITATION_AFTER", ScriptName.OnPartyIgnoreInvitationAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_PARTY_ACCEPT_INVITATION_BEFORE", ScriptName.OnPartyAcceptInvitationBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_PARTY_ACCEPT_INVITATION_AFTER", ScriptName.OnPartyAcceptInvitationAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_PARTY_REJECT_INVITATION_BEFORE", ScriptName.OnPartyRejectInvitationBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_PARTY_REJECT_INVITATION_AFTER", ScriptName.OnPartyRejectInvitationAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_PARTY_KICK_HENCHMAN_BEFORE", ScriptName.OnPartyKickHenchmanBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_PARTY_KICK_HENCHMAN_AFTER", ScriptName.OnPartyKickHenchmanAfter);
 
             // Combat Mode Toggle events
-            EventsPlugin.SubscribeEvent("NWNX_ON_COMBAT_MODE_ON", ScriptName.OnCombatModeOn);
-            EventsPlugin.SubscribeEvent("NWNX_ON_COMBAT_MODE_OFF", ScriptName.OnCombatModeOff);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_COMBAT_MODE_ON", ScriptName.OnCombatModeOn);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_COMBAT_MODE_OFF", ScriptName.OnCombatModeOff);
 
             // Use Skill events
-            EventsPlugin.SubscribeEvent("NWNX_ON_USE_SKILL_BEFORE", ScriptName.OnUseSkillBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_USE_SKILL_AFTER", ScriptName.OnUseSkillAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_USE_SKILL_BEFORE", ScriptName.OnUseSkillBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_USE_SKILL_AFTER", ScriptName.OnUseSkillAfter);
 
             // Map Pin events
-            EventsPlugin.SubscribeEvent("NWNX_ON_MAP_PIN_ADD_PIN_BEFORE", ScriptName.OnMapPinAddPinBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_MAP_PIN_ADD_PIN_AFTER", ScriptName.OnMapPinAddPinAfter);
-            EventsPlugin.SubscribeEvent("NWNX_ON_MAP_PIN_CHANGE_PIN_BEFORE", ScriptName.OnMapPinChangePinBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_MAP_PIN_CHANGE_PIN_AFTER", ScriptName.OnMapPinChangePinAfter);
-            EventsPlugin.SubscribeEvent("NWNX_ON_MAP_PIN_DESTROY_PIN_BEFORE", ScriptName.OnMapPinDestroyPinBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_MAP_PIN_DESTROY_PIN_AFTER", ScriptName.OnMapPinDestroyPinAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_MAP_PIN_ADD_PIN_BEFORE", ScriptName.OnMapPinAddPinBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_MAP_PIN_ADD_PIN_AFTER", ScriptName.OnMapPinAddPinAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_MAP_PIN_CHANGE_PIN_BEFORE", ScriptName.OnMapPinChangePinBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_MAP_PIN_CHANGE_PIN_AFTER", ScriptName.OnMapPinChangePinAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_MAP_PIN_DESTROY_PIN_BEFORE", ScriptName.OnMapPinDestroyPinBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_MAP_PIN_DESTROY_PIN_AFTER", ScriptName.OnMapPinDestroyPinAfter);
 
             // Spot/Listen Detection events
-            EventsPlugin.SubscribeEvent("NWNX_ON_DO_LISTEN_DETECTION_BEFORE", ScriptName.OnDoListenDetectionBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DO_LISTEN_DETECTION_AFTER", ScriptName.OnDoListenDetectionAfter);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DO_SPOT_DETECTION_BEFORE", ScriptName.OnDoSpotDetectionBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DO_SPOT_DETECTION_AFTER", ScriptName.OnDoSpotDetectionAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DO_LISTEN_DETECTION_BEFORE", ScriptName.OnDoListenDetectionBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DO_LISTEN_DETECTION_AFTER", ScriptName.OnDoListenDetectionAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DO_SPOT_DETECTION_BEFORE", ScriptName.OnDoSpotDetectionBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DO_SPOT_DETECTION_AFTER", ScriptName.OnDoSpotDetectionAfter);
 
             // Polymorph events
-            EventsPlugin.SubscribeEvent("NWNX_ON_POLYMORPH_BEFORE", ScriptName.OnPolymorphBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_POLYMORPH_AFTER", ScriptName.OnPolymorphAfter);
-            EventsPlugin.SubscribeEvent("NWNX_ON_UNPOLYMORPH_BEFORE", ScriptName.OnUnpolymorphBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_UNPOLYMORPH_AFTER", ScriptName.OnUnpolymorphAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_POLYMORPH_BEFORE", ScriptName.OnPolymorphBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_POLYMORPH_AFTER", ScriptName.OnPolymorphAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_UNPOLYMORPH_BEFORE", ScriptName.OnUnpolymorphBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_UNPOLYMORPH_AFTER", ScriptName.OnUnpolymorphAfter);
 
             // Effect Applied/Removed events
-            EventsPlugin.SubscribeEvent("NWNX_ON_EFFECT_APPLIED_BEFORE", ScriptName.OnEffectAppliedBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_EFFECT_APPLIED_AFTER", ScriptName.OnEffectAppliedAfter);
-            EventsPlugin.SubscribeEvent("NWNX_ON_EFFECT_REMOVED_BEFORE", ScriptName.OnEffectRemovedBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_EFFECT_REMOVED_AFTER", ScriptName.OnEffectRemovedAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_EFFECT_APPLIED_BEFORE", ScriptName.OnEffectAppliedBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_EFFECT_APPLIED_AFTER", ScriptName.OnEffectAppliedAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_EFFECT_REMOVED_BEFORE", ScriptName.OnEffectRemovedBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_EFFECT_REMOVED_AFTER", ScriptName.OnEffectRemovedAfter);
 
             // Quickchat events
-            EventsPlugin.SubscribeEvent("NWNX_ON_QUICKCHAT_BEFORE", ScriptName.OnQuickchatBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_QUICKCHAT_AFTER", ScriptName.OnQuickchatAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_QUICKCHAT_BEFORE", ScriptName.OnQuickchatBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_QUICKCHAT_AFTER", ScriptName.OnQuickchatAfter);
 
             // Inventory Open events
-            EventsPlugin.SubscribeEvent("NWNX_ON_INVENTORY_OPEN_BEFORE", ScriptName.OnInventoryOpenBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_INVENTORY_OPEN_AFTER", ScriptName.OnInventoryOpenAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_INVENTORY_OPEN_BEFORE", ScriptName.OnInventoryOpenBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_INVENTORY_OPEN_AFTER", ScriptName.OnInventoryOpenAfter);
 
             // Inventory Select Panel events
-            EventsPlugin.SubscribeEvent("NWNX_ON_INVENTORY_SELECT_PANEL_BEFORE", ScriptName.OnInventorySelectPanelBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_INVENTORY_SELECT_PANEL_AFTER", ScriptName.OnInventorySelectPanelAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_INVENTORY_SELECT_PANEL_BEFORE", ScriptName.OnInventorySelectPanelBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_INVENTORY_SELECT_PANEL_AFTER", ScriptName.OnInventorySelectPanelAfter);
 
             // Barter Start events
-            EventsPlugin.SubscribeEvent("NWNX_ON_BARTER_START_BEFORE", ScriptName.OnBarterStartBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_BARTER_START_AFTER", ScriptName.OnBarterStartAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_BARTER_START_BEFORE", ScriptName.OnBarterStartBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_BARTER_START_AFTER", ScriptName.OnBarterStartAfter);
 
             // Barter End events
-            EventsPlugin.SubscribeEvent("NWNX_ON_BARTER_END_BEFORE", ScriptName.OnBarterEndBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_BARTER_END_AFTER", ScriptName.OnBarterEndAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_BARTER_END_BEFORE", ScriptName.OnBarterEndBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_BARTER_END_AFTER", ScriptName.OnBarterEndAfter);
 
             // Trap events
-            EventsPlugin.SubscribeEvent("NWNX_ON_TRAP_DISARM_BEFORE", ScriptName.OnTrapDisarmBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_TRAP_DISARM_AFTER", ScriptName.OnTrapDisarmAfter);
-            EventsPlugin.SubscribeEvent("NWNX_ON_TRAP_ENTER_BEFORE", ScriptName.OnTrapEnterBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_TRAP_ENTER_AFTER", ScriptName.OnTrapEnterAfter);
-            EventsPlugin.SubscribeEvent("NWNX_ON_TRAP_EXAMINE_BEFORE", ScriptName.OnTrapExamineBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_TRAP_EXAMINE_AFTER", ScriptName.OnTrapExamineAfter);
-            EventsPlugin.SubscribeEvent("NWNX_ON_TRAP_FLAG_BEFORE", ScriptName.OnTrapFlagBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_TRAP_FLAG_AFTER", ScriptName.OnTrapFlagAfter);
-            EventsPlugin.SubscribeEvent("NWNX_ON_TRAP_RECOVER_BEFORE", ScriptName.OnTrapRecoverBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_TRAP_RECOVER_AFTER", ScriptName.OnTrapRecoverAfter);
-            EventsPlugin.SubscribeEvent("NWNX_ON_TRAP_SET_BEFORE", ScriptName.OnTrapSetBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_TRAP_SET_AFTER", ScriptName.OnTrapSetAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_TRAP_DISARM_BEFORE", ScriptName.OnTrapDisarmBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_TRAP_DISARM_AFTER", ScriptName.OnTrapDisarmAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_TRAP_ENTER_BEFORE", ScriptName.OnTrapEnterBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_TRAP_ENTER_AFTER", ScriptName.OnTrapEnterAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_TRAP_EXAMINE_BEFORE", ScriptName.OnTrapExamineBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_TRAP_EXAMINE_AFTER", ScriptName.OnTrapExamineAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_TRAP_FLAG_BEFORE", ScriptName.OnTrapFlagBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_TRAP_FLAG_AFTER", ScriptName.OnTrapFlagAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_TRAP_RECOVER_BEFORE", ScriptName.OnTrapRecoverBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_TRAP_RECOVER_AFTER", ScriptName.OnTrapRecoverAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_TRAP_SET_BEFORE", ScriptName.OnTrapSetBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_TRAP_SET_AFTER", ScriptName.OnTrapSetAfter);
 
             // Timing Bar events
-            EventsPlugin.SubscribeEvent("NWNX_ON_TIMING_BAR_START_BEFORE", ScriptName.OnTimingBarStartBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_TIMING_BAR_START_AFTER", ScriptName.OnTimingBarStartAfter);
-            EventsPlugin.SubscribeEvent("NWNX_ON_TIMING_BAR_STOP_BEFORE", ScriptName.OnTimingBarStopBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_TIMING_BAR_STOP_AFTER", ScriptName.OnTimingBarStopAfter);
-            EventsPlugin.SubscribeEvent("NWNX_ON_TIMING_BAR_CANCEL_BEFORE", ScriptName.OnTimingBarCancelBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_TIMING_BAR_CANCEL_AFTER", ScriptName.OnTimingBarCancelAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_TIMING_BAR_START_BEFORE", ScriptName.OnTimingBarStartBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_TIMING_BAR_START_AFTER", ScriptName.OnTimingBarStartAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_TIMING_BAR_STOP_BEFORE", ScriptName.OnTimingBarStopBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_TIMING_BAR_STOP_AFTER", ScriptName.OnTimingBarStopAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_TIMING_BAR_CANCEL_BEFORE", ScriptName.OnTimingBarCancelBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_TIMING_BAR_CANCEL_AFTER", ScriptName.OnTimingBarCancelAfter);
 
             // Webhook events
-            EventsPlugin.SubscribeEvent("NWNX_ON_WEBHOOK_SUCCESS", ScriptName.OnWebhookSuccess);
-            EventsPlugin.SubscribeEvent("NWNX_ON_WEBHOOK_FAILURE", ScriptName.OnWebhookFailure);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_WEBHOOK_SUCCESS", ScriptName.OnWebhookSuccess);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_WEBHOOK_FAILURE", ScriptName.OnWebhookFailure);
 
             // Servervault events
-            EventsPlugin.SubscribeEvent("NWNX_ON_CHECK_STICKY_PLAYER_NAME_RESERVED_BEFORE", ScriptName.OnCheckStickyPlayerNameReservedBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_CHECK_STICKY_PLAYER_NAME_RESERVED_AFTER", ScriptName.OnCheckStickyPlayerNameReservedAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_CHECK_STICKY_PLAYER_NAME_RESERVED_BEFORE", ScriptName.OnCheckStickyPlayerNameReservedBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_CHECK_STICKY_PLAYER_NAME_RESERVED_AFTER", ScriptName.OnCheckStickyPlayerNameReservedAfter);
 
             // Levelling events
-            EventsPlugin.SubscribeEvent("NWNX_ON_LEVEL_UP_BEFORE", ScriptName.OnLevelUpBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_LEVEL_UP_AFTER", ScriptName.OnLevelUpAfter);
-            EventsPlugin.SubscribeEvent("NWNX_ON_LEVEL_UP_AUTOMATIC_BEFORE", ScriptName.OnLevelUpAutomaticBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_LEVEL_UP_AUTOMATIC_AFTER", ScriptName.OnLevelUpAutomaticAfter);
-            EventsPlugin.SubscribeEvent("NWNX_ON_LEVEL_DOWN_BEFORE", ScriptName.OnLevelDownBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_LEVEL_DOWN_AFTER", ScriptName.OnLevelDownAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_LEVEL_UP_BEFORE", ScriptName.OnLevelUpBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_LEVEL_UP_AFTER", ScriptName.OnLevelUpAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_LEVEL_UP_AUTOMATIC_BEFORE", ScriptName.OnLevelUpAutomaticBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_LEVEL_UP_AUTOMATIC_AFTER", ScriptName.OnLevelUpAutomaticAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_LEVEL_DOWN_BEFORE", ScriptName.OnLevelDownBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_LEVEL_DOWN_AFTER", ScriptName.OnLevelDownAfter);
 
             // Container Change events
-            EventsPlugin.SubscribeEvent("NWNX_ON_INVENTORY_ADD_ITEM_BEFORE", ScriptName.OnInventoryAddItemBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_INVENTORY_ADD_ITEM_AFTER", ScriptName.OnInventoryAddItemAfter);
-            EventsPlugin.SubscribeEvent("NWNX_ON_INVENTORY_REMOVE_ITEM_BEFORE", ScriptName.OnInventoryRemoveItemBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_INVENTORY_REMOVE_ITEM_AFTER", ScriptName.OnInventoryRemoveItemAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_INVENTORY_ADD_ITEM_BEFORE", ScriptName.OnInventoryAddItemBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_INVENTORY_ADD_ITEM_AFTER", ScriptName.OnInventoryAddItemAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_INVENTORY_REMOVE_ITEM_BEFORE", ScriptName.OnInventoryRemoveItemBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_INVENTORY_REMOVE_ITEM_AFTER", ScriptName.OnInventoryRemoveItemAfter);
 
             // Gold events
-            EventsPlugin.SubscribeEvent("NWNX_ON_INVENTORY_ADD_GOLD_BEFORE", ScriptName.OnInventoryAddGoldBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_INVENTORY_ADD_GOLD_AFTER", ScriptName.OnInventoryAddGoldAfter);
-            EventsPlugin.SubscribeEvent("NWNX_ON_INVENTORY_REMOVE_GOLD_BEFORE", ScriptName.OnInventoryRemoveGoldBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_INVENTORY_REMOVE_GOLD_AFTER", ScriptName.OnInventoryRemoveGoldAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_INVENTORY_ADD_GOLD_BEFORE", ScriptName.OnInventoryAddGoldBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_INVENTORY_ADD_GOLD_AFTER", ScriptName.OnInventoryAddGoldAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_INVENTORY_REMOVE_GOLD_BEFORE", ScriptName.OnInventoryRemoveGoldBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_INVENTORY_REMOVE_GOLD_AFTER", ScriptName.OnInventoryRemoveGoldAfter);
 
             // PVP Attitude Change events
-            EventsPlugin.SubscribeEvent("NWNX_ON_PVP_ATTITUDE_CHANGE_BEFORE", ScriptName.OnPVPAttitudeChangeBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_PVP_ATTITUDE_CHANGE_AFTER", ScriptName.OnPVPAttitudeChangeAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_PVP_ATTITUDE_CHANGE_BEFORE", ScriptName.OnPVPAttitudeChangeBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_PVP_ATTITUDE_CHANGE_AFTER", ScriptName.OnPVPAttitudeChangeAfter);
 
             // Input Walk To events
-            EventsPlugin.SubscribeEvent("NWNX_ON_INPUT_WALK_TO_WAYPOINT_BEFORE", ScriptName.OnInputWalkToWaypointBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_INPUT_WALK_TO_WAYPOINT_AFTER", ScriptName.OnInputWalkToWaypointAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_INPUT_WALK_TO_WAYPOINT_BEFORE", ScriptName.OnInputWalkToWaypointBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_INPUT_WALK_TO_WAYPOINT_AFTER", ScriptName.OnInputWalkToWaypointAfter);
 
             // Material Change events
-            EventsPlugin.SubscribeEvent("NWNX_ON_MATERIALCHANGE_BEFORE", ScriptName.OnMaterialChangeBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_MATERIALCHANGE_AFTER", ScriptName.OnMaterialChangeAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_MATERIALCHANGE_BEFORE", ScriptName.OnMaterialChangeBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_MATERIALCHANGE_AFTER", ScriptName.OnMaterialChangeAfter);
 
             // Input Attack events
-            EventsPlugin.SubscribeEvent("NWNX_ON_INPUT_ATTACK_OBJECT_BEFORE", ScriptName.OnInputAttackObjectBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_INPUT_ATTACK_OBJECT_AFTER", ScriptName.OnInputAttackObjectAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_INPUT_ATTACK_OBJECT_BEFORE", ScriptName.OnInputAttackObjectBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_INPUT_ATTACK_OBJECT_AFTER", ScriptName.OnInputAttackObjectAfter);
 
             // Input Force Move To events
             // NOTE: These events are disabled because they cause NWServer to crash when a player clicks to move anywhere.
-            //EventsPlugin.SubscribeEvent("NWNX_ON_INPUT_FORCE_MOVE_TO_OBJECT_BEFORE", ScriptName.OnInputForceMoveToObjectBefore);
-            //EventsPlugin.SubscribeEvent("NWNX_ON_INPUT_FORCE_MOVE_TO_OBJECT_AFTER", ScriptName.OnInputForceMoveToObjectAfter);
+            //_eventsPlugin.SubscribeEvent("NWNX_ON_INPUT_FORCE_MOVE_TO_OBJECT_BEFORE", ScriptName.OnInputForceMoveToObjectBefore);
+            //_eventsPlugin.SubscribeEvent("NWNX_ON_INPUT_FORCE_MOVE_TO_OBJECT_AFTER", ScriptName.OnInputForceMoveToObjectAfter);
 
             // Object Lock events
-            EventsPlugin.SubscribeEvent("NWNX_ON_OBJECT_LOCK_BEFORE", ScriptName.OnObjectLockBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_OBJECT_LOCK_AFTER", ScriptName.OnObjectLockAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_OBJECT_LOCK_BEFORE", ScriptName.OnObjectLockBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_OBJECT_LOCK_AFTER", ScriptName.OnObjectLockAfter);
 
             // Object Unlock events
-            EventsPlugin.SubscribeEvent("NWNX_ON_OBJECT_UNLOCK_BEFORE", ScriptName.OnObjectUnlockBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_OBJECT_UNLOCK_AFTER", ScriptName.OnObjectUnlockAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_OBJECT_UNLOCK_BEFORE", ScriptName.OnObjectUnlockBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_OBJECT_UNLOCK_AFTER", ScriptName.OnObjectUnlockAfter);
 
             // UUID Collision events
-            EventsPlugin.SubscribeEvent("NWNX_ON_UUID_COLLISION_BEFORE", ScriptName.OnUUIDCollisionBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_UUID_COLLISION_AFTER", ScriptName.OnUUIDCollisionAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_UUID_COLLISION_BEFORE", ScriptName.OnUUIDCollisionBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_UUID_COLLISION_AFTER", ScriptName.OnUUIDCollisionAfter);
 
             // Resource events
             // NOTE: These events are disabled because they cause NWServer to crash when CTRL+C is pressed on a Docker server.
-            //EventsPlugin.SubscribeEvent("NWNX_ON_RESOURCE_ADDED", ScriptName.OnResourceAdded);
-            //EventsPlugin.SubscribeEvent("NWNX_ON_RESOURCE_REMOVED", ScriptName.OnResourceRemoved);
-            //EventsPlugin.SubscribeEvent("NWNX_ON_RESOURCE_MODIFIED", ScriptName.OnResourceModified);
+            //_eventsPlugin.SubscribeEvent("NWNX_ON_RESOURCE_ADDED", ScriptName.OnResourceAdded);
+            //_eventsPlugin.SubscribeEvent("NWNX_ON_RESOURCE_REMOVED", ScriptName.OnResourceRemoved);
+            //_eventsPlugin.SubscribeEvent("NWNX_ON_RESOURCE_MODIFIED", ScriptName.OnResourceModified);
 
             // ELC Events
-            EventsPlugin.SubscribeEvent("NWNX_ON_ELC_VALIDATE_CHARACTER_BEFORE", ScriptName.OnELCValidateCharacterBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_ELC_VALIDATE_CHARACTER_AFTER", ScriptName.OnELCValidateCharacterAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_ELC_VALIDATE_CHARACTER_BEFORE", ScriptName.OnELCValidateCharacterBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_ELC_VALIDATE_CHARACTER_AFTER", ScriptName.OnELCValidateCharacterAfter);
 
             // Quickbar Events
-            EventsPlugin.SubscribeEvent("NWNX_ON_QUICKBAR_SET_BUTTON_BEFORE", ScriptName.OnQuickbarSetButtonBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_QUICKBAR_SET_BUTTON_AFTER", ScriptName.OnQuickbarSetButtonAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_QUICKBAR_SET_BUTTON_BEFORE", ScriptName.OnQuickbarSetButtonBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_QUICKBAR_SET_BUTTON_AFTER", ScriptName.OnQuickbarSetButtonAfter);
 
             // Calendar Events
-            EventsPlugin.SubscribeEvent("NWNX_ON_CALENDAR_HOUR", ScriptName.OnCalendarHour);
-            EventsPlugin.SubscribeEvent("NWNX_ON_CALENDAR_DAY", ScriptName.OnCalendarDay);
-            EventsPlugin.SubscribeEvent("NWNX_ON_CALENDAR_MONTH", ScriptName.OnCalendarMonth);
-            EventsPlugin.SubscribeEvent("NWNX_ON_CALENDAR_YEAR", ScriptName.OnCalendarYear);
-            EventsPlugin.SubscribeEvent("NWNX_ON_CALENDAR_DAWN", ScriptName.OnCalendarDawn);
-            EventsPlugin.SubscribeEvent("NWNX_ON_CALENDAR_DUSK", ScriptName.OnCalendarDusk);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_CALENDAR_HOUR", ScriptName.OnCalendarHour);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_CALENDAR_DAY", ScriptName.OnCalendarDay);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_CALENDAR_MONTH", ScriptName.OnCalendarMonth);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_CALENDAR_YEAR", ScriptName.OnCalendarYear);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_CALENDAR_DAWN", ScriptName.OnCalendarDawn);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_CALENDAR_DUSK", ScriptName.OnCalendarDusk);
 
             // Broadcast Spell Cast Events
-            EventsPlugin.SubscribeEvent("NWNX_ON_BROADCAST_CAST_SPELL_BEFORE", ScriptName.OnBroadcastCastSpellBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_BROADCAST_CAST_SPELL_AFTER", ScriptName.OnBroadcastCastSpellAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_BROADCAST_CAST_SPELL_BEFORE", ScriptName.OnBroadcastCastSpellBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_BROADCAST_CAST_SPELL_AFTER", ScriptName.OnBroadcastCastSpellAfter);
 
             // RunScript Debug Events
-            EventsPlugin.SubscribeEvent("NWNX_ON_DEBUG_RUN_SCRIPT_BEFORE", ScriptName.OnDebugRunScriptBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DEBUG_RUN_SCRIPT_AFTER", ScriptName.OnDebugRunScriptAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DEBUG_RUN_SCRIPT_BEFORE", ScriptName.OnDebugRunScriptBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DEBUG_RUN_SCRIPT_AFTER", ScriptName.OnDebugRunScriptAfter);
 
             // RunScriptChunk Debug Events
-            EventsPlugin.SubscribeEvent("NWNX_ON_DEBUG_RUN_SCRIPT_CHUNK_BEFORE", ScriptName.OnDebugRunScriptChunkBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_DEBUG_RUN_SCRIPT_CHUNK_AFTER", ScriptName.OnDebugRunScriptChunkAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DEBUG_RUN_SCRIPT_CHUNK_BEFORE", ScriptName.OnDebugRunScriptChunkBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_DEBUG_RUN_SCRIPT_CHUNK_AFTER", ScriptName.OnDebugRunScriptChunkAfter);
 
             // Buy/Sell Store Events
-            EventsPlugin.SubscribeEvent("NWNX_ON_STORE_REQUEST_BUY_BEFORE", ScriptName.OnStoreRequestBuyBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_STORE_REQUEST_BUY_AFTER", ScriptName.OnStoreRequestBuyAfter);
-            EventsPlugin.SubscribeEvent("NWNX_ON_STORE_REQUEST_SELL_BEFORE", ScriptName.OnStoreRequestSellBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_STORE_REQUEST_SELL_AFTER", ScriptName.OnStoreRequestSellAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_STORE_REQUEST_BUY_BEFORE", ScriptName.OnStoreRequestBuyBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_STORE_REQUEST_BUY_AFTER", ScriptName.OnStoreRequestBuyAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_STORE_REQUEST_SELL_BEFORE", ScriptName.OnStoreRequestSellBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_STORE_REQUEST_SELL_AFTER", ScriptName.OnStoreRequestSellAfter);
 
             // Input Drop Item Events
-            EventsPlugin.SubscribeEvent("NWNX_ON_INPUT_DROP_ITEM_BEFORE", ScriptName.OnInputDropItemBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_INPUT_DROP_ITEM_AFTER", ScriptName.OnInputDropItemAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_INPUT_DROP_ITEM_BEFORE", ScriptName.OnInputDropItemBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_INPUT_DROP_ITEM_AFTER", ScriptName.OnInputDropItemAfter);
 
             // Broadcast Attack of Opportunity Events
-            EventsPlugin.SubscribeEvent("NWNX_ON_BROADCAST_ATTACK_OF_OPPORTUNITY_BEFORE", ScriptName.OnBroadcastAttackOfOpportunityBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_BROADCAST_ATTACK_OF_OPPORTUNITY_AFTER", ScriptName.OnBroadcastAttackOfOpportunityAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_BROADCAST_ATTACK_OF_OPPORTUNITY_BEFORE", ScriptName.OnBroadcastAttackOfOpportunityBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_BROADCAST_ATTACK_OF_OPPORTUNITY_AFTER", ScriptName.OnBroadcastAttackOfOpportunityAfter);
 
             // Combat Attack of Opportunity Events
-            EventsPlugin.SubscribeEvent("NWNX_ON_COMBAT_ATTACK_OF_OPPORTUNITY_BEFORE", ScriptName.OnCombatAttackOfOpportunityBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_COMBAT_ATTACK_OF_OPPORTUNITY_AFTER", ScriptName.OnCombatAttackOfOpportunityAfter);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_COMBAT_ATTACK_OF_OPPORTUNITY_BEFORE", ScriptName.OnCombatAttackOfOpportunityBefore);
+            _eventsPlugin.SubscribeEvent("NWNX_ON_COMBAT_ATTACK_OF_OPPORTUNITY_AFTER", ScriptName.OnCombatAttackOfOpportunityAfter);
         }
 
         /// <summary>
@@ -526,20 +529,20 @@ namespace SWLOR.Shared.Events.Service
         private void HookApplicationEvents()
         {
             // Application Shutdown events
-            EventsPlugin.SubscribeEvent("APPLICATION_SHUTDOWN", ScriptName.OnSWLORApplicationShutdown);
+            _eventsPlugin.SubscribeEvent("APPLICATION_SHUTDOWN", ScriptName.OnSWLORApplicationShutdown);
             AppDomain.CurrentDomain.ProcessExit += (sender, args) =>
             {
-                EventsPlugin.SignalEvent("APPLICATION_SHUTDOWN", GetModule());
+                _eventsPlugin.SignalEvent("APPLICATION_SHUTDOWN", GetModule());
             };
 
-            EventsPlugin.SubscribeEvent("SWLOR_ITEM_EQUIP_VALID_BEFORE", ScriptName.OnSWLORItemEquipValidBefore);
-            EventsPlugin.SubscribeEvent("SWLOR_BUY_PERK", ScriptName.OnSWLORBuyPerk);
-            EventsPlugin.SubscribeEvent("SWLOR_GAIN_SKILL_POINT", ScriptName.OnSWLORGainSkillPoint);
-            EventsPlugin.SubscribeEvent("SWLOR_COMPLETE_QUEST", ScriptName.OnSWLORCompleteQuest);
-            EventsPlugin.SubscribeEvent("SWLOR_CACHE_SKILLS_LOADED", ScriptName.OnSWLORCacheSkillsLoaded);
-            EventsPlugin.SubscribeEvent("SWLOR_COMBAT_POINT_DISTRIBUTED", ScriptName.OnSWLORCombatPointDistributed);
-            EventsPlugin.SubscribeEvent("SWLOR_SKILL_LOST_BY_DECAY", ScriptName.OnSWLORSkillLostByDecay);
-            EventsPlugin.SubscribeEvent("SWLOR_DELETE_PROPERTY", ScriptName.OnSWLORDeleteProperty);
+            _eventsPlugin.SubscribeEvent("SWLOR_ITEM_EQUIP_VALID_BEFORE", ScriptName.OnSWLORItemEquipValidBefore);
+            _eventsPlugin.SubscribeEvent("SWLOR_BUY_PERK", ScriptName.OnSWLORBuyPerk);
+            _eventsPlugin.SubscribeEvent("SWLOR_GAIN_SKILL_POINT", ScriptName.OnSWLORGainSkillPoint);
+            _eventsPlugin.SubscribeEvent("SWLOR_COMPLETE_QUEST", ScriptName.OnSWLORCompleteQuest);
+            _eventsPlugin.SubscribeEvent("SWLOR_CACHE_SKILLS_LOADED", ScriptName.OnSWLORCacheSkillsLoaded);
+            _eventsPlugin.SubscribeEvent("SWLOR_COMBAT_POINT_DISTRIBUTED", ScriptName.OnSWLORCombatPointDistributed);
+            _eventsPlugin.SubscribeEvent("SWLOR_SKILL_LOST_BY_DECAY", ScriptName.OnSWLORSkillLostByDecay);
+            _eventsPlugin.SubscribeEvent("SWLOR_DELETE_PROPERTY", ScriptName.OnSWLORDeleteProperty);
 
             _scheduler.ScheduleRepeating(() =>
             {

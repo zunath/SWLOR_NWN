@@ -7,6 +7,13 @@ namespace SWLOR.Component.Inventory.Feature
 {
     public class InstantItemUse
     {
+        private readonly IEventsPluginService _eventsPlugin;
+
+        public InstantItemUse(IEventsPluginService eventsPlugin)
+        {
+            _eventsPlugin = eventsPlugin;
+        }
+
         /// <summary>
         /// Before an item is used, if the item has a script specified, it will be run instantly.
         /// This will bypass the "Use Item" animation items normally have.
@@ -15,14 +22,14 @@ namespace SWLOR.Component.Inventory.Feature
         public void OnUseItem()
         {
             var creature = OBJECT_SELF;
-            var item = StringToObject(EventsPlugin.GetEventData("ITEM_OBJECT_ID"));
+            var item = StringToObject(_eventsPlugin.GetEventData("ITEM_OBJECT_ID"));
             var script = GetLocalString(item, "SCRIPT");
 
             // No script associated. Let it run the normal execution process.
             if (string.IsNullOrWhiteSpace(script)) return;
 
-            EventsPlugin.SkipEvent();
-            EventsPlugin.SetEventResult("0"); // Prevents the "You cannot use that item" error message from being sent.
+            _eventsPlugin.SkipEvent();
+            _eventsPlugin.SetEventResult("0"); // Prevents the "You cannot use that item" error message from being sent.
             ExecuteNWScript(script, creature);
         }
     }

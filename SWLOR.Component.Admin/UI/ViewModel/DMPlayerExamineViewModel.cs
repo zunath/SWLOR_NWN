@@ -19,11 +19,13 @@ namespace SWLOR.Component.Admin.UI.ViewModel
     {
         private readonly IDatabaseService _db;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IEventsPluginService _eventsPlugin;
 
-        public DMPlayerExamineViewModel(IGuiService guiService, IDatabaseService db, IServiceProvider serviceProvider) : base(guiService)
+        public DMPlayerExamineViewModel(IGuiService guiService, IDatabaseService db, IServiceProvider serviceProvider, IEventsPluginService eventsPlugin) : base(guiService)
         {
             _db = db;
             _serviceProvider = serviceProvider;
+            _eventsPlugin = eventsPlugin;
             
             // Initialize lazy services
             _skillService = new Lazy<ISkillService>(() => _serviceProvider.GetRequiredService<ISkillService>());
@@ -45,7 +47,7 @@ namespace SWLOR.Component.Admin.UI.ViewModel
         public void ExaminePlayer()
         {
             var dm = OBJECT_SELF;
-            var target = StringToObject(EventsPlugin.GetEventData("EXAMINEE_OBJECT_ID"));
+            var target = StringToObject(_eventsPlugin.GetEventData("EXAMINEE_OBJECT_ID"));
 
             if (!GetIsDM(dm) && !GetIsDMPossessed(dm))
                 return;

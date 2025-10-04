@@ -37,17 +37,20 @@ namespace SWLOR.Component.Associate.Service
         private readonly IRandomService _random;
         private readonly IServiceProvider _serviceProvider;
         private readonly ICreaturePluginService _creaturePlugin;
+        private readonly IEventsPluginService _eventsPlugin;
 
         public BeastMasteryService(
             IDatabaseService db,
             IRandomService random,
             IServiceProvider serviceProvider,
-            ICreaturePluginService creaturePlugin)
+            ICreaturePluginService creaturePlugin,
+            IEventsPluginService eventsPlugin)
         {
             _db = db;
             _random = random;
             _serviceProvider = serviceProvider;
             _creaturePlugin = creaturePlugin;
+            _eventsPlugin = eventsPlugin;
             
             // Initialize lazy services
             _cacheService = new Lazy<IGenericCacheService>(() => _serviceProvider.GetRequiredService<IGenericCacheService>());
@@ -456,7 +459,7 @@ namespace SWLOR.Component.Associate.Service
             if (!IsPlayerBeast(beast))
                 return;
 
-            var npc = StringToObject(EventsPlugin.GetEventData("NPC"));
+            var npc = StringToObject(_eventsPlugin.GetEventData("NPC"));
             var npcStats = StatService.GetNPCStats(npc);
             var beastId = GetBeastId(beast);
             var dbBeast = _db.Get<Beast>(beastId);
@@ -901,7 +904,7 @@ namespace SWLOR.Component.Associate.Service
         /// </summary>
         public void OnRemoveProperty()
         {
-            var propertyId = EventsPlugin.GetEventData("PROPERTY_ID");
+            var propertyId = _eventsPlugin.GetEventData("PROPERTY_ID");
             var dbQuery = new DBQuery<IncubationJob>()
                 .AddFieldSearch(nameof(IncubationJob.ParentPropertyId), propertyId, false);
             var dbJobs = _db.Search(dbQuery).ToList();

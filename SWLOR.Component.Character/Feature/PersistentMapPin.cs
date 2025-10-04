@@ -14,6 +14,7 @@ namespace SWLOR.Component.Character.Feature
     {
         private readonly IDatabaseService _db;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IEventsPluginService _eventsPlugin;
         
         // Lazy-loaded services to break circular dependencies
         private IAreaService AreaService => _serviceProvider.GetRequiredService<IAreaService>();
@@ -26,10 +27,12 @@ namespace SWLOR.Component.Character.Feature
 
         public PersistentMapPin(
             IDatabaseService db,
-            IServiceProvider serviceProvider)
+            IServiceProvider serviceProvider,
+            IEventsPluginService eventsPlugin)
         {
             _db = db;
             _serviceProvider = serviceProvider;
+            _eventsPlugin = eventsPlugin;
         }
 
         /// <summary>
@@ -41,10 +44,10 @@ namespace SWLOR.Component.Character.Feature
         {
             return new MapPin
             {
-                Id = getId ? Convert.ToInt32(EventsPlugin.GetEventData("PIN_ID")) : -1,
-                Note = isDestroying ? string.Empty : EventsPlugin.GetEventData("PIN_NOTE"),
-                X = isDestroying ? 0 : (float) Convert.ToDouble(EventsPlugin.GetEventData("PIN_X")),
-                Y = isDestroying ? 0 : (float) Convert.ToDouble(EventsPlugin.GetEventData("PIN_Y"))
+                Id = getId ? Convert.ToInt32(_eventsPlugin.GetEventData("PIN_ID")) : -1,
+                Note = isDestroying ? string.Empty : _eventsPlugin.GetEventData("PIN_NOTE"),
+                X = isDestroying ? 0 : (float) Convert.ToDouble(_eventsPlugin.GetEventData("PIN_X")),
+                Y = isDestroying ? 0 : (float) Convert.ToDouble(_eventsPlugin.GetEventData("PIN_Y"))
             };
         }
 

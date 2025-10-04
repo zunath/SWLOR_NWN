@@ -8,6 +8,13 @@ namespace SWLOR.Component.Inventory.Feature
 {
     public class StackDecrementPrevention
     {
+        private readonly IEventsPluginService _eventsPlugin;
+
+        public StackDecrementPrevention(IEventsPluginService eventsPlugin)
+        {
+            _eventsPlugin = eventsPlugin;
+        }
+
         /// <summary>
         /// When a throwing item (shuriken, dart, throwing axe) is thrown, prevent the stack from decrementing.
         /// </summary>
@@ -23,7 +30,7 @@ namespace SWLOR.Component.Inventory.Feature
                 itemType == BaseItemType.Dart ||
                 itemType == BaseItemType.ThrowingAxe)
             {
-                EventsPlugin.SkipEvent();
+                _eventsPlugin.SkipEvent();
             }
         }
     }

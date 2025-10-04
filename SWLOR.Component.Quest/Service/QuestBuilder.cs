@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Quest.Contracts;
 using SWLOR.Component.Quest.Model;
+using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Domain.Character.Contracts;
@@ -34,6 +35,7 @@ namespace SWLOR.Component.Quest.Service
         private INPCGroupService NPCGroupService => _serviceProvider.GetRequiredService<INPCGroupService>();
         private IGuiService GuiService => _serviceProvider.GetRequiredService<IGuiService>();
         private IDialogService DialogService => _serviceProvider.GetRequiredService<IDialogService>();
+        private IEventsPluginService EventsPluginService => _serviceProvider.GetRequiredService<IEventsPluginService>();
 
         public QuestBuilder(IServiceProvider serviceProvider)
         {
@@ -54,7 +56,7 @@ namespace SWLOR.Component.Quest.Service
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentException($"{nameof(name)} cannot be null or whitespace.");
 
-            _activeQuest = new QuestDetail(DatabaseService, GuiService, DialogService, QuestService)
+            _activeQuest = new QuestDetail(DatabaseService, GuiService, DialogService, QuestService, EventsPluginService)
             {
                 QuestId = questId,
                 Name = name

@@ -36,6 +36,7 @@ namespace SWLOR.Test.Component.Space.Infrastructure
             _services.AddSingleton(Substitute.For<IEventAggregator>());
             _services.AddSingleton(Substitute.For<IAreaPluginService>());
             _services.AddSingleton(Substitute.For<ICreaturePluginService>());
+            _services.AddSingleton(Substitute.For<IEventsPluginService>());
         }
 
         [TearDown]

@@ -44,6 +44,7 @@ namespace SWLOR.Component.Space.Service
         private readonly IEventAggregator _eventAggregator;
         private readonly IAreaPluginService _areaPlugin;
         private readonly ICreaturePluginService _creaturePlugin;
+        private readonly IEventsPluginService _eventsPlugin;
 
         public SpaceService(
             ILogger logger,
@@ -53,7 +54,8 @@ namespace SWLOR.Component.Space.Service
             IServiceProvider serviceProvider,
             IEventAggregator eventAggregator,
             IAreaPluginService areaPlugin,
-            ICreaturePluginService creaturePlugin)
+            ICreaturePluginService creaturePlugin,
+            IEventsPluginService eventsPlugin)
         {
             _logger = logger;
             _db = db;
@@ -63,6 +65,7 @@ namespace SWLOR.Component.Space.Service
             _eventAggregator = eventAggregator;
             _areaPlugin = areaPlugin;
             _creaturePlugin = creaturePlugin;
+            _eventsPlugin = eventsPlugin;
             
             // Initialize lazy services
             _abilityService = new Lazy<IAbilityService>(() => _serviceProvider.GetRequiredService<IAbilityService>());
@@ -462,14 +465,14 @@ namespace SWLOR.Component.Space.Service
             var position = GetPosition(player);
 
             if (!IsPlayerInSpaceMode(player)) return;
-            EventsPlugin.SkipEvent();
+            _eventsPlugin.SkipEvent();
 
             // Clicking enemies will cause this flag to be true (and we should proceed with target selection)
             // Being attacked by enemies will have this flag set to false (and we should exit without doing anything else)
-            var clearAllActions = Convert.ToInt32(EventsPlugin.GetEventData("CLEAR_ALL_ACTIONS"));
+            var clearAllActions = Convert.ToInt32(_eventsPlugin.GetEventData("CLEAR_ALL_ACTIONS"));
             if (clearAllActions == 0) return;
 
-            var target = StringToObject(EventsPlugin.GetEventData("TARGET"));
+            var target = StringToObject(_eventsPlugin.GetEventData("TARGET"));
             var (currentTarget, _) = GetCurrentTarget(player);
 
             // Targeted the same object - remove it.
@@ -1065,7 +1068,7 @@ namespace SWLOR.Component.Space.Service
         /// </summary>
         public void ExamineShipModuleItem()
         {
-            var item = StringToObject(EventsPlugin.GetEventData("EXAMINEE_OBJECT_ID"));
+            var item = StringToObject(_eventsPlugin.GetEventData("EXAMINEE_OBJECT_ID"));
 
             // Must be an item
             if (GetObjectType(item) != ObjectType.Item) return;
@@ -1097,7 +1100,7 @@ namespace SWLOR.Component.Space.Service
         /// </summary>
         public void ExamineShipItem()
         {
-            var item = StringToObject(EventsPlugin.GetEventData("EXAMINEE_OBJECT_ID"));
+            var item = StringToObject(_eventsPlugin.GetEventData("EXAMINEE_OBJECT_ID"));
 
             // Must be an item
             if (GetObjectType(item) != ObjectType.Item) return;
@@ -1119,7 +1122,7 @@ namespace SWLOR.Component.Space.Service
         /// </summary>
         public void HandleShipModuleFeats()
         {
-            var feat = (FeatType)Convert.ToInt32(EventsPlugin.GetEventData("FEAT_ID"));
+            var feat = (FeatType)Convert.ToInt32(_eventsPlugin.GetEventData("FEAT_ID"));
 
             if (!ShipModuleFeats.ContainsKey(feat)) return;
             

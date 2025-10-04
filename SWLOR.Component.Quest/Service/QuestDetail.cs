@@ -35,17 +35,20 @@ namespace SWLOR.Component.Quest.Service
         private readonly IGuiService _gui;
         private readonly IDialogService _dialog;
         private readonly IQuestService _quest;
+        private readonly IEventsPluginService _eventsPlugin;
 
         public QuestDetail(
             IDatabaseService db,
             IGuiService gui,
             IDialogService dialog,
-            IQuestService quest)
+            IQuestService quest,
+            IEventsPluginService eventsPlugin)
         {
             _db = db;
             _gui = gui;
             _dialog = dialog;
             _quest = quest;
+            _eventsPlugin = eventsPlugin;
         }
 
         /// <summary>
@@ -436,7 +439,7 @@ namespace SWLOR.Component.Quest.Service
             SendMessageToPC(player, "Quest '" + Name + "' complete!");
             RemoveJournalQuestEntry(QuestId, player, false);
 
-            EventsPlugin.SignalEvent("SWLOR_COMPLETE_QUEST", player);
+            _eventsPlugin.SignalEvent("SWLOR_COMPLETE_QUEST", player);
             _gui.PublishRefreshEvent(player, new QuestCompletedRefreshEvent(QuestId));
         }
     }

@@ -9,9 +9,12 @@ namespace SWLOR.Component.Character.Service
     public class ClientVersionCheckService : IClientVersionCheck
     {
         private readonly ILogger _logger;
-        public ClientVersionCheckService(ILogger logger)
+        private readonly IEventsPluginService _eventsPlugin;
+        
+        public ClientVersionCheckService(ILogger logger, IEventsPluginService eventsPlugin)
         {
             _logger = logger;
+            _eventsPlugin = eventsPlugin;
         }
 
         /// <summary>
@@ -24,8 +27,8 @@ namespace SWLOR.Component.Character.Service
             const int RequiredMajorVersion = 8193;
             const int RequiredMinorVersion = 34;
 
-            var majorVersion = Convert.ToInt32(EventsPlugin.GetEventData("VERSION_MAJOR"));
-            var minorVersion = Convert.ToInt32(EventsPlugin.GetEventData("VERSION_MINOR"));
+            var majorVersion = Convert.ToInt32(_eventsPlugin.GetEventData("VERSION_MAJOR"));
+            var minorVersion = Convert.ToInt32(_eventsPlugin.GetEventData("VERSION_MINOR"));
 
             // Version requirements are met.
             if (majorVersion > RequiredMajorVersion || (majorVersion == RequiredMajorVersion && minorVersion >= RequiredMinorVersion))
@@ -33,15 +36,15 @@ namespace SWLOR.Component.Character.Service
 
             // Version requirements are not met. Cancel the connection event and provide a reason why as well as instructions to the player on what to do.
             
-            var playerName = EventsPlugin.GetEventData("PLAYER_NAME");
-            var cdKey = EventsPlugin.GetEventData("CDKEY");
-            var ipAddress = EventsPlugin.GetEventData("IP_ADDRESS");
-            var platformId = EventsPlugin.GetEventData("PLATFORM_ID");
+            var playerName = _eventsPlugin.GetEventData("PLAYER_NAME");
+            var cdKey = _eventsPlugin.GetEventData("CDKEY");
+            var ipAddress = _eventsPlugin.GetEventData("IP_ADDRESS");
+            var platformId = _eventsPlugin.GetEventData("PLATFORM_ID");
 
             _logger.Write<ConnectionLogGroup>($"{playerName} failed to connect due to old client version. {cdKey} - {ipAddress} - {platformId} - {majorVersion}.{minorVersion}");
 
-            EventsPlugin.SetEventResult($"Your connection has been denied because you are on an unsupported version of Neverwinter Nights. Please upgrade your game client to {RequiredMajorVersion}.{RequiredMinorVersion} or higher and retry. If you have problems please reach out to us on Discord: https://discord.gg/MyQAM6m");
-            EventsPlugin.SkipEvent();
+            _eventsPlugin.SetEventResult($"Your connection has been denied because you are on an unsupported version of Neverwinter Nights. Please upgrade your game client to {RequiredMajorVersion}.{RequiredMinorVersion} or higher and retry. If you have problems please reach out to us on Discord: https://discord.gg/MyQAM6m");
+            _eventsPlugin.SkipEvent();
         }
     }
 }

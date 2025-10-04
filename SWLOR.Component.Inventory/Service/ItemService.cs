@@ -24,6 +24,7 @@ namespace SWLOR.Component.Inventory.Service
     {
         private readonly ILogger _logger;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IEventsPluginService _eventsPlugin;
         
         // Cached data
         private IInterfaceCache<string, ItemDetail> _itemCache;
@@ -38,10 +39,12 @@ namespace SWLOR.Component.Inventory.Service
 
         public ItemService(
             ILogger logger, 
-            IServiceProvider serviceProvider)
+            IServiceProvider serviceProvider,
+            IEventsPluginService eventsPlugin)
         {
             _logger = logger;
             _serviceProvider = serviceProvider;
+            _eventsPlugin = eventsPlugin;
         }
 
         // Lazy-loaded services to break circular dependencies
@@ -288,26 +291,26 @@ namespace SWLOR.Component.Inventory.Service
                 DelayCommand(0.1f, () => CheckPosition(actionUser, actionId, originalPosition));
             }
 
-            var item = StringToObject(EventsPlugin.GetEventData("ITEM_OBJECT_ID"));
+            var item = StringToObject(_eventsPlugin.GetEventData("ITEM_OBJECT_ID"));
             var itemTag = GetTag(item);
 
             // Not in the cache. Skip.
             if (!_allItems.ContainsKey(itemTag))
                 return;
 
-            var target = StringToObject(EventsPlugin.GetEventData("TARGET_OBJECT_ID"));
+            var target = StringToObject(_eventsPlugin.GetEventData("TARGET_OBJECT_ID"));
             var area = GetArea(user);
-            var targetPositionX = (float)Convert.ToDouble(EventsPlugin.GetEventData("TARGET_POSITION_X"));
-            var targetPositionY = (float)Convert.ToDouble(EventsPlugin.GetEventData("TARGET_POSITION_Y"));
-            var targetPositionZ = (float)Convert.ToDouble(EventsPlugin.GetEventData("TARGET_POSITION_Z"));
+            var targetPositionX = (float)Convert.ToDouble(_eventsPlugin.GetEventData("TARGET_POSITION_X"));
+            var targetPositionY = (float)Convert.ToDouble(_eventsPlugin.GetEventData("TARGET_POSITION_Y"));
+            var targetPositionZ = (float)Convert.ToDouble(_eventsPlugin.GetEventData("TARGET_POSITION_Z"));
             var targetPosition = GetIsObjectValid(target) ? GetPosition(target) : Vector3(targetPositionX, targetPositionY, targetPositionZ);
             var targetLocation = GetIsObjectValid(target) ? GetLocation(target) : Location(area, targetPosition, 0.0f);
             var userPosition = GetPosition(user);
-            var propertyIndex = Convert.ToInt32(EventsPlugin.GetEventData("ITEM_PROPERTY_INDEX"));
+            var propertyIndex = Convert.ToInt32(_eventsPlugin.GetEventData("ITEM_PROPERTY_INDEX"));
             var itemDetail = _allItems[itemTag];
 
             // Bypass the NWN "item use" animation.
-            EventsPlugin.SkipEvent();
+            _eventsPlugin.SkipEvent();
 
             // Check item property requirements.
             if (!CanCreatureUseItem(user, item))

@@ -9,6 +9,12 @@ namespace SWLOR.Component.Character.Service
         private readonly Dictionary<Guid, List<uint>> _parties = new();
         private readonly Dictionary<uint, Guid> _creatureToParty = new();
         private readonly Dictionary<Guid, uint> _partyLeaders = new();
+        private readonly IEventsPluginService _eventsPlugin;
+
+        public PartyService(IEventsPluginService eventsPlugin)
+        {
+            _eventsPlugin = eventsPlugin;
+        }
 
         /// <summary>
         /// When a member of a party accepts an invitation, add them to the caches.
@@ -16,7 +22,7 @@ namespace SWLOR.Component.Character.Service
         public void JoinParty()
         {
             var creature = OBJECT_SELF;
-            var requester = StringToObject(EventsPlugin.GetEventData("INVITED_BY"));
+            var requester = StringToObject(_eventsPlugin.GetEventData("INVITED_BY"));
 
             AddToParty(requester, creature);
         }
@@ -54,7 +60,7 @@ namespace SWLOR.Component.Character.Service
         public void AssociateJoinParty()
         {
             var owner = OBJECT_SELF;
-            var associate = StringToObject(EventsPlugin.GetEventData("ASSOCIATE_OBJECT_ID"));
+            var associate = StringToObject(_eventsPlugin.GetEventData("ASSOCIATE_OBJECT_ID"));
 
             AddToParty(owner, associate);
         }
@@ -64,7 +70,7 @@ namespace SWLOR.Component.Character.Service
         /// </summary>
         public void AssociateLeaveParty()
         {
-            var associate = StringToObject(EventsPlugin.GetEventData("ASSOCIATE_OBJECT_ID"));
+            var associate = StringToObject(_eventsPlugin.GetEventData("ASSOCIATE_OBJECT_ID"));
             RemoveCreatureFromParty(associate);
         }
 
@@ -73,7 +79,7 @@ namespace SWLOR.Component.Character.Service
         /// </summary>
         public void LeaveParty()
         {
-            var creature = StringToObject(EventsPlugin.GetEventData("LEAVING"));
+            var creature = StringToObject(_eventsPlugin.GetEventData("LEAVING"));
             RemoveCreatureFromParty(creature);
         }
 
@@ -82,7 +88,7 @@ namespace SWLOR.Component.Character.Service
         /// </summary>
         public void TransferLeadership()
         {
-            var creature = StringToObject(EventsPlugin.GetEventData("NEW_LEADER"));
+            var creature = StringToObject(_eventsPlugin.GetEventData("NEW_LEADER"));
             var partyId = _creatureToParty[creature];
             _partyLeaders[partyId] = creature;
         }

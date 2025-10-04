@@ -13,11 +13,13 @@ namespace SWLOR.Component.Admin.Feature
     {
         private readonly IDatabaseService _db;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IEventsPluginService _eventsPlugin;
 
-        public DMActions(IDatabaseService db, IServiceProvider serviceProvider)
+        public DMActions(IDatabaseService db, IServiceProvider serviceProvider, IEventsPluginService eventsPlugin)
         {
             _db = db;
             _serviceProvider = serviceProvider;
+            _eventsPlugin = eventsPlugin;
         }
 
         // Lazy-loaded service to break circular dependency
@@ -30,7 +32,7 @@ namespace SWLOR.Component.Admin.Feature
 
         public void OnDMSpawnObjectInstance()
         {
-            var obj = StringToObject(EventsPlugin.GetEventData("OBJECT"));
+            var obj = StringToObject(_eventsPlugin.GetEventData("OBJECT"));
             var type = GetObjectType(obj);
 
             if (type == ObjectType.Creature)
@@ -50,12 +52,12 @@ namespace SWLOR.Component.Admin.Feature
         public void GrantRPXPViaDMCommandInstance()
         {
             var dm = OBJECT_SELF;
-            var target = StringToObject(EventsPlugin.GetEventData("OBJECT"));
-            var amountStr = EventsPlugin.GetEventData("AMOUNT");
+            var target = StringToObject(_eventsPlugin.GetEventData("OBJECT"));
+            var amountStr = _eventsPlugin.GetEventData("AMOUNT");
             int.TryParse(amountStr, out var amount);
 
             // Skip the vanilla DM command
-            EventsPlugin.SkipEvent();
+            _eventsPlugin.SkipEvent();
 
             if (amount < 0)
             {
@@ -87,7 +89,7 @@ namespace SWLOR.Component.Admin.Feature
         public void DisableGiveLevelInstance()
         {
             var dm = OBJECT_SELF;
-            EventsPlugin.SkipEvent();
+            _eventsPlugin.SkipEvent();
             SendMessageToPC(dm, "The vanilla DM Give/Take Level command is disabled. Use /giverpxp <amount> instead to give RP XP.");
         }
     }

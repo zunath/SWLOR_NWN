@@ -19,11 +19,13 @@ namespace SWLOR.Component.Combat.Feature
     {
         private readonly IDatabaseService _db;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IEventsPluginService _eventsPlugin;
 
-        public EquipmentStats(IDatabaseService db, IServiceProvider serviceProvider)
+        public EquipmentStats(IDatabaseService db, IServiceProvider serviceProvider, IEventsPluginService eventsPlugin)
         {
             _db = db;
             _serviceProvider = serviceProvider;
+            _eventsPlugin = eventsPlugin;
             
             // Initialize lazy services
             _statService = new Lazy<IStatService>(() => _serviceProvider.GetRequiredService<IStatService>());
@@ -112,8 +114,8 @@ namespace SWLOR.Component.Combat.Feature
             var creature = OBJECT_SELF;
             if (GetIsDM(creature) || GetIsDMPossessed(creature)) return;
 
-            var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
-            var slot = (InventorySlotType)Convert.ToInt32(EventsPlugin.GetEventData("SLOT"));
+            var item = StringToObject(_eventsPlugin.GetEventData("ITEM"));
+            var slot = (InventorySlotType)Convert.ToInt32(_eventsPlugin.GetEventData("SLOT"));
 
             // The unequip event doesn't fire if an item is being swapped out.
             // If there's an item in the slot, run the stat removals first.
@@ -150,7 +152,7 @@ namespace SWLOR.Component.Combat.Feature
             var creature = OBJECT_SELF;
             if (GetIsDM(creature) || GetIsDMPossessed(creature)) return;
 
-            var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
+            var item = StringToObject(_eventsPlugin.GetEventData("ITEM"));
 
             for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
             {

@@ -25,6 +25,7 @@ namespace SWLOR.Test.Shared.Events.Infrastructure
             _serviceCollection.AddSingleton<IEventHandlerDiscoveryService>(Substitute.For<IEventHandlerDiscoveryService>());
             _serviceCollection.AddSingleton<IServiceProvider>(Substitute.For<IServiceProvider>());
             _serviceCollection.AddSingleton<IChatPluginService>(Substitute.For<IChatPluginService>());
+            _serviceCollection.AddSingleton<IEventsPluginService>(Substitute.For<IEventsPluginService>());
         }
 
         [Test]

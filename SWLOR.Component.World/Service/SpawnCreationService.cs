@@ -23,6 +23,7 @@ namespace SWLOR.Component.World.Service
         private readonly IAIService _ai;
         private readonly ISpawnCacheService _spawnCache;
         private readonly ICreaturePluginService _creaturePlugin;
+        private readonly IEventsPluginService _eventsPlugin;
 
         public SpawnCreationService(
             ILogger logger,
@@ -30,7 +31,8 @@ namespace SWLOR.Component.World.Service
             IRandomService random,
             IAIService ai,
             ISpawnCacheService spawnCache,
-            ICreaturePluginService creaturePlugin)
+            ICreaturePluginService creaturePlugin,
+            IEventsPluginService eventsPlugin)
         {
             _logger = logger;
             _walkmesh = walkmesh;
@@ -38,6 +40,7 @@ namespace SWLOR.Component.World.Service
             _ai = ai;
             _spawnCache = spawnCache;
             _creaturePlugin = creaturePlugin;
+            _eventsPlugin = eventsPlugin;
         }
 
         public uint CreateSpawnObject(
@@ -202,12 +205,12 @@ namespace SWLOR.Component.World.Service
 
         public void DMSpawnCreature()
         {
-            var objectType = (InternalObjectType)Convert.ToInt32(EventsPlugin.GetEventData("OBJECT_TYPE"));
+            var objectType = (InternalObjectType)Convert.ToInt32(_eventsPlugin.GetEventData("OBJECT_TYPE"));
 
             if (objectType != InternalObjectType.Creature)
                 return;
 
-            var objectData = EventsPlugin.GetEventData("OBJECT");
+            var objectData = _eventsPlugin.GetEventData("OBJECT");
             var spawn = Convert.ToUInt32(objectData, 16); // Not sure why this is in hex.
             AdjustScripts(spawn);
             AdjustStats(spawn);

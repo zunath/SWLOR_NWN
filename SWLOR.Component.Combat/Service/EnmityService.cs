@@ -13,6 +13,7 @@ namespace SWLOR.Component.Combat.Service
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly IEventAggregator _eventAggregator;
+        private readonly IEventsPluginService _eventsPlugin;
         
         // Enemy -> Creature -> EnmityAmount mapping
         private readonly Dictionary<uint, Dictionary<uint, int>> _enemyEnmityTables = new();
@@ -23,10 +24,11 @@ namespace SWLOR.Component.Combat.Service
         // Lazy-loaded service to break circular dependency
         private readonly Lazy<IPartyService> _partyService;
 
-        public EnmityService(IServiceProvider serviceProvider, IEventAggregator eventAggregator)
+        public EnmityService(IServiceProvider serviceProvider, IEventAggregator eventAggregator, IEventsPluginService eventsPlugin)
         {
             _serviceProvider = serviceProvider;
             _eventAggregator = eventAggregator;
+            _eventsPlugin = eventsPlugin;
             
             // Initialize lazy services
             _partyService = new Lazy<IPartyService>(() => _serviceProvider.GetRequiredService<IPartyService>());
@@ -101,11 +103,11 @@ namespace SWLOR.Component.Combat.Service
         /// </summary>
         public void CreatureLimbo()
         {
-            var count = Convert.ToInt32(EventsPlugin.GetEventData("NUM_TARGETS"));
+            var count = Convert.ToInt32(_eventsPlugin.GetEventData("NUM_TARGETS"));
 
             for (var x = 1; x <= count; x++)
             {
-                var targetData = EventsPlugin.GetEventData($"TARGET_{x}");
+                var targetData = _eventsPlugin.GetEventData($"TARGET_{x}");
 
                 if (uint.TryParse(targetData, out var target))
                 {

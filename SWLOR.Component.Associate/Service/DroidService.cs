@@ -44,6 +44,7 @@ namespace SWLOR.Component.Associate.Service
         private readonly DroidBlandPersonality _blandPersonality;
         private readonly DroidWorshipfulPersonality _worshipfulPersonality;
         private readonly ICreaturePluginService _creaturePlugin;
+        private readonly IEventsPluginService _eventsPlugin;
 
         public string DroidResref => "pc_droid";
         public string DroidControlItemResref => "droid_control";
@@ -62,7 +63,8 @@ namespace SWLOR.Component.Associate.Service
             DroidSlangPersonality slangPersonality,
             DroidBlandPersonality blandPersonality,
             DroidWorshipfulPersonality worshipfulPersonality,
-            ICreaturePluginService creaturePlugin)
+            ICreaturePluginService creaturePlugin,
+            IEventsPluginService eventsPlugin)
         {
             _serviceProvider = serviceProvider;
             _geekyPersonality = geekyPersonality;
@@ -72,6 +74,7 @@ namespace SWLOR.Component.Associate.Service
             _blandPersonality = blandPersonality;
             _worshipfulPersonality = worshipfulPersonality;
             _creaturePlugin = creaturePlugin;
+            _eventsPlugin = eventsPlugin;
             
             // Initialize lazy services
             _guiService = new Lazy<IGuiService>(() => _serviceProvider.GetRequiredService<IGuiService>());
@@ -403,10 +406,10 @@ namespace SWLOR.Component.Associate.Service
             if (!IsDroid(droid))
                 return;
 
-            var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
+            var item = StringToObject(_eventsPlugin.GetEventData("ITEM"));
             var itemId = GetDroidItemId(item);
             var controller = GetControllerItem(droid);
-            var slot = (InventorySlotType)Convert.ToInt32(EventsPlugin.GetEventData("SLOT"));
+            var slot = (InventorySlotType)Convert.ToInt32(_eventsPlugin.GetEventData("SLOT"));
 
             if (slot == InventorySlotType.CreatureArmor ||
                 slot == InventorySlotType.CreatureBite ||
@@ -446,7 +449,7 @@ namespace SWLOR.Component.Associate.Service
             if (!IsDroid(droid))
                 return;
 
-            var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
+            var item = StringToObject(_eventsPlugin.GetEventData("ITEM"));
             var itemId = GetDroidItemId(item);
             var controller = GetControllerItem(droid);
             var slot = ItemService.GetItemSlot(droid, item);

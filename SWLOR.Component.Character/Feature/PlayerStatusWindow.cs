@@ -15,10 +15,12 @@ namespace SWLOR.Component.Character.Feature
     public class PlayerStatusWindow
     {
         private readonly IGuiService _guiService;
+        private readonly IEventsPluginService _eventsPlugin;
 
-        public PlayerStatusWindow(IGuiService guiService)
+        public PlayerStatusWindow(IGuiService guiService, IEventsPluginService eventsPlugin)
         {
             _guiService = guiService;
+            _eventsPlugin = eventsPlugin;
         }
 
         [ScriptHandler<OnSWLORItemEquipValidBefore>]
@@ -78,7 +80,7 @@ namespace SWLOR.Component.Character.Feature
         [ScriptHandler<OnHealAfter>]
         public void PlayerHealed()
         {
-            var target = StringToObject(EventsPlugin.GetEventData("TARGET_OBJECT_ID"));
+            var target = StringToObject(_eventsPlugin.GetEventData("TARGET_OBJECT_ID"));
             _guiService.PublishRefreshEvent(target, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.HP));
         }
 

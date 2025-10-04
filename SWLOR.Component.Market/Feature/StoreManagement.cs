@@ -12,11 +12,13 @@ namespace SWLOR.Component.Market.Feature
     {
         private readonly ILogger _logger;
         private readonly IScheduler _scheduler;
+        private readonly IEventsPluginService _eventsPlugin;
 
-        public StoreManagement(ILogger logger, IScheduler scheduler)
+        public StoreManagement(ILogger logger, IScheduler scheduler, IEventsPluginService eventsPlugin)
         {
             _logger = logger;
             _scheduler = scheduler;
+            _eventsPlugin = eventsPlugin;
         }
 
         private const int IntervalHours = 1; // Determines the interval at which stores are cleaned. 1 = 1 hour
@@ -118,8 +120,8 @@ namespace SWLOR.Component.Market.Feature
 
         public void DestroySoldItem()
         {
-            var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
-            var isSuccessful = EventsPlugin.GetEventData("RESULT") == "1";
+            var item = StringToObject(_eventsPlugin.GetEventData("ITEM"));
+            var isSuccessful = _eventsPlugin.GetEventData("RESULT") == "1";
 
             if (!isSuccessful)
                 return;
@@ -129,13 +131,13 @@ namespace SWLOR.Component.Market.Feature
 
         public void PreventSalesFromHenchmenInventory()
         {
-            var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
+            var item = StringToObject(_eventsPlugin.GetEventData("ITEM"));
             var owner = GetItemPossessor(item);
             var master = GetMaster(owner);
 
             if (GetIsObjectValid(master))
             {
-                EventsPlugin.SkipEvent();
+                _eventsPlugin.SkipEvent();
                 SendMessageToPC(master, ColorToken.Red("Items cannot be directly sold from your henchman's inventory."));
             }
         }

@@ -24,19 +24,22 @@ namespace SWLOR.Component.Skill.Service
         private readonly IServiceProvider _serviceProvider;
         private readonly IGenericCacheService _cacheService;
         private readonly IStatusEffectService _statusEffectService;
+        private readonly IEventsPluginService _eventsPlugin;
 
         public SkillService(
             IDatabaseService db, 
             IRandomService random, 
             IServiceProvider serviceProvider, 
             IGenericCacheService cacheService,
-            IStatusEffectService statusEffectService)
+            IStatusEffectService statusEffectService,
+            IEventsPluginService eventsPlugin)
         {
             _db = db;
             _random = random;
             _serviceProvider = serviceProvider;
             _cacheService = cacheService;
             _statusEffectService = statusEffectService;
+            _eventsPlugin = eventsPlugin;
             
             // Initialize lazy services
             _guiService = new Lazy<IGuiService>(() => _serviceProvider.GetRequiredService<IGuiService>());
@@ -269,13 +272,13 @@ namespace SWLOR.Component.Skill.Service
             // Send out an event signifying that a player has received a skill rank increase.
             if(receivedRankUp)
             {
-                EventsPlugin.SignalEvent("SWLOR_GAIN_SKILL_POINT", player);
+                _eventsPlugin.SignalEvent("SWLOR_GAIN_SKILL_POINT", player);
             }
 
             foreach (var decayedSkill in decayedSkills)
             {
-                EventsPlugin.PushEventData("SKILL_TYPE_ID", ((int)decayedSkill).ToString());
-                EventsPlugin.SignalEvent("SWLOR_SKILL_LOST_BY_DECAY", player);
+                _eventsPlugin.PushEventData("SKILL_TYPE_ID", ((int)decayedSkill).ToString());
+                _eventsPlugin.SignalEvent("SWLOR_SKILL_LOST_BY_DECAY", player);
             }
         }
 

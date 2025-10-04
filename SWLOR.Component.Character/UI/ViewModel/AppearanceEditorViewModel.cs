@@ -26,11 +26,13 @@ namespace SWLOR.Component.Character.UI.ViewModel
     {
         private readonly IDatabaseService _db;
         private readonly IEventAggregator _eventAggregator;
+        private readonly IEventsPluginService _eventsPlugin;
 
-        public AppearanceEditorViewModel(IGuiService guiService, IDatabaseService db, IEventAggregator eventAggregator) : base(guiService)
+        public AppearanceEditorViewModel(IGuiService guiService, IDatabaseService db, IEventAggregator eventAggregator, IEventsPluginService eventsPlugin) : base(guiService)
         {
             _db = db;
             _eventAggregator = eventAggregator;
+            _eventsPlugin = eventsPlugin;
         }
         
         public enum ColorTarget
@@ -100,7 +102,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
         public void CloseAppearanceWindowOnPossessionBefore()
         {
             var dm = OBJECT_SELF;
-            var isUnpossess = StringToObject(EventsPlugin.GetEventData("TARGET")) == OBJECT_INVALID;
+            var isUnpossess = StringToObject(_eventsPlugin.GetEventData("TARGET")) == OBJECT_INVALID;
 
             if (isUnpossess)
             {

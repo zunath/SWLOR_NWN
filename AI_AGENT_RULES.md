@@ -297,14 +297,155 @@ namespace SWLOR.Component.Perk.Service
 - **RULE**: Write unit tests for business logic, integration tests for event handling
 - **RULE**: Use NSubstitute for mocking and NUnit for unit testing framework
 - **RULE**: All unit tests MUST be in corresponding Test projects (e.g., `SWLOR.Test.Component.Perk`)
-- **RULE**: NEVER add mocks to NWScriptServiceMock that don't have equivalent methods in the production NWScriptService
-- **RULE**: NWScript and NWNX services are automatically mocked by TestBase - DO NOT call GetMockService() or create manual mocks
-- **RULE**: Use direct NWScript static calls in tests (e.g., `NWScript.GetFirstArea().Returns(1u)`) - TestBase handles the underlying mock setup
-- **RULE**: TestBase.InitializeMockNWScript() automatically sets up all NWScript and NWNX plugin mocks - no additional setup needed
+
+### 19. Testing Framework Architecture - CRITICAL FOR AI AGENTS
+
+#### 19.1 TestBase Class - Automatic Mocking System
+The `TestBase` class provides a **COMPLETE AUTOMATIC MOCKING SYSTEM** for all NWScript and NWNX plugin services. This is the **ONLY** way to handle mocking in tests.
+
+**KEY POINTS FOR AI AGENTS:**
+- **TestBase.InitializeMockNWScript()** automatically replaces ALL NWScript and NWNX services with mock implementations
+- **NO MANUAL MOCKING** of NWScript or NWNX services is needed or allowed
+- **NO GetMockService() calls** should be made in tests
+- **NO manual mock creation** for NWScript or NWNX services
+
+#### 19.2 How the Mocking System Works
+```csharp
+[TestFixture]
+public class MyServiceTests : TestBase
+{
+    [SetUp]
+    public void SetUp()
+    {
+        // This ONE call sets up ALL NWScript and NWNX mocks automatically
+        InitializeMockNWScript();
+        
+        // Only mock OTHER services (database, cache, etc.) with NSubstitute
+        _mockDatabaseService = Substitute.For<IDatabaseService>();
+        _service = new MyService(_mockDatabaseService);
+    }
+}
+```
+
+#### 19.3 Using NWScript in Tests - CORRECT PATTERN
+**✅ CORRECT**: Use direct NWScript static calls - the mocking is handled automatically:
+```csharp
+[Test]
+public void MyTest()
+{
+    // Arrange - Use NWScript directly, mocks handle the rest
+    var area = NWScript.CreateArea("", "", "Test Area");
+    NWScript.SetName(area, "Test Area");
+    NWScript.SetLocalInt(area, "SOME_VAR", 123);
+    
+    // Act
+    var result = _service.DoSomething(area);
+    
+    // Assert - Use NWScript directly to verify
+    var storedValue = NWScript.GetLocalInt(area, "SOME_VAR");
+    Assert.That(storedValue, Is.EqualTo(123));
+}
+```
+
+#### 19.4 What TestBase.InitializeMockNWScript() Does
+This method automatically:
+1. **Replaces NWScript service** with `NWScriptServiceMock`
+2. **Replaces ALL NWNX plugin services** with their mock implementations:
+   - `AdministrationPlugin` → `AdministrationPluginMock`
+   - `AreaPlugin` → `AreaPluginMock`
+   - `ChatPlugin` → `ChatPluginMock`
+   - `CreaturePlugin` → `CreaturePluginMock`
+   - `EventsPlugin` → `EventsPluginMock`
+   - `FeatPlugin` → `FeatPluginMock`
+   - `FeedbackPlugin` → `FeedbackPluginMock`
+   - `ItemPlugin` → `ItemPluginMock`
+   - `ItemPropertyPlugin` → `ItemPropertyPluginMock`
+   - `ObjectPlugin` → `ObjectPluginMock`
+   - `PlayerPlugin` → `PlayerPluginMock`
+   - `ProfilerPlugin` → `ProfilerPluginMock`
+   - `UtilPlugin` → `UtilPluginMock`
+   - `VisibilityPlugin` → `VisibilityPluginMock`
+   - `WeaponPlugin` → `WeaponPluginMock`
+
+#### 19.5 Common AI Agent Mistakes - DO NOT DO THESE
+**❌ WRONG**: Trying to mock NWScript manually
+```csharp
+// DON'T DO THIS
+var mockNWScript = Substitute.For<INWScriptService>();
+NWScript.SetService(mockNWScript); // WRONG!
+```
+
+**❌ WRONG**: Calling GetMockService() in tests
+```csharp
+// DON'T DO THIS
+var mockService = GetMockService(); // WRONG!
+```
+
+**❌ WRONG**: Creating manual NWScript mocks
+```csharp
+// DON'T DO THIS
+var mockNWScript = new NWScriptServiceMock(); // WRONG!
+```
+
+**❌ WRONG**: Trying to setup NWScript return values
+```csharp
+// DON'T DO THIS
+NWScript.GetFirstArea().Returns(1u); // WRONG! This won't work
+```
+
+#### 19.6 What You CAN Mock with NSubstitute
+**✅ CORRECT**: Mock other services (database, cache, etc.)
+```csharp
+[SetUp]
+public void SetUp()
+{
+    InitializeMockNWScript(); // Handles NWScript/NWNX automatically
+    
+    // Mock OTHER services with NSubstitute
+    _mockDatabaseService = Substitute.For<IDatabaseService>();
+    _mockCacheService = Substitute.For<ICacheService>();
+    _mockConfigService = Substitute.For<IConfigService>();
+    
+    _service = new MyService(_mockDatabaseService, _mockCacheService, _mockConfigService);
+}
+```
+
+#### 19.7 Test Isolation and Cleanup
+- **TestBase automatically resets mock state** between tests
+- **No manual cleanup** of NWScript/NWNX mocks needed
+- **Each test gets a fresh mock state** automatically
+- **Mock data persists within a single test** but is reset between tests
+
+#### 19.8 Mock Data Verification
+The mock implementations store data that can be verified:
+```csharp
+[Test]
+public void VerifyMockData()
+{
+    // Arrange
+    var area = NWScript.CreateArea("", "", "Test Area");
+    NWScript.SetName(area, "Test Area");
+    
+    // Act
+    _service.ProcessArea(area);
+    
+    // Assert - The mock stores the data, so you can verify it
+    var areaName = NWScript.GetName(area);
+    Assert.That(areaName, Is.EqualTo("Test Area"));
+}
+```
+
+### 20. Testing Best Practices
+- **RULE**: Always inherit from `TestBase` for any test that uses NWScript or NWNX
+- **RULE**: Call `InitializeMockNWScript()` in `[SetUp]` method
+- **RULE**: Use direct NWScript static calls in tests - no manual mocking
+- **RULE**: Mock only non-NWScript services with NSubstitute
+- **RULE**: Test business logic, not NWScript functionality
+- **RULE**: Verify mock state through NWScript calls, not direct mock access
 
 ## Documentation Rules
 
-### 19. Code Documentation
+### 21. Code Documentation
 - **RULE**: All public methods MUST have XML documentation
 - **RULE**: Include parameter descriptions and return value descriptions
 - **RULE**: Document complex business logic with inline comments
@@ -312,14 +453,14 @@ namespace SWLOR.Component.Perk.Service
 
 ## Migration and Refactoring Rules
 
-### 20. When Adding New Features
+### 22. When Adding New Features
 - **RULE**: Start with component-specific implementation
 - **RULE**: Only move to shared domain when second component needs it
 - **RULE**: Create interfaces before implementations
 - **RULE**: Register services in appropriate DI container
 - **RULE**: Separate event handling from business logic from the start
 
-### 21. When Modifying Existing Code
+### 23. When Modifying Existing Code
 - **RULE**: Maintain existing architecture patterns
 - **RULE**: Don't break component boundaries
 - **RULE**: Update all references when moving entities
@@ -327,13 +468,13 @@ namespace SWLOR.Component.Perk.Service
 
 ## Specific Component Rules
 
-### 22. Perk Component Specifics
+### 24. Perk Component Specifics
 - **RULE**: Perk services are split into focused services (Data, Level, Trigger, Cache)
 - **RULE**: Main PerkService acts as a facade
 - **RULE**: Use caching for expensive perk calculations
 - **RULE**: Perk requirements are handled by dedicated factory
 
-### 23. Event System Rules
+### 25. Event System Rules
 - **RULE**: Use `[ScriptHandler<>]` attributes for event registration
 - **RULE**: Event handlers MUST be in `EventHandlers/` folder
 - **RULE**: One event handler class per component

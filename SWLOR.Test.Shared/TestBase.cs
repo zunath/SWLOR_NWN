@@ -52,30 +52,5 @@ namespace SWLOR.Test.Shared
                 _isInitialized = true;
             }
         }
-
-        /// <summary>
-        /// Gets the mock NWScript service instance for direct access to mock data.
-        /// This allows tests to verify mock state and reset it between tests.
-        /// </summary>
-        /// <returns>The mock NWScript service instance</returns>
-        protected static NWScriptServiceMock GetMockService()
-        {
-            if (!_isInitialized)
-                InitializeMockNWScript();
-            
-            return _mockService!;
-        }
-
-        /// <summary>
-        /// Resets all mock state to ensure clean test isolation.
-        /// This is automatically called by InitializeMockNWScript() but can be called manually if needed.
-        /// </summary>
-        protected static void ResetMockState()
-        {
-            if (_mockService != null)
-            {
-                _mockService.ResetMockState();
-            }
-        }
     }
 }

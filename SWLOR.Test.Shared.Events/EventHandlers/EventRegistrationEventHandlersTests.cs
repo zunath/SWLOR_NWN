@@ -50,8 +50,7 @@ namespace SWLOR.Test.Shared.Events.EventHandlers
             // Act
             _handlers.ExecuteHeartbeatEvent();
 
-            // Assert - The method should complete without throwing
-            // We can't easily test the internal logic without mocking static NWScript calls
+            // Assert
             Assert.Pass("ExecuteHeartbeatEvent completed successfully");
         }
 
@@ -61,21 +60,15 @@ namespace SWLOR.Test.Shared.Events.EventHandlers
             // Act
             _handlers.EnterServer();
 
-            // Assert - The method should complete without throwing
-            // We can't easily test the internal logic without mocking static NWScript calls
+            // Assert
             Assert.Pass("EnterServer completed successfully");
         }
 
         [Test]
-        [Ignore("NWN.Core initialization required")]
         public void TriggerNWNXPersistence_ShouldCallNWNXFunctions()
         {
-            // Act
-            _handlers.TriggerNWNXPersistence();
-
-            // Assert - The method should complete without throwing
-            // We can't easily test the internal logic without mocking static NWScript calls
-            Assert.Pass("TriggerNWNXPersistence completed successfully");
+            // Act & Assert
+            Assert.DoesNotThrow(() => _handlers.TriggerNWNXPersistence());
         }
 
         [Test]
@@ -93,7 +86,6 @@ namespace SWLOR.Test.Shared.Events.EventHandlers
         }
 
         [Test]
-        [Ignore("NWN.Core initialization required")]
         public void TriggerNWNXPersistence_ShouldNotThrow()
         {
             // Act & Assert

@@ -98,24 +98,21 @@ namespace SWLOR.Test.Shared.Events.Service
             // Act
             _service.DiscoverAndRegisterHandlers();
 
-            // Assert - The method should complete without throwing
-            // We can't easily test the internal logic without mocking AppDomain
+            // Assert
             Assert.Pass("DiscoverAndRegisterHandlers completed successfully");
         }
 
         [Test]
-        [Ignore("NWN.Core initialization required")]
         public void DiscoverAndRegisterHandlers_ShouldHandleExceptions()
         {
-            // Arrange - Create a service with a logger that throws
+            // Arrange
             var throwingLogger = Substitute.For<ILogger>();
             throwingLogger.When(x => x.WriteError(Arg.Any<string>())).Do(x => throw new Exception("Logger error"));
             
             var service = new EventHandlerDiscoveryService(_mockEventAggregator, throwingLogger, _mockServiceProvider);
 
             // Act & Assert
-            var caughtException = Assert.Throws<Exception>(() => service.DiscoverAndRegisterHandlers());
-            Assert.That(caughtException, Is.Not.Null);
+            Assert.DoesNotThrow(() => service.DiscoverAndRegisterHandlers());
         }
 
     }

@@ -18,6 +18,34 @@ namespace SWLOR.Test.Shared.Core.Extension
             public string? DerivedProperty { get; set; }
         }
 
+        public class TestClassWithField
+        {
+            private string TestField = "test";
+        }
+
+        public class TestClassWithEvent
+        {
+            public event EventHandler TestEvent;
+        }
+
+        public class TestClassWithNested
+        {
+            public class NestedClass
+            {
+                public string NestedProperty { get; set; }
+            }
+        }
+
+        public class TestClassWithGenericMethod
+        {
+            public void GenericMethod<T>(T value) { }
+        }
+
+        public interface ITestInterface
+        {
+            void InterfaceMethod();
+        }
+
         [Test]
         public void GetFullName_WithProperty_ShouldReturnFullName()
         {
@@ -86,31 +114,15 @@ namespace SWLOR.Test.Shared.Core.Extension
         [Test]
         public void GetFullName_WithField_ShouldReturnFullName()
         {
-            // Arrange
-            var field = typeof(TestClass).GetField("TestField", BindingFlags.NonPublic | BindingFlags.Instance);
-            if (field == null)
-            {
-                // Create a test field if it doesn't exist
-                var testClass = new TestClass();
-                var fieldInfo = testClass.GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Instance).FirstOrDefault();
-                if (fieldInfo != null)
-                {
-                    field = fieldInfo;
-                }
-            }
-
-            // Skip test if no field found
-            if (field == null)
-            {
-                Assert.Ignore("No suitable field found for testing");
-                return;
-            }
-
+            // Arrange - Create a test class with a field
+            var testClass = new TestClassWithField();
+            var field = typeof(TestClassWithField).GetField("TestField", BindingFlags.NonPublic | BindingFlags.Instance);
+            
             // Act
             var result = field.GetFullName();
 
             // Assert
-            Assert.That(result, Does.Contain("SWLOR.Test.Shared.Core.Extension.ReflectionExtensionsTests+TestClass"));
+            Assert.That(result, Does.Contain("SWLOR.Test.Shared.Core.Extension.ReflectionExtensionsTests+TestClassWithField"));
         }
 
         [Test]
@@ -129,74 +141,48 @@ namespace SWLOR.Test.Shared.Core.Extension
         [Test]
         public void GetFullName_WithEvent_ShouldReturnFullName()
         {
-            // Arrange
-            var eventInfo = typeof(TestClass).GetEvent("TestEvent");
-            if (eventInfo == null)
-            {
-                Assert.Ignore("No event found for testing");
-                return;
-            }
+            // Arrange - Create a test class with an event
+            var eventInfo = typeof(TestClassWithEvent).GetEvent("TestEvent");
 
             // Act
             var result = eventInfo.GetFullName();
 
             // Assert
-            Assert.That(result, Does.Contain("SWLOR.Test.Shared.Core.Extension.ReflectionExtensionsTests+TestClass"));
+            Assert.That(result, Does.Contain("SWLOR.Test.Shared.Core.Extension.ReflectionExtensionsTests+TestClassWithEvent"));
         }
 
         [Test]
         public void GetFullName_WithNestedClass_ShouldReturnFullName()
         {
-            // Arrange
-            var nestedType = typeof(TestClass).GetNestedType("NestedClass", BindingFlags.NonPublic | BindingFlags.Public);
-            if (nestedType == null)
-            {
-                Assert.Ignore("No nested class found for testing");
-                return;
-            }
+            // Arrange - Create a test class with a nested class
+            var nestedType = typeof(TestClassWithNested).GetNestedType("NestedClass", BindingFlags.NonPublic | BindingFlags.Public);
 
             // Act
             var result = nestedType.GetFullName();
 
             // Assert
-            Assert.That(result, Does.Contain("SWLOR.Test.Shared.Core.Extension.ReflectionExtensionsTests+TestClass"));
+            Assert.That(result, Does.Contain("SWLOR.Test.Shared.Core.Extension.ReflectionExtensionsTests+TestClassWithNested"));
         }
 
         [Test]
         public void GetFullName_WithGenericMethod_ShouldReturnFullName()
         {
-            // Arrange
-            var method = typeof(TestClass).GetMethod("GenericMethod");
-            if (method == null)
-            {
-                Assert.Ignore("No generic method found for testing");
-                return;
-            }
+            // Arrange - Create a test class with a generic method
+            var method = typeof(TestClassWithGenericMethod).GetMethod("GenericMethod");
 
             // Act
             var result = method.GetFullName();
 
             // Assert
-            Assert.That(result, Does.Contain("SWLOR.Test.Shared.Core.Extension.ReflectionExtensionsTests+TestClass"));
+            Assert.That(result, Does.Contain("SWLOR.Test.Shared.Core.Extension.ReflectionExtensionsTests+TestClassWithGenericMethod"));
         }
 
         [Test]
         public void GetFullName_WithInterfaceMethod_ShouldReturnFullName()
         {
-            // Arrange
-            var interfaceType = typeof(TestClass).GetInterfaces().FirstOrDefault();
-            if (interfaceType == null)
-            {
-                Assert.Ignore("No interface found for testing");
-                return;
-            }
-
+            // Arrange - Create a test class that implements an interface
+            var interfaceType = typeof(ITestInterface);
             var method = interfaceType.GetMethod("InterfaceMethod");
-            if (method == null)
-            {
-                Assert.Ignore("No interface method found for testing");
-                return;
-            }
 
             // Act
             var result = method.GetFullName();
@@ -210,11 +196,6 @@ namespace SWLOR.Test.Shared.Core.Extension
         {
             // Arrange
             var member = typeof(TestClass).GetMember("TestProperty").FirstOrDefault();
-            if (member == null)
-            {
-                Assert.Ignore("No suitable member found for testing");
-                return;
-            }
 
             // Act
             var result = member.GetFullName();

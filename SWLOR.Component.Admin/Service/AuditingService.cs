@@ -10,10 +10,12 @@ namespace SWLOR.Component.Admin.Service
     public class AuditingService : IAuditingService
     {
         private readonly ILogger _logger;
+        private readonly IChatPluginService _chatPlugin;
 
-        public AuditingService(ILogger logger)
+        public AuditingService(ILogger logger, IChatPluginService chatPlugin)
         {
             _logger = logger;
+            _chatPlugin = chatPlugin;
         }
         /// <summary>
         /// Writes an audit log when a player connects to the server.
@@ -50,11 +52,11 @@ namespace SWLOR.Component.Admin.Service
         /// </summary>
         public void AuditChatMessages()
         {
-            static string BuildRegularLog()
+            string BuildRegularLog()
             {
-                var sender = ChatPlugin.GetSender();
-                var chatChannel = ChatPlugin.GetChannel();
-                var message = ChatPlugin.GetMessage();
+                var sender = _chatPlugin.GetSender();
+                var chatChannel = _chatPlugin.GetChannel();
+                var message = _chatPlugin.GetMessage();
                 var ipAddress = GetPCIPAddress(sender);
                 var cdKey = GetPCPublicCDKey(sender);
                 var account = GetPCPlayerName(sender);
@@ -65,12 +67,12 @@ namespace SWLOR.Component.Admin.Service
                 return logMessage;
             }
 
-            static string BuildTellLog()
+            string BuildTellLog()
             {
-                var sender = ChatPlugin.GetSender();
-                var receiver = ChatPlugin.GetTarget();
-                var chatChannel = ChatPlugin.GetChannel();
-                var message = ChatPlugin.GetMessage();
+                var sender = _chatPlugin.GetSender();
+                var receiver = _chatPlugin.GetTarget();
+                var chatChannel = _chatPlugin.GetChannel();
+                var message = _chatPlugin.GetMessage();
                 var senderIPAddress = GetPCIPAddress(sender);
                 var senderCDKey = GetPCPublicCDKey(sender);
                 var senderAccount = GetPCPlayerName(sender);
@@ -84,7 +86,7 @@ namespace SWLOR.Component.Admin.Service
                 return logMessage;
             }
 
-            var channel = ChatPlugin.GetChannel();
+            var channel = _chatPlugin.GetChannel();
             string log;
 
             // We don't log server messages because there isn't a good way to filter them.

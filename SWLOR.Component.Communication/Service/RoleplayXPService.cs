@@ -16,12 +16,14 @@ namespace SWLOR.Component.Communication.Service
     {
         private readonly IDatabaseService _db;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IChatPluginService _chatPlugin;
         private const string RPTimestampVariable = "RP_SYSTEM_LAST_MESSAGE_TIMESTAMP";
 
-        public RoleplayXPService(IDatabaseService db, IServiceProvider serviceProvider)
+        public RoleplayXPService(IDatabaseService db, IServiceProvider serviceProvider, IChatPluginService chatPlugin)
         {
             _db = db;
             _serviceProvider = serviceProvider;
+            _chatPlugin = chatPlugin;
         }
 
         // Lazy-loaded service to break circular dependency
@@ -83,11 +85,11 @@ namespace SWLOR.Component.Communication.Service
         /// </summary>
         public void ProcessRPMessage()
         {
-            var channel = ChatPlugin.GetChannel();
-            var player = ChatPlugin.GetSender();
+            var channel = _chatPlugin.GetChannel();
+            var player = _chatPlugin.GetSender();
             if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player)) return;
 
-            var message = ChatPlugin.GetMessage().Trim();
+            var message = _chatPlugin.GetMessage().Trim();
             var now = DateTime.UtcNow;
 
             var isInCharacterChat =

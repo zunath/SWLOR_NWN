@@ -23,6 +23,7 @@ namespace SWLOR.Component.Communication.Service
     {
         private readonly IDatabaseService _db;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IChatPluginService _chatPlugin;
         private const string DMPossessedCreature = "COMMUNICATION_DM_POSSESSED_CREATURE";
         private const int HolonetDelayMinutes = 5;
         
@@ -34,10 +35,11 @@ namespace SWLOR.Component.Communication.Service
         public (byte, byte, byte) OOCChatColor => CommunicationConstants.OOCChatColor;
         public (byte, byte, byte) EmoteChatColor => CommunicationConstants.EmoteChatColor;
 
-        public CommunicationService(IDatabaseService db, IServiceProvider serviceProvider)
+        public CommunicationService(IDatabaseService db, IServiceProvider serviceProvider, IChatPluginService chatPlugin)
         {
             _db = db;
             _serviceProvider = serviceProvider;
+            _chatPlugin = chatPlugin;
             
             // Initialize lazy services
             _activityService = new Lazy<IActivityService>(() => _serviceProvider.GetRequiredService<IActivityService>());
@@ -137,7 +139,7 @@ namespace SWLOR.Component.Communication.Service
 
         public void ProcessChatMessage()
         {
-            var channel = ChatPlugin.GetChannel();
+            var channel = _chatPlugin.GetChannel();
 
             // - PlayerTalk, PlayerWhisper, PlayerParty, and PlayerShout are all IC channels. These channels
             //   are subject to emote coloring and language translation. (see below for more info).
@@ -154,8 +156,8 @@ namespace SWLOR.Component.Communication.Service
             
             var messageToDm = channel == ChatChannelType.PlayerDM;
 
-            var sender = ChatPlugin.GetSender();
-            var message = ChatPlugin.GetMessage().Trim();
+            var sender = _chatPlugin.GetSender();
+            var message = _chatPlugin.GetMessage().Trim();
 
             // if this is a DMFI chat command, exit as ProcessNativeChatMessage has already handled via mod_chat event.
             if (GetIsDM(sender) && message.Length >= 1 && message.Substring(0, 1) == ".")
@@ -175,11 +177,11 @@ namespace SWLOR.Component.Communication.Service
             // Echo the message back to the player.
             if (messageToDm)
             {
-                ChatPlugin.SendMessage(ChatChannelType.ServerMessage, "(Sent to DM) " + message, sender, sender);
+                _chatPlugin.SendMessage(ChatChannelType.ServerMessage, "(Sent to DM) " + message, sender, sender);
                 return;
             }
 
-            ChatPlugin.SkipMessage();
+            _chatPlugin.SkipMessage();
 
             if (GetIsDead(sender) && !message.StartsWith("/"))
             {
@@ -518,7 +520,7 @@ namespace SWLOR.Component.Communication.Service
                 // set back to original sender, if it was changed by holocom connection
                 sender = originalSender;
 
-                ChatPlugin.SendMessage(finalChannel, finalMessageColored, sender, receiver);
+                _chatPlugin.SendMessage(finalChannel, finalMessageColored, sender, receiver);
             }
         }
 

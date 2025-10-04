@@ -127,6 +127,7 @@ namespace SWLOR.Game.Server
             // Register NWNX Plugin Services
             services.AddSingleton<IAdministrationPluginService, AdministrationPluginService>();
             services.AddSingleton<IAreaPluginService, AreaPluginService>();
+            services.AddSingleton<IChatPluginService, ChatPluginService>();
         }
 
     }

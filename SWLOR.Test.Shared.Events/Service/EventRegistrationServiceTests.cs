@@ -1,3 +1,4 @@
+using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Events.Contracts;
 using SWLOR.Shared.Events.Events.Infrastructure;
@@ -13,6 +14,7 @@ namespace SWLOR.Test.Shared.Events.Service
         private IScheduler _mockScheduler;
         private IEventAggregator _mockEventAggregator;
         private IEventHandlerDiscoveryService _mockEventHandlerDiscovery;
+        private IChatPluginService _mockChatPlugin;
         private EventRegistrationService _eventRegistrationService;
 
         [SetUp]
@@ -21,10 +23,12 @@ namespace SWLOR.Test.Shared.Events.Service
             _mockScheduler = Substitute.For<IScheduler>();
             _mockEventAggregator = Substitute.For<IEventAggregator>();
             _mockEventHandlerDiscovery = Substitute.For<IEventHandlerDiscoveryService>();
+            _mockChatPlugin = Substitute.For<IChatPluginService>();
             _eventRegistrationService = new EventRegistrationService(
                 _mockScheduler, 
                 _mockEventAggregator, 
-                _mockEventHandlerDiscovery);
+                _mockEventHandlerDiscovery,
+                _mockChatPlugin);
         }
 
         [TearDown]
@@ -40,7 +44,8 @@ namespace SWLOR.Test.Shared.Events.Service
             var service = new EventRegistrationService(
                 _mockScheduler, 
                 _mockEventAggregator, 
-                _mockEventHandlerDiscovery);
+                _mockEventHandlerDiscovery,
+                _mockChatPlugin);
 
             // Assert
             Assert.That(service, Is.Not.Null);

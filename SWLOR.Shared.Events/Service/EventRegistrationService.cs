@@ -14,15 +14,18 @@ namespace SWLOR.Shared.Events.Service
         private readonly IScheduler _scheduler;
         private readonly IEventAggregator _eventAggregator;
         private readonly IEventHandlerDiscoveryService _eventHandlerDiscovery;
+        private readonly IChatPluginService _chatPlugin;
 
         public EventRegistrationService(
             IScheduler scheduler,
             IEventAggregator eventAggregator,
-            IEventHandlerDiscoveryService eventHandlerDiscovery)
+            IEventHandlerDiscoveryService eventHandlerDiscovery,
+            IChatPluginService chatPlugin)
         {
             _scheduler = scheduler;
             _eventAggregator = eventAggregator;
             _eventHandlerDiscovery = eventHandlerDiscovery;
+            _chatPlugin = chatPlugin;
         }
 
         public void RegisterEvents()
@@ -99,7 +102,7 @@ namespace SWLOR.Shared.Events.Service
         private void HookNWNXEvents()
         {
             // Chat Plugin Events start here.
-            ChatPlugin.RegisterChatScript(ScriptName.OnNWNXChat);
+            _chatPlugin.RegisterChatScript(ScriptName.OnNWNXChat);
 
             // Events Plugin Events start here.
 

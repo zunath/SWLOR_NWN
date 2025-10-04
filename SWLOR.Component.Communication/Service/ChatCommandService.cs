@@ -3,7 +3,6 @@ using SWLOR.Component.Communication.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.Service;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Core.Contracts;
@@ -20,6 +19,7 @@ namespace SWLOR.Component.Communication.Service
     {
         private readonly IAppSettings _appSettings;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IChatPluginService _chatPlugin;
         
         // Lazy-loaded services to break circular dependencies
         private IAuthorizationService Authorization => _serviceProvider.GetRequiredService<IAuthorizationService>();
@@ -37,10 +37,11 @@ namespace SWLOR.Component.Communication.Service
         public List<AnimationType> EmoteAnimations { get; } = new();
         public GuiBindingList<bool> EmoteIsLooping { get; } = new();
 
-        public ChatCommandService(IAppSettings appSettings, IServiceProvider serviceProvider)
+        public ChatCommandService(IAppSettings appSettings, IServiceProvider serviceProvider, IChatPluginService chatPlugin)
         {
             _appSettings = appSettings;
             _serviceProvider = serviceProvider;
+            _chatPlugin = chatPlugin;
         }
 
         private const string InvalidChatCommandMessage = "Invalid chat command. Use '/help' to get a list of available commands.";
@@ -52,7 +53,7 @@ namespace SWLOR.Component.Communication.Service
         public void HandleChatMessage()
         {
             var sender = OBJECT_SELF;
-            var originalMessage = ChatPlugin.GetMessage().Trim();
+            var originalMessage = _chatPlugin.GetMessage().Trim();
 
             if (!CanHandleChat(sender, originalMessage))
             {
@@ -69,7 +70,7 @@ namespace SWLOR.Component.Communication.Service
             var command = split[0].Substring(1, split[0].Length - 1);
             split.RemoveAt(0);
 
-            ChatPlugin.SkipMessage();
+            _chatPlugin.SkipMessage();
 
             if (!_chatCommands.ContainsKey(command))
             {

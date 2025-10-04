@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Events.Contracts;
 using SWLOR.Shared.Events.Infrastructure;
@@ -23,6 +24,7 @@ namespace SWLOR.Test.Shared.Events.Infrastructure
             _serviceCollection.AddSingleton<IScheduler>(Substitute.For<IScheduler>());
             _serviceCollection.AddSingleton<IEventHandlerDiscoveryService>(Substitute.For<IEventHandlerDiscoveryService>());
             _serviceCollection.AddSingleton<IServiceProvider>(Substitute.For<IServiceProvider>());
+            _serviceCollection.AddSingleton<IChatPluginService>(Substitute.For<IChatPluginService>());
         }
 
         [Test]

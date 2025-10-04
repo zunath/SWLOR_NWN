@@ -37,6 +37,7 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
         private readonly IDiscordNotificationService _discord;
         private readonly IEventAggregator _eventAggregator;
         private readonly IAdministrationPluginService _administrationPlugin;
+        private readonly IChatPluginService _chatPlugin;
         
 
         public DMChatCommand(
@@ -49,7 +50,8 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
             ISpaceService space,
             IDiscordNotificationService discord,
             IEventAggregator eventAggregator,
-            IAdministrationPluginService administrationPlugin)
+            IAdministrationPluginService administrationPlugin,
+            IChatPluginService chatPlugin)
         {
             _guiService = guiService;
             _db = db;
@@ -61,6 +63,7 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
             _discord = discord;
             _eventAggregator = eventAggregator;
             _administrationPlugin = administrationPlugin;
+            _chatPlugin = chatPlugin;
         }
 
         public Dictionary<string, ChatCommandDetail> BuildChatCommands()
@@ -974,7 +977,7 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
                 {
                     var message = string.Join(" ", args);
                     for (var onlinePlayer = GetFirstPC(); GetIsObjectValid(onlinePlayer); onlinePlayer = GetNextPC())
-                        ChatPlugin.SendMessage(ChatChannelType.DMShout, message, user, onlinePlayer);
+                        _chatPlugin.SendMessage(ChatChannelType.DMShout, message, user, onlinePlayer);
                     
                     var authorName = $"{GetName(user)} ({GetPCPlayerName(user)}) [{GetPCPublicCDKey(user)}]";
                     _discord.PublishMessage(authorName, message, Color.Orange, DiscordNotificationType.DMShout);

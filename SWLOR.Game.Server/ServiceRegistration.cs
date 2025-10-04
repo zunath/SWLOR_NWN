@@ -133,6 +133,7 @@ namespace SWLOR.Game.Server
             services.AddSingleton<IFeatPluginService, FeatPluginService>();
             services.AddSingleton<IFeedbackPluginService, FeedbackPluginService>();
             services.AddSingleton<IItemPluginService, ItemPluginService>();
+            services.AddSingleton<IItemPropertyPluginService, ItemPropertyPluginService>();
         }
 
     }

@@ -21,9 +21,6 @@ namespace SWLOR.Test.Component.World.Service
             // Initialize the mock NWScript service for all tests
             InitializeMockNWScript();
             
-            // Reset mock state to ensure clean test environment
-            // Mock state is automatically reset by TestBase initialization
-            
             _mockPlanetCacheService = Substitute.For<IPlanetCacheService>();
             
             // Create a real service collection and register our mock

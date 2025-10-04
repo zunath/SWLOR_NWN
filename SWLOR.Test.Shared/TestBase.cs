@@ -12,6 +12,7 @@ namespace SWLOR.Test.Shared
     {
         private static bool _isInitialized;
         private static readonly Lock _lock = new();
+        private static NWScriptServiceMock? _mockService;
 
         /// <summary>
         /// Sets up the mock NWScript service and NWNX plugin mocks for testing.
@@ -21,9 +22,15 @@ namespace SWLOR.Test.Shared
         {
             lock (_lock)
             {
-                if (_isInitialized) return;
+                if (_isInitialized) 
+                {
+                    // Reset mock state to ensure clean test isolation
+                    _mockService?.ResetMockState();
+                    return;
+                }
 
-                NWScript.SetService(new NWScriptServiceMock()); 
+                _mockService = new NWScriptServiceMock();
+                NWScript.SetService(_mockService); 
 
                 // Initialize all NWNX plugin mocks
                 AdministrationPlugin.SetService(new AdministrationPluginMock());
@@ -43,6 +50,31 @@ namespace SWLOR.Test.Shared
                 WeaponPlugin.SetService(new WeaponPluginMock());
 
                 _isInitialized = true;
+            }
+        }
+
+        /// <summary>
+        /// Gets the mock NWScript service instance for direct access to mock data.
+        /// This allows tests to verify mock state and reset it between tests.
+        /// </summary>
+        /// <returns>The mock NWScript service instance</returns>
+        protected static NWScriptServiceMock GetMockService()
+        {
+            if (!_isInitialized)
+                InitializeMockNWScript();
+            
+            return _mockService!;
+        }
+
+        /// <summary>
+        /// Resets all mock state to ensure clean test isolation.
+        /// This is automatically called by InitializeMockNWScript() but can be called manually if needed.
+        /// </summary>
+        protected static void ResetMockState()
+        {
+            if (_mockService != null)
+            {
+                _mockService.ResetMockState();
             }
         }
     }

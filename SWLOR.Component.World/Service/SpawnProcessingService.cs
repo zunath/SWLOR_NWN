@@ -2,7 +2,6 @@ using SWLOR.Component.World.Contracts;
 using SWLOR.Component.World.Models;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.Service;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
@@ -20,6 +19,7 @@ namespace SWLOR.Component.World.Service
         private readonly ISpawnCreationService _spawnCreation;
         private readonly ISpawnCacheService _spawnCache;
         private readonly IEventAggregator _eventAggregator;
+        private readonly IAreaPluginService _areaPlugin;
 
         public int DespawnMinutes => 20;
         public int ResourceDespawnMinutes => 180;
@@ -36,13 +36,15 @@ namespace SWLOR.Component.World.Service
             IRandomService random,
             ISpawnCreationService spawnCreation,
             ISpawnCacheService spawnCache,
-            IEventAggregator eventAggregator)
+            IEventAggregator eventAggregator,
+            IAreaPluginService areaPlugin)
         {
             _logger = logger;
             _random = random;
             _spawnCreation = spawnCreation;
             _spawnCache = spawnCache;
             _eventAggregator = eventAggregator;
+            _areaPlugin = areaPlugin;
         }
 
         public void ProcessSpawnSystem()
@@ -199,7 +201,7 @@ namespace SWLOR.Component.World.Service
             {
                 var (area, despawnTime) = _queuedAreaDespawns.ElementAt(index);
                 // Players have entered this area. Remove it and move to the next entry.
-                if (AreaPlugin.GetNumberOfPlayersInArea(area) > 0)
+                if (_areaPlugin.GetNumberOfPlayersInArea(area) > 0)
                 {
                     _queuedAreaDespawns.Remove(area);
                     continue;

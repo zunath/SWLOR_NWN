@@ -4,6 +4,7 @@ using SWLOR.Component.Space.Contracts;
 using SWLOR.Component.Space.EventHandlers;
 using SWLOR.Component.Space.Infrastructure;
 using SWLOR.Component.Space.Service;
+using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Domain.Space.Contracts;
@@ -33,6 +34,7 @@ namespace SWLOR.Test.Component.Space.Infrastructure
             _services.AddSingleton(Substitute.For<IScheduler>());
             _services.AddSingleton(Substitute.For<IRandomService>());
             _services.AddSingleton(Substitute.For<IEventAggregator>());
+            _services.AddSingleton(Substitute.For<IAreaPluginService>());
         }
 
         [TearDown]

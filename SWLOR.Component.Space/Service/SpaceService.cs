@@ -42,6 +42,7 @@ namespace SWLOR.Component.Space.Service
         private readonly IRandomService _random;
         private readonly IServiceProvider _serviceProvider;
         private readonly IEventAggregator _eventAggregator;
+        private readonly IAreaPluginService _areaPlugin;
 
         public SpaceService(
             ILogger logger,
@@ -49,7 +50,8 @@ namespace SWLOR.Component.Space.Service
             IScheduler scheduler,
             IRandomService random,
             IServiceProvider serviceProvider,
-            IEventAggregator eventAggregator)
+            IEventAggregator eventAggregator,
+            IAreaPluginService areaPlugin)
         {
             _logger = logger;
             _db = db;
@@ -57,6 +59,7 @@ namespace SWLOR.Component.Space.Service
             _random = random;
             _serviceProvider = serviceProvider;
             _eventAggregator = eventAggregator;
+            _areaPlugin = areaPlugin;
             
             // Initialize lazy services
             _abilityService = new Lazy<IAbilityService>(() => _serviceProvider.GetRequiredService<IAbilityService>());
@@ -2051,7 +2054,7 @@ namespace SWLOR.Component.Space.Service
             if (dbShip == null)
                 return;
 
-            var playerCount = AreaPlugin.GetNumberOfPlayersInArea(instance);
+            var playerCount = _areaPlugin.GetNumberOfPlayersInArea(instance);
             var shipClone = _shipClones.ContainsKey(dbShip.Id)
                 ? _shipClones[dbShip.Id]
                 : OBJECT_INVALID;

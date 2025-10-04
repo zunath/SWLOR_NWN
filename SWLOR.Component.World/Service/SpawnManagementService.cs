@@ -18,6 +18,7 @@ namespace SWLOR.Component.World.Service
         private readonly ISpawnCalculationService _spawnCalculation;
         private readonly ISpawnCacheService _spawnCache;
         private readonly ISpawnProcessingService _spawnProcessing;
+        private readonly IAreaPluginService _areaPlugin;
 
         private readonly Dictionary<Guid, SpawnDetail> _spawns = new();
         private readonly Dictionary<uint, List<Guid>> _allSpawnsByArea = new();
@@ -26,12 +27,14 @@ namespace SWLOR.Component.World.Service
             ILogger logger,
             ISpawnCalculationService spawnCalculation,
             ISpawnCacheService spawnCache,
-            ISpawnProcessingService spawnProcessing)
+            ISpawnProcessingService spawnProcessing,
+            IAreaPluginService areaPlugin)
         {
             _logger = logger;
             _spawnCalculation = spawnCalculation;
             _spawnCache = spawnCache;
             _spawnProcessing = spawnProcessing;
+            _areaPlugin = areaPlugin;
         }
 
         public void StoreSpawns()
@@ -179,7 +182,7 @@ namespace SWLOR.Component.World.Service
             if (!GetIsPC(player) && !GetIsDM(player)) return;
 
             var area = OBJECT_SELF;
-            var playerCount = AreaPlugin.GetNumberOfPlayersInArea(area);
+            var playerCount = _areaPlugin.GetNumberOfPlayersInArea(area);
             if (playerCount > 0) return;
 
             _spawnProcessing.QueueAreaDespawn(area);

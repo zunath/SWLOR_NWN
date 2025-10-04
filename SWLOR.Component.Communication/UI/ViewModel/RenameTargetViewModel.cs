@@ -15,11 +15,13 @@ namespace SWLOR.Component.Communication.UI.ViewModel
     {
         private readonly ILogger _logger;
         private readonly IDatabaseService _db;
+        private readonly ICreaturePluginService _creaturePlugin;
 
-        public RenameTargetViewModel(IGuiService guiService, ILogger logger, IDatabaseService db) : base(guiService)
+        public RenameTargetViewModel(IGuiService guiService, ILogger logger, IDatabaseService db, ICreaturePluginService creaturePlugin) : base(guiService)
         {
             _logger = logger;
             _db = db;
+            _creaturePlugin = creaturePlugin;
         }
         
         private uint _target;
@@ -133,8 +135,8 @@ namespace SWLOR.Component.Communication.UI.ViewModel
             {
                 var dmName = GetName(Player);
                 var oldName = GetName(_target);
-                CreaturePlugin.SetOriginalName(_target, NewFirstName, false);
-                CreaturePlugin.SetOriginalName(_target, NewLastName, true);
+                _creaturePlugin.SetOriginalName(_target, NewFirstName, false);
+                _creaturePlugin.SetOriginalName(_target, NewLastName, true);
 
                 var newFullName = NewFirstName;
                 if (!string.IsNullOrWhiteSpace(NewLastName))

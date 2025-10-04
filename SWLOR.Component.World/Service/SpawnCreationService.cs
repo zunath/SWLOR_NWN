@@ -22,19 +22,22 @@ namespace SWLOR.Component.World.Service
         private readonly IRandomService _random;
         private readonly IAIService _ai;
         private readonly ISpawnCacheService _spawnCache;
+        private readonly ICreaturePluginService _creaturePlugin;
 
         public SpawnCreationService(
             ILogger logger,
             IWalkmeshService walkmesh,
             IRandomService random,
             IAIService ai,
-            ISpawnCacheService spawnCache)
+            ISpawnCacheService spawnCache,
+            ICreaturePluginService creaturePlugin)
         {
             _logger = logger;
             _walkmesh = walkmesh;
             _random = random;
             _ai = ai;
             _spawnCache = spawnCache;
+            _creaturePlugin = creaturePlugin;
         }
 
         public uint CreateSpawnObject(
@@ -167,15 +170,15 @@ namespace SWLOR.Component.World.Service
             if (!GetPlotFlag(spawn) && !GetImmortal(spawn))
                 return;
 
-            CreaturePlugin.SetBaseAC(spawn, 100);
-            CreaturePlugin.SetRawAbilityScore(spawn, AbilityType.Might, 100);
-            CreaturePlugin.SetRawAbilityScore(spawn, AbilityType.Perception, 100);
-            CreaturePlugin.SetRawAbilityScore(spawn, AbilityType.Vitality, 100);
-            CreaturePlugin.SetRawAbilityScore(spawn, AbilityType.Agility, 100);
-            CreaturePlugin.SetRawAbilityScore(spawn, AbilityType.Willpower, 100);
-            CreaturePlugin.SetRawAbilityScore(spawn, AbilityType.Social, 100);
-            CreaturePlugin.SetBaseAttackBonus(spawn, 254);
-            CreaturePlugin.AddFeatByLevel(spawn, FeatType.WeaponProficiencyCreature, 1);
+            _creaturePlugin.SetBaseAC(spawn, 100);
+            _creaturePlugin.SetRawAbilityScore(spawn, AbilityType.Might, 100);
+            _creaturePlugin.SetRawAbilityScore(spawn, AbilityType.Perception, 100);
+            _creaturePlugin.SetRawAbilityScore(spawn, AbilityType.Vitality, 100);
+            _creaturePlugin.SetRawAbilityScore(spawn, AbilityType.Agility, 100);
+            _creaturePlugin.SetRawAbilityScore(spawn, AbilityType.Willpower, 100);
+            _creaturePlugin.SetRawAbilityScore(spawn, AbilityType.Social, 100);
+            _creaturePlugin.SetBaseAttackBonus(spawn, 254);
+            _creaturePlugin.AddFeatByLevel(spawn, FeatType.WeaponProficiencyCreature, 1);
 
             AssignCommand(spawn, () => ClearAllActions());
 

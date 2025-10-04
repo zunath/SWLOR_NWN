@@ -22,6 +22,7 @@ namespace SWLOR.Component.Perk.Service
         private readonly IDatabaseService _db;
         private readonly IGenericCacheService _cacheService;
         private readonly IServiceProvider _serviceProvider;
+        private readonly ICreaturePluginService _creaturePlugin;
         
         // Lazy-loaded services to break circular dependencies
         private readonly Lazy<IBeastMasteryService> _beastMasteryService;
@@ -43,12 +44,13 @@ namespace SWLOR.Component.Perk.Service
         private readonly Dictionary<PerkType, Dictionary<int, int>> _perkLevelTiers = new();
         private readonly Dictionary<SkillType, List<PerkType>> _perksWithSkillRequirement = new();
 
-        public PerkService(ILogger logger, IDatabaseService db, IGenericCacheService cacheService, IServiceProvider serviceProvider)
+        public PerkService(ILogger logger, IDatabaseService db, IGenericCacheService cacheService, IServiceProvider serviceProvider, ICreaturePluginService creaturePlugin)
         {
             _logger = logger;
             _db = db;
             _cacheService = cacheService;
             _serviceProvider = serviceProvider;
+            _creaturePlugin = creaturePlugin;
             
             // Initialize lazy services
             _beastMasteryService = new Lazy<IBeastMasteryService>(() => _serviceProvider.GetRequiredService<IBeastMasteryService>());
@@ -721,7 +723,7 @@ namespace SWLOR.Component.Perk.Service
 
                     foreach (var feat in perkLevel.GrantedFeats)
                     {
-                        CreaturePlugin.RemoveFeat(player, feat);
+                        _creaturePlugin.RemoveFeat(player, feat);
                     }
                     
                     _logger.Write<PerkRefundLogGroup>($"AUTOMATIC DECAY REFUND - {playerId} - Refunded Date {DateTime.UtcNow} - Level {perkLevel} - PerkID {perkType}");

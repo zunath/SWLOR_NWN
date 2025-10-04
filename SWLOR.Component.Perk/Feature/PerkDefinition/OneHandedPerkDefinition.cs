@@ -19,10 +19,12 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
     public class OneHandedPerkDefinition : IPerkListDefinition
     {
         private readonly IServiceProvider _serviceProvider;
+        private readonly ICreaturePluginService _creaturePlugin;
 
-        public OneHandedPerkDefinition(IServiceProvider serviceProvider)
+        public OneHandedPerkDefinition(IServiceProvider serviceProvider, ICreaturePluginService creaturePlugin)
         {
             _serviceProvider = serviceProvider;
+            _creaturePlugin = creaturePlugin;
         }
 
         // Lazy-loaded services to break circular dependencies
@@ -287,9 +289,9 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
         {
             void AdjustSavingThrows(uint player, uint item)
             {
-                CreaturePlugin.SetBaseSavingThrow(player, SavingThrowCategoryType.Fortitude, StatService.CalculateBaseSavingThrow(player, SavingThrowCategoryType.Fortitude, item));
-                CreaturePlugin.SetBaseSavingThrow(player, SavingThrowCategoryType.Will, StatService.CalculateBaseSavingThrow(player, SavingThrowCategoryType.Will, item));
-                CreaturePlugin.SetBaseSavingThrow(player, SavingThrowCategoryType.Reflex, StatService.CalculateBaseSavingThrow(player, SavingThrowCategoryType.Reflex, item));
+                _creaturePlugin.SetBaseSavingThrow(player, SavingThrowCategoryType.Fortitude, StatService.CalculateBaseSavingThrow(player, SavingThrowCategoryType.Fortitude, item));
+                _creaturePlugin.SetBaseSavingThrow(player, SavingThrowCategoryType.Will, StatService.CalculateBaseSavingThrow(player, SavingThrowCategoryType.Will, item));
+                _creaturePlugin.SetBaseSavingThrow(player, SavingThrowCategoryType.Reflex, StatService.CalculateBaseSavingThrow(player, SavingThrowCategoryType.Reflex, item));
             }
 
             builder.Create(PerkCategoryType.OneHandedShield, PerkType.ShieldResistance)

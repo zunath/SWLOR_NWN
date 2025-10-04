@@ -14,14 +14,16 @@ namespace SWLOR.Component.Character.Feature
     {
         private readonly IDatabaseService _db;
         private readonly IServiceProvider _serviceProvider;
+        private readonly ICreaturePluginService _creaturePlugin;
         
         // Lazy-loaded services to break circular dependencies
         private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
 
-        public PlayerTemporaryEffects(IDatabaseService db, IServiceProvider serviceProvider)
+        public PlayerTemporaryEffects(IDatabaseService db, IServiceProvider serviceProvider, ICreaturePluginService creaturePlugin)
         {
             _db = db;
             _serviceProvider = serviceProvider;
+            _creaturePlugin = creaturePlugin;
         }
 
         [ScriptHandler<OnModuleEnter>]
@@ -70,7 +72,7 @@ namespace SWLOR.Component.Character.Feature
 
         private void ReapplySpeed(uint player)
         {
-            CreaturePlugin.SetMovementRate(player, MovementRateType.PC);
+            _creaturePlugin.SetMovementRate(player, MovementRateType.PC);
         }
     }
 }

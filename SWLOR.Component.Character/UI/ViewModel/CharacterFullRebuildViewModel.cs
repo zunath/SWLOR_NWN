@@ -27,6 +27,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
         private readonly ILogger _logger;
         private readonly IDatabaseService _db;
         private readonly IServiceProvider _serviceProvider;
+        private readonly ICreaturePluginService _creaturePlugin;
         
         // Lazy-loaded services to break circular dependencies
         private readonly Lazy<IStatService> _statService;
@@ -39,12 +40,14 @@ namespace SWLOR.Component.Character.UI.ViewModel
             IGuiService guiService, 
             ILogger logger, 
             IDatabaseService db, 
-            IServiceProvider serviceProvider) 
+            IServiceProvider serviceProvider,
+            ICreaturePluginService creaturePlugin) 
             : base(guiService)
         {
             _logger = logger;
             _db = db;
             _serviceProvider = serviceProvider;
+            _creaturePlugin = creaturePlugin;
             
             // Initialize lazy services
             _statService = new Lazy<IStatService>(() => _serviceProvider.GetRequiredService<IStatService>());
@@ -254,12 +257,12 @@ namespace SWLOR.Component.Character.UI.ViewModel
             Social = $"SOC [{_social}]";
 
             var racialStat = dbPlayer.RacialStat;
-            var might = CreaturePlugin.GetRawAbilityScore(Player, AbilityType.Might) ;
-            var perception = CreaturePlugin.GetRawAbilityScore(Player, AbilityType.Perception);
-            var agility = CreaturePlugin.GetRawAbilityScore(Player, AbilityType.Agility);
-            var vitality = CreaturePlugin.GetRawAbilityScore(Player, AbilityType.Vitality);
-            var willpower = CreaturePlugin.GetRawAbilityScore(Player, AbilityType.Willpower);
-            var social = CreaturePlugin.GetRawAbilityScore(Player, AbilityType.Social);
+            var might = _creaturePlugin.GetRawAbilityScore(Player, AbilityType.Might) ;
+            var perception = _creaturePlugin.GetRawAbilityScore(Player, AbilityType.Perception);
+            var agility = _creaturePlugin.GetRawAbilityScore(Player, AbilityType.Agility);
+            var vitality = _creaturePlugin.GetRawAbilityScore(Player, AbilityType.Vitality);
+            var willpower = _creaturePlugin.GetRawAbilityScore(Player, AbilityType.Willpower);
+            var social = _creaturePlugin.GetRawAbilityScore(Player, AbilityType.Social);
 
             CanDistribute = dbPlayer.Perks.Count == 0
                             && dbPlayer.Skills
@@ -366,7 +369,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
                     var feats = perkDetail.PerkLevels.Values.SelectMany(s => s.GrantedFeats);
                     foreach (var feat in feats)
                     {
-                        CreaturePlugin.RemoveFeat(Player, feat);
+                        _creaturePlugin.RemoveFeat(Player, feat);
                     }
 
                     // Run all of the triggers related to refunding this perk.
@@ -403,24 +406,24 @@ namespace SWLOR.Component.Character.UI.ViewModel
                 var playerId = GetObjectUUID(Player);
                 var dbPlayer = _db.Get<Player>(playerId);
 
-                CreaturePlugin.SetRawAbilityScore(Player, AbilityType.Might, 10);
-                CreaturePlugin.SetRawAbilityScore(Player, AbilityType.Perception, 10);
-                CreaturePlugin.SetRawAbilityScore(Player, AbilityType.Vitality, 10);
-                CreaturePlugin.SetRawAbilityScore(Player, AbilityType.Willpower, 10);
-                CreaturePlugin.SetRawAbilityScore(Player, AbilityType.Agility, 10);
-                CreaturePlugin.SetRawAbilityScore(Player, AbilityType.Social, 10);
-                CreaturePlugin.SetBaseAttackBonus(Player, 1);
+                _creaturePlugin.SetRawAbilityScore(Player, AbilityType.Might, 10);
+                _creaturePlugin.SetRawAbilityScore(Player, AbilityType.Perception, 10);
+                _creaturePlugin.SetRawAbilityScore(Player, AbilityType.Vitality, 10);
+                _creaturePlugin.SetRawAbilityScore(Player, AbilityType.Willpower, 10);
+                _creaturePlugin.SetRawAbilityScore(Player, AbilityType.Agility, 10);
+                _creaturePlugin.SetRawAbilityScore(Player, AbilityType.Social, 10);
+                _creaturePlugin.SetBaseAttackBonus(Player, 1);
 
-                CreaturePlugin.SetBaseSavingThrow(Player, SavingThrowCategoryType.Fortitude, 0);
-                CreaturePlugin.SetBaseSavingThrow(Player, SavingThrowCategoryType.Will, 0);
-                CreaturePlugin.SetBaseSavingThrow(Player, SavingThrowCategoryType.Reflex, 0);
+                _creaturePlugin.SetBaseSavingThrow(Player, SavingThrowCategoryType.Fortitude, 0);
+                _creaturePlugin.SetBaseSavingThrow(Player, SavingThrowCategoryType.Will, 0);
+                _creaturePlugin.SetBaseSavingThrow(Player, SavingThrowCategoryType.Reflex, 0);
 
-                dbPlayer.BaseStats[AbilityType.Might] = CreaturePlugin.GetRawAbilityScore(Player, AbilityType.Might);
-                dbPlayer.BaseStats[AbilityType.Perception] = CreaturePlugin.GetRawAbilityScore(Player, AbilityType.Perception);
-                dbPlayer.BaseStats[AbilityType.Vitality] = CreaturePlugin.GetRawAbilityScore(Player, AbilityType.Vitality);
-                dbPlayer.BaseStats[AbilityType.Willpower] = CreaturePlugin.GetRawAbilityScore(Player, AbilityType.Willpower);
-                dbPlayer.BaseStats[AbilityType.Agility] = CreaturePlugin.GetRawAbilityScore(Player, AbilityType.Agility);
-                dbPlayer.BaseStats[AbilityType.Social] = CreaturePlugin.GetRawAbilityScore(Player, AbilityType.Social);
+                dbPlayer.BaseStats[AbilityType.Might] = _creaturePlugin.GetRawAbilityScore(Player, AbilityType.Might);
+                dbPlayer.BaseStats[AbilityType.Perception] = _creaturePlugin.GetRawAbilityScore(Player, AbilityType.Perception);
+                dbPlayer.BaseStats[AbilityType.Vitality] = _creaturePlugin.GetRawAbilityScore(Player, AbilityType.Vitality);
+                dbPlayer.BaseStats[AbilityType.Willpower] = _creaturePlugin.GetRawAbilityScore(Player, AbilityType.Willpower);
+                dbPlayer.BaseStats[AbilityType.Agility] = _creaturePlugin.GetRawAbilityScore(Player, AbilityType.Agility);
+                dbPlayer.BaseStats[AbilityType.Social] = _creaturePlugin.GetRawAbilityScore(Player, AbilityType.Social);
 
                 dbPlayer.UpgradedStats[AbilityType.Might] = 0;
                 dbPlayer.UpgradedStats[AbilityType.Perception] = 0;
@@ -436,7 +439,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
                 // Reapply racial stat bonus
                 if (dbPlayer.RacialStat != AbilityType.Invalid)
                 {
-                    CreaturePlugin.ModifyRawAbilityScore(Player, dbPlayer.RacialStat, 1);
+                    _creaturePlugin.ModifyRawAbilityScore(Player, dbPlayer.RacialStat, 1);
                 }
             }
 
@@ -699,28 +702,28 @@ namespace SWLOR.Component.Character.UI.ViewModel
                 var playerId = GetObjectUUID(Player);
                 var dbPlayer = _db.Get<Player>(playerId);
 
-                CreaturePlugin.ModifyRawAbilityScore(Player, AbilityType.Might, _might);
-                CreaturePlugin.ModifyRawAbilityScore(Player, AbilityType.Perception, _perception);
-                CreaturePlugin.ModifyRawAbilityScore(Player, AbilityType.Vitality, _vitality);
-                CreaturePlugin.ModifyRawAbilityScore(Player, AbilityType.Willpower, _willpower);
-                CreaturePlugin.ModifyRawAbilityScore(Player, AbilityType.Agility, _agility);
-                CreaturePlugin.ModifyRawAbilityScore(Player, AbilityType.Social, _social);
+                _creaturePlugin.ModifyRawAbilityScore(Player, AbilityType.Might, _might);
+                _creaturePlugin.ModifyRawAbilityScore(Player, AbilityType.Perception, _perception);
+                _creaturePlugin.ModifyRawAbilityScore(Player, AbilityType.Vitality, _vitality);
+                _creaturePlugin.ModifyRawAbilityScore(Player, AbilityType.Willpower, _willpower);
+                _creaturePlugin.ModifyRawAbilityScore(Player, AbilityType.Agility, _agility);
+                _creaturePlugin.ModifyRawAbilityScore(Player, AbilityType.Social, _social);
 
-                dbPlayer.BaseStats[AbilityType.Might] = CreaturePlugin.GetRawAbilityScore(Player, AbilityType.Might);
-                dbPlayer.BaseStats[AbilityType.Perception] = CreaturePlugin.GetRawAbilityScore(Player, AbilityType.Perception);
-                dbPlayer.BaseStats[AbilityType.Vitality] = CreaturePlugin.GetRawAbilityScore(Player, AbilityType.Vitality);
-                dbPlayer.BaseStats[AbilityType.Willpower] = CreaturePlugin.GetRawAbilityScore(Player, AbilityType.Willpower);
-                dbPlayer.BaseStats[AbilityType.Agility] = CreaturePlugin.GetRawAbilityScore(Player, AbilityType.Agility);
-                dbPlayer.BaseStats[AbilityType.Social] = CreaturePlugin.GetRawAbilityScore(Player, AbilityType.Social);
+                dbPlayer.BaseStats[AbilityType.Might] = _creaturePlugin.GetRawAbilityScore(Player, AbilityType.Might);
+                dbPlayer.BaseStats[AbilityType.Perception] = _creaturePlugin.GetRawAbilityScore(Player, AbilityType.Perception);
+                dbPlayer.BaseStats[AbilityType.Vitality] = _creaturePlugin.GetRawAbilityScore(Player, AbilityType.Vitality);
+                dbPlayer.BaseStats[AbilityType.Willpower] = _creaturePlugin.GetRawAbilityScore(Player, AbilityType.Willpower);
+                dbPlayer.BaseStats[AbilityType.Agility] = _creaturePlugin.GetRawAbilityScore(Player, AbilityType.Agility);
+                dbPlayer.BaseStats[AbilityType.Social] = _creaturePlugin.GetRawAbilityScore(Player, AbilityType.Social);
 
                 if (CharacterType == 0)
                 {
-                    CreaturePlugin.SetClassByPosition(Player, 0, ClassType.Standard);
+                    _creaturePlugin.SetClassByPosition(Player, 0, ClassType.Standard);
                     dbPlayer.CharacterType = Shared.Domain.Character.Enums.CharacterType.Standard;
                 }
                 else
                 {
-                    CreaturePlugin.SetClassByPosition(Player, 0, ClassType.ForceSensitive);
+                    _creaturePlugin.SetClassByPosition(Player, 0, ClassType.ForceSensitive);
                     dbPlayer.CharacterType = Shared.Domain.Character.Enums.CharacterType.ForceSensitive;
                 }
 

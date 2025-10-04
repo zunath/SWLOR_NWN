@@ -17,6 +17,7 @@ namespace SWLOR.Component.Migration.Feature.PlayerMigration
     {
         private readonly IDatabaseService _db;
         private readonly IServiceProvider _serviceProvider;
+        private readonly ICreaturePluginService _creaturePlugin;
         
         // Lazy-loaded services to break circular dependencies
         private IPlayerInitializationService PlayerInitialization => _serviceProvider.GetRequiredService<IPlayerInitializationService>();
@@ -26,10 +27,12 @@ namespace SWLOR.Component.Migration.Feature.PlayerMigration
 
         public _1_LegacyPlayerMigration(
             IDatabaseService db, 
-            IServiceProvider serviceProvider)
+            IServiceProvider serviceProvider,
+            ICreaturePluginService creaturePlugin)
         {
             _db = db;
             _serviceProvider = serviceProvider;
+            _creaturePlugin = creaturePlugin;
         }
 
         public int Version => 1;
@@ -57,7 +60,7 @@ namespace SWLOR.Component.Migration.Feature.PlayerMigration
         private void AutoLevelUp(uint player)
         {
             // Most players are Force characters so we default to that class. This can be changed via the migration UI.
-            CreaturePlugin.SetClassByPosition(player, 0, ClassType.ForceSensitive);
+            _creaturePlugin.SetClassByPosition(player, 0, ClassType.ForceSensitive);
 
             GiveXPToCreature(player, 800000);
             var @class = GetClassByPosition(1, player);
@@ -67,12 +70,12 @@ namespace SWLOR.Component.Migration.Feature.PlayerMigration
                 LevelUpHenchman(player, @class);
             }
 
-            CreaturePlugin.SetRawAbilityScore(player, AbilityType.Might, 10);
-            CreaturePlugin.SetRawAbilityScore(player, AbilityType.Vitality, 10);
-            CreaturePlugin.SetRawAbilityScore(player, AbilityType.Perception, 10);
-            CreaturePlugin.SetRawAbilityScore(player, AbilityType.Agility, 10);
-            CreaturePlugin.SetRawAbilityScore(player, AbilityType.Willpower, 10);
-            CreaturePlugin.SetRawAbilityScore(player, AbilityType.Social, 10);
+            _creaturePlugin.SetRawAbilityScore(player, AbilityType.Might, 10);
+            _creaturePlugin.SetRawAbilityScore(player, AbilityType.Vitality, 10);
+            _creaturePlugin.SetRawAbilityScore(player, AbilityType.Perception, 10);
+            _creaturePlugin.SetRawAbilityScore(player, AbilityType.Agility, 10);
+            _creaturePlugin.SetRawAbilityScore(player, AbilityType.Willpower, 10);
+            _creaturePlugin.SetRawAbilityScore(player, AbilityType.Social, 10);
         }
 
         private void ResetFeats(uint player)
@@ -97,17 +100,17 @@ namespace SWLOR.Component.Migration.Feature.PlayerMigration
             StatService.AdjustPlayerMaxHP(dbPlayer, player, 70);
             StatService.AdjustPlayerMaxFP(dbPlayer, 10, player);
             StatService.AdjustPlayerMaxSTM(dbPlayer, 10, player);
-            CreaturePlugin.SetBaseAttackBonus(player, 1);
+            _creaturePlugin.SetBaseAttackBonus(player, 1);
             dbPlayer.HP = GetCurrentHitPoints(player);
             dbPlayer.FP = StatService.GetMaxFP(player, dbPlayer);
             dbPlayer.Stamina = StatService.GetMaxStamina(player, dbPlayer);
 
-            dbPlayer.BaseStats[AbilityType.Might] = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Might);
-            dbPlayer.BaseStats[AbilityType.Perception] = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Perception);
-            dbPlayer.BaseStats[AbilityType.Vitality] = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Vitality);
-            dbPlayer.BaseStats[AbilityType.Willpower] = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Willpower);
-            dbPlayer.BaseStats[AbilityType.Agility] = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Agility);
-            dbPlayer.BaseStats[AbilityType.Social] = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Social);
+            dbPlayer.BaseStats[AbilityType.Might] = _creaturePlugin.GetRawAbilityScore(player, AbilityType.Might);
+            dbPlayer.BaseStats[AbilityType.Perception] = _creaturePlugin.GetRawAbilityScore(player, AbilityType.Perception);
+            dbPlayer.BaseStats[AbilityType.Vitality] = _creaturePlugin.GetRawAbilityScore(player, AbilityType.Vitality);
+            dbPlayer.BaseStats[AbilityType.Willpower] = _creaturePlugin.GetRawAbilityScore(player, AbilityType.Willpower);
+            dbPlayer.BaseStats[AbilityType.Agility] = _creaturePlugin.GetRawAbilityScore(player, AbilityType.Agility);
+            dbPlayer.BaseStats[AbilityType.Social] = _creaturePlugin.GetRawAbilityScore(player, AbilityType.Social);
         }
 
         private void ResetHotBar(uint player)
@@ -199,7 +202,7 @@ namespace SWLOR.Component.Migration.Feature.PlayerMigration
         {
             if (GetRacialType(player) == RacialType.Cyborg)
             {
-                CreaturePlugin.SetRacialType(player, RacialType.Human);
+                _creaturePlugin.SetRacialType(player, RacialType.Human);
             }
         }
 

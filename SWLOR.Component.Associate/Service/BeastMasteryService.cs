@@ -36,15 +36,18 @@ namespace SWLOR.Component.Associate.Service
         private readonly IDatabaseService _db;
         private readonly IRandomService _random;
         private readonly IServiceProvider _serviceProvider;
+        private readonly ICreaturePluginService _creaturePlugin;
 
         public BeastMasteryService(
             IDatabaseService db,
             IRandomService random,
-            IServiceProvider serviceProvider)
+            IServiceProvider serviceProvider,
+            ICreaturePluginService creaturePlugin)
         {
             _db = db;
             _random = random;
             _serviceProvider = serviceProvider;
+            _creaturePlugin = creaturePlugin;
             
             // Initialize lazy services
             _cacheService = new Lazy<IGenericCacheService>(() => _serviceProvider.GetRequiredService<IGenericCacheService>());
@@ -338,7 +341,7 @@ namespace SWLOR.Component.Associate.Service
 
                 foreach (var feat in perkFeats)
                 {
-                    CreaturePlugin.AddFeat(beast, feat);
+                    _creaturePlugin.AddFeat(beast, feat);
                 }
             }
 
@@ -397,12 +400,12 @@ namespace SWLOR.Component.Associate.Service
             BiowareXP2.IPSafeAddItemProperty(claw, ItemPropertyCustom(ItemPropertyType.AccuracyStat, (int)beastDetail.AccuracyStat), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
             
             ObjectPlugin.SetMaxHitPoints(beast, beastDetail.Levels[dbBeast.Level].HP);
-            CreaturePlugin.SetRawAbilityScore(beast, AbilityType.Might, level.Stats[AbilityType.Might]);
-            CreaturePlugin.SetRawAbilityScore(beast, AbilityType.Perception, level.Stats[AbilityType.Perception]);
-            CreaturePlugin.SetRawAbilityScore(beast, AbilityType.Vitality, level.Stats[AbilityType.Vitality]);
-            CreaturePlugin.SetRawAbilityScore(beast, AbilityType.Willpower, level.Stats[AbilityType.Willpower]);
-            CreaturePlugin.SetRawAbilityScore(beast, AbilityType.Agility, level.Stats[AbilityType.Agility]);
-            CreaturePlugin.SetRawAbilityScore(beast, AbilityType.Social, level.Stats[AbilityType.Social]);
+            _creaturePlugin.SetRawAbilityScore(beast, AbilityType.Might, level.Stats[AbilityType.Might]);
+            _creaturePlugin.SetRawAbilityScore(beast, AbilityType.Perception, level.Stats[AbilityType.Perception]);
+            _creaturePlugin.SetRawAbilityScore(beast, AbilityType.Vitality, level.Stats[AbilityType.Vitality]);
+            _creaturePlugin.SetRawAbilityScore(beast, AbilityType.Willpower, level.Stats[AbilityType.Willpower]);
+            _creaturePlugin.SetRawAbilityScore(beast, AbilityType.Agility, level.Stats[AbilityType.Agility]);
+            _creaturePlugin.SetRawAbilityScore(beast, AbilityType.Social, level.Stats[AbilityType.Social]);
 
             var attackBonus = (int)(level.MaxAttackBonus * (dbBeast.AttackPurity * 0.01f));
             var accuracyBonus = (int)(level.MaxAccuracyBonus * (dbBeast.AccuracyPurity * 0.01f));

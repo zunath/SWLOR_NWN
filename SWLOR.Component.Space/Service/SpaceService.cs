@@ -43,6 +43,7 @@ namespace SWLOR.Component.Space.Service
         private readonly IServiceProvider _serviceProvider;
         private readonly IEventAggregator _eventAggregator;
         private readonly IAreaPluginService _areaPlugin;
+        private readonly ICreaturePluginService _creaturePlugin;
 
         public SpaceService(
             ILogger logger,
@@ -51,7 +52,8 @@ namespace SWLOR.Component.Space.Service
             IRandomService random,
             IServiceProvider serviceProvider,
             IEventAggregator eventAggregator,
-            IAreaPluginService areaPlugin)
+            IAreaPluginService areaPlugin,
+            ICreaturePluginService creaturePlugin)
         {
             _logger = logger;
             _db = db;
@@ -60,6 +62,7 @@ namespace SWLOR.Component.Space.Service
             _serviceProvider = serviceProvider;
             _eventAggregator = eventAggregator;
             _areaPlugin = areaPlugin;
+            _creaturePlugin = creaturePlugin;
             
             // Initialize lazy services
             _abilityService = new Lazy<IAbilityService>(() => _serviceProvider.GetRequiredService<IAbilityService>());
@@ -713,10 +716,10 @@ namespace SWLOR.Component.Space.Service
 
             // Update player appearance to match that of the ship.
             SetCreatureAppearanceType(player, shipDetail.Appearance);
-            CreaturePlugin.SetMovementRate(player, MovementRateType.PC);
+            _creaturePlugin.SetMovementRate(player, MovementRateType.PC);
 
             // Set active ship Id and serialize the player's hot bar.
-            dbPlayer.SerializedHotBar = CreaturePlugin.SerializeQuickbar(player);
+            dbPlayer.SerializedHotBar = _creaturePlugin.SerializeQuickbar(player);
             dbPlayer.ActiveShipId = shipId;
 
             foreach(var (slot, shipModule) in dbPlayerShip.Status.HighPowerModules)
@@ -728,7 +731,7 @@ namespace SWLOR.Component.Space.Service
                 if (shipModuleDetail.Type == ShipModuleType.Passive) continue;
 
                 // Convert current ship module to feat.
-                CreaturePlugin.AddFeat(player, feat);
+                _creaturePlugin.AddFeat(player, feat);
 
                 // Rename the feat to match the configured name on the ship module.
                 ApplyShipModuleFeat(player, shipModuleDetail, feat);
@@ -743,7 +746,7 @@ namespace SWLOR.Component.Space.Service
                 if (shipModuleDetail.Type == ShipModuleType.Passive) continue;
 
                 // Convert current ship module to feat.
-                CreaturePlugin.AddFeat(player, feat);
+                _creaturePlugin.AddFeat(player, feat);
 
                 // Rename the feat to match the configured name on the ship module.
                 ApplyShipModuleFeat(player, shipModuleDetail, feat);
@@ -751,7 +754,7 @@ namespace SWLOR.Component.Space.Service
 
             // Load the player's ship hot bar.
             if (!dbPlayerShip.PlayerHotBars.ContainsKey(playerId) ||
-                !CreaturePlugin.DeserializeQuickbar(player, dbPlayerShip.PlayerHotBars[playerId]))
+                !_creaturePlugin.DeserializeQuickbar(player, dbPlayerShip.PlayerHotBars[playerId]))
             {
                 const int MaxSlots = 35;
 
@@ -785,7 +788,7 @@ namespace SWLOR.Component.Space.Service
                     }
                 }
 
-                dbPlayerShip.PlayerHotBars[playerId] = CreaturePlugin.SerializeQuickbar(player);
+                dbPlayerShip.PlayerHotBars[playerId] = _creaturePlugin.SerializeQuickbar(player);
             }
 
             _db.Set(dbPlayer);
@@ -906,22 +909,22 @@ namespace SWLOR.Component.Space.Service
 
             ClearCurrentTarget(player);
             SetCreatureAppearanceType(player, dbPlayer.OriginalAppearanceType);
-            CreaturePlugin.SetMovementRate(player, MovementRateType.PC);
+            _creaturePlugin.SetMovementRate(player, MovementRateType.PC);
             EnmityService.RemoveCreatureEnmity(player);
 
             // Save the ship's hot bar and unassign the active ship Id.
-            dbShip.PlayerHotBars[playerId] = CreaturePlugin.SerializeQuickbar(player);
+            dbShip.PlayerHotBars[playerId] = _creaturePlugin.SerializeQuickbar(player);
             dbPlayer.ActiveShipId = Guid.Empty.ToString();
 
             // Remove all module feats from the player.
             foreach (var (feat, _) in ShipModuleFeats)
             {
-                CreaturePlugin.RemoveFeat(player, feat);
+                _creaturePlugin.RemoveFeat(player, feat);
             }
 
             // Load the player's hot bar.
             if (string.IsNullOrWhiteSpace(dbPlayer.SerializedHotBar) ||
-                !CreaturePlugin.DeserializeQuickbar(player, dbPlayer.SerializedHotBar))
+                !_creaturePlugin.DeserializeQuickbar(player, dbPlayer.SerializedHotBar))
             {
                 // Deserialization failed. Clear out the player's hot bar and start fresh.
                 for (var slot = 0; slot <= 35; slot++)
@@ -929,7 +932,7 @@ namespace SWLOR.Component.Space.Service
                     PlayerPlugin.SetQuickBarSlot(player, slot, PlayerQuickBarSlot.Empty(QuickBarSlotType.Empty));
                 }
 
-                dbPlayer.SerializedHotBar = CreaturePlugin.SerializeQuickbar(player);
+                dbPlayer.SerializedHotBar = _creaturePlugin.SerializeQuickbar(player);
             }
 
             _db.Set(dbPlayer);
@@ -1862,18 +1865,18 @@ namespace SWLOR.Component.Space.Service
                 // Exit space mode
                 ClearCurrentTarget(creature);
                 SetCreatureAppearanceType(creature, dbPlayer.OriginalAppearanceType);
-                CreaturePlugin.SetMovementRate(creature, MovementRateType.PC);
+                _creaturePlugin.SetMovementRate(creature, MovementRateType.PC);
                 EnmityService.RemoveCreatureEnmity(creature);
                 
                 // Remove all module feats from the player.
                 foreach (var (feat, _) in ShipModuleFeats)
                 {
-                    CreaturePlugin.RemoveFeat(creature, feat);
+                    _creaturePlugin.RemoveFeat(creature, feat);
                 }
 
                 // Load the player's hot bar.
                 if (string.IsNullOrWhiteSpace(dbPlayer.SerializedHotBar) ||
-                    !CreaturePlugin.DeserializeQuickbar(creature, dbPlayer.SerializedHotBar))
+                    !_creaturePlugin.DeserializeQuickbar(creature, dbPlayer.SerializedHotBar))
                 {
                     // Deserialization failed. Clear out the player's hot bar and start fresh.
                     for (var slot = 0; slot <= 35; slot++)
@@ -1881,7 +1884,7 @@ namespace SWLOR.Component.Space.Service
                         PlayerPlugin.SetQuickBarSlot(creature, slot, PlayerQuickBarSlot.Empty(QuickBarSlotType.Empty));
                     }
 
-                    dbPlayer.SerializedHotBar = CreaturePlugin.SerializeQuickbar(creature);
+                    dbPlayer.SerializedHotBar = _creaturePlugin.SerializeQuickbar(creature);
                 }
 
                 _shipClones.Remove(dbPlayer.ActiveShipId);

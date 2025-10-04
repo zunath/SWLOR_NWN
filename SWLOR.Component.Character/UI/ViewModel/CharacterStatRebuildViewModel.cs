@@ -20,6 +20,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
     {
         private readonly IDatabaseService _db;
         private readonly IServiceProvider _serviceProvider;
+        private readonly ICreaturePluginService _creaturePlugin;
         
         // Lazy-loaded services to break circular dependencies
         private readonly Lazy<IRecastService> _recastService;
@@ -28,11 +29,13 @@ namespace SWLOR.Component.Character.UI.ViewModel
         public CharacterStatRebuildViewModel(
             IGuiService guiService, 
             IDatabaseService db, 
-            IServiceProvider serviceProvider) 
+            IServiceProvider serviceProvider,
+            ICreaturePluginService creaturePlugin) 
             : base(guiService)
         {
             _db = db;
             _serviceProvider = serviceProvider;
+            _creaturePlugin = creaturePlugin;
             
             // Initialize lazy services
             _recastService = new Lazy<IRecastService>(() => _serviceProvider.GetRequiredService<IRecastService>());
@@ -335,19 +338,19 @@ namespace SWLOR.Component.Character.UI.ViewModel
                 var playerId = GetObjectUUID(Player);
                 var dbPlayer = _db.Get<Player>(playerId);
 
-                CreaturePlugin.SetRawAbilityScore(Player, AbilityType.Might, 10 + _might);
-                CreaturePlugin.SetRawAbilityScore(Player, AbilityType.Perception, 10 + _perception);
-                CreaturePlugin.SetRawAbilityScore(Player, AbilityType.Vitality, 10 + _vitality);
-                CreaturePlugin.SetRawAbilityScore(Player, AbilityType.Willpower, 10 + _willpower);
-                CreaturePlugin.SetRawAbilityScore(Player, AbilityType.Agility, 10 + _agility);
-                CreaturePlugin.SetRawAbilityScore(Player, AbilityType.Social, 10 + _social);
+                _creaturePlugin.SetRawAbilityScore(Player, AbilityType.Might, 10 + _might);
+                _creaturePlugin.SetRawAbilityScore(Player, AbilityType.Perception, 10 + _perception);
+                _creaturePlugin.SetRawAbilityScore(Player, AbilityType.Vitality, 10 + _vitality);
+                _creaturePlugin.SetRawAbilityScore(Player, AbilityType.Willpower, 10 + _willpower);
+                _creaturePlugin.SetRawAbilityScore(Player, AbilityType.Agility, 10 + _agility);
+                _creaturePlugin.SetRawAbilityScore(Player, AbilityType.Social, 10 + _social);
 
-                dbPlayer.BaseStats[AbilityType.Might] = CreaturePlugin.GetRawAbilityScore(Player, AbilityType.Might);
-                dbPlayer.BaseStats[AbilityType.Perception] = CreaturePlugin.GetRawAbilityScore(Player, AbilityType.Perception);
-                dbPlayer.BaseStats[AbilityType.Vitality] = CreaturePlugin.GetRawAbilityScore(Player, AbilityType.Vitality);
-                dbPlayer.BaseStats[AbilityType.Willpower] = CreaturePlugin.GetRawAbilityScore(Player, AbilityType.Willpower);
-                dbPlayer.BaseStats[AbilityType.Agility] = CreaturePlugin.GetRawAbilityScore(Player, AbilityType.Agility);
-                dbPlayer.BaseStats[AbilityType.Social] = CreaturePlugin.GetRawAbilityScore(Player, AbilityType.Social);
+                dbPlayer.BaseStats[AbilityType.Might] = _creaturePlugin.GetRawAbilityScore(Player, AbilityType.Might);
+                dbPlayer.BaseStats[AbilityType.Perception] = _creaturePlugin.GetRawAbilityScore(Player, AbilityType.Perception);
+                dbPlayer.BaseStats[AbilityType.Vitality] = _creaturePlugin.GetRawAbilityScore(Player, AbilityType.Vitality);
+                dbPlayer.BaseStats[AbilityType.Willpower] = _creaturePlugin.GetRawAbilityScore(Player, AbilityType.Willpower);
+                dbPlayer.BaseStats[AbilityType.Agility] = _creaturePlugin.GetRawAbilityScore(Player, AbilityType.Agility);
+                dbPlayer.BaseStats[AbilityType.Social] = _creaturePlugin.GetRawAbilityScore(Player, AbilityType.Social);
 
                 dbPlayer.UpgradedStats[AbilityType.Might] = 0;
                 dbPlayer.UpgradedStats[AbilityType.Perception] = 0;

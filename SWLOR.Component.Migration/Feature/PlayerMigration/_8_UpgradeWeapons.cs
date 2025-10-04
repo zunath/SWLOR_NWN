@@ -1,4 +1,5 @@
 using SWLOR.Component.Migration.Model;
+using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Bioware;
@@ -21,8 +22,9 @@ namespace SWLOR.Component.Migration.Feature.PlayerMigration
             ISkillService skillService, 
             ICombatService combatService, 
             IPerkService perkService, 
-            IItemService itemService) 
-            : base(logger, database, statService, skillService, combatService, perkService, itemService)
+            IItemService itemService,
+            ICreaturePluginService creaturePlugin) 
+            : base(logger, database, statService, skillService, combatService, perkService, itemService, creaturePlugin)
         {
         }
         

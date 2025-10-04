@@ -13,11 +13,14 @@ namespace SWLOR.Shared.Events.EventHandlers
     internal class EventRegistrationEventHandlers
     {
         private readonly IEventAggregator _eventAggregator;
+        private readonly ICreaturePluginService _creaturePlugin;
 
         public EventRegistrationEventHandlers(
-            IEventAggregator eventAggregator)
+            IEventAggregator eventAggregator,
+            ICreaturePluginService creaturePlugin)
         {
             _eventAggregator = eventAggregator;
+            _creaturePlugin = creaturePlugin;
         }
 
         [ScriptHandler<OnServerHeartbeat>]
@@ -67,7 +70,7 @@ namespace SWLOR.Shared.Events.EventHandlers
         public void TriggerNWNXPersistence()
         {
             var firstObject = GetFirstObjectInArea(GetFirstArea());
-            CreaturePlugin.SetCriticalRangeModifier(firstObject, 0, 0, true);
+            _creaturePlugin.SetCriticalRangeModifier(firstObject, 0, 0, true);
         }
     }
 }

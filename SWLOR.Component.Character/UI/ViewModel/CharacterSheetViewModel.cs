@@ -40,14 +40,17 @@ namespace SWLOR.Component.Character.UI.ViewModel
     {
         private readonly IDatabaseService _db;
         private readonly IServiceProvider _serviceProvider;
+        private readonly ICreaturePluginService _creaturePlugin;
 
         public CharacterSheetViewModel(
             IGuiService guiService, 
             IDatabaseService db, 
-            IServiceProvider serviceProvider) : base(guiService)
+            IServiceProvider serviceProvider,
+            ICreaturePluginService creaturePlugin) : base(guiService)
         {
             _db = db;
             _serviceProvider = serviceProvider;
+            _creaturePlugin = creaturePlugin;
             
             // Initialize lazy services
             _statService = new Lazy<IStatService>(() => _serviceProvider.GetRequiredService<IStatService>());
@@ -452,7 +455,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
                     dbPlayer.RacialStat = ability;
                 }
 
-                CreaturePlugin.ModifyRawAbilityScore(_target, ability, 1);
+                _creaturePlugin.ModifyRawAbilityScore(_target, ability, 1);
 
                 _db.Set(dbPlayer);
 

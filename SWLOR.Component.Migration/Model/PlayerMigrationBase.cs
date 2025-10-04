@@ -1,4 +1,5 @@
 using SWLOR.Component.Migration.Contracts;
+using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
@@ -20,6 +21,7 @@ namespace SWLOR.Component.Migration.Model
         protected readonly ICombatService CombatService;
         protected readonly IPerkService PerkService;
         protected readonly IItemService ItemService;
+        protected readonly ICreaturePluginService CreaturePlugin;
 
         protected PlayerMigrationBase(
             ILogger logger, 
@@ -28,7 +30,8 @@ namespace SWLOR.Component.Migration.Model
             ISkillService skillService, 
             ICombatService combatService, 
             IPerkService perkService, 
-            IItemService itemService)
+            IItemService itemService,
+            ICreaturePluginService creaturePlugin)
         {
             Logger = logger;
             Database = database;
@@ -37,6 +40,7 @@ namespace SWLOR.Component.Migration.Model
             CombatService = combatService;
             PerkService = perkService;
             ItemService = itemService;
+            CreaturePlugin = creaturePlugin;
         }
         public abstract int Version { get; }
         public abstract void Migrate(uint player);

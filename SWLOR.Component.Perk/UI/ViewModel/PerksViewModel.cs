@@ -32,17 +32,20 @@ namespace SWLOR.Component.Perk.UI.ViewModel
         private readonly ILogger _logger;
         private readonly IDatabaseService _db;
         private readonly IServiceProvider _serviceProvider;
+        private readonly ICreaturePluginService _creaturePlugin;
 
         public PerksViewModel(
             IGuiService guiService, 
             ILogger logger, 
             IDatabaseService db, 
-            IServiceProvider serviceProvider) 
+            IServiceProvider serviceProvider,
+            ICreaturePluginService creaturePlugin) 
             : base(guiService)
         {
             _logger = logger;
             _db = db;
             _serviceProvider = serviceProvider;
+            _creaturePlugin = creaturePlugin;
             _filteredPerks = new List<PerkType>();
         }
 
@@ -532,7 +535,7 @@ namespace SWLOR.Component.Perk.UI.ViewModel
             foreach (var feat in nextLevel.GrantedFeats)
             {
                 if (GetHasFeat(feat, target)) continue;
-                CreaturePlugin.AddFeatByLevel(target, feat, 1);
+                _creaturePlugin.AddFeatByLevel(target, feat, 1);
 
                 // If feat isn't registered or the ability doesn't have an impact or concentration action,
                 // don't add the feat to the player's hot bar.
@@ -827,7 +830,7 @@ namespace SWLOR.Component.Perk.UI.ViewModel
                     var feats = perkDetail.PerkLevels.Values.SelectMany(s => s.GrantedFeats);
                     foreach (var feat in feats)
                     {
-                        CreaturePlugin.RemoveFeat(target, feat);
+                        _creaturePlugin.RemoveFeat(target, feat);
                     }
 
                     // Run all of the triggers related to refunding this perk.

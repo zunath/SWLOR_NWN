@@ -43,6 +43,7 @@ namespace SWLOR.Component.Associate.Service
         private readonly DroidSlangPersonality _slangPersonality;
         private readonly DroidBlandPersonality _blandPersonality;
         private readonly DroidWorshipfulPersonality _worshipfulPersonality;
+        private readonly ICreaturePluginService _creaturePlugin;
 
         public string DroidResref => "pc_droid";
         public string DroidControlItemResref => "droid_control";
@@ -60,7 +61,8 @@ namespace SWLOR.Component.Associate.Service
             DroidSarcasticPersonality sarcasticPersonality,
             DroidSlangPersonality slangPersonality,
             DroidBlandPersonality blandPersonality,
-            DroidWorshipfulPersonality worshipfulPersonality)
+            DroidWorshipfulPersonality worshipfulPersonality,
+            ICreaturePluginService creaturePlugin)
         {
             _serviceProvider = serviceProvider;
             _geekyPersonality = geekyPersonality;
@@ -69,6 +71,7 @@ namespace SWLOR.Component.Associate.Service
             _slangPersonality = slangPersonality;
             _blandPersonality = blandPersonality;
             _worshipfulPersonality = worshipfulPersonality;
+            _creaturePlugin = creaturePlugin;
             
             // Initialize lazy services
             _guiService = new Lazy<IGuiService>(() => _serviceProvider.GetRequiredService<IGuiService>());
@@ -688,14 +691,14 @@ namespace SWLOR.Component.Associate.Service
             // Raw stats
             ObjectPlugin.SetMaxHitPoints(droid, details.HP);
             ObjectPlugin.SetCurrentHitPoints(droid, details.HP);
-            CreaturePlugin.SetRawAbilityScore(droid, AbilityType.Might, details.MGT);
-            CreaturePlugin.SetRawAbilityScore(droid, AbilityType.Perception, details.PER);
-            CreaturePlugin.SetRawAbilityScore(droid, AbilityType.Vitality, details.VIT);
-            CreaturePlugin.SetRawAbilityScore(droid, AbilityType.Willpower, details.WIL);
-            CreaturePlugin.SetRawAbilityScore(droid, AbilityType.Agility, details.AGI);
-            CreaturePlugin.SetRawAbilityScore(droid, AbilityType.Social, details.SOC);
-            CreaturePlugin.SetBaseAC(droid, 10);
-            CreaturePlugin.SetBaseAttackBonus(droid, 1);
+            _creaturePlugin.SetRawAbilityScore(droid, AbilityType.Might, details.MGT);
+            _creaturePlugin.SetRawAbilityScore(droid, AbilityType.Perception, details.PER);
+            _creaturePlugin.SetRawAbilityScore(droid, AbilityType.Vitality, details.VIT);
+            _creaturePlugin.SetRawAbilityScore(droid, AbilityType.Willpower, details.WIL);
+            _creaturePlugin.SetRawAbilityScore(droid, AbilityType.Agility, details.AGI);
+            _creaturePlugin.SetRawAbilityScore(droid, AbilityType.Social, details.SOC);
+            _creaturePlugin.SetBaseAC(droid, 10);
+            _creaturePlugin.SetBaseAttackBonus(droid, 1);
 
             // Skin item properties
             var levelIP = ItemPropertyCustom(ItemPropertyType.NPCLevel, -1, details.Level);
@@ -723,7 +726,7 @@ namespace SWLOR.Component.Associate.Service
 
                 foreach (var feat in perkFeats)
                 {
-                    CreaturePlugin.AddFeat(droid, feat);
+                    _creaturePlugin.AddFeat(droid, feat);
                 }
             }
 

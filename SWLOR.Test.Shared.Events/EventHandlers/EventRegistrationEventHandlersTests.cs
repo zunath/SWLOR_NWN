@@ -1,3 +1,4 @@
+using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Events.Contracts;
 using SWLOR.Shared.Events.EventHandlers;
 using SWLOR.Test.Shared;
@@ -14,6 +15,7 @@ namespace SWLOR.Test.Shared.Events.EventHandlers
     public class EventRegistrationEventHandlersTests : TestBase
     {
         private IEventAggregator _mockEventAggregator;
+        private ICreaturePluginService _mockCreaturePlugin;
         private EventRegistrationEventHandlers _handlers;
 
         [SetUp]
@@ -23,14 +25,15 @@ namespace SWLOR.Test.Shared.Events.EventHandlers
             InitializeMockNWScript();
             
             _mockEventAggregator = Substitute.For<IEventAggregator>();
-            _handlers = new EventRegistrationEventHandlers(_mockEventAggregator);
+            _mockCreaturePlugin = Substitute.For<ICreaturePluginService>();
+            _handlers = new EventRegistrationEventHandlers(_mockEventAggregator, _mockCreaturePlugin);
         }
 
         [Test]
         public void Constructor_WithValidParameters_ShouldCreateInstance()
         {
             // Act
-            var handlers = new EventRegistrationEventHandlers(_mockEventAggregator);
+            var handlers = new EventRegistrationEventHandlers(_mockEventAggregator, _mockCreaturePlugin);
 
             // Assert
             Assert.That(handlers, Is.Not.Null);
@@ -41,7 +44,7 @@ namespace SWLOR.Test.Shared.Events.EventHandlers
         {
             // Act & Assert
             Assert.DoesNotThrow(() => 
-                new EventRegistrationEventHandlers(null));
+                new EventRegistrationEventHandlers(null, _mockCreaturePlugin));
         }
 
         [Test]

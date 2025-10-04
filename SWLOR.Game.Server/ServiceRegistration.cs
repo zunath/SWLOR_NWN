@@ -128,6 +128,7 @@ namespace SWLOR.Game.Server
             services.AddSingleton<IAdministrationPluginService, AdministrationPluginService>();
             services.AddSingleton<IAreaPluginService, AreaPluginService>();
             services.AddSingleton<IChatPluginService, ChatPluginService>();
+            services.AddSingleton<ICreaturePluginService, CreaturePluginService>();
         }
 
     }

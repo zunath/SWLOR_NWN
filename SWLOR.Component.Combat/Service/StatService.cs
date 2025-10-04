@@ -31,6 +31,7 @@ namespace SWLOR.Component.Combat.Service
         private readonly IServiceProvider _serviceProvider;
         private readonly IStatusEffectService _statusEffectService;
         private readonly IEventAggregator _eventAggregator;
+        private readonly ICreaturePluginService _creaturePlugin;
         
         // Lazy-loaded services to break circular dependencies
         private readonly Lazy<ISkillService> _skillService;
@@ -44,13 +45,15 @@ namespace SWLOR.Component.Combat.Service
             IDatabaseService db, 
             IServiceProvider serviceProvider, 
             IStatusEffectService statusEffectService,
-            IEventAggregator eventAggregator)
+            IEventAggregator eventAggregator,
+            ICreaturePluginService creaturePlugin)
         {
             _logger = logger;
             _db = db;
             _serviceProvider = serviceProvider;
             _statusEffectService = statusEffectService;
             _eventAggregator = eventAggregator;
+            _creaturePlugin = creaturePlugin;
             
             // Initialize lazy services
             _skillService = new Lazy<ISkillService>(() => _serviceProvider.GetRequiredService<ISkillService>());
@@ -446,7 +449,7 @@ namespace SWLOR.Component.Combat.Service
             for (var nwnLevel = 1; nwnLevel <= nwnLevelCount; nwnLevel++)
             {
                 hpToApply--;
-                CreaturePlugin.SetMaxHitPointsByLevel(player, nwnLevel, 1);
+                _creaturePlugin.SetMaxHitPointsByLevel(player, nwnLevel, 1);
             }
 
             // It's possible for the MaxHP value to be a negative if builders misuse item properties, etc.
@@ -459,12 +462,12 @@ namespace SWLOR.Component.Combat.Service
                 {
                     if (hpToApply > MaxHPPerLevel) // Levels can only contain a max of 255 HP
                     {
-                        CreaturePlugin.SetMaxHitPointsByLevel(player, nwnLevel, 255);
+                        _creaturePlugin.SetMaxHitPointsByLevel(player, nwnLevel, 255);
                         hpToApply -= 254;
                     }
                     else // Remaining value gets set to the level. (<255 hp)
                     {
-                        CreaturePlugin.SetMaxHitPointsByLevel(player, nwnLevel, hpToApply + 1);
+                        _creaturePlugin.SetMaxHitPointsByLevel(player, nwnLevel, hpToApply + 1);
                         break;
                     }
                 }
@@ -525,7 +528,7 @@ namespace SWLOR.Component.Combat.Service
         {
             if (GetIsPC(player) && !GetIsDM(player) && !GetIsDMPossessed(player))
             {
-                CreaturePlugin.SetMovementRate(player, MovementRateType.PC);
+                _creaturePlugin.SetMovementRate(player, MovementRateType.PC);
             }
 
             var movementRate = 1.0f;
@@ -562,7 +565,7 @@ namespace SWLOR.Component.Combat.Service
             if (movementRate > 1.5f)
                 movementRate = 1.5f;
 
-            CreaturePlugin.SetMovementRateFactor(player, movementRate);
+            _creaturePlugin.SetMovementRateFactor(player, movementRate);
         }
 
         /// <summary>
@@ -577,7 +580,7 @@ namespace SWLOR.Component.Combat.Service
             if (ability == AbilityType.Invalid) return;
 
             var totalStat = entity.BaseStats[ability] + entity.UpgradedStats[ability];
-            CreaturePlugin.SetRawAbilityScore(player, ability, totalStat);
+            _creaturePlugin.SetRawAbilityScore(player, ability, totalStat);
         }
 
         /// <summary>
@@ -1768,7 +1771,7 @@ namespace SWLOR.Component.Combat.Service
             numberOfAttacks += PerkService.GetPerkLevel(creature, PerkType.BeastSpeed);
 
             var bab = GetBABForAttacks(numberOfAttacks);
-            CreaturePlugin.SetBaseAttackBonus(creature, bab);
+            _creaturePlugin.SetBaseAttackBonus(creature, bab);
         }
 
         public void ApplyCritModifier(uint player, uint rightHandWeapon)
@@ -1794,7 +1797,7 @@ namespace SWLOR.Component.Combat.Service
 
             critMod += PerkService.GetPerkLevel(player, PerkType.InnerStrength);
 
-            CreaturePlugin.SetCriticalRangeModifier(player, -critMod, 0, true);
+            _creaturePlugin.SetCriticalRangeModifier(player, -critMod, 0, true);
         }
 
         /// <summary>

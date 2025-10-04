@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.Service;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Domain.Character.Contracts;
@@ -16,16 +15,18 @@ namespace SWLOR.Component.Character.Service
     {
         private readonly IDatabaseService _db;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IPlayerPluginService _playerPlugin;
         
         // Lazy-loaded services to break circular dependencies
         private IGuiService GuiService => _serviceProvider.GetRequiredService<IGuiService>();
         private static IdReservation _idReservation;
         private static readonly Dictionary<AchievementType, AchievementAttribute> _activeAchievements = new();
 
-        public AchievementService(IDatabaseService db, IServiceProvider serviceProvider)
+        public AchievementService(IDatabaseService db, IServiceProvider serviceProvider, IPlayerPluginService playerPlugin)
         {
             _db = db;
             _serviceProvider = serviceProvider;
+            _playerPlugin = playerPlugin;
         }
 
         public void ReserveGuiIds()
@@ -75,7 +76,7 @@ namespace SWLOR.Component.Character.Service
 
             var achievement = _activeAchievements[achievementType];
             DisplayAchievementNotificationWindow(player, achievement.Name);
-            PlayerPlugin.PlaySound(player, "gui_prompt", OBJECT_INVALID);
+            _playerPlugin.PlaySound(player, "gui_prompt", OBJECT_INVALID);
         }
 
         /// <summary>

@@ -5,7 +5,7 @@ using SWLOR.Component.Crafting.Enums;
 using SWLOR.Component.Crafting.Model;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.Service;
+using SWLOR.NWN.API.Contracts;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Core.Bioware;
@@ -25,6 +25,7 @@ namespace SWLOR.Component.Crafting.Service
     {
         private readonly IDatabaseService _db;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IPlayerPluginService _playerPlugin;
         
         // Cached data
         private IEnumCache<FishType, FishAttribute> _fishCache;
@@ -38,10 +39,12 @@ namespace SWLOR.Component.Crafting.Service
 
         public FishingService(
             IDatabaseService db,
-            IServiceProvider serviceProvider)
+            IServiceProvider serviceProvider,
+            IPlayerPluginService playerPlugin)
         {
             _db = db;
             _serviceProvider = serviceProvider;
+            _playerPlugin = playerPlugin;
             
             // Initialize lazy services
             _cacheService = new Lazy<IGenericCacheService>(() => _serviceProvider.GetRequiredService<IGenericCacheService>());
@@ -276,7 +279,7 @@ namespace SWLOR.Component.Crafting.Service
                 {
                     SendMessageToPC(player, "You move and interrupt your cast.");
                     ClearFishingAttempt(player);
-                    PlayerPlugin.StopGuiTimingBar(player);
+                    _playerPlugin.StopGuiTimingBar(player);
                     return;
                 }
 
@@ -342,7 +345,7 @@ namespace SWLOR.Component.Crafting.Service
             SetLocalObject(player, FishingPointVariable, fishingPoint);
 
             var fishingDelay = 6 + Random.Next(3);
-            PlayerPlugin.StartGuiTimingBar(player, fishingDelay, "finish_fishing");
+            _playerPlugin.StartGuiTimingBar(player, fishingDelay, "finish_fishing");
 
             ActivityService.SetBusy(player, ActivityStatusType.Fishing);
             MessagingService.SendMessageNearbyToPlayers(player, $"{GetName(player)} casts a line into the water.");

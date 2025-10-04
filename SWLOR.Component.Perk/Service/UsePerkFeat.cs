@@ -4,7 +4,7 @@ using SWLOR.Component.Perk.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.Service;
+using SWLOR.NWN.API.Contracts;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Domain.Ability.Contracts;
 using SWLOR.Shared.Domain.Ability.Enums;
@@ -24,6 +24,7 @@ namespace SWLOR.Component.Perk.Service
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly IEventsPluginService _eventsPlugin;
+        private readonly IPlayerPluginService _playerPlugin;
         
         // Lazy-loaded services to break circular dependencies
         private readonly Lazy<IAbilityService> _abilityService;
@@ -42,10 +43,11 @@ namespace SWLOR.Component.Perk.Service
         private IActivityService ActivityService => _activityService.Value;
         private IMessagingService MessagingService => _messagingService.Value;
 
-        public UsePerkFeat(IServiceProvider serviceProvider, IEventsPluginService eventsPlugin)
+        public UsePerkFeat(IServiceProvider serviceProvider, IEventsPluginService eventsPlugin, IPlayerPluginService playerPlugin)
         {
             _serviceProvider = serviceProvider;
             _eventsPlugin = eventsPlugin;
+            _playerPlugin = playerPlugin;
             
             // Initialize lazy services
             _abilityService = new Lazy<IAbilityService>(() => _serviceProvider.GetRequiredService<IAbilityService>());
@@ -276,7 +278,7 @@ namespace SWLOR.Component.Perk.Service
                     currentPosition.Z != originalPosition.Z)
                 {
                     RemoveEffectByTag(activator, "ACTIVATION_VFX");
-                    PlayerPlugin.StopGuiTimingBar(activator, string.Empty);
+                    _playerPlugin.StopGuiTimingBar(activator, string.Empty);
                     MessagingService.SendMessageNearbyToPlayers(activator, $"{GetName(activator)}'s ability has been interrupted.");
                     SetLocalInt(activator, activationId, (int)ActivationStatus.Interrupted);
                     return;
@@ -339,7 +341,7 @@ namespace SWLOR.Component.Perk.Service
                 {
                     if (activationDelay > 0.0f)
                     {
-                        PlayerPlugin.StartGuiTimingBar(activator, activationDelay, string.Empty);
+                        _playerPlugin.StartGuiTimingBar(activator, activationDelay, string.Empty);
                     }
                 }
 

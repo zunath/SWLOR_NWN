@@ -1,6 +1,6 @@
 using SWLOR.Component.Quest.Dialog;
 using SWLOR.NWN.API.NWNX;
-using SWLOR.NWN.API.Service;
+using SWLOR.NWN.API.Contracts;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Dialog.Contracts;
 using SWLOR.Shared.Domain.Entities;
@@ -36,19 +36,22 @@ namespace SWLOR.Component.Quest.Service
         private readonly IDialogService _dialog;
         private readonly IQuestService _quest;
         private readonly IEventsPluginService _eventsPlugin;
+        private readonly IPlayerPluginService _playerPlugin;
 
         public QuestDetail(
             IDatabaseService db,
             IGuiService gui,
             IDialogService dialog,
             IQuestService quest,
-            IEventsPluginService eventsPlugin)
+            IEventsPluginService eventsPlugin,
+            IPlayerPluginService playerPlugin)
         {
             _db = db;
             _gui = gui;
             _dialog = dialog;
             _quest = quest;
             _eventsPlugin = eventsPlugin;
+            _playerPlugin = playerPlugin;
         }
 
         /// <summary>
@@ -269,7 +272,7 @@ namespace SWLOR.Component.Quest.Service
             }
 
             // Add the journal entry to the player.
-            PlayerPlugin.AddCustomJournalEntry(player, new JournalEntry
+            _playerPlugin.AddCustomJournalEntry(player, new JournalEntry
             {
                 Name = quest.Name,
                 Text = state.JournalText,
@@ -345,7 +348,7 @@ namespace SWLOR.Component.Quest.Service
                 var nextState = GetState(playerQuest.CurrentState);
 
                 // Update the player's journal
-                PlayerPlugin.AddCustomJournalEntry(player, new JournalEntry
+                _playerPlugin.AddCustomJournalEntry(player, new JournalEntry
                 {
                     Name = quest.Name,
                     Text = currentState.JournalText,

@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Quest.Contracts;
 using SWLOR.Component.Quest.EventHandlers;
 using SWLOR.Component.Quest.Service;
+using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Quest.Contracts;
 
@@ -37,7 +38,8 @@ namespace SWLOR.Component.Quest.Infrastructure
             services.AddSingleton<IQuestService, QuestService>(provider => new QuestService(
                 provider.GetRequiredService<IDatabaseService>(),
                 provider.GetRequiredService<IServiceProvider>(),
-                provider.GetRequiredService<IEventAggregator>()));
+                provider.GetRequiredService<IEventAggregator>(),
+                provider.GetRequiredService<IPlayerPluginService>()));
 
             // Register Guild service
             services.AddSingleton<IGuildService, GuildService>();

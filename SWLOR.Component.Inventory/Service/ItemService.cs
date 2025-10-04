@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.Service;
+using SWLOR.NWN.API.Contracts;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Domain.Ability.Contracts;
@@ -25,6 +25,7 @@ namespace SWLOR.Component.Inventory.Service
         private readonly ILogger _logger;
         private readonly IServiceProvider _serviceProvider;
         private readonly IEventsPluginService _eventsPlugin;
+        private readonly IPlayerPluginService _playerPlugin;
         
         // Cached data
         private IInterfaceCache<string, ItemDetail> _itemCache;
@@ -40,11 +41,13 @@ namespace SWLOR.Component.Inventory.Service
         public ItemService(
             ILogger logger, 
             IServiceProvider serviceProvider,
-            IEventsPluginService eventsPlugin)
+            IEventsPluginService eventsPlugin,
+            IPlayerPluginService playerPlugin)
         {
             _logger = logger;
             _serviceProvider = serviceProvider;
             _eventsPlugin = eventsPlugin;
+            _playerPlugin = playerPlugin;
         }
 
         // Lazy-loaded services to break circular dependencies
@@ -284,7 +287,7 @@ namespace SWLOR.Component.Inventory.Service
                 {
                     ActivityService.ClearBusy(actionUser);
                     SendMessageToPC(actionUser, "You move and interrupt your action.");
-                    PlayerPlugin.StopGuiTimingBar(actionUser, string.Empty);
+                    _playerPlugin.StopGuiTimingBar(actionUser, string.Empty);
                     return;
                 }
 
@@ -394,7 +397,7 @@ namespace SWLOR.Component.Inventory.Service
             if (delay > 0.0f &&
                 GetIsPC(user))
             {
-                PlayerPlugin.StartGuiTimingBar(user, delay);
+                _playerPlugin.StartGuiTimingBar(user, delay);
             }
 
             // Apply the item's action if specified.

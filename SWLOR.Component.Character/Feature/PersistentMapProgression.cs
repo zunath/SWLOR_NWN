@@ -17,15 +17,17 @@ namespace SWLOR.Component.Character.Feature
         private readonly ILogger _logger;
         private readonly IDatabaseService _db;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IPlayerPluginService _playerPlugin;
         
         // Lazy-loaded services to break circular dependencies
         private IKeyItemService KeyItemService => _serviceProvider.GetRequiredService<IKeyItemService>();
 
-        public PersistentMapProgression(ILogger logger, IDatabaseService db, IServiceProvider serviceProvider)
+        public PersistentMapProgression(ILogger logger, IDatabaseService db, IServiceProvider serviceProvider, IPlayerPluginService playerPlugin)
         {
             _logger = logger;
             _db = db;
             _serviceProvider = serviceProvider;
+            _playerPlugin = playerPlugin;
         }
         /// <summary>
         /// Saves a player's area map progression when exiting an area.
@@ -45,7 +47,7 @@ namespace SWLOR.Component.Character.Feature
 
             if (string.IsNullOrWhiteSpace(areaResref)) return;
 
-            var progression = PlayerPlugin.GetAreaExplorationState(player, area);
+            var progression = _playerPlugin.GetAreaExplorationState(player, area);
 
             dbPlayer.MapProgressions[areaResref] = progression;
 
@@ -97,7 +99,7 @@ namespace SWLOR.Component.Character.Feature
                 return;
 
             var progression = dbPlayer.MapProgressions[areaResref];
-            PlayerPlugin.SetAreaExplorationState(player, area, progression);
+            _playerPlugin.SetAreaExplorationState(player, area, progression);
         }
     }
 }

@@ -4,7 +4,7 @@ using SWLOR.Component.Space.Model;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.Service;
+using SWLOR.NWN.API.Contracts;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Core.Bioware;
@@ -46,6 +46,7 @@ namespace SWLOR.Component.Space.Service
         private readonly ICreaturePluginService _creaturePlugin;
         private readonly IEventsPluginService _eventsPlugin;
         private readonly IObjectPluginService _objectPlugin;
+        private readonly IPlayerPluginService _playerPlugin;
 
         public SpaceService(
             ILogger logger,
@@ -57,7 +58,8 @@ namespace SWLOR.Component.Space.Service
             IAreaPluginService areaPlugin,
             ICreaturePluginService creaturePlugin,
             IEventsPluginService eventsPlugin,
-            IObjectPluginService objectPlugin)
+            IObjectPluginService objectPlugin,
+            IPlayerPluginService playerPlugin)
         {
             _logger = logger;
             _db = db;
@@ -69,6 +71,7 @@ namespace SWLOR.Component.Space.Service
             _creaturePlugin = creaturePlugin;
             _eventsPlugin = eventsPlugin;
             _objectPlugin = objectPlugin;
+            _playerPlugin = playerPlugin;
             
             // Initialize lazy services
             _abilityService = new Lazy<IAbilityService>(() => _serviceProvider.GetRequiredService<IAbilityService>());
@@ -416,7 +419,7 @@ namespace SWLOR.Component.Space.Service
             if (GetIsObjectValid(target) &&
                 GetIsPC(creature))
             {
-                PlayerPlugin.ApplyLoopingVisualEffectToObject(creature, target, VisualEffectType.Vfx_Target_Marker);
+                _playerPlugin.ApplyLoopingVisualEffectToObject(creature, target, VisualEffectType.Vfx_Target_Marker);
             }
             SetLocalObject(creature, "SPACE_TARGET", target);
 
@@ -448,7 +451,7 @@ namespace SWLOR.Component.Space.Service
             if (GetIsObjectValid(target) &&
                 GetIsPC(creature))
             {
-                PlayerPlugin.ApplyLoopingVisualEffectToObject(creature, target, VisualEffectType.None);
+                _playerPlugin.ApplyLoopingVisualEffectToObject(creature, target, VisualEffectType.None);
             }
 
             DeleteLocalObject(creature, "SPACE_TARGET");
@@ -481,7 +484,7 @@ namespace SWLOR.Component.Space.Service
             // Targeted the same object - remove it.
             if (currentTarget == target)
             {
-                PlayerPlugin.ShowVisualEffect(player, (int)VisualEffectType.Vfx_UI_Cancel, 1f, position, Vector3.Zero, Vector3.Zero);
+                _playerPlugin.ShowVisualEffect(player, (int)VisualEffectType.Vfx_UI_Cancel, 1f, position, Vector3.Zero, Vector3.Zero);
                 ClearCurrentTarget(player);
             }
             // Targeted something new. Remove existing target and pick the new one.
@@ -489,7 +492,7 @@ namespace SWLOR.Component.Space.Service
             {
                 ClearCurrentTarget(player);
                 SetCurrentTarget(player, target);
-                PlayerPlugin.ShowVisualEffect(player, (int)VisualEffectType.Vfx_UI_Select, 1f, position, Vector3.Zero, Vector3.Zero);
+                _playerPlugin.ShowVisualEffect(player, (int)VisualEffectType.Vfx_UI_Select, 1f, position, Vector3.Zero, Vector3.Zero);
             }
         }
 
@@ -767,7 +770,7 @@ namespace SWLOR.Component.Space.Service
                 // Deserialization failed. Clear out the player's hot bar and start fresh.
                 for (var slot = 0; slot <= MaxSlots; slot++)
                 {
-                    PlayerPlugin.SetQuickBarSlot(player, slot, PlayerQuickBarSlot.Empty(QuickBarSlotType.Empty));
+                    _playerPlugin.SetQuickBarSlot(player, slot, PlayerQuickBarSlot.Empty(QuickBarSlotType.Empty));
                 }
 
                 var currentSlot = 0;
@@ -777,7 +780,7 @@ namespace SWLOR.Component.Space.Service
                     var shipModuleDetail = _shipModules[shipModule.ItemTag];
                     if (shipModuleDetail.Type != ShipModuleType.Passive)
                     {
-                        PlayerPlugin.SetQuickBarSlot(player, currentSlot, PlayerQuickBarSlot.UseFeat(feat));
+                        _playerPlugin.SetQuickBarSlot(player, currentSlot, PlayerQuickBarSlot.UseFeat(feat));
 
                         currentSlot++;
                     }
@@ -788,7 +791,7 @@ namespace SWLOR.Component.Space.Service
                     var shipModuleDetail = _shipModules[shipModule.ItemTag];
                     if (shipModuleDetail.Type != ShipModuleType.Passive)
                     {
-                        PlayerPlugin.SetQuickBarSlot(player, currentSlot, PlayerQuickBarSlot.UseFeat(feat));
+                        _playerPlugin.SetQuickBarSlot(player, currentSlot, PlayerQuickBarSlot.UseFeat(feat));
 
                         currentSlot++;
                     }
@@ -891,8 +894,8 @@ namespace SWLOR.Component.Space.Service
 
             var shipModuleFeat = ShipModuleFeats[feat];
 
-            PlayerPlugin.SetTlkOverride(player, shipModuleFeat.NameTlkId, shipModuleFeat.SlotName + ":" + shipModuleDetail.Name);
-            PlayerPlugin.SetTlkOverride(player, shipModuleFeat.DescriptionTlkId, shipModuleDetail.Description);
+            _playerPlugin.SetTlkOverride(player, shipModuleFeat.NameTlkId, shipModuleFeat.SlotName + ":" + shipModuleDetail.Name);
+            _playerPlugin.SetTlkOverride(player, shipModuleFeat.DescriptionTlkId, shipModuleDetail.Description);
 
             SetTextureOverride(shipModuleFeat.TextureName, shipModuleDetail.Texture, player);
         }
@@ -935,7 +938,7 @@ namespace SWLOR.Component.Space.Service
                 // Deserialization failed. Clear out the player's hot bar and start fresh.
                 for (var slot = 0; slot <= 35; slot++)
                 {
-                    PlayerPlugin.SetQuickBarSlot(player, slot, PlayerQuickBarSlot.Empty(QuickBarSlotType.Empty));
+                    _playerPlugin.SetQuickBarSlot(player, slot, PlayerQuickBarSlot.Empty(QuickBarSlotType.Empty));
                 }
 
                 dbPlayer.SerializedHotBar = _creaturePlugin.SerializeQuickbar(player);
@@ -1887,7 +1890,7 @@ namespace SWLOR.Component.Space.Service
                     // Deserialization failed. Clear out the player's hot bar and start fresh.
                     for (var slot = 0; slot <= 35; slot++)
                     {
-                        PlayerPlugin.SetQuickBarSlot(creature, slot, PlayerQuickBarSlot.Empty(QuickBarSlotType.Empty));
+                        _playerPlugin.SetQuickBarSlot(creature, slot, PlayerQuickBarSlot.Empty(QuickBarSlotType.Empty));
                     }
 
                     dbPlayer.SerializedHotBar = _creaturePlugin.SerializeQuickbar(creature);

@@ -4,7 +4,7 @@ using SWLOR.Component.Migration.Model;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.Service;
+using SWLOR.NWN.API.Contracts;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
@@ -18,6 +18,7 @@ namespace SWLOR.Component.Migration.Feature.PlayerMigration
         private readonly IDatabaseService _db;
         private readonly IServiceProvider _serviceProvider;
         private readonly ICreaturePluginService _creaturePlugin;
+        private readonly IPlayerPluginService _playerPlugin;
         
         // Lazy-loaded services to break circular dependencies
         private IPlayerInitializationService PlayerInitialization => _serviceProvider.GetRequiredService<IPlayerInitializationService>();
@@ -28,12 +29,14 @@ namespace SWLOR.Component.Migration.Feature.PlayerMigration
         public _1_LegacyPlayerMigration(
             IDatabaseService db, 
             IServiceProvider serviceProvider,
-            ICreaturePluginService creaturePlugin)
+            ICreaturePluginService creaturePlugin,
+            IPlayerPluginService playerPlugin)
             : base(serviceProvider)
         {
             _db = db;
             _serviceProvider = serviceProvider;
             _creaturePlugin = creaturePlugin;
+            _playerPlugin = playerPlugin;
         }
 
         public int Version => 1;
@@ -119,7 +122,7 @@ namespace SWLOR.Component.Migration.Feature.PlayerMigration
             const int MaxSlots = 35;
             for (var slot = 0; slot <= MaxSlots; slot++)
             {
-                PlayerPlugin.SetQuickBarSlot(player, slot, PlayerQuickBarSlot.Empty(QuickBarSlotType.Empty));
+                _playerPlugin.SetQuickBarSlot(player, slot, PlayerQuickBarSlot.Empty(QuickBarSlotType.Empty));
             }
 
             PlayerInitialization.InitializeHotBar(player);

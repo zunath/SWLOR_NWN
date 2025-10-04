@@ -5,7 +5,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Component.Communication.UI.Payload;
-using SWLOR.NWN.API.Service;
+using SWLOR.NWN.API.Contracts;
 using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Domain.Ability.Contracts;
 using SWLOR.Shared.Domain.Ability.Enums;
@@ -33,6 +33,7 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
         private readonly IRecastService _recastService;
         private readonly ILanguageService _language;
         private readonly IAdministrationPluginService _administrationPlugin;
+        private readonly IPlayerPluginService _playerPlugin;
 
         public CharacterChatCommand(
             IDatabaseService db, 
@@ -42,7 +43,8 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
             IHoloComService holoComService, 
             IRecastService recastService,
             ILanguageService languageService,
-            IAdministrationPluginService administrationPlugin)
+            IAdministrationPluginService administrationPlugin,
+            IPlayerPluginService playerPlugin)
         {
             _db = db;
             _abilityService = abilityService;
@@ -52,6 +54,7 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
             _recastService = recastService;
             _language = languageService;
             _administrationPlugin = administrationPlugin;
+            _playerPlugin = playerPlugin;
         }
 
         public Dictionary<string, ChatCommandDetail> BuildChatCommands()
@@ -415,7 +418,7 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
                 .Action((user, _, _, _) =>
                 {
                     var wasWalking = GetLocalInt(user, "WALK_TOGGLE") == 1;
-                    PlayerPlugin.SetAlwaysWalk(user, !wasWalking);
+                    _playerPlugin.SetAlwaysWalk(user, !wasWalking);
 
                     if (wasWalking)
                     {

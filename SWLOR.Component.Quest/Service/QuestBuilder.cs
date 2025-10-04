@@ -36,6 +36,7 @@ namespace SWLOR.Component.Quest.Service
         private IGuiService GuiService => _serviceProvider.GetRequiredService<IGuiService>();
         private IDialogService DialogService => _serviceProvider.GetRequiredService<IDialogService>();
         private IEventsPluginService EventsPluginService => _serviceProvider.GetRequiredService<IEventsPluginService>();
+        private IPlayerPluginService PlayerPluginService => _serviceProvider.GetRequiredService<IPlayerPluginService>();
 
         public QuestBuilder(IServiceProvider serviceProvider)
         {
@@ -56,7 +57,7 @@ namespace SWLOR.Component.Quest.Service
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentException($"{nameof(name)} cannot be null or whitespace.");
 
-            _activeQuest = new QuestDetail(DatabaseService, GuiService, DialogService, QuestService, EventsPluginService)
+            _activeQuest = new QuestDetail(DatabaseService, GuiService, DialogService, QuestService, EventsPluginService, PlayerPluginService)
             {
                 QuestId = questId,
                 Name = name

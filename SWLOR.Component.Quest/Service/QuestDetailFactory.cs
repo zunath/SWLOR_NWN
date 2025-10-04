@@ -28,8 +28,9 @@ namespace SWLOR.Component.Quest.Service
             var dialog = _serviceProvider.GetRequiredService<IDialogService>();
             var quest = _serviceProvider.GetRequiredService<IQuestService>();
             var eventsPlugin = _serviceProvider.GetRequiredService<IEventsPluginService>();
+            var playerPlugin = _serviceProvider.GetRequiredService<IPlayerPluginService>();
             
-            var questDetail = new QuestDetail(db, gui, dialog, quest, eventsPlugin)
+            var questDetail = new QuestDetail(db, gui, dialog, quest, eventsPlugin, playerPlugin)
             {
                 QuestId = questId,
                 Name = name

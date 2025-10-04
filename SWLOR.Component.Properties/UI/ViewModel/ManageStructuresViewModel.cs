@@ -6,7 +6,7 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Component.Properties.UI.Payload;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.Service;
+using SWLOR.NWN.API.Contracts;
 using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Abstractions.Models;
 using SWLOR.Shared.Domain.Properties.Entities;
@@ -23,11 +23,13 @@ namespace SWLOR.Component.Properties.UI.ViewModel
     {
         private readonly IDatabaseService _db;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IPlayerPluginService _playerPlugin;
 
-        public ManageStructuresViewModel(IGuiService guiService, IDatabaseService db, IServiceProvider serviceProvider) : base(guiService)
+        public ManageStructuresViewModel(IGuiService guiService, IDatabaseService db, IServiceProvider serviceProvider, IPlayerPluginService playerPlugin) : base(guiService)
         {
             _db = db;
             _serviceProvider = serviceProvider;
+            _playerPlugin = playerPlugin;
         }
 
         // Lazy-loaded services to break circular dependencies
@@ -291,7 +293,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
                 var permission = GetPermission();
                 var structureDetail = Property.GetStructureByType(structure.StructureType);
 
-                PlayerPlugin.ApplyLoopingVisualEffectToObject(Player, placeable, VisualEffectType.Vfx_Dur_Aura_Green);
+                _playerPlugin.ApplyLoopingVisualEffectToObject(Player, placeable, VisualEffectType.Vfx_Dur_Aura_Green);
                 _currentPosition = GetPosition(placeable);
                 _currentFacing = GetFacing(placeable);
 
@@ -308,7 +310,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
 
             var propertyId = _structurePropertyIds[SelectedStructureIndex];
             var placeable = Property.GetPlaceableByPropertyId(propertyId);
-            PlayerPlugin.ApplyLoopingVisualEffectToObject(Player, placeable, VisualEffectType.None);
+            _playerPlugin.ApplyLoopingVisualEffectToObject(Player, placeable, VisualEffectType.None);
         }
 
         public Action OnCloseWindow() => () =>

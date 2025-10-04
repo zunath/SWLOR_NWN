@@ -2,7 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.Service;
+using SWLOR.NWN.API.Contracts;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Models;
 using SWLOR.Shared.Core.Contracts;
@@ -34,6 +34,7 @@ namespace SWLOR.Component.Perk.UI.ViewModel
         private readonly IServiceProvider _serviceProvider;
         private readonly ICreaturePluginService _creaturePlugin;
         private readonly IEventsPluginService _eventsPlugin;
+        private readonly IPlayerPluginService _playerPlugin;
 
         public PerksViewModel(
             IGuiService guiService, 
@@ -41,7 +42,8 @@ namespace SWLOR.Component.Perk.UI.ViewModel
             IDatabaseService db, 
             IServiceProvider serviceProvider,
             ICreaturePluginService creaturePlugin,
-            IEventsPluginService eventsPlugin) 
+            IEventsPluginService eventsPlugin,
+            IPlayerPluginService playerPlugin) 
             : base(guiService)
         {
             _logger = logger;
@@ -49,6 +51,7 @@ namespace SWLOR.Component.Perk.UI.ViewModel
             _serviceProvider = serviceProvider;
             _creaturePlugin = creaturePlugin;
             _eventsPlugin = eventsPlugin;
+            _playerPlugin = playerPlugin;
             _filteredPerks = new List<PerkType>();
         }
 
@@ -558,28 +561,28 @@ namespace SWLOR.Component.Perk.UI.ViewModel
             var qbs = PlayerQuickBarSlot.UseFeat(feat);
 
             // Try to add the new feat to the player's hotbar.
-            if (PlayerPlugin.GetQuickBarSlot(Player, 0).ObjectType == QuickBarSlotType.Empty)
-                PlayerPlugin.SetQuickBarSlot(Player, 0, qbs);
-            else if (PlayerPlugin.GetQuickBarSlot(Player, 1).ObjectType == QuickBarSlotType.Empty)
-                PlayerPlugin.SetQuickBarSlot(Player, 1, qbs);
-            else if (PlayerPlugin.GetQuickBarSlot(Player, 2).ObjectType == QuickBarSlotType.Empty)
-                PlayerPlugin.SetQuickBarSlot(Player, 2, qbs);
-            else if (PlayerPlugin.GetQuickBarSlot(Player, 3).ObjectType == QuickBarSlotType.Empty)
-                PlayerPlugin.SetQuickBarSlot(Player, 3, qbs);
-            else if (PlayerPlugin.GetQuickBarSlot(Player, 4).ObjectType == QuickBarSlotType.Empty)
-                PlayerPlugin.SetQuickBarSlot(Player, 4, qbs);
-            else if (PlayerPlugin.GetQuickBarSlot(Player, 5).ObjectType == QuickBarSlotType.Empty)
-                PlayerPlugin.SetQuickBarSlot(Player, 5, qbs);
-            else if (PlayerPlugin.GetQuickBarSlot(Player, 6).ObjectType == QuickBarSlotType.Empty)
-                PlayerPlugin.SetQuickBarSlot(Player, 6, qbs);
-            else if (PlayerPlugin.GetQuickBarSlot(Player, 7).ObjectType == QuickBarSlotType.Empty)
-                PlayerPlugin.SetQuickBarSlot(Player, 7, qbs);
-            else if (PlayerPlugin.GetQuickBarSlot(Player, 8).ObjectType == QuickBarSlotType.Empty)
-                PlayerPlugin.SetQuickBarSlot(Player, 8, qbs);
-            else if (PlayerPlugin.GetQuickBarSlot(Player, 9).ObjectType == QuickBarSlotType.Empty)
-                PlayerPlugin.SetQuickBarSlot(Player, 9, qbs);
-            else if (PlayerPlugin.GetQuickBarSlot(Player, 10).ObjectType == QuickBarSlotType.Empty)
-                PlayerPlugin.SetQuickBarSlot(Player, 10, qbs);
+            if (_playerPlugin.GetQuickBarSlot(Player, 0).ObjectType == QuickBarSlotType.Empty)
+                _playerPlugin.SetQuickBarSlot(Player, 0, qbs);
+            else if (_playerPlugin.GetQuickBarSlot(Player, 1).ObjectType == QuickBarSlotType.Empty)
+                _playerPlugin.SetQuickBarSlot(Player, 1, qbs);
+            else if (_playerPlugin.GetQuickBarSlot(Player, 2).ObjectType == QuickBarSlotType.Empty)
+                _playerPlugin.SetQuickBarSlot(Player, 2, qbs);
+            else if (_playerPlugin.GetQuickBarSlot(Player, 3).ObjectType == QuickBarSlotType.Empty)
+                _playerPlugin.SetQuickBarSlot(Player, 3, qbs);
+            else if (_playerPlugin.GetQuickBarSlot(Player, 4).ObjectType == QuickBarSlotType.Empty)
+                _playerPlugin.SetQuickBarSlot(Player, 4, qbs);
+            else if (_playerPlugin.GetQuickBarSlot(Player, 5).ObjectType == QuickBarSlotType.Empty)
+                _playerPlugin.SetQuickBarSlot(Player, 5, qbs);
+            else if (_playerPlugin.GetQuickBarSlot(Player, 6).ObjectType == QuickBarSlotType.Empty)
+                _playerPlugin.SetQuickBarSlot(Player, 6, qbs);
+            else if (_playerPlugin.GetQuickBarSlot(Player, 7).ObjectType == QuickBarSlotType.Empty)
+                _playerPlugin.SetQuickBarSlot(Player, 7, qbs);
+            else if (_playerPlugin.GetQuickBarSlot(Player, 8).ObjectType == QuickBarSlotType.Empty)
+                _playerPlugin.SetQuickBarSlot(Player, 8, qbs);
+            else if (_playerPlugin.GetQuickBarSlot(Player, 9).ObjectType == QuickBarSlotType.Empty)
+                _playerPlugin.SetQuickBarSlot(Player, 9, qbs);
+            else if (_playerPlugin.GetQuickBarSlot(Player, 10).ObjectType == QuickBarSlotType.Empty)
+                _playerPlugin.SetQuickBarSlot(Player, 10, qbs);
         }
 
         // Applies any Purchase triggers associated with this perk.

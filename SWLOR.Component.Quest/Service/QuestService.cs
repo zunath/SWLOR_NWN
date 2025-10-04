@@ -3,7 +3,7 @@ using SWLOR.Component.Quest.Contracts;
 using SWLOR.Component.Quest.Model;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.Service;
+using SWLOR.NWN.API.Contracts;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Domain.Character.Contracts;
@@ -33,6 +33,7 @@ namespace SWLOR.Component.Quest.Service
         private readonly Lazy<IRandomService> _randomService;
         private readonly Lazy<IItemService> _itemService;
         private readonly Lazy<IPerkService> _perkService;
+        private readonly IPlayerPluginService _playerPlugin;
         
         // Cached data
         private IInterfaceCache<string, IQuestDetail> _questCache;
@@ -49,11 +50,13 @@ namespace SWLOR.Component.Quest.Service
         public QuestService(
             IDatabaseService db,
             IServiceProvider serviceProvider,
-            IEventAggregator eventAggregator)
+            IEventAggregator eventAggregator,
+            IPlayerPluginService playerPlugin)
         {
             _db = db;
             _serviceProvider = serviceProvider;
             _eventAggregator = eventAggregator;
+            _playerPlugin = playerPlugin;
             
             // Initialize lazy services
             _itemCache = new Lazy<IItemCacheService>(() => _serviceProvider.GetRequiredService<IItemCacheService>());
@@ -163,7 +166,7 @@ namespace SWLOR.Component.Quest.Service
                     var quest = _questCache.AllItems[questId];
                     var state = quest.States[playerQuest.CurrentState];
 
-                    PlayerPlugin.AddCustomJournalEntry(player, new JournalEntry
+                    _playerPlugin.AddCustomJournalEntry(player, new JournalEntry
                     {
                         Name = quest.Name,
                         Text = state.JournalText,

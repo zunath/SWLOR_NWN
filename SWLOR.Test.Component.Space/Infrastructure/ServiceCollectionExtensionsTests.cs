@@ -38,6 +38,7 @@ namespace SWLOR.Test.Component.Space.Infrastructure
             _services.AddSingleton(Substitute.For<ICreaturePluginService>());
             _services.AddSingleton(Substitute.For<IEventsPluginService>());
             _services.AddSingleton(Substitute.For<IObjectPluginService>());
+            _services.AddSingleton(Substitute.For<IPlayerPluginService>());
         }
 
         [TearDown]

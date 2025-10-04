@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.World.Contracts;
 using SWLOR.NWN.API.NWNX;
-using SWLOR.NWN.API.Service;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Domain.Entities;
@@ -13,14 +12,16 @@ namespace SWLOR.Component.World.Service
     {
         private readonly IDatabaseService _db;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IPlayerPluginService _playerPlugin;
         
         // Lazy-loaded service to break circular dependency
         private readonly Lazy<ISongCacheService> _songCache;
 
-        public MusicService(IDatabaseService db, IServiceProvider serviceProvider)
+        public MusicService(IDatabaseService db, IServiceProvider serviceProvider, IPlayerPluginService playerPlugin)
         {
             _db = db;
             _serviceProvider = serviceProvider;
+            _playerPlugin = playerPlugin;
             
             // Initialize lazy services
             _songCache = new Lazy<ISongCacheService>(() => _serviceProvider.GetRequiredService<ISongCacheService>());
@@ -57,9 +58,9 @@ namespace SWLOR.Component.World.Service
             var area = OBJECT_SELF;
             var battleThemeId = dbPlayer.Settings.BattleThemeId ?? MusicBackgroundGetBattleTrack(area);
 
-            PlayerPlugin.MusicBackgroundChangeTimeToggle(player, MusicBackgroundGetDayTrack(area), false);
-            PlayerPlugin.MusicBackgroundChangeTimeToggle(player, MusicBackgroundGetNightTrack(area), true);
-            PlayerPlugin.MusicBattleChange(player, battleThemeId);
+            _playerPlugin.MusicBackgroundChangeTimeToggle(player, MusicBackgroundGetDayTrack(area), false);
+            _playerPlugin.MusicBackgroundChangeTimeToggle(player, MusicBackgroundGetNightTrack(area), true);
+            _playerPlugin.MusicBattleChange(player, battleThemeId);
         }
 
         /// <summary>

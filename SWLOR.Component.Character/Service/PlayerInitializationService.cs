@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.Service;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Domain.Character.Contracts;
@@ -22,19 +21,22 @@ namespace SWLOR.Component.Character.Service
         private readonly IServiceProvider _serviceProvider;
         private readonly IEventAggregator _eventAggregator;
         private readonly ICreaturePluginService _creaturePlugin;
+        private readonly IPlayerPluginService _playerPlugin;
 
         public PlayerInitializationService(
             ILogger logger, 
             IDatabaseService db, 
             IServiceProvider serviceProvider,
             IEventAggregator eventAggregator,
-            ICreaturePluginService creaturePlugin)
+            ICreaturePluginService creaturePlugin,
+            IPlayerPluginService playerPlugin)
         {
             _logger = logger;
             _db = db;
             _serviceProvider = serviceProvider;
             _eventAggregator = eventAggregator;
             _creaturePlugin = creaturePlugin;
+            _playerPlugin = playerPlugin;
             
             // Initialize lazy services
             _statService = new Lazy<IStatService>(() => _serviceProvider.GetRequiredService<IStatService>());
@@ -208,7 +210,7 @@ namespace SWLOR.Component.Character.Service
         {
             var structureTool = PlayerQuickBarSlot.UseFeat(FeatType.PropertyMenu);
             
-            PlayerPlugin.SetQuickBarSlot(player, 0, structureTool);
+            _playerPlugin.SetQuickBarSlot(player, 0, structureTool);
         }
 
         /// <summary>

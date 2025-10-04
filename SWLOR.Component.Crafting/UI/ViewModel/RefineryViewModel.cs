@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.Service;
+using SWLOR.NWN.API.Contracts;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Models;
 using SWLOR.Shared.Caching.Contracts;
@@ -30,6 +30,7 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
             _skillService = new Lazy<ISkillService>(() => _serviceProvider.GetRequiredService<ISkillService>());
             _targetingService = new Lazy<ITargetingService>(() => _serviceProvider.GetRequiredService<ITargetingService>());
             _objectPlugin = new Lazy<IObjectPluginService>(() => _serviceProvider.GetRequiredService<IObjectPluginService>());
+            _playerPlugin = new Lazy<IPlayerPluginService>(() => _serviceProvider.GetRequiredService<IPlayerPluginService>());
         }
 
         // Lazy-loaded services to break circular dependencies
@@ -38,12 +39,14 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
         private readonly Lazy<ISkillService> _skillService;
         private readonly Lazy<ITargetingService> _targetingService;
         private readonly Lazy<IObjectPluginService> _objectPlugin;
+        private readonly Lazy<IPlayerPluginService> _playerPlugin;
         
         private IItemCacheService ItemCache => _itemCache.Value;
         private IPerkService PerkService => _perkService.Value;
         private ISkillService SkillService => _skillService.Value;
         private ITargetingService TargetingService => _targetingService.Value;
         private IObjectPluginService ObjectPlugin => _objectPlugin.Value;
+        private IPlayerPluginService PlayerPlugin => _playerPlugin.Value;
         private class OreDetail
         {
             public int RequiredLevel { get; }

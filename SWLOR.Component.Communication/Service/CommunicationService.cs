@@ -25,6 +25,7 @@ namespace SWLOR.Component.Communication.Service
         private readonly IServiceProvider _serviceProvider;
         private readonly IChatPluginService _chatPlugin;
         private readonly IEventsPluginService _eventsPlugin;
+        private readonly IFeedbackPluginService _feedbackPlugin;
         private const string DMPossessedCreature = "COMMUNICATION_DM_POSSESSED_CREATURE";
         private const int HolonetDelayMinutes = 5;
         
@@ -36,12 +37,13 @@ namespace SWLOR.Component.Communication.Service
         public (byte, byte, byte) OOCChatColor => CommunicationConstants.OOCChatColor;
         public (byte, byte, byte) EmoteChatColor => CommunicationConstants.EmoteChatColor;
 
-        public CommunicationService(IDatabaseService db, IServiceProvider serviceProvider, IChatPluginService chatPlugin, IEventsPluginService eventsPlugin)
+        public CommunicationService(IDatabaseService db, IServiceProvider serviceProvider, IChatPluginService chatPlugin, IEventsPluginService eventsPlugin, IFeedbackPluginService feedbackPlugin)
         {
             _db = db;
             _serviceProvider = serviceProvider;
             _chatPlugin = chatPlugin;
             _eventsPlugin = eventsPlugin;
+            _feedbackPlugin = feedbackPlugin;
             
             // Initialize lazy services
             _activityService = new Lazy<IActivityService>(() => _serviceProvider.GetRequiredService<IActivityService>());
@@ -789,14 +791,14 @@ namespace SWLOR.Component.Communication.Service
 
         public void ConfigureFeedbackMessages()
         {
-            FeedbackPlugin.SetFeedbackMessageHidden(FeedbackMessageTypes.UseItemCantUse, true);
-            FeedbackPlugin.SetFeedbackMessageHidden(FeedbackMessageTypes.CombatRunningOutOfAmmo, true);
-            FeedbackPlugin.SetFeedbackMessageHidden(FeedbackMessageTypes.RestBeginningRest, true);
-            FeedbackPlugin.SetFeedbackMessageHidden(FeedbackMessageTypes.RestFinishedRest, true);
-            FeedbackPlugin.SetFeedbackMessageHidden(FeedbackMessageTypes.RestCancelRest, true);
+            _feedbackPlugin.SetFeedbackMessageHidden(FeedbackMessageTypes.UseItemCantUse, true);
+            _feedbackPlugin.SetFeedbackMessageHidden(FeedbackMessageTypes.CombatRunningOutOfAmmo, true);
+            _feedbackPlugin.SetFeedbackMessageHidden(FeedbackMessageTypes.RestBeginningRest, true);
+            _feedbackPlugin.SetFeedbackMessageHidden(FeedbackMessageTypes.RestFinishedRest, true);
+            _feedbackPlugin.SetFeedbackMessageHidden(FeedbackMessageTypes.RestCancelRest, true);
 
-            FeedbackPlugin.SetCombatLogMessageHidden(CombatLogMessageType.Initiative, true);
-            FeedbackPlugin.SetCombatLogMessageHidden(CombatLogMessageType.ComplexAttack, true);
+            _feedbackPlugin.SetCombatLogMessageHidden(CombatLogMessageType.Initiative, true);
+            _feedbackPlugin.SetCombatLogMessageHidden(CombatLogMessageType.ComplexAttack, true);
         }
     }
 }

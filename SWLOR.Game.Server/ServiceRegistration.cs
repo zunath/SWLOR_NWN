@@ -131,6 +131,7 @@ namespace SWLOR.Game.Server
             services.AddSingleton<ICreaturePluginService, CreaturePluginService>();
             services.AddSingleton<IEventsPluginService, EventsPluginService>();
             services.AddSingleton<IFeatPluginService, FeatPluginService>();
+            services.AddSingleton<IFeedbackPluginService, FeedbackPluginService>();
         }
 
     }

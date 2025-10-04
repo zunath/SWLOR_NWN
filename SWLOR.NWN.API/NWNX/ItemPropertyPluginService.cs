@@ -3,14 +3,10 @@ using SWLOR.NWN.API.NWNX.Model;
 
 namespace SWLOR.NWN.API.NWNX
 {
-    public static class ItemPropertyPlugin
+    public class ItemPropertyPluginService : IItemPropertyPluginService
     {
-        /// <summary>
-        /// Convert native itemproperty type to unpacked structure.
-        /// </summary>
-        /// <param name="ip">The itemproperty to convert.</param>
-        /// <returns>A constructed ItemPropertyUnpacked.</returns>
-        public static ItemPropertyUnpacked UnpackIP(ItemProperty ip)
+        /// <inheritdoc/>
+        public ItemPropertyUnpacked UnpackIP(ItemProperty ip)
         {
             var nwnxResult = global::NWN.Core.NWNX.ItempropPlugin.UnpackIP(ip);
             
@@ -32,12 +28,8 @@ namespace SWLOR.NWN.API.NWNX
             };
         }
 
-        /// <summary>
-        /// Convert unpacked itemproperty structure to native type.
-        /// </summary>
-        /// <param name="itemProperty">The ItemPropertyUnpacked structure to convert.</param>
-        /// <returns>The itemproperty.</returns>
-        public static ItemProperty PackIP(ItemPropertyUnpacked itemProperty)
+        /// <inheritdoc/>
+        public ItemProperty PackIP(ItemPropertyUnpacked itemProperty)
         {
             var nwnxInput = new global::NWN.Core.NWNX.NWNX_IPUnpacked
             {
@@ -59,13 +51,8 @@ namespace SWLOR.NWN.API.NWNX
             return global::NWN.Core.NWNX.ItempropPlugin.PackIP(nwnxInput);
         }
 
-        /// <summary>
-        /// Gets the active item property at the index.
-        /// </summary>
-        /// <param name="oItem">The item with the property.</param>
-        /// <param name="nIndex">The index such as returned by some Item Events.</param>
-        /// <returns>A constructed ItemPropertyUnpacked, except for creator, and spell id.</returns>
-        public static ItemPropertyUnpacked GetActiveProperty(uint oItem, int nIndex)
+        /// <inheritdoc/>
+        public ItemPropertyUnpacked GetActiveProperty(uint oItem, int nIndex)
         {
             var nwnxResult = global::NWN.Core.NWNX.ItempropPlugin.GetActiveProperty(oItem, nIndex);
             

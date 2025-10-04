@@ -1,4 +1,6 @@
+using SWLOR.NWN.API.Service;
 using SWLOR.Test.Shared.NWScriptMocks;
+using SWLOR.Test.Shared.NWScriptMocks.NWNXPluginMocks;
 
 namespace SWLOR.Test.Shared
 {
@@ -10,36 +12,38 @@ namespace SWLOR.Test.Shared
     {
         private static bool _isInitialized;
         private static readonly Lock _lock = new();
-        private static NWScriptServiceMock? _mockService;
 
         /// <summary>
-        /// Sets up the mock NWScript service for testing.
+        /// Sets up the mock NWScript service and NWNX plugin mocks for testing.
         /// This method is thread-safe and idempotent.
         /// </summary>
         protected static void InitializeMockNWScript()
         {
-            if (_isInitialized) return;
-
             lock (_lock)
             {
                 if (_isInitialized) return;
 
-                // Create and set the mock service as the active NWScript implementation
-                _mockService = new NWScriptServiceMock();
-                SWLOR.NWN.API.Service.NWScript.SetService(_mockService); // Direct call after InternalsVisibleTo
-                
+                NWScript.SetService(new NWScriptServiceMock()); 
+
+                // Initialize all NWNX plugin mocks
+                AdministrationPlugin.SetService(new AdministrationPluginMock());
+                AreaPlugin.SetService(new AreaPluginMock());
+                ChatPlugin.SetService(new ChatPluginMock());
+                CreaturePlugin.SetService(new CreaturePluginMock());
+                EventsPlugin.SetService(new EventsPluginMock());
+                FeatPlugin.SetService(new FeatPluginMock());
+                FeedbackPlugin.SetService(new FeedbackPluginMock());
+                ItemPlugin.SetService(new ItemPluginMock());
+                ItemPropertyPlugin.SetService(new ItemPropertyPluginMock());
+                ObjectPlugin.SetService(new ObjectPluginMock());
+                PlayerPlugin.SetService(new PlayerPluginMock());
+                ProfilerPlugin.SetService(new ProfilerPluginMock());
+                UtilPlugin.SetService(new UtilPluginMock());
+                VisibilityPlugin.SetService(new VisibilityPluginMock());
+                WeaponPlugin.SetService(new WeaponPluginMock());
+
                 _isInitialized = true;
             }
-        }
-
-        /// <summary>
-        /// Gets the mock NWScript service instance for direct access to mock data.
-        /// This allows tests to verify state changes and set up specific conditions.
-        /// </summary>
-        protected static NWScriptServiceMock GetMockService()
-        {
-            InitializeMockNWScript();
-            return _mockService ?? throw new InvalidOperationException("Mock service not properly initialized");
         }
     }
 }

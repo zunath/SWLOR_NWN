@@ -29,6 +29,7 @@ namespace SWLOR.Component.Combat.Feature.Native
         private static readonly IAbilityService _abilityService = ServiceContainer.GetService<IAbilityService>();
         private static readonly ICombatService _combatService = ServiceContainer.GetService<ICombatService>();
         private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private static readonly IProfilerPluginService _profilerPlugin = ServiceContainer.GetService<IProfilerPluginService>();
 
         private const int PowerAttackDamageBonus = 3;
         private const int ImprovedPowerAttackDamageBonus = 6;
@@ -106,7 +107,7 @@ namespace SWLOR.Component.Combat.Feature.Native
                 var attacker = CNWSCreature.FromPointer(attackerStats.m_pBaseCreature);
 
                 var area = attacker.GetArea();
-                ProfilerPlugin.PushPerfScope("RunScript",
+                _profilerPlugin.PushPerfScope("RunScript",
                     "Script", $"NATIVE:{nameof(OnGetDamageRoll)}",
                     "Area", area == null ? "Unknown" : area.m_sTag.ToString(),
                     "ObjectType", "Creature");
@@ -116,7 +117,7 @@ namespace SWLOR.Component.Combat.Feature.Native
                 // Early exit for invalid targets
                 if (targetObject == null || targetObject.m_idSelf == OBJECT_INVALID)
                 {
-                    ProfilerPlugin.PopPerfScope();
+                    _profilerPlugin.PopPerfScope();
                     return 0;
                 }
 
@@ -169,7 +170,7 @@ namespace SWLOR.Component.Combat.Feature.Native
                 var physicalDamage = ProcessDamageTypes(pTarget, attacker, weapon, dmgValues, pAttackData,
                     attackerAttack, attackerStat, critical, weaponPerkLevel, attackType, damageFlags, bOffHand, targetObject);
 
-                ProfilerPlugin.PopPerfScope();
+                _profilerPlugin.PopPerfScope();
                 return physicalDamage;
             });
         }

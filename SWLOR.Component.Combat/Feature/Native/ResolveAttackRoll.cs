@@ -30,6 +30,7 @@ namespace SWLOR.Component.Combat.Feature.Native
         private static readonly ICombatService _combatService = ServiceContainer.GetService<ICombatService>();
         private static readonly IAbilityService _abilityService = ServiceContainer.GetService<IAbilityService>();
         private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private static readonly IProfilerPluginService _profilerPlugin = ServiceContainer.GetService<IProfilerPluginService>();
 
         // Attack result constants
         private const int AttackResultAutomaticHit = 7;
@@ -185,7 +186,7 @@ namespace SWLOR.Component.Combat.Feature.Native
                 var attacker = CNWSCreature.FromPointer(thisPtr);
                 var area = attacker.GetArea();
 
-                ProfilerPlugin.PushPerfScope("RunScript",
+                _profilerPlugin.PushPerfScope("RunScript",
                     "Script", $"NATIVE:{nameof(OnResolveAttackRoll)}",
                     "Area", area.m_sTag.ToString(),
                     "ObjectType", "Creature");
@@ -194,7 +195,7 @@ namespace SWLOR.Component.Combat.Feature.Native
                 var targetObject = CNWSObject.FromPointer(pTarget);
                 if (targetObject == null)
                 {
-                    ProfilerPlugin.PopPerfScope();
+                    _profilerPlugin.PopPerfScope();
                     return;
                 }
 
@@ -211,7 +212,7 @@ namespace SWLOR.Component.Combat.Feature.Native
                     // Automatically hit non-creature targets.  Do not apply criticals.
                     _logger.Write<AttackLogGroup>("Placeable target.  Auto hit.");
                     pAttackData.m_nAttackResult = AttackResultAutomaticHit;
-                    ProfilerPlugin.PopPerfScope();
+                    _profilerPlugin.PopPerfScope();
                     return;
                 }
 
@@ -384,7 +385,7 @@ namespace SWLOR.Component.Combat.Feature.Native
 
                 _logger.Write<AttackLogGroup>($"Finished ResolveAttackRoll");
 
-                ProfilerPlugin.PopPerfScope();
+                _profilerPlugin.PopPerfScope();
             });
         }
 

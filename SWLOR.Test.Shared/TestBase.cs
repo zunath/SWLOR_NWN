@@ -34,7 +34,6 @@ namespace SWLOR.Test.Shared
 
                 // Initialize all NWNX plugin mocks
                 PlayerPlugin.SetService(new PlayerPluginMock());
-                ProfilerPlugin.SetService(new ProfilerPluginMock());
                 UtilPlugin.SetService(new UtilPluginMock());
                 VisibilityPlugin.SetService(new VisibilityPluginMock());
                 WeaponPlugin.SetService(new WeaponPluginMock());

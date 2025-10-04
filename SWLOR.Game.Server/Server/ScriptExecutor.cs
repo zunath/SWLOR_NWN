@@ -1,7 +1,6 @@
 using System;
 using NWN.Native.API;
 using SWLOR.NWN.API.NWNX;
-using SWLOR.NWN.API.Service;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Core.Log.LogGroup;
@@ -18,15 +17,18 @@ namespace SWLOR.Game.Server.Server
         private readonly ILogger _logger;
         private readonly IClosureManager _closureManager;
         private readonly IScriptRegistry _scriptRegistry;
+        private readonly IProfilerPluginService _profilerPlugin;
 
         public ScriptExecutor(
             ILogger logger,
             IClosureManager closureManager, 
-            IScriptRegistry scriptRegistry)
+            IScriptRegistry scriptRegistry,
+            IProfilerPluginService profilerPlugin)
         {
             _logger = logger;
             _closureManager = closureManager;
             _scriptRegistry = scriptRegistry;
+            _profilerPlugin = profilerPlugin;
         }
 
         public void Initialize()
@@ -78,7 +80,7 @@ namespace SWLOR.Game.Server.Server
 
             foreach (var (action, name) in _scriptRegistry.GetConditionalScripts(script))
             {
-                ProfilerPlugin.PushPerfScope(OBJECT_SELF, name);
+                _profilerPlugin.PushPerfScope(OBJECT_SELF, name);
                 try
                 {
                     var actionResult = action.Invoke();
@@ -92,7 +94,7 @@ namespace SWLOR.Game.Server.Server
                 }
                 finally
                 {
-                    ProfilerPlugin.PopPerfScope();
+                    _profilerPlugin.PopPerfScope();
                 }
             }
 
@@ -105,12 +107,12 @@ namespace SWLOR.Game.Server.Server
             {
                 try
                 {
-                    ProfilerPlugin.PushPerfScope(OBJECT_SELF, name);
+                    _profilerPlugin.PushPerfScope(OBJECT_SELF, name);
                     action();
                 }
                 finally
                 {
-                    ProfilerPlugin.PopPerfScope();
+                    _profilerPlugin.PopPerfScope();
                 }
             }
 

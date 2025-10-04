@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
+using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Caching.Extensions;
@@ -29,6 +30,7 @@ namespace SWLOR.Test.Shared.Caching.Extensions
             _services.AddSingleton(Substitute.For<IEventAggregator>());
             _services.AddSingleton(Substitute.For<IPropertyService>());
             _services.AddSingleton(Substitute.For<ILogger>());
+            _services.AddSingleton(Substitute.For<IUtilPluginService>());
 
             // Act
             var result = _services.AddCacheServices();
@@ -61,6 +63,7 @@ namespace SWLOR.Test.Shared.Caching.Extensions
             _services.AddSingleton(Substitute.For<IEventAggregator>());
             _services.AddSingleton(Substitute.For<IPropertyService>());
             _services.AddSingleton(Substitute.For<ILogger>());
+            _services.AddSingleton(Substitute.For<IUtilPluginService>());
 
             // Act
             _services.AddCacheServices();
@@ -110,6 +113,7 @@ namespace SWLOR.Test.Shared.Caching.Extensions
             _services.AddSingleton(Substitute.For<IEventAggregator>());
             _services.AddSingleton(Substitute.For<IPropertyService>());
             _services.AddSingleton(Substitute.For<ILogger>());
+            _services.AddSingleton(Substitute.For<IUtilPluginService>());
 
             // Act
             _services.AddCacheServices();

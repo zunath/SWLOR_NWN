@@ -33,7 +33,6 @@ namespace SWLOR.Test.Shared
                 NWScript.SetService(_mockService); 
 
                 // Initialize all NWNX plugin mocks
-                UtilPlugin.SetService(new UtilPluginMock());
                 VisibilityPlugin.SetService(new VisibilityPluginMock());
                 WeaponPlugin.SetService(new WeaponPluginMock());
 

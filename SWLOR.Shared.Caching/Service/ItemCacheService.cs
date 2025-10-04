@@ -1,6 +1,5 @@
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWNX.Enum;
-using SWLOR.NWN.API.Service;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Caching.Entity;
@@ -15,22 +14,24 @@ namespace SWLOR.Shared.Caching.Service
     public class ItemCacheService : IItemCacheService
     {
         private readonly IDatabaseService _db;
+        private readonly IUtilPluginService _utilPlugin;
         private bool _cachedThisRun;
         private Dictionary<string, string> ItemNamesByResref { get; set; } = new();
 
-        public ItemCacheService(IDatabaseService db)
+        public ItemCacheService(IDatabaseService db, IUtilPluginService utilPlugin)
         {
             _db = db;
+            _utilPlugin = utilPlugin;
         }
 
         public void CacheItemNamesByResref()
         {
-            var resref = UtilPlugin.GetFirstResRef(ResRefType.Item);
+            var resref = _utilPlugin.GetFirstResRef(ResRefType.Item);
 
             while (!string.IsNullOrWhiteSpace(resref))
             {
                 CacheItemNameByResref(resref);
-                resref = UtilPlugin.GetNextResRef();
+                resref = _utilPlugin.GetNextResRef();
             }
 
             var dbModuleCache = _db.Get<ModuleCache>("SWLOR_CACHE");

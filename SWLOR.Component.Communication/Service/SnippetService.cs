@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWNX;
-using SWLOR.NWN.API.Service;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Dialog.Contracts;
 using SWLOR.Shared.Domain.Dialog.ValueObjects;
@@ -10,6 +9,7 @@ namespace SWLOR.Component.Communication.Service
     public class SnippetService : ISnippetService
     {
         private readonly IServiceProvider _serviceProvider;
+        private readonly IUtilPluginService _utilPlugin;
         
         // Lazy-loaded services to break circular dependencies
         private readonly Lazy<IGenericCacheService> _cacheService;
@@ -21,9 +21,10 @@ namespace SWLOR.Component.Communication.Service
         private readonly Dictionary<string, SnippetDetail> _appearsWhenCommands = new();
         private readonly Dictionary<string, SnippetDetail> _actionsTakenCommands = new();
 
-        public SnippetService(IServiceProvider serviceProvider)
+        public SnippetService(IServiceProvider serviceProvider, IUtilPluginService utilPlugin)
         {
             _serviceProvider = serviceProvider;
+            _utilPlugin = utilPlugin;
             
             // Initialize lazy services
             _cacheService = new Lazy<IGenericCacheService>(() => _serviceProvider.GetRequiredService<IGenericCacheService>());
@@ -92,12 +93,12 @@ namespace SWLOR.Component.Communication.Service
                 var notConditionEnabled = false;
 
                 // Check for "not" condition first.
-                if (UtilPlugin.GetScriptParamIsSet("!" + condition.Key))
+                if (_utilPlugin.GetScriptParamIsSet("!" + condition.Key))
                 {
                     notConditionEnabled = true;
                 }
                 // If we can't find either condition, exit.
-                else if (!UtilPlugin.GetScriptParamIsSet(condition.Key)) continue;
+                else if (!_utilPlugin.GetScriptParamIsSet(condition.Key)) continue;
 
                 var conditionKey = notConditionEnabled ? "!" + condition.Key : condition.Key;
                 var param = GetScriptParam(conditionKey);
@@ -126,7 +127,7 @@ namespace SWLOR.Component.Communication.Service
         {
             foreach (var action in _actionsTakenCommands)
             {
-                if (!UtilPlugin.GetScriptParamIsSet(action.Key)) continue;
+                if (!_utilPlugin.GetScriptParamIsSet(action.Key)) continue;
 
                 var param = GetScriptParam(action.Key);
                 var args = param.Split(' ', StringSplitOptions.RemoveEmptyEntries).ToList();

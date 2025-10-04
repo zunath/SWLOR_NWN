@@ -20,6 +20,8 @@ This is a summary of the most critical rules. For complete details, see `AI_AGEN
 - ❌ Manual NWScript/NWNX mocking (TestBase handles automatically)
 - ❌ Calling GetMockService() in tests
 - ❌ Creating manual NWScript mocks
+- ❌ Modifying TestBase class or adding methods to it
+- ❌ Adding `using SWLOR.NWN.API.Service;` for NWScript calls (NWScript is global)
 
 ## ✅ REQUIRED PATTERNS
 - ✅ Separate event handlers from services
@@ -31,6 +33,7 @@ This is a summary of the most critical rules. For complete details, see `AI_AGEN
 - ✅ Use TestBase.InitializeMockNWScript() for automatic mocking
 - ✅ Use direct NWScript static calls in tests
 - ✅ Mock only non-NWScript services with NSubstitute
+- ✅ Use NWScript without adding using statements (it's global)
 
 ## 📋 PRE-COMMIT CHECKLIST
 - [ ] No cross-project dependencies
@@ -43,6 +46,7 @@ This is a summary of the most critical rules. For complete details, see `AI_AGEN
 - [ ] Tests inherit from TestBase
 - [ ] Tests call InitializeMockNWScript()
 - [ ] No manual NWScript/NWNX mocking
+- [ ] TestBase class not modified
 
 ## 🧪 TESTING FRAMEWORK - CRITICAL FOR AI AGENTS
 

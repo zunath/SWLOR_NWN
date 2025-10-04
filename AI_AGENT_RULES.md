@@ -171,6 +171,7 @@ using SWLOR.Shared.Events.Attributes;
   3. SWLOR namespaces (e.g., `using SWLOR.Shared.Core;`)
 - **RULE**: Remove unused using statements to keep code clean
 - **RULE**: Use fully qualified names only when there are naming conflicts
+- **RULE**: NWScript is available globally - DO NOT add `using SWLOR.NWN.API.Service;` for NWScript calls
 - **VIOLATION EXAMPLES**:
 ```csharp
 // ❌ FORBIDDEN: Missing using statements
@@ -185,6 +186,16 @@ public class PerkService
 // ❌ FORBIDDEN: Using statements in wrong order
 using SWLOR.Shared.Core;
 using System; // Should be before SWLOR namespaces
+
+// ❌ FORBIDDEN: Adding unnecessary NWScript using statement
+using SWLOR.NWN.API.Service; // DON'T DO THIS - NWScript is global
+public class MyService
+{
+    public void DoSomething()
+    {
+        var area = NWScript.CreateArea("", "", "Test"); // Works without the using
+    }
+}
 ```
 - **CORRECT APPROACH**:
 ```csharp
@@ -195,6 +206,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Perk.Contracts;
 using SWLOR.Shared.Core;
 using SWLOR.Shared.Domain.Perk.Contracts;
+// Note: NWScript is available globally - no using statement needed
 
 namespace SWLOR.Component.Perk.Service
 {
@@ -203,6 +215,12 @@ namespace SWLOR.Component.Perk.Service
         public List<PerkType> GetPerks()
         {
             return new List<PerkType>();
+        }
+        
+        public void ProcessArea()
+        {
+            // NWScript works without any using statement
+            var area = NWScript.CreateArea("", "", "Test Area");
         }
     }
 }
@@ -393,6 +411,26 @@ var mockNWScript = new NWScriptServiceMock(); // WRONG!
 NWScript.GetFirstArea().Returns(1u); // WRONG! This won't work
 ```
 
+**❌ WRONG**: Modifying TestBase class or adding methods to it
+```csharp
+// DON'T DO THIS - Never modify TestBase.cs
+public class TestBase
+{
+    // DON'T ADD METHODS LIKE THIS
+    protected static NWScriptServiceMock GetMockService() { ... } // WRONG!
+    protected static void SetupMockData() { ... } // WRONG!
+    protected static void ResetMocks() { ... } // WRONG!
+}
+```
+
+**❌ WRONG**: Adding helper methods to TestBase for mock access
+```csharp
+// DON'T DO THIS - Never add these to TestBase
+protected static void SetMockReturnValue(string method, object value) { ... } // WRONG!
+protected static void VerifyMockCall(string method) { ... } // WRONG!
+protected static T GetMockData<T>(string key) { ... } // WRONG!
+```
+
 #### 19.6 What You CAN Mock with NSubstitute
 **✅ CORRECT**: Mock other services (database, cache, etc.)
 ```csharp
@@ -442,6 +480,9 @@ public void VerifyMockData()
 - **RULE**: Mock only non-NWScript services with NSubstitute
 - **RULE**: Test business logic, not NWScript functionality
 - **RULE**: Verify mock state through NWScript calls, not direct mock access
+- **RULE**: NEVER modify the `TestBase` class or add methods to it
+- **RULE**: NEVER add helper methods like `GetMockService()` to TestBase
+- **RULE**: TestBase is a complete, final implementation - do not extend it
 
 ## Documentation Rules
 

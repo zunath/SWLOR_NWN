@@ -48,7 +48,7 @@ namespace SWLOR.Game.Server
         /// <returns>The service collection for chaining</returns>
         public static IServiceCollection AddServices(this IServiceCollection services)
         {
-            AddDatabaseServices(services);
+            AddAPIServices(services);
             AddInfrastructureServices(services);
             AddServerServices(services);
             AddGameServices(services);
@@ -56,13 +56,29 @@ namespace SWLOR.Game.Server
             return services;
         }
 
-        private static void AddDatabaseServices(IServiceCollection services)
+        private static void AddAPIServices(IServiceCollection services)
         {
-            services.AddSingleton<IDatabaseService, DB>();
+            // Register NWNX Plugin Services
+            services.AddSingleton<IAdministrationPluginService, AdministrationPluginService>();
+            services.AddSingleton<IAreaPluginService, AreaPluginService>();
+            services.AddSingleton<IChatPluginService, ChatPluginService>();
+            services.AddSingleton<ICreaturePluginService, CreaturePluginService>();
+            services.AddSingleton<IEventsPluginService, EventsPluginService>();
+            services.AddSingleton<IFeatPluginService, FeatPluginService>();
+            services.AddSingleton<IFeedbackPluginService, FeedbackPluginService>();
+            services.AddSingleton<IItemPluginService, ItemPluginService>();
+            services.AddSingleton<IItemPropertyPluginService, ItemPropertyPluginService>();
+            services.AddSingleton<IObjectPluginService, ObjectPluginService>();
+            services.AddSingleton<IPlayerPluginService, PlayerPluginService>();
+            services.AddSingleton<IProfilerPluginService, ProfilerPluginService>();
+            services.AddSingleton<IUtilPluginService, UtilPluginService>();
+            services.AddSingleton<IVisibilityPluginService, VisibilityPluginService>();
+            services.AddSingleton<IWeaponPluginService, WeaponPluginService>();
         }
 
         private static void AddInfrastructureServices(IServiceCollection services)
         {
+            services.AddSingleton<IDatabaseService, DB>();
             services.AddSingleton<ILogger, LogService>();
             services.AddSingleton<IAppSettings, AppSettings>();
         }
@@ -124,22 +140,7 @@ namespace SWLOR.Game.Server
 
         private static void AddGameSpecificServices(IServiceCollection services)
         {
-            // Register NWNX Plugin Services
-            services.AddSingleton<IAdministrationPluginService, AdministrationPluginService>();
-            services.AddSingleton<IAreaPluginService, AreaPluginService>();
-            services.AddSingleton<IChatPluginService, ChatPluginService>();
-            services.AddSingleton<ICreaturePluginService, CreaturePluginService>();
-            services.AddSingleton<IEventsPluginService, EventsPluginService>();
-            services.AddSingleton<IFeatPluginService, FeatPluginService>();
-            services.AddSingleton<IFeedbackPluginService, FeedbackPluginService>();
-            services.AddSingleton<IItemPluginService, ItemPluginService>();
-            services.AddSingleton<IItemPropertyPluginService, ItemPropertyPluginService>();
-            services.AddSingleton<IObjectPluginService, ObjectPluginService>();
-            services.AddSingleton<IPlayerPluginService, PlayerPluginService>();
-            services.AddSingleton<IProfilerPluginService, ProfilerPluginService>();
-            services.AddSingleton<IUtilPluginService, UtilPluginService>();
-            services.AddSingleton<IVisibilityPluginService, VisibilityPluginService>();
-            services.AddSingleton<IWeaponPluginService, WeaponPluginService>();
+            // Game-specific services can be added here in the future
         }
 
     }

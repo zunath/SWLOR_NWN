@@ -138,6 +138,7 @@ namespace SWLOR.Game.Server
             services.AddSingleton<IPlayerPluginService, PlayerPluginService>();
             services.AddSingleton<IProfilerPluginService, ProfilerPluginService>();
             services.AddSingleton<IUtilPluginService, UtilPluginService>();
+            services.AddSingleton<IWeaponPluginService, WeaponPluginService>();
         }
 
     }

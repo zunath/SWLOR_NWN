@@ -34,7 +34,6 @@ namespace SWLOR.Test.Shared
 
                 // Initialize all NWNX plugin mocks
                 VisibilityPlugin.SetService(new VisibilityPluginMock());
-                WeaponPlugin.SetService(new WeaponPluginMock());
 
                 _isInitialized = true;
             }

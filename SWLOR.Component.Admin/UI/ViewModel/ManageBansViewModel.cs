@@ -1,5 +1,6 @@
 using SWLOR.Component.Admin.Entity;
 using SWLOR.NWN.API.NWNX;
+using SWLOR.NWN.API.Service;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Models;
 using SWLOR.Shared.Core.Data;

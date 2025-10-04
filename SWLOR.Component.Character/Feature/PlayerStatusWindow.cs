@@ -1,4 +1,5 @@
 using SWLOR.NWN.API.NWNX;
+using SWLOR.NWN.API.Service;
 using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Domain.UI.Events;
 using SWLOR.Shared.Events.Attributes;

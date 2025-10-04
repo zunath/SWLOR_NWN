@@ -3,6 +3,7 @@ using SWLOR.Component.World.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.Service;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Caching.Entity;
 using Vector3 = System.Numerics.Vector3;

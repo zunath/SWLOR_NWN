@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWNX;
+using SWLOR.NWN.API.Service;
 using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Domain.Crafting.Contracts;
 using SWLOR.Shared.Domain.Inventory.Contracts;

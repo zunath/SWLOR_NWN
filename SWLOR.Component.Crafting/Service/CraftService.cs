@@ -11,6 +11,7 @@ using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Component.Crafting.UI.Payload;
+using SWLOR.NWN.API.Service;
 using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Abstractions.Models;
 using SWLOR.Shared.Domain.Combat.Enums;

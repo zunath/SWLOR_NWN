@@ -4,6 +4,7 @@ using SWLOR.Component.Perk.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.Service;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Domain.Ability.Contracts;
 using SWLOR.Shared.Domain.Ability.Enums;

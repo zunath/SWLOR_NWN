@@ -1,5 +1,6 @@
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWNX.Enum;
+using SWLOR.NWN.API.Service;
 
 namespace SWLOR.Component.Migration.Model
 {

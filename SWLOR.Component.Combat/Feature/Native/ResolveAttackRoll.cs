@@ -4,6 +4,7 @@ using NWNX.NET;
 using SWLOR.Component.Combat.Enums;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.Service;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Log.LogGroup;

@@ -7,6 +7,7 @@ using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Component.Associate.UI.Payload;
+using SWLOR.NWN.API.Service;
 using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Domain.Associate.Contracts;
 using SWLOR.Shared.Domain.Associate.Enums;

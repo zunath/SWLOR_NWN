@@ -15,14 +15,12 @@ namespace SWLOR.Test.Shared.Events.EventHandlers
     {
         private IEventAggregator _mockEventAggregator;
         private EventRegistrationEventHandlers _handlers;
-        private NWScriptServiceMock _mockNWScript;
 
         [SetUp]
         public void SetUp()
         {
             // Initialize the mock NWScript service
             InitializeMockNWScript();
-            _mockNWScript = GetMockService();
             
             _mockEventAggregator = Substitute.For<IEventAggregator>();
             _handlers = new EventRegistrationEventHandlers(_mockEventAggregator);

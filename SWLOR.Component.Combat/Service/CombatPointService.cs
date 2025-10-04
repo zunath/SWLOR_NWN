@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Globalization;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.Service;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Associate.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;

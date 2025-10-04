@@ -4,6 +4,7 @@ using SWLOR.Component.World.Service;
 using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Domain.World.Enums;
 using SWLOR.Test.Shared;
+using SWLOR.NWN.API.Service;
 
 namespace SWLOR.Test.Component.World.Service
 {
@@ -21,8 +22,7 @@ namespace SWLOR.Test.Component.World.Service
             InitializeMockNWScript();
             
             // Reset mock state to ensure clean test environment
-            var mockService = GetMockService();
-            mockService.ResetMockState();
+            // Mock state is automatically reset by TestBase initialization
             
             _mockPlanetCacheService = Substitute.For<IPlanetCacheService>();
             
@@ -44,8 +44,7 @@ namespace SWLOR.Test.Component.World.Service
         public void RegisterAreaPlanetIds_WithMatchingAreas_ShouldSetPlanetTypeId()
         {
             // Arrange
-            var mockService = GetMockService();
-            mockService.ResetMockState(); // Reset mock state for this test
+            // Mock state is automatically reset by TestBase initialization
             
             var mockPlanets = new Dictionary<PlanetType, PlanetAttribute>
             {
@@ -56,22 +55,22 @@ namespace SWLOR.Test.Component.World.Service
             _mockPlanetCacheService.GetAllPlanets().Returns(mockPlanets);
             
             // Create areas and get their IDs
-            var area1 = mockService.CreateArea("", "", "Viscara - Test Area");
-            var area2 = mockService.CreateArea("", "", "Tatooine - Desert Area");
-            var area3 = mockService.CreateArea("", "", "Unknown - Some Area");
+            var area1 = NWScript.CreateArea("", "", "Viscara - Test Area");
+            var area2 = NWScript.CreateArea("", "", "Tatooine - Desert Area");
+            var area3 = NWScript.CreateArea("", "", "Unknown - Some Area");
             
             // Set names for the areas
-            mockService.SetName(area1, "Viscara - Test Area");
-            mockService.SetName(area2, "Tatooine - Desert Area");
-            mockService.SetName(area3, "Unknown - Some Area");
+            NWScript.SetName(area1, "Viscara - Test Area");
+            NWScript.SetName(area2, "Tatooine - Desert Area");
+            NWScript.SetName(area3, "Unknown - Some Area");
 
             // Act
             _service.RegisterAreaPlanetIds();
 
             // Assert
-            var planetTypeId1 = mockService.GetLocalInt(area1, "PLANET_TYPE_ID");
-            var planetTypeId2 = mockService.GetLocalInt(area2, "PLANET_TYPE_ID");
-            var planetTypeId3 = mockService.GetLocalInt(area3, "PLANET_TYPE_ID");
+            var planetTypeId1 = NWScript.GetLocalInt(area1, "PLANET_TYPE_ID");
+            var planetTypeId2 = NWScript.GetLocalInt(area2, "PLANET_TYPE_ID");
+            var planetTypeId3 = NWScript.GetLocalInt(area3, "PLANET_TYPE_ID");
 
             Assert.That(planetTypeId1, Is.EqualTo((int)PlanetType.Viscara));
             Assert.That(planetTypeId2, Is.EqualTo((int)PlanetType.Tatooine));
@@ -82,8 +81,7 @@ namespace SWLOR.Test.Component.World.Service
         public void RegisterAreaPlanetIds_WithNoMatchingAreas_ShouldNotSetAnyPlanetTypeId()
         {
             // Arrange
-            var mockService = GetMockService();
-            mockService.ResetMockState(); // Reset mock state for this test
+            // Mock state is automatically reset by TestBase initialization
             
             var mockPlanets = new Dictionary<PlanetType, PlanetAttribute>
             {
@@ -93,19 +91,19 @@ namespace SWLOR.Test.Component.World.Service
             _mockPlanetCacheService.GetAllPlanets().Returns(mockPlanets);
             
             // Create areas with non-matching names
-            var area1 = mockService.CreateArea("", "", "Some Other Area");
-            var area2 = mockService.CreateArea("", "", "Another Area");
+            var area1 = NWScript.CreateArea("", "", "Some Other Area");
+            var area2 = NWScript.CreateArea("", "", "Another Area");
             
             // Set names for the areas
-            mockService.SetName(area1, "Some Other Area");
-            mockService.SetName(area2, "Another Area");
+            NWScript.SetName(area1, "Some Other Area");
+            NWScript.SetName(area2, "Another Area");
 
             // Act
             _service.RegisterAreaPlanetIds();
 
             // Assert
-            var planetTypeId1 = mockService.GetLocalInt(area1, "PLANET_TYPE_ID");
-            var planetTypeId2 = mockService.GetLocalInt(area2, "PLANET_TYPE_ID");
+            var planetTypeId1 = NWScript.GetLocalInt(area1, "PLANET_TYPE_ID");
+            var planetTypeId2 = NWScript.GetLocalInt(area2, "PLANET_TYPE_ID");
 
             Assert.That(planetTypeId1, Is.EqualTo(0));
             Assert.That(planetTypeId2, Is.EqualTo(0));
@@ -118,8 +116,7 @@ namespace SWLOR.Test.Component.World.Service
             var area = 1001u;
             var expectedPlanetType = PlanetType.Viscara;
 
-            var mockService = GetMockService();
-            mockService.SetLocalInt(area, "PLANET_TYPE_ID", (int)expectedPlanetType);
+            NWScript.SetLocalInt(area, "PLANET_TYPE_ID", (int)expectedPlanetType);
 
             // Act
             var result = _service.GetPlanetType(area);
@@ -133,8 +130,7 @@ namespace SWLOR.Test.Component.World.Service
         {
             // Arrange
             var area = 1001u;
-            var mockService = GetMockService();
-            mockService.SetLocalInt(area, "PLANET_TYPE_ID", (int)PlanetType.Invalid);
+            NWScript.SetLocalInt(area, "PLANET_TYPE_ID", (int)PlanetType.Invalid);
 
             // Act
             var result = _service.GetPlanetType(area);
@@ -150,8 +146,7 @@ namespace SWLOR.Test.Component.World.Service
             var area = 1001u;
             var planetType = PlanetType.Viscara;
 
-            var mockService = GetMockService();
-            mockService.SetLocalInt(area, "PLANET_TYPE_ID", (int)planetType);
+            NWScript.SetLocalInt(area, "PLANET_TYPE_ID", (int)planetType);
 
             // Act
             var result = _service.IsAreaOnPlanet(area, planetType);
@@ -168,8 +163,7 @@ namespace SWLOR.Test.Component.World.Service
             var planetType = PlanetType.Viscara;
             var otherPlanetType = PlanetType.Tatooine;
 
-            var mockService = GetMockService();
-            mockService.SetLocalInt(area, "PLANET_TYPE_ID", (int)planetType);
+            NWScript.SetLocalInt(area, "PLANET_TYPE_ID", (int)planetType);
 
             // Act
             var result = _service.IsAreaOnPlanet(area, otherPlanetType);
@@ -189,23 +183,21 @@ namespace SWLOR.Test.Component.World.Service
             };
 
             _mockPlanetCacheService.GetAllPlanets().Returns(mockPlanets);
-
-            var mockService = GetMockService();
             
             // Create areas and get their IDs
-            var area1 = mockService.CreateArea("", "", "Viscara - Test Area");
-            var area2 = mockService.CreateArea("", "", "Viscara - Another Area");
-            var area3 = mockService.CreateArea("", "", "Tatooine - Desert Area");
+            var area1 = NWScript.CreateArea("", "", "Viscara - Test Area");
+            var area2 = NWScript.CreateArea("", "", "Viscara - Another Area");
+            var area3 = NWScript.CreateArea("", "", "Tatooine - Desert Area");
             
             // Set names for the areas
-            mockService.SetName(area1, "Viscara - Test Area");
-            mockService.SetName(area2, "Viscara - Another Area");
-            mockService.SetName(area3, "Tatooine - Desert Area");
+            NWScript.SetName(area1, "Viscara - Test Area");
+            NWScript.SetName(area2, "Viscara - Another Area");
+            NWScript.SetName(area3, "Tatooine - Desert Area");
 
             // Set the planet type IDs for the areas
-            mockService.SetLocalInt(area1, "PLANET_TYPE_ID", (int)planetType);
-            mockService.SetLocalInt(area2, "PLANET_TYPE_ID", (int)planetType);
-            mockService.SetLocalInt(area3, "PLANET_TYPE_ID", (int)PlanetType.Tatooine);
+            NWScript.SetLocalInt(area1, "PLANET_TYPE_ID", (int)planetType);
+            NWScript.SetLocalInt(area2, "PLANET_TYPE_ID", (int)planetType);
+            NWScript.SetLocalInt(area3, "PLANET_TYPE_ID", (int)PlanetType.Tatooine);
 
             // Act
             var result = _service.GetAreasForPlanet(planetType);
@@ -225,12 +217,10 @@ namespace SWLOR.Test.Component.World.Service
             var mockPlanets = new Dictionary<PlanetType, PlanetAttribute>();
 
             _mockPlanetCacheService.GetAllPlanets().Returns(mockPlanets);
-
-            var mockService = GetMockService();
             
             // Create area and get its ID
-            var area1 = mockService.CreateArea("", "", "Viscara - Test Area");
-            mockService.SetName(area1, "Viscara - Test Area");
+            var area1 = NWScript.CreateArea("", "", "Viscara - Test Area");
+            NWScript.SetName(area1, "Viscara - Test Area");
 
             // Act
             var result = _service.GetAreasForPlanet(planetType);
@@ -250,16 +240,14 @@ namespace SWLOR.Test.Component.World.Service
             };
 
             _mockPlanetCacheService.GetAllPlanets().Returns(mockPlanets);
-
-            var mockService = GetMockService();
             
             // Create areas with non-matching names
-            var area1 = mockService.CreateArea("", "", "Tatooine - Desert Area");
-            var area2 = mockService.CreateArea("", "", "Some Other Area");
+            var area1 = NWScript.CreateArea("", "", "Tatooine - Desert Area");
+            var area2 = NWScript.CreateArea("", "", "Some Other Area");
             
             // Set names for the areas
-            mockService.SetName(area1, "Tatooine - Desert Area");
-            mockService.SetName(area2, "Some Other Area");
+            NWScript.SetName(area1, "Tatooine - Desert Area");
+            NWScript.SetName(area2, "Some Other Area");
 
             // Act
             var result = _service.GetAreasForPlanet(planetType);

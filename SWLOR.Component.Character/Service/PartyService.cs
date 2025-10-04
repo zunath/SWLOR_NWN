@@ -1,4 +1,5 @@
 using SWLOR.NWN.API.NWNX;
+using SWLOR.NWN.API.Service;
 using SWLOR.Shared.Domain.Character.Contracts;
 
 namespace SWLOR.Component.Character.Service

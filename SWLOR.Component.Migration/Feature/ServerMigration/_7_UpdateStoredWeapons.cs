@@ -4,6 +4,7 @@ using SWLOR.Component.Migration.Enums;
 using SWLOR.Component.Migration.Model;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.Service;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Data;

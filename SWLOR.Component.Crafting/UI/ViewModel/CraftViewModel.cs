@@ -10,6 +10,7 @@ using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Component.Crafting.UI.Payload;
+using SWLOR.NWN.API.Service;
 using SWLOR.Shared.Abstractions.Models;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Crafting.Contracts;

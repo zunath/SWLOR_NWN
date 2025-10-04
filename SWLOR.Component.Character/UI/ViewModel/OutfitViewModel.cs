@@ -1,6 +1,7 @@
 using SWLOR.Component.Character.Enums;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.Service;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.UI.Contracts;

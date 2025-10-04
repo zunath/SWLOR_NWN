@@ -6,6 +6,7 @@ using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Caching.Service;
 using SWLOR.Shared.Domain.Properties.Contracts;
 using SWLOR.Test.Shared;
+using SWLOR.NWN.API.Service;
 
 namespace SWLOR.Test.Shared.Caching.Service
 {
@@ -48,13 +49,12 @@ namespace SWLOR.Test.Shared.Caching.Service
         public void LoadCache_ShouldLoadAreas()
         {
             // Arrange
-            var mockService = GetMockService();
             // Set up mock data for areas
-            mockService.GetFirstArea().Returns(1u);
-            mockService.GetNextArea().Returns(2u, 0u);
-            mockService.GetIsObjectValid(1u).Returns(true);
-            mockService.GetIsObjectValid(2u).Returns(false);
-            mockService.GetResRef(1u).Returns("test_area");
+            NWScript.GetFirstArea().Returns(1u);
+            NWScript.GetNextArea().Returns(2u, 0u);
+            NWScript.GetIsObjectValid(1u).Returns(true);
+            NWScript.GetIsObjectValid(2u).Returns(false);
+            NWScript.GetResRef(1u).Returns("test_area");
 
             // Act
             _service.LoadCache();
@@ -69,11 +69,10 @@ namespace SWLOR.Test.Shared.Caching.Service
         public void GetAreaByResref_ShouldReturnArea()
         {
             // Arrange
-            var mockService = GetMockService();
-            mockService.GetFirstArea().Returns(1u);
-            mockService.GetNextArea().Returns(0u);
-            mockService.GetIsObjectValid(1u).Returns(true);
-            mockService.GetResRef(1u).Returns("test_area");
+            NWScript.GetFirstArea().Returns(1u);
+            NWScript.GetNextArea().Returns(0u);
+            NWScript.GetIsObjectValid(1u).Returns(true);
+            NWScript.GetResRef(1u).Returns("test_area");
             _service.LoadCache();
 
             // Act
@@ -87,11 +86,10 @@ namespace SWLOR.Test.Shared.Caching.Service
         public void GetAreaByResref_WithInvalidResref_ShouldReturnZero()
         {
             // Arrange
-            var mockService = GetMockService();
-            mockService.GetFirstArea().Returns(1u);
-            mockService.GetNextArea().Returns(0u);
-            mockService.GetIsObjectValid(1u).Returns(true);
-            mockService.GetResRef(1u).Returns("test_area");
+            NWScript.GetFirstArea().Returns(1u);
+            NWScript.GetNextArea().Returns(0u);
+            NWScript.GetIsObjectValid(1u).Returns(true);
+            NWScript.GetResRef(1u).Returns("test_area");
             _service.LoadCache();
 
             // Act
@@ -167,11 +165,10 @@ namespace SWLOR.Test.Shared.Caching.Service
         public void GetAreas_ShouldReturnCachedAreas()
         {
             // Arrange
-            var mockService = GetMockService();
-            mockService.GetFirstArea().Returns(1u);
-            mockService.GetNextArea().Returns(0u);
-            mockService.GetIsObjectValid(1u).Returns(true);
-            mockService.GetResRef(1u).Returns("test_area");
+            NWScript.GetFirstArea().Returns(1u);
+            NWScript.GetNextArea().Returns(0u);
+            NWScript.GetIsObjectValid(1u).Returns(true);
+            NWScript.GetResRef(1u).Returns("test_area");
             _service.LoadCache();
 
             // Act

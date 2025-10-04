@@ -4,6 +4,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Component.Admin.UI.Payload;
+using SWLOR.NWN.API.Service;
 using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Perk.Contracts;

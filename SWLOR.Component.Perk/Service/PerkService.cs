@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Perk.Contracts;
 using SWLOR.Component.Perk.Model;
 using SWLOR.NWN.API.NWNX;
+using SWLOR.NWN.API.Service;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Domain.Ability.Delegates;

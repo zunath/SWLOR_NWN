@@ -7,6 +7,7 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Component.Market.UI.Payload;
+using SWLOR.NWN.API.Service;
 using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Inventory.Contracts;

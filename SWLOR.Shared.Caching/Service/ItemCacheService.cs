@@ -1,5 +1,6 @@
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWNX.Enum;
+using SWLOR.NWN.API.Service;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Caching.Entity;

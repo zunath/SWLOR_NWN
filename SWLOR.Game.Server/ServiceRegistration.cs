@@ -130,6 +130,7 @@ namespace SWLOR.Game.Server
             services.AddSingleton<IChatPluginService, ChatPluginService>();
             services.AddSingleton<ICreaturePluginService, CreaturePluginService>();
             services.AddSingleton<IEventsPluginService, EventsPluginService>();
+            services.AddSingleton<IFeatPluginService, FeatPluginService>();
         }
 
     }

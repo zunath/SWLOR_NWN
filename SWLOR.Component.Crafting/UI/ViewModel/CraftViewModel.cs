@@ -45,6 +45,7 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
         private readonly Lazy<IPerkService> _perkService;
         private readonly Lazy<IStatService> _statService;
         private readonly Lazy<ITargetingService> _targetingService;
+        private readonly Lazy<IItemPluginService> _itemPlugin;
         
         private IItemCacheService ItemCache => _itemCache.Value;
         private IRandomService Random => _random.Value;
@@ -54,6 +55,7 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
         private IPerkService PerkService => _perkService.Value;
         private IStatService StatService => _statService.Value;
         private ITargetingService TargetingService => _targetingService.Value;
+        private IItemPluginService ItemPlugin => _itemPlugin.Value;
 
         public CraftViewModel(IGuiService guiService, ILogger logger, IDatabaseService db, IServiceProvider serviceProvider) : base(guiService)
         {
@@ -70,6 +72,7 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
             _perkService = new Lazy<IPerkService>(() => _serviceProvider.GetRequiredService<IPerkService>());
             _statService = new Lazy<IStatService>(() => _serviceProvider.GetRequiredService<IStatService>());
             _targetingService = new Lazy<ITargetingService>(() => _serviceProvider.GetRequiredService<ITargetingService>());
+            _itemPlugin = new Lazy<IItemPluginService>(() => _serviceProvider.GetRequiredService<IItemPluginService>());
 
             _blueprintBonuses = new BlueprintBonuses(Random);
         }

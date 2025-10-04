@@ -13,12 +13,14 @@ namespace SWLOR.Component.Market.Feature
         private readonly ILogger _logger;
         private readonly IScheduler _scheduler;
         private readonly IEventsPluginService _eventsPlugin;
+        private readonly IItemPluginService _itemPlugin;
 
-        public StoreManagement(ILogger logger, IScheduler scheduler, IEventsPluginService eventsPlugin)
+        public StoreManagement(ILogger logger, IScheduler scheduler, IEventsPluginService eventsPlugin, IItemPluginService itemPlugin)
         {
             _logger = logger;
             _scheduler = scheduler;
             _eventsPlugin = eventsPlugin;
+            _itemPlugin = itemPlugin;
         }
 
         private const int IntervalHours = 1; // Determines the interval at which stores are cleaned. 1 = 1 hour
@@ -92,8 +94,8 @@ namespace SWLOR.Component.Market.Feature
 
             if (increasedPrice > 0)
             {
-                var price = ItemPlugin.GetBaseGoldPieceValue(item) + increasedPrice;
-                ItemPlugin.SetBaseGoldPieceValue(item, price);
+                var price = _itemPlugin.GetBaseGoldPieceValue(item) + increasedPrice;
+                _itemPlugin.SetBaseGoldPieceValue(item, price);
             }
         }
 

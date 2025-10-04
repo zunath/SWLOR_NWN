@@ -23,6 +23,7 @@ This document provides comprehensive rules and guidelines for AI agents working 
 - **Language**: C# (.NET 8)
 - **Architecture**: Component-based with shared domain boundaries
 - **Purpose**: Server-side replacement for NWScript using NWNX_DotNet plugin
+- **Status**: All NWNX plugin services have been refactored from static classes to dependency-injected services
 
 ## Core Architecture Principles
 
@@ -123,6 +124,110 @@ public void CacheData()
 {
     _perkCacheService.CacheData();
     // Business logic implementation
+}
+```
+
+### 6.1 NWNX Plugin Service Architecture - CRITICAL FOR AI AGENTS
+
+#### 6.1.1 Dependency Injection Pattern
+**IMPORTANT**: All NWNX plugin services have been refactored from static classes to dependency-injected services.
+
+- **RULE**: NEVER use static plugin classes (e.g., `AdministrationPlugin`, `AreaPlugin`, etc.)
+- **RULE**: ALWAYS inject plugin services through constructor injection
+- **RULE**: Use the service interfaces (e.g., `IAdministrationPluginService`, `IAreaPluginService`)
+- **RULE**: All plugin services are registered in `ServiceRegistration.cs` under `AddAPIServices()`
+
+#### 6.1.2 Service Registration
+All NWNX plugin services are registered as singletons in `ServiceRegistration.cs`:
+```csharp
+private static void AddAPIServices(IServiceCollection services)
+{
+    // Register NWNX Plugin Services
+    services.AddSingleton<IAdministrationPluginService, AdministrationPluginService>();
+    services.AddSingleton<IAreaPluginService, AreaPluginService>();
+    services.AddSingleton<IChatPluginService, ChatPluginService>();
+    services.AddSingleton<ICreaturePluginService, CreaturePluginService>();
+    services.AddSingleton<IEventsPluginService, EventsPluginService>();
+    services.AddSingleton<IFeatPluginService, FeatPluginService>();
+    services.AddSingleton<IFeedbackPluginService, FeedbackPluginService>();
+    services.AddSingleton<IItemPluginService, ItemPluginService>();
+    services.AddSingleton<IItemPropertyPluginService, ItemPropertyPluginService>();
+    services.AddSingleton<IObjectPluginService, ObjectPluginService>();
+    services.AddSingleton<IPlayerPluginService, PlayerPluginService>();
+    services.AddSingleton<IProfilerPluginService, ProfilerPluginService>();
+    services.AddSingleton<IUtilPluginService, UtilPluginService>();
+    services.AddSingleton<IVisibilityPluginService, VisibilityPluginService>();
+    services.AddSingleton<IWeaponPluginService, WeaponPluginService>();
+}
+```
+
+#### 6.1.3 Correct Usage Pattern
+**✅ CORRECT**: Inject plugin services through constructor:
+```csharp
+public class MyService
+{
+    private readonly IAdministrationPluginService _administrationPlugin;
+    private readonly IAreaPluginService _areaPlugin;
+    
+    public MyService(
+        IAdministrationPluginService administrationPlugin,
+        IAreaPluginService areaPlugin)
+    {
+        _administrationPlugin = administrationPlugin;
+        _areaPlugin = areaPlugin;
+    }
+    
+    public void DoSomething()
+    {
+        // Use injected services
+        _administrationPlugin.BanPlayer(player, "Reason");
+        _areaPlugin.SetAreaTransitionTarget(area, targetArea);
+    }
+}
+```
+
+**❌ FORBIDDEN**: Using static plugin classes:
+```csharp
+// DON'T DO THIS - Static classes no longer exist
+AdministrationPlugin.BanPlayer(player, "Reason"); // WRONG!
+AreaPlugin.SetAreaTransitionTarget(area, targetArea); // WRONG!
+```
+
+#### 6.1.4 Lazy Loading for Circular Dependencies
+When circular dependencies exist, use lazy loading:
+```csharp
+public class MyViewModel
+{
+    private readonly IServiceProvider _serviceProvider;
+    private readonly Lazy<IItemPluginService> _itemPlugin;
+    
+    public MyViewModel(IServiceProvider serviceProvider)
+    {
+        _serviceProvider = serviceProvider;
+        _itemPlugin = new Lazy<IItemPluginService>(() => 
+            _serviceProvider.GetRequiredService<IItemPluginService>());
+    }
+    
+    public void DoSomething()
+    {
+        // Use lazy-loaded service
+        _itemPlugin.Value.CreateItem(itemType, 1);
+    }
+}
+```
+
+#### 6.1.5 Static Context Resolution
+For static methods that cannot use constructor injection, use `ServiceContainer`:
+```csharp
+public static class StaticHelper
+{
+    public static void DoSomething()
+    {
+        var profilerPlugin = ServiceContainer.GetService<IProfilerPluginService>();
+        profilerPlugin.PushPerfScope("MyScope");
+        // ... do work
+        profilerPlugin.PopPerfScope();
+    }
 }
 ```
 
@@ -385,6 +490,8 @@ This method automatically:
    - `VisibilityPlugin` → `VisibilityPluginMock`
    - `WeaponPlugin` → `WeaponPluginMock`
 
+**IMPORTANT**: All NWNX plugin services are now registered as dependency-injected services in `ServiceRegistration.cs` under the `AddAPIServices()` method. The static wrapper classes have been removed and replaced with proper service interfaces and implementations.
+
 #### 19.5 Common AI Agent Mistakes - DO NOT DO THESE
 **❌ WRONG**: Trying to mock NWScript manually
 ```csharp
@@ -432,21 +539,32 @@ protected static T GetMockData<T>(string key) { ... } // WRONG!
 ```
 
 #### 19.6 What You CAN Mock with NSubstitute
-**✅ CORRECT**: Mock other services (database, cache, etc.)
+**✅ CORRECT**: Mock other services (database, cache, etc.) and NWNX plugin services
 ```csharp
 [SetUp]
 public void SetUp()
 {
-    InitializeMockNWScript(); // Handles NWScript/NWNX automatically
+    InitializeMockNWScript(); // Handles NWScript automatically
     
     // Mock OTHER services with NSubstitute
     _mockDatabaseService = Substitute.For<IDatabaseService>();
     _mockCacheService = Substitute.For<ICacheService>();
     _mockConfigService = Substitute.For<IConfigService>();
     
-    _service = new MyService(_mockDatabaseService, _mockCacheService, _mockConfigService);
+    // Mock NWNX plugin services with NSubstitute
+    _mockAdministrationPlugin = Substitute.For<IAdministrationPluginService>();
+    _mockAreaPlugin = Substitute.For<IAreaPluginService>();
+    
+    _service = new MyService(
+        _mockDatabaseService, 
+        _mockCacheService, 
+        _mockConfigService,
+        _mockAdministrationPlugin,
+        _mockAreaPlugin);
 }
 ```
+
+**IMPORTANT**: For tests that use NWNX plugin services, you MUST mock them with NSubstitute since the static classes no longer exist. The `InitializeMockNWScript()` method only handles NWScript mocking, not NWNX plugin services.
 
 #### 19.7 Test Isolation and Cleanup
 - **TestBase automatically resets mock state** between tests
@@ -527,6 +645,7 @@ Before submitting any changes, verify:
 - [ ] **CRITICAL**: No shared projects reference component projects
 - [ ] **CRITICAL**: No component projects reference other component projects
 - [ ] **CRITICAL**: No shared/component projects reference test projects
+- [ ] **CRITICAL**: No static plugin class usage (use dependency injection instead)
 - [ ] No cross-component dependencies
 - [ ] No regular C# async/await usage (use SWLOR.Shared.Core.Async only)
 - [ ] No hardcoded data values (use config/database/enums instead)
@@ -541,6 +660,8 @@ Before submitting any changes, verify:
 - [ ] Dependencies injected through constructor
 - [ ] No circular dependencies
 - [ ] Performance considerations addressed
+- [ ] NWNX plugin services injected through constructor (not static calls)
+- [ ] Plugin services properly mocked in unit tests with NSubstitute
 
 ## Emergency Override Rules
 

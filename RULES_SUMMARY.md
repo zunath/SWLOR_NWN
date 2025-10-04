@@ -22,6 +22,8 @@ This is a summary of the most critical rules. For complete details, see `AI_AGEN
 - ❌ Creating manual NWScript mocks
 - ❌ Modifying TestBase class or adding methods to it
 - ❌ Adding `using SWLOR.NWN.API.Service;` for NWScript calls (NWScript is global)
+- ❌ Using static plugin classes (AdministrationPlugin, AreaPlugin, etc.)
+- ❌ Static calls to NWNX plugin services
 
 ## ✅ REQUIRED PATTERNS
 - ✅ Separate event handlers from services
@@ -34,6 +36,9 @@ This is a summary of the most critical rules. For complete details, see `AI_AGEN
 - ✅ Use direct NWScript static calls in tests
 - ✅ Mock only non-NWScript services with NSubstitute
 - ✅ Use NWScript without adding using statements (it's global)
+- ✅ Inject NWNX plugin services through constructor
+- ✅ Use service interfaces (IAdministrationPluginService, etc.)
+- ✅ Mock NWNX plugin services with NSubstitute in tests
 
 ## 📋 PRE-COMMIT CHECKLIST
 - [ ] No cross-project dependencies
@@ -47,14 +52,18 @@ This is a summary of the most critical rules. For complete details, see `AI_AGEN
 - [ ] Tests call InitializeMockNWScript()
 - [ ] No manual NWScript/NWNX mocking
 - [ ] TestBase class not modified
+- [ ] No static plugin class usage
+- [ ] NWNX plugin services injected via constructor
+- [ ] Plugin services mocked with NSubstitute in tests
 
 ## 🧪 TESTING FRAMEWORK - CRITICAL FOR AI AGENTS
 
 ### How Testing Works in SWLOR
-1. **TestBase.InitializeMockNWScript()** automatically replaces ALL NWScript and NWNX services with mocks
+1. **TestBase.InitializeMockNWScript()** automatically replaces NWScript with mocks
 2. **Use direct NWScript static calls** in tests (e.g., `NWScript.CreateArea()`)
-3. **Mock other services** with NSubstitute (database, cache, etc.)
+3. **Mock other services** with NSubstitute (database, cache, NWNX plugin services, etc.)
 4. **NEVER** call `GetMockService()` or create manual NWScript mocks
+5. **IMPORTANT**: NWNX plugin services must be mocked with NSubstitute (static classes no longer exist)
 
 ### Example Test Pattern
 ```csharp
@@ -64,10 +73,13 @@ public class MyServiceTests : TestBase
     [SetUp]
     public void SetUp()
     {
-        InitializeMockNWScript(); // Handles ALL NWScript/NWNX mocking
+        InitializeMockNWScript(); // Handles NWScript mocking
         
+        // Mock other services with NSubstitute
         _mockDatabaseService = Substitute.For<IDatabaseService>();
-        _service = new MyService(_mockDatabaseService);
+        _mockAdministrationPlugin = Substitute.For<IAdministrationPluginService>();
+        
+        _service = new MyService(_mockDatabaseService, _mockAdministrationPlugin);
     }
     
     [Test]

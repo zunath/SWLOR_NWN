@@ -17,6 +17,7 @@ This is a summary of the most critical rules. For complete details, see `AI_AGEN
 - ❌ Services not registered as singletons
 - ❌ Using Moq instead of NSubstitute
 - ❌ Using MSTest/xUnit instead of NUnit
+- ❌ Calling GetMockService() in tests (TestBase handles mocking automatically)
 
 ## ✅ REQUIRED PATTERNS
 - ✅ Separate event handlers from services
@@ -25,6 +26,7 @@ This is a summary of the most critical rules. For complete details, see `AI_AGEN
 - ✅ Use NSubstitute + NUnit for testing
 - ✅ Store data in config/database, not hardcoded
 - ✅ Use proper using statement organization
+- ✅ Use TestBase for automatic NWScript/NWNX mocking (no GetMockService calls)
 
 ## 📋 PRE-COMMIT CHECKLIST
 - [ ] No cross-project dependencies

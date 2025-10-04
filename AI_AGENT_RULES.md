@@ -298,6 +298,9 @@ namespace SWLOR.Component.Perk.Service
 - **RULE**: Use NSubstitute for mocking and NUnit for unit testing framework
 - **RULE**: All unit tests MUST be in corresponding Test projects (e.g., `SWLOR.Test.Component.Perk`)
 - **RULE**: NEVER add mocks to NWScriptServiceMock that don't have equivalent methods in the production NWScriptService
+- **RULE**: NWScript and NWNX services are automatically mocked by TestBase - DO NOT call GetMockService() or create manual mocks
+- **RULE**: Use direct NWScript static calls in tests (e.g., `NWScript.GetFirstArea().Returns(1u)`) - TestBase handles the underlying mock setup
+- **RULE**: TestBase.InitializeMockNWScript() automatically sets up all NWScript and NWNX plugin mocks - no additional setup needed
 
 ## Documentation Rules
 

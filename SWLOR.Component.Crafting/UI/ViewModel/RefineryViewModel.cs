@@ -29,6 +29,7 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
             _perkService = new Lazy<IPerkService>(() => _serviceProvider.GetRequiredService<IPerkService>());
             _skillService = new Lazy<ISkillService>(() => _serviceProvider.GetRequiredService<ISkillService>());
             _targetingService = new Lazy<ITargetingService>(() => _serviceProvider.GetRequiredService<ITargetingService>());
+            _objectPlugin = new Lazy<IObjectPluginService>(() => _serviceProvider.GetRequiredService<IObjectPluginService>());
         }
 
         // Lazy-loaded services to break circular dependencies
@@ -36,11 +37,13 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
         private readonly Lazy<IPerkService> _perkService;
         private readonly Lazy<ISkillService> _skillService;
         private readonly Lazy<ITargetingService> _targetingService;
+        private readonly Lazy<IObjectPluginService> _objectPlugin;
         
         private IItemCacheService ItemCache => _itemCache.Value;
         private IPerkService PerkService => _perkService.Value;
         private ISkillService SkillService => _skillService.Value;
         private ITargetingService TargetingService => _targetingService.Value;
+        private IObjectPluginService ObjectPlugin => _objectPlugin.Value;
         private class OreDetail
         {
             public int RequiredLevel { get; }

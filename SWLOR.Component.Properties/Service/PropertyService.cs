@@ -36,6 +36,7 @@ namespace SWLOR.Component.Properties.Service
         private readonly StructureChangedAction _structureChangedAction;
         private readonly IServiceProvider _serviceProvider;
         private readonly IEventsPluginService _eventsPlugin;
+        private readonly IObjectPluginService _objectPlugin;
         private readonly Dictionary<StructureType, StructureAttribute> _activeStructures = new();
         private readonly Dictionary<PropertyType, PropertyTypeAttribute> _propertyTypes = new();
         private readonly Dictionary<PropertyLayoutType, PropertyLayout> _activeLayouts = new();
@@ -70,7 +71,8 @@ namespace SWLOR.Component.Properties.Service
             IDialogService dialogService,
             StructureChangedAction structureChangedAction,
             IServiceProvider serviceProvider,
-            IEventsPluginService eventsPlugin)
+            IEventsPluginService eventsPlugin,
+            IObjectPluginService objectPlugin)
         {
             _logger = logger;
             _db = db;
@@ -81,6 +83,7 @@ namespace SWLOR.Component.Properties.Service
             _structureChangedAction = structureChangedAction;
             _serviceProvider = serviceProvider;
             _eventsPlugin = eventsPlugin;
+            _objectPlugin = objectPlugin;
             _structureChangedActions = _structureChangedAction.BuildSpawnActions();
         }
 
@@ -1495,7 +1498,7 @@ namespace SWLOR.Component.Properties.Service
             {
                 CustomName = structureDetail.Name,
                 PropertyType = PropertyType.Structure,
-                SerializedItem = ObjectPlugin.Serialize(item),
+                SerializedItem = _objectPlugin.Serialize(item),
                 OwnerPlayerId = parentProperty.OwnerPlayerId,
                 ParentPropertyId = parentPropertyId,
                 StructureType = type,

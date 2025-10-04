@@ -26,6 +26,7 @@ namespace SWLOR.Component.Inventory.UI.ViewModel
         private readonly Lazy<IItemService> _itemService;
         private readonly Lazy<IPerkService> _perkService;
         private readonly Lazy<ITargetingService> _targetingService;
+        private readonly Lazy<IObjectPluginService> _objectPlugin;
 
         public BankViewModel(IGuiService guiService, IDatabaseService db, IServiceProvider serviceProvider) : base(guiService)
         {
@@ -36,12 +37,14 @@ namespace SWLOR.Component.Inventory.UI.ViewModel
             _itemService = new Lazy<IItemService>(() => _serviceProvider.GetRequiredService<IItemService>());
             _perkService = new Lazy<IPerkService>(() => _serviceProvider.GetRequiredService<IPerkService>());
             _targetingService = new Lazy<ITargetingService>(() => _serviceProvider.GetRequiredService<ITargetingService>());
+            _objectPlugin = new Lazy<IObjectPluginService>(() => _serviceProvider.GetRequiredService<IObjectPluginService>());
         }
 
         // Lazy-loaded services to break circular dependencies
         private IItemService ItemService => _itemService.Value;
         private IPerkService PerkService => _perkService.Value;
         private ITargetingService TargetingService => _targetingService.Value;
+        private IObjectPluginService ObjectPlugin => _objectPlugin.Value;
         
         /// <summary>
         /// When a bank placeable is used, display this UI view.

@@ -40,6 +40,7 @@ namespace SWLOR.Component.Market.UI.ViewModel
         // Lazy-loaded services to break circular dependencies
         private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
         private IPlayerMarketService PlayerMarketService => _serviceProvider.GetRequiredService<IPlayerMarketService>();
+        private IObjectPluginService ObjectPlugin => _serviceProvider.GetRequiredService<IObjectPluginService>();
         
         private const int ListingsPerPage = 20;
 

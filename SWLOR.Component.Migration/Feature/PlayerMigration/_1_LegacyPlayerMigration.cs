@@ -29,6 +29,7 @@ namespace SWLOR.Component.Migration.Feature.PlayerMigration
             IDatabaseService db, 
             IServiceProvider serviceProvider,
             ICreaturePluginService creaturePlugin)
+            : base(serviceProvider)
         {
             _db = db;
             _serviceProvider = serviceProvider;

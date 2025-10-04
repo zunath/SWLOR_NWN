@@ -32,6 +32,7 @@ namespace SWLOR.Component.Combat.Service
         private readonly IStatusEffectService _statusEffectService;
         private readonly IEventAggregator _eventAggregator;
         private readonly ICreaturePluginService _creaturePlugin;
+        private readonly IObjectPluginService _objectPlugin;
         
         // Lazy-loaded services to break circular dependencies
         private readonly Lazy<ISkillService> _skillService;
@@ -46,7 +47,8 @@ namespace SWLOR.Component.Combat.Service
             IServiceProvider serviceProvider, 
             IStatusEffectService statusEffectService,
             IEventAggregator eventAggregator,
-            ICreaturePluginService creaturePlugin)
+            ICreaturePluginService creaturePlugin,
+            IObjectPluginService objectPlugin)
         {
             _logger = logger;
             _db = db;
@@ -54,6 +56,7 @@ namespace SWLOR.Component.Combat.Service
             _statusEffectService = statusEffectService;
             _eventAggregator = eventAggregator;
             _creaturePlugin = creaturePlugin;
+            _objectPlugin = objectPlugin;
             
             // Initialize lazy services
             _skillService = new Lazy<ISkillService>(() => _serviceProvider.GetRequiredService<ISkillService>());
@@ -1935,8 +1938,8 @@ namespace SWLOR.Component.Combat.Service
 
             if (maxHP > 0)
             {
-                ObjectPlugin.SetMaxHitPoints(self, maxHP);
-                ObjectPlugin.SetCurrentHitPoints(self, maxHP);
+                _objectPlugin.SetMaxHitPoints(self, maxHP);
+                _objectPlugin.SetCurrentHitPoints(self, maxHP);
             }
 
             SetLocalInt(self, "FP", GetMaxFP(self));

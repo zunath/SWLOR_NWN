@@ -28,6 +28,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
         private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
         private IPropertyService PropertyService => _serviceProvider.GetRequiredService<IPropertyService>();
         private ITargetingService TargetingService => _serviceProvider.GetRequiredService<ITargetingService>();
+        private IObjectPluginService ObjectPlugin => _serviceProvider.GetRequiredService<IObjectPluginService>();
 
         public PropertyItemStorageViewModel(IGuiService guiService, IDatabaseService db, IServiceProvider serviceProvider) : base(guiService)
         {

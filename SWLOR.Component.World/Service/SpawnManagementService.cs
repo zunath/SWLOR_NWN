@@ -19,6 +19,7 @@ namespace SWLOR.Component.World.Service
         private readonly ISpawnCacheService _spawnCache;
         private readonly ISpawnProcessingService _spawnProcessing;
         private readonly IAreaPluginService _areaPlugin;
+        private readonly IObjectPluginService _objectPlugin;
 
         private readonly Dictionary<Guid, SpawnDetail> _spawns = new();
         private readonly Dictionary<uint, List<Guid>> _allSpawnsByArea = new();
@@ -28,13 +29,15 @@ namespace SWLOR.Component.World.Service
             ISpawnCalculationService spawnCalculation,
             ISpawnCacheService spawnCache,
             ISpawnProcessingService spawnProcessing,
-            IAreaPluginService areaPlugin)
+            IAreaPluginService areaPlugin,
+            IObjectPluginService objectPlugin)
         {
             _logger = logger;
             _spawnCalculation = spawnCalculation;
             _spawnCache = spawnCache;
             _spawnProcessing = spawnProcessing;
             _areaPlugin = areaPlugin;
+            _objectPlugin = objectPlugin;
         }
 
         public void StoreSpawns()
@@ -100,7 +103,7 @@ namespace SWLOR.Component.World.Service
 
                         var detail = new SpawnDetail
                         {
-                            SerializedObject = ObjectPlugin.Serialize(obj),
+                            SerializedObject = _objectPlugin.Serialize(obj),
                             X = position.X,
                             Y = position.Y,
                             Z = position.Z,

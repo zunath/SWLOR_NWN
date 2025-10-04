@@ -20,8 +20,9 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
             _serviceProvider = serviceProvider;
         }
 
-        // Lazy-loaded service to break circular dependency
+        // Lazy-loaded services to break circular dependencies
         private IFishingService FishingService => _serviceProvider.GetRequiredService<IFishingService>();
+        private IObjectPluginService ObjectPlugin => _serviceProvider.GetRequiredService<IObjectPluginService>();
 
         public Dictionary<string, ItemDetail> BuildItems()
         {

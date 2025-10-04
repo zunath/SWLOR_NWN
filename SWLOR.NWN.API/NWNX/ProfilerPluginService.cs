@@ -1,10 +1,15 @@
 ﻿using SWLOR.NWN.API.NWNX.Enum;
-using SWLOR.NWN.API.Service;
 
 namespace SWLOR.NWN.API.NWNX
 {
     public class ProfilerPluginService : IProfilerPluginService
     {
+        private readonly IObjectPluginService _objectPlugin;
+
+        public ProfilerPluginService(IObjectPluginService objectPlugin)
+        {
+            _objectPlugin = objectPlugin;
+        }
         /// <inheritdoc/>
         public void PushPerfScope(
             string name, 
@@ -42,7 +47,7 @@ namespace SWLOR.NWN.API.NWNX
         public void PushPerfScope(uint target, string scriptName)
         {
             var internalObjectType = GetIsObjectValid(target)
-                ? ObjectPlugin.GetInternalObjectType(target) 
+                ? _objectPlugin.GetInternalObjectType(target) 
                 : InternalObjectType.Invalid;
             var objectTypeName = internalObjectType == InternalObjectType.Invalid 
                 ? "(unknown)" 

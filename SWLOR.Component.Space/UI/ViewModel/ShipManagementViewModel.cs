@@ -36,6 +36,7 @@ namespace SWLOR.Component.Space.UI.ViewModel
         private ITargetingService TargetingService => _serviceProvider.GetRequiredService<ITargetingService>();
         private ISpaceService SpaceService => _serviceProvider.GetRequiredService<ISpaceService>();
         private IAreaService AreaService => _serviceProvider.GetRequiredService<IAreaService>();
+        private IObjectPluginService ObjectPlugin => _serviceProvider.GetRequiredService<IObjectPluginService>();
 
         public ShipManagementViewModel(IGuiService guiService, IDatabaseService db, IServiceProvider serviceProvider) : base(guiService)
         {

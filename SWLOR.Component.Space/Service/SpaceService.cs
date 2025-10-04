@@ -45,6 +45,7 @@ namespace SWLOR.Component.Space.Service
         private readonly IAreaPluginService _areaPlugin;
         private readonly ICreaturePluginService _creaturePlugin;
         private readonly IEventsPluginService _eventsPlugin;
+        private readonly IObjectPluginService _objectPlugin;
 
         public SpaceService(
             ILogger logger,
@@ -55,7 +56,8 @@ namespace SWLOR.Component.Space.Service
             IEventAggregator eventAggregator,
             IAreaPluginService areaPlugin,
             ICreaturePluginService creaturePlugin,
-            IEventsPluginService eventsPlugin)
+            IEventsPluginService eventsPlugin,
+            IObjectPluginService objectPlugin)
         {
             _logger = logger;
             _db = db;
@@ -66,6 +68,7 @@ namespace SWLOR.Component.Space.Service
             _areaPlugin = areaPlugin;
             _creaturePlugin = creaturePlugin;
             _eventsPlugin = eventsPlugin;
+            _objectPlugin = objectPlugin;
             
             // Initialize lazy services
             _abilityService = new Lazy<IAbilityService>(() => _serviceProvider.GetRequiredService<IAbilityService>());
@@ -1835,7 +1838,7 @@ namespace SWLOR.Component.Space.Service
                 {
                     if (_random.D100(1) <= ChanceToDropModule)
                     {
-                        var deserialized = ObjectPlugin.Deserialize(shipModule.SerializedItem);
+                        var deserialized = _objectPlugin.Deserialize(shipModule.SerializedItem);
                         CopyObject(deserialized, deathLocation);
                         DestroyObject(deserialized);
                     }
@@ -1849,7 +1852,7 @@ namespace SWLOR.Component.Space.Service
                 {
                     if (_random.D100(1) <= ChanceToDropModule)
                     {
-                        var deserialized = ObjectPlugin.Deserialize(shipModule.SerializedItem);
+                        var deserialized = _objectPlugin.Deserialize(shipModule.SerializedItem);
                         CopyObject(deserialized, deathLocation);
                         DestroyObject(deserialized);
                     }

@@ -36,10 +36,12 @@ namespace SWLOR.Component.Associate.UI.ViewModel
         private readonly Lazy<IPerkService> _perkService;
         private readonly Lazy<IItemService> _itemService;
         private readonly Lazy<IBeastMasteryService> _beastMasteryService;
+        private readonly Lazy<IObjectPluginService> _objectPlugin;
         
         private IPerkService PerkService => _perkService.Value;
         private IItemService ItemService => _itemService.Value;
         private IBeastMasteryService BeastMasteryService => _beastMasteryService.Value;
+        private IObjectPluginService ObjectPlugin => _objectPlugin.Value;
 
         public IncubatorViewModel(
             IGuiService guiService, 
@@ -60,6 +62,7 @@ namespace SWLOR.Component.Associate.UI.ViewModel
             _perkService = new Lazy<IPerkService>(() => _serviceProvider.GetRequiredService<IPerkService>());
             _itemService = new Lazy<IItemService>(() => _serviceProvider.GetRequiredService<IItemService>());
             _beastMasteryService = new Lazy<IBeastMasteryService>(() => _serviceProvider.GetRequiredService<IBeastMasteryService>());
+            _objectPlugin = new Lazy<IObjectPluginService>(() => _serviceProvider.GetRequiredService<IObjectPluginService>());
         }
         public const string PartialElement = "PARTIAL_VIEW";
         public const string NewJobPartial = "NEW_JOB_PARTIAL";

@@ -38,19 +38,22 @@ namespace SWLOR.Component.Associate.Service
         private readonly IServiceProvider _serviceProvider;
         private readonly ICreaturePluginService _creaturePlugin;
         private readonly IEventsPluginService _eventsPlugin;
+        private readonly IObjectPluginService _objectPlugin;
 
         public BeastMasteryService(
             IDatabaseService db,
             IRandomService random,
             IServiceProvider serviceProvider,
             ICreaturePluginService creaturePlugin,
-            IEventsPluginService eventsPlugin)
+            IEventsPluginService eventsPlugin,
+            IObjectPluginService objectPlugin)
         {
             _db = db;
             _random = random;
             _serviceProvider = serviceProvider;
             _creaturePlugin = creaturePlugin;
             _eventsPlugin = eventsPlugin;
+            _objectPlugin = objectPlugin;
             
             // Initialize lazy services
             _cacheService = new Lazy<IGenericCacheService>(() => _serviceProvider.GetRequiredService<IGenericCacheService>());
@@ -402,7 +405,7 @@ namespace SWLOR.Component.Associate.Service
             BiowareXP2.IPSafeAddItemProperty(claw, ItemPropertyCustom(ItemPropertyType.DamageStat, (int)beastDetail.DamageStat), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
             BiowareXP2.IPSafeAddItemProperty(claw, ItemPropertyCustom(ItemPropertyType.AccuracyStat, (int)beastDetail.AccuracyStat), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
             
-            ObjectPlugin.SetMaxHitPoints(beast, beastDetail.Levels[dbBeast.Level].HP);
+            _objectPlugin.SetMaxHitPoints(beast, beastDetail.Levels[dbBeast.Level].HP);
             _creaturePlugin.SetRawAbilityScore(beast, AbilityType.Might, level.Stats[AbilityType.Might]);
             _creaturePlugin.SetRawAbilityScore(beast, AbilityType.Perception, level.Stats[AbilityType.Perception]);
             _creaturePlugin.SetRawAbilityScore(beast, AbilityType.Vitality, level.Stats[AbilityType.Vitality]);

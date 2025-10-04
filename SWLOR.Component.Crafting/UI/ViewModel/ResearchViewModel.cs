@@ -45,6 +45,7 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
             _skillService = new Lazy<ISkillService>(() => _serviceProvider.GetRequiredService<ISkillService>());
             _craftService = new Lazy<ICraftService>(() => _serviceProvider.GetRequiredService<ICraftService>());
             _timeService = new Lazy<ITimeService>(() => _serviceProvider.GetRequiredService<ITimeService>());
+            _objectPlugin = new Lazy<IObjectPluginService>(() => _serviceProvider.GetRequiredService<IObjectPluginService>());
 
             _blueprintBonuses = new BlueprintBonuses(Random);
         }
@@ -57,6 +58,7 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
         private readonly Lazy<ISkillService> _skillService;
         private readonly Lazy<ICraftService> _craftService;
         private readonly Lazy<ITimeService> _timeService;
+        private readonly Lazy<IObjectPluginService> _objectPlugin;
         
         private IItemCacheService ItemCache => _itemCache.Value;
         private IRandomService Random => _random.Value;
@@ -65,6 +67,7 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
         private ISkillService SkillService => _skillService.Value;
         private ICraftService CraftService => _craftService.Value;
         private ITimeService TimeService => _timeService.Value;
+        private IObjectPluginService ObjectPlugin => _objectPlugin.Value;
         
         private class ResearchJobDetails
         {

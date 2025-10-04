@@ -13,10 +13,12 @@ namespace SWLOR.Component.Character.UI.ViewModel
     public class OutfitViewModel: GuiViewModelBase<OutfitViewModel, IGuiPayload>
     {
         private readonly IDatabaseService _db;
+        private readonly IObjectPluginService _objectPlugin;
 
-        public OutfitViewModel(IGuiService guiService, IDatabaseService db) : base(guiService)
+        public OutfitViewModel(IGuiService guiService, IDatabaseService db, IObjectPluginService objectPlugin) : base(guiService)
         {
             _db = db;
+            _objectPlugin = objectPlugin;
         }
         
         private const int MaxOutfits = 25;
@@ -194,7 +196,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
                     return;
                 }
 
-                dbOutfit.Data = ObjectPlugin.Serialize(outfit);
+                dbOutfit.Data = _objectPlugin.Serialize(outfit);
 
 
                 dbOutfit.NeckId = GetItemAppearance(outfit, ItemModelColorType.ArmorModel, (int)ItemAppearanceArmorType.Neck);
@@ -266,7 +268,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
 
             // Get the temporary storage placeable and deserialize the outfit into it.
             var tempStorage = GetObjectByTag("OUTFIT_BARREL");
-            var deserialized = ObjectPlugin.Deserialize(dbOutfit.Data);
+            var deserialized = _objectPlugin.Deserialize(dbOutfit.Data);
             var copy = CopyItem(armor, tempStorage, true);
 
             uint CopyColors(ItemAppearanceArmorType part)

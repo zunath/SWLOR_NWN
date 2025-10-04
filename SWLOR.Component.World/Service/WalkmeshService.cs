@@ -24,6 +24,7 @@ namespace SWLOR.Component.World.Service
 
         // Lazy-loaded service to break circular dependency
         private IRandomService Random => _serviceProvider.GetRequiredService<IRandomService>();
+        private IObjectPluginService ObjectPlugin => _serviceProvider.GetRequiredService<IObjectPluginService>();
         private Dictionary<string, List<Vector3>> _walkmeshesByArea = new();
         private const int AreaBakeStep = 2;
         private bool _bakingRan;

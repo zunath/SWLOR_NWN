@@ -33,6 +33,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
         // Lazy-loaded services to break circular dependencies
         private PropertyService Property => _serviceProvider.GetRequiredService<PropertyService>();
         private IGuiService GuiService => _serviceProvider.GetRequiredService<IGuiService>();
+        private IObjectPluginService ObjectPlugin => _serviceProvider.GetRequiredService<IObjectPluginService>();
         
         private const int StructuresPerPage = 20;
         private int SelectedStructureIndex { get; set; }

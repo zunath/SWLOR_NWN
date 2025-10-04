@@ -45,6 +45,7 @@ namespace SWLOR.Component.Associate.Service
         private readonly DroidWorshipfulPersonality _worshipfulPersonality;
         private readonly ICreaturePluginService _creaturePlugin;
         private readonly IEventsPluginService _eventsPlugin;
+        private readonly IObjectPluginService _objectPlugin;
 
         public string DroidResref => "pc_droid";
         public string DroidControlItemResref => "droid_control";
@@ -64,7 +65,8 @@ namespace SWLOR.Component.Associate.Service
             DroidBlandPersonality blandPersonality,
             DroidWorshipfulPersonality worshipfulPersonality,
             ICreaturePluginService creaturePlugin,
-            IEventsPluginService eventsPlugin)
+            IEventsPluginService eventsPlugin,
+            IObjectPluginService objectPlugin)
         {
             _serviceProvider = serviceProvider;
             _geekyPersonality = geekyPersonality;
@@ -75,6 +77,7 @@ namespace SWLOR.Component.Associate.Service
             _worshipfulPersonality = worshipfulPersonality;
             _creaturePlugin = creaturePlugin;
             _eventsPlugin = eventsPlugin;
+            _objectPlugin = objectPlugin;
             
             // Initialize lazy services
             _guiService = new Lazy<IGuiService>(() => _serviceProvider.GetRequiredService<IGuiService>());
@@ -692,8 +695,8 @@ namespace SWLOR.Component.Associate.Service
                 : details.CustomName);
 
             // Raw stats
-            ObjectPlugin.SetMaxHitPoints(droid, details.HP);
-            ObjectPlugin.SetCurrentHitPoints(droid, details.HP);
+            _objectPlugin.SetMaxHitPoints(droid, details.HP);
+            _objectPlugin.SetCurrentHitPoints(droid, details.HP);
             _creaturePlugin.SetRawAbilityScore(droid, AbilityType.Might, details.MGT);
             _creaturePlugin.SetRawAbilityScore(droid, AbilityType.Perception, details.PER);
             _creaturePlugin.SetRawAbilityScore(droid, AbilityType.Vitality, details.VIT);
@@ -760,8 +763,8 @@ namespace SWLOR.Component.Associate.Service
 
             foreach (var (slot, serialized) in constructedDroid.EquippedItems)
             {
-                var deserialized = ObjectPlugin.Deserialize(serialized);
-                ObjectPlugin.AcquireItem(droid, deserialized);
+                var deserialized = _objectPlugin.Deserialize(serialized);
+                _objectPlugin.AcquireItem(droid, deserialized);
                 SetDroppableFlag(deserialized, false);
 
                 AssignCommand(droid, () => ActionEquipItem(deserialized, slot));
@@ -769,11 +772,11 @@ namespace SWLOR.Component.Associate.Service
 
             foreach (var (id, serialized) in constructedDroid.Inventory)
             {
-                var deserialized = ObjectPlugin.Deserialize(serialized);
+                var deserialized = _objectPlugin.Deserialize(serialized);
                 if(!GetIsObjectValid(deserialized))
                     continue;
 
-                ObjectPlugin.AcquireItem(droid, deserialized);
+                _objectPlugin.AcquireItem(droid, deserialized);
                 SetDroppableFlag(deserialized, false);
             }
 
@@ -1016,7 +1019,7 @@ namespace SWLOR.Component.Associate.Service
             if (wasAcquired)
             {
                 var itemId = GetDroidItemId(item);
-                constructedDroid.Inventory[itemId] = ObjectPlugin.Serialize(item);
+                constructedDroid.Inventory[itemId] = _objectPlugin.Serialize(item);
                 SetDroppableFlag(item, false);
             }
             else

@@ -20,6 +20,7 @@ namespace SWLOR.Component.Migration.Feature.ServerMigration
         private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
         
         public _2_LegacyServerMigration(IDatabaseService db, IServiceProvider serviceProvider)
+            : base(serviceProvider)
         {
             _db = db;
             _serviceProvider = serviceProvider;

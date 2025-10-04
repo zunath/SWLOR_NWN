@@ -5,7 +5,14 @@ namespace SWLOR.NWN.API.Service
 {
     public static class ProfilerPlugin
     {
-        private static IProfilerPluginService _service = new ProfilerPluginService();
+        private static IProfilerPluginService _service = new ProfilerPluginService(GetObjectPluginService());
+
+        private static IObjectPluginService GetObjectPluginService()
+        {
+            // This is a temporary solution for the static wrapper
+            // In a real scenario, this would be injected through DI
+            return new ObjectPluginService();
+        }
 
         internal static void SetService(IProfilerPluginService service)
         {

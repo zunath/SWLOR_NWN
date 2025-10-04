@@ -24,6 +24,7 @@ namespace SWLOR.Component.World.Service
         private readonly ISpawnCacheService _spawnCache;
         private readonly ICreaturePluginService _creaturePlugin;
         private readonly IEventsPluginService _eventsPlugin;
+        private readonly IObjectPluginService _objectPlugin;
 
         public SpawnCreationService(
             ILogger logger,
@@ -32,7 +33,8 @@ namespace SWLOR.Component.World.Service
             IAIService ai,
             ISpawnCacheService spawnCache,
             ICreaturePluginService creaturePlugin,
-            IEventsPluginService eventsPlugin)
+            IEventsPluginService eventsPlugin,
+            IObjectPluginService objectPlugin)
         {
             _logger = logger;
             _walkmesh = walkmesh;
@@ -41,6 +43,7 @@ namespace SWLOR.Component.World.Service
             _spawnCache = spawnCache;
             _creaturePlugin = creaturePlugin;
             _eventsPlugin = eventsPlugin;
+            _objectPlugin = objectPlugin;
         }
 
         public uint CreateSpawnObject(
@@ -56,11 +59,11 @@ namespace SWLOR.Component.World.Service
             // Deserialize and add it to the area.
             if (!string.IsNullOrWhiteSpace(serializedObject))
             {
-                var deserialized = ObjectPlugin.Deserialize(serializedObject);
+                var deserialized = _objectPlugin.Deserialize(serializedObject);
                 var finalPosition = useRandomSpawnLocation ?
                     GetPositionFromLocation(_walkmesh.GetRandomLocation(area)) :
                     position;
-                ObjectPlugin.AddToArea(deserialized, area, finalPosition);
+                _objectPlugin.AddToArea(deserialized, area, finalPosition);
 
                 var finalFacing = useRandomSpawnLocation ? _random.Next(360) : facing;
                 AssignCommand(deserialized, () => SetFacing(finalFacing));

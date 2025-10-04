@@ -31,6 +31,7 @@ namespace SWLOR.Component.Migration.Model
 
         // Lazy-loaded service to break circular dependency
         protected ISpaceService SpaceService => ServiceProvider.GetRequiredService<ISpaceService>();
+        protected IObjectPluginService ObjectPlugin => ServiceProvider.GetRequiredService<IObjectPluginService>();
         protected void GrantRebuildTokenToAllPlayers()
         {
             var query = new DBQuery<Player>();

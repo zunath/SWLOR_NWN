@@ -37,6 +37,7 @@ namespace SWLOR.Component.Market.UI.ViewModel
         private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
         private ITargetingService TargetingService => _serviceProvider.GetRequiredService<ITargetingService>();
         private IPlayerMarketService PlayerMarket => _serviceProvider.GetRequiredService<IPlayerMarketService>();
+        private IObjectPluginService ObjectPlugin => _serviceProvider.GetRequiredService<IObjectPluginService>();
         
         private MarketRegionType _regionType;
 

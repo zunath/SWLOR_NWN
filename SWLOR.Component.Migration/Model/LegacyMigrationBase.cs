@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.NWN.API.Service;
@@ -6,6 +7,15 @@ namespace SWLOR.Component.Migration.Model
 {
     public abstract class LegacyMigrationBase
     {
+        protected readonly IServiceProvider ServiceProvider;
+
+        protected LegacyMigrationBase(IServiceProvider serviceProvider)
+        {
+            ServiceProvider = serviceProvider;
+        }
+
+        // Lazy-loaded service to break circular dependency
+        protected IObjectPluginService ObjectPlugin => ServiceProvider.GetRequiredService<IObjectPluginService>();
         protected void CleanItemName(uint item)
         {
             SetName(item, string.Empty);

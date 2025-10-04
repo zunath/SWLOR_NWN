@@ -20,12 +20,14 @@ namespace SWLOR.Component.Combat.Feature
         private readonly IDatabaseService _db;
         private readonly IServiceProvider _serviceProvider;
         private readonly IEventsPluginService _eventsPlugin;
+        private readonly IObjectPluginService _objectPlugin;
 
-        public EquipmentStats(IDatabaseService db, IServiceProvider serviceProvider, IEventsPluginService eventsPlugin)
+        public EquipmentStats(IDatabaseService db, IServiceProvider serviceProvider, IEventsPluginService eventsPlugin, IObjectPluginService objectPlugin)
         {
             _db = db;
             _serviceProvider = serviceProvider;
             _eventsPlugin = eventsPlugin;
+            _objectPlugin = objectPlugin;
             
             // Initialize lazy services
             _statService = new Lazy<IStatService>(() => _serviceProvider.GetRequiredService<IStatService>());
@@ -219,7 +221,7 @@ namespace SWLOR.Component.Combat.Feature
 
                 if (maxHP > 0)
                 {
-                    ObjectPlugin.SetMaxHitPoints(creature, maxHP);
+                    _objectPlugin.SetMaxHitPoints(creature, maxHP);
                 }
 
                 if (GetCurrentHitPoints(creature) > GetMaxHitPoints(creature))

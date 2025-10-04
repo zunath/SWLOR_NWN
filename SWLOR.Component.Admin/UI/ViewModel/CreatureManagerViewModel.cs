@@ -24,8 +24,9 @@ namespace SWLOR.Component.Admin.UI.ViewModel
             _serviceProvider = serviceProvider;
         }
 
-        // Lazy-loaded service to break circular dependency
+        // Lazy-loaded services to break circular dependencies
         private ITargetingService TargetingService => _serviceProvider.GetRequiredService<ITargetingService>();
+        private IObjectPluginService ObjectPlugin => _serviceProvider.GetRequiredService<IObjectPluginService>();
         
         private readonly List<string> _creatureIds = new();        
         private const int ListingsPerPage = 20;

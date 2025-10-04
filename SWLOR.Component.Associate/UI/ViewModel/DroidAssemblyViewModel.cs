@@ -24,10 +24,12 @@ namespace SWLOR.Component.Associate.UI.ViewModel
         private readonly Lazy<IPerkService> _perkService;
         private readonly Lazy<IItemService> _itemService;
         private readonly Lazy<IDroidService> _droid;
+        private readonly Lazy<IObjectPluginService> _objectPlugin;
         
         private IPerkService PerkService => _perkService.Value;
         private IItemService ItemService => _itemService.Value;
         private IDroidService Droid => _droid.Value;
+        private IObjectPluginService ObjectPlugin => _objectPlugin.Value;
 
         public DroidAssemblyViewModel(
             IGuiService guiService, 
@@ -42,6 +44,7 @@ namespace SWLOR.Component.Associate.UI.ViewModel
             _perkService = new Lazy<IPerkService>(() => _serviceProvider.GetRequiredService<IPerkService>());
             _itemService = new Lazy<IItemService>(() => _serviceProvider.GetRequiredService<IItemService>());
             _droid = new Lazy<IDroidService>(() => _serviceProvider.GetRequiredService<IDroidService>());
+            _objectPlugin = new Lazy<IObjectPluginService>(() => _serviceProvider.GetRequiredService<IObjectPluginService>());
         }
 
         private const string BlankTexture = "Blank";

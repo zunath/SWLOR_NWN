@@ -1,5 +1,6 @@
 using NSubstitute;
 using SWLOR.Component.World.Service;
+using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.World.Contracts;
@@ -13,6 +14,7 @@ namespace SWLOR.Test.Component.World.Service
         private ILogger _mockLogger;
         private IVisibilityObjectCacheService _mockVisibilityObjectCache;
         private IPlayerVisibilityService _mockPlayerVisibilityService;
+        private IVisibilityPluginService _mockVisibilityPlugin;
         private ObjectVisibilityService _service;
 
         [SetUp]
@@ -24,7 +26,8 @@ namespace SWLOR.Test.Component.World.Service
             _mockLogger = Substitute.For<ILogger>();
             _mockVisibilityObjectCache = Substitute.For<IVisibilityObjectCacheService>();
             _mockPlayerVisibilityService = Substitute.For<IPlayerVisibilityService>();
-            _service = new ObjectVisibilityService(_mockLogger, _mockVisibilityObjectCache, _mockPlayerVisibilityService);
+            _mockVisibilityPlugin = Substitute.For<IVisibilityPluginService>();
+            _service = new ObjectVisibilityService(_mockLogger, _mockVisibilityObjectCache, _mockPlayerVisibilityService, _mockVisibilityPlugin);
         }
 
         [Test]

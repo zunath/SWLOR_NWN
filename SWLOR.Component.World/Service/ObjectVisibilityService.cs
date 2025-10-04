@@ -1,6 +1,5 @@
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWNX.Enum;
-using SWLOR.NWN.API.Service;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Domain.World.Contracts;
@@ -15,15 +14,18 @@ namespace SWLOR.Component.World.Service
         private readonly ILogger _logger;
         private readonly IVisibilityObjectCacheService _visibilityObjectCache;
         private readonly IPlayerVisibilityService _playerVisibilityService;
+        private readonly IVisibilityPluginService _visibilityPlugin;
 
         public ObjectVisibilityService(
             ILogger logger, 
             IVisibilityObjectCacheService visibilityObjectCache,
-            IPlayerVisibilityService playerVisibilityService)
+            IPlayerVisibilityService playerVisibilityService,
+            IVisibilityPluginService visibilityPlugin)
         {
             _logger = logger;
             _visibilityObjectCache = visibilityObjectCache;
             _playerVisibilityService = playerVisibilityService;
+            _visibilityPlugin = visibilityPlugin;
         }
 
         /// <summary>
@@ -47,7 +49,7 @@ namespace SWLOR.Component.World.Service
             var playerId = GetObjectUUID(player);
             _playerVisibilityService.SetPlayerObjectVisibility(playerId, visibilityObjectId, type);
 
-            VisibilityPlugin.SetVisibilityOverride(player, target, type);
+            _visibilityPlugin.SetVisibilityOverride(player, target, type);
         }
 
         /// <summary>

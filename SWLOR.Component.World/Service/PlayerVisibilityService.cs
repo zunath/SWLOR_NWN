@@ -1,6 +1,5 @@
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWNX.Enum;
-using SWLOR.NWN.API.Service;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.World.Contracts;
@@ -15,15 +14,18 @@ namespace SWLOR.Component.World.Service
         private readonly ILogger _logger;
         private readonly IDatabaseService _db;
         private readonly IVisibilityObjectCacheService _visibilityObjectCache;
+        private readonly IVisibilityPluginService _visibilityPlugin;
 
         public PlayerVisibilityService(
             ILogger logger, 
             IDatabaseService db, 
-            IVisibilityObjectCacheService visibilityObjectCache)
+            IVisibilityObjectCacheService visibilityObjectCache,
+            IVisibilityPluginService visibilityPlugin)
         {
             _logger = logger;
             _db = db;
             _visibilityObjectCache = visibilityObjectCache;
+            _visibilityPlugin = visibilityPlugin;
         }
 
         /// <summary>
@@ -37,7 +39,7 @@ namespace SWLOR.Component.World.Service
             // Toggle visibility of all hidden objects 
             foreach (var hiddenObject in _visibilityObjectCache.GetDefaultHiddenObjects())
             {
-                VisibilityPlugin.SetVisibilityOverride(player, hiddenObject, VisibilityType.Hidden);
+                _visibilityPlugin.SetVisibilityOverride(player, hiddenObject, VisibilityType.Hidden);
             }
 
             // Now iterate over the player's objects and adjust visibility.
@@ -57,7 +59,7 @@ namespace SWLOR.Component.World.Service
                 var obj = _visibilityObjectCache.GetVisibilityObject(objectId);
                 if (obj.HasValue)
                 {
-                    VisibilityPlugin.SetVisibilityOverride(player, obj.Value, visibilityType);
+                    _visibilityPlugin.SetVisibilityOverride(player, obj.Value, visibilityType);
                 }
             }
         }

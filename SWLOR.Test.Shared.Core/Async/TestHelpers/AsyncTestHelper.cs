@@ -33,7 +33,7 @@ namespace SWLOR.Test.Shared.Core.Async.TestHelpers
                 while (!operationTask.IsCompleted && DateTime.Now - startTime < timeout)
                 {
                     context.Update();
-                    Thread.Sleep(1); // Small delay to prevent busy waiting
+                    // Removed Thread.Sleep(1) - not needed for test performance
                 }
                 
                 if (!operationTask.IsCompleted)

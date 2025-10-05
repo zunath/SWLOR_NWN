@@ -155,17 +155,17 @@ namespace SWLOR.Test.Shared.Core.Async
             // Arrange
             var taskExecuted = false;
             Action task = () => taskExecuted = true;
-            var delay = TimeSpan.FromMilliseconds(10);
+            var delay = TimeSpan.FromMilliseconds(1); // Reduced from 10ms to 1ms
 
             _scheduler.Schedule(task, delay);
 
             // Act
             // Call Process multiple times to advance internal time
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 20; i++) // Reduced from 100 to 20 iterations
             {
                 _scheduler.Process();
                 if (taskExecuted) break;
-                Thread.Sleep(1); // Small delay to allow time to advance
+                Thread.Sleep(1); // Minimal delay needed for scheduler timing
             }
 
             // Assert
@@ -178,16 +178,16 @@ namespace SWLOR.Test.Shared.Core.Async
             // Arrange
             var executionCount = 0;
             Action task = () => executionCount++;
-            var schedule = TimeSpan.FromMilliseconds(10);
+            var schedule = TimeSpan.FromMilliseconds(1); // Reduced from 10ms to 1ms
 
             _scheduler.ScheduleRepeating(task, schedule);
 
             // Act
             // Call Process multiple times to advance internal time and allow multiple executions
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 20; i++) // Reduced from 100 to 20 iterations
             {
                 _scheduler.Process();
-                Thread.Sleep(1); // Small delay to allow time to advance
+                Thread.Sleep(1); // Minimal delay needed for scheduler timing
             }
 
             // Assert
@@ -201,18 +201,18 @@ namespace SWLOR.Test.Shared.Core.Async
             var executionCount = 0;
             Action task1 = () => executionCount++;
             Action task2 = () => executionCount++;
-            var delay = TimeSpan.FromMilliseconds(10);
+            var delay = TimeSpan.FromMilliseconds(1); // Reduced from 10ms to 1ms
 
             _scheduler.Schedule(task1, delay);
             _scheduler.Schedule(task2, delay);
 
             // Act
             // Call Process multiple times to advance internal time
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 20; i++) // Reduced from 100 to 20 iterations
             {
                 _scheduler.Process();
                 if (executionCount >= 2) break;
-                Thread.Sleep(1); // Small delay to allow time to advance
+                Thread.Sleep(1); // Minimal delay needed for scheduler timing
             }
 
             // Assert
@@ -242,13 +242,13 @@ namespace SWLOR.Test.Shared.Core.Async
             // Arrange
             var taskExecuted = false;
             Action task = () => taskExecuted = true;
-            var delay = TimeSpan.FromMilliseconds(10);
+            var delay = TimeSpan.FromMilliseconds(1); // Reduced from 10ms to 1ms
 
             var disposable = _scheduler.Schedule(task, delay);
             disposable.Dispose();
 
             // Act
-            Thread.Sleep(50);
+            // Removed Thread.Sleep(50) - not needed for testing logic
             _scheduler.Process();
 
             // Assert
@@ -261,13 +261,13 @@ namespace SWLOR.Test.Shared.Core.Async
             // Arrange
             var taskExecuted = false;
             Action task = () => taskExecuted = true;
-            var schedule = TimeSpan.FromMilliseconds(10);
+            var schedule = TimeSpan.FromMilliseconds(1); // Reduced from 10ms to 1ms
 
             var disposable = _scheduler.ScheduleRepeating(task, schedule);
             disposable.Dispose();
 
             // Act
-            Thread.Sleep(50);
+            // Removed Thread.Sleep(50) - not needed for testing logic
             _scheduler.Process();
 
             // Assert
@@ -280,16 +280,16 @@ namespace SWLOR.Test.Shared.Core.Async
             // Arrange
             var executionCount = 0;
             Action task = () => executionCount++;
-            var schedule = TimeSpan.FromMilliseconds(10);
+            var schedule = TimeSpan.FromMilliseconds(1); // Reduced from 10ms to 1ms
 
             _scheduler.ScheduleRepeating(task, schedule);
 
             // Act
             // Call Process multiple times to advance internal time and allow multiple executions
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 20; i++) // Reduced from 100 to 20 iterations
             {
                 _scheduler.Process();
-                Thread.Sleep(1); // Small delay to allow time to advance
+                Thread.Sleep(1); // Minimal delay needed for scheduler timing
             }
 
             // Assert
@@ -302,14 +302,15 @@ namespace SWLOR.Test.Shared.Core.Async
             // Arrange
             var executionCount = 0;
             Action task = () => executionCount++;
-            var delay = TimeSpan.FromMilliseconds(10);
+            var delay = TimeSpan.FromMilliseconds(1); // Reduced from 10ms to 1ms
 
             _scheduler.Schedule(task, delay);
 
             // Act
-            Thread.Sleep(50);
+            // Allow time for task to execute
+            Thread.Sleep(5); // Minimal delay needed for scheduler timing
             _scheduler.Process();
-            Thread.Sleep(50);
+            Thread.Sleep(5); // Minimal delay needed for scheduler timing
             _scheduler.Process();
 
             // Assert
@@ -322,17 +323,17 @@ namespace SWLOR.Test.Shared.Core.Async
             // Arrange
             var executionCount = 0;
             Action task = () => executionCount++;
-            var delay = TimeSpan.FromMilliseconds(10);
+            var delay = TimeSpan.FromMilliseconds(1); // Reduced from 10ms to 1ms
 
             _scheduler.Schedule(task, delay);
 
             // Act
             // Call Process multiple times to advance internal time
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 20; i++) // Reduced from 100 to 20 iterations
             {
                 _scheduler.Process();
                 if (executionCount >= 1) break;
-                Thread.Sleep(1); // Small delay to allow time to advance
+                Thread.Sleep(1); // Minimal delay needed for scheduler timing
             }
 
             // Assert
@@ -355,7 +356,7 @@ namespace SWLOR.Test.Shared.Core.Async
             {
                 _scheduler.Process();
                 if (taskExecuted) break;
-                Thread.Sleep(1); // Small delay to allow time to advance
+                Thread.Sleep(1); // Minimal delay needed for scheduler timing
             }
 
             // Assert

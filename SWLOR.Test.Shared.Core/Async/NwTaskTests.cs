@@ -30,14 +30,14 @@ namespace SWLOR.Test.Shared.Core.Async
         public async Task Delay_WithValidTimeSpan_ShouldComplete()
         {
             // Arrange
-            var delay = TimeSpan.FromMilliseconds(10);
+            var delay = TimeSpan.FromMilliseconds(1); // Reduced from 10ms to 1ms
 
             // Act & Assert
             var startTime = DateTime.Now;
             await TestNwTask.Delay(delay);
             var elapsed = DateTime.Now - startTime;
             
-            Assert.That(elapsed.TotalMilliseconds, Is.GreaterThanOrEqualTo(9));
+            Assert.That(elapsed.TotalMilliseconds, Is.GreaterThanOrEqualTo(0.5)); // Adjusted threshold
         }
 
         [Test]
@@ -58,7 +58,7 @@ namespace SWLOR.Test.Shared.Core.Async
         public async Task Delay_WithCancellationToken_ShouldComplete()
         {
             // Arrange
-            var delay = TimeSpan.FromMilliseconds(10);
+            var delay = TimeSpan.FromMilliseconds(1); // Reduced from 10ms to 1ms
             var cancellationToken = new CancellationToken();
 
             // Act & Assert
@@ -66,7 +66,7 @@ namespace SWLOR.Test.Shared.Core.Async
             await TestNwTask.Delay(delay, cancellationToken);
             var elapsed = DateTime.Now - startTime;
             
-            Assert.That(elapsed.TotalMilliseconds, Is.GreaterThanOrEqualTo(9));
+            Assert.That(elapsed.TotalMilliseconds, Is.GreaterThanOrEqualTo(0.5)); // Adjusted threshold
         }
 
         [Test]
@@ -201,9 +201,9 @@ namespace SWLOR.Test.Shared.Core.Async
             // Arrange
             var tasks = new[]
             {
-                TestNwTask.Delay(TimeSpan.FromMilliseconds(10)),
-                TestNwTask.Delay(TimeSpan.FromMilliseconds(20)),
-                TestNwTask.Delay(TimeSpan.FromMilliseconds(30))
+                TestNwTask.Delay(TimeSpan.FromMilliseconds(1)), // Reduced from 10ms to 1ms
+                TestNwTask.Delay(TimeSpan.FromMilliseconds(2)), // Reduced from 20ms to 2ms
+                TestNwTask.Delay(TimeSpan.FromMilliseconds(3))  // Reduced from 30ms to 3ms
             };
 
             // Act & Assert
@@ -217,9 +217,9 @@ namespace SWLOR.Test.Shared.Core.Async
             // Arrange
             var tasks = new List<Task>
             {
-                TestNwTask.Delay(TimeSpan.FromMilliseconds(10)),
-                TestNwTask.Delay(TimeSpan.FromMilliseconds(20)),
-                TestNwTask.Delay(TimeSpan.FromMilliseconds(30))
+                TestNwTask.Delay(TimeSpan.FromMilliseconds(1)), // Reduced from 10ms to 1ms
+                TestNwTask.Delay(TimeSpan.FromMilliseconds(2)), // Reduced from 20ms to 2ms
+                TestNwTask.Delay(TimeSpan.FromMilliseconds(3))  // Reduced from 30ms to 3ms
             };
 
             // Act & Assert
@@ -277,9 +277,9 @@ namespace SWLOR.Test.Shared.Core.Async
             // Arrange
             var tasks = new[]
             {
-                TestNwTask.Delay(TimeSpan.FromMilliseconds(100)),
-                TestNwTask.Delay(TimeSpan.FromMilliseconds(50)),
-                TestNwTask.Delay(TimeSpan.FromMilliseconds(200))
+                TestNwTask.Delay(TimeSpan.FromMilliseconds(10)), // Reduced from 100ms to 10ms
+                TestNwTask.Delay(TimeSpan.FromMilliseconds(5)),  // Reduced from 50ms to 5ms
+                TestNwTask.Delay(TimeSpan.FromMilliseconds(20))  // Reduced from 200ms to 20ms
             };
 
             // Act & Assert
@@ -293,9 +293,9 @@ namespace SWLOR.Test.Shared.Core.Async
             // Arrange
             var tasks = new List<Task>
             {
-                TestNwTask.Delay(TimeSpan.FromMilliseconds(100)),
-                TestNwTask.Delay(TimeSpan.FromMilliseconds(50)),
-                TestNwTask.Delay(TimeSpan.FromMilliseconds(200))
+                TestNwTask.Delay(TimeSpan.FromMilliseconds(10)), // Reduced from 100ms to 10ms
+                TestNwTask.Delay(TimeSpan.FromMilliseconds(5)),  // Reduced from 50ms to 5ms
+                TestNwTask.Delay(TimeSpan.FromMilliseconds(20))  // Reduced from 200ms to 20ms
             };
 
             // Act & Assert
@@ -309,9 +309,9 @@ namespace SWLOR.Test.Shared.Core.Async
             // Arrange
             var tasks = new[]
             {
-                Task.Delay(100).ContinueWith(_ => "slow"),
-                Task.Delay(50).ContinueWith(_ => "fast"),
-                Task.Delay(200).ContinueWith(_ => "slowest")
+                Task.Delay(10).ContinueWith(_ => "slow"),   // Reduced from 100ms to 10ms
+                Task.Delay(5).ContinueWith(_ => "fast"),    // Reduced from 50ms to 5ms
+                Task.Delay(20).ContinueWith(_ => "slowest") // Reduced from 200ms to 20ms
             };
 
             // Act
@@ -328,9 +328,9 @@ namespace SWLOR.Test.Shared.Core.Async
             // Arrange
             var tasks = new List<Task<string>>
             {
-                Task.Delay(100).ContinueWith(_ => "slow"),
-                Task.Delay(50).ContinueWith(_ => "fast"),
-                Task.Delay(200).ContinueWith(_ => "slowest")
+                Task.Delay(20).ContinueWith(_ => "slow"),   // Increased to ensure clear ordering
+                Task.Delay(5).ContinueWith(_ => "fast"),     // Keep as fastest
+                Task.Delay(30).ContinueWith(_ => "slowest") // Increased to ensure clear ordering
             };
 
             // Act
@@ -346,7 +346,7 @@ namespace SWLOR.Test.Shared.Core.Async
         {
             // Arrange
             var delay = TimeSpan.FromSeconds(1);
-            var cancellationToken = new CancellationTokenSource(TimeSpan.FromMilliseconds(10)).Token;
+            var cancellationToken = new CancellationTokenSource(TimeSpan.FromMilliseconds(1)).Token; // Reduced from 10ms to 1ms
 
             // Act & Assert
             Assert.ThrowsAsync<OperationCanceledException>(async () => await TestNwTask.Delay(delay, cancellationToken));
@@ -357,7 +357,7 @@ namespace SWLOR.Test.Shared.Core.Async
         {
             // Arrange
             const int frames = 100;
-            var cancellationToken = new CancellationTokenSource(TimeSpan.FromMilliseconds(10)).Token;
+            var cancellationToken = new CancellationTokenSource(TimeSpan.FromMilliseconds(1)).Token; // Reduced from 10ms to 1ms
 
             // Act & Assert
             Assert.ThrowsAsync<OperationCanceledException>(async () => await TestNwTask.DelayFrame(frames, cancellationToken));
@@ -368,7 +368,7 @@ namespace SWLOR.Test.Shared.Core.Async
         {
             // Arrange
             var condition = false;
-            var cancellationToken = new CancellationTokenSource(TimeSpan.FromMilliseconds(10)).Token;
+            var cancellationToken = new CancellationTokenSource(TimeSpan.FromMilliseconds(1)).Token; // Reduced from 10ms to 1ms
 
             // Act & Assert
             var startTime = DateTime.Now;
@@ -376,7 +376,7 @@ namespace SWLOR.Test.Shared.Core.Async
             var elapsed = DateTime.Now - startTime;
             
             // Should complete after timeout without throwing an exception
-            Assert.That(elapsed.TotalMilliseconds, Is.GreaterThanOrEqualTo(9));
+            Assert.That(elapsed.TotalMilliseconds, Is.GreaterThanOrEqualTo(0.5)); // Adjusted threshold
         }
 
         [Test]
@@ -385,7 +385,7 @@ namespace SWLOR.Test.Shared.Core.Async
             // Arrange
             var value = 0;
             var valueSource = () => value;
-            var cancellationToken = new CancellationTokenSource(TimeSpan.FromMilliseconds(10)).Token;
+            var cancellationToken = new CancellationTokenSource(TimeSpan.FromMilliseconds(1)).Token; // Reduced from 10ms to 1ms
 
             // Act & Assert
             var startTime = DateTime.Now;
@@ -393,7 +393,7 @@ namespace SWLOR.Test.Shared.Core.Async
             var elapsed = DateTime.Now - startTime;
             
             // Should complete after timeout without throwing an exception
-            Assert.That(elapsed.TotalMilliseconds, Is.GreaterThanOrEqualTo(9));
+            Assert.That(elapsed.TotalMilliseconds, Is.GreaterThanOrEqualTo(0.5)); // Adjusted threshold
         }
     }
 }

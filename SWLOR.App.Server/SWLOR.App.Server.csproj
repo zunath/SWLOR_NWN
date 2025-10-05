@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<TargetFramework>net8.0</TargetFramework>
 		<EnableDynamicLoading>true</EnableDynamicLoading>
-		<LangVersion>11</LangVersion>
+		<LangVersion>latest</LangVersion>
 		<OutputType>Library</OutputType>
 		<PlatformTarget>x64</PlatformTarget>
 		<AssemblyName>SWLOR.App.Server</AssemblyName>

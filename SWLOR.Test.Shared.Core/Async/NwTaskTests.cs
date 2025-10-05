@@ -309,9 +309,9 @@ namespace SWLOR.Test.Shared.Core.Async
             // Arrange
             var tasks = new[]
             {
-                Task.Delay(10).ContinueWith(_ => "slow"),   // Reduced from 100ms to 10ms
-                Task.Delay(5).ContinueWith(_ => "fast"),    // Reduced from 50ms to 5ms
-                Task.Delay(20).ContinueWith(_ => "slowest") // Reduced from 200ms to 20ms
+                Task.Delay(100).ContinueWith(_ => "slow"),   // 100ms delay
+                Task.Delay(50).ContinueWith(_ => "fast"),     // 50ms delay - should complete first
+                Task.Delay(200).ContinueWith(_ => "slowest")  // 200ms delay
             };
 
             // Act
@@ -328,9 +328,9 @@ namespace SWLOR.Test.Shared.Core.Async
             // Arrange
             var tasks = new List<Task<string>>
             {
-                Task.Delay(20).ContinueWith(_ => "slow"),   // Increased to ensure clear ordering
-                Task.Delay(5).ContinueWith(_ => "fast"),     // Keep as fastest
-                Task.Delay(30).ContinueWith(_ => "slowest") // Increased to ensure clear ordering
+                Task.Delay(100).ContinueWith(_ => "slow"),   // 100ms delay
+                Task.Delay(50).ContinueWith(_ => "fast"),     // 50ms delay - should complete first
+                Task.Delay(200).ContinueWith(_ => "slowest")  // 200ms delay
             };
 
             // Act

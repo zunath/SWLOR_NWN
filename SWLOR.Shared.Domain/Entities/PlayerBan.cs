@@ -1,6 +1,6 @@
 ﻿using SWLOR.Shared.Abstractions;
 
-namespace SWLOR.Component.Admin.Entity
+namespace SWLOR.Shared.Domain.Entities
 {
     public class PlayerBan: EntityBase
     {

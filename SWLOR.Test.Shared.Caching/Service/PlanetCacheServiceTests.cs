@@ -1,4 +1,3 @@
-using NUnit.Framework;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using SWLOR.Shared.Abstractions.Contracts;

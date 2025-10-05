@@ -1,11 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
-using SWLOR.Component.Admin.Entity;
+using SWLOR.NWN.API.Contracts;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.Service;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Data;
+using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Repositories;
 using SWLOR.Shared.UI.Component;
 using SWLOR.Shared.UI.Contracts;

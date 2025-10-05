@@ -1,4 +1,4 @@
-﻿namespace SWLOR.NWN.API.NWNX
+﻿namespace SWLOR.NWN.API.NWNX.Model
 {
     /// <summary>
     /// Represents a journal entry in the player's quest log.

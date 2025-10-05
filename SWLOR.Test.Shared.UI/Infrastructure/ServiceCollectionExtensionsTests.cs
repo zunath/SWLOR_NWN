@@ -1,12 +1,9 @@
-using NUnit.Framework;
 using NSubstitute;
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Shared.UI.Infrastructure;
 using SWLOR.Shared.UI.Service;
 using SWLOR.Shared.UI.Contracts;
-using SWLOR.Shared.UI.EventHandlers;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Test.Shared;
 
 namespace SWLOR.Test.Shared.UI.Infrastructure
 {

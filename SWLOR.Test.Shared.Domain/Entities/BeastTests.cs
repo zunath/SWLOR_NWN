@@ -3,7 +3,6 @@ using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Associate.Enums;
 using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Perk.Enums;
-using SWLOR.Test.Shared.Core.TestHelpers;
 
 namespace SWLOR.Test.Shared.Domain.Entities
 {

@@ -1,8 +1,6 @@
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Events.Contracts;
 using SWLOR.Shared.Events.EventAggregator;
 using SWLOR.Shared.Events.Events.Infrastructure;
-using SWLOR.Test.Shared;
 using SWLOR.NWN.API.Contracts;
 using NSubstitute;
 

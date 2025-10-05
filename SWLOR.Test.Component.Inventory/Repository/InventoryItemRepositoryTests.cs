@@ -1,11 +1,7 @@
-using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
-using NUnit.Framework;
 using SWLOR.Component.Inventory.Repository;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Domain.Entities;
-using SWLOR.Shared.Domain.Repositories;
 
 namespace SWLOR.Test.Component.Inventory.Repository
 {

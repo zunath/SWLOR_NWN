@@ -1,10 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using NSubstitute;
 using SWLOR.Component.Communication.Service;
-using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Dialog.Contracts;
-using SWLOR.Shared.Domain.Dialog.ValueObjects;
 using SWLOR.Test.Shared;
 
 namespace SWLOR.Test.Component.Communication.Integration

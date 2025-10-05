@@ -1,7 +1,7 @@
-using SWLOR.Component.Admin.Entity;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Domain.Admin.Enums;
+using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Repositories;
 
 namespace SWLOR.Component.Admin.Repository

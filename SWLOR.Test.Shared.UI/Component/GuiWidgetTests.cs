@@ -1,16 +1,11 @@
 using System.Linq.Expressions;
-using NUnit.Framework;
-using NSubstitute;
 using SWLOR.Shared.UI.Component;
 using SWLOR.Shared.UI.Contracts;
-using SWLOR.Shared.UI.Model;
-using SWLOR.Shared.UI.Service;
 using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Abstractions.Models;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.Service;
-using SWLOR.Test.Shared;
 
 namespace SWLOR.Test.Shared.UI.Component
 {

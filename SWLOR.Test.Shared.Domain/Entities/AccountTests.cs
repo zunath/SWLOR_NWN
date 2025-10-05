@@ -1,6 +1,5 @@
 using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Character.Enums;
-using SWLOR.Test.Shared.Core.TestHelpers;
 
 namespace SWLOR.Test.Shared.Domain.Entities
 {

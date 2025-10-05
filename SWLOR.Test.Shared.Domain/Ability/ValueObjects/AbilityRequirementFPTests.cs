@@ -1,4 +1,3 @@
-using NUnit.Framework;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
 
 namespace SWLOR.Test.Shared.Domain.Ability.ValueObjects

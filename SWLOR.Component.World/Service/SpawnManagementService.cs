@@ -1,8 +1,8 @@
 using SWLOR.Component.World.Contracts;
 using SWLOR.Component.World.Models;
+using SWLOR.NWN.API.Contracts;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.Service;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;

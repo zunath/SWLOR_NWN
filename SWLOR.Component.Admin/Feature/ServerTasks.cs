@@ -1,9 +1,8 @@
-using SWLOR.Component.Admin.Entity;
+using SWLOR.NWN.API.Contracts;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Repositories;

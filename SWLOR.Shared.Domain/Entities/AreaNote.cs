@@ -1,6 +1,6 @@
 ﻿using SWLOR.Shared.Abstractions;
 
-namespace SWLOR.Component.World.Entity
+namespace SWLOR.Shared.Domain.Entities
 {
     public class AreaNote: EntityBase
     {

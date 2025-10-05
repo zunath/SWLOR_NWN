@@ -1,13 +1,8 @@
 using SWLOR.NWN.API.NWNX;
-using SWLOR.Shared.Events.Contracts;
 using SWLOR.Shared.Events.EventHandlers;
-using SWLOR.Test.Shared;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Events.Events.Player;
-using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Events.Constants;
-using SWLOR.Test.Shared.NWScriptMocks;
 using NSubstitute;
+using SWLOR.NWN.API.Contracts;
 
 namespace SWLOR.Test.Shared.Events.EventHandlers
 {

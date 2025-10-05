@@ -7,7 +7,7 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.UI.Service;
 using System.Globalization;
 using System.Text;
-using SWLOR.NWN.API.Service;
+using SWLOR.NWN.API.Contracts;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Communication.Constants;
 using SWLOR.Shared.Domain.Communication.Contracts;

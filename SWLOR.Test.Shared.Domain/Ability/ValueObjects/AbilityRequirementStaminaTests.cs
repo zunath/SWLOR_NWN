@@ -1,5 +1,4 @@
 using NSubstitute;
-using NUnit.Framework;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
 using SWLOR.Shared.Domain.Combat.Contracts;
 

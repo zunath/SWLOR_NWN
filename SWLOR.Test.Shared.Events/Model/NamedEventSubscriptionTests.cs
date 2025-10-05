@@ -1,5 +1,4 @@
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Events.Events.Infrastructure;
 using NSubstitute;
 
 namespace SWLOR.Test.Shared.Events.Model

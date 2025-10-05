@@ -1,4 +1,3 @@
-using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Properties.Contracts;
 using SWLOR.Component.Properties.EventHandlers;

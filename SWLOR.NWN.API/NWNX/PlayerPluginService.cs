@@ -1,8 +1,9 @@
 ﻿using System.Numerics;
+using SWLOR.NWN.API.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX.Enum;
+using SWLOR.NWN.API.NWNX.Model;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.Service;
 using QuickBarSlot = SWLOR.NWN.API.NWNX.Model.QuickBarSlot;
 
 namespace SWLOR.NWN.API.NWNX

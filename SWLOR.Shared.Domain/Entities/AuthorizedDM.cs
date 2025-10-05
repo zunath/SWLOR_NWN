@@ -1,7 +1,7 @@
 ﻿using SWLOR.Shared.Abstractions;
 using SWLOR.Shared.Domain.Admin.Enums;
 
-namespace SWLOR.Component.Admin.Entity
+namespace SWLOR.Shared.Domain.Entities
 {
     public class AuthorizedDM: EntityBase
     {

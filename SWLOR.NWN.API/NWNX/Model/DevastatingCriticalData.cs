@@ -1,4 +1,4 @@
-namespace SWLOR.NWN.API.NWNX
+namespace SWLOR.NWN.API.NWNX.Model
 {
     /// <summary>
     /// Devastating critical event data struct.

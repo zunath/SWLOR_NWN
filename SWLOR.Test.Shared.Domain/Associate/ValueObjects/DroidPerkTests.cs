@@ -1,4 +1,3 @@
-using NUnit.Framework;
 using SWLOR.Shared.Domain.Associate.ValueObjects;
 using SWLOR.Shared.Domain.Perk.Enums;
 

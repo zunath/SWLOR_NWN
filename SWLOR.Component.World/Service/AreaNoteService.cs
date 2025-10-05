@@ -1,8 +1,5 @@
 using SWLOR.Component.World.Contracts;
-using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.UI.Service;
-using SWLOR.Component.World.Entity;
 using SWLOR.Shared.Domain.Repositories;
 
 namespace SWLOR.Component.World.Service

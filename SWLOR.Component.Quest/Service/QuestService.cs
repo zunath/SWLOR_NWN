@@ -1,9 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Quest.Contracts;
 using SWLOR.Component.Quest.Model;
-using SWLOR.NWN.API.NWNX;
-using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.Contracts;
+using SWLOR.NWN.API.NWNX;
+using SWLOR.NWN.API.NWNX.Model;
+using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Domain.Character.Contracts;

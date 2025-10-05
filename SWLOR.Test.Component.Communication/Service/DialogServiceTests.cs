@@ -1,7 +1,6 @@
 using NSubstitute;
 using SWLOR.Component.Communication.Service;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Domain.Dialog.Contracts;
 using SWLOR.Test.Shared;
 
 namespace SWLOR.Test.Component.Communication.Service

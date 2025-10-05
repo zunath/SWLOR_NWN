@@ -1,4 +1,3 @@
-using NUnit.Framework;
 using SWLOR.Shared.Caching.Service;
 
 namespace SWLOR.Test.Shared.Caching.Service

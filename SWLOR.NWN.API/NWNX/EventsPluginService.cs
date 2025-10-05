@@ -1,3 +1,5 @@
+using SWLOR.NWN.API.Contracts;
+
 namespace SWLOR.NWN.API.NWNX
 {
     /// <summary>

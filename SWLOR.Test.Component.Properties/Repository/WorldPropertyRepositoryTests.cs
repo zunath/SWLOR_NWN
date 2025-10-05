@@ -1,12 +1,8 @@
-using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
-using NUnit.Framework;
 using SWLOR.Component.Properties.Repository;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Domain.Properties.Entities;
 using SWLOR.Shared.Domain.Properties.Enums;
-using SWLOR.Shared.Domain.Repositories;
 
 namespace SWLOR.Test.Component.Properties.Repository
 {

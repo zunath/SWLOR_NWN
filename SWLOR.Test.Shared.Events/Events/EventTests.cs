@@ -4,7 +4,6 @@ using SWLOR.Shared.Events.Events.Infrastructure;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.Player;
 using SWLOR.Shared.Events.Events.Space;
-using SWLOR.Shared.Events.Contracts;
 using SWLOR.Shared.Abstractions.Contracts;
 
 namespace SWLOR.Test.Shared.Events.Events

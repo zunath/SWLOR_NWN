@@ -1,7 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Properties.Service;
-using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Abstractions.Models;
 using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Properties.Entities;

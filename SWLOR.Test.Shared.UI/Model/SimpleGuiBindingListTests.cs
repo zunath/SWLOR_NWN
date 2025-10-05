@@ -1,6 +1,4 @@
-using NUnit.Framework;
 using SWLOR.Shared.UI.Model;
-using SWLOR.Test.Shared;
 
 namespace SWLOR.Test.Shared.UI.Model
 {

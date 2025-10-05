@@ -1,11 +1,8 @@
-using NUnit.Framework;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Caching.Service;
 using SWLOR.Shared.Domain.Properties.Contracts;
-using SWLOR.Test.Shared;
 using SWLOR.NWN.API.Service;
 
 namespace SWLOR.Test.Shared.Caching.Service

@@ -1,6 +1,6 @@
 using SWLOR.Component.Combat.Contracts;
+using SWLOR.NWN.API.Contracts;
 using SWLOR.NWN.API.NWNX;
-using SWLOR.NWN.API.Service;
 
 namespace SWLOR.Component.Combat.Service
 {

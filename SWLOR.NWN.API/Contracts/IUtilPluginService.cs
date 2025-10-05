@@ -1,7 +1,8 @@
 using SWLOR.NWN.API.Engine;
+using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWNX.Enum;
 
-namespace SWLOR.NWN.API.NWNX;
+namespace SWLOR.NWN.API.Contracts;
 
 public interface IUtilPluginService
 {

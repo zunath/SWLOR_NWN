@@ -1,4 +1,4 @@
-namespace SWLOR.NWN.API.NWNX;
+namespace SWLOR.NWN.API.Contracts;
 
 public interface IEventsPluginService
 {

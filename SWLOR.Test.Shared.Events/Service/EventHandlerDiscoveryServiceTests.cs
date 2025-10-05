@@ -1,11 +1,8 @@
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Events.Contracts;
 using SWLOR.Shared.Events.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Infrastructure;
-using SWLOR.NWN.API.Contracts;
 using NSubstitute;
-using System.Reflection;
 
 namespace SWLOR.Test.Shared.Events.Service
 {

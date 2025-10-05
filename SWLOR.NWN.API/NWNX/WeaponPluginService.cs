@@ -1,3 +1,5 @@
+using SWLOR.NWN.API.Contracts;
+using SWLOR.NWN.API.NWNX.Model;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.NWN.API.NWNX

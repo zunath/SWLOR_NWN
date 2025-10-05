@@ -2,7 +2,7 @@ using System.Numerics;
 using NWN.Core.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 
-namespace SWLOR.NWN.API.NWNX;
+namespace SWLOR.NWN.API.Contracts;
 
 public interface IAreaPluginService
 {

@@ -1,10 +1,8 @@
 using NSubstitute;
-using NUnit.Framework;
 using SWLOR.Component.Associate.Repository;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Domain.Associate.ValueObjects;
-using SWLOR.Shared.Domain.Repositories;
 
 namespace SWLOR.Test.Component.Associate.Repository
 {

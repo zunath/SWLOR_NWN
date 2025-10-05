@@ -4,7 +4,6 @@ using SWLOR.Component.Crafting.EventHandlers;
 using SWLOR.Component.Crafting.Feature;
 using SWLOR.Component.Crafting.Repository;
 using SWLOR.Component.Crafting.Service;
-using System.Reflection;
 using SWLOR.Shared.Domain.Crafting.Contracts;
 using SWLOR.Shared.Domain.Repositories;
 

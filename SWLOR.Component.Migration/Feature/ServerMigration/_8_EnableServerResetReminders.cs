@@ -3,8 +3,6 @@ using SWLOR.Component.Migration.Contracts;
 using SWLOR.Component.Migration.Enums;
 using SWLOR.Component.Migration.Model;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Data;
-using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Repositories;
 
 namespace SWLOR.Component.Migration.Feature.ServerMigration

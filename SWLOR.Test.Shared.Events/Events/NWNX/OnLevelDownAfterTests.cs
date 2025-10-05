@@ -1,5 +1,4 @@
 using SWLOR.Shared.Events.Events.NWNX;
-using NUnit.Framework;
 
 namespace SWLOR.Test.Shared.Events.Events.NWNX
 {

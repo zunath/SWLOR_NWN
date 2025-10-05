@@ -2,38 +2,35 @@ using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Crafting.Contracts;
 using SWLOR.Component.Crafting.Enums;
 using SWLOR.Component.Crafting.Model;
+using SWLOR.Component.Crafting.UI.Payload;
+using SWLOR.NWN.API.Contracts;
 using SWLOR.NWN.API.Engine;
-using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Abstractions.Enums;
+using SWLOR.Shared.Abstractions.Models;
 using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Data;
-using SWLOR.Component.Crafting.UI.Payload;
-using SWLOR.NWN.API.Service;
-using SWLOR.Shared.Abstractions.Enums;
-using SWLOR.Shared.Abstractions.Models;
 using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Crafting.Contracts;
 using SWLOR.Shared.Domain.Crafting.Enums;
 using SWLOR.Shared.Domain.Crafting.Payloads;
-using SWLOR.Shared.Domain.Repositories;
 using SWLOR.Shared.Domain.Crafting.ValueObjects;
+using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Perk.Contracts;
 using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Properties.Contracts;
+using SWLOR.Shared.Domain.Repositories;
 using SWLOR.Shared.Domain.Skill.Enums;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
-using SWLOR.Shared.Domain.Entities;
 
 namespace SWLOR.Component.Crafting.Service
 {
     public class CraftService : ICraftService
     {
-        private readonly ILogger _logger;
         private readonly IDatabaseService _db;
         private readonly IGenericCacheService _cacheService;
         private readonly IServiceProvider _serviceProvider;
@@ -48,7 +45,6 @@ namespace SWLOR.Component.Crafting.Service
         private readonly Lazy<IPropertyService> _propertyService;
 
         public CraftService(
-            ILogger logger, 
             IDatabaseService db, 
             IGenericCacheService cacheService, 
             IItemCacheService itemCache, 
@@ -57,7 +53,6 @@ namespace SWLOR.Component.Crafting.Service
             IEventsPluginService eventsPlugin,
             IResearchJobRepository researchJobRepository)
         {
-            _logger = logger;
             _db = db;
             _researchJobRepository = researchJobRepository;
             _cacheService = cacheService;

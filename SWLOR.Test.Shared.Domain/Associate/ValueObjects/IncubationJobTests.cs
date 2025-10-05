@@ -1,4 +1,3 @@
-using NUnit.Framework;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Associate.Enums;
 using SWLOR.Shared.Domain.Associate.ValueObjects;

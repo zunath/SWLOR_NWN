@@ -1,4 +1,4 @@
-using SWLOR.Component.World.Entity;
+using SWLOR.Shared.Domain.Entities;
 
 namespace SWLOR.Shared.Domain.Repositories
 {

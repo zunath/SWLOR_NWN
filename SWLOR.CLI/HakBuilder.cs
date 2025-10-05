@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using SWLOR.CLI.Model;
 using SWLOR.Shared.Abstractions.Extensions;
-using SWLOR.Shared.Core.Extension;
 
 namespace SWLOR.CLI
 {

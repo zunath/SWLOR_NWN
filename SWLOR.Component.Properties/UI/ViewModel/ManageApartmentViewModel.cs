@@ -1,7 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Properties.Service;
-using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Data;
 using SWLOR.Component.Properties.UI.Payload;
 using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Abstractions.Models;

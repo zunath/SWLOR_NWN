@@ -1,6 +1,7 @@
 using SWLOR.Component.Quest.Dialog;
-using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.Contracts;
+using SWLOR.NWN.API.NWNX;
+using SWLOR.NWN.API.NWNX.Model;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Dialog.Contracts;
 using SWLOR.Shared.Domain.Entities;

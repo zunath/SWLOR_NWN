@@ -1,12 +1,11 @@
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
+using SWLOR.NWN.API.Contracts;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Caching.Extensions;
 using SWLOR.Shared.Caching.Service;
-using SWLOR.Shared.Core.Log.LogGroup;
-using SWLOR.Shared.Events.Contracts;
 using SWLOR.Shared.Domain.Properties.Contracts;
 
 namespace SWLOR.Test.Shared.Caching.Extensions

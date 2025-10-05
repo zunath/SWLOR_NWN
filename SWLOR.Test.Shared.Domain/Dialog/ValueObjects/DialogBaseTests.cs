@@ -2,7 +2,6 @@ using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using SWLOR.Shared.Domain.Dialog.Contracts;
 using SWLOR.Shared.Domain.Dialog.ValueObjects;
-using SWLOR.Test.Shared;
 
 namespace SWLOR.Test.Shared.Domain.Dialog.ValueObjects
 {

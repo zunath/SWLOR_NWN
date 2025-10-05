@@ -4,13 +4,12 @@ using SWLOR.Component.Space.Contracts;
 using SWLOR.Component.Space.EventHandlers;
 using SWLOR.Component.Space.Infrastructure;
 using SWLOR.Component.Space.Service;
+using SWLOR.NWN.API.Contracts;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Domain.Repositories;
 using SWLOR.Shared.Domain.Space.Contracts;
 using SWLOR.Shared.Domain.World.Contracts;
-using SWLOR.Shared.Events.Contracts;
 
 namespace SWLOR.Test.Component.Space.Infrastructure
 {

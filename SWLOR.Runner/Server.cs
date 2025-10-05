@@ -6,7 +6,6 @@ using System.Runtime.InteropServices;
 using EnvDTE;
 using Microsoft.VisualStudio.OLE.Interop;
 using SWLOR.Shared.Abstractions.Extensions;
-using SWLOR.Shared.Core.Extension;
 
 namespace SWLOR.Runner
 {

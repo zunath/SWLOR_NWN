@@ -1,4 +1,3 @@
-using NUnit.Framework;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Caching.Service;
 using SWLOR.Shared.Domain.World.Enums;

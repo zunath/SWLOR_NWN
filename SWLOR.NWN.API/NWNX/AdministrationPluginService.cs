@@ -1,4 +1,5 @@
 ﻿using NWN.Core.NWNX;
+using SWLOR.NWN.API.Contracts;
 using SWLOR.NWN.API.NWNX.Enum;
 
 namespace SWLOR.NWN.API.NWNX

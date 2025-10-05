@@ -6,6 +6,7 @@ using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Service;
 using System.Drawing;
+using SWLOR.NWN.API.Contracts;
 using SWLOR.NWN.API.Service;
 using SWLOR.Shared.Domain.Ability.Contracts;
 using SWLOR.Shared.Domain.Admin.Enums;

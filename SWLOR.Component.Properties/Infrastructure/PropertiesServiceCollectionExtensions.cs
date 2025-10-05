@@ -5,6 +5,7 @@ using SWLOR.Component.Properties.Repository;
 using SWLOR.Component.Properties.Service;
 using SWLOR.Shared.Domain.Properties.Contracts;
 using SWLOR.Shared.Domain.Repositories;
+using SWLOR.Shared.Core.Infrastructure;
 
 namespace SWLOR.Component.Properties.Infrastructure
 {
@@ -37,15 +38,7 @@ namespace SWLOR.Component.Properties.Infrastructure
             // Dialog classes are automatically registered by the Inventory component
             
             // Automatically register all IPropertyLayoutListDefinition implementations
-            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-            var propertyLayoutDefinitionTypes = assemblies
-                .SelectMany(a => a.GetTypes())
-                .Where(t => t.IsClass && !t.IsAbstract && typeof(IPropertyLayoutListDefinition).IsAssignableFrom(t));
-            
-            foreach (var type in propertyLayoutDefinitionTypes)
-            {
-                services.AddSingleton(type);
-            }
+            services.RegisterInterfaceImplementations<IPropertyLayoutListDefinition>();
 
             return services;
         }

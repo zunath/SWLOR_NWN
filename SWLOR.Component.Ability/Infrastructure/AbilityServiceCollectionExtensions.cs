@@ -3,6 +3,7 @@ using SWLOR.Component.Ability.Contracts;
 using SWLOR.Component.Ability.EventHandlers;
 using SWLOR.Component.Ability.Service;
 using SWLOR.Shared.Domain.Ability.Contracts;
+using SWLOR.Shared.Core.Infrastructure;
 
 namespace SWLOR.Component.Ability.Infrastructure
 {
@@ -18,32 +19,14 @@ namespace SWLOR.Component.Ability.Infrastructure
         /// <returns>The service collection for chaining</returns>
         public static IServiceCollection AddAbilityServices(this IServiceCollection services)
         {
-                // Register services as singletons
-                services.AddSingleton<IAbilityService, AbilityService>();
-                services.AddSingleton<IRecastService, RecastService>();
-                services.AddSingleton<IAbilityBuilder, AbilityBuilder>();
-
-            // Dynamically register all ability definition classes
-            RegisterAbilityDefinitionClasses(services);
-
-            // Register event handlers as singletons
+            services.AddSingleton<IAbilityService, AbilityService>();
+            services.AddSingleton<IRecastService, RecastService>();
+            services.AddSingleton<IAbilityBuilder, AbilityBuilder>();
             services.AddSingleton<AbilityEventHandlers>();
+            
+            services.RegisterInterfaceImplementations<IAbilityListDefinition>();
 
             return services;
-        }
-
-        private static void RegisterAbilityDefinitionClasses(IServiceCollection services)
-        {
-            // Find all types that implement IAbilityListDefinition
-            var abilityDefinitionTypes = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(s => s.GetTypes())
-                .Where(w => typeof(IAbilityListDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
-
-            foreach (var type in abilityDefinitionTypes)
-            {
-                // Register each ability definition as singleton
-                services.AddSingleton(type);
-            }
         }
     }
 }

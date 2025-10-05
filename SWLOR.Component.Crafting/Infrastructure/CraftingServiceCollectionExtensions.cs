@@ -6,6 +6,7 @@ using SWLOR.Component.Crafting.Repository;
 using SWLOR.Component.Crafting.Service;
 using SWLOR.Shared.Domain.Crafting.Contracts;
 using SWLOR.Shared.Domain.Repositories;
+using SWLOR.Shared.Core.Infrastructure;
 
 namespace SWLOR.Component.Crafting.Infrastructure
 {
@@ -37,25 +38,10 @@ namespace SWLOR.Component.Crafting.Infrastructure
             services.AddSingleton<Resource>();
             
             // Automatically register all IRecipeListDefinition implementations
-            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-            var recipeDefinitionTypes = assemblies
-                .SelectMany(a => a.GetTypes())
-                .Where(t => t.IsClass && !t.IsAbstract && typeof(IRecipeListDefinition).IsAssignableFrom(t));
-            
-            foreach (var type in recipeDefinitionTypes)
-            {
-                services.AddSingleton(type);
-            }
+            services.RegisterInterfaceImplementations<IRecipeListDefinition>();
             
             // Automatically register all IFishingLocationDefinition implementations
-            var fishingLocationDefinitionTypes = assemblies
-                .SelectMany(a => a.GetTypes())
-                .Where(t => t.IsClass && !t.IsAbstract && typeof(IFishingLocationDefinition).IsAssignableFrom(t));
-            
-            foreach (var type in fishingLocationDefinitionTypes)
-            {
-                services.AddSingleton(type);
-            }
+            services.RegisterInterfaceImplementations<IFishingLocationDefinition>();
 
             // Register event handlers as singletons
             services.AddSingleton<CraftingServiceEventHandlers>();

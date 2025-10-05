@@ -6,6 +6,7 @@ using SWLOR.Component.Inventory.Service;
 using SWLOR.Shared.Domain.Dialog.Contracts;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Repositories;
+using SWLOR.Shared.Core.Infrastructure;
 
 namespace SWLOR.Component.Inventory.Infrastructure
 {
@@ -21,9 +22,7 @@ namespace SWLOR.Component.Inventory.Infrastructure
         /// <returns>The service collection for chaining</returns>
         public static IServiceCollection AddInventoryServices(this IServiceCollection services)
         {
-            // Register repositories
             services.AddSingleton<IInventoryItemRepository, InventoryItemRepository>();
-            
             services.AddSingleton<IKeyItemService, KeyItemService>();
             services.AddSingleton<ILootTableBuilder, LootTableBuilder>();
             services.AddSingleton<ILootService, LootService>();
@@ -31,18 +30,11 @@ namespace SWLOR.Component.Inventory.Infrastructure
             services.AddSingleton<IItemBuilder, ItemBuilder>();
             services.AddSingleton<InventoryEventHandlers>();
             services.AddSingleton<InventoryServiceEventHandlers>();
-
-            // Automatically register all snippet definition classes
-            RegisterSnippetDefinitionClasses(services);
-
-            // Register feature classes
             services.AddSingleton<LightsaberAudio>();
             services.AddSingleton<TrashCan>();
             services.AddSingleton<StackDecrementPrevention>();
             services.AddSingleton<InstantItemUse>();
             services.AddSingleton<StandardItemConfigurations>();
-            
-            // Register item definition classes
             services.AddSingleton<Feature.ItemDefinition.FishingRodItemDefinition>();
             services.AddSingleton<Feature.ItemDefinition.DestroyItemDefinition>();
             services.AddSingleton<Feature.ItemDefinition.ConsumableItemDefinition>();
@@ -54,43 +46,11 @@ namespace SWLOR.Component.Inventory.Infrastructure
             services.AddSingleton<Feature.ItemDefinition.SpeederItemDefinition>();
             services.AddSingleton<Feature.ItemDefinition.SaberUpgradeItemDefinition>();
             
-            // Automatically register all ILootTableDefinition implementations
-            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-            var lootTableDefinitionTypes = assemblies
-                .SelectMany(a => a.GetTypes())
-                .Where(t => t.IsClass && !t.IsAbstract && typeof(ILootTableDefinition).IsAssignableFrom(t));
-            
-            foreach (var type in lootTableDefinitionTypes)
-            {
-                services.AddSingleton(type);
-            }
-
-            // Automatically register all IItemListDefinition implementations
-            var itemDefinitionTypes = assemblies
-                .SelectMany(a => a.GetTypes())
-                .Where(t => t.IsClass && !t.IsAbstract && typeof(IItemListDefinition).IsAssignableFrom(t));
-            
-            foreach (var type in itemDefinitionTypes)
-            {
-                services.AddSingleton(type);
-            }
+            services.RegisterInterfaceImplementationsWithInterface<ISnippetListDefinition>();
+            services.RegisterInterfaceImplementations<ILootTableDefinition>();
+            services.RegisterInterfaceImplementations<IItemListDefinition>();
 
             return services;
-        }
-
-        private static void RegisterSnippetDefinitionClasses(IServiceCollection services)
-        {
-            // Find all types that implement ISnippetListDefinition across all assemblies
-            var snippetDefinitionTypes = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(s => s.GetTypes())
-                .Where(w => typeof(ISnippetListDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
-
-            foreach (var type in snippetDefinitionTypes)
-            {
-                // Register each snippet definition class as transient
-                services.AddSingleton(type);
-                services.AddSingleton(typeof(ISnippetListDefinition), type);
-            }
         }
 
     }

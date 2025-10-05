@@ -3,6 +3,7 @@ using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Service;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.UI.EventHandlers;
+using SWLOR.Shared.Core.Infrastructure;
 
 namespace SWLOR.Shared.UI.Infrastructure
 {
@@ -19,29 +20,9 @@ namespace SWLOR.Shared.UI.Infrastructure
         /// <returns>The service collection for chaining</returns>
         public static IServiceCollection AddUIServices(this IServiceCollection services)
         {
-            // Register the main GUI service
             services.AddSingleton<IGuiService, GuiService>();
-            
-            // Register all ViewModels that inherit from GuiViewModelBase
-            AddViewModels(services);
-            
-            // Register all GUI Window Definitions that implement IGuiWindowDefinition
-            AddGuiWindowDefinitions(services);
-
-            // Register event handlers as singletons
             services.AddSingleton<UIEventHandlers>();
-            
-            return services;
-        }
 
-        /// <summary>
-        /// Registers all ViewModels that inherit from GuiViewModelBase in the service collection.
-        /// </summary>
-        /// <param name="services">The service collection to register services in</param>
-        /// <returns>The service collection for chaining</returns>
-        private static IServiceCollection AddViewModels(IServiceCollection services)
-        {
-            // Automatically discover and register all ViewModels that inherit from GuiViewModelBase across all assemblies
             var viewModelTypes = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(assembly => assembly.GetTypes())
                 .Where(type => type.IsClass && 
@@ -53,36 +34,14 @@ namespace SWLOR.Shared.UI.Infrastructure
             {
                 services.AddSingleton(viewModelType);
                 
-                // If the ViewModel also implements IServiceInitializer, register it as such
                 if (typeof(IServiceInitializer).IsAssignableFrom(viewModelType))
                 {
                     services.AddSingleton<IServiceInitializer>(provider => (IServiceInitializer)provider.GetRequiredService(viewModelType));
                 }
             }
 
-            return services;
-        }
-
-        /// <summary>
-        /// Registers all GUI Window Definitions that implement IGuiWindowDefinition in the service collection.
-        /// </summary>
-        /// <param name="services">The service collection to register services in</param>
-        /// <returns>The service collection for chaining</returns>
-        private static IServiceCollection AddGuiWindowDefinitions(IServiceCollection services)
-        {
-            // Automatically discover and register all GUI Window Definitions that implement IGuiWindowDefinition across all assemblies
-            var windowDefinitionTypes = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(assembly => assembly.GetTypes())
-                .Where(type => type.IsClass && 
-                              !type.IsAbstract && 
-                              typeof(IGuiWindowDefinition).IsAssignableFrom(type))
-                .ToList();
-
-            foreach (var windowDefinitionType in windowDefinitionTypes)
-            {
-                services.AddSingleton(windowDefinitionType);
-            }
-
+            services.RegisterInterfaceImplementations<IGuiWindowDefinition>();
+            
             return services;
         }
 

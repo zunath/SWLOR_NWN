@@ -9,7 +9,7 @@ namespace SWLOR.Shared.Events.Infrastructure
     /// <summary>
     /// Extension methods for registering Eventing-related services in the dependency injection container.
     /// </summary>
-    public static class ServiceCollectionExtensions
+    public static class EventsServiceCollectionExtensions
     {
         /// <summary>
         /// Registers all Eventing services in the service collection.

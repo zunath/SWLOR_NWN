@@ -9,7 +9,7 @@ namespace SWLOR.Shared.Caching.Extensions
     /// <summary>
     /// Extension methods for registering cache-related services in the dependency injection container.
     /// </summary>
-    public static class ServiceCollectionExtensions
+    public static class CachingServiceCollectionExtensions
     {
         /// <summary>
         /// Registers all cache services in the service collection.

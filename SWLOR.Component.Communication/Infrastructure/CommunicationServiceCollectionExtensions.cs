@@ -5,6 +5,7 @@ using SWLOR.Component.Communication.Service;
 using SWLOR.Shared.Domain.Communication.Contracts;
 using SWLOR.Shared.Domain.Dialog.Contracts;
 using SWLOR.Shared.Domain.Dialog.ValueObjects;
+using SWLOR.Shared.Core.Infrastructure;
 
 namespace SWLOR.Component.Communication.Infrastructure
 {
@@ -20,7 +21,6 @@ namespace SWLOR.Component.Communication.Infrastructure
         /// <returns>The service collection for chaining</returns>
         public static IServiceCollection AddCommunicationServices(this IServiceCollection services)
         {
-            // Register services as singletons
             services.AddSingleton<IChatCommandService, ChatCommandService>();
             services.AddSingleton<ICommunicationService, CommunicationService>();
             services.AddSingleton<ILanguageService, LanguageService>();
@@ -32,34 +32,11 @@ namespace SWLOR.Component.Communication.Infrastructure
             services.AddTransient<IDialogBuilder, DialogBuilder>();
             services.AddSingleton<IChatCommandBuilder, ChatCommandBuilder>();
             services.AddSingleton<ISnippetBuilder, SnippetBuilder>();
-
-            RegisterDialogClasses(services);
-            RegisterChatCommandDefinitionClasses(services);
-
-            // Register event handlers as singletons
             services.AddSingleton<CommunicationEventHandlers>();
             services.AddSingleton<CommunicationServiceEventHandlers>();
 
-            return services;
-        }
+            services.RegisterInterfaceImplementations<IChatCommandListDefinition>();
 
-        private static void RegisterChatCommandDefinitionClasses(IServiceCollection services)
-        {
-            var chatCommandDefinitionTypes = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(s => s.GetTypes())
-                .Where(w => typeof(IChatCommandListDefinition).IsAssignableFrom(w) && 
-                           !w.IsInterface && 
-                           !w.IsAbstract);
-
-            foreach (var type in chatCommandDefinitionTypes)
-            {
-                services.AddSingleton(type);
-            }
-        }
-
-        private static void RegisterDialogClasses(IServiceCollection services)
-        {
-            // Find all types that inherit from DialogBase across all assemblies
             var dialogTypes = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
                 .Where(w => typeof(DialogBase).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
@@ -68,6 +45,8 @@ namespace SWLOR.Component.Communication.Infrastructure
             {
                 services.AddTransient(type);
             }
+
+            return services;
         }
     }
 }

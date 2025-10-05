@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.StatusEffect.Contracts;
 using SWLOR.Component.StatusEffect.Feature;
 using SWLOR.Shared.Domain.StatusEffect.Contracts;
+using SWLOR.Shared.Core.Infrastructure;
 
 namespace SWLOR.Component.StatusEffect.Infrastructure
 {
@@ -37,15 +38,7 @@ namespace SWLOR.Component.StatusEffect.Infrastructure
             services.AddSingleton<BuffTimer>();
             
             // Automatically register all IStatusEffectListDefinition implementations
-            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-            var statusEffectDefinitionTypes = assemblies
-                .SelectMany(a => a.GetTypes())
-                .Where(t => t.IsClass && !t.IsAbstract && typeof(IStatusEffectListDefinition).IsAssignableFrom(t));
-            
-            foreach (var type in statusEffectDefinitionTypes)
-            {
-                services.AddSingleton(type);
-            }
+            services.RegisterInterfaceImplementations<IStatusEffectListDefinition>();
             
             return services;
         }

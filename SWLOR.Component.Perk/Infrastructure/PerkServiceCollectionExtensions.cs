@@ -3,6 +3,7 @@ using SWLOR.Component.Perk.Contracts;
 using SWLOR.Component.Perk.EventHandlers;
 using SWLOR.Component.Perk.Service;
 using SWLOR.Shared.Domain.Perk.Contracts;
+using SWLOR.Shared.Core.Infrastructure;
 
 namespace SWLOR.Component.Perk.Infrastructure
 {
@@ -37,15 +38,7 @@ namespace SWLOR.Component.Perk.Infrastructure
             services.AddSingleton<PerkEventHandler>();
             
             // Automatically register all IPerkListDefinition implementations
-            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-            var perkDefinitionTypes = assemblies
-                .SelectMany(a => a.GetTypes())
-                .Where(t => t.IsClass && !t.IsAbstract && typeof(IPerkListDefinition).IsAssignableFrom(t));
-            
-            foreach (var type in perkDefinitionTypes)
-            {
-                services.AddSingleton(type);
-            }
+            services.RegisterInterfaceImplementations<IPerkListDefinition>();
             
             return services;
         }

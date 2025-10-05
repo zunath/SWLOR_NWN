@@ -6,6 +6,7 @@ using SWLOR.Component.World.Repository;
 using SWLOR.Component.World.Service;
 using SWLOR.Shared.Domain.Repositories;
 using SWLOR.Shared.Domain.World.Contracts;
+using SWLOR.Shared.Core.Infrastructure;
 
 namespace SWLOR.Component.World.Infrastructure
 {
@@ -64,18 +65,7 @@ namespace SWLOR.Component.World.Infrastructure
             services.AddSingleton<GameWorldEntry>();
 
             // Automatically register all spawn definition implementations
-            // Check all assemblies instead of just the current one
-            var allAssemblies = AppDomain.CurrentDomain.GetAssemblies();
-            
-            // Register ISpawnListDefinition implementations
-            var spawnDefinitionTypes = allAssemblies
-                .SelectMany(assembly => assembly.GetTypes())
-                .Where(t => t.IsClass && !t.IsAbstract && typeof(ISpawnListDefinition).IsAssignableFrom(t));
-            
-            foreach (var type in spawnDefinitionTypes)
-            {
-                services.AddSingleton(type);
-            }
+            services.RegisterInterfaceImplementations<ISpawnListDefinition>();
 
             return services;
         }

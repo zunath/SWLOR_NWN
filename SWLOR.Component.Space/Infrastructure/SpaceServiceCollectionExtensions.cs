@@ -5,6 +5,7 @@ using SWLOR.Component.Space.Repository;
 using SWLOR.Component.Space.Service;
 using SWLOR.Shared.Domain.Repositories;
 using SWLOR.Shared.Domain.Space.Contracts;
+using SWLOR.Shared.Core.Infrastructure;
 
 namespace SWLOR.Component.Space.Infrastructure
 {
@@ -20,62 +21,18 @@ namespace SWLOR.Component.Space.Infrastructure
         /// <returns>The service collection for chaining</returns>
         public static IServiceCollection AddSpaceServices(this IServiceCollection services)
         {
-            // Register repositories
             services.AddSingleton<IPlayerShipRepository, PlayerShipRepository>();
-            
-            // Register Space services
             services.AddSingleton<ISpaceService, SpaceService>();
             services.AddTransient<IShipBuilder, ShipBuilder>();
             services.AddTransient<IShipModuleBuilder, ShipModuleBuilder>();
             services.AddTransient<ISpaceObjectBuilder, SpaceObjectBuilder>();
-            
-            // Register Space EventHandlers
             services.AddSingleton<SpaceEventHandler>();
             
-            RegisterShipListDefinitions(services);
-            RegisterShipModuleListDefinitions(services);
-            RegisterSpaceObjectListDefinitions(services);
+            services.RegisterInterfaceImplementationsWithInterface<IShipListDefinition>();
+            services.RegisterInterfaceImplementationsWithInterface<IShipModuleListDefinition>();
+            services.RegisterInterfaceImplementationsWithInterface<ISpaceObjectListDefinition>();
             
             return services;
-        }
-
-        private static void RegisterShipListDefinitions(IServiceCollection services)
-        {
-            var allAssemblies = AppDomain.CurrentDomain.GetAssemblies();
-            var shipDefinitionTypes = allAssemblies
-                .SelectMany(assembly => assembly.GetTypes())
-                .Where(t => t.IsClass && !t.IsAbstract && typeof(IShipListDefinition).IsAssignableFrom(t));
-
-            foreach (var type in shipDefinitionTypes)
-            {
-                services.AddSingleton(typeof(IShipListDefinition), type);
-            }
-        }
-
-        private static void RegisterShipModuleListDefinitions(IServiceCollection services)
-        {
-            var allAssemblies = AppDomain.CurrentDomain.GetAssemblies();
-            var shipModuleDefinitionTypes = allAssemblies
-                .SelectMany(assembly => assembly.GetTypes())
-                .Where(t => t.IsClass && !t.IsAbstract && typeof(IShipModuleListDefinition).IsAssignableFrom(t));
-
-            foreach (var type in shipModuleDefinitionTypes)
-            {
-                services.AddSingleton(typeof(IShipModuleListDefinition), type);
-            }
-        }
-
-        private static void RegisterSpaceObjectListDefinitions(IServiceCollection services)
-        {
-            var allAssemblies = AppDomain.CurrentDomain.GetAssemblies();
-            var spaceObjectDefinitionTypes = allAssemblies
-                .SelectMany(assembly => assembly.GetTypes())
-                .Where(t => t.IsClass && !t.IsAbstract && typeof(ISpaceObjectListDefinition).IsAssignableFrom(t));
-
-            foreach (var type in spaceObjectDefinitionTypes)
-            {
-                services.AddSingleton(typeof(ISpaceObjectListDefinition), type);
-            }
         }
     }
 }

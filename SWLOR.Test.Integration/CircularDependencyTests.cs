@@ -39,7 +39,7 @@ namespace SWLOR.Test.Integration
             var serviceProvider = services.BuildServiceProvider();
 
             // Act
-            var initializationManager = serviceProvider.GetRequiredService<ServiceInitializationManager>();
+            var initializationManager = serviceProvider.GetRequiredService<ServiceInitializer>();
 
             // This should not throw
             Assert.DoesNotThrow(() =>

@@ -1,4 +1,3 @@
-using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Events.EventHandlers;
 using SWLOR.Shared.Abstractions.Contracts;
 using NSubstitute;

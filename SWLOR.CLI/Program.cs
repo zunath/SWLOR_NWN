@@ -1,5 +1,4 @@
 ﻿using McMaster.Extensions.CommandLineUtils;
-using System;
 
 namespace SWLOR.CLI
 {

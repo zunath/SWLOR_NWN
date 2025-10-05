@@ -1,5 +1,4 @@
 using SWLOR.NWN.API.Contracts;
-using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Models;
 using SWLOR.Shared.Core.Log.LogGroup;

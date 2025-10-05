@@ -1,12 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
-using NSubstitute;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.Component.Ability.EventHandlers;
 using SWLOR.Component.Ability.Infrastructure;
 using SWLOR.Component.Ability.Service;
-using SWLOR.NWN.API.Contracts;
-using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Domain.Ability.Contracts;
 
 namespace SWLOR.Test.Component.Ability.Infrastructure

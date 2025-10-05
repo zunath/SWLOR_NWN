@@ -1,5 +1,3 @@
-using System;
-using System.Runtime.InteropServices;
 using NWNX.NET;
 using NWNX.NET.Native;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -7,37 +5,39 @@ using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Events.Events.Infrastructure;
 using SWLOR.Shared.Events.Events.Module;
+using System;
+using System.Runtime.InteropServices;
+using SWLOR.Shared.Core.Contracts;
 
 namespace SWLOR.Game.Server.Server
 {
     public unsafe class NativeInteropManager : INativeInteropManager
     {
-        private readonly ILogger _logger;
         private readonly IMainLoopProcessor _mainLoopProcessor;
         private readonly IScriptExecutor _scriptExecutor;
         private readonly IClosureManager _closureManager;
         private readonly IEventAggregator _eventAggregator;
         private readonly IEventRegistrationService _eventRegistration;
+        private readonly IServiceInitializer _serviceInitializer;
 
         public NativeInteropManager(
-            ILogger logger, 
             IMainLoopProcessor mainLoopProcessor, 
             IScriptExecutor scriptExecutor, 
             IClosureManager closureManager, 
             IEventAggregator eventAggregator,
-            IEventRegistrationService eventRegistration)
+            IEventRegistrationService eventRegistration,
+            IServiceInitializer serviceInitializer)
         {
-            _logger = logger;
             _mainLoopProcessor = mainLoopProcessor;
             _scriptExecutor = scriptExecutor;
             _closureManager = closureManager;
             _eventAggregator = eventAggregator;
             _eventRegistration = eventRegistration;
+            _serviceInitializer = serviceInitializer;
         }
 
         public void RegisterHandlers()
         {
-            
             NWNXAPI.RegisterMainLoopHandler(&OnMainLoop);
             NWNXAPI.RegisterRunScriptHandler(&OnRunScript);
             NWNXAPI.RegisterClosureHandler(&OnClosure);
@@ -114,9 +114,26 @@ namespace SWLOR.Game.Server.Server
             {
                 case "ON_MODULE_LOAD_FINISH":
                     _scriptExecutor.Initialize();
+                    InitializeServices();
                     _eventRegistration.RegisterEvents();
                     RunPreModuleLoadEvents();
                     break;
+            }
+        }
+
+        /// <summary>
+        /// Initializes all services that require post-construction setup
+        /// </summary>
+        private void InitializeServices()
+        {
+            try
+            {
+                _serviceInitializer.InitializeAllServices();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error during service initialization: {ex.Message}");
+                throw;
             }
         }
 

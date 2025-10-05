@@ -1,6 +1,5 @@
 using SWLOR.Component.Admin.Contracts;
 using SWLOR.NWN.API.Contracts;
-using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;

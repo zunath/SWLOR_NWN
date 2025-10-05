@@ -1,13 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
-using NSubstitute;
 using SWLOR.Component.Inventory.EventHandlers;
 using SWLOR.Component.Inventory.Feature;
 using SWLOR.Component.Inventory.Infrastructure;
-using SWLOR.Component.Inventory.Repository;
 using SWLOR.Component.Inventory.Service;
-using SWLOR.NWN.API.Contracts;
-using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Domain.Dialog.Contracts;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Repositories;
 

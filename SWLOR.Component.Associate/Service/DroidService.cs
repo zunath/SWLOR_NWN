@@ -3,7 +3,6 @@ using Newtonsoft.Json;
 using SWLOR.Component.Associate.Contracts;
 using SWLOR.Component.Associate.Model;
 using SWLOR.NWN.API.Contracts;
-using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Core.Bioware;

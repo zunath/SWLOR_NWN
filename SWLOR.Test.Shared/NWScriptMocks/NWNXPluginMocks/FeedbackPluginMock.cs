@@ -1,5 +1,4 @@
 using SWLOR.NWN.API.Contracts;
-using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWNX.Enum;
 
 namespace SWLOR.Test.Shared.NWScriptMocks.NWNXPluginMocks

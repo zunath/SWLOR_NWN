@@ -34,9 +34,9 @@ namespace SWLOR.Shared.UI.Infrastructure
             {
                 services.AddSingleton(viewModelType);
                 
-                if (typeof(IServiceInitializer).IsAssignableFrom(viewModelType))
+                if (typeof(IInitializable).IsAssignableFrom(viewModelType))
                 {
-                    services.AddSingleton<IServiceInitializer>(provider => (IServiceInitializer)provider.GetRequiredService(viewModelType));
+                    services.AddSingleton<IInitializable>(provider => (IInitializable)provider.GetRequiredService(viewModelType));
                 }
             }
 

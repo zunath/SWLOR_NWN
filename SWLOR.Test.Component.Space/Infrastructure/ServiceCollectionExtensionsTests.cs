@@ -5,7 +5,6 @@ using SWLOR.Component.Space.EventHandlers;
 using SWLOR.Component.Space.Infrastructure;
 using SWLOR.Component.Space.Service;
 using SWLOR.NWN.API.Contracts;
-using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Repositories;
 using SWLOR.Shared.Domain.Space.Contracts;

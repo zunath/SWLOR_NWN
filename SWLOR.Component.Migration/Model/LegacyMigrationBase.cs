@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.Contracts;
-using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWNX.Enum;
 
 namespace SWLOR.Component.Migration.Model

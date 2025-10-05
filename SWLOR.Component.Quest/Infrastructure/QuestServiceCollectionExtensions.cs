@@ -3,7 +3,6 @@ using SWLOR.Component.Quest.Contracts;
 using SWLOR.Component.Quest.EventHandlers;
 using SWLOR.Component.Quest.Service;
 using SWLOR.NWN.API.Contracts;
-using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Quest.Contracts;
 using SWLOR.Shared.Core.Infrastructure;

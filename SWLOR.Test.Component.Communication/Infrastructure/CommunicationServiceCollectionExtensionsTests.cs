@@ -1,14 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
-using NSubstitute;
 using SWLOR.Component.Communication.Contracts;
 using SWLOR.Component.Communication.EventHandlers;
 using SWLOR.Component.Communication.Infrastructure;
 using SWLOR.Component.Communication.Service;
-using SWLOR.NWN.API.Contracts;
-using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Communication.Contracts;
 using SWLOR.Shared.Domain.Dialog.Contracts;
-using SWLOR.Shared.Domain.Dialog.ValueObjects;
 
 namespace SWLOR.Test.Component.Communication.Infrastructure
 {

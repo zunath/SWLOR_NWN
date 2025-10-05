@@ -1,7 +1,6 @@
 using SWLOR.Component.Character.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.Component.Character.Feature.AppearanceDefinition.RacialAppearance;
 using SWLOR.NWN.API.Contracts;
-using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Constants;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;

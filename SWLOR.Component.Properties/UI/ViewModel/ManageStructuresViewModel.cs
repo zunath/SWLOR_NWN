@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using System.Numerics;
 using SWLOR.Component.Properties.Service;
-using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Component.Properties.UI.Payload;
 using SWLOR.NWN.API.Contracts;

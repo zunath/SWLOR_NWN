@@ -103,7 +103,7 @@ namespace SWLOR.Game.Server
             services.AddSingleton<IScheduler, Scheduler>();
             
             // Service Initialization
-            services.AddSingleton<ServiceInitializationManager>();
+            services.AddSingleton<ServiceInitializer>();
         }
 
         private static void AddGameServices(IServiceCollection services)

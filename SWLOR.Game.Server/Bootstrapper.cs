@@ -11,9 +11,6 @@ namespace SWLOR.Game.Server
         {
             var serviceProvider = InitializeDependencyInjection();
 
-            // Initialize all services that require post-construction setup
-            InitializeServices(serviceProvider);
-
             // Bootstrap the server
             var serverManager = serviceProvider.GetRequiredService<IServerManager>();
             serverManager.Bootstrap();
@@ -36,23 +33,6 @@ namespace SWLOR.Game.Server
             ServiceContainer.Initialize(serviceProvider);
             
             return serviceProvider;
-        }
-
-        /// <summary>
-        /// Initializes all services that require post-construction setup
-        /// </summary>
-        private static void InitializeServices(IServiceProvider serviceProvider)
-        {
-            try
-            {
-                var initializationManager = serviceProvider.GetRequiredService<ServiceInitializationManager>();
-                initializationManager.InitializeAllServices();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error during service initialization: {ex.Message}");
-                throw;
-            }
         }
     }
 }

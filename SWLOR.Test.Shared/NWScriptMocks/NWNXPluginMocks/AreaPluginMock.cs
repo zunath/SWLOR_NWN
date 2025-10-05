@@ -1,7 +1,6 @@
 using System.Numerics;
 using NWN.Core.NWNX;
 using SWLOR.NWN.API.Contracts;
-using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Test.Shared.NWScriptMocks.NWNXPluginMocks

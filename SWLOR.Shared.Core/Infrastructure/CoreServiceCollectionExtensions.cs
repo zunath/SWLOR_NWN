@@ -20,7 +20,7 @@ namespace SWLOR.Shared.Core.Infrastructure
             services.AddSingleton<IRandomService, RandomService>();
             services.AddSingleton<ITimeService, TimeService>();
             services.AddSingleton<IDiscordNotificationService, DiscordNotificationService>();
-            services.AddSingleton<IServiceInitializationManager, ServiceInitializationManager>();
+            services.AddSingleton<IServiceInitializer, ServiceInitializer>();
 
             return services;
         }

@@ -3,7 +3,6 @@ using SWLOR.Component.Market.Contracts;
 using SWLOR.Component.Market.Enums;
 using SWLOR.Component.Market.UI.Payload;
 using SWLOR.NWN.API.Contracts;
-using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Core.Log.LogGroup;

@@ -4,13 +4,13 @@ using SWLOR.Shared.Domain.StatusEffect.Enums;
 
 namespace SWLOR.Component.StatusEffect.Model
 {
-    public class CreatureStatusEffect
+    internal class CreatureStatusEffect
     {
         private readonly HashSet<IStatusEffect> _allActiveEffects = new();
         private readonly HashSet<IStatusEffect> _tickEffects = new();
         private readonly HashSet<IStatusEffect> _onHitEffects = new();
         private readonly Dictionary<StatusEffectSourceType, HashSet<IStatusEffect>> _effectsBySourceType = new();
-        public StatGroup StatGroup { get; private set; }
+        internal StatGroup StatGroup { get; }
 
         public void Add(IStatusEffect statusEffect)
         {

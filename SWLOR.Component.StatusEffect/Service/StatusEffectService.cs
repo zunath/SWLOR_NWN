@@ -1,6 +1,7 @@
 ﻿using SWLOR.Component.StatusEffect.Model;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Domain.Character.ValueObjects;
 using SWLOR.Shared.Domain.Combat.Events;
 using SWLOR.Shared.Domain.Communication.Contracts;
 using SWLOR.Shared.Domain.StatusEffect;
@@ -11,7 +12,7 @@ using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Component.StatusEffect.Service
 {
-    public class StatusEffectService
+    public class StatusEffectService : IStatusEffectService
     {
         private const string StatusEffectTag = "STATUS_EFFECT";
         private const float Interval = 1f;
@@ -106,10 +107,16 @@ namespace SWLOR.Component.StatusEffect.Service
             }
         }
 
-        public CreatureStatusEffect GetCreatureStatusEffects(uint creature)
+        public StatGroup GetCreatureStatGroup(uint creature)
         {
-            return !_creatureEffects.ContainsKey(creature) 
-                ? new CreatureStatusEffect() 
+            var statusEffect = GetCreatureStatusEffects(creature);
+            return statusEffect.StatGroup;
+        }
+
+        private CreatureStatusEffect GetCreatureStatusEffects(uint creature)
+        {
+            return !_creatureEffects.ContainsKey(creature)
+                ? new CreatureStatusEffect()
                 : _creatureEffects[creature];
         }
 

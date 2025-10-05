@@ -20,7 +20,6 @@ using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Perk.Contracts;
 using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Skill.Enums;
-using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Service;
 

@@ -8,7 +8,6 @@ using SWLOR.Shared.Domain.Inventory.Events;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.Player;
-using SWLOR.Shared.Events.Events.Server;
 
 namespace SWLOR.Component.Ability.EventHandlers
 {

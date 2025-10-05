@@ -24,5 +24,6 @@
         public const string OnEnmityChanged = "enmity_changed";
         public const string OnIntervalPC6Seconds = "interval_pc_6s";
         public const string OnItemHit = "item_on_hit";
+        public const string OnDealtDamage = "swlor_dmg_dealt";
     }
 }

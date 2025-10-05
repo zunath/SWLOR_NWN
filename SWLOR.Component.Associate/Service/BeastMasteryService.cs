@@ -27,7 +27,6 @@ using SWLOR.Shared.Domain.Properties.Contracts;
 using SWLOR.Shared.Domain.UI.Events;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Service;
-using SWLOR.Shared.Events.Constants;
 
 namespace SWLOR.Component.Associate.Service
 {

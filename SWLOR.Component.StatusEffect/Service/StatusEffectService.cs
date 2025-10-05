@@ -1,9 +1,13 @@
 ﻿using SWLOR.Component.StatusEffect.Model;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Domain.Combat.Events;
 using SWLOR.Shared.Domain.Communication.Contracts;
+using SWLOR.Shared.Domain.StatusEffect;
 using SWLOR.Shared.Domain.StatusEffect.Contracts;
 using SWLOR.Shared.Domain.StatusEffect.Enums;
+using SWLOR.Shared.Domain.StatusEffect.Events;
+using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Component.StatusEffect.Service
 {
@@ -27,28 +31,20 @@ namespace SWLOR.Component.StatusEffect.Service
             _serviceProvider = serviceProvider;
             _messagingService = messagingService;
 
-            RegisterEvents();
             SubscribeEvents();
-        }
-
-        private void RegisterEvents()
-        {
-            _event.RegisterEvent<StatusEffectEvent.OnApplyStatusEffect>(ProgressionEventScript.OnApplyStatusEffectScript);
-            _event.RegisterEvent<StatusEffectEvent.OnRemoveStatusEffect>(ProgressionEventScript.OnRemoveStatusEffectScript);
-            _event.RegisterEvent<StatusEffectEvent.OnStatusEffectInterval>(ProgressionEventScript.OnStatusEffectIntervalScript);
         }
 
         private void SubscribeEvents()
         {
-            _event.Subscribe<StatusEffectEvent.OnApplyStatusEffect>(OnApplyNWNStatusEffect);
-            _event.Subscribe<StatusEffectEvent.OnRemoveStatusEffect>(OnRemoveNWNStatusEffect);
-            _event.Subscribe<StatusEffectEvent.OnStatusEffectInterval>(OnNWNStatusEffectInterval);
-            _event.Subscribe<ModuleEvent.OnPlayerEnter>(OnPlayerEnter);
-            _event.Subscribe<JobEvent.PlayerChangedJobEvent>(OnChangeJobs);
-            _event.Subscribe<XMEvent.OnDamageDealt>(OnDealtDamage);
+            _event.Subscribe<OnApplyStatusEffect>(OnApplyNWNStatusEffect);
+            _event.Subscribe<OnRemoveStatusEffect>(OnRemoveNWNStatusEffect);
+            _event.Subscribe<OnStatusEffectInterval>(OnNWNStatusEffectInterval);
+
+            _event.Subscribe<OnModuleEnter>(OnPlayerEnter);
+            _event.Subscribe<OnDealtDamage>(OnDealtDamage);
         }
 
-        private void OnPlayerEnter(uint module)
+        private void OnPlayerEnter(OnModuleEnter evt)
         {
             var player = GetEnteringObject();
             ApplyNWNEffect(player);
@@ -70,19 +66,22 @@ namespace SWLOR.Component.StatusEffect.Service
             ApplyEffectToObject(DurationType.Permanent, effect, creature);
         }
 
-        private void OnApplyNWNStatusEffect(uint player)
+        private void OnApplyNWNStatusEffect(OnApplyStatusEffect evt)
         {
-            _creatureEffects[player] = new CreatureStatusEffect();
+            var creature = OBJECT_SELF;
+            _creatureEffects[creature] = new CreatureStatusEffect();
         }
 
-        private void OnRemoveNWNStatusEffect(uint player)
+        private void OnRemoveNWNStatusEffect(OnRemoveStatusEffect evt)
         {
-            if (_creatureEffects.ContainsKey(player))
-                _creatureEffects.Remove(player);
+            var creature = OBJECT_SELF;
+            if (_creatureEffects.ContainsKey(creature))
+                _creatureEffects.Remove(creature);
         }
 
-        private void OnNWNStatusEffectInterval(uint creature)
+        private void OnNWNStatusEffectInterval(OnStatusEffectInterval evt)
         {
+            var creature = OBJECT_SELF;
             if (!_creatureEffects.ContainsKey(creature))
             {
                 RemoveEffectByTag(creature, StatusEffectTag);
@@ -260,28 +259,14 @@ namespace SWLOR.Component.StatusEffect.Service
             return HasEffect(typeof(T), creature);
         }
 
-        private void OnChangeJobs(uint player)
+        private void OnDealtDamage(OnDealtDamage evt)
         {
-            if (!_creatureEffects.ContainsKey(player))
-                return;
-
-            foreach (var effect in _creatureEffects[player].GetAllEffects())
-            {
-                if (effect.IsRemovedOnJobChange)
-                {
-                    RemoveStatusEffect(effect.GetType(), player);
-                }
-            }
-        }
-
-        private void OnDealtDamage(uint attacker)
-        {
-            var data = _event.GetEventData<XMEvent.OnDamageDealt>();
+            var attacker = OBJECT_SELF;
             var effects = GetCreatureStatusEffects(attacker);
 
             foreach (var effect in effects.GetAllOnHitEffects())
             {
-                effect.OnHitEffect(attacker, data.Target, data.Damage);
+                effect.OnHitEffect(attacker, evt.Target, evt.Damage);
             }
         }
     }

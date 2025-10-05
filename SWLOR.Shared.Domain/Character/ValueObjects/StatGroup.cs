@@ -20,5 +20,10 @@ namespace SWLOR.Shared.Domain.Character.ValueObjects
 
             return _stats[type];
         }
+
+        public IDictionary<StatType, int> GetAll()
+        {
+            return _stats.ToDictionary(x => x.Key, y => y.Value);
+        }
     }
 }

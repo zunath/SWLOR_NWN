@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Abstractions.Extensions;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Log.LogGroup;

@@ -10,7 +10,6 @@ using SWLOR.Shared.Domain.Properties.Enums;
 using SWLOR.Shared.Domain.Properties.Events;
 using SWLOR.Shared.Domain.Properties.ValueObjects;
 using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Constants;
 
 namespace SWLOR.Component.Properties.Feature.PropertyLayoutDefinition
 {

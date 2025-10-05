@@ -14,14 +14,9 @@ namespace SWLOR.Component.StatusEffect.Model
 
         public void Add(IStatusEffect statusEffect)
         {
-            foreach (var (type, value) in statusEffect.StatGroup.Stats)
+            foreach (var (type, value) in statusEffect.StatGroup.GetAll())
             {
-                StatGroup.Stats[type] += value;
-            }
-
-            foreach (var (type, value) in statusEffect.StatGroup.Resists)
-            {
-                StatGroup.Resists[type] += value;
+                StatGroup.SetStat(type, StatGroup.GetStat(type) + value);
             }
 
             _allActiveEffects.Add(statusEffect);
@@ -42,14 +37,9 @@ namespace SWLOR.Component.StatusEffect.Model
 
         public void Remove(IStatusEffect statusEffect)
         {
-            foreach (var (type, value) in statusEffect.StatGroup.Stats)
+            foreach (var (type, value) in statusEffect.StatGroup.GetAll())
             {
-                StatGroup.Stats[type] -= value;
-            }
-
-            foreach (var (type, value) in statusEffect.StatGroup.Resists)
-            {
-                StatGroup.Resists[type] -= value;
+                StatGroup.SetStat(type, StatGroup.GetStat(type) - value);
             }
 
             _allActiveEffects.Remove(statusEffect);

@@ -1,6 +1,6 @@
 ﻿namespace SWLOR.Shared.Domain.StatusEffect
 {
-    internal class StatusEffectScriptName
+    public class StatusEffectScriptName
     {
         public const string OnApplyStatusEffectScript = "status_apply";
         public const string OnRemoveStatusEffectScript = "status_remove";

@@ -7,10 +7,6 @@ using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Inventory.Enums;
 using SWLOR.Shared.Domain.Inventory.ValueObjects;
-using SWLOR.Shared.Domain.Skill.Enums;
-
-
-using SWLOR.Shared.Domain.StatusEffect.ValueObjects;
 
 namespace SWLOR.Component.Inventory.Feature.ItemDefinition
 {

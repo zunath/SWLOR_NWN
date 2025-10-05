@@ -9,13 +9,11 @@ using SWLOR.Shared.Domain.Properties.Entities;
 using SWLOR.Shared.Domain.Properties.Enums;
 using SWLOR.Shared.Domain.Properties.Events;
 using SWLOR.Shared.Domain.Properties.ValueObjects;
-using SWLOR.Shared.Domain.Space;
 using SWLOR.Shared.Domain.Space.Contracts;
 using SWLOR.Shared.Domain.World.Contracts;
 using SWLOR.Shared.Domain.World.Enums;
 using SWLOR.Shared.Domain.World.Events;
 using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Constants;
 
 namespace SWLOR.Component.Properties.Feature.PropertyLayoutDefinition
 {

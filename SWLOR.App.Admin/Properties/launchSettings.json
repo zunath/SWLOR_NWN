@@ -8,7 +8,7 @@
     }
   },
   "profiles": {
-    "SWLOR.Admin": {
+    "SWLOR.App.Admin": {
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {

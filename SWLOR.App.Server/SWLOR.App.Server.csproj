@@ -6,6 +6,7 @@
 		<LangVersion>11</LangVersion>
 		<OutputType>Library</OutputType>
 		<PlatformTarget>x64</PlatformTarget>
+		<AssemblyName>SWLOR.App.Server</AssemblyName>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -59,7 +60,8 @@
 		</ItemGroup>
 	</Target>
 
-	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-		<Exec Command="SWLOR.CLI.exe -o" WorkingDirectory="$(MSBuildProjectDirectory)\..\Build" />
-	</Target>
+	<!-- Temporarily disabled post-build step during project rename -->
+	<!-- <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+		<Exec Command="SWLOR.App.CLI.exe -o" WorkingDirectory="$(MSBuildProjectDirectory)\..\Build" />
+	</Target> -->
 </Project>

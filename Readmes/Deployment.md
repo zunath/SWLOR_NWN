@@ -1,10 +1,10 @@
-# SWLOR.Game.Server Deployment Documentation
+# SWLOR.App.Server Deployment Documentation
 
-This document provides comprehensive information about deploying and running the SWLOR.Game.Server project, including Docker configuration, environment setup, and production considerations.
+This document provides comprehensive information about deploying and running the SWLOR.App.Server project, including Docker configuration, environment setup, and production considerations.
 
 ## Overview
 
-SWLOR.Game.Server is designed to run in a containerized environment using Docker, with support for different deployment environments (Development, Test, Production). The deployment system includes monitoring with Grafana and uses Redis for caching and data storage.
+SWLOR.App.Server is designed to run in a containerized environment using Docker, with support for different deployment environments (Development, Test, Production). The deployment system includes monitoring with Grafana and uses Redis for caching and data storage.
 
 ## Directory Structure
 

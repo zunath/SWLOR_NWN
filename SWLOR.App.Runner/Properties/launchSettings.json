@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "SWLOR.Runner": {
+    "SWLOR.App.Runner": {
       "commandName": "Project",
       "remoteDebugEnabled": false
     }

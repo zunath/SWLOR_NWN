@@ -1,18 +1,18 @@
-# SWLOR.Game.Server Project Structure Documentation
+# SWLOR.App.Server Project Structure Documentation
 
-This document provides comprehensive information about the overall project structure, build configuration, development setup, and project organization for SWLOR.Game.Server.
+This document provides comprehensive information about the overall project structure, build configuration, development setup, and project organization for SWLOR.App.Server.
 
 ## Overview
 
-SWLOR.Game.Server is a .NET 7.0 library project designed to run as a Neverwinter Nights server module. The project uses a layered architecture with clear separation of concerns, extensive use of the builder pattern, and comprehensive integration with the NWN engine.
+SWLOR.App.Server is a .NET 8.0 library project designed to run as a Neverwinter Nights server module. The project uses a layered architecture with clear separation of concerns, extensive use of the builder pattern, and comprehensive integration with the NWN engine.
 
 ## Project Structure
 
 ```
-SWLOR.Game.Server/
+SWLOR.App.Server/
 ├── ApplicationSettings.cs              # Application configuration
 ├── GlobalUsings.cs                    # Global using statements
-├── SWLOR.Game.Server.csproj           # Project file
+├── SWLOR.App.Server.csproj           # Project file
 ├── SWLOR.sln                          # Solution file
 ├── Core/                              # Core systems and abstractions
 │   ├── Async/                         # Asynchronous programming
@@ -51,10 +51,10 @@ SWLOR.Game.Server/
 
 ### 1. Project File
 
-**Location**: `SWLOR.Game.Server.csproj`
+**Location**: `SWLOR.App.Server.csproj`
 
 **Key Configuration**: See the project file for complete build configuration including:
-- Target Framework: .NET 7.0
+- Target Framework: .NET 8.0
 - Dynamic Loading: Enabled for plugin support
 - Language Version: C# 10
 - Output Type: Library (not executable)
@@ -63,7 +63,7 @@ SWLOR.Game.Server/
 
 ### 2. Dependencies
 
-**NuGet Packages**: See `SWLOR.Game.Server.csproj` for the complete list of dependencies including:
+**NuGet Packages**: See `SWLOR.App.Server.csproj` for the complete list of dependencies including:
 - NWN.Native: Neverwinter Nights engine integration
 - StackExchange.Redis: Redis client for caching
 - Serilog: Logging framework
@@ -72,9 +72,9 @@ SWLOR.Game.Server/
 
 ### 3. Build Targets
 
-**Post-Build Processing**: See `SWLOR.Game.Server.csproj` for the post-build target configuration.
+**Post-Build Processing**: See `SWLOR.App.Server.csproj` for the post-build target configuration.
 
-**NWN Target**: See `SWLOR.Game.Server.csproj` for the NWN build target configuration.
+**NWN Target**: See `SWLOR.App.Server.csproj` for the NWN build target configuration.
 
 ## Application Configuration
 
@@ -181,7 +181,7 @@ SWLOR.Game.Server/
 ```bash
 # Clone repository
 git clone <repository-url>
-cd SWLOR.Game.Server
+cd SWLOR.App.Server
 
 # Restore dependencies
 dotnet restore
@@ -230,15 +230,15 @@ dotnet build
 
 ### 2. Post-Build Processing
 
-**CLI Processing**: See `SWLOR.Game.Server.csproj` for the post-build processing configuration.
+**CLI Processing**: See `SWLOR.App.Server.csproj` for the post-build processing configuration.
 
 ### 3. Output Files
 
 **Generated Files**: See the build output directory for generated files including:
-- `SWLOR.Game.Server.dll`: Main assembly
-- `SWLOR.Game.Server.pdb`: Debug symbols
-- `SWLOR.Game.Server.runtimeconfig.json`: Runtime configuration
-- `SWLOR.Game.Server.deps.json`: Dependency information
+- `SWLOR.App.Server.dll`: Main assembly
+- `SWLOR.App.Server.pdb`: Debug symbols
+- `SWLOR.App.Server.runtimeconfig.json`: Runtime configuration
+- `SWLOR.App.Server.deps.json`: Dependency information
 
 ## Project Organization
 

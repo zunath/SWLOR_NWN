@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Game.Server", "SWLOR.Game.Server.csproj", "{7ED0B204-0548-4C84-A1D6-67FC98606CBA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.App.Server", "SWLOR.App.Server.csproj", "{7ED0B204-0548-4C84-A1D6-67FC98606CBA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

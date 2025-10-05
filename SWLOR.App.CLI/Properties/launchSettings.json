@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "SWLOR.CLI": {
+    "SWLOR.App.CLI": {
       "commandName": "Project",
       "commandLineArgs": "-l"
     }

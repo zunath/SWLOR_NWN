@@ -8,7 +8,7 @@
    "ModelNamespace": null,
    "OutputContextPath": "LegacyMigration",
    "OutputPath": "LegacyMigration",
-   "ProjectRootNamespace": "SWLOR.CLI",
+   "ProjectRootNamespace": "SWLOR.App.CLI",
    "Schemas": null,
    "SelectedHandlebarsLanguage": 0,
    "SelectedToBeGenerated": 0,

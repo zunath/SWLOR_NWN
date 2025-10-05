@@ -1,11 +1,11 @@
-# SWLOR.Game.Server Documentation
+# SWLOR.App.Server Documentation
 
-This folder contains comprehensive documentation for the SWLOR.Game.Server project, focusing on the various systems and patterns used throughout the codebase.
+This folder contains comprehensive documentation for the SWLOR.App.Server project, focusing on the various systems and patterns used throughout the codebase.
 
 ## Available Documentation
 
 ### [Builders.md](Builders.md)
-Comprehensive documentation of all builder classes in the SWLOR.Game.Server project. This includes:
+Comprehensive documentation of all builder classes in the SWLOR.App.Server project. This includes:
 
 - **16 different builders** covering all major game systems
 - **Detailed usage examples** for each builder
@@ -78,7 +78,7 @@ Comprehensive documentation of the Feature layer, which contains game-specific c
 - **Integration** with services and entities
 
 ### [Deployment.md](Deployment.md)
-Comprehensive documentation for deploying and running the SWLOR.Game.Server project. This includes:
+Comprehensive documentation for deploying and running the SWLOR.App.Server project. This includes:
 
 - **Docker configuration** and container setup
 - **Environment management** (Development, Test, Production)
@@ -160,4 +160,4 @@ This documentation should be updated when:
 
 ---
 
-*This documentation is maintained as part of the SWLOR.Game.Server project and should be kept up-to-date with the codebase.* 
+*This documentation is maintained as part of the SWLOR.App.Server project and should be kept up-to-date with the codebase.* 

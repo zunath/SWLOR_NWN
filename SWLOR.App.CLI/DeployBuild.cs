@@ -28,7 +28,7 @@ namespace SWLOR.CLI
             Directory.CreateDirectory(ModulesPath);
             Directory.CreateDirectory(TlkPath);
 
-            var source = new DirectoryInfo("../SWLOR.Runner/Docker");
+            var source = new DirectoryInfo("../SWLOR.App.Runner/Docker");
             var target = new DirectoryInfo(DebugServerPath);
 
             CopyAll(source, target, "swlor.env");
@@ -36,7 +36,7 @@ namespace SWLOR.CLI
 
         private void CopyBinaries()
         {
-            var binPath = "../SWLOR.Game.Server/bin/Debug/net8.0/";
+            var binPath = "../SWLOR.App.Server/bin/Debug/net8.0/";
 
             var source = new DirectoryInfo(binPath);
             var target = new DirectoryInfo(DotnetPath);

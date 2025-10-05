@@ -7,6 +7,7 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>disable</Nullable>
 		<PlatformTarget>x64</PlatformTarget>
+		<AssemblyName>SWLOR.App.Runner</AssemblyName>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -39,7 +40,7 @@
 		<ProjectReference Include="..\SWLOR.Component.Space\SWLOR.Component.Space.csproj" />
 		<ProjectReference Include="..\SWLOR.Component.StatusEffect\SWLOR.Component.StatusEffect.csproj" />
 		<ProjectReference Include="..\SWLOR.Component.World\SWLOR.Component.World.csproj" />
-		<ProjectReference Include="..\SWLOR.Game.Server\SWLOR.Game.Server.csproj" />
+		<ProjectReference Include="..\SWLOR.App.Server\SWLOR.App.Server.csproj" />
 		<ProjectReference Include="..\SWLOR.NWN.API\SWLOR.NWN.API.csproj" />
 		<ProjectReference Include="..\SWLOR.Shared.Abstractions\SWLOR.Shared.Abstractions.csproj" />
 		<ProjectReference Include="..\SWLOR.Shared.Caching\SWLOR.Shared.Caching.csproj" />

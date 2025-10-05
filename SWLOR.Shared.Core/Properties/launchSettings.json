@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "SWLOR.Game.Server": {
+    "SWLOR.App.Server": {
       "commandName": "Project",
       "remoteDebugEnabled": false
     }

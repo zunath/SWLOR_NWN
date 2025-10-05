@@ -107,7 +107,7 @@ namespace SWLOR.Runner
                 var commandWindow = window.Object as CommandWindow;
 
                 var command2 = "DebugAdapterHost.Launch " +
-                               "/LaunchJson:\"./SWLOR.Runner/launch.json\" " +
+                               "/LaunchJson:\"./SWLOR.App.Runner/launch.json\" " +
                                "/EngineGuid:541B8A8A-6081-4506-9F0A-1CE771DEBC04";
 
                 commandWindow.SendInput(command2, true);

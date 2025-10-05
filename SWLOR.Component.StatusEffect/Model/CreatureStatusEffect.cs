@@ -76,9 +76,9 @@ namespace SWLOR.Component.StatusEffect.Model
             return _effectsBySourceType[sourceType].ToHashSet();
         }
 
-        public bool HasEffect(Type effectType)
+        public bool HasEffect(StatusEffectType effectType)
         {
-            return _allActiveEffects.Any(x => x.GetType() == effectType);
+            return _allActiveEffects.Any(x => x.Type == effectType);
         }
 
         public CreatureStatusEffect()

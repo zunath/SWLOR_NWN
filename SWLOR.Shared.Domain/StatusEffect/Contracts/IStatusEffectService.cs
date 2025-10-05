@@ -7,21 +7,11 @@ public interface IStatusEffectService
 {
     StatGroup GetCreatureStatGroup(uint creature);
 
-    void ApplyPermanentStatusEffect<T>(uint source, uint creature)
-        where T: IStatusEffect;
+    void ApplyPermanentStatusEffect(uint source, uint creature, StatusEffectType type);
 
-    void ApplyPermanentStatusEffect(Type type, uint source, uint creature);
+    void ApplyStatusEffect(uint source, uint creature, StatusEffectType type, int durationTicks);
 
-    void ApplyStatusEffect<T>(uint source, uint creature, int durationTicks)
-        where T: IStatusEffect;
-
-    void RemoveStatusEffect<T>(uint creature)
-        where T: IStatusEffect;
-
-    void RemoveStatusEffect(Type type, uint creature);
+    void RemoveStatusEffect(uint creature, StatusEffectType type);
     void RemoveStatusEffectBySourceType(uint creature, StatusEffectSourceType sourceType);
-    bool HasEffect(Type type, uint creature);
-
-    bool HasEffect<T>(uint creature)
-        where T : IStatusEffect;
+    bool HasEffect(uint creature, StatusEffectType type);
 }

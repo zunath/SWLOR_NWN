@@ -1,4 +1,5 @@
-﻿using SWLOR.Component.StatusEffect.Model;
+﻿using SWLOR.Component.StatusEffect.Contracts;
+using SWLOR.Component.StatusEffect.Model;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Character.ValueObjects;
@@ -8,6 +9,7 @@ using SWLOR.Shared.Domain.StatusEffect;
 using SWLOR.Shared.Domain.StatusEffect.Contracts;
 using SWLOR.Shared.Domain.StatusEffect.Enums;
 using SWLOR.Shared.Domain.StatusEffect.Events;
+using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Component.StatusEffect.Service
@@ -20,16 +22,16 @@ namespace SWLOR.Component.StatusEffect.Service
         private readonly Dictionary<uint, CreatureStatusEffect> _creatureEffects = new();
 
         private readonly IEventAggregator _event;
-        private readonly IServiceProvider _serviceProvider;
+        private readonly IStatusEffectFactory _statusEffectFactory;
         private readonly IMessagingService _messagingService;
 
         public StatusEffectService(
             IEventAggregator eventAggregator,
-            IServiceProvider serviceProvider,
+            IStatusEffectFactory statusEffectFactory,
             IMessagingService messagingService)
         {
             _event = eventAggregator;
-            _serviceProvider = serviceProvider;
+            _statusEffectFactory = statusEffectFactory;
             _messagingService = messagingService;
 
             SubscribeEvents();
@@ -43,6 +45,15 @@ namespace SWLOR.Component.StatusEffect.Service
 
             _event.Subscribe<OnModuleEnter>(OnPlayerEnter);
             _event.Subscribe<OnDealtDamage>(OnDealtDamage);
+        }
+
+        [ScriptHandler<TestEvent>]
+        public void Test()
+        {
+            var player = GetLastUsedBy();
+            SendMessageToPC(player, "Applying haste");
+
+            ApplyStatusEffect(OBJECT_SELF, player, StatusEffectType.Haste, 1);
         }
 
         private void OnPlayerEnter(OnModuleEnter evt)
@@ -98,7 +109,7 @@ namespace SWLOR.Component.StatusEffect.Service
 
                 if (effect.IsFlaggedForRemoval)
                 {
-                    RemoveStatusEffect(effect.GetType(), creature);
+                    RemoveStatusEffect(creature, effect.Type);
                 }
                 else
                 {
@@ -120,18 +131,12 @@ namespace SWLOR.Component.StatusEffect.Service
                 : _creatureEffects[creature];
         }
 
-        public void ApplyPermanentStatusEffect<T>(uint source, uint creature)
-            where T: IStatusEffect
+        public void ApplyPermanentStatusEffect(uint source, uint creature, StatusEffectType type)
         {
-            ApplyStatusEffectInternal(typeof(T), source, creature, -1, true);
+            ApplyStatusEffectInternal(source, creature, type, -1, true);
         }
 
-        public void ApplyPermanentStatusEffect(Type type, uint source, uint creature)
-        {
-            ApplyStatusEffectInternal(type, source, creature, -1, true);
-        }
-
-        private void ApplyStatusEffectInternal(Type type, uint source, uint creature, int durationTicks, bool isPermanent)
+        private void ApplyStatusEffectInternal(uint source, uint creature, StatusEffectType type, int durationTicks, bool isPermanent)
         {
             if (!isPermanent && durationTicks <= 0)
             {
@@ -141,7 +146,7 @@ namespace SWLOR.Component.StatusEffect.Service
 
             ApplyNWNEffect(creature);
 
-            var statusEffect = (IStatusEffect)_serviceProvider.GetService(type);
+            var statusEffect = _statusEffectFactory.CreateStatusEffect(type);
 
             var canApply = statusEffect.CanApply(creature);
             if (!string.IsNullOrWhiteSpace(canApply))
@@ -152,7 +157,7 @@ namespace SWLOR.Component.StatusEffect.Service
 
             foreach (var morePowerful in statusEffect.MorePowerfulEffectTypes)
             {
-                if (HasEffect(morePowerful, creature))
+                if (HasEffect(creature, morePowerful))
                 {
                     SendMessageToPC(creature, "A more powerful effect is active on your target.");
                     return;
@@ -163,16 +168,16 @@ namespace SWLOR.Component.StatusEffect.Service
             {
                 case StatusEffectStackType.Disabled:
                 case StatusEffectStackType.Invalid:
-                    RemoveStatusEffect(type, creature);
+                    RemoveStatusEffect(creature, type);
                     break;
                 case StatusEffectStackType.StackFromMultipleSources:
-                    RemoveStatusEffect(type, creature, source);
+                    RemoveStatusEffectInternal(creature, source, type);
                     break;
             }
 
             foreach (var lessPowerful in statusEffect.LessPowerfulEffectTypes)
             {
-                RemoveStatusEffect(lessPowerful, creature);
+                RemoveStatusEffect(creature, lessPowerful);
             }
 
             _creatureEffects[creature].Add(statusEffect);
@@ -194,14 +199,12 @@ namespace SWLOR.Component.StatusEffect.Service
             }
         }
 
-        public void ApplyStatusEffect<T>(uint source, uint creature, int durationTicks)
-            where T: IStatusEffect
+        public void ApplyStatusEffect(uint source, uint creature, StatusEffectType type, int durationTicks)
         {
-            var type = typeof(T);
-            ApplyStatusEffectInternal(type, source, creature, durationTicks, false);
+            ApplyStatusEffectInternal(source, creature, type, durationTicks, false);
         }
 
-        private void RemoveStatusEffect(Type type, uint creature, uint source)
+        private void RemoveStatusEffectInternal(uint creature, uint source, StatusEffectType type)
         {
             if (!_creatureEffects.ContainsKey(creature))
                 return;
@@ -210,7 +213,7 @@ namespace SWLOR.Component.StatusEffect.Service
             var statusEffects = _creatureEffects[creature].GetAllEffects();
             foreach (var statusEffect in statusEffects)
             {
-                if (statusEffect.GetType() == type)
+                if (statusEffect.Type == type)
                 {
                     if (source == OBJECT_INVALID || statusEffect.Source == source)
                     {
@@ -230,16 +233,9 @@ namespace SWLOR.Component.StatusEffect.Service
             }
         }
 
-        public void RemoveStatusEffect<T>(uint creature)
-            where T: IStatusEffect
+        public void RemoveStatusEffect(uint creature, StatusEffectType type)
         {
-            var type = typeof(T);
-            RemoveStatusEffect(type, creature);
-        }
-
-        public void RemoveStatusEffect(Type type, uint creature)
-        {
-            RemoveStatusEffect(type, creature, OBJECT_INVALID);
+            RemoveStatusEffectInternal(creature, OBJECT_INVALID, type);
         }
 
         public void RemoveStatusEffectBySourceType(uint creature, StatusEffectSourceType sourceType)
@@ -248,22 +244,16 @@ namespace SWLOR.Component.StatusEffect.Service
             var effects = creatureEffects.GetAllBySourceType(sourceType);
             foreach (var effect in effects)
             {
-                RemoveStatusEffect(effect.GetType(), creature);
+                RemoveStatusEffect(creature, effect.Type);
             }
         }
 
-        public bool HasEffect(Type type, uint creature)
+        public bool HasEffect(uint creature, StatusEffectType type)
         {
             if (!_creatureEffects.ContainsKey(creature))
                 return false;
 
             return _creatureEffects[creature].HasEffect(type);
-        }
-
-        public bool HasEffect<T>(uint creature)
-            where T : IStatusEffect
-        {
-            return HasEffect(typeof(T), creature);
         }
 
         private void OnDealtDamage(OnDealtDamage evt)

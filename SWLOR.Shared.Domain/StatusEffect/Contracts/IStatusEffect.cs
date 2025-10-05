@@ -6,6 +6,7 @@ namespace SWLOR.Shared.Domain.StatusEffect.Contracts
 {
     public interface IStatusEffect
     {
+        StatusEffectType Type { get; }
         string Id { get; }
         uint Source { get; }
         StatusEffectActivationType ActivationType { get; }
@@ -19,8 +20,8 @@ namespace SWLOR.Shared.Domain.StatusEffect.Contracts
         bool IsRemovedOnJobChange { get; }
         float Frequency { get; }
         public StatGroup StatGroup { get; }
-        public List<Type> MorePowerfulEffectTypes { get; }
-        public List<Type> LessPowerfulEffectTypes { get; }
+        public List<StatusEffectType> MorePowerfulEffectTypes { get; }
+        public List<StatusEffectType> LessPowerfulEffectTypes { get; }
         string CanApply(uint creature);
         void ApplyEffect(uint source, uint creature, int durationTicks);
         void RemoveEffect(uint creature);

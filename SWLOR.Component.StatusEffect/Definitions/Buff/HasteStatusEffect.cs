@@ -7,6 +7,7 @@ namespace SWLOR.Component.StatusEffect.Definitions.Buff
 {
     public class HasteStatusEffect : StatusEffectBase
     {
+        public override StatusEffectType Type => StatusEffectType.Haste;
         public override string Name => "Haste";
         public override EffectIconType Icon => EffectIconType.Haste;
         public override StatusEffectStackType StackingType => StatusEffectStackType.Disabled;

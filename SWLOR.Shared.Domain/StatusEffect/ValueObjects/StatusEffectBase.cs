@@ -11,6 +11,7 @@ namespace SWLOR.Shared.Domain.StatusEffect.ValueObjects
         private int _durationTicks;
         private DateTime _lastRun;
 
+        public abstract StatusEffectType Type { get; }
         public string Id { get; }
         public uint Source { get; private set; }
         public virtual StatusEffectActivationType ActivationType => StatusEffectActivationType.Tick;
@@ -24,15 +25,15 @@ namespace SWLOR.Shared.Domain.StatusEffect.ValueObjects
         public abstract float Frequency { get; }
         public virtual bool IsRemovedOnJobChange => true;
         public StatGroup StatGroup { get; }
-        public virtual List<Type> MorePowerfulEffectTypes { get; }
-        public virtual List<Type> LessPowerfulEffectTypes { get; }
+        public virtual List<StatusEffectType> MorePowerfulEffectTypes { get; }
+        public virtual List<StatusEffectType> LessPowerfulEffectTypes { get; }
 
         protected StatusEffectBase()
         {
             Id = Guid.NewGuid().ToString();
             StatGroup = new StatGroup();
-            MorePowerfulEffectTypes = new List<Type>();
-            LessPowerfulEffectTypes = new List<Type>();
+            MorePowerfulEffectTypes = new List<StatusEffectType>();
+            LessPowerfulEffectTypes = new List<StatusEffectType>();
         }
 
         public virtual string CanApply(uint creature) { return string.Empty; }

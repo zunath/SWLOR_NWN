@@ -1,0 +1,50 @@
+using SWLOR.Component.Space.Contracts;
+using SWLOR.Shared.Domain.Perk.Enums;
+using SWLOR.Shared.Domain.Space.Enums;
+using SWLOR.Shared.Domain.Space.ValueObjects;
+
+namespace SWLOR.Component.Space.Definitions.ShipModuleDefinition
+{
+    public class HullBoosterModuleDefinition: IShipModuleListDefinition
+    {
+        private readonly IShipModuleBuilder _builder;
+
+        public HullBoosterModuleDefinition(IShipModuleBuilder builder)
+        {
+            _builder = builder;
+        }
+
+        public Dictionary<string, ShipModuleDetail> BuildShipModules()
+        {
+            HullBooster("hull_boost_b", "Basic Hull Booster", 8, 1);
+            HullBooster("hull_boost_1", "Hull Booster I", 16, 2);
+            HullBooster("hull_boost_2", "Hull Booster II", 24, 3);
+            HullBooster("hull_boost_3", "Hull Booster III", 32, 4);
+            HullBooster("hull_boost_4", "Hull Booster IV", 40, 5);
+
+            return _builder.Build();
+        }
+
+        private void HullBooster(string itemTag, string name, int hullBoostAmount, int requiredLevel)
+        {
+            _builder.Create(itemTag)
+                .Name(name)
+                .ShortName(name)
+                .Texture("iit_ess_026")
+                .Description($"Improves a ship's maximum hull by {hullBoostAmount}.")
+                .PowerType(ShipModulePowerType.Low)
+                .RequirePerk(PerkType.DefensiveModules, requiredLevel)
+                .EquippedAction((shipStatus, moduleBonus) =>
+                {
+                    shipStatus.MaxHull += hullBoostAmount + moduleBonus * 5;
+                })
+                .UnequippedAction((shipStatus, moduleBonus) =>
+                {
+                    shipStatus.MaxHull -= hullBoostAmount + moduleBonus * 5;
+
+                    if (shipStatus.Hull > shipStatus.MaxHull)
+                        shipStatus.Hull = shipStatus.MaxHull;
+                });
+        }
+    }
+}

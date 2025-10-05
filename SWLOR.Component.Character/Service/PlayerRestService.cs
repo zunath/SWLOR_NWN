@@ -2,8 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Character.Contracts;
-
-
+using SWLOR.Shared.Domain.Combat.Events;
 using SWLOR.Shared.Events.Events.Player;
 
 namespace SWLOR.Component.Character.Service

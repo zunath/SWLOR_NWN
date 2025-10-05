@@ -1,0 +1,97 @@
+using Microsoft.Extensions.DependencyInjection;
+using SWLOR.Component.Space.Contracts;
+using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Domain.Combat.Contracts;
+using SWLOR.Shared.Domain.Communication.Contracts;
+using SWLOR.Shared.Domain.Perk.Enums;
+using SWLOR.Shared.Domain.Skill.Enums;
+using SWLOR.Shared.Domain.Space.Contracts;
+using SWLOR.Shared.Domain.Space.Enums;
+using SWLOR.Shared.Domain.Space.ValueObjects;
+
+namespace SWLOR.Component.Space.Definitions.ShipModuleDefinition
+{
+    public class ShieldRepairerModuleDefinition: IShipModuleListDefinition
+    {
+        private readonly IServiceProvider _serviceProvider;
+        private readonly IShipModuleBuilder _builder;
+        
+        // Lazy-loaded services to break circular dependencies
+        private readonly Lazy<ISpaceService> _spaceService;
+        private readonly Lazy<ICombatPointService> _combatPointService;
+        private readonly Lazy<IMessagingService> _messagingService;
+        
+        private ISpaceService SpaceService => _spaceService.Value;
+        private ICombatPointService CombatPointService => _combatPointService.Value;
+        private IMessagingService MessagingService => _messagingService.Value;
+
+        public ShieldRepairerModuleDefinition(IServiceProvider serviceProvider, IShipModuleBuilder builder)
+        {
+            _serviceProvider = serviceProvider;
+            _builder = builder;
+            
+            // Initialize lazy services
+            _spaceService = new Lazy<ISpaceService>(() => _serviceProvider.GetRequiredService<ISpaceService>());
+            _combatPointService = new Lazy<ICombatPointService>(() => _serviceProvider.GetRequiredService<ICombatPointService>());
+            _messagingService = new Lazy<IMessagingService>(() => _serviceProvider.GetRequiredService<IMessagingService>());
+        }
+
+        public Dictionary<string, ShipModuleDetail> BuildShipModules()
+        {
+            ShieldRepairer("shld_rep_b", "Basic Shield Repairer", "B. Shld. Rep.", "Restores targeted or user ship's shield HP by 7.", 1, 8, 7);
+            ShieldRepairer("shld_rep_1", "Shield Repairer I", "Shld. Rep. I", "Restores targeted or user ship's shield HP by 14.", 2, 12, 14);
+            ShieldRepairer("shld_rep_2", "Shield Repairer II", "Shld. Rep. II", "Restores targeted or user ship's shield HP by 21.", 3, 16, 21);
+            ShieldRepairer("shld_rep_3", "Shield Repairer III", "Shld. Rep. III", "Restores targeted or user ship's shield HP by 28.", 4, 20, 28);
+            ShieldRepairer("shld_rep_4", "Shield Repairer IV", "Shld. Rep. IV", "Restores targeted or user ship's shield HP by 35.", 5, 24, 35);
+            ShieldRepairer("npc_shld_r_1", "NPC Shield Repairer I", "NPC ShldR 1", "Restores targeted or user ship's shield HP by 10.", 0, 10, 10);
+            ShieldRepairer("npc_shld_r_2", "NPC Shield Repairer II", "NPC ShldR 2", "Restores targeted or user ship's shield HP by 15.", 0, 10, 15);
+            ShieldRepairer("npc_shld_r_3", "NPC Shield Repairer III", "NPC ShldR 3", "Restores targeted or user ship's shield HP by 20.", 0, 10, 20);
+            ShieldRepairer("npc_shld_r_4", "NPC Shield Repairer IV", "NPC ShldR 4", "Restores targeted or user ship's shield HP by 25.", 0, 10, 25);
+            ShieldRepairer("npc_shld_r_5", "NPC Shield Repairer V", "NPC ShldR 5", "Restores targeted or user ship's shield HP by 30.", 0, 10, 30);
+
+            return _builder.Build();
+        }
+
+        private void ShieldRepairer(string itemTag, string name, string shortName, string description, int requiredLevel, int capacitor, int baseRecovery)
+        {
+            _builder.Create(itemTag)
+                .Name(name)
+                .ShortName(shortName)
+                .Texture("iit_ess_040")
+                .Type(ShipModuleType.ShieldRepairer)
+                .CanTargetSelf()
+                .MaxDistance(20f)
+                .ValidTargetType(ObjectType.Creature)
+                .Description(description)
+                .PowerType(ShipModulePowerType.High)
+                .RequirePerk(PerkType.DefensiveModules, requiredLevel)
+                .Recast(12f)
+                .Capacitor(capacitor)
+                .ActivatedAction((activator, activatorShipStatus, target, targetShipStatus, moduleBonus) =>
+                {
+                    if (!GetIsObjectValid(target) || GetIsEnemy(target, activator))
+                    {
+                        target = activator;
+                        targetShipStatus = activatorShipStatus;
+                    }
+
+                    if (activator != target)
+                    {
+                        AssignCommand(activator, () =>
+                        {
+                            var beam = EffectBeam(VisualEffectType.Vfx_Beam_Mind, activator, BodyNodeType.Chest);
+                            ApplyEffectToObject(DurationType.Temporary, beam, target, 1.0f);
+                        });
+                    }
+
+                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Imp_Ac_Bonus), target);
+
+                    var recovery = baseRecovery + (moduleBonus + activatorShipStatus.Industrial) * 2;
+                    SpaceService.RestoreShield(target, targetShipStatus, recovery);
+
+                    MessagingService.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} restores {recovery} shield HP to {GetName(target)}'s ship.");
+                    CombatPointService.AddCombatPointToAllTagged(activator, SkillType.Piloting);
+                });
+        }
+    }
+}

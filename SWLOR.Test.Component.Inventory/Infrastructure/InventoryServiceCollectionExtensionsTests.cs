@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using SWLOR.Component.Inventory.Definitions.ItemDefinition;
 using SWLOR.Component.Inventory.EventHandlers;
 using SWLOR.Component.Inventory.Feature;
 using SWLOR.Component.Inventory.Infrastructure;
@@ -158,9 +159,9 @@ namespace SWLOR.Test.Component.Inventory.Infrastructure
             _services.AddInventoryServices();
 
             // Assert
-            var fishingRodDescriptor = _services.FirstOrDefault(sd => sd.ServiceType == typeof(SWLOR.Component.Inventory.Feature.ItemDefinition.FishingRodItemDefinition));
-            var destroyItemDescriptor = _services.FirstOrDefault(sd => sd.ServiceType == typeof(SWLOR.Component.Inventory.Feature.ItemDefinition.DestroyItemDefinition));
-            var consumableItemDescriptor = _services.FirstOrDefault(sd => sd.ServiceType == typeof(SWLOR.Component.Inventory.Feature.ItemDefinition.ConsumableItemDefinition));
+            var fishingRodDescriptor = _services.FirstOrDefault(sd => sd.ServiceType == typeof(FishingRodItemDefinition));
+            var destroyItemDescriptor = _services.FirstOrDefault(sd => sd.ServiceType == typeof(DestroyItemDefinition));
+            var consumableItemDescriptor = _services.FirstOrDefault(sd => sd.ServiceType == typeof(ConsumableItemDefinition));
             
             Assert.That(fishingRodDescriptor, Is.Not.Null);
             Assert.That(destroyItemDescriptor, Is.Not.Null);

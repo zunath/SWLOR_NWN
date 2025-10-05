@@ -1,0 +1,115 @@
+using Microsoft.Extensions.DependencyInjection;
+using SWLOR.Component.Communication.Service;
+using SWLOR.NWN.API.Engine;
+using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Abstractions.Enums;
+using SWLOR.Shared.Domain.Admin.Enums;
+using SWLOR.Shared.Domain.Communication.Contracts;
+using SWLOR.Shared.Domain.Communication.ValueObjects;
+using SWLOR.Shared.UI.Contracts;
+
+namespace SWLOR.Component.Communication.Definitions.ChatCommandDefinition
+{
+    public class DebuggingChatCommand: IChatCommandListDefinition
+    {
+        private readonly ChatCommandBuilder _builder = new();
+        private readonly IDatabaseService _db;
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded services to break circular dependencies
+        private IGuiService GuiService => _serviceProvider.GetRequiredService<IGuiService>();
+
+        public DebuggingChatCommand(IDatabaseService db, IServiceProvider serviceProvider)
+        {
+            _db = db;
+            _serviceProvider = serviceProvider;
+        }
+
+        public Dictionary<string, ChatCommandDetail> BuildChatCommands()
+        {
+            //MoveDoor();
+            EnmityDebugger();
+            GetObjectId();
+
+            return _builder.Build();
+        }
+
+        private Location GetDoorLocation(uint building, float orientationOverride = 0f, float sqrtValue = 0f)
+        {
+            var area = GetArea(building);
+            var location = GetLocation(building);
+            var orientationAdjustment = orientationOverride != 0f ? orientationOverride : 200.31f;
+            var sqrtAdjustment = sqrtValue != 0f ? sqrtValue : 13.0f;
+
+            var position = GetPositionFromLocation(location);
+            var orientation = GetFacingFromLocation(location);
+
+            orientation = orientation + orientationAdjustment;
+            if (orientation > 360.0)
+                orientation -= 360.0f;
+
+            var mod = sqrt(sqrtAdjustment) * sin(orientation);
+            position.X += mod;
+
+            mod = sqrt(sqrtAdjustment) * cos(orientation);
+            position.Y -= mod;
+            var doorLocation = Location(area, position, orientation);
+            return doorLocation;
+        }
+
+        private void MoveDoor()
+        {
+            _builder.Create("movedoor")
+                .Description("Debugging")
+                .Permissions(AuthorizationLevel.Admin)
+                .Action((user, target, location, args) =>
+                {
+                    var orientationOverride = float.Parse(args[0]);
+                    var sqrtValue = float.Parse(args[1]);
+                    var placeable = GetObjectByTag("house1");
+
+                    if (!GetIsObjectValid(placeable))
+                    {
+                        var waypoint = GetWaypointByTag("DEBUG_HOUSE");
+                        placeable = CreateObject(ObjectType.Placeable, "house1", GetLocation(waypoint));
+                    }
+
+                    var doorLocation = GetDoorLocation(placeable, orientationOverride, sqrtValue);
+
+                    var door = GetLocalObject(placeable, "PROPERTY_DOOR");
+                    if (GetIsObjectValid(door))
+                        DestroyObject(door);
+
+                    door = CreateObject(ObjectType.Placeable, "building_ent1", doorLocation);
+                    SetLocalObject(placeable, "PROPERTY_DOOR", door);
+
+                    SendMessageToPC(user, $"{orientationOverride} {sqrtValue}");
+                });
+        }
+
+        private void EnmityDebugger()
+        {
+            _builder.Create("enmitydebugger")
+                .Description("Opens enmity debugger window")
+                .Permissions(AuthorizationLevel.Admin)
+                .Action((user, target, location, args) =>
+                {
+                    GuiService.TogglePlayerWindow(user, GuiWindowType.DebugEnmity);
+                });
+        }
+
+        private void GetObjectId()
+        {
+            _builder.Create("objectid", "oid")
+                .Description("Gets the object Id of a target")
+                .Permissions(AuthorizationLevel.Admin)
+                .RequiresTarget()
+                .Action((user, target, location, args) =>
+                {
+                    SendMessageToPC(user, $"{GetName(target)} oid = {target}");
+                });
+        }
+
+    }
+}

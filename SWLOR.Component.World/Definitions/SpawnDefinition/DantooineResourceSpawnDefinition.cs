@@ -1,0 +1,247 @@
+using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Domain.World.Contracts;
+using SWLOR.Shared.Domain.World.ValueObjects;
+
+namespace SWLOR.Component.World.Definitions.SpawnDefinition
+{
+    public class DantooineResourceSpawnDefinition : ISpawnListDefinition
+    {
+        private readonly ISpawnTableBuilder _builder;
+
+        public DantooineResourceSpawnDefinition(ISpawnTableBuilder spawnTableBuilder)
+        {
+            _builder = spawnTableBuilder;
+        }
+
+        public Dictionary<string, SpawnTable> BuildSpawnTables()
+        {
+            DantooineLake();
+            DanPiles();
+            DanHay();
+            DantooineWildPlains();
+            DantooineWareHouse();
+            DanTribeVillage();
+            DantooineCrystalFields();
+            DantooineJantaCaves();
+            DantooineForsakenJungles();
+            DantooineDestroy();
+
+            return _builder.Build();
+        }
+
+        private void DantooineLake()
+        {
+            _builder.Create("DANTOOINE_LAKE_RESOURCES")
+                .ResourceDespawnDelay(180) // 3 hours for standard organic lake resources
+                .AddSpawn(ObjectType.Placeable, "herbs_patch_4")
+                .WithFrequency(10)
+                .AddSpawn(ObjectType.Placeable, "herbs_patch_5")
+                .WithFrequency(30)
+
+                .AddSpawn(ObjectType.Placeable, "patch_veggies4")
+                .WithFrequency(5)
+                .AddSpawn(ObjectType.Placeable, "patch_veggies5")
+                .WithFrequency(10)
+
+                .AddSpawn(ObjectType.Placeable, "fiberp_bush_4")
+                .WithFrequency(5)
+
+                .AddSpawn(ObjectType.Placeable, "fiberp_bush_5")
+                .WithFrequency(10);
+        }
+        private void DanPiles()
+        {
+            _builder.Create("DANTOOINE_JUNKPILES")
+                .ResourceDespawnDelay(90) // 1.5 hours for scavenge junk
+                .AddSpawn(ObjectType.Placeable, "dan_junk")
+                .WithFrequency(50);
+        }
+        private void DanHay()
+        {
+            _builder.Create("DANTOOINE_HAY")
+                .ResourceDespawnDelay(120) // 2 hours for hay/crafting materials
+                .AddSpawn(ObjectType.Placeable, "dan_hay")
+                .WithFrequency(50);
+        }
+        private void DantooineWildPlains()
+        {
+            _builder.Create("DANTOOINE_WILD_PLAINS_RESOURCES")
+                .ResourceDespawnDelay(90) // 1.5 hours for areas with rare arkoxit
+                .AddSpawn(ObjectType.Placeable, "keromber_vein")
+                .WithFrequency(40)
+
+                .AddSpawn(ObjectType.Placeable, "jasioclase_vein")
+                .WithFrequency(30)
+
+                .AddSpawn(ObjectType.Placeable, "arkoxit_vein")
+                .WithFrequency(1)
+
+                .AddSpawn(ObjectType.Placeable, "herbs_patch_4")
+                .WithFrequency(10)
+                .AddSpawn(ObjectType.Placeable, "herbs_patch_5")
+                .WithFrequency(30)
+
+                .AddSpawn(ObjectType.Placeable, "patch_veggies4")
+                .WithFrequency(5)
+                .AddSpawn(ObjectType.Placeable, "patch_veggies5")
+                .WithFrequency(15)
+
+                .AddSpawn(ObjectType.Placeable, "fiberp_bush_4")
+                .WithFrequency(5)
+
+                .AddSpawn(ObjectType.Placeable, "fiberp_bush_5")
+                .WithFrequency(15);
+        }
+
+        private void DantooineCrystalFields()
+        {
+            _builder.Create("DANTOOINE_CRYSTAL_FIELDS_RESOURCES")
+                .ResourceDespawnDelay(90) // 1.5 hours for crystal field resources with rare arkoxit
+                .AddSpawn(ObjectType.Placeable, "keromber_vein")
+                .WithFrequency(20)
+
+                .AddSpawn(ObjectType.Placeable, "jasioclase_vein")
+                .WithFrequency(40)
+
+                .AddSpawn(ObjectType.Placeable, "arkoxit_vein")
+                .WithFrequency(1)
+
+                .AddSpawn(ObjectType.Placeable, "herbs_patch_4")
+                .WithFrequency(10)
+                .AddSpawn(ObjectType.Placeable, "herbs_patch_5")
+                .WithFrequency(30)
+
+                .AddSpawn(ObjectType.Placeable, "patch_veggies4")
+                .WithFrequency(5)
+                .AddSpawn(ObjectType.Placeable, "patch_veggies5")
+                .WithFrequency(15)
+
+                .AddSpawn(ObjectType.Placeable, "fiberp_bush_4")
+                .WithFrequency(5)
+
+                .AddSpawn(ObjectType.Placeable, "fiberp_bush_5")
+                .WithFrequency(15);
+        }
+
+        private void DantooineDestroy()
+        {
+            _builder.Create("DANTOOINE_RUIN_FARM_RESOURCES")
+                .ResourceDespawnDelay(150) // 2.5 hours for abandoned ruins
+                .AddSpawn(ObjectType.Placeable, "herbs_patch_4")
+                .WithFrequency(10)
+                .AddSpawn(ObjectType.Placeable, "herbs_patch_5")
+                .WithFrequency(30)
+
+                .AddSpawn(ObjectType.Placeable, "patch_veggies4")
+                .WithFrequency(5)
+                .AddSpawn(ObjectType.Placeable, "patch_veggies5")
+                .WithFrequency(15)
+
+                .AddSpawn(ObjectType.Placeable, "fiberp_bush_4")
+                .WithFrequency(5)
+
+                .AddSpawn(ObjectType.Placeable, "fiberp_bush_5")
+                .WithFrequency(15);
+        }
+
+        private void DantooineJantaCaves()
+        {
+            _builder.Create("DANTOOINE_JANTA_CAVES_RESOURCES")
+                .ResourceDespawnDelay(90) // 1.5 hours for dangerous cave resources with rare arkoxit
+                .AddSpawn(ObjectType.Placeable, "keromber_vein")
+                .WithFrequency(30)
+
+                .AddSpawn(ObjectType.Placeable, "jasioclase_vein")
+                .WithFrequency(50)
+
+                .AddSpawn(ObjectType.Placeable, "arkoxit_vein")
+                .WithFrequency(1)
+
+                .AddSpawn(ObjectType.Placeable, "patch_veggies4")
+                .WithFrequency(5)
+                .AddSpawn(ObjectType.Placeable, "patch_veggies5")
+                .WithFrequency(5);
+        }
+
+        private void DantooineForsakenJungles()
+        {
+            _builder.Create("DANTOOINE_FORSAKEN_JUNGLES_RESOURCES")
+                .ResourceDespawnDelay(120) // 2 hours for mixed jungle resources
+
+                .AddSpawn(ObjectType.Placeable, "herbs_patch_4")
+                .WithFrequency(10)
+                .AddSpawn(ObjectType.Placeable, "herbs_patch_5")
+                .WithFrequency(30)
+
+                .AddSpawn(ObjectType.Placeable, "patch_veggies4")
+                .WithFrequency(5)
+                .AddSpawn(ObjectType.Placeable, "patch_veggies5")
+                .WithFrequency(15)
+
+                .AddSpawn(ObjectType.Placeable, "fiberp_bush_4")
+                .WithFrequency(5)
+
+                .AddSpawn(ObjectType.Placeable, "fiberp_bush_5")
+                .WithFrequency(15)
+
+                .AddSpawn(ObjectType.Placeable, "hyphae_tree")
+                .WithFrequency(5);
+        }
+
+        private void DantooineWareHouse()
+        {
+            _builder.Create("DANTOOINE_WARE_HOUSE_RESOURCES")
+                .ResourceDespawnDelay(120) // 2 hours for warehouse scavenged materials
+
+                .AddSpawn(ObjectType.Placeable, "jasioclase_vein")
+                .WithFrequency(20)
+                .AddSpawn(ObjectType.Placeable, "herbs_patch_5")
+                .WithFrequency(30)
+
+                .AddSpawn(ObjectType.Placeable, "patch_veggies4")
+                .WithFrequency(5)
+                .AddSpawn(ObjectType.Placeable, "patch_veggies5")
+                .WithFrequency(15)
+
+                .AddSpawn(ObjectType.Placeable, "fiberp_bush_4")
+                .WithFrequency(5)
+
+                .AddSpawn(ObjectType.Placeable, "fiberp_bush_5")
+                .WithFrequency(15);
+        }
+
+        private void DanTribeVillage()
+        {
+            _builder.Create("DANTOOINE_TRIBE_VILLAGE_RESOURCES")
+                .ResourceDespawnDelay(90) // 1.5 hours for tribal area with rare arkoxit
+                .AddSpawn(ObjectType.Placeable, "keromber_vein")
+                .WithFrequency(40)
+
+                .AddSpawn(ObjectType.Placeable, "jasioclase_vein")
+                .WithFrequency(20)
+
+                .AddSpawn(ObjectType.Placeable, "arkoxit_vein")
+                .WithFrequency(1)
+
+                .AddSpawn(ObjectType.Placeable, "herbs_patch_4")
+                .WithFrequency(10)
+                .AddSpawn(ObjectType.Placeable, "herbs_patch_5")
+                .WithFrequency(30)
+
+                .AddSpawn(ObjectType.Placeable, "patch_veggies4")
+                .WithFrequency(5)
+                .AddSpawn(ObjectType.Placeable, "patch_veggies5")
+                .WithFrequency(10)
+
+                .AddSpawn(ObjectType.Placeable, "fiberp_bush_4")
+                .WithFrequency(5)
+
+                .AddSpawn(ObjectType.Placeable, "fiberp_bush_5")
+                .WithFrequency(10)
+
+                .AddSpawn(ObjectType.Placeable, "hyphae_tree")
+                .WithFrequency(5);
+        }
+
+    }
+}

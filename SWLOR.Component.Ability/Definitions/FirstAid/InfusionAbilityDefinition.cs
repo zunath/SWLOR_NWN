@@ -1,0 +1,111 @@
+using SWLOR.Component.Ability.Contracts;
+using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Domain.Ability.Enums;
+using SWLOR.Shared.Domain.Ability.ValueObjects;
+using SWLOR.Shared.Domain.Perk.Enums;
+using SWLOR.Shared.Domain.Skill.Enums;
+
+namespace SWLOR.Component.Ability.Definitions.FirstAid
+{
+    public class InfusionAbilityDefinition: FirstAidBaseAbilityDefinition
+    {
+        private const string Tier1Tag = "ABILITY_INFUSION_1";
+        private const string Tier2Tag = "ABILITY_INFUSION_2";
+
+        public InfusionAbilityDefinition(IServiceProvider serviceProvider) 
+            : base(serviceProvider)
+        {
+        }
+
+        public override Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
+        {
+            Infusion1(builder);
+            Infusion2(builder);
+
+            return builder.Build();
+        }
+
+        private string Validation(uint activator, uint target, int level)
+        {
+            if (!IsWithinRange(activator, target))
+            {
+                return "Your target is too far away.";
+            }
+
+            if (HasMorePowerfulEffect(target, level,
+                    new(Tier1Tag, 1),
+                    new(Tier2Tag, 2)))
+            {
+                return "Your target is already enhanced by a more powerful effect.";
+            }
+
+            if (!HasStimPack(activator))
+            {
+                return "You have no stim packs.";
+            }
+
+            return string.Empty;
+        }
+
+        private void Impact(uint activator, uint target, int amount, string effectTag)
+        {
+            const float Duration = 24f;
+            var will = GetAbilityScore(activator, AbilityType.Willpower) - 10;
+            amount += will;
+
+            RemoveEffectByTag(target, Tier1Tag, Tier2Tag);
+
+            var effect = EffectRegenerate(amount, 6f);
+            effect = TagEffect(effect, effectTag);
+            ApplyEffectToObject(DurationType.Temporary, effect, target, Duration);
+
+            TakeStimPack(activator);
+            EnmityService.ModifyEnmityOnAll(activator, 5 * amount);
+            CombatPointService.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
+        }
+
+        private void Infusion1(IAbilityBuilder builder)
+        {
+            builder.Create(FeatType.Infusion1, PerkType.Infusion)
+                .Name("Infusion I")
+                .Level(1)
+                .HasRecastDelay(RecastGroupType.Infusion, 60f)
+                .HasActivationDelay(2f)
+                .HasMaxRange(30.0f)
+                .RequirementStamina(6)
+                .UsesAnimation(AnimationType.LoopingGetMid)
+                .IsCastedAbility()
+                .UnaffectedByHeavyArmor()
+                .HasCustomValidation((activator, target, level, location) =>
+                {
+                    return Validation(activator, target, 1);
+                })
+                .HasImpactAction((activator, target, _, _) =>
+                {
+                    Impact(activator, target, 20, Tier1Tag);
+                });
+        }
+
+        private void Infusion2(IAbilityBuilder builder)
+        {
+            builder.Create(FeatType.Infusion2, PerkType.Infusion)
+                .Name("Infusion II")
+                .Level(2)
+                .HasRecastDelay(RecastGroupType.Infusion, 60f)
+                .HasActivationDelay(2f)
+                .HasMaxRange(30.0f)
+                .RequirementStamina(8)
+                .UsesAnimation(AnimationType.LoopingGetMid)
+                .IsCastedAbility()
+                .UnaffectedByHeavyArmor()
+                .HasCustomValidation((activator, target, level, location) =>
+                {
+                    return Validation(activator, target, 2);
+                })
+                .HasImpactAction((activator, target, _, _) =>
+                {
+                    Impact(activator, target, 40, Tier2Tag);
+                });
+        }
+    }
+}

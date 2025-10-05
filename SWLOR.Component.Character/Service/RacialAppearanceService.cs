@@ -1,4 +1,4 @@
-using SWLOR.Component.Character.Feature.AppearanceDefinition.RacialAppearance;
+using SWLOR.Component.Character.Definitions.AppearanceDefinition.RacialAppearance;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Character.Contracts;
 

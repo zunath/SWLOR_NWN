@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using SWLOR.Component.Inventory.Definitions.ItemDefinition;
 using SWLOR.Component.Inventory.EventHandlers;
 using SWLOR.Component.Inventory.Feature;
 using SWLOR.Component.Inventory.Repository;
@@ -35,16 +36,16 @@ namespace SWLOR.Component.Inventory.Infrastructure
             services.AddSingleton<StackDecrementPrevention>();
             services.AddSingleton<InstantItemUse>();
             services.AddSingleton<StandardItemConfigurations>();
-            services.AddSingleton<Feature.ItemDefinition.FishingRodItemDefinition>();
-            services.AddSingleton<Feature.ItemDefinition.DestroyItemDefinition>();
-            services.AddSingleton<Feature.ItemDefinition.ConsumableItemDefinition>();
-            services.AddSingleton<Feature.ItemDefinition.TomeItemDefinition>();
-            services.AddSingleton<Feature.ItemDefinition.DroidControlItemDefinition>();
-            services.AddSingleton<Feature.ItemDefinition.KeyItemDefinition>();
-            services.AddSingleton<Feature.ItemDefinition.HarvesterItemDefinition>();
-            services.AddSingleton<Feature.ItemDefinition.RecipeItemDefinition>();
-            services.AddSingleton<Feature.ItemDefinition.SpeederItemDefinition>();
-            services.AddSingleton<Feature.ItemDefinition.SaberUpgradeItemDefinition>();
+            services.AddSingleton<FishingRodItemDefinition>();
+            services.AddSingleton<DestroyItemDefinition>();
+            services.AddSingleton<ConsumableItemDefinition>();
+            services.AddSingleton<TomeItemDefinition>();
+            services.AddSingleton<DroidControlItemDefinition>();
+            services.AddSingleton<KeyItemDefinition>();
+            services.AddSingleton<HarvesterItemDefinition>();
+            services.AddSingleton<RecipeItemDefinition>();
+            services.AddSingleton<SpeederItemDefinition>();
+            services.AddSingleton<SaberUpgradeItemDefinition>();
             
             services.RegisterInterfaceImplementationsWithInterface<ISnippetListDefinition>();
             services.RegisterInterfaceImplementations<ILootTableDefinition>();

@@ -1,0 +1,118 @@
+using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Domain.World.Contracts;
+using SWLOR.Shared.Domain.World.ValueObjects;
+
+namespace SWLOR.Component.Space.Definitions.SpawnDefinition
+{
+    public class SpaceResourceSpawnDefinition : ISpawnListDefinition
+    {
+        private readonly ISpawnTableBuilder _builder;
+
+        public SpaceResourceSpawnDefinition(ISpawnTableBuilder spawnTableBuilder)
+        {
+            _builder = spawnTableBuilder;
+        }
+        public Dictionary<string, SpawnTable> BuildSpawnTables()
+        {
+            ViscaraOrbit();
+            MonCalaOrbit();
+            HutlarOrbit();
+            TatooineOrbit();
+            KorribanOrbit();
+            DathomirOrbit();
+            DantooineOrbit();
+
+            return _builder.Build();
+        }
+
+        private void ViscaraOrbit()
+        {
+            _builder.Create("SPACE_RESOURCES_VISCARA_ORBIT", "Space Resources - Viscara Orbit")
+                .ResourceDespawnDelay(180) // 3 hours for basic space asteroids
+                .AddSpawn(ObjectType.Placeable, "spc_asteroid_til")
+                .WithFrequency(50)
+
+                .AddSpawn(ObjectType.Placeable, "asteroid_currian")
+                .WithFrequency(5);
+        }
+
+        private void MonCalaOrbit()
+        {
+            _builder.Create("SPACE_RESOURCES_MONCALA_ORBIT", "Space Resources - Mon Cala Orbit")
+                .ResourceDespawnDelay(150) // 2.5 hours for mid-tier space asteroids
+                .AddSpawn(ObjectType.Placeable, "spc_asteroid_til")
+                .WithFrequency(50)
+
+                .AddSpawn(ObjectType.Placeable, "asteroid_currian")
+                .WithFrequency(30)
+
+                .AddSpawn(ObjectType.Placeable, "asteroid_idailia")
+                .WithFrequency(5);
+        }
+
+        private void HutlarOrbit()
+        {
+            _builder.Create("SPACE_RESOURCES_HUTLAR_ORBIT", "Space Resources - Hutlar Orbit")
+                .ResourceDespawnDelay(120) // 2 hours for higher-tier space asteroids
+                .AddSpawn(ObjectType.Placeable, "asteroid_currian")
+                .WithFrequency(50)
+
+                .AddSpawn(ObjectType.Placeable, "asteroid_idailia")
+                .WithFrequency(30)
+
+                .AddSpawn(ObjectType.Placeable, "asteroid_bariniu")
+                .WithFrequency(5);
+        }
+
+        private void TatooineOrbit()
+        {
+            _builder.Create("SPACE_RESOURCES_TATOOINE_ORBIT", "Space Resources - Tatooine Orbit")
+                .ResourceDespawnDelay(90) // 1.5 hours for high-tier space asteroids
+                .AddSpawn(ObjectType.Placeable, "asteroid_idailia")
+                .WithFrequency(50)
+
+                .AddSpawn(ObjectType.Placeable, "asteroid_bariniu")
+                .WithFrequency(30)
+
+                .AddSpawn(ObjectType.Placeable, "asteroid_gostian")
+                .WithFrequency(5);
+        }
+
+        private void KorribanOrbit()
+        {
+            _builder.Create("SPACE_RESOURCES_KORRIBAN_ORBIT", "Space Resources - Korriban Orbit")
+                .ResourceDespawnDelay(60) // 1 hour for rare top-tier space asteroids
+                .AddSpawn(ObjectType.Placeable, "asteroid_gostian")
+                .WithFrequency(25)
+
+                .AddSpawn(ObjectType.Placeable, "asteroid_arda")
+                .WithFrequency(1);
+        }
+
+        private void DathomirOrbit()
+        {
+            _builder.Create("SPACE_RESOURCES_DATHOMIR_ORBIT", "Space Resources - Dathomir Orbit")
+                .ResourceDespawnDelay(75) // 1.25 hours for very high-tier space asteroids
+                
+                .AddSpawn(ObjectType.Placeable, "asteroid_bariniu")
+                .WithFrequency(37)
+
+                .AddSpawn(ObjectType.Placeable, "asteroid_gostian")
+                .WithFrequency(25)
+
+                .AddSpawn(ObjectType.Placeable, "asteroid_arda")
+                .WithFrequency(3);
+        }
+        private void DantooineOrbit()
+        { 
+            _builder.Create("SPACE_RESOURCES_DANTOOINE_ORBIT", "Space Resources - Dantooine Orbit")
+                .ResourceDespawnDelay(90) // 1.5 hours for high-tier space asteroids
+
+                .AddSpawn(ObjectType.Placeable, "asteroid_bariniu")
+                .WithFrequency(50)
+
+                .AddSpawn(ObjectType.Placeable, "asteroid_gostian")
+                .WithFrequency(10);
+        }
+    }
+}

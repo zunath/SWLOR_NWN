@@ -1,7 +1,6 @@
 ﻿using SWLOR.Shared.Abstractions;
-using SWLOR.Shared.Domain.Combat;
 
-namespace SWLOR.Shared.Events.Events.Player
+namespace SWLOR.Shared.Domain.Combat.Events
 {
     public class OnPlayerRestStarted: BaseEvent
     {

@@ -1,6 +1,6 @@
-using SWLOR.Component.Ability.Feature.AbilityDefinition.Devices;
-using SWLOR.Component.Ability.Feature.AbilityDefinition.Force;
-using SWLOR.Component.Ability.Feature.AbilityDefinition.General;
+using SWLOR.Component.Ability.Definitions.Devices;
+using SWLOR.Component.Ability.Definitions.Force;
+using SWLOR.Component.Ability.Definitions.General;
 using SWLOR.Shared.Domain.Ability.Contracts;
 using SWLOR.Shared.Domain.Ability.Events;
 using SWLOR.Shared.Domain.Combat.Events;

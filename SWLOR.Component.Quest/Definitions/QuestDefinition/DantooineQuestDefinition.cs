@@ -1,0 +1,167 @@
+using Microsoft.Extensions.DependencyInjection;
+using SWLOR.Component.Quest.Contracts;
+using SWLOR.Shared.Domain.Inventory.Contracts;
+using SWLOR.Shared.Domain.Inventory.Enums;
+using SWLOR.Shared.Domain.Quest.Contracts;
+using SWLOR.Shared.Domain.Quest.Enums;
+
+namespace SWLOR.Component.Quest.Definitions.QuestDefinition
+{
+    public class DantooineQuestDefinition : IQuestListDefinition
+    {
+        private readonly IServiceProvider _serviceProvider;
+        
+        // Lazy-loaded services to break circular dependencies
+        private IQuestBuilderFactory QuestBuilderFactory => _serviceProvider.GetRequiredService<IQuestBuilderFactory>();
+        private IKeyItemService KeyItemService => _serviceProvider.GetRequiredService<IKeyItemService>();
+
+        public DantooineQuestDefinition(IServiceProvider serviceProvider)
+        {
+            _serviceProvider = serviceProvider;
+        }
+        public Dictionary<string, IQuestDetail> BuildQuests()
+        {
+            var builder = QuestBuilderFactory.Create();
+            DanBundle(builder);
+            DanMedicalSupplies(builder);
+            BlueMilkQuest(builder);
+            CullVoritorLizardThreat(builder);
+            HarvestingHerbs(builder);
+            FetchPetTreat(builder);
+            CollectHerbsForLibrarian(builder);
+            HiddenCave(builder);
+            return builder.Build();
+        }
+
+        private void BlueMilkQuest(IQuestBuilder builder)
+        {
+            builder.Create("bantha_milk_quest", "Bantha Milk Quest")
+
+               .AddState()
+               .SetStateJournalText("The farmer from Dantooine requires milk that has been taken from the Dantari. Find it and bring back the milk.")
+               .AddCollectItemObjective("bantha_milk", 20)
+
+               .AddState()
+               .SetStateJournalText("Return to the farmer and deliver the stolen blue milk.")
+
+               .AddXPReward(4000)
+               .AddGoldReward(2500);
+        }
+        private void CullVoritorLizardThreat(IQuestBuilder builder)
+        {
+            builder.Create("voritor_lizard_threat", "Cull the Voritor Lizard Threat")
+
+                .AddState()
+                .SetStateJournalText("Jason wants you to head to the Janta Caves and kill ten Voritor Lizards. Report back when this is done.")
+                .AddKillObjective(NPCGroupType.Dantooine_VoritorLizard, 10)
+
+                .AddState()
+                .SetStateJournalText("Return to Jason in the Dantooine Colony and report your progress.")
+
+                .AddGoldReward(4000)
+                .AddXPReward(5000);
+        }
+
+        private void DanMedicalSupplies(IQuestBuilder builder)
+        {
+            builder.Create("medical_supplies", "Medical Supplies for the Clinic")
+
+                .AddState()
+                .SetStateJournalText("The clinic in Dantooine Medical Facility needs  kolto injections and  medi syringes. Collect them from the Abandoned Warehouse and return them to the clinic.")
+                .AddCollectItemObjective("kolto_injection", 20)
+                .AddCollectItemObjective("medisyringes", 5)
+
+                .AddState()
+                .SetStateJournalText("You delivered the kolto injections and medi syringes to the clinic. Talk to the clinic staff for your reward.")
+
+                .AddXPReward(4000)
+                .AddGoldReward(5000)
+                .AddItemReward("med_supplies", 20)
+                .AddItemReward("stim_pack", 10)
+                .AddItemReward("wild_sandwich", 1);
+
+        }
+        private void DanBundle(IQuestBuilder builder)
+        {
+            builder.Create("hay_bundles", "Hay bales for Wrrl")
+
+                .AddState()
+                .SetStateJournalText("The farmer needs help with his herd. Collect 20 bags of hay bales from the Ruin Farmlands and return them to the farmer.")
+                .AddCollectItemObjective("haybundle", 20)
+
+                .AddState()
+                .SetStateJournalText("You delivered the hay bundles to the farmer. Talk to the farmer for your reward.")
+
+                .AddXPReward(2000)
+                .AddGoldReward(1000);
+        }
+        private void HarvestingHerbs(IQuestBuilder builder)
+        {
+            builder.Create("harvest_herbs", "Harvesting Herbs")
+               .IsRepeatable()
+
+               .AddState()
+               .SetStateJournalText("Collect rare Dantooine Starwort herbs from the Crystal fields of Dantooine.")
+               .AddCollectItemObjective("dant_starwort", 15)
+
+               .AddState()
+               .SetStateJournalText("Deliver the herbs to the healer in the Colony.")
+
+               .AddXPReward(600)
+               .AddGoldReward(200);
+        }
+        private void FetchPetTreat(IQuestBuilder builder)
+        {
+            builder.Create("fetch_pet_treat", "Fetch Pet Treat Quest")
+
+               .AddState()
+               .SetStateJournalText("The battlegym trainer needs a Yot Beans to make pet treats. Find the Yot Beans and bring it back.")
+               .AddCollectItemObjective("yotbean", 10)
+
+               .AddState()
+               .SetStateJournalText("Return to the battlegym trainer with the Yot Beans.")
+
+               .AddXPReward(2000)
+               .AddGoldReward(1500)
+               .AddItemReward("pf_dryfruit_5", 1)
+               .AddItemReward("pf_sourfruit_1", 1);
+        }
+        private void CollectHerbsForLibrarian(IQuestBuilder builder)
+        {
+            builder.Create("collect_herbs_librarian", "Collect Herbs for the Librarian")
+
+               .AddState()
+               .SetStateJournalText("The Jedi librarian needs Yot Beans and Dantooine Starworts for his research. Collect these items and bring them back.")
+               .AddCollectItemObjective("yotbean", 10)
+               .AddCollectItemObjective("dant_starwort", 15)
+
+               .AddState()
+               .SetStateJournalText("Return to the Jedi librarian with the collected herbs.")
+
+               .AddItemReward("emerald", 2)
+               .AddXPReward(5000)
+               .AddGoldReward(3000);
+        }
+        private void HiddenCave(IQuestBuilder builder)
+        {
+            builder.Create("hidden_cave", "Find the hidden cave")
+
+                .AddState()
+                .AddKillObjective(NPCGroupType.Dantooine_KinrathQueen, 1)
+                .SetStateJournalText("Head to the kinrath cave and defeat the Kinrath queen. Return to Joran when the work is done.")
+
+                .AddState()
+                .SetStateJournalText("You defeated the Kinrath Queen. Return to Joran for that shovel.")
+
+                .AddGoldReward(7500)
+                .AddXPReward(12000)
+
+                .OnCompleteAction((player, sourceObject) =>
+                {
+                    KeyItemService.GiveKeyItem(player, KeyItemType.DantooineShovel);
+                }); 
+
+        }
+    }
+}
+

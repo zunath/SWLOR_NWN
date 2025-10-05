@@ -21,6 +21,7 @@
 		<Folder Include="Delegates\" />
 		<Folder Include="Dialog\" />
 		<Folder Include="EventHandlers\" />
+		<Folder Include="Feature\" />
 		<Folder Include="UI\" />
 	</ItemGroup>
 

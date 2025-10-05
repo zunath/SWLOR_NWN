@@ -6,6 +6,7 @@ using SWLOR.NWN.API.Service;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data;
+using SWLOR.Shared.Domain.Repositories;
 using SWLOR.Shared.UI.Component;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
@@ -17,11 +18,13 @@ namespace SWLOR.Component.Admin.UI.ViewModel
     {
         private readonly IDatabaseService _db;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IDMCreatureRepository _dmCreatureRepository;
 
-        public CreatureManagerViewModel(IGuiService guiService, IDatabaseService db, IServiceProvider serviceProvider) : base(guiService)
+        public CreatureManagerViewModel(IGuiService guiService, IDatabaseService db, IServiceProvider serviceProvider, IDMCreatureRepository dmCreatureRepository) : base(guiService)
         {
             _db = db;
             _serviceProvider = serviceProvider;
+            _dmCreatureRepository = dmCreatureRepository;
         }
 
         // Lazy-loaded services to break circular dependencies
@@ -163,17 +166,21 @@ namespace SWLOR.Component.Admin.UI.ViewModel
 
         private void Search()
         {
-            var query = new DBQuery<DMCreature>()
-                .OrderBy(nameof(DMCreature.Name));                
+            IEnumerable<DMCreature> creatures;
+            
+            if (!string.IsNullOrWhiteSpace(SearchText))
+            {
+                creatures = _dmCreatureRepository.GetByName(SearchText);
+            }
+            else
+            {
+                creatures = _dmCreatureRepository.GetAllOrderedByName();
+            }
 
-            if (!string.IsNullOrWhiteSpace(SearchText)) query.AddFieldSearch(nameof(DMCreature.Name), SearchText, true);
-
-            query.AddPaging(ListingsPerPage, ListingsPerPage * SelectedPageIndex);
-
-            var totalRecordCount = _db.SearchCount(query);
+            var totalRecordCount = creatures.Count();
             UpdatePagination(totalRecordCount);
 
-            var results = _db.Search(query);
+            var results = creatures.Skip(ListingsPerPage * SelectedPageIndex).Take(ListingsPerPage);
 
             _creatureIds.Clear();
             var creatureNames = new GuiBindingList<string>();

@@ -7,6 +7,7 @@ using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Properties.Entities;
 using SWLOR.Shared.Domain.Properties.Enums;
+using SWLOR.Shared.Domain.Repositories;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
@@ -15,12 +16,16 @@ namespace SWLOR.Component.Properties.UI.ViewModel
 {
     public class ElectionViewModel: GuiViewModelBase<ElectionViewModel, IGuiPayload>
     {
-        private readonly IDatabaseService _db;
+        private readonly IWorldPropertyRepository _worldPropertyRepository;
+        private readonly IElectionRepository _electionRepository;
+        private readonly IPlayerRepository _playerRepository;
         private readonly IServiceProvider _serviceProvider;
 
-        public ElectionViewModel(IGuiService guiService, IDatabaseService db, IServiceProvider serviceProvider) : base(guiService)
+        public ElectionViewModel(IGuiService guiService, IWorldPropertyRepository worldPropertyRepository, IElectionRepository electionRepository, IPlayerRepository playerRepository, IServiceProvider serviceProvider) : base(guiService)
         {
-            _db = db;
+            _worldPropertyRepository = worldPropertyRepository;
+            _electionRepository = electionRepository;
+            _playerRepository = playerRepository;
             _serviceProvider = serviceProvider;
         }
 
@@ -73,11 +78,9 @@ namespace SWLOR.Component.Properties.UI.ViewModel
             var playerId = GetObjectUUID(Player);
             var area = GetArea(TetherObject);
             var propertyId = Property.GetPropertyId(area);
-            var dbProperty = _db.Get<WorldProperty>(propertyId);
-            var dbBuilding = _db.Get<WorldProperty>(dbProperty.ParentPropertyId);
-            var election = _db.Search(new DBQuery<Election>()
-                .AddFieldSearch(nameof(Election.PropertyId), dbBuilding.ParentPropertyId, false))
-                .Single();
+            var dbProperty = _worldPropertyRepository.GetById(propertyId);
+            var dbBuilding = _worldPropertyRepository.GetById(dbProperty.ParentPropertyId);
+            var election = _electionRepository.GetSingleByPropertyId(dbBuilding.ParentPropertyId);
 
             if (election.Stage == ElectionStageType.Registration)
             {
@@ -103,9 +106,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
             }
 
             var candidates = election.CandidatePlayerIds.Count > 0
-                ? _db.Search(new DBQuery<Player>()
-                    .AddFieldSearch(nameof(Shared.Domain.Entities.Player.Id), election.CandidatePlayerIds))
-                    .ToList()
+                ? election.CandidatePlayerIds.Select(id => _playerRepository.GetById(id)).Where(p => p != null).ToList()
                 : new List<Player>();
             var candidateNames = new GuiBindingList<string>();
             var candidateToggles = new GuiBindingList<bool>();
@@ -161,11 +162,11 @@ namespace SWLOR.Component.Properties.UI.ViewModel
         {
             var playerId = GetObjectUUID(Player);
             var cdKey = GetPCPublicCDKey(Player);
-            var dbElection = _db.Get<Election>(_electionId);
+            var dbElection = _electionRepository.GetById(_electionId);
 
             bool IsCitizen()
             {
-                var dbPlayer = _db.Get<Player>(playerId);
+                var dbPlayer = _playerRepository.GetById(playerId);
                 if (dbPlayer.CitizenPropertyId != dbElection.PropertyId)
                 {
                     SendMessageToPC(Player, "You must be a registered citizen of this city to run in the election.");
@@ -178,7 +179,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
             if (!IsCitizen())
                 return;
 
-            var dbCity = _db.Get<WorldProperty>(dbElection.PropertyId);
+            var dbCity = _worldPropertyRepository.GetById(dbElection.PropertyId);
 
             // This button behaves differently depending on the mode the election is in.
             // If we're in the 'Registration' process, it will enter or exit the player from the race.
@@ -194,7 +195,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
                             if (!IsCitizen())
                                 return;
 
-                            dbElection = _db.Get<Election>(_electionId);
+                            dbElection = _electionRepository.GetById(_electionId);
 
                             if(dbElection.CandidatePlayerIds.Contains(playerId))
                                 dbElection.CandidatePlayerIds.Remove(playerId);
@@ -207,7 +208,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
                                 dbElection.VoterSelections.Remove(vote.Key);
                             }
 
-                            _db.Set(dbElection);
+                            _electionRepository.Save(dbElection);
                             SendMessageToPC(Player, "You have withdrawn from the race.");
                             _guiService.TogglePlayerWindow(Player, GuiWindowType.Election);
                         });
@@ -220,11 +221,11 @@ namespace SWLOR.Component.Properties.UI.ViewModel
                             if (!IsCitizen())
                                 return;
 
-                            dbElection = _db.Get<Election>(_electionId);
+                            dbElection = _electionRepository.GetById(_electionId);
                             if(!dbElection.CandidatePlayerIds.Contains(playerId))
                                 dbElection.CandidatePlayerIds.Add(playerId);
 
-                            _db.Set(dbElection);
+                            _electionRepository.Save(dbElection);
                             SendMessageToPC(Player, "You have entered the race!");
                             _guiService.TogglePlayerWindow(Player, GuiWindowType.Election);
                         });
@@ -247,7 +248,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
                 else
                 {
                     var selectedCandidateId = _candidatePlayerIds[_selectedCandidateIndex];
-                    var dbCandidate = _db.Get<Player>(selectedCandidateId);
+                    var dbCandidate = _playerRepository.GetById(selectedCandidateId);
 
                     dbElection.VoterSelections[cdKey] = new ElectionVoter
                     {
@@ -259,7 +260,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
                     _guiService.TogglePlayerWindow(Player, GuiWindowType.Election);
                 }
 
-                _db.Set(dbElection);
+                _electionRepository.Save(dbElection);
             }
         };
     }

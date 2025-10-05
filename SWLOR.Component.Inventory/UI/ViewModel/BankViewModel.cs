@@ -14,6 +14,7 @@ using SWLOR.Shared.Events.Events.Inventory;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
+using SWLOR.Shared.Domain.Repositories;
 
 namespace SWLOR.Component.Inventory.UI.ViewModel
 {
@@ -21,6 +22,7 @@ namespace SWLOR.Component.Inventory.UI.ViewModel
     {
         private readonly IDatabaseService _db;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IInventoryItemRepository _inventoryItemRepository;
         
         // Lazy-loaded services to break circular dependencies
         private readonly Lazy<IItemService> _itemService;
@@ -28,10 +30,11 @@ namespace SWLOR.Component.Inventory.UI.ViewModel
         private readonly Lazy<ITargetingService> _targetingService;
         private readonly Lazy<IObjectPluginService> _objectPlugin;
 
-        public BankViewModel(IGuiService guiService, IDatabaseService db, IServiceProvider serviceProvider) : base(guiService)
+        public BankViewModel(IGuiService guiService, IDatabaseService db, IServiceProvider serviceProvider, IInventoryItemRepository inventoryItemRepository) : base(guiService)
         {
             _db = db;
             _serviceProvider = serviceProvider;
+            _inventoryItemRepository = inventoryItemRepository;
             
             // Initialize lazy services
             _itemService = new Lazy<IItemService>(() => _serviceProvider.GetRequiredService<IItemService>());
@@ -110,9 +113,7 @@ namespace SWLOR.Component.Inventory.UI.ViewModel
             var storageId = GetLocalString(bank, "STORAGE_ID");
             var maxItems = GetLocalInt(bank, "STORAGE_ITEM_LIMIT");
 
-            var itemCount = _db.SearchCount(new DBQuery<InventoryItem>()
-                .AddFieldSearch(nameof(InventoryItem.StorageId), storageId, false)
-                .AddFieldSearch(nameof(InventoryItem.PlayerId), playerId, false));
+            var itemCount = _inventoryItemRepository.GetCountByStorageIdAndPlayerId(storageId, playerId);
 
             _itemCount = itemCount;
             ItemCountText = $"{itemCount} / {maxItems} Items";
@@ -132,17 +133,16 @@ namespace SWLOR.Component.Inventory.UI.ViewModel
             var bank = TetherObject;
             var storageId = GetLocalString(bank, "STORAGE_ID");
 
-            var query = new DBQuery<InventoryItem>()
-                .AddFieldSearch(nameof(InventoryItem.StorageId), storageId, false)
-                .AddFieldSearch(nameof(InventoryItem.PlayerId), playerId, false);
+            var allItems = _inventoryItemRepository.GetByStorageIdAndPlayerId(storageId, playerId);
 
+            var filteredItems = allItems;
             if (!string.IsNullOrWhiteSpace(SearchText))
             {
-                query.AddFieldSearch(nameof(InventoryItem.Name), SearchText, true);
+                filteredItems = allItems.Where(item => item.Name.ToLower().Contains(SearchText.ToLower()));
             }
 
             _itemIds.Clear();
-            var items = _db.Search(query);
+            var items = filteredItems;
             var itemResrefs = new GuiBindingList<string>();
             var itemNames = new GuiBindingList<string>();
 

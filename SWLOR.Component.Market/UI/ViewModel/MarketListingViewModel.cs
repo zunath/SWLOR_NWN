@@ -15,6 +15,7 @@ using SWLOR.Shared.Domain.UI.Payloads;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
+using SWLOR.Shared.Domain.Repositories;
 
 namespace SWLOR.Component.Market.UI.ViewModel
 {
@@ -22,15 +23,18 @@ namespace SWLOR.Component.Market.UI.ViewModel
     {
         private readonly IDatabaseService _db;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IMarketItemRepository _marketItemRepository;
 
         public MarketListingViewModel(
             IGuiService guiService, 
             IDatabaseService db, 
-            IServiceProvider serviceProvider) 
+            IServiceProvider serviceProvider,
+            IMarketItemRepository marketItemRepository) 
             : base(guiService)
         {
             _db = db;
             _serviceProvider = serviceProvider;
+            _marketItemRepository = marketItemRepository;
         }
 
         // Lazy-loaded services to break circular dependencies
@@ -124,11 +128,7 @@ namespace SWLOR.Component.Market.UI.ViewModel
             _itemPrices.Clear();
             var playerId = GetObjectUUID(Player);
             var market = PlayerMarket.GetMarketRegion(_regionType);
-            var query = new DBQuery<MarketItem>()
-                .AddFieldSearch(nameof(MarketItem.PlayerId), playerId, false)
-                .AddFieldSearch(nameof(MarketItem.MarketId), market.MarketId, false)
-                .OrderBy(nameof(MarketItem.Name));
-            var records = _db.Search(query);
+            var records = _marketItemRepository.GetBySellerPlayerIdAndMarketId(playerId, market.MarketId);
             var count = 0;
 
             foreach (var record in records)

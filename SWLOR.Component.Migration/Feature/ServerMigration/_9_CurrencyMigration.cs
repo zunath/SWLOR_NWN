@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using SWLOR.Component.Migration.Contracts;
 using SWLOR.Component.Migration.Enums;
@@ -7,11 +8,15 @@ using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Inventory.Enums;
+using SWLOR.Shared.Domain.Repositories;
 
 namespace SWLOR.Component.Migration.Feature.ServerMigration
 {
     public class _9_CurrencyMigration : ServerMigrationBase, IServerMigration
     {
+        // Lazy-loaded services to break circular dependencies
+        private IPlayerRepository PlayerRepository => ServiceProvider.GetRequiredService<IPlayerRepository>();
+        
         public _9_CurrencyMigration(ILogger logger, IDatabaseService db, IServiceProvider serviceProvider) : base(logger, db, serviceProvider)
         {
         }
@@ -21,11 +26,8 @@ namespace SWLOR.Component.Migration.Feature.ServerMigration
 
         public void Migrate()
         {
-            var dbQuery = new DBQuery<Player>();
-            var playerCount = (int)DB.SearchCount(dbQuery);
-
-            var dbPlayers = DB.Search(dbQuery
-                .AddPaging(playerCount, 0));
+            var playerCount = (int)PlayerRepository.GetCount();
+            var dbPlayers = PlayerRepository.GetAll();
 
             foreach (var dbPlayer in dbPlayers)
             {
@@ -38,7 +40,7 @@ namespace SWLOR.Component.Migration.Feature.ServerMigration
                 dbPlayer.Currencies[CurrencyType.PerkRefundToken] = perkResets;
                 dbPlayer.Currencies[CurrencyType.RebuildToken] = rebuildCount;
 
-                DB.Set(dbPlayer);
+                PlayerRepository.Save(dbPlayer);
 
                 Logger.Write<MigrationLogGroup>($"Migrated {perkResets} perk resets and {rebuildCount} rebuild tokens for player {dbPlayer.Name} ({dbPlayer.Id})");
             }

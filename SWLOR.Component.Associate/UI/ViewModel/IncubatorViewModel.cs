@@ -16,6 +16,7 @@ using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Perk.Contracts;
 using SWLOR.Shared.Domain.Perk.Enums;
+using SWLOR.Shared.Domain.Repositories;
 using SWLOR.Shared.Domain.UI.Events;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Service;
@@ -31,6 +32,7 @@ namespace SWLOR.Component.Associate.UI.ViewModel
         private readonly ITargetingService _targetingService;
         private readonly IDatabaseService _db;
         private readonly ITimeService _timeService;
+        private readonly IIncubationJobRepository _incubationJobRepository;
         
         // Lazy-loaded services to break circular dependencies
         private readonly Lazy<IPerkService> _perkService;
@@ -49,11 +51,13 @@ namespace SWLOR.Component.Associate.UI.ViewModel
             IServiceProvider serviceProvider, 
             ITargetingService targetingService, 
             IDatabaseService db, 
-            ITimeService timeService) 
+            ITimeService timeService,
+            IIncubationJobRepository incubationJobRepository) 
             : base(guiService)
         {
             _logger = logger;
             _serviceProvider = serviceProvider;
+            _incubationJobRepository = incubationJobRepository;
             _targetingService = targetingService;
             _db = db;
             _timeService = timeService;
@@ -368,9 +372,7 @@ namespace SWLOR.Component.Associate.UI.ViewModel
 
         private IncubationJob GetJob()
         {
-            var dbQuery = new DBQuery<IncubationJob>()
-                .AddFieldSearch(nameof(IncubationJob.ParentPropertyId), _incubatorPropertyId, false);
-            var dbJob = _db.Search(dbQuery)
+            var dbJob = _incubationJobRepository.GetByParentPropertyId(_incubatorPropertyId)
                 .FirstOrDefault();
 
             return dbJob;
@@ -969,9 +971,7 @@ namespace SWLOR.Component.Associate.UI.ViewModel
         {
             var playerId = GetObjectUUID(Player);
             var maxConcurrentJobs = PerkService.GetPerkLevel(Player, PerkType.IncubationManagement) + 1;
-            var dbQuery = new DBQuery<IncubationJob>()
-                .AddFieldSearch(nameof(IncubationJob.PlayerId), playerId, false);
-            var currentJobs = _db.Search(dbQuery).ToList();
+            var currentJobs = _incubationJobRepository.GetByPlayerId(playerId).ToList();
             var currentJobCount = currentJobs.Count(x => x.ParentPropertyId != _incubatorPropertyId);
 
             if (currentJobCount >= maxConcurrentJobs)

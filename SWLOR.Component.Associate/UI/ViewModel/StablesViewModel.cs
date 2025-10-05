@@ -12,6 +12,7 @@ using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Perk.Contracts;
 using SWLOR.Shared.Domain.Perk.Enums;
+using SWLOR.Shared.Domain.Repositories;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
@@ -22,15 +23,18 @@ namespace SWLOR.Component.Associate.UI.ViewModel
     {
         private readonly IDatabaseService _db;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IBeastRepository _beastRepository;
 
         public StablesViewModel(
             IGuiService guiService, 
             IDatabaseService db, 
-            IServiceProvider serviceProvider) 
+            IServiceProvider serviceProvider,
+            IBeastRepository beastRepository) 
             : base(guiService)
         {
             _db = db;
             _serviceProvider = serviceProvider;
+            _beastRepository = beastRepository;
             
             // Initialize lazy services
             _statService = new Lazy<IStatService>(() => _serviceProvider.GetRequiredService<IStatService>());
@@ -377,9 +381,7 @@ namespace SWLOR.Component.Associate.UI.ViewModel
             var playerId = GetObjectUUID(Player);
             var dbPlayer = _db.Get<Player>(playerId);
             var perkLevel = PerkService.GetPerkLevel(Player, PerkType.Stabling) + 1;
-            var dbQuery = new DBQuery<Beast>()
-                .AddFieldSearch(nameof(Beast.OwnerPlayerId), playerId, false);
-            var dbBeasts = _db.Search(dbQuery)
+            var dbBeasts = _beastRepository.GetByOwnerPlayerId(playerId)
                 .OrderBy(o => o.Name)
                 .ToList();
 
@@ -610,9 +612,7 @@ namespace SWLOR.Component.Associate.UI.ViewModel
                 return;
             }
 
-            var dbQuery = new DBQuery<Beast>()
-                .AddFieldSearch(nameof(Beast.OwnerPlayerId), playerId, false);
-            var beastCount = _db.SearchCount(dbQuery);
+            var beastCount = (int)_beastRepository.GetCountByOwnerPlayerId(playerId);
             var perkLevel = PerkService.GetPerkLevel(Player, PerkType.Stabling) + 1;
             if (perkLevel < beastCount)
             {

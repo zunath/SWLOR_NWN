@@ -7,6 +7,7 @@ using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Abstractions.Models;
 using SWLOR.Shared.Domain.Properties.Entities;
 using SWLOR.Shared.Domain.Properties.Enums;
+using SWLOR.Shared.Domain.Repositories;
 using SWLOR.Shared.Domain.UI.Payloads;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
@@ -16,12 +17,14 @@ namespace SWLOR.Component.Properties.UI.ViewModel
 {
     public class ManageApartmentViewModel: GuiViewModelBase<ManageApartmentViewModel, ManageApartmentPayload>
     {
-        private readonly IDatabaseService _db;
+        private readonly IWorldPropertyRepository _worldPropertyRepository;
+        private readonly IWorldPropertyPermissionRepository _worldPropertyPermissionRepository;
         private readonly IServiceProvider _serviceProvider;
 
-        public ManageApartmentViewModel(IGuiService guiService, IDatabaseService db, IServiceProvider serviceProvider) : base(guiService)
+        public ManageApartmentViewModel(IGuiService guiService, IWorldPropertyRepository worldPropertyRepository, IWorldPropertyPermissionRepository worldPropertyPermissionRepository, IServiceProvider serviceProvider) : base(guiService)
         {
-            _db = db;
+            _worldPropertyRepository = worldPropertyRepository;
+            _worldPropertyPermissionRepository = worldPropertyPermissionRepository;
             _serviceProvider = serviceProvider;
         }
 
@@ -183,9 +186,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
         private WorldProperty GetApartment()
         {
             var selectedPropertyId = PropertyIds[SelectedApartmentIndex];
-            var query = new DBQuery<WorldProperty>()
-                .AddFieldSearch(nameof(WorldProperty.Id), selectedPropertyId, false);
-            var apartment = _db.Search(query).Single();
+            var apartment = _worldPropertyRepository.GetById(selectedPropertyId);
 
             return apartment;
         }
@@ -194,10 +195,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
         {
             var playerId = GetObjectUUID(Player);
             var selectedPropertyId = PropertyIds[SelectedApartmentIndex];
-            var query = new DBQuery<WorldPropertyPermission>()
-                .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false)
-                .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), selectedPropertyId, false);
-            var permission = _db.Search(query).FirstOrDefault()
+            var permission = _worldPropertyPermissionRepository.GetSingleByPropertyIdAndPlayerId(selectedPropertyId, playerId)
                              ?? new WorldPropertyPermission();
 
             return permission;
@@ -213,7 +211,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
 
             if (initialPayload != null && !string.IsNullOrWhiteSpace(initialPayload.SpecificPropertyId))
             {
-                var property = _db.Get<WorldProperty>(initialPayload.SpecificPropertyId);
+                var property = _worldPropertyRepository.GetById(initialPayload.SpecificPropertyId);
                 apartmentNames.Add(property.CustomName);
                 apartmentToggles.Add(true);
                 PropertyIds.Add(property.Id);
@@ -222,24 +220,13 @@ namespace SWLOR.Component.Properties.UI.ViewModel
             }
             else
             {
-                var permissionQuery = new DBQuery<WorldPropertyPermission>()
-                    .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false);
-                var permissionCount = (int)_db.SearchCount(permissionQuery);
-                var dbPermissions = _db.Search(permissionQuery
-                        .AddPaging(permissionCount, 0))
-                    .ToList();
+                var dbPermissions = _worldPropertyPermissionRepository.GetByPlayerId(playerId).ToList();
 
                 if (dbPermissions.Count > 0)
                 {
                     var propertyIds = dbPermissions.Select(s => s.PropertyId);
-                    var propertyQuery = new DBQuery<WorldProperty>()
-                        .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.Apartment)
-                        .AddFieldSearch(nameof(WorldProperty.Id), propertyIds)
-                        .AddFieldSearch(nameof(WorldProperty.IsQueuedForDeletion), false);
-                    var propertyCount = (int)_db.SearchCount(propertyQuery);
-
-                    var properties = _db.Search(propertyQuery
-                        .AddPaging(propertyCount, 0));
+                    var properties = _worldPropertyRepository.GetByPropertyIds(propertyIds)
+                        .Where(p => p.PropertyType == PropertyType.Apartment && !p.IsQueuedForDeletion);
 
                     foreach (var property in properties)
                     {
@@ -410,7 +397,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
 
             if (hasChange)
             {
-                _db.Set(apartment);
+                _worldPropertyRepository.Save(apartment);
 
                 var instance = Property.GetRegisteredInstance(apartment.Id);
                 SetName(instance.Area, "{PC} " + CustomName);
@@ -458,7 +445,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
                     apartment = GetApartment();
                     apartment.Dates[PropertyDateType.Lease] = newLeaseDate;
 
-                    _db.Set(apartment);
+                    _worldPropertyRepository.Save(apartment);
 
                     Instruction = $"Lease extended by {days} {dayWord}!";
                     InstructionColor = GuiColor.Green;
@@ -489,7 +476,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
 
                     // Queue the deletion for the next reboot to avoid lag while players are on.
                     apartment.IsQueuedForDeletion = true;
-                    _db.Set(apartment);
+                    _worldPropertyRepository.Save(apartment);
                     
                     if(_guiService.IsWindowOpen(Player, GuiWindowType.ManageApartment))
                         _guiService.TogglePlayerWindow(Player, GuiWindowType.ManageApartment);

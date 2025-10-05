@@ -5,19 +5,17 @@ using SWLOR.Component.Properties.Dialog;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.Service;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Enums;
-using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Domain.Dialog.Contracts;
-using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Properties.Contracts;
 using SWLOR.Shared.Domain.Properties.Entities;
 using SWLOR.Shared.Domain.Properties.Enums;
 using SWLOR.Shared.Domain.Properties.ValueObjects;
+using SWLOR.Shared.Domain.Repositories;
 using SWLOR.Shared.Domain.World.Contracts;
 using SWLOR.Shared.Domain.World.Enums;
 using SWLOR.Shared.UI.Contracts;
@@ -29,6 +27,12 @@ namespace SWLOR.Component.Properties.Service
     {
         private readonly ILogger _logger;
         private readonly IDatabaseService _db;
+        private readonly IWorldPropertyRepository _worldPropertyRepository;
+        private readonly IWorldPropertyPermissionRepository _worldPropertyPermissionRepository;
+        private readonly IWorldPropertyCategoryRepository _worldPropertyCategoryRepository;
+        private readonly IPlayerRepository _playerRepository;
+        private readonly IElectionRepository _electionRepository;
+        private readonly IInventoryItemRepository _inventoryItemRepository;
         private readonly IGuiService _guiService;
         private readonly IAreaService _areaService;
         private readonly IPlanetService _planetService;
@@ -63,11 +67,17 @@ namespace SWLOR.Component.Properties.Service
         private readonly Dictionary<PropertyType, List<StructureType>> _structureTypesByPropertyType = new();
 
         public PropertyService(
-            ILogger logger, 
-            IDatabaseService db, 
-            IGuiService guiService, 
-            IAreaService areaService, 
-            IPlanetService planetService, 
+            ILogger logger,
+            IDatabaseService db,
+            IWorldPropertyRepository worldPropertyRepository,
+            IWorldPropertyPermissionRepository worldPropertyPermissionRepository,
+            IWorldPropertyCategoryRepository worldPropertyCategoryRepository,
+            IPlayerRepository playerRepository,
+            IElectionRepository electionRepository,
+            IInventoryItemRepository inventoryItemRepository,
+            IGuiService guiService,
+            IAreaService areaService,
+            IPlanetService planetService,
             IDialogService dialogService,
             StructureChangedAction structureChangedAction,
             IServiceProvider serviceProvider,
@@ -76,6 +86,12 @@ namespace SWLOR.Component.Properties.Service
         {
             _logger = logger;
             _db = db;
+            _worldPropertyRepository = worldPropertyRepository;
+            _worldPropertyPermissionRepository = worldPropertyPermissionRepository;
+            _worldPropertyCategoryRepository = worldPropertyCategoryRepository;
+            _playerRepository = playerRepository;
+            _electionRepository = electionRepository;
+            _inventoryItemRepository = inventoryItemRepository;
             _guiService = guiService;
             _areaService = areaService;
             _planetService = planetService;
@@ -347,7 +363,7 @@ namespace SWLOR.Component.Properties.Service
         private Vector4 GetEntrancePosition(string areaResref)
         {
             var area = _areaService.GetAreaByResref(areaResref);
-            
+
             for (var obj = GetFirstObjectInArea(area); GetIsObjectValid(obj); obj = GetNextObjectInArea(area))
             {
                 if (GetTag(obj) != "PROPERTY_ENTRANCE") continue;
@@ -355,7 +371,7 @@ namespace SWLOR.Component.Properties.Service
                 var position = GetPosition(obj);
                 return new Vector4(position, GetFacing(obj));
             }
-            
+
             return new Vector4();
         }
 
@@ -400,7 +416,7 @@ namespace SWLOR.Component.Properties.Service
         {
             return _propertyInstances[propertyId];
         }
-        
+
         /// <summary>
         /// When the module loads, remove all data marked for deletion and any properties with expired leases.
         /// </summary>
@@ -410,45 +426,32 @@ namespace SWLOR.Component.Properties.Service
 
             // Mark any properties with expired leases as queued for deletion. They will be picked up on the last
             // step of this method.
-            var propertyTypesWithLeases = new[]
-            {
-                (int)PropertyType.Apartment,
-            };
-            var query = new DBQuery<WorldProperty>()
-                .AddFieldSearch(nameof(WorldProperty.PropertyType), propertyTypesWithLeases);
-            var queryCount = (int)_db.SearchCount(query);
-            var properties = _db.Search(query.AddPaging(queryCount, 0));
+            var properties = _worldPropertyRepository.GetPropertiesWithLeases();
 
             foreach (var property in properties)
             {
                 var lease = property.Dates[PropertyDateType.Lease];
                 if (lease <= now)
                 {
-                    _logger.Write<PropertyLogGroup>( $"Property '{property.CustomName}' has an expired lease. Expired on: {lease.ToString("G")}");
+                    _logger.Write<PropertyLogGroup>($"Property '{property.CustomName}' has an expired lease. Expired on: {lease.ToString("G")}");
 
                     property.IsQueuedForDeletion = true;
-                    _db.Set(property);
+                    _worldPropertyRepository.Save(property);
                 }
             }
 
             // Remove any properties queued for deletion.
-            query = new DBQuery<WorldProperty>()
-                .AddFieldSearch(nameof(WorldProperty.IsQueuedForDeletion), true);
-            queryCount = (int)_db.SearchCount(query);
-            properties = _db.Search(query.AddPaging(queryCount, 0));
+            properties = _worldPropertyRepository.GetQueuedForDeletion();
 
             foreach (var property in properties)
             {
-                _logger.Write<PropertyLogGroup>( $"Property '{property.CustomName}' scheduled for deletion. Peforming delete now.");
+                _logger.Write<PropertyLogGroup>($"Property '{property.CustomName}' scheduled for deletion. Peforming delete now.");
                 DeleteProperty(property);
             }
 
             // Starship properties should have their current location wiped on every boot.
             // This ensures the player's ship doesn't get lost in space when they're thrown out of an instance.
-            var starshipQuery = new DBQuery<WorldProperty>()
-                .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.Starship);
-            var starshipCount = (int)_db.SearchCount(starshipQuery);
-            var starshipProperties = _db.Search(starshipQuery.AddPaging(starshipCount, 0));
+            var starshipProperties = _worldPropertyRepository.GetByPropertyType(PropertyType.Starship);
 
             foreach (var property in starshipProperties)
             {
@@ -462,7 +465,7 @@ namespace SWLOR.Component.Properties.Service
                 var dockPosition = property.Positions[PropertyLocationType.DockPosition];
                 if (!string.IsNullOrWhiteSpace(dockPosition.InstancePropertyId))
                 {
-                    var dbStarport = _db.Get<WorldProperty>(dockPosition.InstancePropertyId);
+                    var dbStarport = _worldPropertyRepository.GetById(dockPosition.InstancePropertyId);
                     if (dbStarport == null)
                     {
                         // The PC starport no longer exists (probably destroyed by the previous cleanup)
@@ -470,11 +473,11 @@ namespace SWLOR.Component.Properties.Service
                         // their docked position with it.
                         property.Positions[PropertyLocationType.DockPosition] = property.Positions[PropertyLocationType.LastNPCDockPosition];
 
-                        _logger.Write<PropertyLogGroup>( $"Starship '{property.CustomName}' ({property.Id}) was docked at a non-existent player starport. It has been relocated to the last NPC dock position at '{property.Positions[PropertyLocationType.LastNPCDockPosition].AreaResref}'.");
+                        _logger.Write<PropertyLogGroup>($"Starship '{property.CustomName}' ({property.Id}) was docked at a non-existent player starport. It has been relocated to the last NPC dock position at '{property.Positions[PropertyLocationType.LastNPCDockPosition].AreaResref}'.");
                     }
                 }
-                
-                _db.Set(property);
+
+                _worldPropertyRepository.Save(property);
             }
         }
 
@@ -488,11 +491,7 @@ namespace SWLOR.Component.Properties.Service
         /// </summary>
         public void ProcessCities()
         {
-            var cityQuery = new DBQuery<WorldProperty>()
-                .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.City)
-                .AddFieldSearch(nameof(WorldProperty.IsQueuedForDeletion), false);
-            var queryCount = (int)_db.SearchCount(cityQuery);
-            var cities = _db.Search(cityQuery.AddPaging(queryCount, 0));
+            var cities = _worldPropertyRepository.GetActiveCities();
             var now = DateTime.UtcNow;
 
             foreach (var city in cities)
@@ -502,7 +501,7 @@ namespace SWLOR.Component.Properties.Service
 
                 if (now < city.Dates[PropertyDateType.Upkeep])
                 {
-                    _logger.Write<PropertyLogGroup>( $"City '{city.CustomName}' ({city.Id}) upkeep isn't ready yet.");
+                    _logger.Write<PropertyLogGroup>($"City '{city.CustomName}' ({city.Id}) upkeep isn't ready yet.");
                     continue;
                 }
                 else
@@ -515,18 +514,14 @@ namespace SWLOR.Component.Properties.Service
                     city.Dates[PropertyDateType.Upkeep] = city.Dates[PropertyDateType.Upkeep].AddDays(7);
                 }
 
-                _db.Set(city);
+                _worldPropertyRepository.Save(city);
             }
         }
 
         private void ProcessCityCitizenRequirement(DateTime now, WorldProperty city)
         {
-            var citizenQuery = new DBQuery<Player>()
-                .AddFieldSearch(nameof(Player.CitizenPropertyId), city.Id, false)
-                .AddFieldSearch(nameof(Player.IsDeleted), false);
-            var citizenCount = (int)_db.SearchCount(citizenQuery);
-            var citizens = _db.Search(citizenQuery.AddPaging(citizenCount, 0))
-                .ToList();
+            var citizens = _playerRepository.GetActiveCitizensByPropertyId(city.Id).ToList();
+            var citizenCount = citizens.Count;
 
             // City is below the number of citizens required to maintain the city.
             if (citizenCount < _citizensRequired[1])
@@ -542,7 +537,7 @@ namespace SWLOR.Component.Properties.Service
                     }
                     else
                     {
-                        _logger.Write<PropertyLogGroup>( $"City '{city.CustomName}' in area '{city.ParentPropertyId}' is below the required citizen count but time has not expired. Next check will occur on the next server reboot.");
+                        _logger.Write<PropertyLogGroup>($"City '{city.CustomName}' in area '{city.ParentPropertyId}' is below the required citizen count but time has not expired. Next check will occur on the next server reboot.");
                     }
                 }
                 // This is the first restart where the city is below the required amount.
@@ -550,7 +545,7 @@ namespace SWLOR.Component.Properties.Service
                 {
                     city.Dates[PropertyDateType.BelowRequiredCitizens] = now.AddHours(MinimumCitizensGracePeriodHours);
 
-                    _logger.Write<PropertyLogGroup>( $"City '{city.CustomName}' has fallen below the required {_citizensRequired[1]} citizens required to maintain a city. An expiration has been applied");
+                    _logger.Write<PropertyLogGroup>($"City '{city.CustomName}' has fallen below the required {_citizensRequired[1]} citizens required to maintain a city. An expiration has been applied");
                 }
             }
             // Otherwise they're at or above the required amount. Ensure the date is removed from the property.
@@ -562,7 +557,7 @@ namespace SWLOR.Component.Properties.Service
                 }
             }
 
-            _db.Set(city);
+            _worldPropertyRepository.Save(city);
         }
 
         private void ProcessCityElections(DateTime now, WorldProperty city)
@@ -571,17 +566,11 @@ namespace SWLOR.Component.Properties.Service
 
             void TransferPermissions(string winnerPlayerId)
             {
-                var mayorPermission = _db.Search(new DBQuery<WorldPropertyPermission>()
-                        .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), incumbentMayorId, false)
-                        .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), city.Id, false))
-                    .Single();
+                var mayorPermission = _worldPropertyPermissionRepository.GetSingleByPropertyIdAndPlayerId(city.Id, incumbentMayorId);
 
-                _db.Delete<WorldPropertyPermission>(mayorPermission.Id);
-                
-                var winnerPermission = _db.Search(new DBQuery<WorldPropertyPermission>()
-                        .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), winnerPlayerId, false)
-                        .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), city.Id, false))
-                    .SingleOrDefault() ?? new WorldPropertyPermission
+                _worldPropertyPermissionRepository.Delete(mayorPermission.Id);
+
+                var winnerPermission = _worldPropertyPermissionRepository.GetSingleByPropertyIdAndPlayerId(city.Id, winnerPlayerId) ?? new WorldPropertyPermission
                 {
                     PlayerId = winnerPlayerId,
                     PropertyId = city.Id
@@ -593,16 +582,14 @@ namespace SWLOR.Component.Properties.Service
                     winnerPermission.GrantPermissions[permission] = true;
                 }
 
-                _db.Set(winnerPermission);
+                _worldPropertyPermissionRepository.Save(winnerPermission);
             }
 
             // No reason to process deleted cities. Skip.
             if (city.IsQueuedForDeletion) return;
 
-            _logger.Write<PropertyLogGroup>( $"Election process starting for city {city.CustomName} ({city.Id})");
-            var election = _db.Search(new DBQuery<Election>()
-                .AddFieldSearch(nameof(Election.PropertyId), city.Id, false))
-                .SingleOrDefault();
+            _logger.Write<PropertyLogGroup>($"Election process starting for city {city.CustomName} ({city.Id})");
+            var election = _electionRepository.GetSingleByPropertyId(city.Id);
 
             // Election hasn't started yet.
             if (election == null)
@@ -616,7 +603,7 @@ namespace SWLOR.Component.Properties.Service
                         Stage = ElectionStageType.Registration
                     };
 
-                    _db.Set(election);
+                    _electionRepository.Save(election);
                 }
             }
             // Election has started. See if it's time to progress to the next stage.
@@ -644,26 +631,26 @@ namespace SWLOR.Component.Properties.Service
                     // Nobody voted at all. Incumbent stays in power.
                     if (orderedVotes.Count <= 0)
                     {
-                        _logger.Write<PropertyLogGroup>( $"No one voted. Incumbent mayor '{incumbentMayorId}' stays in power.");
+                        _logger.Write<PropertyLogGroup>($"No one voted. Incumbent mayor '{incumbentMayorId}' stays in power.");
                     }
                     // If top two are the same, incumbent mayor wins.
                     else if (orderedVotes.Count >= 2 && orderedVotes.ElementAt(0).Value != orderedVotes.ElementAt(1).Value)
                     {
-                        _logger.Write<PropertyLogGroup>( $"Top 2 candidates were tied. Incumbent mayor '{incumbentMayorId}' wins the election.");
+                        _logger.Write<PropertyLogGroup>($"Top 2 candidates were tied. Incumbent mayor '{incumbentMayorId}' wins the election.");
                     }
                     // Otherwise, take the person with the highest votes.
-                    else 
+                    else
                     {
                         var winnerPlayerId = orderedVotes.ElementAt(0).Key;
                         TransferPermissions(winnerPlayerId);
                         city.OwnerPlayerId = winnerPlayerId;
-                        _logger.Write<PropertyLogGroup>( $"New mayor of {city.CustomName} is '{winnerPlayerId}'");
+                        _logger.Write<PropertyLogGroup>($"New mayor of {city.CustomName} is '{winnerPlayerId}'");
                     }
 
-                    _logger.Write<PropertyLogGroup>( $"Vote Counts:");
+                    _logger.Write<PropertyLogGroup>($"Vote Counts:");
                     foreach (var (candidatePlayerId, voteCount) in orderedVotes)
                     {
-                        _logger.Write<PropertyLogGroup>( $"{candidatePlayerId}: {voteCount} votes");
+                        _logger.Write<PropertyLogGroup>($"{candidatePlayerId}: {voteCount} votes");
                     }
 
                     // The next election should occur in 3 weeks from the end of this election.
@@ -672,8 +659,8 @@ namespace SWLOR.Component.Properties.Service
                         .AddDays(ElectionRegistrationDays + ElectionVotingDays) // This gets us to the end of the election
                         .AddDays(21); // Then add another 3 weeks.
 
-                    _db.Set(city);
-                    _db.Delete<Election>(election.Id);
+                    _worldPropertyRepository.Save(city);
+                    _electionRepository.Delete(election.Id);
                 }
                 // Registration cut-off has passed. 
                 // If no one has registered, the incumbent mayor wins by default.
@@ -691,45 +678,45 @@ namespace SWLOR.Component.Properties.Service
                             .AddDays(ElectionRegistrationDays) // This gets us to the end of the registration period
                             .AddDays(21); // Then add another 3 weeks.
 
-                        _db.Set(city);
+                        _worldPropertyRepository.Save(city);
 
-                        _db.Delete<Election>(election.Id);
-                        _logger.Write<PropertyLogGroup>( $"No one ran for this election. Existing mayor '{incumbentMayorId}' wins by default.");
+                        _electionRepository.Delete(election.Id);
+                        _logger.Write<PropertyLogGroup>($"No one ran for this election. Existing mayor '{incumbentMayorId}' wins by default.");
                     }
                     // In the event only one person ran for election, they automatically win
                     // and the power shift occurs immediately. Another election is scheduled
                     // three weeks from now.
-                    else if(election.CandidatePlayerIds.Count == 1)
+                    else if (election.CandidatePlayerIds.Count == 1)
                     {
                         var winnerPlayerId = election.CandidatePlayerIds[0];
 
                         // The winner was the incumbent mayor. No changes are needed.
                         if (winnerPlayerId == incumbentMayorId)
                         {
-                            _logger.Write<PropertyLogGroup>( $"Incumbent mayor '{incumbentMayorId}' ran unopposed. They retain mayor status.");
+                            _logger.Write<PropertyLogGroup>($"Incumbent mayor '{incumbentMayorId}' ran unopposed. They retain mayor status.");
                         }
                         // Someone new won. Transfer mayor permissions over to the new player.
                         else
                         {
                             city.OwnerPlayerId = winnerPlayerId;
                             TransferPermissions(winnerPlayerId);
-                            _logger.Write<PropertyLogGroup>( $"Only one person '{winnerPlayerId}' ran for mayor. They win by default.");
+                            _logger.Write<PropertyLogGroup>($"Only one person '{winnerPlayerId}' ran for mayor. They win by default.");
                         }
 
                         city.Dates[PropertyDateType.ElectionStart] = city.Dates[PropertyDateType.ElectionStart]
                             .AddDays(ElectionRegistrationDays) // This gets us to the end of the registration period
                             .AddDays(21); // Then add another 3 weeks.
 
-                        _db.Set(city);
-                        _db.Delete<Election>(election.Id);
+                        _worldPropertyRepository.Save(city);
+                        _electionRepository.Delete(election.Id);
                     }
                     // We're past the registration window. Move into the voting stage.
                     else
                     {
                         election.Stage = ElectionStageType.Voting;
 
-                        _db.Set(election);
-                        _logger.Write<PropertyLogGroup>( $"City '{city.CustomName}' ({city.Id}) has progressed into the Voting stage of the election.");
+                        _electionRepository.Save(election);
+                        _logger.Write<PropertyLogGroup>($"City '{city.CustomName}' ({city.Id}) has progressed into the Voting stage of the election.");
                     }
 
                 }
@@ -738,22 +725,20 @@ namespace SWLOR.Component.Properties.Service
 
         private void ProcessCityLevel(WorldProperty city)
         {
-            _logger.Write<PropertyLogGroup>( $"Processing city level for '{city.CustomName}' ({city.Id})...");
+            _logger.Write<PropertyLogGroup>($"Processing city level for '{city.CustomName}' ({city.Id})...");
 
-            var mayor = _db.Get<Player>(city.OwnerPlayerId);
-            var citizenCount = _db.SearchCount(new DBQuery<Player>()
-                .AddFieldSearch(nameof(Player.CitizenPropertyId), city.Id, false)
-                .AddFieldSearch(nameof(Player.IsDeleted), false));
+            var mayor = _playerRepository.GetById(city.OwnerPlayerId);
+            var citizenCount = _playerRepository.GetActiveCitizensByPropertyId(city.Id).Count();
             var currentLevel = city.Upgrades[PropertyUpgradeType.CityLevel];
             var mayorLevel = mayor.Perks.ContainsKey(PerkType.CityManagement)
                 ? mayor.Perks[PerkType.CityManagement] + 1
                 : 1;
-            
+
             // Mayor's perk level has fallen below the city level.
             if (mayorLevel < currentLevel)
             {
                 currentLevel = mayorLevel;
-                _logger.Write<PropertyLogGroup>( $"City level reduced to {currentLevel} because mayor's perk level is {mayorLevel}");
+                _logger.Write<PropertyLogGroup>($"City level reduced to {currentLevel} because mayor's perk level is {mayorLevel}");
             }
 
             var maxLevelThisCycle = 1;
@@ -762,7 +747,7 @@ namespace SWLOR.Component.Properties.Service
                 // Mayor can't support a higher city level.
                 if (level > mayorLevel)
                 {
-                    _logger.Write<PropertyLogGroup>( $"Mayor cannot support city level {level} or higher.");
+                    _logger.Write<PropertyLogGroup>($"Mayor cannot support city level {level} or higher.");
                     break;
                 }
 
@@ -770,7 +755,7 @@ namespace SWLOR.Component.Properties.Service
                 if (citizenCount >= _citizensRequired[level])
                 {
                     maxLevelThisCycle = level;
-                    _logger.Write<PropertyLogGroup>( $"Meets citizen requirement for level {level} (Required amount: {_citizensRequired[level]})");
+                    _logger.Write<PropertyLogGroup>($"Meets citizen requirement for level {level} (Required amount: {_citizensRequired[level]})");
                 }
             }
 
@@ -778,50 +763,50 @@ namespace SWLOR.Component.Properties.Service
             if (currentLevel > maxLevelThisCycle)
             {
                 currentLevel = maxLevelThisCycle;
-                _logger.Write<PropertyLogGroup>( $"City level dropped to {maxLevelThisCycle}");
+                _logger.Write<PropertyLogGroup>($"City level dropped to {maxLevelThisCycle}");
             }
 
             // Upkeep hasn't been paid. City isn't eligible to increase in level.
             if (city.Upkeep > 0)
             {
-                _logger.Write<PropertyLogGroup>( $"Unable to upgrade city because upkeep hasn't been fully paid.");
+                _logger.Write<PropertyLogGroup>($"Unable to upgrade city because upkeep hasn't been fully paid.");
             }
             // The city can increase in level and upkeep has been paid. Perform the upgrade now.
             else if (currentLevel < maxLevelThisCycle)
             {
                 currentLevel++;
-                _logger.Write<PropertyLogGroup>( $"City increased by one level this cycle.");
+                _logger.Write<PropertyLogGroup>($"City increased by one level this cycle.");
             }
 
-            _logger.Write<PropertyLogGroup>( $"City level changed to {currentLevel} from {city.Upgrades[PropertyUpgradeType.CityLevel]}");
+            _logger.Write<PropertyLogGroup>($"City level changed to {currentLevel} from {city.Upgrades[PropertyUpgradeType.CityLevel]}");
             city.Upgrades[PropertyUpgradeType.CityLevel] = currentLevel;
-            _db.Set(city);
+            _worldPropertyRepository.Save(city);
 
-            _logger.Write<PropertyLogGroup>( $"Finished processing city level for '{city.CustomName}' ({city.Id})");
+            _logger.Write<PropertyLogGroup>($"Finished processing city level for '{city.CustomName}' ({city.Id})");
         }
 
         private void ProcessUpkeep(DateTime now, WorldProperty city)
         {
-            _logger.Write<PropertyLogGroup>( $"Processing city '{city.CustomName}' ({city.Id}) upkeep...");
-            
+            _logger.Write<PropertyLogGroup>($"Processing city '{city.CustomName}' ({city.Id}) upkeep...");
+
             // If upkeep wasn't fully paid for this week, process the destruction date
             if (city.Upkeep > 0)
             {
-                _logger.Write<PropertyLogGroup>( $"City upkeep was not paid for the past week.");
+                _logger.Write<PropertyLogGroup>($"City upkeep was not paid for the past week.");
 
                 // This is a consecutive week in which upkeep wasn't paid. Check if it's time to destroy the city.
                 if (city.Dates.ContainsKey(PropertyDateType.DisrepairDestruction))
                 {
                     if (now >= city.Dates[PropertyDateType.DisrepairDestruction])
                     {
-                        _logger.Write<PropertyLogGroup>( $"City upkeep was not paid for 30 days. City is marked for destruction.");
+                        _logger.Write<PropertyLogGroup>($"City upkeep was not paid for 30 days. City is marked for destruction.");
                         city.IsQueuedForDeletion = true;
                     }
                 }
                 else
                 {
                     city.Dates[PropertyDateType.DisrepairDestruction] = now.AddDays(30);
-                    _logger.Write<PropertyLogGroup>( $"This is the first week upkeep wasn't paid. Destruction will occur on {city.Dates[PropertyDateType.DisrepairDestruction]:yyyy-MM-dd hh:mm:ss}");
+                    _logger.Write<PropertyLogGroup>($"This is the first week upkeep wasn't paid. Destruction will occur on {city.Dates[PropertyDateType.DisrepairDestruction]:yyyy-MM-dd hh:mm:ss}");
                 }
 
             }
@@ -831,12 +816,12 @@ namespace SWLOR.Component.Properties.Service
                 if (city.Dates.ContainsKey(PropertyDateType.DisrepairDestruction))
                 {
                     city.Dates.Remove(PropertyDateType.DisrepairDestruction);
-                    _logger.Write<PropertyLogGroup>( $"City upkeep was paid. Removing destruction date.");
+                    _logger.Write<PropertyLogGroup>($"City upkeep was paid. Removing destruction date.");
                 }
             }
-            
+
             // Calculate new upkeep price for this week.
-            var dbMayor = _db.Get<Player>(city.OwnerPlayerId);
+            var dbMayor = _playerRepository.GetById(city.OwnerPlayerId);
             var upkeepReductionPercent = dbMayor.Perks.ContainsKey(PerkType.Upkeep)
                 ? dbMayor.Perks[PerkType.Upkeep] * 0.05f
                 : 0;
@@ -845,39 +830,35 @@ namespace SWLOR.Component.Properties.Service
             var basePrice = layout.PricePerDay * 7;
             basePrice -= (int)(basePrice * upkeepReductionPercent);
 
-            var upgradePrice = 
+            var upgradePrice =
                 (city.Upgrades[PropertyUpgradeType.BankLevel] - 1) * UpgradeBasePrice +
                 (city.Upgrades[PropertyUpgradeType.MedicalCenterLevel] - 1) * UpgradeBasePrice +
                 (city.Upgrades[PropertyUpgradeType.StarportLevel] - 1) * UpgradeBasePrice +
                 (city.Upgrades[PropertyUpgradeType.CantinaLevel] - 1) * UpgradeBasePrice;
 
-            _logger.Write<PropertyLogGroup>( $"Weekly upkeep calcuated to be: {basePrice + upgradePrice} credits.");
+            _logger.Write<PropertyLogGroup>($"Weekly upkeep calcuated to be: {basePrice + upgradePrice} credits.");
             city.Upkeep += basePrice + upgradePrice;
-            _db.Set(city);
-            _logger.Write<PropertyLogGroup>( $"Total upkeep owed: {city.Upkeep} credits.");
+            _worldPropertyRepository.Save(city);
+            _logger.Write<PropertyLogGroup>($"Total upkeep owed: {city.Upkeep} credits.");
 
-            _logger.Write<PropertyLogGroup>( $"Finished processing city upkeep for '{city.CustomName}' ({city.Id})");
+            _logger.Write<PropertyLogGroup>($"Finished processing city upkeep for '{city.CustomName}' ({city.Id})");
         }
 
         private void ProcessCitizenshipFees(WorldProperty city)
         {
-            _logger.Write<PropertyLogGroup>( $"Processing citizenship fees for '{city.CustomName}' ({city.Id})");
+            _logger.Write<PropertyLogGroup>($"Processing citizenship fees for '{city.CustomName}' ({city.Id})");
 
-            var citizenQuery = new DBQuery<Player>()
-                .AddFieldSearch(nameof(Player.CitizenPropertyId), city.Id, false)
-                .AddFieldSearch(nameof(Player.IsDeleted), false);
-            var citizenCount = (int)_db.SearchCount(citizenQuery);
-            var citizens = _db.Search(citizenQuery.AddPaging(citizenCount, 0))
-                .ToList();
+            var citizens = _playerRepository.GetActiveCitizensByPropertyId(city.Id).ToList();
+            var citizenCount = citizens.Count;
 
             foreach (var citizen in citizens)
             {
                 citizen.PropertyOwedTaxes += city.Taxes[PropertyTaxType.Citizenship];
-                _logger.Write<PropertyLogGroup>( $"Citizen '{citizen.Name}' owes an additional {city.Taxes[PropertyTaxType.Citizenship]} credits for a total of {citizen.PropertyOwedTaxes} credits");
-                _db.Set(citizen);
+                _logger.Write<PropertyLogGroup>($"Citizen '{citizen.Name}' owes an additional {city.Taxes[PropertyTaxType.Citizenship]} credits for a total of {citizen.PropertyOwedTaxes} credits");
+                _playerRepository.Save(citizen);
             }
 
-            _logger.Write<PropertyLogGroup>( $"Finished processing citizenship fees for '{city.CustomName}' ({city.Id})");
+            _logger.Write<PropertyLogGroup>($"Finished processing citizenship fees for '{city.CustomName}' ({city.Id})");
         }
 
         public void DeleteProperty(WorldProperty property)
@@ -891,10 +872,7 @@ namespace SWLOR.Component.Properties.Service
 
                 if (propertyIds.Count > 0)
                 {
-                    var query = new DBQuery<WorldProperty>()
-                        .AddFieldSearch(nameof(WorldProperty.Id), propertyIds);
-                    var queryCount = (int)_db.SearchCount(query);
-                    var children = _db.Search(query.AddPaging(queryCount, 0));
+                    var children = _worldPropertyRepository.GetByPropertyIds(propertyIds);
 
                     foreach (var child in children)
                     {
@@ -904,76 +882,59 @@ namespace SWLOR.Component.Properties.Service
             }
 
             // Clear permissions for the property.
-            var permissionsQuery = new DBQuery<WorldPropertyPermission>()
-                .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), property.Id, false);
-            var permissionsCount = (int)_db.SearchCount(permissionsQuery);
-            var permissions = _db.Search(permissionsQuery.AddPaging(permissionsCount, 0));
+            var permissions = _worldPropertyPermissionRepository.GetByPropertyId(property.Id);
 
             foreach (var permission in permissions)
             {
-                _db.Delete<WorldPropertyPermission>(permission.Id);
-                _logger.Write<PropertyLogGroup>( $"Deleted property permission for property '{permission.PropertyId}' and player '{permission.PlayerId}'.");
+                _worldPropertyPermissionRepository.Delete(permission.Id);
+                _logger.Write<PropertyLogGroup>($"Deleted property permission for property '{permission.PropertyId}' and player '{permission.PlayerId}'.");
             }
 
             // Clear item categories and their permissions
-            var categoriesQuery = new DBQuery<WorldPropertyCategory>()
-                .AddFieldSearch(nameof(WorldPropertyCategory.ParentPropertyId), property.Id, false);
-            var categoriesCount = (int)_db.SearchCount(categoriesQuery);
-            var categories = _db.Search(categoriesQuery.AddPaging(categoriesCount, 0))
-                .ToList();
+            var categories = _worldPropertyCategoryRepository.GetByPropertyId(property.Id).ToList();
             var categoryPropertyIds = categories.Select(s => s.Id).ToList();
 
             // Clear any permissions tied to categories.
             if (categoryPropertyIds.Count > 0)
             {
-                permissionsQuery = new DBQuery<WorldPropertyPermission>()
-                    .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), categoryPropertyIds);
-                permissionsCount = (int)_db.SearchCount(permissionsQuery);
-                permissions = _db.Search(permissionsQuery.AddPaging(permissionsCount, 0))
-                    .ToList();
+                var categoryPermissions = _worldPropertyPermissionRepository.GetByPropertyIds(categoryPropertyIds).ToList();
 
-                foreach (var permission in permissions)
+                foreach (var permission in categoryPermissions)
                 {
-                    _db.Delete<WorldPropertyPermission>(permission.Id);
-                    _logger.Write<PropertyLogGroup>( $"Deleted property permission for category '{permission.PropertyId}'.");
+                    _worldPropertyPermissionRepository.Delete(permission.Id);
+                    _logger.Write<PropertyLogGroup>($"Deleted property permission for category '{permission.PropertyId}'.");
                 }
             }
 
             // Clear the actual categories (and any associated items)
             foreach (var category in categories)
             {
-                _db.Delete<WorldPropertyCategory>(category.Id);
-                _logger.Write<PropertyLogGroup>( $"Deleted property category '{category.Name}', id: '{category.Id}' from property '{category.ParentPropertyId}'");
+                _worldPropertyCategoryRepository.Delete(category.Id);
+                _logger.Write<PropertyLogGroup>($"Deleted property category '{category.Name}', id: '{category.Id}' from property '{category.ParentPropertyId}'");
             }
 
             // Clear any citizenship assignments on players who may be citizens of this property.
-            var citizenQuery = new DBQuery<Player>()
-                .AddFieldSearch(nameof(Player.CitizenPropertyId), property.Id, false);
-            var citizenCount = (int)_db.SearchCount(citizenQuery);
-            var citizens = _db.Search(citizenQuery.AddPaging(citizenCount, 0));
+            var citizens = _playerRepository.GetByCitizenPropertyId(property.Id);
 
             foreach (var citizen in citizens)
             {
-                _logger.Write<PropertyLogGroup>( $"Citizenship revoked for player '{citizen.Name}' ({citizen.Id}) on property '{property.CustomName}' ({property.Id})");
+                _logger.Write<PropertyLogGroup>($"Citizenship revoked for player '{citizen.Name}' ({citizen.Id}) on property '{property.CustomName}' ({property.Id})");
                 citizen.CitizenPropertyId = string.Empty;
-                _db.Set(citizen);
+                _playerRepository.Save(citizen);
             }
 
             // Clear any bank items stored within this city.
-            var bankQuery = new DBQuery<InventoryItem>()
-                .AddFieldSearch(nameof(InventoryItem.StorageId), property.Id, false);
-            var bankCount = (int)_db.SearchCount(bankQuery);
-            var dbBankItems = _db.Search(bankQuery.AddPaging(bankCount, 0));
+            var dbBankItems = _inventoryItemRepository.GetByStorageId(property.Id);
 
             foreach (var item in dbBankItems)
             {
-                _db.Delete<InventoryItem>(item.Id);
-                _logger.Write<PropertyLogGroup>( $"Deleted bank item '{item.Quantity}x {item.Name}' ({item.Tag} / {item.Resref}) from property '{property.Id}' which was stored by {item.PlayerId}");
+                _inventoryItemRepository.Delete(item.Id);
+                _logger.Write<PropertyLogGroup>($"Deleted bank item '{item.Quantity}x {item.Name}' ({item.Tag} / {item.Resref}) from property '{property.Id}' which was stored by {item.PlayerId}");
             }
 
             // Finally delete the entire property.
-            _db.Delete<WorldProperty>(property.Id);
-            _logger.Write<PropertyLogGroup>( $"Property '{property.CustomName}' deleted.");
+            _worldPropertyRepository.Delete(property.Id);
+            _logger.Write<PropertyLogGroup>($"Property '{property.CustomName}' deleted.");
 
             _eventsPlugin.PushEventData("PROPERTY_ID", property.Id);
             _eventsPlugin.SignalEvent("SWLOR_DELETE_PROPERTY", GetModule());
@@ -986,27 +947,19 @@ namespace SWLOR.Component.Properties.Service
         {
             foreach (var (type, permissions) in _permissionsByPropertyType)
             {
-                var propertyQuery = new DBQuery<WorldProperty>()
-                    .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)type);
-                var propertyCount = (int)_db.SearchCount(propertyQuery);
-                var dbProperties = _db.Search(propertyQuery.AddPaging(propertyCount, 0))
-                    .ToList();
+                var dbProperties = _worldPropertyRepository.GetByPropertyType(type).ToList();
 
                 foreach (var property in dbProperties)
                 {
-                    var permissionQuery = new DBQuery<WorldPropertyPermission>()
-                        .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), property.Id, false);
-                    var permissionCount = (int)_db.SearchCount(permissionQuery);
-                    var dbPropertyPermissions = _db.Search(permissionQuery.AddPaging(permissionCount, 0))
-                        .ToList();
-                    
+                    var dbPropertyPermissions = _worldPropertyPermissionRepository.GetByPropertyId(property.Id).ToList();
+
                     foreach (var propertyPermission in dbPropertyPermissions)
                     {
                         // Perform a refresh of permissions (adding/removing as needed)
                         // If changes occurred, save them.
                         if (RefreshPermissions(property.OwnerPlayerId, propertyPermission, permissions))
                         {
-                            _db.Set(propertyPermission);
+                            _worldPropertyPermissionRepository.Save(propertyPermission);
                         }
                     }
                 }
@@ -1030,7 +983,7 @@ namespace SWLOR.Component.Properties.Service
                 if (!masterList.Contains(permission))
                 {
                     dbPermission.Permissions.Remove(permission);
-                    _logger.Write<PropertyLogGroup>( $"Removing permission {permission} from property {dbPermission.PropertyId} for player Id {dbPermission.PlayerId}.");
+                    _logger.Write<PropertyLogGroup>($"Removing permission {permission} from property {dbPermission.PropertyId} for player Id {dbPermission.PlayerId}.");
                     hasChanges = true;
                 }
             }
@@ -1040,7 +993,7 @@ namespace SWLOR.Component.Properties.Service
                 if (!masterList.Contains(grantPermission))
                 {
                     dbPermission.Permissions.Remove(grantPermission);
-                    _logger.Write<PropertyLogGroup>( $"Removing grant permission {grantPermission} from property {dbPermission.PropertyId} for player Id {dbPermission.PlayerId}.");
+                    _logger.Write<PropertyLogGroup>($"Removing grant permission {grantPermission} from property {dbPermission.PropertyId} for player Id {dbPermission.PlayerId}.");
                     hasChanges = true;
                 }
             }
@@ -1052,14 +1005,14 @@ namespace SWLOR.Component.Properties.Service
                 if (!dbPermission.Permissions.ContainsKey(masterPermission))
                 {
                     dbPermission.Permissions[masterPermission] = hasAccess;
-                    _logger.Write<PropertyLogGroup>( $"Adding permission {dbPermission.Permissions[masterPermission]} to property {dbPermission.PropertyId} for player Id {dbPermission.PlayerId}.");
+                    _logger.Write<PropertyLogGroup>($"Adding permission {dbPermission.Permissions[masterPermission]} to property {dbPermission.PropertyId} for player Id {dbPermission.PlayerId}.");
                     hasChanges = true;
                 }
 
                 if (!dbPermission.GrantPermissions.ContainsKey(masterPermission))
                 {
                     dbPermission.GrantPermissions[masterPermission] = hasAccess;
-                    _logger.Write<PropertyLogGroup>( $"Adding permission {dbPermission.Permissions[masterPermission]} to property {dbPermission.PropertyId} for player Id {dbPermission.PlayerId}.");
+                    _logger.Write<PropertyLogGroup>($"Adding permission {dbPermission.Permissions[masterPermission]} to property {dbPermission.PropertyId} for player Id {dbPermission.PlayerId}.");
                     hasChanges = true;
                 }
             }
@@ -1085,32 +1038,17 @@ namespace SWLOR.Component.Properties.Service
                 .Select(s => (int)s.Key)
                 .ToList();
 
-            var instanceQuery = new DBQuery<WorldProperty>()
-                .AddFieldSearch(nameof(WorldProperty.PropertyType), instanceTypes);
-            var instancePropertiesCount = _db.SearchCount(instanceQuery);
-            var instanceProperties = _db.Search(instanceQuery
-                .AddPaging((int)instancePropertiesCount, 0))
-                .ToList();
-
-            var worldQuery = new DBQuery<WorldProperty>()
-                .AddFieldSearch(nameof(WorldProperty.PropertyType), worldTypes);
-            var worldPropertiesCount = _db.SearchCount(worldQuery);
-            var worldProperties = _db.Search(worldQuery
-                .AddPaging((int)worldPropertiesCount, 0))
-                .ToList();
-
-            var areaQuery = new DBQuery<WorldProperty>()
-                .AddFieldSearch(nameof(WorldProperty.PropertyType), areaTypes);
-            var areaPropertiesCount = _db.SearchCount(areaQuery);
-            var areaProperties = _db.Search(areaQuery
-                .AddPaging((int)areaPropertiesCount, 0))
-                .ToList();
+            // Get properties by spawn type - need to filter by spawn type since PropertyType doesn't have these values
+            var allProperties = _worldPropertyRepository.GetAll();
+            var instanceProperties = allProperties.Where(p => GetPropertyDetail(p.PropertyType).SpawnType == PropertySpawnType.Instance).ToList();
+            var worldProperties = allProperties.Where(p => GetPropertyDetail(p.PropertyType).SpawnType == PropertySpawnType.World).ToList();
+            var areaProperties = allProperties.Where(p => GetPropertyDetail(p.PropertyType).SpawnType == PropertySpawnType.Area).ToList();
 
             foreach (var property in instanceProperties)
             {
                 SpawnIntoWorld(property, OBJECT_INVALID);
             }
-            
+
             foreach (var property in worldProperties)
             {
                 // If the parent is contained in the instance list, this world property needs to 
@@ -1125,7 +1063,7 @@ namespace SWLOR.Component.Properties.Service
                 // which will be the resref of the area.
                 else
                 {
-                    var parent = _db.Get<WorldProperty>(property.ParentPropertyId);
+                    var parent = _worldPropertyRepository.GetById(property.ParentPropertyId);
 
                     if (parent == null)
                     {
@@ -1148,9 +1086,9 @@ namespace SWLOR.Component.Properties.Service
             }
 
 
-            _logger.Write<PropertyLogGroup>( $"Loaded {instanceProperties.Count} instanced properties.", true);
-            _logger.Write<PropertyLogGroup>( $"Loaded {worldProperties.Count} world properties.", true);
-            _logger.Write<PropertyLogGroup>( $"Loaded {areaProperties.Count} area properties.", true);
+            _logger.Write<PropertyLogGroup>($"Loaded {instanceProperties.Count} instanced properties.", true);
+            _logger.Write<PropertyLogGroup>($"Loaded {worldProperties.Count} world properties.", true);
+            _logger.Write<PropertyLogGroup>($"Loaded {areaProperties.Count} area properties.", true);
         }
 
         /// <summary>
@@ -1186,10 +1124,10 @@ namespace SWLOR.Component.Properties.Service
 
         private WorldProperty CreateProperty(
             uint creatorPlayer,
-            string ownerPlayerId, 
+            string ownerPlayerId,
             string propertyName,
-            PropertyType type, 
-            PropertyLayoutType layout, 
+            PropertyType type,
+            PropertyLayoutType layout,
             uint targetArea = OBJECT_INVALID,
             Action<WorldProperty> constructionAction = null)
         {
@@ -1235,17 +1173,17 @@ namespace SWLOR.Component.Properties.Service
                 }
             }
 
-            _db.Set(property);
-            _db.Set(ownerPermissions);
-            if(creatorPermissions != null)
-                _db.Set(creatorPermissions);
+            _worldPropertyRepository.Save(property);
+            _worldPropertyPermissionRepository.Save(ownerPermissions);
+            if (creatorPermissions != null)
+                _worldPropertyPermissionRepository.Save(creatorPermissions);
 
             if (propertyDetail.HasStorage)
             {
                 // Create the default item storage categories and give permission to the owner for all categories.
                 foreach (var category in CreateDefaultCategories(property.Id))
                 {
-                    _db.Set(category);
+                    _worldPropertyCategoryRepository.Save(category);
 
                     var categoryPermission = new WorldPropertyPermission
                     {
@@ -1259,13 +1197,13 @@ namespace SWLOR.Component.Properties.Service
                         categoryPermission.GrantPermissions[permission] = true;
                     }
 
-                    _db.Set(categoryPermission);
+                    _worldPropertyPermissionRepository.Save(categoryPermission);
                 }
             }
-            
+
             SpawnIntoWorld(property, targetArea);
 
-            _logger.Write<PropertyLogGroup>( $"{GetName(creatorPlayer)} ({GetPCPlayerName(creatorPlayer)} / {GetPCPublicCDKey(creatorPlayer)}) placed {propertyDetail.Name}.");
+            _logger.Write<PropertyLogGroup>($"{GetName(creatorPlayer)} ({GetPCPlayerName(creatorPlayer)} / {GetPCPublicCDKey(creatorPlayer)}) placed {propertyDetail.Name}.");
 
             return property;
         }
@@ -1296,10 +1234,10 @@ namespace SWLOR.Component.Properties.Service
         /// <param name="landingLocation">Location of the ground transfer point (when a player is converted back to normal)</param>
         /// <returns>The new world property.</returns>
         public WorldProperty CreateStarship(
-            uint player, 
-            PropertyLayoutType layout, 
+            uint player,
+            PropertyLayoutType layout,
             PlanetType planetType,
-            Location spaceLocation, 
+            Location spaceLocation,
             Location landingLocation)
         {
             var spacePosition = GetPositionFromLocation(spaceLocation);
@@ -1371,7 +1309,7 @@ namespace SWLOR.Component.Properties.Service
         public void CreateCity(uint player, uint area, uint item, Location location)
         {
             var playerId = GetObjectUUID(player);
-            var dbPlayer = _db.Get<Player>(playerId);
+            var dbPlayer = _playerRepository.GetById(playerId);
             var propertyName = $"{GetName(player)}'s City";
             var now = DateTime.UtcNow;
             var city = CreateProperty(player, playerId, propertyName, PropertyType.City, PropertyLayoutType.City, area, property =>
@@ -1411,9 +1349,9 @@ namespace SWLOR.Component.Properties.Service
                 location);
 
             dbPlayer.CitizenPropertyId = city.Id;
-            _db.Set(dbPlayer);
+            _playerRepository.Save(dbPlayer);
 
-            _logger.Write<PropertyLogGroup>( $"{GetName(player)} ({GetPCPlayerName(player)} / {GetPCPublicCDKey(player)}) founded a new city in {GetName(area)}.");
+            _logger.Write<PropertyLogGroup>($"{GetName(player)} ({GetPCPlayerName(player)} / {GetPCPublicCDKey(player)}) founded a new city in {GetName(area)}.");
         }
 
         /// <summary>
@@ -1428,31 +1366,31 @@ namespace SWLOR.Component.Properties.Service
         /// <param name="location">The location to spawn the structure.</param>
         /// <returns>The new world property.</returns>
         public void CreateBuilding(
-            uint player, 
-            uint item, 
-            string parentCityId, 
-            PropertyType propertyType, 
+            uint player,
+            uint item,
+            string parentCityId,
+            PropertyType propertyType,
             PropertyLayoutType layout,
             StructureType structureType,
             Location location)
         {
             var layoutDetail = GetLayoutByType(layout);
             var propertyName = $"{GetName(player)}'s {layoutDetail.Name}";
-            var city = _db.Get<WorldProperty>(parentCityId);
+            var city = _worldPropertyRepository.GetById(parentCityId);
 
             // Hierarchy goes:
             //      City  (Top Level)
             //          -> Contains: Structure (buildings)
             //              -> Contains: Building interiors
             var buildingStructure = CreateStructure(parentCityId, item, structureType, location);
-            
+
             var interior = CreateProperty(
                 player,
                 city.OwnerPlayerId,
-                propertyName, 
-                propertyType, 
-                layout, 
-                OBJECT_INVALID, 
+                propertyName,
+                propertyType,
+                layout,
+                OBJECT_INVALID,
                 interiorProperty =>
             {
                 interiorProperty.ParentPropertyId = buildingStructure.Id;
@@ -1463,7 +1401,7 @@ namespace SWLOR.Component.Properties.Service
                 buildingStructure.ChildPropertyIds[PropertyChildType.Interior] = new List<string>();
 
             buildingStructure.ChildPropertyIds[PropertyChildType.Interior].Add(interior.Id);
-            _db.Set(buildingStructure);
+            _worldPropertyRepository.Save(buildingStructure);
         }
 
         /// <summary>
@@ -1474,16 +1412,16 @@ namespace SWLOR.Component.Properties.Service
         /// <param name="type">The type of structure to spawn.</param>
         /// <param name="location">The location to spawn the structure at.</param>
         public WorldProperty CreateStructure(
-            string parentPropertyId, 
+            string parentPropertyId,
             uint item,
-            StructureType type, 
+            StructureType type,
             Location location)
         {
             var structureDetail = GetStructureByType(type);
             var area = GetAreaFromLocation(location);
             var areaResref = GetResRef(area);
             var position = GetPositionFromLocation(location);
-            var parentProperty = _db.Get<WorldProperty>(parentPropertyId);
+            var parentProperty = _worldPropertyRepository.GetById(parentPropertyId);
             var structureItemStorage = structureDetail.ItemStorage;
 
             for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
@@ -1518,10 +1456,10 @@ namespace SWLOR.Component.Properties.Service
                 parentProperty.ChildPropertyIds[PropertyChildType.Structure] = new List<string>();
 
             parentProperty.ChildPropertyIds[PropertyChildType.Structure].Add(structure.Id);
-            parentProperty.ItemStorageCount += structureItemStorage; 
+            parentProperty.ItemStorageCount += structureItemStorage;
 
-            _db.Set(structure);
-            _db.Set(parentProperty);
+            _worldPropertyRepository.Save(structure);
+            _worldPropertyRepository.Save(parentProperty);
 
             // Now spawn it within the game world.
             var placeable = CreateObject(ObjectType.Placeable, structureDetail.Resref, location);
@@ -1544,15 +1482,10 @@ namespace SWLOR.Component.Properties.Service
         /// <returns>A list of permissions</returns>
         public List<WorldPropertyPermission> GetCategoryPermissions(string playerId, string propertyId)
         {
-            var categoriesQuery = new DBQuery<WorldPropertyCategory>()
-                .AddFieldSearch(nameof(WorldPropertyCategory.ParentPropertyId), propertyId, false);
-            var categories = _db.Search(categoriesQuery).ToList();
+            var categories = _worldPropertyCategoryRepository.GetByPropertyId(propertyId).ToList();
             var categoryIds = categories.Select(s => s.Id).ToList();
 
-            var permissionQuery = new DBQuery<WorldPropertyPermission>()
-                .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), categoryIds)
-                .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false);
-            var permissions = _db.Search(permissionQuery);
+            var permissions = _worldPropertyPermissionRepository.GetByPlayerIdAndPropertyIds(playerId, categoryIds);
 
             return permissions.ToList();
         }
@@ -1645,8 +1578,8 @@ namespace SWLOR.Component.Properties.Service
         /// <returns>A placeable or OBJECT_INVALID if not found.</returns>
         public uint GetPlaceableByPropertyId(string propertyId)
         {
-            return !_structurePropertyIdToPlaceable.ContainsKey(propertyId) 
-                ? OBJECT_INVALID 
+            return !_structurePropertyIdToPlaceable.ContainsKey(propertyId)
+                ? OBJECT_INVALID
                 : _structurePropertyIdToPlaceable[propertyId];
         }
 
@@ -1670,7 +1603,7 @@ namespace SWLOR.Component.Properties.Service
         {
             var player = GetLastUsedBy();
             var terminal = OBJECT_SELF;
-            
+
             _guiService.TogglePlayerWindow(player, GuiWindowType.ManageApartment, null, terminal);
         }
 
@@ -1687,15 +1620,12 @@ namespace SWLOR.Component.Properties.Service
             // DMs always have permission.
             if (GetIsDM(player) || GetIsDMPossessed(player))
                 return true;
-            
+
             if (!GetIsPC(player))
                 return false;
 
             var playerId = GetObjectUUID(player);
-            var query = new DBQuery<WorldPropertyPermission>()
-                .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), propertyId, false)
-                .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false);
-            var permissions = _db.Search(query).FirstOrDefault();
+            var permissions = _worldPropertyPermissionRepository.GetSingleByPropertyIdAndPlayerId(propertyId, playerId);
 
             // Player doesn't exist in the permissions list. No permission.
             if (permissions == null)
@@ -1723,10 +1653,7 @@ namespace SWLOR.Component.Properties.Service
                 return false;
 
             var playerId = GetObjectUUID(player);
-            var query = new DBQuery<WorldPropertyPermission>()
-                .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), propertyId, false)
-                .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false);
-            var permissions = _db.Search(query).FirstOrDefault();
+            var permissions = _worldPropertyPermissionRepository.GetSingleByPropertyIdAndPlayerId(propertyId, playerId);
 
             // Player doesn't exist in the permissions list. No permission.
             if (permissions == null)
@@ -1805,7 +1732,7 @@ namespace SWLOR.Component.Properties.Service
                 return;
             }
 
-            var property = _db.Get<WorldProperty>(propertyId);
+            var property = _worldPropertyRepository.GetById(propertyId);
             var entrance = _entrancesByLayout[property.Layout];
             var instance = GetRegisteredInstance(property.Id);
             var position = new Vector3(entrance.X, entrance.Y, entrance.Z);
@@ -1886,22 +1813,14 @@ namespace SWLOR.Component.Properties.Service
             }
 
             var playerId = GetObjectUUID(player);
-            var permissionQuery = new DBQuery<WorldPropertyPermission>()
-                .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false)
-                .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), propertyId, false);
-            var permission = _db.Search(permissionQuery).FirstOrDefault();
+            var permission = _worldPropertyPermissionRepository.GetSingleByPropertyIdAndPlayerId(propertyId, playerId);
 
-            var categoryQuery = new DBQuery<WorldPropertyCategory>()
-                .AddFieldSearch(nameof(WorldPropertyCategory.ParentPropertyId), propertyId, false);
-            var categoryIds = _db.Search(categoryQuery).Select(s => s.Id).ToList();
+            var categoryIds = _worldPropertyCategoryRepository.GetByPropertyId(propertyId).Select(s => s.Id).ToList();
             long categoryPermissionCount = 0;
 
             if (categoryIds.Count > 0)
             {
-                permissionQuery = new DBQuery<WorldPropertyPermission>()
-                    .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false)
-                    .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), categoryIds);
-                categoryPermissionCount = _db.SearchCount(permissionQuery);
+                categoryPermissionCount = _worldPropertyPermissionRepository.GetByPlayerIdAndPropertyIds(playerId, categoryIds).Count();
             }
 
             // Player can access this menu only if they have permission to manipulate structures,
@@ -1914,7 +1833,7 @@ namespace SWLOR.Component.Properties.Service
                 FloatingTextStringOnCreature($"You do not have permission to access this property.", player, false);
                 return;
             }
-            
+
             _guiService.TogglePlayerWindow(player, GuiWindowType.ManageStructures);
         }
 
@@ -1978,7 +1897,7 @@ namespace SWLOR.Component.Properties.Service
                 _dialogService.StartConversation(player, player, nameof(PlaceCityHallDialog));
                 return;
             }
-            
+
             if (structureType == StructureType.Invalid) return;
 
             // Must be in a player property.
@@ -1988,10 +1907,7 @@ namespace SWLOR.Component.Properties.Service
                 return;
             }
 
-            var query = new DBQuery<WorldPropertyPermission>()
-                .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false)
-                .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), propertyId, false);
-            var permission = _db.Search(query).FirstOrDefault();
+            var permission = _worldPropertyPermissionRepository.GetSingleByPropertyIdAndPlayerId(propertyId, playerId);
 
             // Player must have permission to edit structures.
             if (permission == null ||
@@ -2000,16 +1916,12 @@ namespace SWLOR.Component.Properties.Service
                 FloatingTextStringOnCreature($"You do not have permission to place structures within this property.", player, false);
                 return;
             }
-            
-            var property = _db.Get<WorldProperty>(propertyId);
+
+            var property = _worldPropertyRepository.GetById(propertyId);
             var layout = GetLayoutByType(property.Layout);
             int structureLimit;
             var structureDetail = GetStructureByType(structureType);
-            var structureQuery = new DBQuery<WorldProperty>()
-                .AddFieldSearch(nameof(WorldProperty.ParentPropertyId), propertyId, false)
-                .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.Structure);
-            var structureQueryCount = (int)_db.SearchCount(structureQuery);
-            var structures = _db.Search(structureQuery.AddPaging(structureQueryCount, 0));
+            var structures = _worldPropertyRepository.GetStructuresByParentPropertyId(propertyId);
             int structureCount;
             string fixtureName;
 
@@ -2080,15 +1992,15 @@ namespace SWLOR.Component.Properties.Service
             {
                 var structureLayout = GetLayoutByType(structureDetail.LayoutType);
                 CreateBuilding(
-                    player, 
-                    item, 
-                    propertyId, 
-                    structureLayout.PropertyType, 
-                    structureDetail.LayoutType, 
+                    player,
+                    item,
+                    propertyId,
+                    structureLayout.PropertyType,
+                    structureDetail.LayoutType,
                     structureType, location);
             }
 
-            SendMessageToPC(player, $"{fixtureName} Limit: {structureCount+1} / {structureLimit}");
+            SendMessageToPC(player, $"{fixtureName} Limit: {structureCount + 1} / {structureLimit}");
         }
 
         /// <summary>
@@ -2122,13 +2034,13 @@ namespace SWLOR.Component.Properties.Service
                 RunStructureChangedEvent(property.StructureType, StructureChangeType.PositionChanged, property, placeable);
             }
             // Instance spawns are instanced areas that are spawned dynamically into the game world.
-            else if(propertyDetail.SpawnType == PropertySpawnType.Instance)
+            else if (propertyDetail.SpawnType == PropertySpawnType.Instance)
             {
                 // If no interior layout is defined, the provided area will be used.
                 var layout = GetLayoutByType(property.Layout);
                 var targetArea = CreateArea(layout.AreaInstanceResref);
                 RegisterInstance(property.Id, targetArea, property.Layout);
-                
+
                 SetName(targetArea, "{PC} " + property.CustomName);
 
                 if (layout.OnSpawnAction != null)
@@ -2137,7 +2049,7 @@ namespace SWLOR.Component.Properties.Service
                 }
             }
             // Area spawns exist in a pre-built area.
-            else if(propertyDetail.SpawnType == PropertySpawnType.Area)
+            else if (propertyDetail.SpawnType == PropertySpawnType.Area)
             {
                 AssignPropertyId(area, property.Id);
             }
@@ -2152,21 +2064,18 @@ namespace SWLOR.Component.Properties.Service
             var player = GetLastUsedBy();
             var playerId = GetObjectUUID(player);
             var door = OBJECT_SELF;
-            
+
             // Buildings only ever have one child which is the interior area instance
             var buildingId = GetPropertyId(door);
-            var building = _db.Get<WorldProperty>(buildingId);
+            var building = _worldPropertyRepository.GetById(buildingId);
             var interiorId = building.ChildPropertyIds[PropertyChildType.Interior].Single();
-            var interior = _db.Get<WorldProperty>(interiorId);
+            var interior = _worldPropertyRepository.GetById(interiorId);
 
             var instance = GetRegisteredInstance(interior.Id);
             var entrance = GetEntrancePosition(interior.Layout);
             var position = Vector3(entrance.X, entrance.Y, entrance.Z);
             var location = Location(instance.Area, position, entrance.W);
-            var permission = _db.Search(new DBQuery<WorldPropertyPermission>()
-                .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false)
-                .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), interiorId, false))
-                .SingleOrDefault();
+            var permission = _worldPropertyPermissionRepository.GetSingleByPropertyIdAndPlayerId(interiorId, playerId);
 
             // Building is publicly accessible or the player has permission to enter.
             if (interior.IsPubliclyAccessible ||
@@ -2213,13 +2122,13 @@ namespace SWLOR.Component.Properties.Service
             }
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = _db.Get<Player>(playerId);
+            var dbPlayer = _playerRepository.GetById(playerId);
 
             var terminal = OBJECT_SELF;
             var area = GetArea(terminal);
             var propertyId = GetPropertyId(area);
-            var dbProperty = _db.Get<WorldProperty>(propertyId);
-            var dbBuilding = _db.Get<WorldProperty>(dbProperty.ParentPropertyId);
+            var dbProperty = _worldPropertyRepository.GetById(propertyId);
+            var dbBuilding = _worldPropertyRepository.GetById(dbProperty.ParentPropertyId);
 
             // Player is a citizen of another city. Their citizenship needs to be revoked before
             // they're able to access this terminal.
@@ -2245,13 +2154,10 @@ namespace SWLOR.Component.Properties.Service
             var terminal = OBJECT_SELF;
             var area = GetArea(terminal);
             var propertyId = GetPropertyId(area);
-            var dbProperty = _db.Get<WorldProperty>(propertyId);
-            var dbBuilding = _db.Get<WorldProperty>(dbProperty.ParentPropertyId);
+            var dbProperty = _worldPropertyRepository.GetById(propertyId);
+            var dbBuilding = _worldPropertyRepository.GetById(dbProperty.ParentPropertyId);
 
-            var permission = _db.Search(new DBQuery<WorldPropertyPermission>()
-                .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), dbBuilding.ParentPropertyId, false)
-                .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false))
-                .SingleOrDefault();
+            var permission = _worldPropertyPermissionRepository.GetSingleByPropertyIdAndPlayerId(dbBuilding.ParentPropertyId, playerId);
 
             // Player has at least one permission. Display the window.
             if (permission != null && (permission.Permissions[PropertyPermissionType.RenameProperty] ||
@@ -2317,7 +2223,7 @@ namespace SWLOR.Component.Properties.Service
             if (string.IsNullOrWhiteSpace(cityId))
                 return 0;
 
-            var property = _db.Get<WorldProperty>(cityId);
+            var property = _worldPropertyRepository.GetById(cityId);
             if (property == null)
                 return 0;
 
@@ -2349,11 +2255,7 @@ namespace SWLOR.Component.Properties.Service
                 return 0;
 
             // At least one building property of the given type must exist within the city.
-            var buildingCount = _db.SearchCount(new DBQuery<WorldProperty>()
-                .AddFieldSearch(nameof(WorldProperty.IsQueuedForDeletion), false)
-                .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.Structure)
-                .AddFieldSearch(nameof(WorldProperty.StructureType), (int)structureType)
-                .AddFieldSearch(nameof(WorldProperty.ParentPropertyId), cityId, false));
+            var buildingCount = _worldPropertyRepository.GetActiveStructureCountByParentAndType(cityId, structureType);
 
             if (buildingCount <= 0)
                 return 0;

@@ -11,6 +11,7 @@ using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Properties.Contracts;
 using SWLOR.Shared.Domain.Properties.Entities;
 using SWLOR.Shared.Domain.Properties.Enums;
+using SWLOR.Shared.Domain.Repositories;
 using SWLOR.Shared.Domain.UI.Payloads;
 using SWLOR.Shared.UI.Component;
 using SWLOR.Shared.UI.Contracts;
@@ -21,7 +22,9 @@ namespace SWLOR.Component.Properties.UI.ViewModel
 {
     public class PropertyItemStorageViewModel: GuiViewModelBase<PropertyItemStorageViewModel, IGuiPayload>
     {
-        private readonly IDatabaseService _db;
+        private readonly IWorldPropertyCategoryRepository _worldPropertyCategoryRepository;
+        private readonly IWorldPropertyPermissionRepository _worldPropertyPermissionRepository;
+        private readonly IWorldPropertyRepository _worldPropertyRepository;
         private readonly IServiceProvider _serviceProvider;
         
         // Lazy-loaded services to break circular dependencies
@@ -30,9 +33,11 @@ namespace SWLOR.Component.Properties.UI.ViewModel
         private ITargetingService TargetingService => _serviceProvider.GetRequiredService<ITargetingService>();
         private IObjectPluginService ObjectPlugin => _serviceProvider.GetRequiredService<IObjectPluginService>();
 
-        public PropertyItemStorageViewModel(IGuiService guiService, IDatabaseService db, IServiceProvider serviceProvider) : base(guiService)
+        public PropertyItemStorageViewModel(IGuiService guiService, IWorldPropertyCategoryRepository worldPropertyCategoryRepository, IWorldPropertyPermissionRepository worldPropertyPermissionRepository, IWorldPropertyRepository worldPropertyRepository, IServiceProvider serviceProvider) : base(guiService)
         {
-            _db = db;
+            _worldPropertyCategoryRepository = worldPropertyCategoryRepository;
+            _worldPropertyPermissionRepository = worldPropertyPermissionRepository;
+            _worldPropertyRepository = worldPropertyRepository;
             _serviceProvider = serviceProvider;
         }
         
@@ -158,9 +163,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
         {
             var area = GetArea(Player);
             var propertyId = PropertyService.GetPropertyId(area);
-            var query = new DBQuery<WorldPropertyCategory>()
-                .AddFieldSearch(nameof(WorldPropertyCategory.ParentPropertyId), propertyId, false);
-            var categories = _db.Search(query).ToList();
+            var categories = _worldPropertyCategoryRepository.GetByPropertyId(propertyId).ToList();
             var itemCount = categories.Sum(x => x.Items.Count);
 
             return itemCount;
@@ -168,11 +171,9 @@ namespace SWLOR.Component.Properties.UI.ViewModel
 
         private WorldPropertyPermission GetPropertyPermission(string playerId, string propertyId)
         {
-            var property = _db.Get<WorldProperty>(propertyId);
-            var propertyPermissionQuery = new DBQuery<WorldPropertyPermission>()
-                .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false)
-                .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), propertyId, false);
-            return _db.Search(propertyPermissionQuery).FirstOrDefault() ?? new WorldPropertyPermission
+            var property = _worldPropertyRepository.GetById(propertyId);
+            var permissions = _worldPropertyPermissionRepository.GetByPropertyIdAndPlayerId(propertyId, playerId);
+            return permissions.FirstOrDefault() ?? new WorldPropertyPermission
             {
                 PropertyId = propertyId,
                 PlayerId = playerId,
@@ -183,10 +184,8 @@ namespace SWLOR.Component.Properties.UI.ViewModel
 
         private WorldPropertyPermission GetCategoryPermission(string playerId, string categoryId)
         {
-            var propertyPermissionQuery = new DBQuery<WorldPropertyPermission>()
-                .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false)
-                .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), categoryId, false);
-            return _db.Search(propertyPermissionQuery).FirstOrDefault() ?? new WorldPropertyPermission
+            var permissions = _worldPropertyPermissionRepository.GetByPropertyIdAndPlayerId(categoryId, playerId);
+            return permissions.FirstOrDefault() ?? new WorldPropertyPermission
             {
                 PropertyId = categoryId,
                 PlayerId = playerId,
@@ -212,18 +211,15 @@ namespace SWLOR.Component.Properties.UI.ViewModel
             var area = GetArea(Player);
             var playerId = GetObjectUUID(Player);
             var propertyId = PropertyService.GetPropertyId(area);
-            var property = _db.Get<WorldProperty>(propertyId);
+            var property = _worldPropertyRepository.GetById(propertyId);
             var propertyPermission = GetPropertyPermission(playerId, propertyId);
 
-            var categoriesQuery = new DBQuery<WorldPropertyCategory>()
-                .AddFieldSearch(nameof(WorldPropertyCategory.ParentPropertyId), propertyId, false);
-            var categories = _db.Search(categoriesQuery).ToList();
+            var categories = _worldPropertyCategoryRepository.GetByPropertyId(propertyId).ToList();
             var categoryIds = categories.Select(s => s.Id).ToList();
 
-            var permissionQuery = new DBQuery<WorldPropertyPermission>()
-                .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), categoryIds)
-                .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false);
-            var permissions = _db.Search(permissionQuery).ToList();
+            var permissions = _worldPropertyPermissionRepository.GetByPlayerId(playerId)
+                .Where(p => categoryIds.Contains(p.PropertyId))
+                .ToList();
 
             var categoryNames = new GuiBindingList<string>();
             var categoryToggles = new GuiBindingList<bool>();
@@ -266,7 +262,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
                 var propertyId = PropertyService.GetPropertyId(area);
                 var propertyPermission = GetPropertyPermission(playerId, propertyId);
                 var categoryId = _categoryIds[SelectedCategoryIndex];
-                var category = _db.Get<WorldPropertyCategory>(categoryId);
+                var category = _worldPropertyCategoryRepository.GetById(categoryId);
                 var categoryPermission = GetCategoryPermission(playerId, categoryId);
 
                 foreach (var (itemId, item) in category.Items)
@@ -303,16 +299,14 @@ namespace SWLOR.Component.Properties.UI.ViewModel
 
             var area = GetArea(Player);
             var propertyId = PropertyService.GetPropertyId(area);
-            var property = _db.Get<WorldProperty>(propertyId);
+            var property = _worldPropertyRepository.GetById(propertyId);
             var playerId = GetObjectUUID(Player);
 
             var propertyPermission = GetPropertyPermission(playerId, propertyId);
             if (!propertyPermission.Permissions[PropertyPermissionType.EditCategories])
                 return;
 
-            var query = new DBQuery<WorldPropertyCategory>()
-                .AddFieldSearch(nameof(WorldPropertyCategory.ParentPropertyId), propertyId, false);
-            var categoryCount = _db.SearchCount(query);
+            var categoryCount = _worldPropertyCategoryRepository.GetByPropertyId(propertyId).Count();
 
             if (categoryCount >= MaxNumberOfCategories)
             {
@@ -348,11 +342,11 @@ namespace SWLOR.Component.Properties.UI.ViewModel
                 adderPermission.GrantPermissions[permission] = true;
             }
 
-            _db.Set(category);
-            _db.Set(ownerPermission);
+            _worldPropertyCategoryRepository.Save(category);
+            _worldPropertyPermissionRepository.Save(ownerPermission);
 
             if(playerId != property.OwnerPlayerId)
-                _db.Set(adderPermission);
+                _worldPropertyPermissionRepository.Save(adderPermission);
 
             _categoryIds.Add(category.Id);
             CategoryNames.Add(category.Name);
@@ -371,7 +365,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
                     var propertyId = PropertyService.GetPropertyId(area);
                     var playerId = GetObjectUUID(Player);
                     var categoryId = _categoryIds[SelectedCategoryIndex];
-                    var category = _db.Get<WorldPropertyCategory>(categoryId);
+                    var category = _worldPropertyCategoryRepository.GetById(categoryId);
 
                     var propertyPermission = GetPropertyPermission(playerId, propertyId);
                     if (!propertyPermission.Permissions[PropertyPermissionType.EditCategories])
@@ -392,18 +386,15 @@ namespace SWLOR.Component.Properties.UI.ViewModel
                         return;
                     }
 
-                    var query = new DBQuery<WorldPropertyPermission>()
-                        .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), categoryId, false);
-                    
                     // Remove any permissions specific to this category.
-                    var permissions = _db.Search(query);
+                    var permissions = _worldPropertyPermissionRepository.GetByPropertyId(categoryId);
                     foreach (var permission in permissions)
                     {
-                        _db.Delete<WorldPropertyPermission>(permission.Id);
+                        _worldPropertyPermissionRepository.Delete(permission.Id);
                     }
 
                     // Remove the category itself.
-                    _db.Delete<WorldPropertyCategory>(categoryId);
+                    _worldPropertyCategoryRepository.Delete(categoryId);
 
                     // Remove from the UI.
                     CategoryNames.RemoveAt(SelectedCategoryIndex);
@@ -453,11 +444,11 @@ namespace SWLOR.Component.Properties.UI.ViewModel
             if (!propertyPermission.Permissions[PropertyPermissionType.EditCategories])
                 return;
 
-            var category = _db.Get<WorldPropertyCategory>(categoryId);
+            var category = _worldPropertyCategoryRepository.GetById(categoryId);
 
             category.Name = CategoryName;
 
-            _db.Set(category);
+            _worldPropertyCategoryRepository.Save(category);
 
             CategoryNames[SelectedCategoryIndex] = CategoryName;
 
@@ -488,7 +479,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
                 if (!categoryPermission.Permissions[PropertyPermissionType.AccessStorage])
                     return;
 
-                var property = _db.Get<WorldProperty>(propertyId);
+                var property = _worldPropertyRepository.GetById(propertyId);
                 var itemCount = GetItemCount();
 
                 if (itemCount >= property.ItemStorageCount)
@@ -498,7 +489,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
                     return;
                 }
 
-                var category = _db.Get<WorldPropertyCategory>(categoryId);
+                var category = _worldPropertyCategoryRepository.GetById(categoryId);
                 var itemId = Guid.NewGuid().ToString();
                 var dbItem = new WorldPropertyItem
                 {
@@ -513,7 +504,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
 
                 category.Items.Add(itemId, dbItem);
 
-                _db.Set(category);
+                _worldPropertyCategoryRepository.Save(category);
 
                 ItemNames.Add($"{dbItem.Quantity}x {dbItem.Name}");
                 ItemToggles.Add(false);
@@ -542,8 +533,8 @@ namespace SWLOR.Component.Properties.UI.ViewModel
             if (!categoryPermission.Permissions[PropertyPermissionType.AccessStorage])
                 return;
 
-            var property = _db.Get<WorldProperty>(propertyId);
-            var category = _db.Get<WorldPropertyCategory>(categoryId);
+            var property = _worldPropertyRepository.GetById(propertyId);
+            var category = _worldPropertyCategoryRepository.GetById(categoryId);
             var itemId = _itemIds[SelectedItemIndex];
 
             // Another player may have taken it out before this player.
@@ -560,7 +551,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
             ObjectPlugin.AcquireItem(Player, item);
 
             category.Items.Remove(itemId);
-            _db.Set(category);
+            _worldPropertyCategoryRepository.Save(category);
 
             var itemCount = GetItemCount();
             RefreshItemCount(itemCount, property.ItemStorageCount);
@@ -581,7 +572,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
             var index = NuiGetEventArrayIndex();
             var categoryId = _categoryIds[SelectedCategoryIndex];
             var itemId = _itemIds[index];
-            var category = _db.Get<WorldPropertyCategory>(categoryId);
+            var category = _worldPropertyCategoryRepository.GetById(categoryId);
 
             if (!category.Items.ContainsKey(itemId))
             {

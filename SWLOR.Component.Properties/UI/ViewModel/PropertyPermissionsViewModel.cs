@@ -6,6 +6,7 @@ using SWLOR.Shared.Abstractions.Models;
 using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Properties.Entities;
 using SWLOR.Shared.Domain.Properties.Enums;
+using SWLOR.Shared.Domain.Repositories;
 using SWLOR.Shared.Domain.UI.Payloads;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
@@ -15,12 +16,18 @@ namespace SWLOR.Component.Properties.UI.ViewModel
 {
     public class PropertyPermissionsViewModel: GuiViewModelBase<PropertyPermissionsViewModel, PropertyPermissionPayload>
     {
-        private readonly IDatabaseService _db;
+        private readonly IWorldPropertyPermissionRepository _worldPropertyPermissionRepository;
+        private readonly IPlayerRepository _playerRepository;
+        private readonly IWorldPropertyRepository _worldPropertyRepository;
+        private readonly IWorldPropertyCategoryRepository _worldPropertyCategoryRepository;
         private readonly IServiceProvider _serviceProvider;
 
-        public PropertyPermissionsViewModel(IGuiService guiService, IDatabaseService db, IServiceProvider serviceProvider) : base(guiService)
+        public PropertyPermissionsViewModel(IGuiService guiService, IWorldPropertyPermissionRepository worldPropertyPermissionRepository, IPlayerRepository playerRepository, IWorldPropertyRepository worldPropertyRepository, IWorldPropertyCategoryRepository worldPropertyCategoryRepository, IServiceProvider serviceProvider) : base(guiService)
         {
-            _db = db;
+            _worldPropertyPermissionRepository = worldPropertyPermissionRepository;
+            _playerRepository = playerRepository;
+            _worldPropertyRepository = worldPropertyRepository;
+            _worldPropertyCategoryRepository = worldPropertyCategoryRepository;
             _serviceProvider = serviceProvider;
         }
 
@@ -178,16 +185,10 @@ namespace SWLOR.Component.Properties.UI.ViewModel
             var playerId = GetObjectUUID(Player);
             var targetPlayerId = _playerIds[SelectedPlayerIndex];
             
-            var dbPlayer = _db.Get<Player>(targetPlayerId);
-            var grantorPermissions = _db.Search(new DBQuery<WorldPropertyPermission>()
-                .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false)
-                .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), PropertyId, false))
-                .First();
+            var dbPlayer = _playerRepository.GetById(targetPlayerId);
+            var grantorPermissions = _worldPropertyPermissionRepository.GetByPropertyIdAndPlayerId(PropertyId, playerId).First();
             
-            var targetPermissions = _db.Search(new DBQuery<WorldPropertyPermission>()
-                .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), targetPlayerId, false)
-                .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), PropertyId, false))
-                .FirstOrDefault() ?? CreateEmptyPermissions(targetPlayerId);
+            var targetPermissions = _worldPropertyPermissionRepository.GetByPropertyIdAndPlayerId(PropertyId, targetPlayerId).FirstOrDefault() ?? CreateEmptyPermissions(targetPlayerId);
 
             var permissionStates = new GuiBindingList<bool>();
             var permissionGrantingStates = new GuiBindingList<bool>();
@@ -201,13 +202,13 @@ namespace SWLOR.Component.Properties.UI.ViewModel
             string ownerPlayerId;
             if (_isCategory)
             {
-                var dbCategory = _db.Get<WorldPropertyCategory>(PropertyId);
-                var dbProperty = _db.Get<WorldProperty>(dbCategory.ParentPropertyId);
+                var dbCategory = _worldPropertyCategoryRepository.GetById(PropertyId);
+                var dbProperty = _worldPropertyRepository.GetById(dbCategory.ParentPropertyId);
                 ownerPlayerId = dbProperty.OwnerPlayerId;
             }
             else
             {
-                var dbProperty = _db.Get<WorldProperty>(PropertyId);
+                var dbProperty = _worldPropertyRepository.GetById(PropertyId);
                 ownerPlayerId = dbProperty.OwnerPlayerId;
             }
 
@@ -255,7 +256,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
 
             if (_isCategory)
             {
-                var category = _db.Get<WorldPropertyCategory>(PropertyId);
+                var category = _worldPropertyCategoryRepository.GetById(PropertyId);
                 PropertyName = category.Name;
                 CanChangePublicSetting = false;
                 IsPublic = false;
@@ -263,12 +264,9 @@ namespace SWLOR.Component.Properties.UI.ViewModel
             else
             {
                 var playerId = GetObjectUUID(Player);
-                var grantorPermissions = _db.Search(new DBQuery<WorldPropertyPermission>()
-                        .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false)
-                        .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), PropertyId, false))
-                    .First();
+                var grantorPermissions = _worldPropertyPermissionRepository.GetByPropertyIdAndPlayerId(PropertyId, playerId).First();
 
-                var property = _db.Get<WorldProperty>(PropertyId);
+                var property = _worldPropertyRepository.GetById(PropertyId);
                 var propertyDetail = Property.GetPropertyDetail(property.PropertyType);
 
                 PropertyName = property.CustomName;
@@ -307,29 +305,23 @@ namespace SWLOR.Component.Properties.UI.ViewModel
             // If no search is specified, load only the users who currently have permissions.
             if (string.IsNullOrWhiteSpace(SearchText))
             {
-                var permissionQuery = new DBQuery<WorldPropertyPermission>()
-                    .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), PropertyId, false);
-                var playerIds = _db.Search(permissionQuery).Select(s => s.PlayerId);
-                var query = new DBQuery<Player>()
-                    .AddFieldSearch(nameof(Shared.Domain.Entities.Player.Id), playerIds)
-                    .AddFieldSearch(nameof(Shared.Domain.Entities.Player.IsDeleted), false);
-                dbPlayers = _db.Search(query);
+                var playerIds = _worldPropertyPermissionRepository.GetByPropertyId(PropertyId).Select(s => s.PlayerId);
+                dbPlayers = _playerRepository.GetActivePlayers().Where(p => playerIds.Contains(p.Id));
             }
             // Otherwise look for players by their names.
             else
             {
-                var query = new DBQuery<Player>()
-                    .AddFieldSearch(nameof(Shared.Domain.Entities.Player.Name), SearchText, true)
-                    .AddFieldSearch(nameof(Shared.Domain.Entities.Player.IsDeleted), false)
-                    .AddPaging(25, 0);
+                // For now, we'll search through all active players by name
+                // This could be optimized with a more specific repository method if needed
+                dbPlayers = _playerRepository.GetActivePlayers()
+                    .Where(p => p.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
+                    .Take(25);
 
                 // Searches within City properties require that the players be a citizen.
                 if (!string.IsNullOrWhiteSpace(_cityId))
                 {
-                    query.AddFieldSearch(nameof(Shared.Domain.Entities.Player.CitizenPropertyId), _cityId, false);
+                    dbPlayers = dbPlayers.Where(p => p.CitizenPropertyId == _cityId);
                 }
-
-                dbPlayers = _db.Search(query);
             }
 
             foreach (var player in dbPlayers)
@@ -373,10 +365,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
         public Action OnClickSaveChanges() => () =>
         {
             var playerId = GetObjectUUID(Player);
-            var query = new DBQuery<WorldPropertyPermission>()
-                .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false)
-                .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), PropertyId, false);
-            var grantorPermissions = _db.Search(query).FirstOrDefault();
+            var grantorPermissions = _worldPropertyPermissionRepository.GetByPropertyIdAndPlayerId(PropertyId, playerId).FirstOrDefault();
 
             // Safety check to ensure the user still has grant permissions.
             // If they lost them while the window was open, they could still send this command even though they no longer have permission.
@@ -392,10 +381,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
                 if (playerId == targetPlayerId)
                     return;
 
-                query = new DBQuery<WorldPropertyPermission>()
-                    .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), targetPlayerId, false)
-                    .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), PropertyId, false);
-                var targetPermissions = _db.Search(query).FirstOrDefault() ?? CreateEmptyPermissions(targetPlayerId);
+                var targetPermissions = _worldPropertyPermissionRepository.GetByPropertyIdAndPlayerId(PropertyId, targetPlayerId).FirstOrDefault() ?? CreateEmptyPermissions(targetPlayerId);
 
                 for (var index = 0; index < AvailablePermissions.Count; index++)
                 {
@@ -421,17 +407,17 @@ namespace SWLOR.Component.Properties.UI.ViewModel
                 if (targetPermissions.Permissions.Any(x => x.Value) ||
                     targetPermissions.GrantPermissions.Any(x => x.Value))
                 {
-                    _db.Set(targetPermissions);
+                    _worldPropertyPermissionRepository.Save(targetPermissions);
                 }
                 // Player doesn't have any permissions. Remove the entry.
                 else
                 {
-                    _db.Delete<WorldPropertyPermission>(targetPermissions.Id);
+                    _worldPropertyPermissionRepository.Delete(targetPermissions.Id);
                 }
             }
 
             // Now handle property permissions
-            var dbProperty = _db.Get<WorldProperty>(PropertyId);
+            var dbProperty = _worldPropertyRepository.GetById(PropertyId);
             if (dbProperty == null)
                 return;
 
@@ -441,7 +427,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
                 grantorPermissions.GrantPermissions[PropertyPermissionType.EnterProperty])
             {
                 dbProperty.IsPubliclyAccessible = IsPublic;
-                _db.Set(dbProperty);
+                _worldPropertyRepository.Save(dbProperty);
             }
 
             Instruction = $"Permissions updated!";
@@ -455,10 +441,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
             if (IsPlayerSelected)
             {
                 var targetPlayerId = _playerIds[SelectedPlayerIndex];
-                var query = new DBQuery<WorldPropertyPermission>()
-                    .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), targetPlayerId, false)
-                    .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), PropertyId, false);
-                var permissions = _db.Search(query).FirstOrDefault() ?? CreateEmptyPermissions(targetPlayerId);
+                var permissions = _worldPropertyPermissionRepository.GetByPropertyIdAndPlayerId(PropertyId, targetPlayerId).FirstOrDefault() ?? CreateEmptyPermissions(targetPlayerId);
 
                 var permissionStates = new GuiBindingList<bool>();
                 var grantPermissionStates = new GuiBindingList<bool>();
@@ -475,7 +458,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
                 PermissionGrantingStates = grantPermissionStates;
             }
 
-            var dbProperty = _db.Get<WorldProperty>(PropertyId);
+            var dbProperty = _worldPropertyRepository.GetById(PropertyId);
             IsPublic = dbProperty.IsPubliclyAccessible;
         };
     }

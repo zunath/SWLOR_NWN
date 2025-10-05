@@ -1,14 +1,19 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Migration.Contracts;
 using SWLOR.Component.Migration.Enums;
 using SWLOR.Component.Migration.Model;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Domain.Entities;
+using SWLOR.Shared.Domain.Repositories;
 
 namespace SWLOR.Component.Migration.Feature.ServerMigration
 {
     public class _4_ResaveNotes : ServerMigrationBase, IServerMigration
     {
+        // Lazy-loaded services to break circular dependencies
+        private IPlayerNoteRepository PlayerNoteRepository => ServiceProvider.GetRequiredService<IPlayerNoteRepository>();
+        
         public _4_ResaveNotes(ILogger logger, IDatabaseService db, IServiceProvider serviceProvider) : base(logger, db, serviceProvider)
         {
         }
@@ -17,9 +22,8 @@ namespace SWLOR.Component.Migration.Feature.ServerMigration
         public MigrationExecutionType ExecutionType => MigrationExecutionType.PostDatabaseLoad;
         public void Migrate()
         {
-            var query = new DBQuery<PlayerNote>();
-            var noteCount = (int)DB.SearchCount(query);
-            var notes = DB.Search(query.AddPaging(noteCount, 0));
+            var noteCount = (int)PlayerNoteRepository.GetCount();
+            var notes = PlayerNoteRepository.GetAll();
 
             foreach (var note in notes)
             {
@@ -27,7 +31,7 @@ namespace SWLOR.Component.Migration.Feature.ServerMigration
                 note.DMCreatorName = string.Empty;
                 note.IsDMNote = false;
 
-                DB.Set(note);
+                PlayerNoteRepository.Save(note);
             }
         }
     }

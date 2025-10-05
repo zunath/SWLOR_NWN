@@ -2,17 +2,18 @@ using SWLOR.Component.Admin.Entity;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Domain.Admin.Contracts;
+using SWLOR.Shared.Domain.Repositories;
 using AuthorizationLevel = SWLOR.Shared.Domain.Admin.Enums.AuthorizationLevel;
 
 namespace SWLOR.Component.Admin.Service
 {
     public class AuthorizationService : IAuthorizationService
     {
-        private readonly IDatabaseService _db;
+        private readonly IAuthorizedDMRepository _authorizedDMRepository;
 
-        public AuthorizationService(IDatabaseService db)
+        public AuthorizationService(IAuthorizedDMRepository authorizedDMRepository)
         {
-            _db = db;
+            _authorizedDMRepository = authorizedDMRepository;
         }
 
         /// <summary>
@@ -32,9 +33,7 @@ namespace SWLOR.Component.Admin.Service
                     return AuthorizationLevel.Admin;
             }
 
-            var query = new DBQuery<AuthorizedDM>()
-                .AddFieldSearch(nameof(AuthorizedDM.CDKey), cdKey, false);
-            var existing = _db.Search(query).FirstOrDefault();
+            var existing = _authorizedDMRepository.GetByCDKey(cdKey);
             if (existing == null)
                 return AuthorizationLevel.Player;
 

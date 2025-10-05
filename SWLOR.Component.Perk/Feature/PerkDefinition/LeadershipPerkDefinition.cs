@@ -10,6 +10,7 @@ using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Perk.ValueObjects;
 using SWLOR.Shared.Domain.Properties.Entities;
 using SWLOR.Shared.Domain.Skill.Enums;
+using SWLOR.Shared.Domain.Repositories;
 
 namespace SWLOR.Component.Perk.Feature.PerkDefinition
 {
@@ -17,13 +18,15 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
     {
         private readonly IDatabaseService _db;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IElectionRepository _electionRepository;
         
         // Lazy-loaded services to break circular dependencies
         private IAbilityService AbilityService => _serviceProvider.GetRequiredService<IAbilityService>();
-                public LeadershipPerkDefinition(IDatabaseService db, IServiceProvider serviceProvider)
+        public LeadershipPerkDefinition(IDatabaseService db, IServiceProvider serviceProvider, IElectionRepository electionRepository)
         {
             _db = db;
             _serviceProvider = serviceProvider;
+            _electionRepository = electionRepository;
             // Services are now lazy-loaded via IServiceProvider
         }
 
@@ -71,9 +74,7 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                     }
 
                     // Player is currently running for election.
-                    var dbElection = _db.Search(new DBQuery<Election>()
-                        .AddFieldSearch(nameof(Election.PropertyId), dbCity.Id, false))
-                        .SingleOrDefault();
+                    var dbElection = _electionRepository.GetSingleByPropertyId(dbCity.Id);
                     if (dbElection != null && dbElection.CandidatePlayerIds.Contains(playerId))
                     {
                         return "You are currently running for election. You cannot refund this perk until you withdraw from the race.";

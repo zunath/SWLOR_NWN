@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Migration.Contracts;
 using SWLOR.Component.Migration.Enums;
 using SWLOR.Component.Migration.Model;
@@ -5,11 +6,15 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Domain.Crafting.Enums;
 using SWLOR.Shared.Domain.Entities;
+using SWLOR.Shared.Domain.Repositories;
 
 namespace SWLOR.Component.Migration.Feature.ServerMigration
 {
     public class _16_CorvetteRecipeAdditions: ServerMigrationBase, IServerMigration
     {
+        // Lazy-loaded services to break circular dependencies
+        private IPlayerRepository PlayerRepository => ServiceProvider.GetRequiredService<IPlayerRepository>();
+        
         public _16_CorvetteRecipeAdditions(ILogger logger, IDatabaseService db, IServiceProvider serviceProvider) : base(logger, db, serviceProvider)
         {
         }
@@ -18,10 +23,8 @@ namespace SWLOR.Component.Migration.Feature.ServerMigration
         public MigrationExecutionType ExecutionType => MigrationExecutionType.PostDatabaseLoad;
         public void Migrate()
         {
-            var query = new DBQuery<Player>();
-            var count = (int)DB.SearchCount(query);
-            var dbPlayers = DB.Search(query
-                .AddPaging(count, 0));
+            var count = (int)PlayerRepository.GetCount();
+            var dbPlayers = PlayerRepository.GetAll();
 
             foreach (var player in dbPlayers)
             {
@@ -29,7 +32,7 @@ namespace SWLOR.Component.Migration.Feature.ServerMigration
                 {
                     player.UnlockedRecipes[RecipeType.CorvetteJehaveyFrigate] = DateTime.UtcNow;
                 }
-                DB.Set(player);
+                PlayerRepository.Save(player);
             }
         }
     }

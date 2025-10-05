@@ -6,7 +6,9 @@
 @using SWLOR.Shared.Core.Data
 @using SWLOR.Shared.Domain.Character.Enums
 @using SWLOR.Shared.Domain.Entities
+@using SWLOR.Shared.Domain.Repositories
 @inject IDatabaseService _db
+@inject IPlayerRepository _playerRepository
 
 <h3>Players (@_totalRecords)</h3>
 
@@ -93,14 +95,8 @@
 
 	protected void RefreshList()
 	{
-		var query = new DBQuery<Player>();
-
-	    _totalRecords = _db.SearchCount(query);
-
-		if (!string.IsNullOrWhiteSpace(_searchText))
-		{
-			query.AddFieldSearch(nameof(Player.Name), _searchText, true);
-		}
+		var players = _playerRepository.GetPlayersWithSearch(_searchText);
+		_totalRecords = players.Count();
 
         // Calculate total pages
         _totalPages = (int)Math.Ceiling((double)_totalRecords / PageSize);
@@ -115,11 +111,9 @@
             _currentPage = 1;
         }
 
-        // Add pagination to query
+        // Apply pagination
         var offset = (_currentPage - 1) * PageSize;
-        query.AddPaging(PageSize, offset);
-
-		_players = _db.Search(query).ToList();
+		_players = players.Skip(offset).Take(PageSize).ToList();
 	}
 
 	protected override async Task OnInitializedAsync()

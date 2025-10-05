@@ -12,6 +12,7 @@ using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Properties.Contracts;
 using SWLOR.Shared.Domain.Properties.Entities;
 using SWLOR.Shared.Domain.Properties.Enums;
+using SWLOR.Shared.Domain.Repositories;
 using SWLOR.Shared.Domain.Space.Contracts;
 using SWLOR.Shared.Domain.Space.Enums;
 using SWLOR.Shared.Domain.Space.ValueObjects;
@@ -27,7 +28,10 @@ namespace SWLOR.Component.Space.UI.ViewModel
 {
     public class ShipManagementViewModel : GuiViewModelBase<ShipManagementViewModel, ShipManagementPayload>
     {
-        private readonly IDatabaseService _db;
+        private readonly IPlayerShipRepository _playerShipRepository;
+        private readonly IWorldPropertyPermissionRepository _worldPropertyPermissionRepository;
+        private readonly IPlayerRepository _playerRepository;
+        private readonly IWorldPropertyRepository _worldPropertyRepository;
         private readonly IServiceProvider _serviceProvider;
         
         // Lazy-loaded services to break circular dependencies
@@ -38,9 +42,12 @@ namespace SWLOR.Component.Space.UI.ViewModel
         private IAreaService AreaService => _serviceProvider.GetRequiredService<IAreaService>();
         private IObjectPluginService ObjectPlugin => _serviceProvider.GetRequiredService<IObjectPluginService>();
 
-        public ShipManagementViewModel(IGuiService guiService, IDatabaseService db, IServiceProvider serviceProvider) : base(guiService)
+        public ShipManagementViewModel(IGuiService guiService, IPlayerShipRepository playerShipRepository, IWorldPropertyPermissionRepository worldPropertyPermissionRepository, IPlayerRepository playerRepository, IWorldPropertyRepository worldPropertyRepository, IServiceProvider serviceProvider) : base(guiService)
         {
-            _db = db;
+            _playerShipRepository = playerShipRepository;
+            _worldPropertyPermissionRepository = worldPropertyPermissionRepository;
+            _playerRepository = playerRepository;
+            _worldPropertyRepository = worldPropertyRepository;
             _serviceProvider = serviceProvider;
         }
         
@@ -624,38 +631,26 @@ namespace SWLOR.Component.Space.UI.ViewModel
         private List<PlayerShip> GetMyShips()
         {
             var playerId = GetObjectUUID(Player);
-            var query = new DBQuery<PlayerShip>()
-                .AddFieldSearch(nameof(PlayerShip.OwnerPlayerId), playerId, false);
-            return _db.Search(query).ToList();
+            return _playerShipRepository.GetByOwnerPlayerId(playerId).ToList();
         }
 
         private List<PlayerShip> GetOtherShips()
         {
             var playerId = GetObjectUUID(Player);
-            var permissionQuery = new DBQuery<WorldPropertyPermission>()
-                .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false);
-            var permissionCount = (int)_db.SearchCount(permissionQuery);
-            var propertyIds = _db.Search(permissionQuery.AddPaging(permissionCount, 0))
+            var propertyIds = _worldPropertyPermissionRepository.GetByPlayerId(playerId)
                 .Select(s => s.PropertyId)
                 .ToList();
 
             if (propertyIds.Count <= 0) 
                 return new List<PlayerShip>();
 
-            var shipQuery = new DBQuery<PlayerShip>()
-                .AddFieldSearch(nameof(PlayerShip.PropertyId), propertyIds);
-
-            var ships = _db.Search(shipQuery)
-                .Where(x => x.OwnerPlayerId != playerId)
-                .ToList();
-
-            return ships;
+            return _playerShipRepository.GetByPropertyIdsExcludingPlayer(propertyIds, playerId).ToList();
         }
 
         private int CalculateRepairBill(PlayerShip ship)
         {
             var playerId = GetObjectUUID(Player);
-            var dbPlayer = _db.Get<Player>(playerId);
+            var dbPlayer = _playerRepository.GetById(playerId);
             var shieldDiff = ship.Status.MaxShield - ship.Status.Shield;
             var hullDiff = ship.Status.MaxHull - ship.Status.Hull;
             var price = shieldDiff * 50 + hullDiff * 100;
@@ -687,11 +682,9 @@ namespace SWLOR.Component.Space.UI.ViewModel
             List<PlayerShip> dbPlayerShips;
             if (!string.IsNullOrWhiteSpace(initialPayload.SpecificPropertyId))
             {
-                var query = new DBQuery<PlayerShip>()
-                    .AddFieldSearch(nameof(PlayerShip.PropertyId), initialPayload.SpecificPropertyId, false);
-                dbPlayerShips = _db.Search(query).ToList();
+                dbPlayerShips = _playerShipRepository.GetByPropertyId(initialPayload.SpecificPropertyId).ToList();
 
-                var dbProperty = _db.Get<WorldProperty>(initialPayload.SpecificPropertyId);
+                var dbProperty = _worldPropertyRepository.GetById(initialPayload.SpecificPropertyId);
                 var spacePropertyLocation = dbProperty.Positions[PropertyLocationType.SpacePosition];
                 var spaceArea = AreaService.GetAreaByResref(spacePropertyLocation.AreaResref);
                 var spacePosition = Vector3(spacePropertyLocation.X, spacePropertyLocation.Y, spacePropertyLocation.Z);
@@ -830,14 +823,11 @@ namespace SWLOR.Component.Space.UI.ViewModel
             else
             {
                 var shipId = _shipIds[SelectedShipIndex];
-                var ship = _db.Get<PlayerShip>(shipId);
+                var ship = _playerShipRepository.GetById(shipId);
                 var shipDetail = SpaceService.GetShipDetailByItemTag(ship.Status.ItemTag);
-                var property = _db.Get<WorldProperty>(ship.PropertyId);
+                var property = _worldPropertyRepository.GetById(ship.PropertyId);
 
-                var permissionQuery = new DBQuery<WorldPropertyPermission>()
-                    .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false)
-                    .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), ship.PropertyId, false);
-                var permission = _db.Search(permissionQuery).Single();
+                var permission = _worldPropertyPermissionRepository.GetByPropertyIdAndPlayerId(ship.PropertyId, playerId).Single();
                 var currentLocation = GetShipLocation(property);
                 var isAtCurrentLocation = currentLocation == GetArea(Player);
                 var gold = GetGold(Player);
@@ -1284,8 +1274,8 @@ namespace SWLOR.Component.Space.UI.ViewModel
             {
                 var playerId = GetObjectUUID(Player);
                 var shipId = _shipIds[SelectedShipIndex];
-                var dbShip = _db.Get<PlayerShip>(shipId);
-                var dbProperty = _db.Get<WorldProperty>(dbShip.PropertyId);
+                var dbShip = _playerShipRepository.GetById(shipId);
+                var dbProperty = _worldPropertyRepository.GetById(dbShip.PropertyId);
                 var shipLocation = GetShipLocation(dbProperty);
                 IsUnregisterEnabled = shipLocation == GetArea(Player) && playerId == dbProperty.OwnerPlayerId;
             }
@@ -1331,9 +1321,7 @@ namespace SWLOR.Component.Space.UI.ViewModel
                 }
 
                 var playerId = GetObjectUUID(Player);
-                var query = new DBQuery<PlayerShip>()
-                    .AddFieldSearch(nameof(PlayerShip.OwnerPlayerId), playerId, false);
-                var dbPlayerShips = _db.Search(query).ToList();
+                var dbPlayerShips = _playerShipRepository.GetByOwnerPlayerId(playerId).ToList();
 
                 if (dbPlayerShips.Count >= SpaceService.MaxRegisteredShips)
                 {
@@ -1380,7 +1368,7 @@ namespace SWLOR.Component.Space.UI.ViewModel
                         CapitalShip = shipDetail.CapitalShip
                     }
                 };
-                _db.Set(ship);
+                _playerShipRepository.Save(ship);
 
                 var instance = PropertyService.GetRegisteredInstance(property.Id);
                 SetName(instance.Area, "{PC} " + property.CustomName);
@@ -1405,9 +1393,9 @@ namespace SWLOR.Component.Space.UI.ViewModel
                 {
                     var playerId = GetObjectUUID(Player);
                     var shipId = _shipIds[SelectedShipIndex];
-                    var dbPlayer = _db.Get<Player>(playerId);
-                    var dbShip = _db.Get<PlayerShip>(shipId);
-                    var dbProperty = _db.Get<WorldProperty>(dbShip.PropertyId);
+                    var dbPlayer = _playerRepository.GetById(playerId);
+                    var dbShip = _playerShipRepository.GetById(shipId);
+                    var dbProperty = _worldPropertyRepository.GetById(dbShip.PropertyId);
 
                     if (dbShip.Status.HighPowerModules.Count > 0 ||
                         dbShip.Status.LowPowerModules.Count > 0)
@@ -1428,9 +1416,9 @@ namespace SWLOR.Component.Space.UI.ViewModel
 
                     dbProperty.IsQueuedForDeletion = true;
 
-                    _db.Delete<PlayerShip>(shipId);
-                    _db.Set(dbPlayer);
-                    _db.Set(dbProperty);
+                    _playerShipRepository.Delete(shipId);
+                    _playerRepository.Save(dbPlayer);
+                    _worldPropertyRepository.Save(dbProperty);
 
                     var item = ObjectPlugin.Deserialize(dbShip.SerializedItem);
                     ObjectPlugin.AcquireItem(Player, item);
@@ -1456,12 +1444,12 @@ namespace SWLOR.Component.Space.UI.ViewModel
             }
 
             var shipId = _shipIds[SelectedShipIndex];
-            var dbShip = _db.Get<PlayerShip>(shipId);
-            var dbProperty = _db.Get<WorldProperty>(dbShip.PropertyId);
+            var dbShip = _playerShipRepository.GetById(shipId);
+            var dbProperty = _worldPropertyRepository.GetById(dbShip.PropertyId);
             var instance = PropertyService.GetRegisteredInstance(dbShip.PropertyId);
 
             dbProperty.CustomName = ShipName;
-            _db.Set(dbProperty);
+            _worldPropertyRepository.Save(dbProperty);
 
             SetName(instance.Area, "{PC} " + ShipName);
 
@@ -1532,7 +1520,7 @@ namespace SWLOR.Component.Space.UI.ViewModel
         private void ProcessHighPower(int slot)
         {
             var shipId = _shipIds[SelectedShipIndex];
-            var dbShip = _db.Get<PlayerShip>(shipId);
+            var dbShip = _playerShipRepository.GetById(shipId);
             var module = dbShip.Status.HighPowerModules.ContainsKey(slot)
                 ? dbShip.Status.HighPowerModules[slot]
                 : null;
@@ -1544,7 +1532,7 @@ namespace SWLOR.Component.Space.UI.ViewModel
                 TargetingService.EnterTargetingMode(Player, ObjectType.Item, "Please click on a ship high-powered module within your inventory.",
                     item => 
                 {
-                    dbShip = _db.Get<PlayerShip>(shipId);
+                    dbShip = _playerShipRepository.GetById(shipId);
                     var itemTag = GetTag(item);
                     if (!SpaceService.IsRegisteredShipModule(itemTag))
                     {
@@ -1575,7 +1563,7 @@ namespace SWLOR.Component.Space.UI.ViewModel
 
                     moduleDetails.ModuleEquippedAction?.Invoke(dbShip.Status, moduleBonus);
 
-                    _db.Set(dbShip);
+                    _playerShipRepository.Save(dbShip);
 
                     DestroyObject(item);
                     LoadShip();
@@ -1593,7 +1581,7 @@ namespace SWLOR.Component.Space.UI.ViewModel
                     var moduleBonus = SpaceService.GetModuleBonus(item);
                     moduleDetail.ModuleUnequippedAction?.Invoke(dbShip.Status, moduleBonus);
                     dbShip.Status.HighPowerModules.Remove(slot);
-                    _db.Set(dbShip);
+                    _playerShipRepository.Save(dbShip);
                     LoadShip();
                 });
             }
@@ -1602,7 +1590,7 @@ namespace SWLOR.Component.Space.UI.ViewModel
         private void ProcessLowPower(int slot)
         {
             var shipId = _shipIds[SelectedShipIndex];
-            var dbShip = _db.Get<PlayerShip>(shipId);
+            var dbShip = _playerShipRepository.GetById(shipId);
             var module = dbShip.Status.LowPowerModules.ContainsKey(slot)
                 ? dbShip.Status.LowPowerModules[slot]
                 : null;
@@ -1614,7 +1602,7 @@ namespace SWLOR.Component.Space.UI.ViewModel
                 TargetingService.EnterTargetingMode(Player, ObjectType.Item, "Please click on a low-powered ship module within your inventory",
                     item =>
                 {
-                    dbShip = _db.Get<PlayerShip>(shipId);
+                    dbShip = _playerShipRepository.GetById(shipId);
                     var itemTag = GetTag(item);
                     if (!SpaceService.IsRegisteredShipModule(itemTag))
                     {
@@ -1646,7 +1634,7 @@ namespace SWLOR.Component.Space.UI.ViewModel
 
                     moduleDetails.ModuleEquippedAction?.Invoke(dbShip.Status, moduleBonus);
 
-                    _db.Set(dbShip);
+                    _playerShipRepository.Save(dbShip);
 
                     DestroyObject(item);
                     LoadShip();
@@ -1664,7 +1652,7 @@ namespace SWLOR.Component.Space.UI.ViewModel
 
                     moduleDetail.ModuleUnequippedAction?.Invoke(dbShip.Status, moduleBonus);
                     dbShip.Status.LowPowerModules.Remove(slot);
-                    _db.Set(dbShip);
+                    _playerShipRepository.Save(dbShip);
                     LoadShip();
                 });
             }
@@ -1673,7 +1661,7 @@ namespace SWLOR.Component.Space.UI.ViewModel
         private void ProcessConfiguration(int slot)
         {
             var shipId = _shipIds[SelectedShipIndex];
-            var dbShip = _db.Get<PlayerShip>(shipId);
+            var dbShip = _playerShipRepository.GetById(shipId);
             var module = dbShip.Status.ConfigurationModules.ContainsKey(slot)
                 ? dbShip.Status.ConfigurationModules[slot]
                 : null;
@@ -1685,7 +1673,7 @@ namespace SWLOR.Component.Space.UI.ViewModel
                 TargetingService.EnterTargetingMode(Player, ObjectType.Item, "Please click on a ship configuration module within your inventory",
                     item =>
                     {
-                        dbShip = _db.Get<PlayerShip>(shipId);
+                        dbShip = _playerShipRepository.GetById(shipId);
                         var itemTag = GetTag(item);
                         if (!SpaceService.IsRegisteredShipModule(itemTag))
                         {
@@ -1716,7 +1704,7 @@ namespace SWLOR.Component.Space.UI.ViewModel
 
                         moduleDetails.ModuleEquippedAction?.Invoke(dbShip.Status, moduleBonus);
 
-                        _db.Set(dbShip);
+                        _playerShipRepository.Save(dbShip);
 
                         DestroyObject(item);
                         LoadShip();
@@ -1734,7 +1722,7 @@ namespace SWLOR.Component.Space.UI.ViewModel
 
                     moduleDetail.ModuleUnequippedAction?.Invoke(dbShip.Status, moduleBonus);
                     dbShip.Status.ConfigurationModules.Remove(slot);
-                    _db.Set(dbShip);
+                    _playerShipRepository.Save(dbShip);
                     LoadShip();
                 });
             }
@@ -1851,7 +1839,7 @@ namespace SWLOR.Component.Space.UI.ViewModel
         public Action OnClickBoardShip() => () =>
         {
             var shipId = _shipIds[SelectedShipIndex];
-            var dbShip = _db.Get<PlayerShip>(shipId);
+            var dbShip = _playerShipRepository.GetById(shipId);
             var shipDetail = SpaceService.GetShipDetailByItemTag(dbShip.Status.ItemTag);
             var instance = PropertyService.GetRegisteredInstance(dbShip.PropertyId);
             var entrance = PropertyService.GetEntrancePosition(shipDetail.Layout);
@@ -1868,7 +1856,7 @@ namespace SWLOR.Component.Space.UI.ViewModel
         public Action OnClickPermissions() => () =>
         {
             var shipId = _shipIds[SelectedShipIndex];
-            var dbShip = _db.Get<PlayerShip>(shipId);
+            var dbShip = _playerShipRepository.GetById(shipId);
             
             var payload = new PropertyPermissionPayload(PropertyType.Starship, dbShip.PropertyId, string.Empty, false);
             _guiService.TogglePlayerWindow(Player, GuiWindowType.PermissionManagement, payload, TetherObject);
@@ -1882,7 +1870,7 @@ namespace SWLOR.Component.Space.UI.ViewModel
 
             foreach (var ship in ships)
             {
-                var property = _db.Get<WorldProperty>(ship.PropertyId);
+                var property = _worldPropertyRepository.GetById(ship.PropertyId);
 
                 _shipIds.Add(ship.Id);
                 shipToggles.Add(false);
@@ -1918,7 +1906,7 @@ namespace SWLOR.Component.Space.UI.ViewModel
         public Action OnClickRepair() => () =>
         {
             var shipId = _shipIds[SelectedShipIndex];
-            var dbShip = _db.Get<PlayerShip>(shipId);
+            var dbShip = _playerShipRepository.GetById(shipId);
             var price = CalculateRepairBill(dbShip);
 
             ShowModal($"Repairs will cost you {price} credits. Will you pay for repairs?", () =>
@@ -1938,7 +1926,7 @@ namespace SWLOR.Component.Space.UI.ViewModel
 
                 dbShip.Status.Shield = dbShip.Status.MaxShield;
                 dbShip.Status.Hull = dbShip.Status.MaxHull;
-                _db.Set(dbShip);
+                _playerShipRepository.Save(dbShip);
 
                 FloatingTextStringOnCreature(ColorToken.Green("Ship repaired!"), Player, false);
                 LoadShip();

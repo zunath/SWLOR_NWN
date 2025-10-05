@@ -5,21 +5,22 @@ using SWLOR.Shared.Domain.World.Contracts;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
+using SWLOR.Shared.Domain.Repositories;
 
 namespace SWLOR.Component.World.UI.ViewModel
 {
     public class AreaNotesViewModel: GuiViewModelBase<AreaNotesViewModel, IGuiPayload>
     {
-        private readonly IDatabaseService _db;
+        private readonly IAreaNoteRepository _areaNoteRepository;
         private readonly IAreaService _area;
 
         public AreaNotesViewModel(
             IGuiService guiService, 
-            IDatabaseService db,
+            IAreaNoteRepository areaNoteRepository,
             IAreaService areaService) 
             : base(guiService)
         {
-            _db = db;
+            _areaNoteRepository = areaNoteRepository;
             _area = areaService;
         }
         
@@ -136,10 +137,7 @@ namespace SWLOR.Component.World.UI.ViewModel
 
             _isLoadingNote = true;
 
-            var query = new DBQuery<AreaNote>()
-                .AddFieldSearch(nameof(AreaNote.AreaResref), AreaResrefs[SelectedAreaIndex], false)
-                .OrderBy(nameof(AreaNote.AreaResref));
-            var notes = _db.Search(query)
+            var notes = _areaNoteRepository.GetByAreaResref(AreaResrefs[SelectedAreaIndex])
                 .ToList();
 
             foreach (var note in notes)
@@ -155,7 +153,7 @@ namespace SWLOR.Component.World.UI.ViewModel
                 {
                     AreaResref = AreaResrefs[SelectedAreaIndex]
                 };
-                _db.Set<AreaNote>(dbNote);
+                _areaNoteRepository.Save(dbNote);
             }
 
             _isLoadingNote = false;
@@ -167,10 +165,7 @@ namespace SWLOR.Component.World.UI.ViewModel
             if (SelectedAreaIndex <= -1)
                 return;
 
-            var query = new DBQuery<AreaNote>()
-                .AddFieldSearch(nameof(AreaNote.AreaResref), AreaResrefs[SelectedAreaIndex], false)
-                .OrderBy(nameof(AreaNote.AreaResref));
-            var notes = _db.Search(query)
+            var notes = _areaNoteRepository.GetByAreaResref(AreaResrefs[SelectedAreaIndex])
                 .ToList();
 
             foreach (var note in notes)
@@ -186,7 +181,7 @@ namespace SWLOR.Component.World.UI.ViewModel
                 SendMessageToPC(player, ColorToken.Purple(message));
             }
 
-            _db.Set(notes[0]);
+            _areaNoteRepository.Save(notes[0]);
             IsSaveEnabled = false;
         }
 

@@ -5,12 +5,14 @@ using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Domain.Properties.Entities;
 using SWLOR.Shared.Domain.Properties.Enums;
+using SWLOR.Shared.Domain.Repositories;
 
 namespace SWLOR.CLI
 {
     internal class AdHocTool
     {
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private static readonly IWorldPropertyRepository _worldPropertyRepository = ServiceContainer.GetService<IWorldPropertyRepository>();
 
         public void Process()
         {
@@ -19,12 +21,7 @@ namespace SWLOR.CLI
             _db.Load();
 
             // Cleans up orphaned property records
-            var query = new DBQuery<WorldProperty>();
-            var count = _db.SearchCount(query);
-            query = (DBQuery<WorldProperty>)query
-                .AddPaging((int)count, 0);
-
-            var entities = _db.Search(query).ToList();
+            var entities = _worldPropertyRepository.GetAll().ToList();
 
             foreach (var entity in entities)
             {

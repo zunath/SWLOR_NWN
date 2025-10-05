@@ -3,16 +3,17 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.UI.Service;
 using SWLOR.Component.World.Entity;
+using SWLOR.Shared.Domain.Repositories;
 
 namespace SWLOR.Component.World.Service
 {
     public class AreaNoteService : IAreaNoteService
     {
-        private readonly IDatabaseService _db;
+        private readonly IAreaNoteRepository _areaNoteRepository;
 
-        public AreaNoteService(IDatabaseService db)
+        public AreaNoteService(IAreaNoteRepository areaNoteRepository)
         {
-            _db = db;
+            _areaNoteRepository = areaNoteRepository;
         }
 
         /// <summary>
@@ -22,10 +23,7 @@ namespace SWLOR.Component.World.Service
         /// <param name="area">The area to get notes for</param>
         public void DisplayAreaNotes(uint player, uint area)
         {
-            var query = new DBQuery<AreaNote>()
-                .AddFieldSearch(nameof(AreaNote.AreaResref), GetResRef(area), false)
-                .OrderBy(nameof(AreaNote.AreaResref));
-            var notes = _db.Search(query)
+            var notes = _areaNoteRepository.GetByAreaResref(GetResRef(area))
                 .ToList();
 
             if (notes.Count > 0)

@@ -4,16 +4,19 @@ using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
+using SWLOR.Shared.Domain.Repositories;
 
 namespace SWLOR.Component.Character.UI.ViewModel
 {
     public class NotesViewModel: GuiViewModelBase<NotesViewModel, IGuiPayload>
     {
         private readonly IDatabaseService _db;
+        private readonly IPlayerNoteRepository _playerNoteRepository;
 
-        public NotesViewModel(IGuiService guiService, IDatabaseService db) : base(guiService)
+        public NotesViewModel(IGuiService guiService, IDatabaseService db, IPlayerNoteRepository playerNoteRepository) : base(guiService)
         {
             _db = db;
+            _playerNoteRepository = playerNoteRepository;
         }
         
         public const int MaxNumberOfNotes = 25;
@@ -91,11 +94,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
         protected override void Initialize(IGuiPayload initialPayload)
         {
             var playerId = GetObjectUUID(Player);
-            var query = new DBQuery<PlayerNote>()
-                .AddFieldSearch(nameof(PlayerNote.PlayerId), playerId, false)
-                .AddFieldSearch(nameof(PlayerNote.IsDMNote), false)
-                .OrderBy(nameof(PlayerNote.Name));
-            var notes = _db.Search(query)
+            var notes = _playerNoteRepository.GetPlayerNotesByPlayerId(playerId)
                 .ToList();
 
             _noteIds.Clear();

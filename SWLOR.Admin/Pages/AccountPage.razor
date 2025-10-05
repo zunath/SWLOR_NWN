@@ -2,8 +2,10 @@
 @using SWLOR.Shared.Abstractions.Contracts
 @using SWLOR.Shared.Core.Data
 @using SWLOR.Shared.Domain.Entities
+@using SWLOR.Shared.Domain.Repositories
 @attribute [Authorize(Policy = "DiscordAdmin")]
 @inject IDatabaseService _db
+@inject IAccountRepository _accountRepository
 
 <h3>Accounts (@_totalRecords)</h3>
 
@@ -96,13 +98,8 @@
 
     protected void RefreshList()
     {
-        var query = new DBQuery<Account>();
-        _totalRecords = _db.SearchCount(query);
-
-        if (!string.IsNullOrWhiteSpace(_searchText))
-        {
-            query.AddFieldSearch(nameof(Account.Id), _searchText, true);
-        }
+        var accounts = _accountRepository.GetAccountsWithSearch(_searchText);
+        _totalRecords = accounts.Count();
 
         // Calculate total pages
         _totalPages = (int)Math.Ceiling((double)_totalRecords / PageSize);
@@ -117,11 +114,9 @@
             _currentPage = 1;
         }
 
-        // Add pagination to query
+        // Apply pagination
         var offset = (_currentPage - 1) * PageSize;
-        query.AddPaging(PageSize, offset);
-
-        _accounts = _db.Search(query).ToList();
+        _accounts = accounts.Skip(offset).Take(PageSize).ToList();
     }
 
     // Pagination methods

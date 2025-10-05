@@ -1,5 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
-using SWLOR.Component.Crafting.Entity;
+using SWLOR.Shared.Domain.Entities;
 using SWLOR.Component.Crafting.Model;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
@@ -17,6 +17,7 @@ using SWLOR.Shared.Domain.Crafting.Enums;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Perk.Contracts;
 using SWLOR.Shared.Domain.Perk.Enums;
+using SWLOR.Shared.Domain.Repositories;
 using SWLOR.Shared.Domain.Skill.Contracts;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
@@ -28,14 +29,17 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
     {
         private readonly IDatabaseService _db;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IResearchJobRepository _researchJobRepository;
 
         public ResearchViewModel(
             IGuiService guiService, 
             IDatabaseService db, 
-            IServiceProvider serviceProvider) : base(guiService)
+            IServiceProvider serviceProvider,
+            IResearchJobRepository researchJobRepository) : base(guiService)
         {
             _db = db;
             _serviceProvider = serviceProvider;
+            _researchJobRepository = researchJobRepository;
             
             // Initialize lazy services
             _itemCache = new Lazy<IItemCacheService>(() => _serviceProvider.GetRequiredService<IItemCacheService>());
@@ -194,9 +198,7 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
 
         private ResearchJob GetJob()
         {
-            var query = new DBQuery<ResearchJob>()
-                .AddFieldSearch(nameof(ResearchJob.ParentPropertyId), _researchTerminalPropertyId, false);
-            var dbJob = _db.Search(query)
+            var dbJob = _researchJobRepository.GetByParentPropertyId(_researchTerminalPropertyId)
                 .FirstOrDefault();
 
             return dbJob;
@@ -368,9 +370,7 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
 
             var playerId = GetObjectUUID(Player);
             var maxConcurrentJobs = PerkService.GetPerkLevel(Player, PerkType.ResearchProjects) + 1;
-            var dbQuery = new DBQuery<ResearchJob>()
-                .AddFieldSearch(nameof(ResearchJob.PlayerId), playerId, false);
-            var currentJobs = _db.Search(dbQuery).ToList();
+            var currentJobs = _researchJobRepository.GetByPlayerId(playerId).ToList();
             var currentJobCount = currentJobs.Count(x => x.ParentPropertyId != _researchTerminalPropertyId);
 
             if (currentJobCount >= maxConcurrentJobs)

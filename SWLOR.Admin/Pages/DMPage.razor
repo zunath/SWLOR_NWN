@@ -4,7 +4,9 @@
 @using SWLOR.Shared.Abstractions.Contracts
 @using SWLOR.Shared.Core.Data
 @using SWLOR.Shared.Domain.Admin.Enums
+@using SWLOR.Shared.Domain.Repositories
 @inject IDatabaseService _db
+@inject IAuthorizedDMRepository _authorizedDMRepository
 
 <h3>DMs (@_totalRecords)</h3>
 
@@ -180,13 +182,8 @@
 
 	protected void RefreshList()
 	{
-		var query = new DBQuery<AuthorizedDM>();
-		_totalRecords = _db.SearchCount(query);
-
-		if (!string.IsNullOrWhiteSpace(_searchText))
-		{
-		    query.AddFieldSearch(nameof(AuthorizedDM.Name), _searchText, true);
-		}
+		var dms = _authorizedDMRepository.GetDMsWithSearch(_searchText);
+		_totalRecords = dms.Count();
 
         // Calculate total pages
         _totalPages = (int)Math.Ceiling((double)_totalRecords / PageSize);
@@ -201,11 +198,9 @@
             _currentPage = 1;
         }
 
-        // Add pagination to query
+        // Apply pagination
         var offset = (_currentPage - 1) * PageSize;
-        query.AddPaging(PageSize, offset);
-
-	    _dms = _db.Search(query).ToList();
+	    _dms = dms.Skip(offset).Take(PageSize).ToList();
 	}
 
     // Pagination methods

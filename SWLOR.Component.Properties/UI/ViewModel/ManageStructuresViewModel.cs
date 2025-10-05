@@ -11,6 +11,7 @@ using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Abstractions.Models;
 using SWLOR.Shared.Domain.Properties.Entities;
 using SWLOR.Shared.Domain.Properties.Enums;
+using SWLOR.Shared.Domain.Repositories;
 using SWLOR.Shared.Domain.UI.Payloads;
 using SWLOR.Shared.UI.Component;
 using SWLOR.Shared.UI.Contracts;
@@ -21,13 +22,17 @@ namespace SWLOR.Component.Properties.UI.ViewModel
 {
     public class ManageStructuresViewModel: GuiViewModelBase<ManageStructuresViewModel, IGuiPayload>
     {
-        private readonly IDatabaseService _db;
+        private readonly IWorldPropertyRepository _worldPropertyRepository;
+        private readonly IWorldPropertyPermissionRepository _worldPropertyPermissionRepository;
+        private readonly IWorldPropertyCategoryRepository _worldPropertyCategoryRepository;
         private readonly IServiceProvider _serviceProvider;
         private readonly IPlayerPluginService _playerPlugin;
 
-        public ManageStructuresViewModel(IGuiService guiService, IDatabaseService db, IServiceProvider serviceProvider, IPlayerPluginService playerPlugin) : base(guiService)
+        public ManageStructuresViewModel(IGuiService guiService, IWorldPropertyRepository worldPropertyRepository, IWorldPropertyPermissionRepository worldPropertyPermissionRepository, IWorldPropertyCategoryRepository worldPropertyCategoryRepository, IServiceProvider serviceProvider, IPlayerPluginService playerPlugin) : base(guiService)
         {
-            _db = db;
+            _worldPropertyRepository = worldPropertyRepository;
+            _worldPropertyPermissionRepository = worldPropertyPermissionRepository;
+            _worldPropertyCategoryRepository = worldPropertyCategoryRepository;
             _serviceProvider = serviceProvider;
             _playerPlugin = playerPlugin;
         }
@@ -137,7 +142,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
         private WorldProperty GetStructure()
         {
             var propertyId = _structurePropertyIds[SelectedStructureIndex];
-            var structure = _db.Get<WorldProperty>(propertyId);
+            var structure = _worldPropertyRepository.GetById(propertyId);
 
             return structure;
         }
@@ -178,14 +183,15 @@ namespace SWLOR.Component.Properties.UI.ViewModel
 
             var structureNames = new GuiBindingList<string>();
             var structureToggles = new GuiBindingList<bool>();
-            var query = new DBQuery<WorldProperty>()
-                .AddFieldSearch(nameof(WorldProperty.ParentPropertyId), propertyId, false)
-                .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.Structure);
-            var structureCount = _db.SearchCount(query);
+            var allStructures = _worldPropertyRepository.GetByParentPropertyId(propertyId)
+                .Where(s => s.PropertyType == PropertyType.Structure)
+                .ToList();
+            var structureCount = allStructures.Count;
             UpdatePagination(structureCount);
 
-            query.AddPaging(StructuresPerPage, SelectedPageIndex * StructuresPerPage);
-            var structures = _db.Search(query);
+            var structures = allStructures
+                .Skip(SelectedPageIndex * StructuresPerPage)
+                .Take(StructuresPerPage);
             _structurePropertyIds.Clear();
 
             foreach (var structure in structures)
@@ -206,10 +212,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
             var playerId = GetObjectUUID(Player);
             var area = GetArea(Player);
             var propertyId = Property.GetPropertyId(area);
-            var query = new DBQuery<WorldPropertyPermission>()
-                .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), propertyId, false)
-                .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false);
-            return _db.Search(query).FirstOrDefault();
+            return _worldPropertyPermissionRepository.GetSingleByPropertyIdAndPlayerId(propertyId, playerId);
         }
 
         private void LoadPropertyPermissions(WorldProperty property)
@@ -261,7 +264,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
                 return;
             }
             
-            var property = _db.Get<WorldProperty>(propertyId);
+            var property = _worldPropertyRepository.GetById(propertyId);
             ManageButtonText = property.PropertyType == PropertyType.Apartment
                 ? "Manage Property"
                 : "Permissions";
@@ -368,7 +371,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
         {
             var area = GetArea(Player);
             var propertyId = Property.GetPropertyId(area);
-            var property = _db.Get<WorldProperty>(propertyId);
+            var property = _worldPropertyRepository.GetById(propertyId);
 
             // Apartments have their own management menu.
             if (property.PropertyType == PropertyType.Apartment)
@@ -391,7 +394,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
             // Buildings look at their parent's parent to determine the city Id.
             else
             {
-                var parentBuilding = _db.Get<WorldProperty>(property.ParentPropertyId);
+                var parentBuilding = _worldPropertyRepository.GetById(property.ParentPropertyId);
                 var cityId = parentBuilding.ParentPropertyId;
                 var payload = new PropertyPermissionPayload(property.PropertyType, propertyId, cityId, false);
                 GuiService.TogglePlayerWindow(Player, GuiWindowType.PermissionManagement, payload);
@@ -408,7 +411,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
             ShowModal($"Are you sure you want to retrieve this structure? WARNING: Any structures, items, research jobs, etc. contained inside will be permanently lost.", () =>
             {
                 var structure = GetStructure();
-                var parentProperty = _db.Get<WorldProperty>(structure.ParentPropertyId);
+                var parentProperty = _worldPropertyRepository.GetById(structure.ParentPropertyId);
                 var placeable = Property.GetPlaceableByPropertyId(structure.Id);
                 var permission = GetPermission();
 
@@ -431,9 +434,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
 
                 // Removing this structure would reduce the item storage cap below the number of items actually
                 // in storage.
-                var query = new DBQuery<WorldPropertyCategory>()
-                    .AddFieldSearch(nameof(WorldPropertyCategory.ParentPropertyId), structure.ParentPropertyId, false);
-                var categories = _db.Search(query).ToList();
+                var categories = _worldPropertyCategoryRepository.GetByPropertyId(structure.ParentPropertyId).ToList();
                 var itemCount = categories.Sum(x => x.Items.Count);
 
                 if (itemCount > parentProperty.ItemStorageCount - structure.ItemStorageCount)
@@ -450,7 +451,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
                 parentProperty.ChildPropertyIds[PropertyChildType.Structure].Remove(structure.Id);
                 parentProperty.ItemStorageCount -= structure.ItemStorageCount;
 
-                _db.Set(parentProperty);
+                _worldPropertyRepository.Save(parentProperty);
 
                 // Some structures have specific logic which must be run when they're picked up. Do that now.
                 Property.RunStructureChangedEvent(structure.StructureType, StructureChangeType.Retrieved, structure, placeable);
@@ -492,7 +493,7 @@ namespace SWLOR.Component.Properties.UI.ViewModel
 
             structure.CustomName = StructureName;
 
-            _db.Set(structure);
+            _worldPropertyRepository.Save(structure);
 
             StructureNames[SelectedStructureIndex] = StructureName;
 

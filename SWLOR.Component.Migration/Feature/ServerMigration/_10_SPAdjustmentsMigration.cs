@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using SWLOR.Component.Migration.Contracts;
 using SWLOR.Component.Migration.Enums;
@@ -8,11 +9,15 @@ using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Perk.Enums;
+using SWLOR.Shared.Domain.Repositories;
 
 namespace SWLOR.Component.Migration.Feature.ServerMigration
 {
     public class _10_SPAdjustmentsMigration : ServerMigrationBase, IServerMigration
     {
+        // Lazy-loaded services to break circular dependencies
+        private IPlayerRepository PlayerRepository => ServiceProvider.GetRequiredService<IPlayerRepository>();
+        
         public _10_SPAdjustmentsMigration(ILogger logger, IDatabaseService db, IServiceProvider serviceProvider) : base(logger, db, serviceProvider)
         {
         }
@@ -106,10 +111,8 @@ namespace SWLOR.Component.Migration.Feature.ServerMigration
 
         private void RemoveGrenadesRecast()
         {
-            var dbQuery = new DBQuery<Player>();
-            var playerCount = (int)DB.SearchCount(dbQuery);
-            var dbPlayersRaw = DB.SearchRawJson(dbQuery
-                .AddPaging(playerCount, 0));
+            var playerCount = (int)PlayerRepository.GetCount();
+            var dbPlayersRaw = DB.SearchRawJson(new DBQuery<Player>().AddPaging(playerCount, 0));
 
             foreach (var dbPlayerJson in dbPlayersRaw)
             {
@@ -123,7 +126,7 @@ namespace SWLOR.Component.Migration.Feature.ServerMigration
 
                     var dbPlayer = jObject.ToObject<Player>();
 
-                    DB.Set(dbPlayer);
+                    PlayerRepository.Save(dbPlayer);
 
                     Logger.Write<MigrationLogGroup>($"{dbPlayer.Name} ({dbPlayer.Id}): Replaced recast timer for Grenades.");
                 }

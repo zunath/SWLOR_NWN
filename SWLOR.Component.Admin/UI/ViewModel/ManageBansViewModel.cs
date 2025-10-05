@@ -4,6 +4,7 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Models;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Domain.Repositories;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
@@ -15,12 +16,14 @@ namespace SWLOR.Component.Admin.UI.ViewModel
         private readonly ILogger _logger;
         private readonly IDatabaseService _db;
         private readonly IAdministrationPluginService _administrationPlugin;
+        private readonly IPlayerBanRepository _playerBanRepository;
 
-        public ManageBansViewModel(IGuiService guiService, ILogger logger, IDatabaseService db, IAdministrationPluginService administrationPlugin) : base(guiService)
+        public ManageBansViewModel(IGuiService guiService, ILogger logger, IDatabaseService db, IAdministrationPluginService administrationPlugin, IPlayerBanRepository playerBanRepository) : base(guiService)
         {
             _logger = logger;
             _db = db;
             _administrationPlugin = administrationPlugin;
+            _playerBanRepository = playerBanRepository;
         }
         
         private int SelectedUserIndex { get; set; }
@@ -75,8 +78,7 @@ namespace SWLOR.Component.Admin.UI.ViewModel
             ActiveBanReason = string.Empty;
 
             _userIds.Clear();
-            var query = new DBQuery<PlayerBan>();
-            var users = _db.Search(query);
+            var users = _playerBanRepository.GetAll();
 
             var cdKeys = new GuiBindingList<string>();
             var toggles = new GuiBindingList<bool>();

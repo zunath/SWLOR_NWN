@@ -8,6 +8,7 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Inventory.Contracts;
+using SWLOR.Shared.Domain.Repositories;
 
 namespace SWLOR.Component.Migration.Feature.ServerMigration
 {
@@ -18,6 +19,7 @@ namespace SWLOR.Component.Migration.Feature.ServerMigration
         
         // Lazy-loaded services to break circular dependencies
         private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
+        private IInventoryItemRepository InventoryItemRepository => _serviceProvider.GetRequiredService<IInventoryItemRepository>();
         
         public _2_LegacyServerMigration(IDatabaseService db, IServiceProvider serviceProvider)
             : base(serviceProvider)
@@ -35,9 +37,8 @@ namespace SWLOR.Component.Migration.Feature.ServerMigration
 
         private void MigratePersistentStorageItems()
         {
-            var query = new DBQuery<InventoryItem>();
-            var itemCount = (int)_db.SearchCount(query);
-            var items = _db.Search(query.AddPaging(itemCount, 0)).ToList();
+            var itemCount = (int)InventoryItemRepository.GetCount();
+            var items = InventoryItemRepository.GetAll().ToList();
             var tempStorage = GetObjectByTag("MIGRATION_STORAGE");
 
             foreach (var item in items)
@@ -61,7 +62,7 @@ namespace SWLOR.Component.Migration.Feature.ServerMigration
                 CleanItemName(deserialized);
 
                 item.Data = ObjectPlugin.Serialize(deserialized);
-                _db.Set(item);
+                InventoryItemRepository.Save(item);
 
                 DestroyObject(deserialized);
             }

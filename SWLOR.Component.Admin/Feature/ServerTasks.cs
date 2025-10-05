@@ -6,6 +6,7 @@ using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Domain.Entities;
+using SWLOR.Shared.Domain.Repositories;
 using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Component.Admin.Feature
@@ -18,19 +19,22 @@ namespace SWLOR.Component.Admin.Feature
         private readonly ITimeService _timeService;
         private readonly IScheduler _scheduler;
         private readonly IAdministrationPluginService _administrationPlugin;
+        private readonly IPlayerBanRepository _playerBanRepository;
 
         public ServerTasks(
             ILogger logger, 
             IDatabaseService db, 
             IScheduler scheduler,
             ITimeService timeService,
-            IAdministrationPluginService administrationPlugin)
+            IAdministrationPluginService administrationPlugin,
+            IPlayerBanRepository playerBanRepository)
         {
             _logger = logger;
             _db = db;
             _scheduler = scheduler;
             _timeService = timeService;
             _administrationPlugin = administrationPlugin;
+            _playerBanRepository = playerBanRepository;
         }
 
         // This determines what time the server will restart.
@@ -88,10 +92,8 @@ namespace SWLOR.Component.Admin.Feature
 
         private void ApplyBans()
         {
-            var query = new DBQuery<PlayerBan>();
-
-            var dbBanCount = (int)_db.SearchCount(query);
-            var dbBans = _db.Search(query.AddPaging(dbBanCount, 0));
+            var dbBanCount = (int)_playerBanRepository.GetCount();
+            var dbBans = _playerBanRepository.GetAll();
 
             foreach (var ban in dbBans)
             {

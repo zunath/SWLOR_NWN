@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Migration.Contracts;
 using SWLOR.Component.Migration.Enums;
 using SWLOR.Component.Migration.Model;
@@ -7,11 +8,15 @@ using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Properties.Entities;
 using SWLOR.Shared.Domain.Properties.Enums;
+using SWLOR.Shared.Domain.Repositories;
 
 namespace SWLOR.Component.Migration.Feature.ServerMigration
 {
     public class _11_RefundMobilityAndUpdateVelesStarport: ServerMigrationBase, IServerMigration
     {
+        // Lazy-loaded services to break circular dependencies
+        private IWorldPropertyRepository WorldPropertyRepository => ServiceProvider.GetRequiredService<IWorldPropertyRepository>();
+        
         public _11_RefundMobilityAndUpdateVelesStarport(ILogger logger, IDatabaseService db, IServiceProvider serviceProvider) : base(logger, db, serviceProvider)
         {
         }
@@ -33,11 +38,8 @@ namespace SWLOR.Component.Migration.Feature.ServerMigration
         {
             const string StarportResref = "velesinterior";
 
-            var dbQuery = new DBQuery<WorldProperty>()
-                .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.Starship);
-            var shipCount = (int)DB.SearchCount(dbQuery);
-            var dbShips = DB.Search(dbQuery
-                .AddPaging(shipCount, 0));
+            var shipCount = (int)WorldPropertyRepository.GetCountByPropertyType(PropertyType.Starship);
+            var dbShips = WorldPropertyRepository.GetByPropertyType(PropertyType.Starship);
 
             var waypoint = GetWaypointByTag("VISCARA_LANDING");
             var position = GetPosition(waypoint);
@@ -64,7 +66,7 @@ namespace SWLOR.Component.Migration.Feature.ServerMigration
                     lastNPCDockPosition.Orientation = facing;
                 }
 
-                DB.Set(dbShip);
+                WorldPropertyRepository.Save(dbShip);
                 Logger.Write<MigrationLogGroup>($"Updated location of ship '{dbShip.CustomName}' ({dbShip.Id}) in Veles Starport.");
             }
         }

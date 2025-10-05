@@ -16,6 +16,7 @@ using SWLOR.Shared.UI.Component;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
+using SWLOR.Shared.Domain.Repositories;
 
 namespace SWLOR.Component.Market.UI.ViewModel
 {
@@ -24,17 +25,20 @@ namespace SWLOR.Component.Market.UI.ViewModel
         private readonly ILogger _logger;
         private readonly IDatabaseService _db;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IMarketItemRepository _marketItemRepository;
 
         public MarketBuyViewModel(
             IGuiService guiService, 
             ILogger logger, 
             IDatabaseService db, 
-            IServiceProvider serviceProvider) 
+            IServiceProvider serviceProvider,
+            IMarketItemRepository marketItemRepository) 
             : base(guiService)
         {
             _logger = logger;
             _db = db;
             _serviceProvider = serviceProvider;
+            _marketItemRepository = marketItemRepository;
         }
 
         // Lazy-loaded services to break circular dependencies
@@ -183,28 +187,20 @@ namespace SWLOR.Component.Market.UI.ViewModel
         private void Search()
         {
             var marketDetail = PlayerMarketService.GetMarketRegion(_regionType);
-            var query = new DBQuery<MarketItem>()
-                .AddFieldSearch(nameof(MarketItem.IsListed), true)
-                .AddFieldSearch(nameof(MarketItem.MarketId), marketDetail.MarketId, false);
+            var allRecords = _marketItemRepository.GetListedItemsByMarketId(
+                marketDetail.MarketId, 
+                SearchText, 
+                _activeCategoryIdFilters.Count > 0 ? _activeCategoryIdFilters : null, 
+                _sortByPriceAscending);
 
-            if (!string.IsNullOrWhiteSpace(SearchText))
-                query.AddFieldSearch(nameof(MarketItem.Name), SearchText, true);
-
-            if (_activeCategoryIdFilters.Count > 0)
-            {
-                query.AddFieldSearch(nameof(MarketItem.Category), _activeCategoryIdFilters);
-            }
-
-            // Add sorting by price
-            query.OrderBy(nameof(MarketItem.Price), _sortByPriceAscending);
-
-            query.AddPaging(ListingsPerPage, ListingsPerPage * SelectedPageIndex);
-
-            var totalRecordCount = _db.SearchCount(query);
+            var totalRecordCount = allRecords.Count();
             UpdatePagination(totalRecordCount);
 
+            // Apply pagination
+            var records = allRecords.Skip(ListingsPerPage * SelectedPageIndex).Take(ListingsPerPage);
+
             var credits = GetGold(Player);
-            var results = _db.Search(query);
+            var results = records;
 
             _itemIds.Clear();
             _itemPrices.Clear();

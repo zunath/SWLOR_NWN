@@ -11,6 +11,7 @@ using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Inventory.ValueObjects;
 using SWLOR.Shared.Domain.Perk.Contracts;
 using SWLOR.Shared.Domain.Perk.Enums;
+using SWLOR.Shared.Domain.Repositories;
 
 namespace SWLOR.Component.Associate.Feature.ItemDefinition
 {
@@ -21,19 +22,22 @@ namespace SWLOR.Component.Associate.Feature.ItemDefinition
         private readonly IBeastMasteryService _beastMasteryService;
         private readonly IPerkService _perkService;
         private readonly IItemBuilder _builder;
+        private readonly IBeastRepository _beastRepository;
 
         public BeastEggItemDefinition(
             ILogger logger, 
             IDatabaseService db, 
             IBeastMasteryService beastMasteryService, 
             IPerkService perkService,
-            IItemBuilder itemBuilder)
+            IItemBuilder itemBuilder,
+            IBeastRepository beastRepository)
         {
             _logger = logger;
             _db = db;
             _beastMasteryService = beastMasteryService;
             _perkService = perkService;
             _builder = itemBuilder;
+            _beastRepository = beastRepository;
         }
 
         public Dictionary<string, ItemDetail> BuildItems()
@@ -71,9 +75,7 @@ namespace SWLOR.Component.Associate.Feature.ItemDefinition
                     }
 
                     var maxBeasts = 1 + _perkService.GetPerkLevel(user, PerkType.Stabling);
-                    var dbQuery = new DBQuery<Beast>()
-                        .AddFieldSearch(nameof(Beast.OwnerPlayerId), playerId, false);
-                    var beastCount = (int)_db.SearchCount(dbQuery);
+                    var beastCount = (int)_beastRepository.GetCountByOwnerPlayerId(playerId);
                     if (beastCount >= maxBeasts)
                     {
                         return $"You have already tamed the maximum number of beasts your perks support.";
@@ -211,7 +213,7 @@ namespace SWLOR.Component.Associate.Feature.ItemDefinition
                         }
                     };
 
-                    _db.Set(dbBeast);
+                    _beastRepository.Save(dbBeast);
 
                     dbPlayer.ActiveBeastId = dbBeast.Id;
                     _db.Set(dbPlayer);

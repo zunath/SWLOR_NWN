@@ -13,6 +13,7 @@ using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Market.Enums;
 using SWLOR.Shared.Domain.Properties.Contracts;
 using SWLOR.Shared.Domain.Properties.Enums;
+using SWLOR.Shared.Domain.Repositories;
 using SWLOR.Shared.Domain.Space.Contracts;
 using MarketCategoryType = SWLOR.Shared.Domain.Market.Enums.MarketCategoryType;
 
@@ -22,6 +23,7 @@ namespace SWLOR.Component.Market.Service
     {
         private readonly IDatabaseService _db;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IMarketItemRepository _marketItemRepository;
         
         public const int MaxListingsPerMarket = 25;
         
@@ -37,10 +39,12 @@ namespace SWLOR.Component.Market.Service
 
         public PlayerMarketService(
             IDatabaseService db, 
-            IServiceProvider serviceProvider)
+            IServiceProvider serviceProvider,
+            IMarketItemRepository marketItemRepository)
         {
             _db = db;
             _serviceProvider = serviceProvider;
+            _marketItemRepository = marketItemRepository;
         }
 
         // Lazy-loaded services to break circular dependencies
@@ -55,11 +59,8 @@ namespace SWLOR.Component.Market.Service
 
         public void RemoveOldListings()
         {
-            var query = new DBQuery<MarketItem>()
-                .AddFieldSearch(nameof(MarketItem.IsListed), true);
-            var count = (int)_db.SearchCount(query);
-            var listings = _db.Search(query
-                .AddPaging(count, 0));
+            var count = (int)_marketItemRepository.GetListedCount();
+            var listings = _marketItemRepository.GetListedItems();
             var now = DateTime.UtcNow;
 
             foreach (var listing in listings)
@@ -68,7 +69,7 @@ namespace SWLOR.Component.Market.Service
                 {
                     listing.IsListed = false;
 
-                    _db.Set(listing);
+                    _marketItemRepository.Save(listing);
                 }
             }
         }

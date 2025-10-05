@@ -7,6 +7,7 @@ using SWLOR.Component.Space.Service;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.Domain.Repositories;
 using SWLOR.Shared.Domain.Space.Contracts;
 using SWLOR.Shared.Domain.World.Contracts;
 using SWLOR.Shared.Events.Contracts;
@@ -39,6 +40,10 @@ namespace SWLOR.Test.Component.Space.Infrastructure
             _services.AddSingleton(Substitute.For<IEventsPluginService>());
             _services.AddSingleton(Substitute.For<IObjectPluginService>());
             _services.AddSingleton(Substitute.For<IPlayerPluginService>());
+            
+            // Add repository dependencies
+            _services.AddSingleton(Substitute.For<IPlayerShipRepository>());
+            _services.AddSingleton(Substitute.For<IWorldPropertyPermissionRepository>());
         }
 
         [TearDown]

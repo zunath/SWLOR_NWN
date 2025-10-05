@@ -8,6 +8,7 @@ using SWLOR.NWN.API.Service;
 using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Perk.Contracts;
+using SWLOR.Shared.Domain.Repositories;
 using SWLOR.Shared.Domain.Skill.Contracts;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
@@ -20,12 +21,14 @@ namespace SWLOR.Component.Admin.UI.ViewModel
         private readonly IDatabaseService _db;
         private readonly IServiceProvider _serviceProvider;
         private readonly IEventsPluginService _eventsPlugin;
+        private readonly IPlayerNoteRepository _playerNoteRepository;
 
-        public DMPlayerExamineViewModel(IGuiService guiService, IDatabaseService db, IServiceProvider serviceProvider, IEventsPluginService eventsPlugin) : base(guiService)
+        public DMPlayerExamineViewModel(IGuiService guiService, IDatabaseService db, IServiceProvider serviceProvider, IEventsPluginService eventsPlugin, IPlayerNoteRepository playerNoteRepository) : base(guiService)
         {
             _db = db;
             _serviceProvider = serviceProvider;
             _eventsPlugin = eventsPlugin;
+            _playerNoteRepository = playerNoteRepository;
             
             // Initialize lazy services
             _skillService = new Lazy<ISkillService>(() => _serviceProvider.GetRequiredService<ISkillService>());
@@ -265,10 +268,7 @@ namespace SWLOR.Component.Admin.UI.ViewModel
             if (dbPlayer == null)
                 return;
 
-            var query = new DBQuery<PlayerNote>()
-                .AddFieldSearch(nameof(PlayerNote.PlayerId), _playerId, false)
-                .AddFieldSearch(nameof(PlayerNote.IsDMNote), true);
-            var dbNotes = _db.Search(query);
+            var dbNotes = _playerNoteRepository.GetDMNotesByPlayerId(_playerId);
 
             _noteIds.Clear();
             var noteNames = new GuiBindingList<string>();

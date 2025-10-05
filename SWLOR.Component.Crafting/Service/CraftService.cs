@@ -18,6 +18,7 @@ using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Crafting.Contracts;
 using SWLOR.Shared.Domain.Crafting.Enums;
 using SWLOR.Shared.Domain.Crafting.Payloads;
+using SWLOR.Shared.Domain.Repositories;
 using SWLOR.Shared.Domain.Crafting.ValueObjects;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Perk.Contracts;
@@ -26,7 +27,7 @@ using SWLOR.Shared.Domain.Properties.Contracts;
 using SWLOR.Shared.Domain.Skill.Enums;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
-using ResearchJob = SWLOR.Component.Crafting.Entity.ResearchJob;
+using SWLOR.Shared.Domain.Entities;
 
 namespace SWLOR.Component.Crafting.Service
 {
@@ -38,6 +39,7 @@ namespace SWLOR.Component.Crafting.Service
         private readonly IServiceProvider _serviceProvider;
         private readonly ITimeService _timeService;
         private readonly IEventsPluginService _eventsPlugin;
+        private readonly IResearchJobRepository _researchJobRepository;
         
         // Lazy-loaded services to break circular dependencies
         private readonly Lazy<IGuiService> _guiService;
@@ -52,10 +54,12 @@ namespace SWLOR.Component.Crafting.Service
             IItemCacheService itemCache, 
             IServiceProvider serviceProvider,
             ITimeService timeService,
-            IEventsPluginService eventsPlugin)
+            IEventsPluginService eventsPlugin,
+            IResearchJobRepository researchJobRepository)
         {
             _logger = logger;
             _db = db;
+            _researchJobRepository = researchJobRepository;
             _cacheService = cacheService;
             _itemCache = itemCache;
             _serviceProvider = serviceProvider;
@@ -789,9 +793,7 @@ namespace SWLOR.Component.Crafting.Service
                 return;
             }
 
-            var query = new DBQuery<ResearchJob>()
-                .AddFieldSearch(nameof(ResearchJob.ParentPropertyId), propertyId, false);
-            var dbJob = _db.Search(query)
+            var dbJob = _researchJobRepository.GetByParentPropertyId(propertyId)
                 .FirstOrDefault();
 
             if (dbJob == null)
@@ -968,9 +970,7 @@ namespace SWLOR.Component.Crafting.Service
         public void OnRemoveProperty()
         {
             var propertyId = _eventsPlugin.GetEventData("PROPERTY_ID");
-            var dbQuery = new DBQuery<ResearchJob>()
-                .AddFieldSearch(nameof(ResearchJob.ParentPropertyId), propertyId, false);
-            var dbJobs = _db.Search(dbQuery).ToList();
+            var dbJobs = _researchJobRepository.GetByParentPropertyId(propertyId).ToList();
 
             foreach (var dbJob in dbJobs)
             {

@@ -4,6 +4,7 @@ using SWLOR.Shared.Abstractions.Models;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Domain.Admin.Enums;
+using SWLOR.Shared.Domain.Repositories;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
@@ -14,11 +15,13 @@ namespace SWLOR.Component.Admin.UI.ViewModel
     {
         private readonly ILogger _logger;
         private readonly IDatabaseService _db;
+        private readonly IAuthorizedDMRepository _authorizedDMRepository;
 
-        public ManageStaffViewModel(IGuiService guiService, ILogger logger, IDatabaseService db) : base(guiService)
+        public ManageStaffViewModel(IGuiService guiService, ILogger logger, IDatabaseService db, IAuthorizedDMRepository authorizedDMRepository) : base(guiService)
         {
             _logger = logger;
             _db = db;
+            _authorizedDMRepository = authorizedDMRepository;
         }
         
         private int SelectedUserIndex { get; set; }
@@ -86,8 +89,7 @@ namespace SWLOR.Component.Admin.UI.ViewModel
             SelectedRoleId = 0;
 
             _userIds.Clear();
-            var query = new DBQuery<AuthorizedDM>();
-            var users = _db.Search(query);
+            var users = _authorizedDMRepository.GetAll();
 
             var names = new GuiBindingList<string>();
             var toggles = new GuiBindingList<bool>();

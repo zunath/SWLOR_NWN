@@ -6,6 +6,7 @@ using SWLOR.Shared.Abstractions.Models;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Domain.Properties.Entities;
 using SWLOR.Shared.Domain.Properties.Enums;
+using SWLOR.Shared.Domain.Repositories;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
@@ -14,12 +15,12 @@ namespace SWLOR.Component.Properties.UI.ViewModel
 {
     public class RentApartmentViewModel: GuiViewModelBase<RentApartmentViewModel, IGuiPayload>
     {
-        private readonly IDatabaseService _db;
+        private readonly IWorldPropertyRepository _worldPropertyRepository;
         private readonly IServiceProvider _serviceProvider;
 
-        public RentApartmentViewModel(IGuiService guiService, IDatabaseService db, IServiceProvider serviceProvider) : base(guiService)
+        public RentApartmentViewModel(IGuiService guiService, IWorldPropertyRepository worldPropertyRepository, IServiceProvider serviceProvider) : base(guiService)
         {
-            _db = db;
+            _worldPropertyRepository = worldPropertyRepository;
             _serviceProvider = serviceProvider;
         }
 
@@ -87,11 +88,9 @@ namespace SWLOR.Component.Properties.UI.ViewModel
         private bool CanRentApartment()
         {
             var playerId = GetObjectUUID(Player);
-            var query = new DBQuery<WorldProperty>()
-                .AddFieldSearch(nameof(WorldProperty.OwnerPlayerId), playerId, false)
-                .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.Apartment)
-                .AddFieldSearch(nameof(WorldProperty.IsQueuedForDeletion), false);
-            var dbApartment = _db.Search(query).FirstOrDefault();
+            var dbApartment = _worldPropertyRepository.GetByOwnerPlayerId(playerId)
+                .Where(p => p.PropertyType == PropertyType.Apartment && !p.IsQueuedForDeletion)
+                .FirstOrDefault();
 
             return dbApartment == null;
         }
@@ -163,11 +162,9 @@ namespace SWLOR.Component.Properties.UI.ViewModel
                     }
 
                     var playerId = GetObjectUUID(Player);
-                    var query = new DBQuery<WorldProperty>()
-                        .AddFieldSearch(nameof(WorldProperty.OwnerPlayerId), playerId, false)
-                        .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.Apartment)
-                        .AddFieldSearch(nameof(WorldProperty.IsQueuedForDeletion), false);
-                    var apartments = _db.Search(query).ToList();
+                    var apartments = _worldPropertyRepository.GetByOwnerPlayerId(playerId)
+                        .Where(p => p.PropertyType == PropertyType.Apartment && !p.IsQueuedForDeletion)
+                        .ToList();
 
                     if (apartments.Count > 0)
                     {

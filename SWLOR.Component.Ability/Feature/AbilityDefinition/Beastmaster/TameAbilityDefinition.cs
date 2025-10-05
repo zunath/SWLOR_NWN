@@ -12,6 +12,7 @@ using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Perk.Contracts;
 using SWLOR.Shared.Domain.Perk.Enums;
+using SWLOR.Shared.Domain.Repositories;
 using SWLOR.Shared.Domain.Skill.Enums;
 using SWLOR.Shared.UI.Service;
 
@@ -33,6 +34,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beastmaster
         private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
         private IBeastMasteryService BeastMastery => _serviceProvider.GetRequiredService<IBeastMasteryService>();
         private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
+        private IBeastRepository BeastRepository => _serviceProvider.GetRequiredService<IBeastRepository>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
@@ -92,9 +94,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beastmaster
                     }
 
                     var maxBeasts = 1 + PerkService.GetPerkLevel(activator, PerkType.Stabling);
-                    var dbQuery = new DBQuery<Beast>()
-                        .AddFieldSearch(nameof(Beast.OwnerPlayerId), playerId, false);
-                    var beastCount = (int)DB.SearchCount(dbQuery);
+                    var beastCount = (int)BeastRepository.GetCountByOwnerPlayerId(playerId);
                     if (beastCount >= maxBeasts)
                     {
                         return $"You have already tamed the maximum number of beasts your perks support.";

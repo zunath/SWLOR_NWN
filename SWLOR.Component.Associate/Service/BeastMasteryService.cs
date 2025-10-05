@@ -18,6 +18,7 @@ using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Entities;
+using SWLOR.Shared.Domain.Repositories;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Perk.Contracts;
 using SWLOR.Shared.Domain.Perk.Enums;
@@ -39,6 +40,7 @@ namespace SWLOR.Component.Associate.Service
         private readonly ICreaturePluginService _creaturePlugin;
         private readonly IEventsPluginService _eventsPlugin;
         private readonly IObjectPluginService _objectPlugin;
+        private readonly IIncubationJobRepository _incubationJobRepository;
 
         public BeastMasteryService(
             IDatabaseService db,
@@ -46,11 +48,13 @@ namespace SWLOR.Component.Associate.Service
             IServiceProvider serviceProvider,
             ICreaturePluginService creaturePlugin,
             IEventsPluginService eventsPlugin,
-            IObjectPluginService objectPlugin)
+            IObjectPluginService objectPlugin,
+            IIncubationJobRepository incubationJobRepository)
         {
             _db = db;
             _random = random;
             _serviceProvider = serviceProvider;
+            _incubationJobRepository = incubationJobRepository;
             _creaturePlugin = creaturePlugin;
             _eventsPlugin = eventsPlugin;
             _objectPlugin = objectPlugin;
@@ -105,11 +109,13 @@ namespace SWLOR.Component.Associate.Service
         public BeastMasteryService(
             IDatabaseService db,
             IServiceProvider serviceProvider,
-            IRandomService random)
+            IRandomService random,
+            IIncubationJobRepository incubationJobRepository)
         {
             _db = db;
             _random = random;
             _serviceProvider = serviceProvider;
+            _incubationJobRepository = incubationJobRepository;
         }
 
         public string HydrolaseResrefPrefix => "hydrolase_";
@@ -777,9 +783,7 @@ namespace SWLOR.Component.Associate.Service
                 return;
             }
 
-            var dbQuery = new DBQuery<IncubationJob>()
-                .AddFieldSearch(nameof(IncubationJob.ParentPropertyId), incubatorPropertyId, false);
-            var incubatorJob = _db.Search(dbQuery).FirstOrDefault();
+            var incubatorJob = _incubationJobRepository.GetByParentPropertyId(incubatorPropertyId).FirstOrDefault();
 
             if (incubatorJob != null && incubatorJob.PlayerId != playerId)
             {
@@ -908,9 +912,7 @@ namespace SWLOR.Component.Associate.Service
         public void OnRemoveProperty()
         {
             var propertyId = _eventsPlugin.GetEventData("PROPERTY_ID");
-            var dbQuery = new DBQuery<IncubationJob>()
-                .AddFieldSearch(nameof(IncubationJob.ParentPropertyId), propertyId, false);
-            var dbJobs = _db.Search(dbQuery).ToList();
+            var dbJobs = _incubationJobRepository.GetByParentPropertyId(propertyId).ToList();
 
             foreach (var dbJob in dbJobs)
             {

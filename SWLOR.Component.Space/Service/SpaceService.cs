@@ -19,6 +19,7 @@ using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Properties.Contracts;
 using SWLOR.Shared.Domain.Properties.Entities;
 using SWLOR.Shared.Domain.Properties.Enums;
+using SWLOR.Shared.Domain.Repositories;
 using SWLOR.Shared.Domain.Skill.Enums;
 using SWLOR.Shared.Domain.Space.Contracts;
 using SWLOR.Shared.Domain.Space.Enums;
@@ -38,6 +39,8 @@ namespace SWLOR.Component.Space.Service
     {
         private readonly ILogger _logger;
         private readonly IDatabaseService _db;
+        private readonly IPlayerShipRepository _playerShipRepository;
+        private readonly IWorldPropertyPermissionRepository _worldPropertyPermissionRepository;
         private readonly IScheduler _scheduler;
         private readonly IRandomService _random;
         private readonly IServiceProvider _serviceProvider;
@@ -51,6 +54,8 @@ namespace SWLOR.Component.Space.Service
         public SpaceService(
             ILogger logger,
             IDatabaseService db,
+            IPlayerShipRepository playerShipRepository,
+            IWorldPropertyPermissionRepository worldPropertyPermissionRepository,
             IScheduler scheduler,
             IRandomService random,
             IServiceProvider serviceProvider,
@@ -63,6 +68,8 @@ namespace SWLOR.Component.Space.Service
         {
             _logger = logger;
             _db = db;
+            _playerShipRepository = playerShipRepository;
+            _worldPropertyPermissionRepository = worldPropertyPermissionRepository;
             _scheduler = scheduler;
             _random = random;
             _serviceProvider = serviceProvider;
@@ -547,10 +554,7 @@ namespace SWLOR.Component.Space.Service
             var player = GetLastUsedBy();
             var playerId = GetObjectUUID(player);
             var propertyId = PropertyService.GetPropertyId(area);
-            var permissionQuery = new DBQuery<WorldPropertyPermission>()
-                .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), propertyId, false)
-                .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false);
-            var permission = _db.Search(permissionQuery).FirstOrDefault();
+            var permission = _worldPropertyPermissionRepository.GetByPropertyIdAndPlayerId(propertyId, playerId).FirstOrDefault();
 
             if (permission == null || !permission.Permissions[PropertyPermissionType.PilotShip])
             {
@@ -558,9 +562,7 @@ namespace SWLOR.Component.Space.Service
                 return;
             }
 
-            var shipQuery = new DBQuery<PlayerShip>()
-                .AddFieldSearch(nameof(PlayerShip.PropertyId), propertyId, false);
-            var dbShip = _db.Search(shipQuery).FirstOrDefault();
+            var dbShip = _playerShipRepository.GetByPropertyId(propertyId).FirstOrDefault();
 
             if (dbShip == null)
             {
@@ -2059,9 +2061,7 @@ namespace SWLOR.Component.Space.Service
         public void PerformEmergencyExit(uint instance)
         {
             var propertyId = PropertyService.GetPropertyId(instance);
-            var shipQuery = new DBQuery<PlayerShip>()
-                .AddFieldSearch(nameof(PlayerShip.PropertyId), propertyId, false);
-            var dbShip = _db.Search(shipQuery).FirstOrDefault();
+            var dbShip = _playerShipRepository.GetByPropertyId(propertyId).FirstOrDefault();
 
             if (dbShip == null)
                 return;

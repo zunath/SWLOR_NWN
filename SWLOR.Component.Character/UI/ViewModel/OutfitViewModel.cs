@@ -1,4 +1,4 @@
-using SWLOR.Component.Character.Enums;
+using SWLOR.Shared.Domain.Entities;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.Service;
@@ -7,6 +7,7 @@ using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
+using SWLOR.Shared.Domain.Repositories;
 
 namespace SWLOR.Component.Character.UI.ViewModel
 {
@@ -14,11 +15,13 @@ namespace SWLOR.Component.Character.UI.ViewModel
     {
         private readonly IDatabaseService _db;
         private readonly IObjectPluginService _objectPlugin;
+        private readonly IPlayerOutfitRepository _playerOutfitRepository;
 
-        public OutfitViewModel(IGuiService guiService, IDatabaseService db, IObjectPluginService objectPlugin) : base(guiService)
+        public OutfitViewModel(IGuiService guiService, IDatabaseService db, IObjectPluginService objectPlugin, IPlayerOutfitRepository playerOutfitRepository) : base(guiService)
         {
             _db = db;
             _objectPlugin = objectPlugin;
+            _playerOutfitRepository = playerOutfitRepository;
         }
         
         private const int MaxOutfits = 25;
@@ -86,8 +89,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
         private List<PlayerOutfit> GetOutfits()
         {
             var playerId = GetObjectUUID(Player);
-            var dbOutfits = _db.Search(new DBQuery<PlayerOutfit>()
-                .AddFieldSearch(nameof(PlayerOutfit.PlayerId), playerId, false));
+            var dbOutfits = _playerOutfitRepository.GetByPlayerId(playerId);
 
             return dbOutfits.ToList();
         }
@@ -327,8 +329,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
         public Action OnClickNew() => () =>
         {
             var playerId = GetObjectUUID(Player);
-            var outfitCount = _db.SearchCount(new DBQuery<PlayerOutfit>()
-                .AddFieldSearch(nameof(PlayerOutfit.PlayerId), playerId, false));
+            var outfitCount = _playerOutfitRepository.GetCountByPlayerId(playerId);
 
             if (outfitCount >= MaxOutfits)
             {

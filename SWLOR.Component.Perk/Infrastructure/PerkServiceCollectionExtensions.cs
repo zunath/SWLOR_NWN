@@ -38,8 +38,9 @@ namespace SWLOR.Component.Perk.Infrastructure
             services.AddSingleton<PerkEventHandler>();
             
             // Automatically register all IPerkListDefinition implementations
-            var assembly = Assembly.GetExecutingAssembly();
-            var perkDefinitionTypes = assembly.GetTypes()
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            var perkDefinitionTypes = assemblies
+                .SelectMany(a => a.GetTypes())
                 .Where(t => t.IsClass && !t.IsAbstract && typeof(IPerkListDefinition).IsAssignableFrom(t));
             
             foreach (var type in perkDefinitionTypes)

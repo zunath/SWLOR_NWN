@@ -38,8 +38,9 @@ namespace SWLOR.Component.Crafting.Infrastructure
             services.AddSingleton<Resource>();
             
             // Automatically register all IRecipeListDefinition implementations
-            var assembly = Assembly.GetExecutingAssembly();
-            var recipeDefinitionTypes = assembly.GetTypes()
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            var recipeDefinitionTypes = assemblies
+                .SelectMany(a => a.GetTypes())
                 .Where(t => t.IsClass && !t.IsAbstract && typeof(IRecipeListDefinition).IsAssignableFrom(t));
             
             foreach (var type in recipeDefinitionTypes)
@@ -48,7 +49,8 @@ namespace SWLOR.Component.Crafting.Infrastructure
             }
             
             // Automatically register all IFishingLocationDefinition implementations
-            var fishingLocationDefinitionTypes = assembly.GetTypes()
+            var fishingLocationDefinitionTypes = assemblies
+                .SelectMany(a => a.GetTypes())
                 .Where(t => t.IsClass && !t.IsAbstract && typeof(IFishingLocationDefinition).IsAssignableFrom(t));
             
             foreach (var type in fishingLocationDefinitionTypes)

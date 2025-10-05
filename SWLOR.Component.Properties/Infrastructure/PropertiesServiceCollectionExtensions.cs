@@ -38,8 +38,9 @@ namespace SWLOR.Component.Properties.Infrastructure
             // Dialog classes are automatically registered by the Inventory component
             
             // Automatically register all IPropertyLayoutListDefinition implementations
-            var assembly = Assembly.GetExecutingAssembly();
-            var propertyLayoutDefinitionTypes = assembly.GetTypes()
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            var propertyLayoutDefinitionTypes = assemblies
+                .SelectMany(a => a.GetTypes())
                 .Where(t => t.IsClass && !t.IsAbstract && typeof(IPropertyLayoutListDefinition).IsAssignableFrom(t));
             
             foreach (var type in propertyLayoutDefinitionTypes)

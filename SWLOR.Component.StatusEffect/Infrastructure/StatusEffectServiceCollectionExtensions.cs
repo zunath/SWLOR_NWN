@@ -38,8 +38,9 @@ namespace SWLOR.Component.StatusEffect.Infrastructure
             services.AddSingleton<BuffTimer>();
             
             // Automatically register all IStatusEffectListDefinition implementations
-            var assembly = Assembly.GetExecutingAssembly();
-            var statusEffectDefinitionTypes = assembly.GetTypes()
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            var statusEffectDefinitionTypes = assemblies
+                .SelectMany(a => a.GetTypes())
                 .Where(t => t.IsClass && !t.IsAbstract && typeof(IStatusEffectListDefinition).IsAssignableFrom(t));
             
             foreach (var type in statusEffectDefinitionTypes)

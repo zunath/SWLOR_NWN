@@ -57,8 +57,9 @@ namespace SWLOR.Component.Inventory.Infrastructure
             services.AddSingleton<Feature.ItemDefinition.SaberUpgradeItemDefinition>();
             
             // Automatically register all ILootTableDefinition implementations
-            var assembly = Assembly.GetExecutingAssembly();
-            var lootTableDefinitionTypes = assembly.GetTypes()
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            var lootTableDefinitionTypes = assemblies
+                .SelectMany(a => a.GetTypes())
                 .Where(t => t.IsClass && !t.IsAbstract && typeof(ILootTableDefinition).IsAssignableFrom(t));
             
             foreach (var type in lootTableDefinitionTypes)
@@ -67,7 +68,8 @@ namespace SWLOR.Component.Inventory.Infrastructure
             }
 
             // Automatically register all IItemListDefinition implementations
-            var itemDefinitionTypes = assembly.GetTypes()
+            var itemDefinitionTypes = assemblies
+                .SelectMany(a => a.GetTypes())
                 .Where(t => t.IsClass && !t.IsAbstract && typeof(IItemListDefinition).IsAssignableFrom(t));
             
             foreach (var type in itemDefinitionTypes)

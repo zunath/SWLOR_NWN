@@ -1,13 +1,13 @@
+using System.Security.Claims;
+using System.Text.Json;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
-using System.Text.Json;
-using SWLOR.Admin.Services;
-using SWLOR.Admin.Authorization;
+using SWLOR.App.Admin.Authorization;
+using SWLOR.App.Admin.Services;
 
-namespace SWLOR.Admin
+namespace SWLOR.App.Admin
 {
     public class Program
     {

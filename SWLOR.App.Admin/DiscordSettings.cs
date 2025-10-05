@@ -1,4 +1,4 @@
-namespace SWLOR.Admin
+namespace SWLOR.App.Admin
 {
     public class DiscordSettings
     {

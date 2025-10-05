@@ -1,6 +1,6 @@
 ﻿using McMaster.Extensions.CommandLineUtils;
 
-namespace SWLOR.CLI
+namespace SWLOR.App.CLI
 {
     internal class Program
     {

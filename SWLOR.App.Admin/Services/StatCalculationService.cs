@@ -2,7 +2,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Skill.Enums;
 
-namespace SWLOR.Admin.Services
+namespace SWLOR.App.Admin.Services
 {
     public class StatCalculationService
     {

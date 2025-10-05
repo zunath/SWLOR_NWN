@@ -4,7 +4,7 @@ using System.Linq;
 using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Domain.Properties.Enums;
 
-namespace SWLOR.CLI
+namespace SWLOR.App.CLI
 {
     class StructureItemCreator
     {

@@ -5,7 +5,7 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Extensions;
 using SWLOR.Shared.Core.Log.LogGroup;
 
-namespace SWLOR.Game.Server.Server
+namespace SWLOR.App.Server.Server
 {
     /// <summary>
     /// Simple GameManager implementation. Used by default if no manager is specified during bootstrap.

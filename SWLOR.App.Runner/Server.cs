@@ -1,13 +1,13 @@
-﻿using Ductus.FluentDocker.Services;
+﻿using System.Runtime.InteropServices;
 using Ductus.FluentDocker.Builders;
 using Ductus.FluentDocker.Commands;
 using Ductus.FluentDocker.Extensions;
-using System.Runtime.InteropServices;
+using Ductus.FluentDocker.Services;
 using EnvDTE;
 using Microsoft.VisualStudio.OLE.Interop;
 using SWLOR.Shared.Abstractions.Extensions;
 
-namespace SWLOR.Runner
+namespace SWLOR.App.Runner
 {
     internal class Server
     {

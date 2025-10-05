@@ -6,7 +6,7 @@ using SWLOR.Shared.Domain.Properties.Entities;
 using SWLOR.Shared.Domain.Properties.Enums;
 using SWLOR.Shared.Domain.Repositories;
 
-namespace SWLOR.CLI
+namespace SWLOR.App.CLI
 {
     internal class AdHocTool
     {

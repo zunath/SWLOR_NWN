@@ -1,15 +1,15 @@
+using System;
+using System.Runtime.InteropServices;
 using NWNX.NET;
 using NWNX.NET.Native;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Events.Events.Infrastructure;
 using SWLOR.Shared.Events.Events.Module;
-using System;
-using System.Runtime.InteropServices;
-using SWLOR.Shared.Core.Contracts;
 
-namespace SWLOR.Game.Server.Server
+namespace SWLOR.App.Server.Server
 {
     public unsafe class NativeInteropManager : INativeInteropManager
     {

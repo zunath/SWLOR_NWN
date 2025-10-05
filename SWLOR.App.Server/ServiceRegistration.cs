@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using NWN.Core;
+using SWLOR.App.Server.Server;
 using SWLOR.Component.Ability.Infrastructure;
 using SWLOR.Component.Admin.Infrastructure;
 using SWLOR.Component.AI.Infrastructure;
@@ -18,23 +19,22 @@ using SWLOR.Component.Skill.Infrastructure;
 using SWLOR.Component.Space.Infrastructure;
 using SWLOR.Component.StatusEffect.Infrastructure;
 using SWLOR.Component.World.Infrastructure;
-using SWLOR.Game.Server.Server;
 using SWLOR.NWN.API.Contracts;
+using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Caching.Extensions;
 using SWLOR.Shared.Core.Async;
 using SWLOR.Shared.Core.Configuration;
 using SWLOR.Shared.Core.Data;
-using SWLOR.Shared.Core.Log;
 using SWLOR.Shared.Core.Infrastructure;
+using SWLOR.Shared.Core.Log;
 using SWLOR.Shared.Events.Contracts;
 using SWLOR.Shared.Events.Infrastructure;
 using SWLOR.Shared.Events.Service;
-using ScriptExecutionProvider = SWLOR.Game.Server.Server.ScriptExecutionProvider;
 using SWLOR.Shared.UI.Infrastructure;
-using SWLOR.NWN.API.NWNX;
+using ScriptExecutionProvider = SWLOR.App.Server.Server.ScriptExecutionProvider;
 
-namespace SWLOR.Game.Server
+namespace SWLOR.App.Server
 {
     /// <summary>
     /// Handles registration of services in the dependency injection container.

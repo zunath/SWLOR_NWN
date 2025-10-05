@@ -1,7 +1,7 @@
 using System.Security.Claims;
 using System.Text.Json;
 
-namespace SWLOR.Admin.Services
+namespace SWLOR.App.Admin.Services
 {
     public class DiscordAuthService
     {

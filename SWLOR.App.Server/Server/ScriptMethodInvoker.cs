@@ -4,7 +4,7 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Extensions;
 using SWLOR.Shared.Core.Log.LogGroup;
 
-namespace SWLOR.Game.Server.Server
+namespace SWLOR.App.Server.Server
 {
     /// <summary>
     /// Handles invocation of script methods, supporting both static and instance methods.

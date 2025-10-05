@@ -1,7 +1,7 @@
 using System.Reflection;
 using SWLOR.Shared.Abstractions.Delegates;
 
-namespace SWLOR.Game.Server.Server
+namespace SWLOR.App.Server.Server
 {
     /// <summary>
     /// Represents a conditional script that returns a boolean result.

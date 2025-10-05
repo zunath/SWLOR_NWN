@@ -1,7 +1,7 @@
 using System;
 using SWLOR.Shared.Abstractions.Contracts;
 
-namespace SWLOR.Game.Server.Server
+namespace SWLOR.App.Server.Server
 {
     public class ServerManager : IServerManager
     {

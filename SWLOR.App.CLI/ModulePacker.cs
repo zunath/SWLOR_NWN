@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SWLOR.CLI
+namespace SWLOR.App.CLI
 {
     public class ModulePacker
     {

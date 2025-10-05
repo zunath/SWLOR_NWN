@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NUnit.Framework;
-using SWLOR.Game.Server;
+using SWLOR.App.Server;
 using SWLOR.Shared.Core.Infrastructure;
 
 namespace SWLOR.Test.Integration

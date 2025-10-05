@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Runner
+﻿namespace SWLOR.App.Runner
 {
     internal class ContainerLogger
     {

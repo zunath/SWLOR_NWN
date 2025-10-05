@@ -7,7 +7,7 @@ using SWLOR.Shared.Abstractions.Delegates;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Events.Attributes;
 
-namespace SWLOR.Game.Server.Server
+namespace SWLOR.App.Server.Server
 {
     /// <summary>
     /// Handles registration of script methods from assemblies.

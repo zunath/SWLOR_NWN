@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Infrastructure;
 
-namespace SWLOR.Game.Server
+namespace SWLOR.App.Server
 {
     public static class Bootstrapper
     {

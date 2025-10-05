@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 
-namespace SWLOR.Admin.Authorization
+namespace SWLOR.App.Admin.Authorization
 {
     public class DiscordAuthorizationRequirement : IAuthorizationRequirement
     {

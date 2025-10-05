@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace SWLOR.CLI.Model
+namespace SWLOR.App.CLI.Model
 {
     public class HakBuilderConfig
     {

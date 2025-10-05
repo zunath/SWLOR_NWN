@@ -1,7 +1,7 @@
 using System;
 using System.Reflection;
 
-namespace SWLOR.Game.Server.Server
+namespace SWLOR.App.Server.Server
 {
     /// <summary>
     /// Represents an action script that can be executed.

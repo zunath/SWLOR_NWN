@@ -5,7 +5,7 @@ using System.Linq;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Infrastructure;
 
-namespace SWLOR.CLI
+namespace SWLOR.App.CLI
 {
     internal class EnhancementItemBuilder
     {

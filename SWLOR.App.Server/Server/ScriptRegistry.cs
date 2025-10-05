@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Delegates;
 
-namespace SWLOR.Game.Server.Server
+namespace SWLOR.App.Server.Server
 {
     public class ScriptRegistry : IScriptRegistry
     {

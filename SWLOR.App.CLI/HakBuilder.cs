@@ -5,10 +5,10 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using SWLOR.CLI.Model;
+using SWLOR.App.CLI.Model;
 using SWLOR.Shared.Abstractions.Extensions;
 
-namespace SWLOR.CLI
+namespace SWLOR.App.CLI
 {
     public class HakBuilder
     {

@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace SWLOR.CLI
+namespace SWLOR.App.CLI
 {
     internal class PlaceableBuilder
     {

@@ -1,6 +1,6 @@
 using System.Runtime.InteropServices;
 
-namespace SWLOR.Game.Server.Server
+namespace SWLOR.App.Server.Server
 {
     internal class NWNXUtils
     {

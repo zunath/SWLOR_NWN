@@ -5,7 +5,7 @@ using System.Linq;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Associate.Enums;
 
-namespace SWLOR.CLI
+namespace SWLOR.App.CLI
 {
     internal class BeastCodeBuilder
     {

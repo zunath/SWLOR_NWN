@@ -4,7 +4,7 @@ using SWLOR.Shared.Abstractions.Extensions;
 using SWLOR.Shared.Core.Async;
 using SWLOR.Shared.Core.Log.LogGroup;
 
-namespace SWLOR.Game.Server.Server
+namespace SWLOR.App.Server.Server
 {
     public class MainLoopProcessor : IMainLoopProcessor
     {

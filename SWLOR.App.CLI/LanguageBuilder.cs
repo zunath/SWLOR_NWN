@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 
-namespace SWLOR.CLI
+namespace SWLOR.App.CLI
 {
     public class LanguageBuilder
     {

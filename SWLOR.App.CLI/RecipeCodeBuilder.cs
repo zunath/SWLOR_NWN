@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace SWLOR.CLI
+namespace SWLOR.App.CLI
 {
     internal class RecipeCodeBuilder
     {

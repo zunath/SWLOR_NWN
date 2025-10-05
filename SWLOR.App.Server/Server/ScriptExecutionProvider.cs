@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using SWLOR.NWN.API.Contracts;
 using SWLOR.Shared.Abstractions.Contracts;
 
-namespace SWLOR.Game.Server.Server
+namespace SWLOR.App.Server.Server
 {
     /// <summary>
     /// Implementation of IScriptExecutionProvider that bridges the NWScript API

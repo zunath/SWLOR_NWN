@@ -1,7 +1,7 @@
 ﻿using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Infrastructure;
 
-namespace SWLOR.Admin
+namespace SWLOR.App.Admin
 {
     public class WebSettings
     {

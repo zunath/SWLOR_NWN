@@ -1,42 +1,42 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
-    <LangVersion>latest</LangVersion>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <IsPackable>false</IsPackable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<LangVersion>latest</LangVersion>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>disable</Nullable>
+		<IsPackable>false</IsPackable>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="coverlet.collector" Version="6.0.4">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.0" />
-    <PackageReference Include="NSubstitute" Version="5.3.0" />
-    <PackageReference Include="NUnit" Version="4.4.0" />
-    <PackageReference Include="NUnit.Analyzers" Version="4.10.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="NUnit3TestAdapter" Version="5.1.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.9" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="coverlet.collector" Version="6.0.4">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.0" />
+		<PackageReference Include="NSubstitute" Version="5.3.0" />
+		<PackageReference Include="NUnit" Version="4.4.0" />
+		<PackageReference Include="NUnit.Analyzers" Version="4.10.0">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="NUnit3TestAdapter" Version="5.1.0" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.9" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Using Include="NUnit.Framework" />
-  </ItemGroup>
+	<ItemGroup>
+		<Using Include="NUnit.Framework" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\SWLOR.Shared.Events\SWLOR.Shared.Events.csproj" />
-    <ProjectReference Include="..\SWLOR.Shared.Abstractions\SWLOR.Shared.Abstractions.csproj" />
-    <ProjectReference Include="..\SWLOR.NWN.API\SWLOR.NWN.API.csproj" />
-    <ProjectReference Include="..\SWLOR.Test.Shared\SWLOR.Test.Shared.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\SWLOR.Shared.Events\SWLOR.Shared.Events.csproj" />
+		<ProjectReference Include="..\SWLOR.Shared.Abstractions\SWLOR.Shared.Abstractions.csproj" />
+		<ProjectReference Include="..\SWLOR.NWN.API\SWLOR.NWN.API.csproj" />
+		<ProjectReference Include="..\SWLOR.Test.Shared\SWLOR.Test.Shared.csproj" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Model\" />
-  </ItemGroup>
+	<ItemGroup>
+		<Folder Include="Model\" />
+	</ItemGroup>
 
 </Project>

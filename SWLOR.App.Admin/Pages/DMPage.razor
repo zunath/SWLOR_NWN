@@ -161,8 +161,8 @@
 	// Modal state
 	private bool _showModal = false;
 	private bool _showDeleteModal = false;
-	private AuthorizedDM? _editingDM;
-	private AuthorizedDM? _deletingDM;
+	private AuthorizedDM _editingDM;
+	private AuthorizedDM _deletingDM;
 	private string _modalName = "";
 	private string _modalCDKey = "";
 	private AuthorizationLevel _modalAuthorization = AuthorizationLevel.DM;
@@ -174,9 +174,10 @@
     private int _totalPages = 0;
     private string _pageInput = "";
 
-	protected override async Task OnInitializedAsync()
+	protected override Task OnInitializedAsync()
 	{
 		RefreshList();
+		return Task.CompletedTask;
 	}
 
 	protected void RefreshList()

@@ -90,9 +90,10 @@
     private int _totalPages = 0;
     private string _pageInput = "";
 
-	protected override async Task OnInitializedAsync()
+	protected override Task OnInitializedAsync()
 	{
 		RefreshList();
+		return Task.CompletedTask;
 	}
 
     protected void RefreshList()

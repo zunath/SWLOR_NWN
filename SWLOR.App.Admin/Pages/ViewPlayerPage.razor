@@ -1,5 +1,6 @@
 ﻿@page "/viewplayer/{PlayerId}"
 @attribute [Authorize(Policy = "DiscordAdmin")]
+@using SWLOR.App.Admin.Shared.Components
 @using SWLOR.Shared.Abstractions.Contracts
 @using SWLOR.Shared.Domain.Entities
 @inject IDatabaseService _db
@@ -125,9 +126,9 @@
 
 @code {
     [Parameter]
-    public string? PlayerId { get; set; }
+    public string PlayerId { get; set; }
 
-    protected Player? ActivePlayer;
+    protected Player ActivePlayer;
     protected string ActiveTab = "overview";
     // ShowDebugInfo and related methods removed
 

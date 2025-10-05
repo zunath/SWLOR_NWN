@@ -115,9 +115,10 @@
 		_players = players.Skip(offset).Take(PageSize).ToList();
 	}
 
-	protected override async Task OnInitializedAsync()
+	protected override Task OnInitializedAsync()
 	{
 		RefreshList();
+		return Task.CompletedTask;
 	}
 
     protected void Edit(string id)

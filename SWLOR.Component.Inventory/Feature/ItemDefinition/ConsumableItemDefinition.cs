@@ -8,8 +8,8 @@ using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Inventory.Enums;
 using SWLOR.Shared.Domain.Inventory.ValueObjects;
 using SWLOR.Shared.Domain.Skill.Enums;
-using SWLOR.Shared.Domain.StatusEffect.Contracts;
-using SWLOR.Shared.Domain.StatusEffect.Enums;
+
+
 using SWLOR.Shared.Domain.StatusEffect.ValueObjects;
 
 namespace SWLOR.Component.Inventory.Feature.ItemDefinition
@@ -31,7 +31,6 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
             _serviceProvider = serviceProvider;
             
             // Initialize lazy services
-            _statusEffectService = new Lazy<IStatusEffectService>(() => _serviceProvider.GetRequiredService<IStatusEffectService>());
             _beastMasteryService = new Lazy<IBeastMasteryService>(() => _serviceProvider.GetRequiredService<IBeastMasteryService>());
             _itemService = new Lazy<IItemService>(() => _serviceProvider.GetRequiredService<IItemService>());
             _currencyService = new Lazy<ICurrencyService>(() => _serviceProvider.GetRequiredService<ICurrencyService>());
@@ -39,13 +38,11 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
         }
 
         // Lazy-loaded services to break circular dependencies
-        private readonly Lazy<IStatusEffectService> _statusEffectService;
         private readonly Lazy<IBeastMasteryService> _beastMasteryService;
         private readonly Lazy<IItemService> _itemService;
         private readonly Lazy<ICurrencyService> _currencyService;
         private readonly Lazy<IItemBuilder> _builder;
         
-        private IStatusEffectService StatusEffectService => _statusEffectService.Value;
         private IBeastMasteryService BeastMasteryService => _beastMasteryService.Value;
         private IItemService ItemService => _itemService.Value;
         private ICurrencyService CurrencyService => _currencyService.Value;
@@ -105,133 +102,11 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
                 .ReducesItemCharge()
                 .ValidationAction((user, item, target, location, itemPropertyIndex) =>
                 {
-                    if (StatusEffectService.HasStatusEffect(user, StatusEffectType.Food))
-                    {
-                        return "You are not hungry.";
-                    }
-
                     return string.Empty;
                 })
                 .ApplyAction((user, item, target, location, itemPropertyIndex) =>
                 {
-                    var foodEffect = new FoodEffectData();
-                    var duration = 1800f; // 30 minutes by default for all food
-
-                    for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
-                    {
-                        if (GetItemPropertyType(ip) != ItemPropertyType.FoodBonus)
-                            continue;
-
-                        var bonusType = (ItemPropertyFoodSubType)GetItemPropertySubType(ip);
-                        var amount = GetItemPropertyCostTableValue(ip);
-
-                        switch (bonusType)
-                        {
-                            case ItemPropertyFoodSubType.HP:
-                                foodEffect.HP += amount;
-                                break;
-                            case ItemPropertyFoodSubType.FP:
-                                foodEffect.FP += amount;
-                                break;
-                            case ItemPropertyFoodSubType.STM:
-                                foodEffect.STM += amount;
-                                break;
-                            case ItemPropertyFoodSubType.HPRegen:
-                                foodEffect.HPRegen += amount;
-                                break;
-                            case ItemPropertyFoodSubType.FPRegen:
-                                foodEffect.FPRegen += amount;
-                                break;
-                            case ItemPropertyFoodSubType.STMRegen:
-                                foodEffect.STMRegen += amount;
-                                break;
-                            case ItemPropertyFoodSubType.RestRegen:
-                                foodEffect.RestRegen += amount;
-                                break;
-                            case ItemPropertyFoodSubType.XPBonus:
-                                foodEffect.XPBonusPercent += amount;
-                                break;
-                            case ItemPropertyFoodSubType.RecastReduction:
-                                foodEffect.RecastReductionPercent += amount;
-                                break;
-                            case ItemPropertyFoodSubType.Duration:
-                                duration += amount * (60f * 5); // 5 minutes per duration bonus
-                                break;
-                            case ItemPropertyFoodSubType.Might:
-                                ApplyEffectToObject(DurationType.Temporary, EffectAbilityIncrease(AbilityType.Might, amount), user, duration);
-                                break;
-                            case ItemPropertyFoodSubType.Vitality:
-                                ApplyEffectToObject(DurationType.Temporary, EffectAbilityIncrease(AbilityType.Vitality, amount), user, duration);
-                                break;
-                            case ItemPropertyFoodSubType.Perception:
-                                ApplyEffectToObject(DurationType.Temporary, EffectAbilityIncrease(AbilityType.Perception, amount), user, duration);
-                                break;
-                            case ItemPropertyFoodSubType.Willpower:
-                                ApplyEffectToObject(DurationType.Temporary, EffectAbilityIncrease(AbilityType.Willpower, amount), user, duration);
-                                break;
-                            case ItemPropertyFoodSubType.Agility:
-                                ApplyEffectToObject(DurationType.Temporary, EffectAbilityIncrease(AbilityType.Agility, amount), user, duration);
-                                break;
-                            case ItemPropertyFoodSubType.Social:
-                                ApplyEffectToObject(DurationType.Temporary, EffectAbilityIncrease(AbilityType.Social, amount), user, duration);
-                                break;
-                            case ItemPropertyFoodSubType.DefensePhysical:
-                                foodEffect.DefensePhysical += amount;
-                                break;
-                            case ItemPropertyFoodSubType.DefenseForce:
-                                foodEffect.DefenseForce += amount;
-                                break;
-                            case ItemPropertyFoodSubType.DefenseFire:
-                                foodEffect.DefenseFire += amount;
-                                break;
-                            case ItemPropertyFoodSubType.DefensePoison:
-                                foodEffect.DefensePoison += amount;
-                                break;
-                            case ItemPropertyFoodSubType.DefenseElectrical:
-                                foodEffect.DefenseElectrical += amount;
-                                break;
-                            case ItemPropertyFoodSubType.DefenseIce:
-                                foodEffect.DefenseIce += amount;
-                                break;
-                            case ItemPropertyFoodSubType.Evasion:
-                                foodEffect.Evasion += amount;
-                                break;
-                            case ItemPropertyFoodSubType.ControlSmithery:
-                                foodEffect.Control[SkillType.Smithery] += amount;
-                                break;
-                            case ItemPropertyFoodSubType.CraftsmanshipSmithery:
-                                foodEffect.Craftsmanship[SkillType.Smithery] += amount;
-                                break;
-                            case ItemPropertyFoodSubType.ControlEngineering:
-                                foodEffect.Control[SkillType.Engineering] += amount;
-                                break;
-                            case ItemPropertyFoodSubType.CraftsmanshipEngineering:
-                                foodEffect.Craftsmanship[SkillType.Engineering] += amount;
-                                break;
-                            case ItemPropertyFoodSubType.ControlFabrication:
-                                foodEffect.Control[SkillType.Fabrication] += amount;
-                                break;
-                            case ItemPropertyFoodSubType.CraftsmanshipFabrication:
-                                foodEffect.Craftsmanship[SkillType.Fabrication] += amount;
-                                break;
-                            case ItemPropertyFoodSubType.ControlAgriculture:
-                                foodEffect.Control[SkillType.Agriculture] += amount;
-                                break;
-                            case ItemPropertyFoodSubType.CraftsmanshipAgriculture:
-                                foodEffect.Craftsmanship[SkillType.Agriculture] += amount;
-                                break;
-                            case ItemPropertyFoodSubType.Accuracy:
-                                foodEffect.Accuracy += amount;
-                                break;
-                            case ItemPropertyFoodSubType.Attack:
-                                foodEffect.Attack += amount;
-                                break;
-                            default:
-                                throw new ArgumentOutOfRangeException();
-                        }
-                    }
-
-                    StatusEffectService.Apply(user, user, StatusEffectType.Food, duration, foodEffect);
+                    // todo: implement food
                 });
         }
 
@@ -250,10 +125,11 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
                         return "You do not have a beast active.";
                     }
 
-                    if (StatusEffectService.HasStatusEffect(beast, StatusEffectType.PetFood))
-                    {
-                        return "Your beast is not hungry.";
-                    }
+                    // todo: implement pet food in new system
+                    //if (StatusEffectService.HasStatusEffect(beast, StatusEffectType.PetFood))
+                    //{
+                    //    return "Your beast is not hungry.";
+                    //}
 
                     var beastId = BeastMasteryService.GetBeastId(beast);
                     var dbBeast = _db.Get<Beast>(beastId);
@@ -286,7 +162,8 @@ namespace SWLOR.Component.Inventory.Feature.ItemDefinition
                         SendMessageToPC(user, "Your beast doesn't like this food very much...");
                     }
 
-                    StatusEffectService.Apply(user, beast, StatusEffectType.PetFood, 1800f, xpBonus);
+                    // todo: implement pet food in new system
+                    //StatusEffectService.Apply(user, beast, StatusEffectType.PetFood, 1800f, xpBonus);
 
                     ItemService.ReduceItemStack(item, 1);
                 });

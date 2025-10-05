@@ -5,9 +5,11 @@ using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Domain.Ability.Contracts;
 using SWLOR.Shared.Domain.Ability.Enums;
+using SWLOR.Shared.Domain.Character.Contracts;
+using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Entities;
-using SWLOR.Shared.Domain.StatusEffect.Contracts;
-using SWLOR.Shared.Domain.StatusEffect.Enums;
+
+
 using SWLOR.Shared.Domain.StatusEffect.ValueObjects;
 
 namespace SWLOR.Component.Ability.Service
@@ -15,22 +17,21 @@ namespace SWLOR.Component.Ability.Service
     public class RecastService : IRecastService
     {
         private readonly IDatabaseService _db;
-        private readonly IServiceProvider _serviceProvider;
         private readonly ITimeService _time;
+        private readonly IStatServiceNew _statService;
         private static readonly Dictionary<RecastGroupType, string> _recastDescriptions = new();
 
         public RecastService(
             IDatabaseService db, 
-            IServiceProvider serviceProvider,
-            ITimeService time)
+            ITimeService time,
+            IStatServiceNew statService)
         {
             _db = db;
-            _serviceProvider = serviceProvider;
             _time = time;
+            _statService = statService;
         }
         
         // Lazy-loaded service to break circular dependency
-        private IStatusEffectService StatusEffectService => _serviceProvider.GetRequiredService<IStatusEffectService>();
 
         public void CacheRecastGroups()
         {
@@ -130,21 +131,9 @@ namespace SWLOR.Component.Ability.Service
 
                 if (!ignoreRecastReduction)
                 {
-                    var foodEffect = StatusEffectService.GetEffectData<FoodEffectData>(activator, StatusEffectType.Food);
-                    var recastReduction = dbPlayer.AbilityRecastReduction;
-                    if (foodEffect != null)
-                    {
-                        recastReduction += foodEffect.RecastReductionPercent;
-                    }
-
-                    var recastPercentage = recastReduction * 0.01f;
-                    if (recastPercentage > 0.5f)
-                        recastPercentage = 0.5f;
-
-                    delaySeconds -= delaySeconds * recastPercentage;
+                    var recastReduction = _statService.CalculateRecastReduction(activator);
+                    delaySeconds -= delaySeconds * recastReduction;
                 }
-
-
 
                 var recastDate = DateTime.UtcNow.AddSeconds(delaySeconds);
                 dbPlayer.RecastTimes[group] = recastDate;

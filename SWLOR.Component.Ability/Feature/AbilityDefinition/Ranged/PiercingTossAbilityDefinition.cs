@@ -11,8 +11,8 @@ using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Skill.Enums;
-using SWLOR.Shared.Domain.StatusEffect.Contracts;
-using SWLOR.Shared.Domain.StatusEffect.Enums;
+
+
 
 namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Ranged
 {
@@ -30,7 +30,6 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Ranged
         private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
         private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
         private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
-        private IStatusEffectService StatusEffectService => _serviceProvider.GetRequiredService<IStatusEffectService>();
         private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
@@ -100,7 +99,6 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Ranged
             var checkResult = ReflexSave(target, dc, SavingThrowType.None, activator);
             if (checkResult == SavingThrowResultType.Failed)
             {
-                StatusEffectService.Apply(activator, target, StatusEffectType.Bleed, duration);
             }
 
             CombatPointService.AddCombatPoint(activator, target, SkillType.Ranged, 3);

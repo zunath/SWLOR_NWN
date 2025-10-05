@@ -3,8 +3,6 @@ using SWLOR.Component.AI.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Ability.Contracts;
 using SWLOR.Shared.Domain.Perk.Contracts;
-using SWLOR.Shared.Domain.StatusEffect.Contracts;
-using SWLOR.Shared.Domain.StatusEffect.Enums;
 
 namespace SWLOR.Component.AI.Model
 {
@@ -15,7 +13,6 @@ namespace SWLOR.Component.AI.Model
         // Lazy-loaded services to break circular dependencies
         protected IAbilityService AbilityService => _serviceProvider.GetRequiredService<IAbilityService>();
         protected IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
-        protected IStatusEffectService StatusEffectService => _serviceProvider.GetRequiredService<IStatusEffectService>();
 
         protected uint Self { get; private set; }
         protected uint Target { get; private set; }
@@ -25,7 +22,6 @@ namespace SWLOR.Component.AI.Model
         protected float LowestHPAllyPercentage { get; private set; }
         protected RacialType LowestHPAllyRace { get; private set; }
         protected int AllyCount { get; private set; }
-        protected FeatType SelfActiveConcentration { get; private set; }
         protected uint AllyWithTreatmentKit1StatusEffect { get; private set; }
         protected uint AllyWithTreatmentKit2StatusEffect { get; private set; }
 
@@ -44,7 +40,6 @@ namespace SWLOR.Component.AI.Model
             LowestHPAllyPercentage = 100f;
             LowestHPAllyRace = RacialType.Invalid;
             AllyCount = 0;
-            SelfActiveConcentration = FeatType.Invalid;
             AllyWithTreatmentKit1StatusEffect = OBJECT_INVALID;
             AllyWithTreatmentKit2StatusEffect = OBJECT_INVALID;
         }
@@ -69,13 +64,6 @@ namespace SWLOR.Component.AI.Model
 
             foreach (var ally in allies)
             {
-                if (!GetIsObjectValid(AllyWithTreatmentKit1StatusEffect) &&  
-                    StatusEffectService.HasStatusEffect(ally, StatusEffectType.Bleed, StatusEffectType.Poison))
-                    AllyWithTreatmentKit1StatusEffect = ally;
-                if (!GetIsObjectValid(AllyWithTreatmentKit2StatusEffect) && 
-                    StatusEffectService.HasStatusEffect(ally, StatusEffectType.Shock, StatusEffectType.Burn))
-                    AllyWithTreatmentKit2StatusEffect = ally;
-
                 // Exit if we've found a target for both abilities.
                 if (GetIsObjectValid(AllyWithTreatmentKit1StatusEffect) &&
                     GetIsObjectValid(AllyWithTreatmentKit2StatusEffect))
@@ -87,7 +75,6 @@ namespace SWLOR.Component.AI.Model
             SelfRace = GetRacialType(Self);
             LowestHPAllyRace = GetRacialType(LowestHPAlly);
             AllyCount = allies.Count;
-            SelfActiveConcentration = AbilityService.GetActiveConcentration(self).Feat;
         }
 
         /// <summary>
@@ -119,9 +106,6 @@ namespace SWLOR.Component.AI.Model
             var (success, result) = Benevolence();
             if (success) return result;
 
-            (success, result) = ForceHeal();
-            if (success) return result;
-
             (success, result) = MedKit();
             if (success) return result;
 
@@ -149,13 +133,7 @@ namespace SWLOR.Component.AI.Model
             (success, result) = TreatmentKit();
             if (success) return result;
 
-            (success, result) = BattleInsight();
-            if (success) return result;
-
             (success, result) = ThrowSaber();
-            if (success) return result;
-
-            (success, result) = ForceStun();
             if (success) return result;
 
             (success, result) = AdhesiveGrenade();
@@ -197,9 +175,6 @@ namespace SWLOR.Component.AI.Model
             (success, result) = CombatEnhancement();
             if (success) return result;
 
-            (success, result) = Shielding();
-            if (success) return result;
-
             (success, result) = StasisField();
             if (success) return result;
 
@@ -221,19 +196,10 @@ namespace SWLOR.Component.AI.Model
             (success, result) = ThrowRock();
             if (success) return result;
 
-            (success, result) = ForceDrain();
-            if (success) return result;
-
             (success, result) = ForcePush();
             if (success) return result;
 
             (success, result) = ForceInspiration();
-            if (success) return result;
-
-            (success, result) = MindTrick();
-            if (success) return result;
-
-            (success, result) = BurstOfSpeed();
             if (success) return result;
 
             (success, result) = Knockdown();
@@ -339,32 +305,6 @@ namespace SWLOR.Component.AI.Model
             return NoAction;
         }
 
-        protected (bool, (FeatType, uint)) ForceHeal()
-        {
-            // Force Heal
-            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.ForceHeal5, () => LowestHPAllyPercentage <= 40 && SelfActiveConcentration == FeatType.Invalid))
-            {
-                return (true, (FeatType.ForceHeal5, LowestHPAlly));
-            }
-            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.ForceHeal4, () => LowestHPAllyPercentage <= 60 && SelfActiveConcentration == FeatType.Invalid))
-            {
-                return (true, (FeatType.ForceHeal4, LowestHPAlly));
-            }
-            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.ForceHeal3, () => LowestHPAllyPercentage <= 75 && SelfActiveConcentration == FeatType.Invalid))
-            {
-                return (true, (FeatType.ForceHeal3, LowestHPAlly));
-            }
-            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.ForceHeal2, () => LowestHPAllyPercentage <= 85 && SelfActiveConcentration == FeatType.Invalid))
-            {
-                return (true, (FeatType.ForceHeal2, LowestHPAlly));
-            }
-            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.ForceHeal1, () => LowestHPAllyPercentage <= 95 && SelfActiveConcentration == FeatType.Invalid))
-            {
-                return (true, (FeatType.ForceHeal1, LowestHPAlly));
-            }
-
-            return NoAction;
-        }
 
         protected (bool, (FeatType, uint)) MedKit()
         {
@@ -450,20 +390,6 @@ namespace SWLOR.Component.AI.Model
             return NoAction;
         }
 
-        protected (bool, (FeatType, uint)) BattleInsight()
-        {
-            // Battle Insight
-            if (CheckIfCanUseFeat(Self, Self, FeatType.BattleInsight2, () => AllyCount >= 1 && SelfActiveConcentration == FeatType.Invalid))
-            {
-                return (true, (FeatType.BattleInsight2, Self));
-            }
-            if (CheckIfCanUseFeat(Self, Self, FeatType.BattleInsight1, () => AllyCount >= 1 && SelfActiveConcentration == FeatType.Invalid))
-            {
-                return (true, (FeatType.BattleInsight1, Self));
-            }
-
-            return NoAction;
-        }
 
         protected (bool, (FeatType, uint)) ThrowSaber()
         {
@@ -479,25 +405,6 @@ namespace SWLOR.Component.AI.Model
             if (CheckIfCanUseFeat(Self, Self, FeatType.ThrowLightsaber1))
             {
                 return (true, (FeatType.ThrowLightsaber1, Self));
-            }
-
-            return NoAction;
-        }
-
-        protected (bool, (FeatType, uint)) ForceStun()
-        {
-            // Force Stun
-            if (CheckIfCanUseFeat(Self, Target, FeatType.ForceStun3, () => SelfActiveConcentration == FeatType.Invalid))
-            {
-                return (true, (FeatType.ForceStun3, Target));
-            }
-            if (CheckIfCanUseFeat(Self, Target, FeatType.ForceStun2, () => SelfActiveConcentration == FeatType.Invalid))
-            {
-                return (true, (FeatType.ForceStun2, Target));
-            }
-            if (CheckIfCanUseFeat(Self, Target, FeatType.ForceStun1, () => SelfActiveConcentration == FeatType.Invalid))
-            {
-                return (true, (FeatType.ForceStun1, Target));
             }
 
             return NoAction;
@@ -731,28 +638,6 @@ namespace SWLOR.Component.AI.Model
             return NoAction;
         }
 
-        protected (bool, (FeatType, uint)) Shielding()
-        {
-            // Shielding
-            if (CheckIfCanUseFeat(Self, Self, FeatType.Shielding4, () => !StatusEffectService.HasStatusEffect(Self, StatusEffectType.Shielding1, StatusEffectType.Shielding2, StatusEffectType.Shielding3, StatusEffectType.Shielding4)))
-            {
-                return (true, (FeatType.Shielding4, Self));
-            }
-            if (CheckIfCanUseFeat(Self, Self, FeatType.Shielding3, () => !StatusEffectService.HasStatusEffect(Self, StatusEffectType.Shielding1, StatusEffectType.Shielding2, StatusEffectType.Shielding3, StatusEffectType.Shielding4)))
-            {
-                return (true, (FeatType.Shielding3, Self));
-            }
-            if (CheckIfCanUseFeat(Self, Self, FeatType.Shielding2, () => !StatusEffectService.HasStatusEffect(Self, StatusEffectType.Shielding1, StatusEffectType.Shielding2, StatusEffectType.Shielding3, StatusEffectType.Shielding4)))
-            {
-                return (true, (FeatType.Shielding2, Self));
-            }
-            if (CheckIfCanUseFeat(Self, Self, FeatType.Shielding1, () => !StatusEffectService.HasStatusEffect(Self, StatusEffectType.Shielding1, StatusEffectType.Shielding2, StatusEffectType.Shielding3, StatusEffectType.Shielding4)))
-            {
-                return (true, (FeatType.Shielding1, Self));
-            }
-
-            return NoAction;
-        }
 
         protected (bool, (FeatType, uint)) StasisField()
         {
@@ -903,32 +788,6 @@ namespace SWLOR.Component.AI.Model
             return NoAction;
         }
 
-        protected (bool, (FeatType, uint)) ForceDrain()
-        {
-            // Force Drain
-            if (CheckIfCanUseFeat(Self, Target, FeatType.ForceDrain5, () => SelfActiveConcentration == FeatType.Invalid))
-            {
-                return (true, (FeatType.ForceDrain5, Target));
-            }
-            if (CheckIfCanUseFeat(Self, Target, FeatType.ForceDrain4, () => SelfActiveConcentration == FeatType.Invalid))
-            {
-                return (true, (FeatType.ForceDrain4, Target));
-            }
-            if (CheckIfCanUseFeat(Self, Target, FeatType.ForceDrain3, () => SelfActiveConcentration == FeatType.Invalid))
-            {
-                return (true, (FeatType.ForceDrain3, Target));
-            }
-            if (CheckIfCanUseFeat(Self, Target, FeatType.ForceDrain2, () => SelfActiveConcentration == FeatType.Invalid))
-            {
-                return (true, (FeatType.ForceDrain2, Target));
-            }
-            if (CheckIfCanUseFeat(Self, Target, FeatType.ForceDrain1, () => SelfActiveConcentration == FeatType.Invalid))
-            {
-                return (true, (FeatType.ForceDrain1, Target));
-            }
-
-            return NoAction;
-        }
 
         protected (bool, (FeatType, uint)) ForcePush()
         {
@@ -967,48 +826,6 @@ namespace SWLOR.Component.AI.Model
             if (CheckIfCanUseFeat(Self, Self, FeatType.ForceInspiration1, () => !HasEffectByTag(Self, "COMBAT_ENHANCEMENT", "FORCE_INSPIRATION")))
             {
                 return (true, (FeatType.ForceInspiration1, Self));
-            }
-
-            return NoAction;
-        }
-
-        protected (bool, (FeatType, uint)) MindTrick()
-        {
-            // Mind Trick
-            if (CheckIfCanUseFeat(Self, Target, FeatType.MindTrick2, () => SelfActiveConcentration == FeatType.Invalid))
-            {
-                return (true, (FeatType.MindTrick2, Target));
-            }
-            if (CheckIfCanUseFeat(Self, Target, FeatType.MindTrick1, () => SelfActiveConcentration == FeatType.Invalid))
-            {
-                return (true, (FeatType.MindTrick1, Target));
-            }
-
-            return NoAction;
-        }
-
-        protected (bool, (FeatType, uint)) BurstOfSpeed()
-        {
-            // Burst of Speed
-            if (CheckIfCanUseFeat(Self, Self, FeatType.BurstOfSpeed5, () => SelfActiveConcentration == FeatType.Invalid))
-            {
-                return (true, (FeatType.BurstOfSpeed5, Self));
-            }
-            if (CheckIfCanUseFeat(Self, Self, FeatType.BurstOfSpeed4, () => SelfActiveConcentration == FeatType.Invalid))
-            {
-                return (true, (FeatType.BurstOfSpeed4, Self));
-            }
-            if (CheckIfCanUseFeat(Self, Self, FeatType.BurstOfSpeed3, () => SelfActiveConcentration == FeatType.Invalid))
-            {
-                return (true, (FeatType.BurstOfSpeed3, Self));
-            }
-            if (CheckIfCanUseFeat(Self, Self, FeatType.BurstOfSpeed2, () => SelfActiveConcentration == FeatType.Invalid))
-            {
-                return (true, (FeatType.BurstOfSpeed2, Self));
-            }
-            if (CheckIfCanUseFeat(Self, Self, FeatType.BurstOfSpeed1, () => SelfActiveConcentration == FeatType.Invalid))
-            {
-                return (true, (FeatType.BurstOfSpeed1, Self));
             }
 
             return NoAction;

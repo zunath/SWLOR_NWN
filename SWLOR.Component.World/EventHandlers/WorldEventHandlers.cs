@@ -1,8 +1,8 @@
 using SWLOR.Component.World.Contracts;
+using SWLOR.Shared.Domain.Combat.Events;
 using SWLOR.Shared.Domain.World.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Area;
-using SWLOR.Shared.Events.Events.Combat;
 using SWLOR.Shared.Events.Events.Creature;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.NWNX;

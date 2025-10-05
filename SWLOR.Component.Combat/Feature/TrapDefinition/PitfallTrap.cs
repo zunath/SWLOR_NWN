@@ -1,6 +1,6 @@
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Domain.Combat.Events;
 using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Events.Combat;
 
 namespace SWLOR.Component.Combat.Feature.TrapDefinition
 {

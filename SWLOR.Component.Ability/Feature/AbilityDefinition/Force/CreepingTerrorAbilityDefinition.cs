@@ -4,8 +4,6 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
 using SWLOR.Shared.Domain.Perk.Enums;
-using SWLOR.Shared.Domain.StatusEffect.Contracts;
-using SWLOR.Shared.Domain.StatusEffect.Enums;
 
 namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
 {
@@ -19,7 +17,6 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
         }
 
         // Lazy-loaded services to break circular dependencies
-        private IStatusEffectService StatusEffectService => _serviceProvider.GetRequiredService<IStatusEffectService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
@@ -45,7 +42,6 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .IsHostileAbility()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    StatusEffectService.Apply(activator, target, StatusEffectType.CreepingTerror, 24f, 1);
                 });
         }
 
@@ -64,7 +60,6 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .IsHostileAbility()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    StatusEffectService.Apply(activator, target, StatusEffectType.CreepingTerror, 24f, 2);
                 });
         }
 
@@ -83,7 +78,6 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .IsHostileAbility()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    StatusEffectService.Apply(activator, target, StatusEffectType.CreepingTerror, 24f, 3);
                 });
         }
     }

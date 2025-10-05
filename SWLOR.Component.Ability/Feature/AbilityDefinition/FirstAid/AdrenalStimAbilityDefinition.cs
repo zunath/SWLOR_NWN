@@ -3,7 +3,6 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
 using SWLOR.Shared.Domain.Perk.Enums;
-using SWLOR.Shared.Domain.StatusEffect.Enums;
 
 namespace SWLOR.Component.Ability.Feature.AbilityDefinition.FirstAid
 {
@@ -55,7 +54,6 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.FirstAid
                 .HasImpactAction((activator, target, _, _) =>
                 {
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Imp_Restoration), target);
-                    StatusEffectService.Apply(activator, activator, StatusEffectType.AdrenalStim1, 30f);
                     ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Willpower, 2), activator, 30f);
                 });
         }
@@ -93,7 +91,6 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.FirstAid
                 .HasImpactAction((activator, target, _, _) =>
                 {
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Imp_Restoration), target);
-                    StatusEffectService.Apply(activator, activator, StatusEffectType.AdrenalStim2, 30f);
                     ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Willpower, 4), activator, 30f);
                 });
         }
@@ -131,7 +128,6 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.FirstAid
                 .HasImpactAction((activator, target, _, _) =>
                 {
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Imp_Restoration), target);
-                    StatusEffectService.Apply(activator, activator, StatusEffectType.AdrenalStim3, 48f);
                     ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Willpower, 6), activator, 48f);
                 });
         }

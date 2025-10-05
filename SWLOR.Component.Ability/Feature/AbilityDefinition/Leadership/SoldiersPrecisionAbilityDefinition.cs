@@ -5,7 +5,6 @@ using SWLOR.Shared.Domain.Ability.Contracts;
 using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
 using SWLOR.Shared.Domain.Perk.Enums;
-using SWLOR.Shared.Domain.StatusEffect.Enums;
 
 namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Leadership
 {
@@ -40,11 +39,10 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Leadership
                 .UsesAnimation(AnimationType.FireForgetTaunt)
                 .HasActivationAction((activator, target, level, location) =>
                 {
-                    return AbilityService.ToggleAura(activator, StatusEffectType.SoldiersPrecision);
+                    return false;
                 })
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    AbilityService.ApplyAura(activator, StatusEffectType.SoldiersPrecision, false, true, false);
                 });
         }
     }

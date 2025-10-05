@@ -7,7 +7,6 @@ using SWLOR.Shared.Domain.Ability.ValueObjects;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Perk.Contracts;
 using SWLOR.Shared.Domain.Perk.Enums;
-using SWLOR.Shared.Domain.StatusEffect.Contracts;
 
 namespace SWLOR.Component.Ability.Feature.AbilityDefinition.FirstAid
 {
@@ -26,7 +25,6 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.FirstAid
         protected ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
         protected IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
         protected IAbilityService AbilityService => _serviceProvider.GetRequiredService<IAbilityService>();
-        protected IStatusEffectService StatusEffectService => _serviceProvider.GetRequiredService<IStatusEffectService>();
         private const string MedicalSuppliesItemTag = "med_supplies";
         private const string StimPackItemTag = "stim_pack";
 

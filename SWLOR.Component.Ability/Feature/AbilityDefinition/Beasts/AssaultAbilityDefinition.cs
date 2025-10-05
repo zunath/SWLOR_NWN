@@ -7,8 +7,6 @@ using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Skill.Enums;
-using SWLOR.Shared.Domain.StatusEffect.Contracts;
-using SWLOR.Shared.Domain.StatusEffect.Enums;
 
 namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beasts
 {
@@ -24,7 +22,6 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beasts
         // Lazy-loaded services to break circular dependencies
         private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
         private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
-        private IStatusEffectService StatusEffectService => _serviceProvider.GetRequiredService<IStatusEffectService>();
         private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
@@ -64,7 +61,6 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beasts
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Com_Blood_Spark_Medium), target);
             });
 
-            StatusEffectService.Apply(activator, activator, StatusEffectType.Assault, 30f);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Imp_Magblue), activator);
 
             EnmityService.ModifyEnmity(activator, target, 350 + damage);

@@ -1,3 +1,6 @@
+// todo: Migrate this file to the new system
+
+
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -7,6 +10,7 @@ using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Domain.Ability.Contracts;
 using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Associate.Contracts;
+using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Communication.Contracts;
@@ -18,9 +22,6 @@ using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Skill.Contracts;
 using SWLOR.Shared.Domain.Skill.Enums;
 using SWLOR.Shared.Domain.Space.Contracts;
-using SWLOR.Shared.Domain.StatusEffect.Contracts;
-using SWLOR.Shared.Domain.StatusEffect.Enums;
-using SWLOR.Shared.Domain.StatusEffect.ValueObjects;
 using SWLOR.Shared.Domain.UI.Events;
 using SWLOR.Shared.Domain.UI.Payloads;
 using SWLOR.Shared.UI.Contracts;
@@ -33,40 +34,37 @@ namespace SWLOR.Component.Character.UI.ViewModel
         IGuiRefreshable<SkillXPRefreshEvent>,
         IGuiRefreshable<EquipItemRefreshEvent>,
         IGuiRefreshable<UnequipItemRefreshEvent>,
-        IGuiRefreshable<StatusEffectReceivedRefreshEvent>,
-        IGuiRefreshable<StatusEffectRemovedRefreshEvent>,
         IGuiRefreshable<BeastGainXPRefreshEvent>
     {
         private readonly IDatabaseService _db;
-        private readonly IServiceProvider _serviceProvider;
         private readonly ICreaturePluginService _creaturePlugin;
+        private readonly IStatServiceNew _statService;
 
         public CharacterSheetViewModel(
             IGuiService guiService, 
             IDatabaseService db, 
             IServiceProvider serviceProvider,
-            ICreaturePluginService creaturePlugin) : base(guiService)
+            ICreaturePluginService creaturePlugin,
+            IStatServiceNew statService) 
+            : base(guiService)
         {
             _db = db;
-            _serviceProvider = serviceProvider;
             _creaturePlugin = creaturePlugin;
+            _statService = statService;
             
             // Initialize lazy services
-            _statService = new Lazy<IStatService>(() => _serviceProvider.GetRequiredService<IStatService>());
-            _skillService = new Lazy<ISkillService>(() => _serviceProvider.GetRequiredService<ISkillService>());
-            _itemService = new Lazy<IItemService>(() => _serviceProvider.GetRequiredService<IItemService>());
-            _combatService = new Lazy<ICombatService>(() => _serviceProvider.GetRequiredService<ICombatService>());
-            _abilityService = new Lazy<IAbilityService>(() => _serviceProvider.GetRequiredService<IAbilityService>());
-            _spaceService = new Lazy<ISpaceService>(() => _serviceProvider.GetRequiredService<ISpaceService>());
-            _beastMasteryService = new Lazy<IBeastMasteryService>(() => _serviceProvider.GetRequiredService<IBeastMasteryService>());
-            _dialogService = new Lazy<IDialogService>(() => _serviceProvider.GetRequiredService<IDialogService>());
-            _statusEffectService = new Lazy<IStatusEffectService>(() => _serviceProvider.GetRequiredService<IStatusEffectService>());
-            _holoComService = new Lazy<IHoloComService>(() => _serviceProvider.GetRequiredService<IHoloComService>());
-            _guiService = new Lazy<IGuiService>(() => _serviceProvider.GetRequiredService<IGuiService>());
+            _skillService = new Lazy<ISkillService>(serviceProvider.GetRequiredService<ISkillService>);
+            _itemService = new Lazy<IItemService>(serviceProvider.GetRequiredService<IItemService>);
+            _combatService = new Lazy<ICombatService>(serviceProvider.GetRequiredService<ICombatService>);
+            _abilityService = new Lazy<IAbilityService>(serviceProvider.GetRequiredService<IAbilityService>);
+            _spaceService = new Lazy<ISpaceService>(serviceProvider.GetRequiredService<ISpaceService>);
+            _beastMasteryService = new Lazy<IBeastMasteryService>(serviceProvider.GetRequiredService<IBeastMasteryService>);
+            _dialogService = new Lazy<IDialogService>(serviceProvider.GetRequiredService<IDialogService>);
+            _holoComService = new Lazy<IHoloComService>(serviceProvider.GetRequiredService<IHoloComService>);
+            _guiService = new Lazy<IGuiService>(serviceProvider.GetRequiredService<IGuiService>);
         }
 
         // Lazy-loaded services to break circular dependencies
-        private readonly Lazy<IStatService> _statService;
         private readonly Lazy<ISkillService> _skillService;
         private readonly Lazy<IItemService> _itemService;
         private readonly Lazy<ICombatService> _combatService;
@@ -75,7 +73,6 @@ namespace SWLOR.Component.Character.UI.ViewModel
         private readonly Lazy<IBeastMasteryService> _beastMasteryService;
         private readonly Lazy<IDialogService> _dialogService;
         
-        private IStatService StatService => _statService.Value;
         private ISkillService SkillService => _skillService.Value;
         private IItemService ItemService => _itemService.Value;
         private ICombatService CombatService => _combatService.Value;
@@ -83,11 +80,9 @@ namespace SWLOR.Component.Character.UI.ViewModel
         private ISpaceService SpaceService => _spaceService.Value;
         private IBeastMasteryService BeastMasteryService => _beastMasteryService.Value;
         private IDialogService DialogService => _dialogService.Value;
-        private readonly Lazy<IStatusEffectService> _statusEffectService;
         private readonly Lazy<IHoloComService> _holoComService;
         private readonly Lazy<IGuiService> _guiService;
         
-        private IStatusEffectService StatusEffectService => _statusEffectService.Value;
         private IHoloComService HoloComService => _holoComService.Value;
         private IGuiService GuiService => _guiService.Value;
         
@@ -496,203 +491,202 @@ namespace SWLOR.Component.Character.UI.ViewModel
 
         private void RefreshStats()
         {
-            HP = GetCurrentHitPoints(_target) + " / " + GetMaxHitPoints(_target);
+            //HP = GetCurrentHitPoints(_target) + " / " + GetMaxHitPoints(_target);
 
-            if (GetClassByPosition(1, _target) == ClassType.Standard)
-            {
-                FP = $"0 / 0";
-            }
-            else
-            {
-                var currentFP = StatService.GetCurrentFP(_target);
-                var maxFP = StatService.GetMaxFP(_target);
-                if (currentFP < 0)
-                    currentFP = 0;
-                if (maxFP < 0)
-                    maxFP = 0;
+            //if (GetClassByPosition(1, _target) == ClassType.Standard)
+            //{
+            //    FP = $"0 / 0";
+            //}
+            //else
+            //{
+            //    var currentFP = StatService.GetCurrentFP(_target);
+            //    var maxFP = StatService.GetMaxFP(_target);
+            //    if (currentFP < 0)
+            //        currentFP = 0;
+            //    if (maxFP < 0)
+            //        maxFP = 0;
 
-                FP = $"{currentFP} / {maxFP}";
-            }
+            //    FP = $"{currentFP} / {maxFP}";
+            //}
 
-            var currentSTM = StatService.GetCurrentStamina(_target);
-            var maxSTM = StatService.GetMaxStamina(_target);
-            if (currentSTM < 0)
-                currentSTM = 0;
-            if (maxSTM < 0)
-                maxSTM = 0;
+            //var currentSTM = StatService.GetCurrentStamina(_target);
+            //var maxSTM = StatService.GetMaxStamina(_target);
+            //if (currentSTM < 0)
+            //    currentSTM = 0;
+            //if (maxSTM < 0)
+            //    maxSTM = 0;
 
-            STM = $"{currentSTM} / {maxSTM}";
-            Name = GetName(_target);
-            Might = GetAbilityScore(_target, AbilityType.Might);
-            Perception = GetAbilityScore(_target, AbilityType.Perception);
-            Vitality = GetAbilityScore(_target, AbilityType.Vitality);
-            Willpower = GetAbilityScore(_target, AbilityType.Willpower);
-            Agility = GetAbilityScore(_target, AbilityType.Agility);
-            Social = GetAbilityScore(_target, AbilityType.Social);
-            SavingThrows = GetFortitudeSavingThrow(_target) + "/" +
-                           GetReflexSavingThrow(_target) + "/" +
-                           GetWillSavingThrow(_target);
+            //STM = $"{currentSTM} / {maxSTM}";
+            //Name = GetName(_target);
+            //Might = GetAbilityScore(_target, AbilityType.Might);
+            //Perception = GetAbilityScore(_target, AbilityType.Perception);
+            //Vitality = GetAbilityScore(_target, AbilityType.Vitality);
+            //Willpower = GetAbilityScore(_target, AbilityType.Willpower);
+            //Agility = GetAbilityScore(_target, AbilityType.Agility);
+            //Social = GetAbilityScore(_target, AbilityType.Social);
+            //SavingThrows = GetFortitudeSavingThrow(_target) + "/" +
+            //               GetReflexSavingThrow(_target) + "/" +
+            //               GetWillSavingThrow(_target);
 
-            if (IsPlayerMode)
-            {
-                var playerId = GetObjectUUID(_target);
-                var dbPlayer = _db.Get<Player>(playerId);
+            //if (IsPlayerMode)
+            //{
+            //    var playerId = GetObjectUUID(_target);
+            //    var dbPlayer = _db.Get<Player>(playerId);
 
-                var isRacialBonusAvailable = dbPlayer.RacialStat == AbilityType.Invalid;
-                IsMightUpgradeAvailable = (dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Might] < MaxUpgrades) || isRacialBonusAvailable;
-                IsPerceptionUpgradeAvailable = (dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Perception] < MaxUpgrades) || isRacialBonusAvailable;
-                IsVitalityUpgradeAvailable = (dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Vitality] < MaxUpgrades) || isRacialBonusAvailable;
-                IsWillpowerUpgradeAvailable = (dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Willpower] < MaxUpgrades) || isRacialBonusAvailable;
-                IsAgilityUpgradeAvailable = (dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Agility] < MaxUpgrades) || isRacialBonusAvailable;
-                IsSocialUpgradeAvailable = (dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Social] < MaxUpgrades) || isRacialBonusAvailable;
-            }
+            //    var isRacialBonusAvailable = dbPlayer.RacialStat == AbilityType.Invalid;
+            //    IsMightUpgradeAvailable = (dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Might] < MaxUpgrades) || isRacialBonusAvailable;
+            //    IsPerceptionUpgradeAvailable = (dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Perception] < MaxUpgrades) || isRacialBonusAvailable;
+            //    IsVitalityUpgradeAvailable = (dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Vitality] < MaxUpgrades) || isRacialBonusAvailable;
+            //    IsWillpowerUpgradeAvailable = (dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Willpower] < MaxUpgrades) || isRacialBonusAvailable;
+            //    IsAgilityUpgradeAvailable = (dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Agility] < MaxUpgrades) || isRacialBonusAvailable;
+            //    IsSocialUpgradeAvailable = (dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Social] < MaxUpgrades) || isRacialBonusAvailable;
+            //}
         }
 
         private void RefreshEquipmentStats()
         {
             // Builds a damage estimate using the player's stats as a baseline.
-            (string, string) GetCombatInfo( uint item)
-            {
-                var itemType = GetBaseItemType(item);
-                var skill = SkillService.GetSkillTypeByBaseItem(itemType);
-                int skillRank;
+            //(string, string) GetCombatInfo( uint item)
+            //{
+            //    var itemType = GetBaseItemType(item);
+            //    var skill = SkillService.GetSkillTypeByBaseItem(itemType);
+            //    int skillRank;
 
-                if (GetIsPC(_target))
-                {
-                    var playerId = GetObjectUUID(_target);
-                    var dbPlayer = _db.Get<Player>(playerId);
-                    skillRank = dbPlayer.Skills[skill].Rank;
-                }
-                else
-                {
-                    var npcStats = StatService.GetNPCStats(_target);
-                    skillRank = npcStats.Level;
-                }
+            //    if (GetIsPC(_target))
+            //    {
+            //        var playerId = GetObjectUUID(_target);
+            //        var dbPlayer = _db.Get<Player>(playerId);
+            //        skillRank = dbPlayer.Skills[skill].Rank;
+            //    }
+            //    else
+            //    {
+            //        var npcStats = StatService.GetNPCStats(_target);
+            //        skillRank = npcStats.Level;
+            //    }
 
-                var damageAbility = ItemService.GetWeaponDamageAbilityType(itemType);
-                var damageStat = GetAbilityScore(_target, damageAbility);
-                var dmg = ItemService.GetDMG(item) + CombatService.GetMiscDMGBonus(_target, itemType);
-                var dmgText = $"{dmg} DMG";
-                var attack = StatService.GetAttack(_target, damageAbility, skill);
-                var defense = StatService.CalculateDefense(damageStat, skillRank, 0);
-                var (min, max) = CombatService.CalculateDamageRange(attack, dmg, damageStat, defense, damageStat, 0);
-                var tooltip = $"Est. Damage: {min} - {max}";
+            //    var damageAbility = ItemService.GetWeaponDamageAbilityType(itemType);
+            //    var damageStat = GetAbilityScore(_target, damageAbility);
+            //    var dmg = ItemService.GetDMG(item) + CombatService.GetMiscDMGBonus(_target, itemType);
+            //    var dmgText = $"{dmg} DMG";
+            //    var attack = _statService.CalculateAttack(_target);
+            //    var defense = _statService.CalculateDefense(_target);
+            //    var (min, max) = CombatService.CalculateDamageRange(attack, dmg, damageStat, defense, damageStat, 0);
+            //    var tooltip = $"Est. Damage: {min} - {max}";
 
-                return (dmgText, tooltip);
-            }
+            //    return (dmgText, tooltip);
+            //}
 
-            var food = StatusEffectService.GetEffectData<FoodEffectData>(Player, StatusEffectType.Food) ?? new FoodEffectData();
-            var mainHand = GetItemInSlot(InventorySlotType.RightHand, _target);
-            var offHand = GetItemInSlot(InventorySlotType.LeftHand, _target);
-            var mainHandType = GetBaseItemType(mainHand);
+            //var mainHand = GetItemInSlot(InventorySlotType.RightHand, _target);
+            //var offHand = GetItemInSlot(InventorySlotType.LeftHand, _target);
+            //var mainHandType = GetBaseItemType(mainHand);
 
-            if (GetIsObjectValid(mainHand))
-            {
-                var dmgInfo = GetCombatInfo(mainHand);
-                MainHandDMG = dmgInfo.Item1;
-                MainHandTooltip = dmgInfo.Item2;
-            }
-            else
-            {
-                MainHandDMG = "-";
-                MainHandTooltip = "Est. Damage: N/A";
-            }
+            //if (GetIsObjectValid(mainHand))
+            //{
+            //    var dmgInfo = GetCombatInfo(mainHand);
+            //    MainHandDMG = dmgInfo.Item1;
+            //    MainHandTooltip = dmgInfo.Item2;
+            //}
+            //else
+            //{
+            //    MainHandDMG = "-";
+            //    MainHandTooltip = "Est. Damage: N/A";
+            //}
 
-            if (GetIsObjectValid(offHand))
-            {
-                var dmgInfo = GetCombatInfo(offHand);
-                OffHandDMG = dmgInfo.Item1;
-                OffHandTooltip = dmgInfo.Item2;
-            }
-            else
-            {
-                OffHandDMG = "-";
-                OffHandTooltip = "Est. Damage: N/A";
-            }
+            //if (GetIsObjectValid(offHand))
+            //{
+            //    var dmgInfo = GetCombatInfo(offHand);
+            //    OffHandDMG = dmgInfo.Item1;
+            //    OffHandTooltip = dmgInfo.Item2;
+            //}
+            //else
+            //{
+            //    OffHandDMG = "-";
+            //    OffHandTooltip = "Est. Damage: N/A";
+            //}
 
-            AbilityType damageStat;
-            AbilityType accuracyStatOverride;
+            //AbilityType damageStat;
+            //AbilityType accuracyStatOverride;
 
-            if (BeastMasteryService.IsPlayerBeast(_target))
-            {
-                var beastType = BeastMasteryService.GetBeastType(_target);
-                var beastDetails = BeastMasteryService.GetBeastDetail(beastType);
-                damageStat = beastDetails.DamageStat;
-                accuracyStatOverride = beastDetails.AccuracyStat;
-                mainHand = GetItemInSlot(InventorySlotType.CreatureArmor, _target);
-            }
-            else
-            {
-                damageStat = ItemService.GetWeaponDamageAbilityType(mainHandType);
-                accuracyStatOverride = AbilityType.Invalid;
+            //if (BeastMasteryService.IsPlayerBeast(_target))
+            //{
+            //    var beastType = BeastMasteryService.GetBeastType(_target);
+            //    var beastDetails = BeastMasteryService.GetBeastDetail(beastType);
+            //    damageStat = beastDetails.DamageStat;
+            //    accuracyStatOverride = beastDetails.AccuracyStat;
+            //    mainHand = GetItemInSlot(InventorySlotType.CreatureArmor, _target);
+            //}
+            //else
+            //{
+            //    damageStat = ItemService.GetWeaponDamageAbilityType(mainHandType);
+            //    accuracyStatOverride = AbilityType.Invalid;
 
-                // Strong Style (Lightsaber)
-                if (ItemService.LightsaberBaseItemTypes.Contains(mainHandType) &&
-                    AbilityService.IsAbilityToggled(_target, AbilityToggleType.StrongStyleLightsaber))
-                {
-                    damageStat = AbilityType.Might;
-                    accuracyStatOverride = AbilityType.Perception;
-                }
-                // Strong Style (Saberstaff)
-                if (ItemService.SaberstaffBaseItemTypes.Contains(mainHandType) &&
-                    AbilityService.IsAbilityToggled(_target, AbilityToggleType.StrongStyleSaberstaff))
-                {
-                    damageStat = AbilityType.Might;
-                    accuracyStatOverride = AbilityType.Perception;
-                }
+            //    // Strong Style (Lightsaber)
+            //    if (ItemService.LightsaberBaseItemTypes.Contains(mainHandType) &&
+            //        AbilityService.IsAbilityToggled(_target, AbilityToggleType.StrongStyleLightsaber))
+            //    {
+            //        damageStat = AbilityType.Might;
+            //        accuracyStatOverride = AbilityType.Perception;
+            //    }
+            //    // Strong Style (Saberstaff)
+            //    if (ItemService.SaberstaffBaseItemTypes.Contains(mainHandType) &&
+            //        AbilityService.IsAbilityToggled(_target, AbilityToggleType.StrongStyleSaberstaff))
+            //    {
+            //        damageStat = AbilityType.Might;
+            //        accuracyStatOverride = AbilityType.Perception;
+            //    }
 
-                // Flurry Style (Staff)
-                if (ItemService.StaffBaseItemTypes.Contains(mainHandType) &&
-                    GetHasFeat(FeatType.FlurryStyle, _target))
-                {
-                    damageStat = AbilityType.Perception;
-                    accuracyStatOverride = AbilityType.Agility;
-                }
-            }
+            //    // Flurry Style (Staff)
+            //    if (ItemService.StaffBaseItemTypes.Contains(mainHandType) &&
+            //        GetHasFeat(FeatType.FlurryStyle, _target))
+            //    {
+            //        damageStat = AbilityType.Perception;
+            //        accuracyStatOverride = AbilityType.Agility;
+            //    }
+            //}
             
-            var mainHandSkill = SkillService.GetSkillTypeByBaseItem(mainHandType);
-            Attack = StatService.GetAttack(_target, damageStat, mainHandSkill);
-            DefensePhysical = StatService.GetDefense(_target, CombatDamageType.Physical, AbilityType.Vitality);
-            DefenseForce = StatService.GetDefense(_target, CombatDamageType.Force, AbilityType.Willpower);
+            //var mainHandSkill = SkillService.GetSkillTypeByBaseItem(mainHandType);
+            //Attack = StatService.GetAttack(_target, damageStat, mainHandSkill);
+            //DefensePhysical = StatService.GetDefense(_target, CombatDamageType.Physical, AbilityType.Vitality);
+            //DefenseForce = StatService.GetDefense(_target, CombatDamageType.Force, AbilityType.Willpower);
             
-            if (GetIsPC(_target))
-            {
-                var playerId = GetObjectUUID(_target);
-                var dbPlayer = _db.Get<Player>(playerId);
+            //if (GetIsPC(_target))
+            //{
+            //    var playerId = GetObjectUUID(_target);
+            //    var dbPlayer = _db.Get<Player>(playerId);
 
-                var fireDefense = (dbPlayer.Defenses[CombatDamageType.Fire] + food.DefenseFire).ToString();
-                var poisonDefense = (dbPlayer.Defenses[CombatDamageType.Poison] + food.DefensePoison).ToString();
-                var electricalDefense = (dbPlayer.Defenses[CombatDamageType.Electrical + food.DefenseElectrical]).ToString();
-                var iceDefense = (dbPlayer.Defenses[CombatDamageType.Ice] + food.DefenseIce).ToString();
+            //    var fireDefense = (dbPlayer.Defenses[CombatDamageType.Fire] + food.DefenseFire).ToString();
+            //    var poisonDefense = (dbPlayer.Defenses[CombatDamageType.Poison] + food.DefensePoison).ToString();
+            //    var electricalDefense = (dbPlayer.Defenses[CombatDamageType.Electrical + food.DefenseElectrical]).ToString();
+            //    var iceDefense = (dbPlayer.Defenses[CombatDamageType.Ice] + food.DefenseIce).ToString();
 
-                DefenseElemental = $"{fireDefense}/{poisonDefense}/{electricalDefense}/{iceDefense}";
-            }
-            else
-            {
-                var npcStats = StatService.GetNPCStats(_target);
-                var fireDefense = npcStats.Defenses.ContainsKey(CombatDamageType.Fire) ? npcStats.Defenses[CombatDamageType.Fire] : 0;
-                var poisonDefense = npcStats.Defenses.ContainsKey(CombatDamageType.Poison) ? npcStats.Defenses[CombatDamageType.Poison] : 0;
-                var electricalDefense = npcStats.Defenses.ContainsKey(CombatDamageType.Electrical) ? npcStats.Defenses[CombatDamageType.Electrical] : 0;
-                var iceDefense = npcStats.Defenses.ContainsKey(CombatDamageType.Ice) ? npcStats.Defenses[CombatDamageType.Ice] : 0;
+            //    DefenseElemental = $"{fireDefense}/{poisonDefense}/{electricalDefense}/{iceDefense}";
+            //}
+            //else
+            //{
+            //    var npcStats = StatService.GetNPCStats(_target);
+            //    var fireDefense = npcStats.Defenses.ContainsKey(CombatDamageType.Fire) ? npcStats.Defenses[CombatDamageType.Fire] : 0;
+            //    var poisonDefense = npcStats.Defenses.ContainsKey(CombatDamageType.Poison) ? npcStats.Defenses[CombatDamageType.Poison] : 0;
+            //    var electricalDefense = npcStats.Defenses.ContainsKey(CombatDamageType.Electrical) ? npcStats.Defenses[CombatDamageType.Electrical] : 0;
+            //    var iceDefense = npcStats.Defenses.ContainsKey(CombatDamageType.Ice) ? npcStats.Defenses[CombatDamageType.Ice] : 0;
 
-                DefenseElemental = $"{fireDefense}/{poisonDefense}/{electricalDefense}/{iceDefense}";
-            }
+            //    DefenseElemental = $"{fireDefense}/{poisonDefense}/{electricalDefense}/{iceDefense}";
+            //}
 
-            Accuracy = StatService.GetAccuracy(_target, mainHand, accuracyStatOverride, SkillType.Invalid);
-            Evasion = StatService.GetEvasion(_target, SkillType.Invalid);
+            //Accuracy = StatService.GetAccuracy(_target, mainHand, accuracyStatOverride, SkillType.Invalid);
+            //Evasion = StatService.GetEvasion(_target, SkillType.Invalid);
 
-            var smithery = StatService.CalculateControl(_target, SkillType.Smithery);
-            var engineering = StatService.CalculateControl(_target, SkillType.Engineering);
-            var fabrication = StatService.CalculateControl(_target, SkillType.Fabrication);
-            var agriculture = StatService.CalculateControl(_target, SkillType.Agriculture);
+            //var smithery = StatService.CalculateControl(_target, SkillType.Smithery);
+            //var engineering = StatService.CalculateControl(_target, SkillType.Engineering);
+            //var fabrication = StatService.CalculateControl(_target, SkillType.Fabrication);
+            //var agriculture = StatService.CalculateControl(_target, SkillType.Agriculture);
 
-            Control = $"{smithery}/{engineering}/{fabrication}/{agriculture}";
+            //Control = $"{smithery}/{engineering}/{fabrication}/{agriculture}";
 
-            smithery = StatService.CalculateCraftsmanship(_target, SkillType.Smithery);
-            engineering = StatService.CalculateCraftsmanship(_target, SkillType.Engineering);
-            fabrication = StatService.CalculateCraftsmanship(_target, SkillType.Fabrication);
-            agriculture = StatService.CalculateCraftsmanship(_target, SkillType.Agriculture);
-            Craftsmanship = $"{smithery}/{engineering}/{fabrication}/{agriculture}";
+            //smithery = StatService.CalculateCraftsmanship(_target, SkillType.Smithery);
+            //engineering = StatService.CalculateCraftsmanship(_target, SkillType.Engineering);
+            //fabrication = StatService.CalculateCraftsmanship(_target, SkillType.Fabrication);
+            //agriculture = StatService.CalculateCraftsmanship(_target, SkillType.Agriculture);
+            //Craftsmanship = $"{smithery}/{engineering}/{fabrication}/{agriculture}";
         }
 
         private void RefreshAttributes()
@@ -796,16 +790,16 @@ namespace SWLOR.Component.Character.UI.ViewModel
             RefreshEquipmentStats();
         }
 
-        public void Refresh(StatusEffectReceivedRefreshEvent payload)
-        {
-            RefreshStats();
-            RefreshEquipmentStats();
-        }
+        //public void Refresh(StatusEffectReceivedRefreshEvent payload)
+        //{
+        //    RefreshStats();
+        //    RefreshEquipmentStats();
+        //}
 
-        public void Refresh(StatusEffectRemovedRefreshEvent payload)
-        {
-            RefreshStats();
-            RefreshEquipmentStats();
-        }
+        //public void Refresh(StatusEffectRemovedRefreshEvent payload)
+        //{
+        //    RefreshStats();
+        //    RefreshEquipmentStats();
+        //}
     }
 }

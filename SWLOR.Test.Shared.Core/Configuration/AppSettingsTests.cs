@@ -180,11 +180,11 @@ namespace SWLOR.Test.Shared.Core.Configuration
             var settings = new AppSettings();
 
             // Assert
-            Assert.That(settings.LogDirectory, Is.EqualTo(""));
-            Assert.That(settings.RedisIPAddress, Is.EqualTo(""));
-            Assert.That(settings.BugWebHookUrl, Is.EqualTo(""));
-            Assert.That(settings.HolonetWebHookUrl, Is.EqualTo(""));
-            Assert.That(settings.DMShoutWebHookUrl, Is.EqualTo(""));
+            Assert.That(settings.LogDirectory, Is.Null);
+            Assert.That(settings.RedisIPAddress, Is.Null);
+            Assert.That(settings.BugWebHookUrl, Is.Null);
+            Assert.That(settings.HolonetWebHookUrl, Is.Null);
+            Assert.That(settings.DMShoutWebHookUrl, Is.Null);
         }
     }
 }

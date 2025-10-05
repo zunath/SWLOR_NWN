@@ -1,9 +1,9 @@
 using SWLOR.Component.Combat.Contracts;
 using SWLOR.Component.Combat.Feature.Native;
 using SWLOR.Shared.Domain.Combat.Contracts;
+using SWLOR.Shared.Domain.Combat.Events;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Area;
-using SWLOR.Shared.Events.Events.Combat;
 using SWLOR.Shared.Events.Events.Creature;
 using SWLOR.Shared.Events.Events.Infrastructure;
 using SWLOR.Shared.Events.Events.Module;

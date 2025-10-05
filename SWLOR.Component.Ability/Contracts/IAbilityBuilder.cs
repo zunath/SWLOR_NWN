@@ -2,7 +2,6 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
 using SWLOR.Shared.Domain.Perk.Enums;
-using SWLOR.Shared.Domain.StatusEffect.Enums;
 
 namespace SWLOR.Component.Ability.Contracts
 {
@@ -34,14 +33,6 @@ namespace SWLOR.Component.Ability.Contracts
         /// </summary>
         /// <returns>An ability builder with the configured options.</returns>
         IAbilityBuilder IsWeaponAbility();
-
-        /// <summary>
-        /// Indicates this is a concentration ability which stays active and drains resources until turned off or player runs out of required resources.
-        /// A corresponding status effect must also be defined and this will be applied when the concentration ability is activated and removed when it ends.
-        /// </summary>
-        /// <param name="concentrationStatusEffectType">The status effect to use for this concentration ability.</param>
-        /// <returns>An ability builder with the configured options.</returns>
-        IAbilityBuilder IsConcentrationAbility(StatusEffectType concentrationStatusEffectType);
 
         /// <summary>
         /// Indicates this ability can be used while in space.

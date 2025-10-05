@@ -2,7 +2,6 @@ using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
-using SWLOR.Shared.Domain.StatusEffect.Enums;
 
 namespace SWLOR.Shared.Domain.Ability.Contracts
 {
@@ -49,47 +48,6 @@ namespace SWLOR.Shared.Domain.Ability.Contracts
             Location targetLocation);
 
         /// <summary>
-        /// Checks whether a creature can activate the perk feat.
-        /// </summary>
-        /// <param name="activator">The activator of the perk feat.</param>
-        /// <param name="abilityType">The type of ability to use.</param>
-        /// <returns>true if successful, false otherwise</returns>
-        bool CanUseConcentration(
-            uint activator,
-            FeatType abilityType);
-
-        /// <summary>
-        /// Each tick, creatures with a concentration effect will be processed.
-        /// This will drain FP and reapply whatever effect is associated with an ability.
-        /// </summary>
-        void ProcessConcentrationEffects();
-
-        /// <summary>
-        /// Starts a concentration ability on a specified creature.
-        /// If there is already a concentration ability active, it will be replaced with this one.
-        /// </summary>
-        /// <param name="creature">The creature who will perform the concentration.</param>
-        /// <param name="target">The target of the concentration effect.</param>
-        /// <param name="feat">The type of ability to activate.</param>
-        /// <param name="statusEffectType">The concentration status effect to apply.</param>
-        void StartConcentrationAbility(uint creature, uint target, FeatType feat, StatusEffectType statusEffectType);
-
-        /// <summary>
-        /// Retrieves a creature's active concentration ability.
-        /// If no concentration ability is active, Feat.Invalid will be returned.
-        /// </summary>
-        /// <param name="creature">The creature to check.</param>
-        /// <returns>The active concentration feat or Feat.Invalid.</returns>
-        ActiveConcentrationAbility GetActiveConcentration(uint creature);
-
-        /// <summary>
-        /// Ends a concentration effect on a specified creature.
-        /// If creature isn't concentrating, nothing will happen.
-        /// </summary>
-        /// <param name="creature"></param>
-        void EndConcentrationAbility(uint creature);
-
-        /// <summary>
         /// Toggles an ability on or off for a given player.
         /// If additional logic is defined in an AbilityToggleDefinition, that will be run after this is performed.
         /// </summary>
@@ -125,45 +83,6 @@ namespace SWLOR.Shared.Domain.Ability.Contracts
         /// Whenever a weapon's OnHit event is fired, add a Leadership combat point if an Aura is active.
         /// </summary>
         void AddLeadershipCombatPoint();
-
-        void ApplyAura(uint activator, StatusEffectType type, bool targetsSelf, bool targetsParty, bool targetsEnemies);
-        bool ToggleAura(uint activator, StatusEffectType type);
-        void ReapplyPlayerAuraAOE(uint player);
-
-        /// <summary>
-        /// When a player enters the server, apply the Aura AOE effect.
-        /// </summary>
-        void ApplyAuraAOE();
-
-        /// <summary>
-        /// When a player exits the server, remove all of their Aura effects.
-        /// </summary>
-        void ClearAurasOnExit();
-
-        /// <summary>
-        /// When a player dies, remove all of their Aura effects.
-        /// </summary>
-        void ClearAurasOnDeath();
-
-        /// <summary>
-        /// When a player respawns, reapply the aura AOE effect
-        /// </summary>
-        void ReapplyAuraOnRespawn();
-
-        /// <summary>
-        /// When a player enters space mode, remove all of their Aura effects.
-        /// </summary>
-        void ClearAurasOnSpaceEntry();
-
-        /// <summary>
-        /// Whenever a creature enters the aura, add them to the cache.
-        /// </summary>
-        void AuraEnter();
-
-        /// <summary>
-        /// Whenever a creature exits the aura, remove it from the cache.
-        /// </summary>
-        void AuraExit();
 
         /// <summary>
         /// Applies a temporary immunity effect to a particular target.

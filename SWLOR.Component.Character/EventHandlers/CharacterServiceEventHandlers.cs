@@ -2,11 +2,11 @@ using SWLOR.Component.Character.Contracts;
 using SWLOR.Component.Character.Service;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Domain.Character.Contracts;
+using SWLOR.Shared.Domain.Character.Events;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.NWNX;
-using SWLOR.Shared.Events.Events.Character;
 
 namespace SWLOR.Component.Character.EventHandlers
 {

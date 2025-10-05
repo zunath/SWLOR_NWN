@@ -61,7 +61,7 @@ namespace SWLOR.Test.Shared.NWScriptMocks
         public ItemProperty ItemPropertyContainerReducedWeight(ItemPropertyContainerWeightType nContainerType) => CreateItemProperty(ItemPropertyType.EnhancedContainerReducedWeight);
         public ItemProperty ItemPropertyExtraMeleeDamageType(ItemPropertyDamageType nDamageType) => CreateItemProperty(ItemPropertyType.ExtraMeleeDamageType);
         public ItemProperty ItemPropertyExtraRangeDamageType(ItemPropertyDamageType nDamageType) => CreateItemProperty(ItemPropertyType.ExtraRangedDamageType);
-        public ItemProperty ItemPropertyHaste() => CreateItemProperty(ItemPropertyType.Haste);
+        public ItemProperty ItemPropertyHaste() => CreateItemProperty(ItemPropertyType.HasteNWN);
         public ItemProperty ItemPropertyHolyAvenger() => CreateItemProperty(ItemPropertyType.HolyAvenger);
         public ItemProperty ItemPropertyImmunityMisc(ItemPropertyImmunityMiscType nImmunityType) => CreateItemProperty(ItemPropertyType.ImmunityMiscellaneous);
         public ItemProperty ItemPropertyImprovedEvasion() => CreateItemProperty(ItemPropertyType.ImprovedEvasion);

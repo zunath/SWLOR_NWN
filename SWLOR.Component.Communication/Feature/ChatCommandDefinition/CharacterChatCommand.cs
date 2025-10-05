@@ -68,7 +68,6 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
             DeleteCommand();
             LanguageCommand();
             ToggleEmoteStyle();
-            ConcentrationAbility();
             Customize();
             AlwaysWalk();
             AssociateCommands();
@@ -359,35 +358,6 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
                 });
         }
 
-
-        private void ConcentrationAbility()
-        {
-            _builder.Create("concentration", "conc")
-                .Description("Tells you what concentration ability you have active. Follow with 'end' (no quotes) to turn your concentration ability off. Example: /concentration end")
-                .Permissions(AuthorizationLevel.All)
-                .Action((user, target, location, args) =>
-                {
-                    var doEnd = args.Length > 0 && args[0].ToLower() == "end";
-
-                    if (doEnd)
-                    {
-                        _abilityService.EndConcentrationAbility(user);
-                    }
-                    else
-                    {
-                        var activeConcentration = _abilityService.GetActiveConcentration(user);
-                        if (activeConcentration.Feat == FeatType.Invalid)
-                        {
-                            SendMessageToPC(user, "No concentration ability is currently active.");
-                        }
-                        else
-                        {
-                            var ability = _abilityService.GetAbilityDetail(activeConcentration.Feat);
-                            SendMessageToPC(user, $"Currently active concentration ability: {ability.Name}");
-                        }
-                    }
-                });
-        }
 
         private void Customize()
         {

@@ -21,8 +21,8 @@ using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Perk.Contracts;
 using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Properties.Contracts;
-using SWLOR.Shared.Domain.StatusEffect.Contracts;
-using SWLOR.Shared.Domain.StatusEffect.Enums;
+
+
 using SWLOR.Shared.Domain.UI.Events;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Service;
@@ -60,7 +60,6 @@ namespace SWLOR.Component.Associate.Service
             // Initialize lazy services
             _cacheService = new Lazy<IGenericCacheService>(() => _serviceProvider.GetRequiredService<IGenericCacheService>());
             _guiService = new Lazy<IGuiService>(() => _serviceProvider.GetRequiredService<IGuiService>());
-            _statusEffectService = new Lazy<IStatusEffectService>(() => _serviceProvider.GetRequiredService<IStatusEffectService>());
             _propertyService = new Lazy<IPropertyService>(() => _serviceProvider.GetRequiredService<IPropertyService>());
             _activityService = new Lazy<IActivityService>(() => _serviceProvider.GetRequiredService<IActivityService>());
             _timeService = new Lazy<ITimeService>(() => _serviceProvider.GetRequiredService<ITimeService>());
@@ -72,7 +71,6 @@ namespace SWLOR.Component.Associate.Service
         // Lazy-loaded services to break circular dependencies
         private readonly Lazy<IGenericCacheService> _cacheService;
         private readonly Lazy<IGuiService> _guiService;
-        private readonly Lazy<IStatusEffectService> _statusEffectService;
         private readonly Lazy<IPropertyService> _propertyService;
         private readonly Lazy<IActivityService> _activityService;
         private readonly Lazy<ITimeService> _timeService;
@@ -82,7 +80,6 @@ namespace SWLOR.Component.Associate.Service
         
         private IGenericCacheService CacheService => _cacheService.Value;
         private IGuiService GuiService => _guiService.Value;
-        private IStatusEffectService StatusEffectService => _statusEffectService.Value;
         private IPropertyService PropertyService => _propertyService.Value;
         private IActivityService ActivityService => _activityService.Value;
         private ITimeService TimeService => _timeService.Value;
@@ -232,25 +229,27 @@ namespace SWLOR.Component.Associate.Service
             if (!ignoreBonuses)
             {
                 // Food Bonus
-                if (StatusEffectService.HasStatusEffect(beast, StatusEffectType.PetFood))
-                {
-                    var xpBonus = StatusEffectService.GetEffectData<int>(beast, StatusEffectType.PetFood);
+                // todo: check for new effect type for PetFood
+                //if (StatusEffectService.HasStatusEffect(beast, StatusEffectType.PetFood))
+                //{
+                //    var xpBonus = StatusEffectService.GetEffectData<int>(beast, StatusEffectType.PetFood);
 
-                    bonusPercentage += xpBonus * 0.01f;
-                }
+                //    bonusPercentage += xpBonus * 0.01f;
+                //}
 
                 // Dedication bonus
-                if (StatusEffectService.HasStatusEffect(beast, StatusEffectType.Dedication))
-                {
-                    var source = StatusEffectService.GetEffectData<uint>(beast, StatusEffectType.Dedication);
+                // todo: check for new effect type for Dedication
+                //if (StatusEffectService.HasStatusEffect(beast, StatusEffectType.Dedication))
+                //{
+                //    var source = StatusEffectService.GetEffectData<uint>(beast, StatusEffectType.Dedication);
 
-                    if (GetIsObjectValid(source))
-                    {
-                        var effectiveLevel = PerkService.GetPerkLevel(source, PerkType.Dedication);
-                        var sourceSocial = GetAbilityScore(source, AbilityType.Social);
-                        bonusPercentage += (10 + effectiveLevel * sourceSocial) * 0.01f;
-                    }
-                }
+                //    if (GetIsObjectValid(source))
+                //    {
+                //        var effectiveLevel = PerkService.GetPerkLevel(source, PerkType.Dedication);
+                //        var sourceSocial = GetAbilityScore(source, AbilityType.Social);
+                //        bonusPercentage += (10 + effectiveLevel * sourceSocial) * 0.01f;
+                //    }
+                //}
 
                 // Social bonus
                 if (social > 0)
@@ -589,7 +588,8 @@ namespace SWLOR.Component.Associate.Service
 
             AssignCommand(beast, () => ClearAllActions());
 
-            StatusEffectService.Apply(beast, beast, StatusEffectType.Rest, 0f);
+            // todo: Apply Rest effect on beast in new system
+            //StatusEffectService.Apply(beast, beast, StatusEffectType.Rest, 0f);
         }
 
         public void BeastOnSpawn()

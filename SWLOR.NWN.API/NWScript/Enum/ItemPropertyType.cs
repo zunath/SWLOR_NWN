@@ -34,7 +34,7 @@ namespace SWLOR.NWN.API.NWScript.Enum
         EnhancedContainerReducedWeight = 32,
         ExtraMeleeDamageType = 33,
         ExtraRangedDamageType = 34,
-        Haste = 35,
+        HasteNWN = 35,
         HolyAvenger = 36,
         ImmunityMiscellaneous = 37,
         ImprovedEvasion = 38,
@@ -96,7 +96,7 @@ namespace SWLOR.NWN.API.NWScript.Enum
         ProgressPenalty = 95,
         NPCHP = 96,
         AccuracyStat = 97,
-        // 98 is free
+        Delay = 98,
         NPCLevel = 99,
         UseLimitationPerk = 100,
         ArmorEnhancement = 101,
@@ -129,5 +129,6 @@ namespace SWLOR.NWN.API.NWScript.Enum
         DNAType = 128,
         EnzymeColor = 129,
         Blueprint = 130,
+
     }
 }

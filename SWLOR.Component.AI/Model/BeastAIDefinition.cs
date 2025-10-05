@@ -1,5 +1,4 @@
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Domain.StatusEffect.Enums;
 
 namespace SWLOR.Component.AI.Model
 {
@@ -16,15 +15,7 @@ namespace SWLOR.Component.AI.Model
             if (success) return result;
 
             // Buffs
-            (success, result) = BolsterAttack();
-            if (success) return result;
             
-            (success, result) = BolsterArmor();
-            if (success) return result;
-
-            (success, result) = EvasiveManeuver();
-            if (success) return result;
-
             // Enmity
             (success, result) = Anger();
             if (success) return result;
@@ -226,62 +217,6 @@ namespace SWLOR.Component.AI.Model
             return NoAction;
         }
 
-        private (bool, (FeatType, uint)) BolsterArmor()
-        {
-            if (CheckIfCanUseFeat(Self, Self, FeatType.BolsterArmor5, 
-                    () => !StatusEffectService.HasStatusEffect(Self, 
-                        StatusEffectType.BolsterArmor5, 
-                        StatusEffectType.BolsterArmor4, 
-                        StatusEffectType.BolsterArmor3, 
-                        StatusEffectType.BolsterArmor2, 
-                        StatusEffectType.BolsterArmor1)))
-            {
-                return (true, (FeatType.BolsterArmor5, Self));
-            }
-            if (CheckIfCanUseFeat(Self, Self, FeatType.BolsterArmor4,
-                    () => !StatusEffectService.HasStatusEffect(Self,
-                        StatusEffectType.BolsterArmor5,
-                        StatusEffectType.BolsterArmor4,
-                        StatusEffectType.BolsterArmor3,
-                        StatusEffectType.BolsterArmor2,
-                        StatusEffectType.BolsterArmor1)))
-            {
-                return (true, (FeatType.BolsterArmor4, Self));
-            }
-            if (CheckIfCanUseFeat(Self, Self, FeatType.BolsterArmor3,
-                    () => !StatusEffectService.HasStatusEffect(Self,
-                        StatusEffectType.BolsterArmor5,
-                        StatusEffectType.BolsterArmor4,
-                        StatusEffectType.BolsterArmor3,
-                        StatusEffectType.BolsterArmor2,
-                        StatusEffectType.BolsterArmor1)))
-            {
-                return (true, (FeatType.BolsterArmor3, Self));
-            }
-            if (CheckIfCanUseFeat(Self, Self, FeatType.BolsterArmor2,
-                    () => !StatusEffectService.HasStatusEffect(Self,
-                        StatusEffectType.BolsterArmor5,
-                        StatusEffectType.BolsterArmor4,
-                        StatusEffectType.BolsterArmor3,
-                        StatusEffectType.BolsterArmor2,
-                        StatusEffectType.BolsterArmor1)))
-            {
-                return (true, (FeatType.BolsterArmor2, Self));
-            }
-            if (CheckIfCanUseFeat(Self, Self, FeatType.BolsterArmor1,
-                    () => !StatusEffectService.HasStatusEffect(Self,
-                        StatusEffectType.BolsterArmor5,
-                        StatusEffectType.BolsterArmor4,
-                        StatusEffectType.BolsterArmor3,
-                        StatusEffectType.BolsterArmor2,
-                        StatusEffectType.BolsterArmor1)))
-            {
-                return (true, (FeatType.BolsterArmor1, Self));
-            }
-
-            return NoAction;
-        }
-
         private (bool, (FeatType, uint)) Anger()
         {
             if (CheckIfCanUseFeat(Self, Target, FeatType.Anger5))
@@ -334,61 +269,6 @@ namespace SWLOR.Component.AI.Model
             return NoAction;
         }
 
-        private (bool, (FeatType, uint)) BolsterAttack()
-        {
-            if (CheckIfCanUseFeat(Self, Self, FeatType.BolsterAttack5,
-                    () => !StatusEffectService.HasStatusEffect(Self,
-                        StatusEffectType.BolsterAttack5,
-                        StatusEffectType.BolsterAttack4,
-                        StatusEffectType.BolsterAttack3,
-                        StatusEffectType.BolsterAttack2,
-                        StatusEffectType.BolsterAttack1)))
-            {
-                return (true, (FeatType.BolsterAttack5, Self));
-            }
-            if (CheckIfCanUseFeat(Self, Self, FeatType.BolsterAttack4,
-                    () => !StatusEffectService.HasStatusEffect(Self,
-                        StatusEffectType.BolsterAttack5,
-                        StatusEffectType.BolsterAttack4,
-                        StatusEffectType.BolsterAttack3,
-                        StatusEffectType.BolsterAttack2,
-                        StatusEffectType.BolsterAttack1)))
-            {
-                return (true, (FeatType.BolsterAttack4, Self));
-            }
-            if (CheckIfCanUseFeat(Self, Self, FeatType.BolsterAttack3,
-                    () => !StatusEffectService.HasStatusEffect(Self,
-                        StatusEffectType.BolsterAttack5,
-                        StatusEffectType.BolsterAttack4,
-                        StatusEffectType.BolsterAttack3,
-                        StatusEffectType.BolsterAttack2,
-                        StatusEffectType.BolsterAttack1)))
-            {
-                return (true, (FeatType.BolsterAttack3, Self));
-            }
-            if (CheckIfCanUseFeat(Self, Self, FeatType.BolsterAttack2,
-                    () => !StatusEffectService.HasStatusEffect(Self,
-                        StatusEffectType.BolsterAttack5,
-                        StatusEffectType.BolsterAttack4,
-                        StatusEffectType.BolsterAttack3,
-                        StatusEffectType.BolsterAttack2,
-                        StatusEffectType.BolsterAttack1)))
-            {
-                return (true, (FeatType.BolsterAttack2, Self));
-            }
-            if (CheckIfCanUseFeat(Self, Self, FeatType.BolsterAttack1,
-                    () => !StatusEffectService.HasStatusEffect(Self,
-                        StatusEffectType.BolsterAttack5,
-                        StatusEffectType.BolsterAttack4,
-                        StatusEffectType.BolsterAttack3,
-                        StatusEffectType.BolsterAttack2,
-                        StatusEffectType.BolsterAttack1)))
-            {
-                return (true, (FeatType.BolsterAttack1, Self));
-            }
-
-            return NoAction;
-        }
 
         private (bool, (FeatType, uint)) Hasten()
         {
@@ -459,63 +339,6 @@ namespace SWLOR.Component.AI.Model
             {
                 return (true, (FeatType.IceBreath1, Self));
             }
-
-            return NoAction;
-        }
-
-        private (bool, (FeatType, uint)) EvasiveManeuver()
-        {
-            if (CheckIfCanUseFeat(Self, Self, FeatType.EvasiveManeuver5,
-                    () => !StatusEffectService.HasStatusEffect(Self,
-                        StatusEffectType.EvasiveManeuver5,
-                        StatusEffectType.EvasiveManeuver4,
-                        StatusEffectType.EvasiveManeuver3,
-                        StatusEffectType.EvasiveManeuver2,
-                        StatusEffectType.EvasiveManeuver1)))
-            {
-                return (true, (FeatType.EvasiveManeuver5, Self));
-            }
-            if (CheckIfCanUseFeat(Self, Self, FeatType.EvasiveManeuver4,
-                    () => !StatusEffectService.HasStatusEffect(Self,
-                        StatusEffectType.EvasiveManeuver5,
-                        StatusEffectType.EvasiveManeuver4,
-                        StatusEffectType.EvasiveManeuver3,
-                        StatusEffectType.EvasiveManeuver2,
-                        StatusEffectType.EvasiveManeuver1)))
-            {
-                return (true, (FeatType.EvasiveManeuver4, Self));
-            }
-            if (CheckIfCanUseFeat(Self, Self, FeatType.EvasiveManeuver3,
-                    () => !StatusEffectService.HasStatusEffect(Self,
-                        StatusEffectType.EvasiveManeuver5,
-                        StatusEffectType.EvasiveManeuver4,
-                        StatusEffectType.EvasiveManeuver3,
-                        StatusEffectType.EvasiveManeuver2,
-                        StatusEffectType.EvasiveManeuver1)))
-            {
-                return (true, (FeatType.EvasiveManeuver3, Self));
-            }
-            if (CheckIfCanUseFeat(Self, Self, FeatType.EvasiveManeuver2,
-                    () => !StatusEffectService.HasStatusEffect(Self,
-                        StatusEffectType.EvasiveManeuver5,
-                        StatusEffectType.EvasiveManeuver4,
-                        StatusEffectType.EvasiveManeuver3,
-                        StatusEffectType.EvasiveManeuver2,
-                        StatusEffectType.EvasiveManeuver1)))
-            {
-                return (true, (FeatType.EvasiveManeuver2, Self));
-            }
-            if (CheckIfCanUseFeat(Self, Self, FeatType.EvasiveManeuver1,
-                    () => !StatusEffectService.HasStatusEffect(Self,
-                        StatusEffectType.EvasiveManeuver5,
-                        StatusEffectType.EvasiveManeuver4,
-                        StatusEffectType.EvasiveManeuver3,
-                        StatusEffectType.EvasiveManeuver2,
-                        StatusEffectType.EvasiveManeuver1)))
-            {
-                return (true, (FeatType.EvasiveManeuver1, Self));
-            }
-
 
             return NoAction;
         }

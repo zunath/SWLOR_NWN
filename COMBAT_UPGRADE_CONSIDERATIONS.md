@@ -33,6 +33,25 @@ This document tracks items that need to be considered and implemented for the co
   - Ensure compatibility with existing items that use accuracy
   - Plan migration strategy for existing accuracy items
 
+### 4. Player Entity Cleanup
+- **Task**: Remove the "Defenses" property from the Player entity
+- **Status**: Pending
+- **Details**:
+  - Remove the "Defenses" property from the Player entity
+  - Update any code that references this property
+  - Ensure new defense system doesn't rely on this property
+  - Consider impact on existing player data and migration
+
+### 5. Player Entity Stat Migration
+- **Task**: Remove AbilityRecastReduction from Player entity in favor of the new stat dictionary
+- **Status**: Pending
+- **Details**:
+  - Remove AbilityRecastReduction property from Player entity
+  - Migrate to new stat dictionary system
+  - Update any code that references AbilityRecastReduction
+  - Ensure new stat system properly handles ability recast reduction
+  - Plan migration strategy for existing player data
+
 ## Implementation Notes
 
 ### Database Considerations

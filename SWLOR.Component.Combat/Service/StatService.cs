@@ -15,9 +15,6 @@ using SWLOR.Shared.Domain.Perk.Contracts;
 using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Skill.Contracts;
 using SWLOR.Shared.Domain.Skill.Enums;
-using SWLOR.Shared.Domain.StatusEffect.Contracts;
-using SWLOR.Shared.Domain.StatusEffect.Enums;
-using SWLOR.Shared.Domain.StatusEffect.ValueObjects;
 using SWLOR.Shared.Events.Events.Player;
 using EquipmentSlot = NWN.Native.API.EquipmentSlot;
 
@@ -28,7 +25,6 @@ namespace SWLOR.Component.Combat.Service
         private readonly ILogger _logger;
         private readonly IDatabaseService _db;
         private readonly IServiceProvider _serviceProvider;
-        private readonly IStatusEffectService _statusEffectService;
         private readonly IEventAggregator _eventAggregator;
         private readonly ICreaturePluginService _creaturePlugin;
         private readonly IObjectPluginService _objectPlugin;
@@ -44,7 +40,6 @@ namespace SWLOR.Component.Combat.Service
             ILogger logger, 
             IDatabaseService db, 
             IServiceProvider serviceProvider, 
-            IStatusEffectService statusEffectService,
             IEventAggregator eventAggregator,
             ICreaturePluginService creaturePlugin,
             IObjectPluginService objectPlugin)
@@ -52,7 +47,6 @@ namespace SWLOR.Component.Combat.Service
             _logger = logger;
             _db = db;
             _serviceProvider = serviceProvider;
-            _statusEffectService = statusEffectService;
             _eventAggregator = eventAggregator;
             _creaturePlugin = creaturePlugin;
             _objectPlugin = objectPlugin;
@@ -108,14 +102,8 @@ namespace SWLOR.Component.Combat.Service
         public int GetMaxFP(uint creature, Player dbPlayer = null)
         {
             var modifier = GetAbilityModifier(AbilityType.Willpower, creature);
-            var foodEffect = _statusEffectService.GetEffectData<FoodEffectData>(creature, StatusEffectType.Food);
             var foodBonus = 0;
             int baseFP;
-
-            if (foodEffect != null)
-            {
-                foodBonus = foodEffect.FP;
-            }
 
             // Players
             if (GetIsPC(creature) && !GetIsDM(creature))
@@ -179,14 +167,8 @@ namespace SWLOR.Component.Combat.Service
         public int GetMaxStamina(uint creature, Player dbPlayer = null)
         {
             var modifier = GetAbilityModifier(AbilityType.Agility, creature);
-            var foodEffect = _statusEffectService.GetEffectData<FoodEffectData>(creature, StatusEffectType.Food);
             var foodBonus = 0;
             int baseStamina;
-
-            if (foodEffect != null)
-            {
-                foodBonus = foodEffect.STM;
-            }
 
             // Players
             if (GetIsPC(creature) && !GetIsDM(creature))
@@ -420,7 +402,7 @@ namespace SWLOR.Component.Combat.Service
 
             // Player returned after the server restarted. They no longer have the food status effect.
             // Reduce their HP by the amount tracked in the DB.
-            if (dbPlayer.TemporaryFoodHP > 0 && !_statusEffectService.HasStatusEffect(player, StatusEffectType.Food))
+            if (dbPlayer.TemporaryFoodHP > 0 )//&& !_statusEffectService.HasStatusEffect(player, StatusEffectType.Food))
             {
                 AdjustPlayerMaxHP(dbPlayer, player, -dbPlayer.TemporaryFoodHP);
                 dbPlayer.TemporaryFoodHP = 0;
@@ -734,150 +716,12 @@ namespace SWLOR.Component.Combat.Service
         /// <returns>A modified defense value.</returns>
         private int CalculateEffectDefense(uint creature, int defense, CombatDamageType type)
         {
-            var foodEffect = _statusEffectService.GetEffectData<FoodEffectData>(creature, StatusEffectType.Food);
-
-            if (type == CombatDamageType.Physical)
-            {
-                // Iron Shell
-                if (_statusEffectService.HasStatusEffect(creature, StatusEffectType.IronShell))
-                    defense += 20;
-
-                // Shielding
-                if (_statusEffectService.HasStatusEffect(creature, StatusEffectType.Shielding1))
-                    defense += 5;
-                if (_statusEffectService.HasStatusEffect(creature, StatusEffectType.Shielding2))
-                    defense += 10;
-                if (_statusEffectService.HasStatusEffect(creature, StatusEffectType.Shielding3))
-                    defense += 15;
-                if (_statusEffectService.HasStatusEffect(creature, StatusEffectType.Shielding4))
-                    defense += 20;
-
-                // Force Valor
-                if (_statusEffectService.HasStatusEffect(creature, StatusEffectType.ForceValor1))
-                    defense += 10;
-                if (_statusEffectService.HasStatusEffect(creature, StatusEffectType.ForceValor2))
-                    defense += 20;
-
-                // Bolster Armor
-                if (_statusEffectService.HasStatusEffect(creature, StatusEffectType.BolsterArmor1))
-                    defense += 5;
-                if (_statusEffectService.HasStatusEffect(creature, StatusEffectType.BolsterArmor2))
-                    defense += 10;
-                if (_statusEffectService.HasStatusEffect(creature, StatusEffectType.BolsterArmor3))
-                    defense += 15;
-                if (_statusEffectService.HasStatusEffect(creature, StatusEffectType.BolsterArmor4))
-                    defense += 20;
-                if (_statusEffectService.HasStatusEffect(creature, StatusEffectType.BolsterArmor5))
-                    defense += 25;
-
-                // Frenzied Shout
-                if (_statusEffectService.HasStatusEffect(creature, StatusEffectType.FrenziedShout))
-                {
-                    var source = _statusEffectService.GetEffectData<uint>(creature, StatusEffectType.FrenziedShout);
-                    if (GetIsObjectValid(source))
-                    {
-                        var sourceSOC = GetAbilityScore(source, AbilityType.Social);
-                        var perkLevel = PerkService.GetPerkLevel(source, PerkType.FrenziedShout);
-                        switch (perkLevel)
-                        {
-                            case 1:
-                                defense -= sourceSOC;
-                                break;
-                            case 2:
-                                defense -= (int)(sourceSOC * 1.5f);
-                                break;
-                            case 3:
-                                defense -= sourceSOC * 2;
-                                break;
-                        }
-                    }
-                }
-
-                // Food Effects
-                if(foodEffect != null)
-                    defense += foodEffect.DefensePhysical;
-            }
-            else if (type == CombatDamageType.Force)
-            {
-                if (foodEffect != null)
-                    defense += foodEffect.DefenseForce;
-            }
-            else if (type == CombatDamageType.Poison)
-            {
-                if (foodEffect != null)
-                    defense += foodEffect.DefensePoison;
-            }
-            else if (type == CombatDamageType.Fire)
-            {
-                if (foodEffect != null)
-                    defense += foodEffect.DefenseFire;
-            }
-            else if (type == CombatDamageType.Ice)
-            {
-                if (foodEffect != null)
-                    defense += foodEffect.DefenseIce;
-            }
-            else if (type == CombatDamageType.Electrical)
-            {
-                if (foodEffect != null)
-                    defense += foodEffect.DefenseElectrical;
-            }
-
-            return defense;
+            return 0;
         }
 
         private int CalculateEffectAttack(uint creature, int attack)
         {
-            // Force Rage
-            if (_statusEffectService.HasStatusEffect(creature, StatusEffectType.ForceRage1))
-                attack += 10;
-            if (_statusEffectService.HasStatusEffect(creature, StatusEffectType.ForceRage2))
-                attack += 20;
-
-            // Soldiers Strike
-            if (_statusEffectService.HasStatusEffect(creature, StatusEffectType.SoldiersStrike))
-            {
-                var source = _statusEffectService.GetEffectData<uint>(creature, StatusEffectType.SoldiersStrike);
-                if (GetIsObjectValid(source))
-                {
-                    var perkLevel = PerkService.GetPerkLevel(source, PerkType.SoldiersStrike);
-                    var sourceSOC = GetAbilityScore(source, AbilityType.Social);
-
-                    switch (perkLevel)
-                    {
-                        case 1:
-                            attack += sourceSOC;
-                            break;
-                        case 2:
-                            attack += (int)(sourceSOC * 1.5f);
-                            break;
-                        case 3:
-                            attack += sourceSOC * 2;
-                            break;
-                    }
-                }
-            }
-
-            // Food Effects
-            var foodEffect = _statusEffectService.GetEffectData<FoodEffectData>(creature, StatusEffectType.Food);
-            if (foodEffect != null)
-            {
-                attack += foodEffect.Attack;
-            }
-
-            // Bolster Attack
-            if (_statusEffectService.HasStatusEffect(creature, StatusEffectType.BolsterAttack1))
-                attack += 5;
-            if (_statusEffectService.HasStatusEffect(creature, StatusEffectType.BolsterAttack2))
-                attack += 10;
-            if (_statusEffectService.HasStatusEffect(creature, StatusEffectType.BolsterAttack3))
-                attack += 15;
-            if (_statusEffectService.HasStatusEffect(creature, StatusEffectType.BolsterAttack4))
-                attack += 20;
-            if (_statusEffectService.HasStatusEffect(creature, StatusEffectType.BolsterAttack5))
-                attack += 25;
-
-            return attack;
+            return 0;
         }
         
         /// <summary>
@@ -1303,139 +1147,19 @@ namespace SWLOR.Component.Combat.Service
 
         private int CalculateEffectAccuracy(uint creature, int accuracy)
         {
-            for (var effect = GetFirstEffect(creature); GetIsEffectValid(effect); effect = GetNextEffect(creature))
-            {
-                var type = GetEffectType(effect);
-                if (type == EffectScriptType.AttackIncrease)
-                {
-                    accuracy += 5 * GetEffectInteger(effect, 0);
-                }
-                else if (type == EffectScriptType.AttackDecrease)
-                {
-                    accuracy -= 5 * GetEffectInteger(effect, 0);
-                }
-            }
-
-            var foodEffect = _statusEffectService.GetEffectData<FoodEffectData>(creature, StatusEffectType.Food);
-            if (foodEffect != null)
-            {
-                accuracy += foodEffect.Accuracy;
-            }
-
-            accuracy += GetSoldierPrecisionAccuracyBonus(creature);
-
-            _logger.Write<AttackLogGroup>($"Effect Accuracy: {accuracy}");
-
-            return accuracy;
+            return 0;
         }
 
         private int CalculateEffectAccuracyNative(CNWSCreature creature, int accuracy)
         {
-            foreach (var effect in creature.m_appliedEffects)
-            {
-                if (effect.m_nType == (ushort)EffectTrueType.AttackIncrease)
-                {
-                    accuracy += 5 * effect.GetInteger(0);
-                }
-                else if (effect.m_nType == (ushort)EffectTrueType.AttackDecrease)
-                {
-                    accuracy -= 5 * effect.GetInteger(0);
-                }
-            }
-
-            var foodEffect = _statusEffectService.GetEffectData<FoodEffectData>(creature.m_idSelf, StatusEffectType.Food);
-            if (foodEffect != null)
-            {
-                accuracy += foodEffect.Accuracy;
-            }
-
-            accuracy += GetSoldierPrecisionAccuracyBonus(creature.m_idSelf);
-
-            _logger.Write<AttackLogGroup>($"Native Effect Accuracy: {accuracy}");
-
-            return accuracy;
+            return 0;
         }
 
         private int CalculateEffectEvasion(uint creature)
         {
-            var evasionBonus = 0;
-            var foodEffect = _statusEffectService.GetEffectData<FoodEffectData>(creature, StatusEffectType.Food);
-
-            // Soldiers Speed
-            if (_statusEffectService.HasStatusEffect(creature, StatusEffectType.SoldiersSpeed))
-            {
-                var source = _statusEffectService.GetEffectData<uint>(creature, StatusEffectType.SoldiersSpeed);
-                if (GetIsObjectValid(source))
-                {
-                    var sourceSOC = GetAbilityScore(source, AbilityType.Social);
-                    var perkLevel = PerkService.GetPerkLevel(source, PerkType.SoldiersSpeed);
-
-                    switch (perkLevel)
-                    {
-                        case 1:
-                            evasionBonus += sourceSOC / 2;
-                            break;
-                        case 2:
-                            evasionBonus += sourceSOC;
-                            break;
-                        case 3:
-                            evasionBonus += (int)(sourceSOC * 1.5f);
-                            break;
-                    }
-
-                }
-            }
-
-            // Food Effects
-            if (foodEffect != null)
-            {
-                evasionBonus += foodEffect.Evasion;
-            }
-
-            // Evasive Maneuver
-            if (_statusEffectService.HasStatusEffect(creature, StatusEffectType.EvasiveManeuver1))
-                evasionBonus += 5;
-            if (_statusEffectService.HasStatusEffect(creature, StatusEffectType.EvasiveManeuver2))
-                evasionBonus += 10;
-            if (_statusEffectService.HasStatusEffect(creature, StatusEffectType.EvasiveManeuver3))
-                evasionBonus += 15;
-            if (_statusEffectService.HasStatusEffect(creature, StatusEffectType.EvasiveManeuver4))
-                evasionBonus += 20;
-            if (_statusEffectService.HasStatusEffect(creature, StatusEffectType.EvasiveManeuver5))
-                evasionBonus += 25;
-
-            // Assault
-            if (_statusEffectService.HasStatusEffect(creature, StatusEffectType.Assault))
-                evasionBonus += 10;
-
-            return evasionBonus;
-        }
-
-        private int GetSoldierPrecisionAccuracyBonus(uint creature)
-        {
-            if (_statusEffectService.HasStatusEffect(creature, StatusEffectType.SoldiersPrecision))
-            {
-                var source = _statusEffectService.GetEffectData<uint>(creature, StatusEffectType.SoldiersPrecision);
-
-                if (GetIsObjectValid(source))
-                {
-                    var sourceSOC = GetAbilityScore(source, AbilityType.Social);
-                    var perkLevel = PerkService.GetPerkLevel(source, PerkType.SoldiersPrecision);
-
-                    switch (perkLevel)
-                    {
-                        case 1:
-                            return sourceSOC / 2;
-                        case 2:
-                            return sourceSOC;
-                        case 3:
-                            return (int)(sourceSOC * 1.5f);
-                    }
-                }
-            }
-
             return 0;
         }
+
 
         /// <summary>
         /// Retrieves a creature's evasion.
@@ -1851,11 +1575,6 @@ namespace SWLOR.Component.Combat.Service
             var control = dbPlayer.Control.ContainsKey(craftingSkillType)
                 ? dbPlayer.Control[craftingSkillType]
                 : 0;
-            var foodEffect = _statusEffectService.GetEffectData<FoodEffectData>(player, StatusEffectType.Food);
-            if (foodEffect != null)
-            {
-                control += foodEffect.Control[craftingSkillType];
-            }
 
             return control;
         }
@@ -1881,11 +1600,6 @@ namespace SWLOR.Component.Combat.Service
             var control = dbPlayer.Craftsmanship.ContainsKey(craftingSkillType)
                 ? dbPlayer.Craftsmanship[craftingSkillType]
                 : 0;
-            var foodEffect = _statusEffectService.GetEffectData<FoodEffectData>(player, StatusEffectType.Food);
-            if (foodEffect != null)
-            {
-                control += foodEffect.Craftsmanship[craftingSkillType];
-            }
 
             return control;
         }

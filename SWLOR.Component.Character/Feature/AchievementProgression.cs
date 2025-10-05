@@ -1,15 +1,15 @@
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
+using SWLOR.Shared.Domain.Crafting.Events;
 using SWLOR.Shared.Domain.Entities;
+using SWLOR.Shared.Domain.Perk.Events;
+using SWLOR.Shared.Domain.Quest.Events;
+using SWLOR.Shared.Domain.Skill.Events;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Area;
-using SWLOR.Shared.Events.Events.Crafting;
 using SWLOR.Shared.Events.Events.Creature;
 using SWLOR.Shared.Events.Events.Module;
-using SWLOR.Shared.Events.Events.Perk;
-using SWLOR.Shared.Events.Events.Quest;
-using SWLOR.Shared.Events.Events.Skill;
 
 namespace SWLOR.Component.Character.Feature
 {

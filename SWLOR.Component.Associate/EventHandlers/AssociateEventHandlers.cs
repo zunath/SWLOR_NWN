@@ -1,12 +1,12 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Shared.Domain.Associate.Contracts;
+using SWLOR.Shared.Domain.Associate.Events;
+using SWLOR.Shared.Domain.Combat.Events;
+using SWLOR.Shared.Domain.Properties.Events;
+using SWLOR.Shared.Domain.Space.Events;
 using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Events.Associate;
-using SWLOR.Shared.Events.Events.Combat;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.NWNX;
-using SWLOR.Shared.Events.Events.Space;
-using SWLOR.Shared.Events.Events.Properties;
 
 namespace SWLOR.Component.Associate.EventHandlers
 {

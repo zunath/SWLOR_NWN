@@ -2,7 +2,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
 using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Perk.Enums;
-using SWLOR.Shared.Domain.StatusEffect.Enums;
+
 
 namespace SWLOR.Test.Shared.Domain.Ability.ValueObjects
 {
@@ -28,7 +28,6 @@ namespace SWLOR.Test.Shared.Domain.Ability.ValueObjects
             Assert.That(abilityDetail.ActivationType, Is.EqualTo(AbilityActivationType.Invalid));
             Assert.That(abilityDetail.EffectiveLevelPerkType, Is.EqualTo(PerkType.Invalid));
             Assert.That(abilityDetail.AnimationType, Is.EqualTo(AnimationType.Invalid));
-            Assert.That(abilityDetail.ConcentrationStatusEffectType, Is.EqualTo(StatusEffectType.Invalid));
             Assert.That(abilityDetail.CanBeUsedInSpace, Is.False);
             Assert.That(abilityDetail.IgnoreHeavyArmorPenalty, Is.False);
             Assert.That(abilityDetail.MaxRange, Is.EqualTo(5.0f));
@@ -186,18 +185,6 @@ namespace SWLOR.Test.Shared.Domain.Ability.ValueObjects
             Assert.That(abilityDetail.AnimationType, Is.EqualTo(AnimationType.LoopingConjure1));
         }
 
-        [Test]
-        public void AbilityDetail_WithConcentrationStatusEffectType_ShouldStoreConcentrationStatusEffectTypeCorrectly()
-        {
-            // Arrange
-            var abilityDetail = new AbilityDetail();
-
-            // Act
-            abilityDetail.ConcentrationStatusEffectType = StatusEffectType.ForceAttunement;
-
-            // Assert
-            Assert.That(abilityDetail.ConcentrationStatusEffectType, Is.EqualTo(StatusEffectType.ForceAttunement));
-        }
 
         [Test]
         public void AbilityDetail_WithCanBeUsedInSpace_ShouldStoreCanBeUsedInSpaceCorrectly()
@@ -313,7 +300,6 @@ namespace SWLOR.Test.Shared.Domain.Ability.ValueObjects
             abilityDetail.ActivationType = AbilityActivationType.Casted;
             abilityDetail.EffectiveLevelPerkType = PerkType.LightsaberProficiency;
             abilityDetail.AnimationType = AnimationType.LoopingConjure1;
-            abilityDetail.ConcentrationStatusEffectType = StatusEffectType.ForceAttunement;
             abilityDetail.CanBeUsedInSpace = true;
             abilityDetail.IgnoreHeavyArmorPenalty = true;
             abilityDetail.MaxRange = 10.5f;
@@ -334,7 +320,6 @@ namespace SWLOR.Test.Shared.Domain.Ability.ValueObjects
             Assert.That(abilityDetail.ActivationType, Is.EqualTo(AbilityActivationType.Casted));
             Assert.That(abilityDetail.EffectiveLevelPerkType, Is.EqualTo(PerkType.LightsaberProficiency));
             Assert.That(abilityDetail.AnimationType, Is.EqualTo(AnimationType.LoopingConjure1));
-            Assert.That(abilityDetail.ConcentrationStatusEffectType, Is.EqualTo(StatusEffectType.ForceAttunement));
             Assert.That(abilityDetail.CanBeUsedInSpace, Is.True);
             Assert.That(abilityDetail.IgnoreHeavyArmorPenalty, Is.True);
             Assert.That(abilityDetail.MaxRange, Is.EqualTo(10.5f));
@@ -548,20 +533,6 @@ namespace SWLOR.Test.Shared.Domain.Ability.ValueObjects
         }
 
         [Test]
-        public void AbilityDetail_WithAllStatusEffectTypes_ShouldStoreAllStatusEffectTypes()
-        {
-            // Arrange
-            var abilityDetail = new AbilityDetail();
-
-            // Act & Assert
-            abilityDetail.ConcentrationStatusEffectType = StatusEffectType.Invalid;
-            Assert.That(abilityDetail.ConcentrationStatusEffectType, Is.EqualTo(StatusEffectType.Invalid));
-
-            abilityDetail.ConcentrationStatusEffectType = StatusEffectType.ForceAttunement;
-            Assert.That(abilityDetail.ConcentrationStatusEffectType, Is.EqualTo(StatusEffectType.ForceAttunement));
-        }
-
-        [Test]
         public void AbilityDetail_WithAllPerkTypes_ShouldStoreAllPerkTypes()
         {
             // Arrange
@@ -589,7 +560,6 @@ namespace SWLOR.Test.Shared.Domain.Ability.ValueObjects
             abilityDetail.ActivationType = AbilityActivationType.Casted;
             abilityDetail.EffectiveLevelPerkType = PerkType.LightsaberProficiency;
             abilityDetail.AnimationType = AnimationType.LoopingConjure1;
-            abilityDetail.ConcentrationStatusEffectType = StatusEffectType.ForceAttunement;
             abilityDetail.CanBeUsedInSpace = true;
             abilityDetail.IgnoreHeavyArmorPenalty = true;
             abilityDetail.MaxRange = 10.5f;
@@ -610,7 +580,6 @@ namespace SWLOR.Test.Shared.Domain.Ability.ValueObjects
             Assert.That(deserializedDetail.ActivationType, Is.EqualTo(abilityDetail.ActivationType));
             Assert.That(deserializedDetail.EffectiveLevelPerkType, Is.EqualTo(abilityDetail.EffectiveLevelPerkType));
             Assert.That(deserializedDetail.AnimationType, Is.EqualTo(abilityDetail.AnimationType));
-            Assert.That(deserializedDetail.ConcentrationStatusEffectType, Is.EqualTo(abilityDetail.ConcentrationStatusEffectType));
             Assert.That(deserializedDetail.CanBeUsedInSpace, Is.EqualTo(abilityDetail.CanBeUsedInSpace));
             Assert.That(deserializedDetail.IgnoreHeavyArmorPenalty, Is.EqualTo(abilityDetail.IgnoreHeavyArmorPenalty));
             Assert.That(deserializedDetail.MaxRange, Is.EqualTo(abilityDetail.MaxRange));

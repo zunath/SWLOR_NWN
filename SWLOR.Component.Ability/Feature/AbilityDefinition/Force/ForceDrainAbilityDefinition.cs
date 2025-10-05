@@ -3,7 +3,6 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
 using SWLOR.Shared.Domain.Perk.Enums;
-using SWLOR.Shared.Domain.StatusEffect.Enums;
 
 namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
 {
@@ -29,7 +28,6 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .HasActivationDelay(2f)
                 .HasMaxRange(15.0f)
                 .RequirementFP(2)
-                .IsConcentrationAbility(StatusEffectType.ForceDrain1)
                 .IsHostileAbility()
                 .UsesAnimation(AnimationType.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
@@ -44,7 +42,6 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .HasActivationDelay(2f)
                 .HasMaxRange(15.0f)
                 .RequirementFP(3)
-                .IsConcentrationAbility(StatusEffectType.ForceDrain2)
                 .IsHostileAbility()
                 .UsesAnimation(AnimationType.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
@@ -59,7 +56,6 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .HasActivationDelay(2f)
                 .HasMaxRange(15.0f)
                 .RequirementFP(4)
-                .IsConcentrationAbility(StatusEffectType.ForceDrain3)
                 .IsHostileAbility()
                 .UsesAnimation(AnimationType.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
@@ -74,7 +70,6 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .HasActivationDelay(2f)
                 .HasMaxRange(15.0f)
                 .RequirementFP(5)
-                .IsConcentrationAbility(StatusEffectType.ForceDrain4)
                 .IsHostileAbility()
                 .UsesAnimation(AnimationType.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
@@ -88,7 +83,6 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .HasActivationDelay(2f)
                 .HasMaxRange(15.0f)
                 .RequirementFP(6)
-                .IsConcentrationAbility(StatusEffectType.ForceDrain5)
                 .IsHostileAbility()
                 .UsesAnimation(AnimationType.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();

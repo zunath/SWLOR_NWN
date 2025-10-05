@@ -3,7 +3,6 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Ability.Contracts;
 using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Perk.Enums;
-using SWLOR.Shared.Domain.StatusEffect.Enums;
 
 namespace SWLOR.Shared.Domain.Ability.ValueObjects
 {
@@ -27,7 +26,6 @@ namespace SWLOR.Shared.Domain.Ability.ValueObjects
         public AbilityActivationType ActivationType { get; set; }
         public PerkType EffectiveLevelPerkType { get; set; }
         public AnimationType AnimationType { get; set; }
-        public StatusEffectType ConcentrationStatusEffectType { get; set; }
         public bool CanBeUsedInSpace { get; set; }
         public bool IgnoreHeavyArmorPenalty { get; set; }
         public float MaxRange { get; set; }
@@ -41,7 +39,6 @@ namespace SWLOR.Shared.Domain.Ability.ValueObjects
             ActivationVisualEffect = VisualEffectType.None;
             AnimationType = AnimationType.Invalid;
             Requirements = new List<IAbilityActivationRequirement>();
-            ConcentrationStatusEffectType = StatusEffectType.Invalid;
             MaxRange = 5.0f;
             IsHostileAbility = false;
             DisplaysActivationMessage = true;

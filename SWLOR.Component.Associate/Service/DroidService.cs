@@ -19,8 +19,8 @@ using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Perk.Contracts;
 using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Skill.Enums;
-using SWLOR.Shared.Domain.StatusEffect.Contracts;
-using SWLOR.Shared.Domain.StatusEffect.Enums;
+
+
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Service;
 using SWLOR.Shared.Events.Constants;
@@ -81,7 +81,6 @@ namespace SWLOR.Component.Associate.Service
             // Initialize lazy services
             _guiService = new Lazy<IGuiService>(() => _serviceProvider.GetRequiredService<IGuiService>());
             _raceService = new Lazy<IRaceService>(() => _serviceProvider.GetRequiredService<IRaceService>());
-            _statusEffectService = new Lazy<IStatusEffectService>(() => _serviceProvider.GetRequiredService<IStatusEffectService>());
             _aiService = new Lazy<IAIService>(() => _serviceProvider.GetRequiredService<IAIService>());
             _activityService = new Lazy<IActivityService>(() => _serviceProvider.GetRequiredService<IActivityService>());
             _recastService = new Lazy<IRecastService>(() => _serviceProvider.GetRequiredService<IRecastService>());
@@ -93,7 +92,6 @@ namespace SWLOR.Component.Associate.Service
         // Lazy-loaded services to break circular dependencies
         private readonly Lazy<IGuiService> _guiService;
         private readonly Lazy<IRaceService> _raceService;
-        private readonly Lazy<IStatusEffectService> _statusEffectService;
         private readonly Lazy<IAIService> _aiService;
         private readonly Lazy<IActivityService> _activityService;
         private readonly Lazy<IRecastService> _recastService;
@@ -103,7 +101,6 @@ namespace SWLOR.Component.Associate.Service
         
         private IGuiService GuiService => _guiService.Value;
         private IRaceService RaceService => _raceService.Value;
-        private IStatusEffectService StatusEffectService => _statusEffectService.Value;
         private IAIService AIService => _aiService.Value;
         private IActivityService ActivityService => _activityService.Value;
         private IRecastService RecastService => _recastService.Value;
@@ -1148,7 +1145,8 @@ namespace SWLOR.Component.Associate.Service
 
             AssignCommand(droid, () => ClearAllActions());
 
-            StatusEffectService.Apply(droid, droid, StatusEffectType.Rest, 0f);
+            // todo: apply rest effect in new system to droid
+            //StatusEffectService.Apply(droid, droid, StatusEffectType.Rest, 0f);
         }
 
         public void DroidOnSpawn()

@@ -16,7 +16,7 @@ using SWLOR.Shared.Domain.Perk.Contracts;
 using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Perk.ValueObjects;
 using SWLOR.Shared.Domain.Skill.Contracts;
-using SWLOR.Shared.Domain.StatusEffect.Enums;
+
 using SWLOR.Shared.Domain.UI.Events;
 using SWLOR.Shared.UI.Component;
 using SWLOR.Shared.UI.Contracts;
@@ -543,11 +543,10 @@ namespace SWLOR.Component.Perk.UI.ViewModel
                 if (GetHasFeat(feat, target)) continue;
                 _creaturePlugin.AddFeatByLevel(target, feat, 1);
 
-                // If feat isn't registered or the ability doesn't have an impact or concentration action,
-                // don't add the feat to the player's hot bar.
+                // If feat isn't registered don't add the feat to the player's hot bar.
                 if (!AbilityService.IsFeatRegistered(feat)) continue;
                 var abilityDetail = AbilityService.GetAbilityDetail(feat);
-                if (abilityDetail.ImpactAction == null && abilityDetail.ConcentrationStatusEffectType == StatusEffectType.Invalid) continue;
+                if (abilityDetail.ImpactAction == null) continue;
 
                 AddFeatToHotBar(feat);
             }

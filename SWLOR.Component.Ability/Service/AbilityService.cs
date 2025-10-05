@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
-using SWLOR.Component.Ability.Model;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -15,8 +14,6 @@ using SWLOR.Shared.Domain.Perk.Contracts;
 using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Skill.Enums;
 using SWLOR.Shared.Domain.Space.Contracts;
-using SWLOR.Shared.Domain.StatusEffect.Contracts;
-using SWLOR.Shared.Domain.StatusEffect.Enums;
 using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Component.Ability.Service
@@ -33,9 +30,7 @@ namespace SWLOR.Component.Ability.Service
         private readonly Dictionary<FeatType, AbilityDetail> _allAbilities = new();
         
         // Additional caches for complex data
-        private readonly Dictionary<uint, ActiveConcentrationAbility> _activeConcentrationAbilities = new();
         private readonly Dictionary<AbilityToggleType, Action<uint, bool>> _toggleActions = new();
-        private readonly Dictionary<uint, PlayerAura> _playerAuras = new();
 
         public AbilityService(
             IDatabaseService db, 
@@ -54,7 +49,6 @@ namespace SWLOR.Component.Ability.Service
         private IActivityService ActivityService => _serviceProvider.GetRequiredService<IActivityService>();
         private IMessagingService MessagingService => _serviceProvider.GetRequiredService<IMessagingService>();
         private IRecastService RecastService => _serviceProvider.GetRequiredService<IRecastService>();
-        private IStatusEffectService StatusEffectService => _serviceProvider.GetRequiredService<IStatusEffectService>();
         private IAbilityBuilder AbilityBuilder => _serviceProvider.GetRequiredService<IAbilityBuilder>();
         private ISpaceService SpaceService => _serviceProvider.GetRequiredService<ISpaceService>();
 
@@ -232,148 +226,6 @@ namespace SWLOR.Component.Ability.Service
         }
 
 
-        /// <summary>
-        /// Checks whether a creature can activate the perk feat.
-        /// </summary>
-        /// <param name="activator">The activator of the perk feat.</param>
-        /// <param name="abilityType">The type of ability to use.</param>
-        /// <returns>true if successful, false otherwise</returns>
-        public bool CanUseConcentration(
-            uint activator,
-            FeatType abilityType)
-        {
-            var ability = GetAbilityDetail(abilityType);
-
-            // Activator is dead.
-            if (GetCurrentHitPoints(activator) <= 0)
-            {
-                SendMessageToPC(activator, "You are dead.");
-                return false;
-            }
-
-            // Not commandable
-            if (!GetCommandable(activator))
-            {
-                SendMessageToPC(activator, "You cannot take actions at this time.");
-                return false;
-            }
-
-            // Perk-specific requirement checks
-            foreach (var req in ability.Requirements)
-            {
-                var requirementError = req.CheckRequirements(activator);
-                if (!string.IsNullOrWhiteSpace(requirementError))
-                {
-                    SendMessageToPC(activator, requirementError);
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        /// <summary>
-        /// Each tick, creatures with a concentration effect will be processed.
-        /// This will drain FP and reapply whatever effect is associated with an ability.
-        /// </summary>
-        public void ProcessConcentrationEffects()
-        {
-            var pairs = _activeConcentrationAbilities.ToList();
-
-            foreach (var (creature, concentrationAbility) in pairs)
-            {
-                // Creature/target is dead or invalid.
-                if (!GetIsObjectValid(creature) ||
-                    GetIsDead(creature) ||
-                    !GetIsObjectValid(concentrationAbility.Target) ||
-                    GetIsDead(concentrationAbility.Target))
-                {
-                    EndConcentrationAbility(creature);
-                    continue;
-                }
-
-                // Creature and caster are not in the same area.
-                if (GetArea(creature) != GetArea(concentrationAbility.Target))
-                {
-                    EndConcentrationAbility(creature);
-                    continue;
-                }
-
-                var ability = GetAbilityDetail(concentrationAbility.Feat);
-
-                // Move to next creature if requirements aren't met.
-                if (!CanUseConcentration(creature, concentrationAbility.Feat))
-                {
-                    EndConcentrationAbility(creature);
-                    continue;
-                }
-
-                // We don't run after activation actions until the second concentration cycle.
-                // This is because if a player activates a concentration ability 1 second before the cycle,
-                // they get charged for both the activation as well as the concentration cost.
-                // The trade off is some abilities will last longer depending on when the player uses them in the cycle.
-                // I think this is preferable to punishing the player twice though.
-                if (!GetLocalBool(creature, "CONCENTRATION_FIRST_USE"))
-                {
-                    foreach (var req in ability.Requirements)
-                    {
-                        req.AfterActivationAction(creature);
-                    }
-                }
-                DeleteLocalBool(creature, "CONCENTRATION_FIRST_USE");
-            }
-        }
-
-        /// <summary>
-        /// Starts a concentration ability on a specified creature.
-        /// If there is already a concentration ability active, it will be replaced with this one.
-        /// </summary>
-        /// <param name="creature">The creature who will perform the concentration.</param>
-        /// <param name="target">The target of the concentration effect.</param>
-        /// <param name="feat">The type of ability to activate.</param>
-        /// <param name="statusEffectType">The concentration status effect to apply.</param>
-        public void StartConcentrationAbility(uint creature, uint target, FeatType feat, StatusEffectType statusEffectType)
-        {
-            _activeConcentrationAbilities[creature] = new ActiveConcentrationAbility(target, feat, statusEffectType);
-            StatusEffectService.Apply(creature, target, statusEffectType, 0.0f, null, feat);
-
-            MessagingService.SendMessageNearbyToPlayers(creature, $"{GetName(creature)} begins concentrating...");
-            SetLocalBool(creature, "CONCENTRATION_FIRST_USE", true);
-        }
-
-        /// <summary>
-        /// Retrieves a creature's active concentration ability.
-        /// If no concentration ability is active, Feat.Invalid will be returned.
-        /// </summary>
-        /// <param name="creature">The creature to check.</param>
-        /// <returns>The active concentration feat or Feat.Invalid.</returns>
-        public ActiveConcentrationAbility GetActiveConcentration(uint creature)
-        {
-            if (_activeConcentrationAbilities.ContainsKey(creature))
-            {
-                return _activeConcentrationAbilities[creature];
-            }
-
-            return new ActiveConcentrationAbility(OBJECT_INVALID, FeatType.Invalid, StatusEffectType.Invalid);
-        }
-        
-        /// <summary>
-        /// Ends a concentration effect on a specified creature.
-        /// If creature isn't concentrating, nothing will happen.
-        /// </summary>
-        /// <param name="creature"></param>
-        public void EndConcentrationAbility(uint creature)
-        {
-            if (_activeConcentrationAbilities.ContainsKey(creature))
-            {
-                var activeConcentrationEffect = _activeConcentrationAbilities[creature];
-                StatusEffectService.Remove(creature, activeConcentrationEffect.StatusEffectType);
-                _activeConcentrationAbilities.Remove(creature);
-
-                SendMessageToPC(creature, "You stop concentrating.");
-                DeleteLocalBool(creature, "CONCENTRATION_FIRST_USE");
-            }
-        }
 
         /// <summary>
         /// Toggles an ability on or off for a given player.
@@ -483,13 +335,15 @@ namespace SWLOR.Component.Ability.Service
             if (GetIsPC(target) || GetIsDM(target))
                 return;
 
-            if (!_playerAuras.ContainsKey(player))
-                return;
+            // todo: migrate to new system
 
-            var aura = _playerAuras[player];
+            //if (!_playerAuras.ContainsKey(player))
+            //    return;
 
-            if (aura.Auras.Count <= 0)
-                return;
+            //var aura = _playerAuras[player];
+
+            //if (aura.Auras.Count <= 0)
+            //    return;
 
             CombatPointService.AddCombatPoint(player, target, SkillType.Leadership);
         }
@@ -503,139 +357,6 @@ namespace SWLOR.Component.Ability.Service
                 count = MaxNumberOfAuras;
 
             return count;
-        }
-
-        public void ApplyAura(uint activator, StatusEffectType type, bool targetsSelf, bool targetsParty, bool targetsEnemies)
-        {
-            if (!_playerAuras.ContainsKey(activator))
-                _playerAuras.Add(activator, new PlayerAura());
-
-            var aura = _playerAuras[activator];
-
-            // Safety check - ensure the same aura never enters the cache more than once.
-            if (aura.Auras.Exists(x => x.Type == type))
-                return;
-
-            var maxAuras = GetMaxNumberOfAuras(activator);
-            var detail = StatusEffectService.GetDetail(type);
-
-            while (aura.Auras.Count >= maxAuras)
-            {
-                var removeType = aura.Auras[0].Type;
-                if (aura.Auras[0].TargetsSelf)
-                {
-                    StatusEffectService.Remove(activator, removeType, false);
-                }
-
-                if (aura.Auras[0].TargetsParty)
-                {
-                    foreach (var member in aura.PartyMembersInRange)
-                    {
-                        StatusEffectService.Remove(member, removeType, false);
-                    }
-                }
-
-                if (aura.Auras[0].TargetsEnemies)
-                {
-                    foreach (var npc in aura.CreaturesInRange)
-                    {
-                        StatusEffectService.Remove(npc, removeType, false);
-                    }
-                }
-
-                aura.Auras.RemoveAt(0);
-            }
-
-            aura.Auras.Add(new PlayerAuraDetail(type, targetsSelf, targetsParty, targetsEnemies));
-
-            if (targetsSelf)
-            {
-                StatusEffectService.Apply(activator, activator, type, 0f, activator);
-            }
-
-            SendMessageToPC(activator, ColorToken.Green($"Aura '{detail.Name}' activated."));
-            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Fnf_Sound_Burst), activator);
-        }
-
-        public bool ToggleAura(uint activator, StatusEffectType type)
-        {
-            if (!_playerAuras.ContainsKey(activator))
-                return true;
-
-            // Aura is active and player wants to deactivate it.
-            // Remove it from the list and send a notification message.
-            var aura = _playerAuras[activator];
-            var existing = aura.Auras.FirstOrDefault(x => x.Type == type);
-            if (existing != null)
-            {
-                var statusEffect = StatusEffectService.GetDetail(type);
-
-                SendMessageToPC(activator, ColorToken.Red($"Aura '{statusEffect.Name}' deactivated."));
-
-                if (existing.TargetsSelf)
-                {
-                    StatusEffectService.Remove(activator, type, false);
-                }
-
-                if (existing.TargetsParty)
-                {
-                    foreach (var member in aura.PartyMembersInRange)
-                    {
-                        StatusEffectService.Remove(member, type, false);
-                    }
-                }
-
-                if (existing.TargetsEnemies)
-                {
-                    foreach (var npc in aura.CreaturesInRange)
-                    {
-                        StatusEffectService.Remove(npc, type, false);
-                    }
-                }
-
-                _playerAuras[activator].Auras.Remove(existing);
-                return false;
-            }
-
-            return true;
-        }
-
-        /// <summary>
-        /// Removes all auras which are currently active on a creature.
-        /// </summary>
-        /// <param name="activator">The creature who originally activated the auras.</param>
-        private void RemoveAllAuras(uint activator)
-        {
-            if (!_playerAuras.ContainsKey(activator))
-                return;
-
-            var auraDetails = _playerAuras[activator];
-
-            foreach (var aura in auraDetails.Auras)
-            {
-                if (aura.TargetsSelf)
-                {
-                    StatusEffectService.Remove(activator, aura.Type);
-                }
-
-                if (aura.TargetsParty)
-                {
-                    foreach (var member in auraDetails.PartyMembersInRange)
-                    {
-                        StatusEffectService.Remove(member, aura.Type, false);
-                    }
-                }
-
-                if (aura.TargetsEnemies)
-                {
-                    foreach (var npc in auraDetails.CreaturesInRange)
-                    {
-                        StatusEffectService.Remove(npc, aura.Type, false);
-                    }
-                }
-            }
-
-            _playerAuras.Remove(activator);
         }
 
         private AreaOfEffectType GetAuraAOE(int level)
@@ -678,129 +399,12 @@ namespace SWLOR.Component.Ability.Service
         }
 
         /// <summary>
-        /// When a player exits the server, remove all of their Aura effects.
-        /// </summary>
-        public void ClearAurasOnExit()
-        {
-            var player = GetExitingObject();
-            RemoveAllAuras(player);
-        }
-
-        /// <summary>
-        /// When a player dies, remove all of their Aura effects.
-        /// </summary>
-        public void ClearAurasOnDeath()
-        {
-            var player = GetLastPlayerDied();
-            RemoveAllAuras(player);
-        }
-
-        /// <summary>
         /// When a player respawns, reapply the aura AOE effect
         /// </summary>
         public void ReapplyAuraOnRespawn()
         {
             var player = GetLastRespawnButtonPresser();
             ReapplyPlayerAuraAOE(player);
-        }
-
-        /// <summary>
-        /// When a player enters space mode, remove all of their Aura effects.
-        /// </summary>
-        public void ClearAurasOnSpaceEntry()
-        {
-            var player = OBJECT_SELF;
-            RemoveAllAuras(player);
-        }
-
-        /// <summary>
-        /// Whenever a creature enters the aura, add them to the cache.
-        /// </summary>
-        public void AuraEnter()
-        {
-            var entering = GetEnteringObject();
-            var self = GetAreaOfEffectCreator(OBJECT_SELF);
-
-            if (!_playerAuras.ContainsKey(self))
-                _playerAuras.Add(self, new PlayerAura());
-
-            // Party Members
-            if (PartyService.IsInParty(self, entering))
-            {
-                if (_playerAuras[self].PartyMembersInRange.Contains(entering))
-                    return;
-
-                _playerAuras[self].PartyMembersInRange.Add(entering);
-
-                foreach (var detail in _playerAuras[self].Auras)
-                {
-                    if (detail.TargetsParty)
-                    {
-                        StatusEffectService.Apply(self, entering, detail.Type, 0f, self);
-                    }
-                }
-            }
-
-            // Enemies
-            else if (!GetIsDMPossessed(entering) && !GetIsDM(entering) && (GetIsEnemy(self, entering) || GetIsEnemy(entering, self)))
-            {
-                if (_playerAuras[self].CreaturesInRange.Contains(entering))
-                    return;
-
-                _playerAuras[self].CreaturesInRange.Add(entering);
-
-                foreach (var detail in _playerAuras[self].Auras)
-                {
-                    if (detail.TargetsEnemies)
-                    {
-                        StatusEffectService.Apply(self, entering, detail.Type, 0f, self);
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Whenever a creature exits the aura, remove it from the cache.
-        /// </summary>
-        public void AuraExit()
-        {
-            var exiting = GetExitingObject();
-            var self = GetAreaOfEffectCreator(OBJECT_SELF);
-
-            if (!_playerAuras.ContainsKey(self))
-                _playerAuras.Add(self, new PlayerAura());
-
-            if (PartyService.IsInParty(self, exiting))
-            {
-                if (!_playerAuras[self].PartyMembersInRange.Contains(exiting))
-                    return;
-
-                _playerAuras[self].PartyMembersInRange.Remove(exiting);
-
-                foreach (var detail in _playerAuras[self].Auras)
-                {
-                    if (detail.TargetsParty)
-                    {
-                        StatusEffectService.Remove(exiting, detail.Type, false);
-                    }
-                }
-            }
-
-            else if (!GetIsDMPossessed(exiting) && !GetIsDM(exiting) && (GetIsEnemy(self, exiting) || GetIsEnemy(exiting, self)))
-            {
-                if (!_playerAuras[self].CreaturesInRange.Contains(exiting))
-                    return;
-
-                _playerAuras[self].CreaturesInRange.Remove(exiting);
-
-                foreach (var detail in _playerAuras[self].Auras)
-                {
-                    if (detail.TargetsEnemies)
-                    {
-                        StatusEffectService.Remove(exiting, detail.Type, false);
-                    }
-                }
-            }
         }
 
         /// <summary>

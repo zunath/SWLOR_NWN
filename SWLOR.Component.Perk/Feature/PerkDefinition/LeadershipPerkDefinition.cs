@@ -167,10 +167,10 @@ namespace SWLOR.Component.Perk.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Increases the range of your shouts to 15 meters.")
                 .Price(2)
-                .RequirementSkill(SkillType.Leadership, 50)
-                
-                .TriggerPurchase(AbilityService.ReapplyPlayerAuraAOE)
-                .TriggerRefund(AbilityService.ReapplyPlayerAuraAOE);
+                .RequirementSkill(SkillType.Leadership, 50);
+
+            //.TriggerPurchase(AbilityService.ReapplyPlayerAuraAOE)
+            //.TriggerRefund(AbilityService.ReapplyPlayerAuraAOE);
         }
 
         private void RousingShout(IPerkBuilder builder)

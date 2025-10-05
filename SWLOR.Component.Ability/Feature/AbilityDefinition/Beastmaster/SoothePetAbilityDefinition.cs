@@ -7,8 +7,6 @@ using SWLOR.Shared.Domain.Associate.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Skill.Enums;
-using SWLOR.Shared.Domain.StatusEffect.Contracts;
-using SWLOR.Shared.Domain.StatusEffect.Enums;
 
 namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beastmaster
 {
@@ -25,7 +23,6 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beastmaster
         private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
         private IBeastMasteryService BeastMastery => _serviceProvider.GetRequiredService<IBeastMasteryService>();
         private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
-        private IStatusEffectService StatusEffectService => _serviceProvider.GetRequiredService<IStatusEffectService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
@@ -68,12 +65,6 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beastmaster
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {
                     var beast = GetAssociate(AssociateType.Henchman, activator);
-
-                    StatusEffectService.Remove(beast, StatusEffectType.Bleed);
-                    StatusEffectService.Remove(beast, StatusEffectType.Poison);
-                    StatusEffectService.Remove(beast, StatusEffectType.Shock);
-                    StatusEffectService.Remove(beast, StatusEffectType.Burn);
-                    StatusEffectService.Remove(beast, StatusEffectType.Disease);
 
                     RemoveEffect(beast, 
                         EffectScriptType.Disease, 

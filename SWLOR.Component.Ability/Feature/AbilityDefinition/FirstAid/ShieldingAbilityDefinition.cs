@@ -5,7 +5,6 @@ using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
 using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Skill.Enums;
-using SWLOR.Shared.Domain.StatusEffect.Enums;
 
 namespace SWLOR.Component.Ability.Feature.AbilityDefinition.FirstAid
 {
@@ -40,13 +39,12 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.FirstAid
             return string.Empty;
         }
 
-        private void Impact(uint activator, uint target, StatusEffectType statusEffectType)
+        private void Impact(uint activator, uint target)
         {
             var willpowerMod = GetAbilityModifier(AbilityType.Willpower, activator);
             const float BaseLength = 900f;
             var length = BaseLength + willpowerMod * 30f;
             
-            StatusEffectService.Apply(activator, target, statusEffectType, length);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Imp_Spell_Mantle_Use), target);
 
             TakeStimPack(activator);
@@ -67,7 +65,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.FirstAid
                 .HasCustomValidation(Validation)
                 .HasImpactAction((activator, target, _, _) =>
                 {
-                    Impact(activator, target, StatusEffectType.Shielding1);
+                    Impact(activator, target);
 
                     EnmityService.ModifyEnmityOnAll(activator, 150);
                     CombatPointService.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
@@ -89,7 +87,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.FirstAid
                 .HasCustomValidation(Validation)
                 .HasImpactAction((activator, target, _, _) =>
                 {
-                    Impact(activator, target, StatusEffectType.Shielding2);
+                    Impact(activator, target);
 
                     EnmityService.ModifyEnmityOnAll(activator, 300);
                     CombatPointService.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
@@ -111,7 +109,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.FirstAid
                 .HasCustomValidation(Validation)
                 .HasImpactAction((activator, target, _, _) =>
                 {
-                    Impact(activator, target, StatusEffectType.Shielding3);
+                    Impact(activator, target);
 
                     EnmityService.ModifyEnmityOnAll(activator, 450);
                     CombatPointService.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
@@ -133,7 +131,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.FirstAid
                 .HasCustomValidation(Validation)
                 .HasImpactAction((activator, target, _, _) =>
                 {
-                    Impact(activator, target, StatusEffectType.Shielding4);
+                    Impact(activator, target);
 
                     EnmityService.ModifyEnmityOnAll(activator, 600);
                     CombatPointService.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);

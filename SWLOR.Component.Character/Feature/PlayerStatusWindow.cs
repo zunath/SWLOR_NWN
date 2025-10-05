@@ -1,12 +1,12 @@
 using SWLOR.NWN.API.Contracts;
 using SWLOR.Shared.Abstractions.Enums;
+using SWLOR.Shared.Domain.Space.Events;
 using SWLOR.Shared.Domain.UI.Events;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Area;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Events.Player;
-using SWLOR.Shared.Events.Events.Space;
 using SWLOR.Shared.UI.Contracts;
 
 namespace SWLOR.Component.Character.Feature

@@ -4,7 +4,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
-using SWLOR.Shared.Events.Events.Combat;
+using SWLOR.Shared.Domain.Combat.Events;
 
 namespace SWLOR.Component.Combat.Service
 {

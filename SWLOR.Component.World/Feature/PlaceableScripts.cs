@@ -4,8 +4,8 @@ using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Dialog.Contracts;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Inventory.Enums;
+using SWLOR.Shared.Domain.World.Events;
 using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Events.World;
 using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Component.World.Feature

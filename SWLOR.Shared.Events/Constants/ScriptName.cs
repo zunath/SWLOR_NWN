@@ -533,17 +533,12 @@ namespace SWLOR.Shared.Events.Constants
         public const string OnAssociateStateEffect = "assoc_stateffect";
 
         // Combat events
-        public const string OnPlayerRestStarted = "rest_started";
 
         // Space events
         public const string OnSpaceEnter = "space_enter";
         public const string OnSpaceExit = "space_exit";
         public const string OnUseShipComputer = "ship_computer";
         public const string OnSpaceTarget = "spc_target";
-
-        // Aura events
-        public const string OnAuraEnter = "aura_enter";
-        public const string OnAuraExit = "aura_exit";
 
         // Beast events
         public const string OnBeastBlocked = "beast_blocked";
@@ -637,7 +632,6 @@ namespace SWLOR.Shared.Events.Constants
         public const string OnPitfallTrap = "pitfalltrap";
 
         // Combat point events
-        public const string OnCombatPointXPDistribute = "cp_xp_distribute";
 
         // Incubator events
         public const string OnIncubatorTerminal = "incubator_term";

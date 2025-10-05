@@ -11,7 +11,6 @@ using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Perk.Contracts;
 using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Skill.Enums;
-using SWLOR.Shared.Domain.StatusEffect.Contracts;
 
 namespace SWLOR.Component.Ability.Feature.AbilityDefinition.FirstAid
 {
@@ -23,8 +22,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.FirstAid
             IServiceProvider serviceProvider,
             ICombatPointService combatPointService, 
             IEnmityService enmityService, 
-            IAbilityService abilityService,
-            IStatusEffectService statusEffect) 
+            IAbilityService abilityService) 
             : base(serviceProvider)
         {
             _serviceProvider = serviceProvider;

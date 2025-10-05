@@ -2,13 +2,12 @@ using SWLOR.Component.Ability.Feature.AbilityDefinition.Devices;
 using SWLOR.Component.Ability.Feature.AbilityDefinition.Force;
 using SWLOR.Component.Ability.Feature.AbilityDefinition.General;
 using SWLOR.Shared.Domain.Ability.Contracts;
+using SWLOR.Shared.Domain.Ability.Events;
+using SWLOR.Shared.Domain.Combat.Events;
+using SWLOR.Shared.Domain.Inventory.Events;
 using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Events.Ability;
-using SWLOR.Shared.Events.Events.Combat;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.Player;
-using SWLOR.Shared.Events.Events.Space;
-using SWLOR.Shared.Events.Events.Inventory;
 using SWLOR.Shared.Events.Events.Server;
 
 namespace SWLOR.Component.Ability.EventHandlers
@@ -56,16 +55,6 @@ namespace SWLOR.Component.Ability.EventHandlers
         }
 
         /// <summary>
-        /// Each tick, creatures with a concentration effect will be processed.
-        /// This will drain FP and reapply whatever effect is associated with an ability.
-        /// </summary>
-        [ScriptHandler<OnServerHeartbeat>]
-        public void ProcessConcentrationEffects()
-        {
-            _abilityService.ProcessConcentrationEffects();
-        }
-
-        /// <summary>
         /// Whenever a weapon's OnHit event is fired, add a Leadership combat point if an Aura is active.
         /// </summary>
         [ScriptHandler<OnItemHit>]
@@ -80,62 +69,7 @@ namespace SWLOR.Component.Ability.EventHandlers
         [ScriptHandler<OnModuleEnter>]
         public void OnModuleEnter()
         {
-            _abilityService.ApplyAuraAOE();
             _dashAbilityDefinition.EnterSpace();
-        }
-
-        /// <summary>
-        /// When a player exits the server, remove all of their Aura effects.
-        /// </summary>
-        [ScriptHandler<OnModuleExit>]
-        public void OnModuleExit()
-        {
-            _abilityService.ClearAurasOnExit();
-        }
-
-        /// <summary>
-        /// When a player dies, remove all of their Aura effects.
-        /// </summary>
-        [ScriptHandler<OnModuleDeath>]
-        public void OnModuleDeath()
-        {
-            _abilityService.ClearAurasOnDeath();
-        }
-
-        /// <summary>
-        /// When a player respawns, reapply the aura AOE effect
-        /// </summary>
-        [ScriptHandler<OnModuleRespawn>]
-        public void OnModuleRespawn()
-        {
-            _abilityService.ReapplyAuraOnRespawn();
-        }
-
-        /// <summary>
-        /// When a player enters space mode, remove all of their Aura effects.
-        /// </summary>
-        [ScriptHandler<OnSpaceEnter>]
-        public void OnSpaceEnter()
-        {
-            _abilityService.ClearAurasOnSpaceEntry();
-        }
-
-        /// <summary>
-        /// Whenever a creature enters the aura, add them to the cache.
-        /// </summary>
-        [ScriptHandler<OnAuraEnter>]
-        public void AuraEnter()
-        {
-            _abilityService.AuraEnter();
-        }
-
-        /// <summary>
-        /// Whenever a creature exits the aura, remove it from the cache.
-        /// </summary>
-        [ScriptHandler<OnAuraExit>]
-        public void AuraExit()
-        {
-            _abilityService.AuraExit();
         }
 
         /// <summary>

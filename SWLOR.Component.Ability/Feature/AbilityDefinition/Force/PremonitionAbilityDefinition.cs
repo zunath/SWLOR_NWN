@@ -3,7 +3,6 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
 using SWLOR.Shared.Domain.Perk.Enums;
-using SWLOR.Shared.Domain.StatusEffect.Enums;
 
 namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
 {
@@ -26,7 +25,6 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .HasRecastDelay(RecastGroupType.Premonition, 60f)
                 .RequirementFP(4)
                 .IsCastedAbility()
-                .IsConcentrationAbility(StatusEffectType.Premonition1)
                 .UsesAnimation(AnimationType.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }
@@ -39,7 +37,6 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .HasRecastDelay(RecastGroupType.Premonition, 60f)
                 .RequirementFP(6)
                 .IsCastedAbility()
-                .IsConcentrationAbility(StatusEffectType.Premonition2)
                 .UsesAnimation(AnimationType.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }

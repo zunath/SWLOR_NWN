@@ -79,7 +79,6 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Leadership
                     }
 
                     ApplyEffectToObject(DurationType.Instant, EffectResurrection(), target);
-                    AbilityService.ReapplyPlayerAuraAOE(target);
 
                     if (hp > 0)
                     {

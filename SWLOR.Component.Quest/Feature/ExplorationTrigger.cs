@@ -1,5 +1,5 @@
+using SWLOR.Shared.Domain.Quest.Events;
 using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Events.Quest;
 using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Component.Quest.Feature

@@ -2,12 +2,12 @@ using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Domain.Combat.Events;
 using SWLOR.Shared.Domain.Inventory.Contracts;
+using SWLOR.Shared.Domain.Inventory.Events;
 using SWLOR.Shared.Domain.Inventory.ValueObjects;
 using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Events.Combat;
 using SWLOR.Shared.Events.Events.Creature;
-using SWLOR.Shared.Events.Events.Inventory;
 
 namespace SWLOR.Component.Inventory.Feature.ItemDefinition
 {

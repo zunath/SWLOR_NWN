@@ -1,6 +1,6 @@
 using SWLOR.Shared.Domain.Dialog.Contracts;
+using SWLOR.Shared.Domain.Dialog.Events;
 using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Events.Dialog;
 using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Component.Communication.EventHandlers

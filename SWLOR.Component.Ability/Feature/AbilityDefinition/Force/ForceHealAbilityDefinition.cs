@@ -3,7 +3,6 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
 using SWLOR.Shared.Domain.Perk.Enums;
-using SWLOR.Shared.Domain.StatusEffect.Enums;
 
 namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
 {
@@ -29,7 +28,6 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .HasActivationDelay(2f)
                 .RequirementFP(3)
                 .HasMaxRange(15)
-                .IsConcentrationAbility(StatusEffectType.ForceHeal1)
                 .UsesAnimation(AnimationType.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }
@@ -43,7 +41,6 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .HasActivationDelay(2f)
                 .RequirementFP(4)
                 .HasMaxRange(15)
-                .IsConcentrationAbility(StatusEffectType.ForceHeal2)
                 .UsesAnimation(AnimationType.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }
@@ -57,7 +54,6 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .HasActivationDelay(2f)
                 .RequirementFP(5)
                 .HasMaxRange(15)
-                .IsConcentrationAbility(StatusEffectType.ForceHeal3)
                 .UsesAnimation(AnimationType.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }
@@ -71,7 +67,6 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .HasActivationDelay(2f)
                 .RequirementFP(6)
                 .HasMaxRange(15)
-                .IsConcentrationAbility(StatusEffectType.ForceHeal4)
                 .UsesAnimation(AnimationType.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }
@@ -85,7 +80,6 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .HasActivationDelay(2f)
                 .RequirementFP(7)
                 .HasMaxRange(15)
-                .IsConcentrationAbility(StatusEffectType.ForceHeal5)
                 .UsesAnimation(AnimationType.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }

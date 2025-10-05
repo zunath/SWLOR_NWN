@@ -1,0 +1,92 @@
+﻿using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Domain.Character.Contracts;
+using SWLOR.Shared.Domain.Repositories;
+
+namespace SWLOR.Component.Character.Service
+{
+    internal class CharacterResourceService: ICharacterResourceService
+    {
+        private const string FPLocalVar = "FP";
+        private const string StaminaLocalVar = "STAMINA";
+        
+        private readonly IPlayerRepository _playerRepository;
+        private readonly IStatServiceNew _statService;
+
+        public CharacterResourceService(
+            IPlayerRepository playerRepository, 
+            IStatServiceNew statService)
+        {
+            _playerRepository = playerRepository;
+            _statService = statService;
+        }
+        public void RestoreHP(uint creature, int amount)
+        {
+            var effect = EffectHeal(amount);
+            ApplyEffectToObject(DurationType.Instant, effect, creature);
+        }
+
+        public void RestoreFP(uint creature, int amount)
+        {
+            if (amount <= 0) return;
+
+            var maxFP = _statService.CalculateMaxFP(creature);
+            
+            // Players
+            if (GetIsPC(creature) && !GetIsDM(creature))
+            {
+                var playerId = GetObjectUUID(creature);
+                var dbPlayer = _playerRepository.GetById(playerId);
+                
+                dbPlayer.FP += amount;
+
+                if (dbPlayer.FP > maxFP)
+                    dbPlayer.FP = maxFP;
+                
+                _playerRepository.Save(dbPlayer);
+            }
+            // NPCs
+            else
+            {
+                var fp = GetLocalInt(creature, FPLocalVar);
+                fp += amount;
+
+                if (fp > maxFP)
+                    fp = maxFP;
+
+                SetLocalInt(creature, FPLocalVar, fp);
+            }
+        }
+
+        public void RestoreSTM(uint creature, int amount)
+        {
+            if (amount <= 0) return;
+
+            var maxSTM = _statService.CalculateMaxSTM(creature);
+
+            // Players
+            if (GetIsPC(creature) && !GetIsDM(creature))
+            {
+                var playerId = GetObjectUUID(creature);
+                var dbPlayer = _playerRepository.GetById(playerId);
+
+                dbPlayer.Stamina += amount;
+
+                if (dbPlayer.Stamina > maxSTM)
+                    dbPlayer.Stamina = maxSTM;
+
+                _playerRepository.Save(dbPlayer);
+            }
+            // NPCs
+            else
+            {
+                var stamina = GetLocalInt(creature, StaminaLocalVar);
+                stamina += amount;
+
+                if (stamina > maxSTM)
+                    stamina = maxSTM;
+
+                SetLocalInt(creature, StaminaLocalVar, stamina);
+            }
+        }
+    }
+}

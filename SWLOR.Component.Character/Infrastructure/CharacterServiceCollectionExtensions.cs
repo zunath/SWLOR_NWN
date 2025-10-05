@@ -42,8 +42,8 @@ namespace SWLOR.Component.Character.Infrastructure
             services.AddSingleton<AchievementService>();
             services.AddSingleton<IRaceService, RaceService>();
             services.AddSingleton<IActivityService, ActivityService>();
-
-            // Snippet definitions are automatically registered by the Inventory component
+            services.AddSingleton<IStatGroupService, StatGroupService>();
+            services.AddSingleton<ICharacterResourceService, CharacterResourceService>();
 
             // Register feature classes
             services.AddSingleton<PlayerStatusWindow>();

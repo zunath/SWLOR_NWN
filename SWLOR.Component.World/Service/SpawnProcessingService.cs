@@ -5,7 +5,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
-using SWLOR.Shared.Events.Events.World;
+using SWLOR.Shared.Domain.World.Events;
 
 namespace SWLOR.Component.World.Service
 {

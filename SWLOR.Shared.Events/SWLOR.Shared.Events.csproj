@@ -20,23 +20,13 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Events\Ability\" />
-	  <Folder Include="Events\Admin\" />
-	  <Folder Include="Events\AI\" />
 	  <Folder Include="Events\Area\" />
-	  <Folder Include="Events\Associate\" />
-	  <Folder Include="Events\Character\" />
-	  <Folder Include="Events\Combat\" />
 	  <Folder Include="Events\Creature\" />
-	  <Folder Include="Events\Crafting\" />
 	  <Folder Include="Events\Eventing\" />
-	  <Folder Include="Events\Market\" />
-	  <Folder Include="Events\Migration\" />
 	  <Folder Include="Events\Module\" />
 	  <Folder Include="Events\NWNX\" />
 	  <Folder Include="Events\Player\" />
 	  <Folder Include="Events\Server\" />
-	  <Folder Include="Events\StatusEffect\" />
 	  <Folder Include="EventHandlers\" />
 	</ItemGroup>
 

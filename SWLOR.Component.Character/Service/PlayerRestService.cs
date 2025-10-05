@@ -2,8 +2,8 @@ using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Character.Contracts;
-using SWLOR.Shared.Domain.StatusEffect.Contracts;
-using SWLOR.Shared.Domain.StatusEffect.Enums;
+
+
 using SWLOR.Shared.Events.Events.Player;
 
 namespace SWLOR.Component.Character.Service
@@ -14,7 +14,6 @@ namespace SWLOR.Component.Character.Service
         private readonly IEventAggregator _eventAggregator;
         
         // Lazy-loaded services to break circular dependencies
-        private readonly Lazy<IStatusEffectService> _statusEffectService;
         private readonly Lazy<IPartyService> _partyService;
 
         public PlayerRestService(IServiceProvider serviceProvider, IEventAggregator eventAggregator)
@@ -23,12 +22,10 @@ namespace SWLOR.Component.Character.Service
             _eventAggregator = eventAggregator;
             
             // Initialize lazy services
-            _statusEffectService = new Lazy<IStatusEffectService>(() => _serviceProvider.GetRequiredService<IStatusEffectService>());
             _partyService = new Lazy<IPartyService>(() => _serviceProvider.GetRequiredService<IPartyService>());
         }
         
         // Lazy-loaded services to break circular dependencies
-        private IStatusEffectService StatusEffectService => _statusEffectService.Value;
         private IPartyService PartyService => _partyService.Value;
 
         /// <summary>
@@ -91,12 +88,14 @@ namespace SWLOR.Component.Character.Service
                 return;
             }
 
-            StatusEffectService.Apply(player, player, StatusEffectType.Rest, 0f);
+            // todo: apply rest effect to player in new system
+            //StatusEffectService.Apply(player, player, StatusEffectType.Rest, 0f);
 
             var henchman = GetAssociate(AssociateType.Henchman, player);
             if (GetIsObjectValid(henchman))
             {
-                StatusEffectService.Apply(henchman, henchman, StatusEffectType.Rest, 0f);
+                // todo: apply rest effect to henchman in new system
+                //StatusEffectService.Apply(henchman, henchman, StatusEffectType.Rest, 0f);
             }
 
             _eventAggregator.Publish(new OnPlayerRestStarted(), player);

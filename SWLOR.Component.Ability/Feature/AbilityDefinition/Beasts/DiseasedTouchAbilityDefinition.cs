@@ -7,8 +7,6 @@ using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Skill.Enums;
-using SWLOR.Shared.Domain.StatusEffect.Contracts;
-using SWLOR.Shared.Domain.StatusEffect.Enums;
 
 namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beasts
 {
@@ -24,7 +22,6 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beasts
         // Lazy-loaded services to break circular dependencies
         private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
         private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
-        private IStatusEffectService StatusEffectService => _serviceProvider.GetRequiredService<IStatusEffectService>();
         private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
@@ -68,7 +65,6 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beasts
             var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
             if (checkResult == SavingThrowResultType.Failed)
             {
-                StatusEffectService.Apply(activator, target, StatusEffectType.Disease, 30f, level);
             }
 
             EnmityService.ModifyEnmity(activator, target, 250 + damage);

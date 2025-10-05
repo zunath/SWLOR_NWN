@@ -1,8 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Shared.Domain.Ability.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
-using SWLOR.Shared.Domain.StatusEffect.Contracts;
-using SWLOR.Shared.Domain.StatusEffect.Enums;
 
 namespace SWLOR.Shared.Domain.Ability.ValueObjects
 {
@@ -22,7 +20,6 @@ namespace SWLOR.Shared.Domain.Ability.ValueObjects
 
         // Lazy-loaded services to break circular dependencies
         private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
-        private IStatusEffectService StatusEffectService => _serviceProvider.GetRequiredService<IStatusEffectService>();
 
         public string CheckRequirements(uint player)
         {
@@ -38,9 +35,6 @@ namespace SWLOR.Shared.Domain.Ability.ValueObjects
         public void AfterActivationAction(uint player)
         {
             if (GetIsDM(player)) return;
-
-            // Force Attunement reduces FP costs to zero.
-            if (StatusEffectService.HasStatusEffect(player, StatusEffectType.ForceAttunement)) return;
 
             StatService.ReduceFP(player, RequiredFP);
         }

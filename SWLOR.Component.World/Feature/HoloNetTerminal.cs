@@ -1,6 +1,6 @@
 using SWLOR.Shared.Abstractions.Enums;
+using SWLOR.Shared.Domain.World.Events;
 using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Events.World;
 using SWLOR.Shared.UI.Contracts;
 
 namespace SWLOR.Component.World.Feature

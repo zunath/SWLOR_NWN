@@ -22,12 +22,12 @@ using SWLOR.Shared.Domain.Repositories;
 using SWLOR.Shared.Domain.Skill.Enums;
 using SWLOR.Shared.Domain.Space.Contracts;
 using SWLOR.Shared.Domain.Space.Enums;
+using SWLOR.Shared.Domain.Space.Events;
 using SWLOR.Shared.Domain.Space.ValueObjects;
-using SWLOR.Shared.Domain.StatusEffect.Contracts;
+
 using SWLOR.Shared.Domain.World.Contracts;
 using SWLOR.Shared.Domain.World.Enums;
 using SWLOR.Shared.Events.Events.Player;
-using SWLOR.Shared.Events.Events.Space;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Service;
 using Vector3 = System.Numerics.Vector3;
@@ -87,7 +87,6 @@ namespace SWLOR.Component.Space.Service
             _planetService = new Lazy<IPlanetService>(() => _serviceProvider.GetRequiredService<IPlanetService>());
             _areaService = new Lazy<IAreaService>(() => _serviceProvider.GetRequiredService<IAreaService>());
             _messagingService = new Lazy<IMessagingService>(() => _serviceProvider.GetRequiredService<IMessagingService>());
-            _statusEffectService = new Lazy<IStatusEffectService>(() => _serviceProvider.GetRequiredService<IStatusEffectService>());
             _enmityService = new Lazy<IEnmityService>(() => _serviceProvider.GetRequiredService<IEnmityService>());
             _combatService = new Lazy<ICombatService>(() => _serviceProvider.GetRequiredService<ICombatService>());
             _perkService = new Lazy<IPerkService>(() => _serviceProvider.GetRequiredService<IPerkService>());
@@ -101,7 +100,6 @@ namespace SWLOR.Component.Space.Service
         private readonly Lazy<IPlanetService> _planetService;
         private readonly Lazy<IAreaService> _areaService;
         private readonly Lazy<IMessagingService> _messagingService;
-        private readonly Lazy<IStatusEffectService> _statusEffectService;
         private readonly Lazy<IEnmityService> _enmityService;
         private readonly Lazy<ICombatService> _combatService;
         private readonly Lazy<IPerkService> _perkService;
@@ -113,7 +111,6 @@ namespace SWLOR.Component.Space.Service
         private IPlanetService PlanetService => _planetService.Value;
         private IAreaService AreaService => _areaService.Value;
         private IMessagingService MessagingService => _messagingService.Value;
-        private IStatusEffectService StatusEffectService => _statusEffectService.Value;
         private IEnmityService EnmityService => _enmityService.Value;
         private ICombatService CombatService => _combatService.Value;
         private IPerkService PerkService => _perkService.Value;
@@ -711,7 +708,10 @@ namespace SWLOR.Component.Space.Service
         {
             // Ground effects must be removed when entering space mode.
             // Otherwise players could buff on the ground, then get those same bonuses while in space.
-            StatusEffectService.RemoveAll(player);
+
+            // todo: remove all status effects in new system
+            //StatusEffectService.RemoveAll(player);
+
             for (var effect = GetFirstEffect(player); GetIsEffectValid(effect); effect = GetNextEffect(player))
             {
                 RemoveEffect(player, effect);
@@ -834,7 +834,9 @@ namespace SWLOR.Component.Space.Service
         public void WarpPlayerInsideShip(uint player)
         {
             ExitSpaceMode(player);
-            AbilityService.ReapplyPlayerAuraAOE(player);
+
+            // todo: reapply player aura AOEs in new system
+            //AbilityService.ReapplyPlayerAuraAOE(player);
 
             if (!GetLocalBool(player, "SPACE_INSTANCE_LOCATION_SET"))
                 return;

@@ -4,7 +4,6 @@ using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
 using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Skill.Enums;
-using SWLOR.Shared.Domain.StatusEffect.Enums;
 
 namespace SWLOR.Component.Ability.Feature.AbilityDefinition.FirstAid
 {
@@ -41,11 +40,6 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.FirstAid
                         return "Your target is too far away.";
                     }
 
-                    if (!StatusEffectService.HasStatusEffect(target, StatusEffectType.Bleed, StatusEffectType.Poison))
-                    {
-                        return "Your target is healthy.";
-                    }
-
                     if (!HasMedicalSupplies(activator))
                     {
                         return "You have no medical supplies.";
@@ -56,8 +50,6 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.FirstAid
                 .HasImpactAction((activator, target, _, _) =>
                 {
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Imp_Healing_G), target);
-                    StatusEffectService.Remove(target, StatusEffectType.Bleed);
-                    StatusEffectService.Remove(target, StatusEffectType.Poison);
                     RemoveEffect(target, EffectScriptType.Poison, EffectScriptType.Disease);
 
                     TakeMedicalSupplies(activator);
@@ -85,11 +77,6 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.FirstAid
                         return "Your target is too far away.";
                     }
 
-                    if (!StatusEffectService.HasStatusEffect(target, StatusEffectType.Bleed, StatusEffectType.Poison, StatusEffectType.Shock, StatusEffectType.Burn))
-                    {
-                        return "Your target is healthy.";
-                    }
-
                     if (!HasMedicalSupplies(activator))
                     {
                         return "You have no medical supplies.";
@@ -100,11 +87,6 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.FirstAid
                 .HasImpactAction((activator, target, _, _) =>
                 {
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Imp_Healing_G), target);
-                    StatusEffectService.Remove(target, StatusEffectType.Bleed);
-                    StatusEffectService.Remove(target, StatusEffectType.Poison);
-                    StatusEffectService.Remove(target, StatusEffectType.Shock);
-                    StatusEffectService.Remove(target, StatusEffectType.Burn);
-                    StatusEffectService.Remove(target, StatusEffectType.Disease);
                     RemoveEffect(target, EffectScriptType.Poison, EffectScriptType.Disease);
 
                     TakeMedicalSupplies(activator);

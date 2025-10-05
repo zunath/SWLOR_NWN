@@ -9,8 +9,8 @@ using SWLOR.Shared.Domain.Communication.ValueObjects;
 using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Skill.Contracts;
 using SWLOR.Shared.Domain.Skill.Enums;
-using SWLOR.Shared.Domain.StatusEffect.Contracts;
-using SWLOR.Shared.Domain.StatusEffect.Enums;
+
+
 
 namespace SWLOR.Component.Communication.Service
 {
@@ -30,7 +30,6 @@ namespace SWLOR.Component.Communication.Service
         // Lazy-loaded services to break circular dependencies
         private IRandomService Random => _serviceProvider.GetRequiredService<IRandomService>();
         private ISkillService SkillService => _serviceProvider.GetRequiredService<ISkillService>();
-        private IStatusEffectService StatusEffectService => _serviceProvider.GetRequiredService<IStatusEffectService>();
 
         /// <summary>
         /// When the module loads, create translators for every language and store them into cache.
@@ -105,24 +104,6 @@ namespace SWLOR.Component.Communication.Service
                 dbListener.Skills[language].Rank;
             var maxRank = languageSkill.MaxRank;
 
-            // Check for the Comprehend Speech concentration ability.
-            var grantSenseXP = false;
-            var statusEffectBonus = 0;
-            if (StatusEffectService.HasStatusEffect(listener, StatusEffectType.ComprehendSpeech1))
-                statusEffectBonus = 5;
-            else if (StatusEffectService.HasStatusEffect(listener, StatusEffectType.ComprehendSpeech2))
-                statusEffectBonus = 10;
-            else if (StatusEffectService.HasStatusEffect(listener, StatusEffectType.ComprehendSpeech3))
-                statusEffectBonus = 15;
-            else if (StatusEffectService.HasStatusEffect(listener, StatusEffectType.ComprehendSpeech4))
-                statusEffectBonus = 20;
-
-            if (statusEffectBonus > 0)
-            {
-                rank += statusEffectBonus;
-                grantSenseXP = true;
-            }
-
             // Ensure we don't go over the maximum.
             if (rank > maxRank)
                 rank = maxRank;
@@ -182,10 +163,6 @@ namespace SWLOR.Component.Communication.Service
                 }
 
                 SkillService.GiveSkillXP(listener, language, amount, false, false);
-
-                // Grant Force XP if player is concentrating Comprehend Speech.
-                if (grantSenseXP)
-                    SkillService.GiveSkillXP(listener, SkillType.Force, amount * 10, false, false);
 
                 SetLocalInt(listener, "LAST_LANGUAGE_SKILL_INCREASE_LOW", (int)(now & 0xFFFFFFFF));
                 SetLocalInt(listener, "LAST_LANGUAGE_SKILL_INCREASE_HIGH", (int)((now >> 32) & 0xFFFFFFFF));

@@ -1,9 +1,9 @@
 using SWLOR.Shared.Domain.Properties.Contracts;
+using SWLOR.Shared.Domain.Properties.Events;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.Area;
 using SWLOR.Shared.Events.Events.NWNX;
-using SWLOR.Shared.Events.Events.Properties;
 
 namespace SWLOR.Component.Properties.EventHandlers
 {

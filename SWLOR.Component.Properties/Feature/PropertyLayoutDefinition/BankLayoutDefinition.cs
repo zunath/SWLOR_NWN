@@ -3,13 +3,13 @@ using SWLOR.Component.Properties.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Entities;
+using SWLOR.Shared.Domain.Inventory.Events;
 using SWLOR.Shared.Domain.Properties.Entities;
 using SWLOR.Shared.Domain.Properties.Enums;
+using SWLOR.Shared.Domain.Properties.Events;
 using SWLOR.Shared.Domain.Properties.ValueObjects;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
-using SWLOR.Shared.Events.Events.Inventory;
-using SWLOR.Shared.Events.Events.Properties;
 
 namespace SWLOR.Component.Properties.Feature.PropertyLayoutDefinition
 {

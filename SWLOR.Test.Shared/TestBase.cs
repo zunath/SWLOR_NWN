@@ -10,7 +10,7 @@ namespace SWLOR.Test.Shared
     public abstract class TestBase
     {
         private static bool _isInitialized;
-        private static readonly Lock _lock = new();
+        private static readonly object _lock = new();
         private static NWScriptServiceMock? _mockService;
 
         /// <summary>

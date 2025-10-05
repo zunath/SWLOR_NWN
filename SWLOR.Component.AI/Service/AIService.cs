@@ -10,7 +10,6 @@ using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Dialog.Contracts;
 using SWLOR.Shared.Domain.Perk.Contracts;
-using SWLOR.Shared.Domain.StatusEffect.Contracts;
 
 namespace SWLOR.Component.AI.Service
 {
@@ -27,7 +26,6 @@ namespace SWLOR.Component.AI.Service
             // Initialize lazy services
             _random = new Lazy<IRandomService>(() => _serviceProvider.GetRequiredService<IRandomService>());
             _enmity = new Lazy<IEnmityService>(() => _serviceProvider.GetRequiredService<IEnmityService>());
-            _statusEffectService = new Lazy<IStatusEffectService>(() => _serviceProvider.GetRequiredService<IStatusEffectService>());
             _partyService = new Lazy<IPartyService>(() => _serviceProvider.GetRequiredService<IPartyService>());
             _activityService = new Lazy<IActivityService>(() => _serviceProvider.GetRequiredService<IActivityService>());
             _dialogService = new Lazy<IDialogService>(() => _serviceProvider.GetRequiredService<IDialogService>());
@@ -39,7 +37,6 @@ namespace SWLOR.Component.AI.Service
         // Lazy-loaded services to break circular dependencies
         private readonly Lazy<IRandomService> _random;
         private readonly Lazy<IEnmityService> _enmity;
-        private readonly Lazy<IStatusEffectService> _statusEffectService;
         private readonly Lazy<IPartyService> _partyService;
         private readonly Lazy<IActivityService> _activityService;
         private readonly Lazy<IDialogService> _dialogService;
@@ -49,7 +46,6 @@ namespace SWLOR.Component.AI.Service
         
         private IRandomService Random => _random.Value;
         private IEnmityService Enmity => _enmity.Value;
-        private IStatusEffectService StatusEffectService => _statusEffectService.Value;
         private IPartyService PartyService => _partyService.Value;
         private IActivityService ActivityService => _activityService.Value;
         private IDialogService DialogService => _dialogService.Value;

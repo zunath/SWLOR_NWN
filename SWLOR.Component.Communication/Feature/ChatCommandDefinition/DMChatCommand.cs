@@ -17,8 +17,8 @@ using SWLOR.Shared.Domain.Communication.ValueObjects;
 using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Skill.Enums;
 using SWLOR.Shared.Domain.Space.Contracts;
+using SWLOR.Shared.Domain.Space.Events;
 using SWLOR.Shared.Domain.UI.Events;
-using SWLOR.Shared.Events.Events.Space;
 using ChatChannelType = SWLOR.NWN.API.NWNX.Enum.ChatChannelType;
 using FactionType = SWLOR.Shared.Domain.Character.Enums.FactionType;
 
@@ -186,7 +186,6 @@ namespace SWLOR.Component.Communication.Feature.ChatCommandDefinition
                     if (GetIsDead(target))
                     {
                         ApplyEffectToObject(DurationType.Instant, EffectResurrection(), target);
-                        _abilityService.ReapplyPlayerAuraAOE(target);
                     }
 
                     ApplyEffectToObject(DurationType.Instant, EffectHeal(999), target);

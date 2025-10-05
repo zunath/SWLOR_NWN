@@ -1,6 +1,6 @@
+using SWLOR.Shared.Domain.Associate.Events;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Events.Associate;
 using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Component.Combat.EventHandlers

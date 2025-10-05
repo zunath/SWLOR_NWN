@@ -64,6 +64,7 @@ namespace SWLOR.Shared.Domain.Entities
                 { CombatDamageType.EM, 0 },
             };
 
+            Stats = new Dictionary<StatType, int>();
             ActiveShipId = Guid.Empty.ToString();
             IsUsingDualPistolMode = false;
             EmoteStyle = EmoteStyleType.Regular;
@@ -158,6 +159,7 @@ namespace SWLOR.Shared.Domain.Entities
         public AbilityType RacialStat { get; set; }
         public Dictionary<AbilityType, int> BaseStats { get; set; }
         public Dictionary<AbilityType, int> UpgradedStats { get; set; }
+        public Dictionary<StatType, int> Stats { get; set; }
         public RoleplayProgress RoleplayProgress { get; set; }
         public Dictionary<string, List<MapPin>> MapPins { get; set; }
         public Dictionary<string, string> MapProgressions { get; set; }

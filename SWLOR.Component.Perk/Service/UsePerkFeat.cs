@@ -15,7 +15,7 @@ using SWLOR.Shared.Domain.Communication.Contracts;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Perk.Contracts;
 using SWLOR.Shared.Domain.Perk.Enums;
-using SWLOR.Shared.Domain.StatusEffect.Enums;
+
 
 namespace SWLOR.Component.Perk.Service
 {
@@ -129,23 +129,6 @@ namespace SWLOR.Component.Perk.Service
                     if(ability.DisplaysActivationMessage)
                         MessagingService.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} queues {ability.Name} for the next attack.");
                     QueueWeaponAbility(activator, ability, feat);
-                }
-            }
-            // Concentration abilities are triggered once per tick.
-            else if (ability.ActivationType == AbilityActivationType.Concentration)
-            {
-                // Using the same concentration feat ends the effect.
-                var activeConcentrationAbility = AbilityService.GetActiveConcentration(activator);
-                if (activeConcentrationAbility.Feat == feat)
-                {
-                    AbilityService.EndConcentrationAbility(activator);
-                }
-                else
-                {
-                    if (AbilityService.CanUseAbility(activator, target, feat, effectivePerkLevel, targetLocation))
-                    {
-                        ActivateAbility(activator, target, feat, ability, targetLocation);
-                    }
                 }
             }
             // All other abilities are funneled through the same process.
@@ -305,11 +288,6 @@ namespace SWLOR.Component.Perk.Service
                 HandleStealthBreaking(activator, ability);
                 ability.ImpactAction?.Invoke(activator, target, ability.AbilityLevel, targetLocation);
                 RecastService.ApplyRecastDelay(activator, ability.RecastGroup, abilityRecastDelay, false);
-
-                if (ability.ConcentrationStatusEffectType != StatusEffectType.Invalid)
-                {
-                    AbilityService.StartConcentrationAbility(activator, target, feat, ability.ConcentrationStatusEffectType);
-                }
 
                 // If this is an attack make the NPC react.
                 EnmityService.AttackHighestEnmityTarget(target);

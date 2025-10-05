@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Domain.Crafting.Events;
 using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Perk.Contracts;
@@ -8,7 +9,6 @@ using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Skill.Contracts;
 using SWLOR.Shared.Domain.Skill.Enums;
 using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Events.Crafting;
 using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Component.Crafting.Feature

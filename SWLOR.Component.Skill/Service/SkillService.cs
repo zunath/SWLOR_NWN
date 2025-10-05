@@ -7,8 +7,8 @@ using SWLOR.Shared.Domain.Perk.Contracts;
 using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Skill.Contracts;
 using SWLOR.Shared.Domain.Skill.Enums;
-using SWLOR.Shared.Domain.StatusEffect.Contracts;
-using SWLOR.Shared.Domain.StatusEffect.Enums;
+
+
 using SWLOR.Shared.Domain.StatusEffect.ValueObjects;
 using SWLOR.Shared.Domain.UI.Events;
 using SWLOR.Shared.UI.Contracts;
@@ -22,7 +22,6 @@ namespace SWLOR.Component.Skill.Service
         private readonly IRandomService _random;
         private readonly IServiceProvider _serviceProvider;
         private readonly IGenericCacheService _cacheService;
-        private readonly IStatusEffectService _statusEffectService;
         private readonly IEventsPluginService _eventsPlugin;
 
         public SkillService(
@@ -30,14 +29,12 @@ namespace SWLOR.Component.Skill.Service
             IRandomService random, 
             IServiceProvider serviceProvider, 
             IGenericCacheService cacheService,
-            IStatusEffectService statusEffectService,
             IEventsPluginService eventsPlugin)
         {
             _db = db;
             _random = random;
             _serviceProvider = serviceProvider;
             _cacheService = cacheService;
-            _statusEffectService = statusEffectService;
             _eventsPlugin = eventsPlugin;
             
             // Initialize lazy services
@@ -97,28 +94,10 @@ namespace SWLOR.Component.Skill.Service
                 if (social > 0)
                     bonusPercentage += social * 0.025f;
 
-                // Food bonus
-                var foodEffect = _statusEffectService.GetEffectData<FoodEffectData>(player, StatusEffectType.Food);
-                if (foodEffect != null)
-                {
-                    bonusPercentage += foodEffect.XPBonusPercent * 0.01f;
-                }
-
                 // DM bonus
                 bonusPercentage += dbPlayer.DMXPBonus * 0.01f;
 
-                // Dedication bonus
-                if (_statusEffectService.HasStatusEffect(player, StatusEffectType.Dedication))
-                {
-                    var source = _statusEffectService.GetEffectData<uint>(player, StatusEffectType.Dedication);
-
-                    if (GetIsObjectValid(source))
-                    {
-                        var effectiveLevel = PerkService.GetPerkLevel(source, PerkType.Dedication);
-                        social = GetAbilityScore(source, AbilityType.Social);
-                        bonusPercentage += (10 + effectiveLevel * social) * 0.01f;
-                    }
-                }
+                // todo: XP bonus status effects in new system
 
                 // Apply bonuses
                 xp += (int)(xp * bonusPercentage);

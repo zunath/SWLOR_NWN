@@ -7,8 +7,8 @@ using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Skill.Enums;
-using SWLOR.Shared.Domain.StatusEffect.Contracts;
-using SWLOR.Shared.Domain.StatusEffect.Enums;
+
+
 
 namespace SWLOR.Component.Ability.Feature.AbilityDefinition.NPC
 {
@@ -24,7 +24,6 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.NPC
         // Lazy-loaded services to break circular dependencies
         private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
         private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
-        private IStatusEffectService StatusEffectService => _serviceProvider.GetRequiredService<IStatusEffectService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
@@ -58,7 +57,6 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.NPC
 
                     ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Piercing), target);
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Imp_Wallspike), target);
-                    StatusEffectService.Apply(activator, target, StatusEffectType.Bleed, 45f);
                 });
         }
 

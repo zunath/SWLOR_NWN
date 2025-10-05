@@ -1,11 +1,5 @@
-using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Domain.Combat.Contracts;
-using SWLOR.Shared.Domain.Entities;
-using SWLOR.Shared.Domain.StatusEffect.Contracts;
-using SWLOR.Shared.Domain.StatusEffect.Enums;
-using SWLOR.Shared.Domain.StatusEffect.ValueObjects;
+using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Player;
 
@@ -13,25 +7,16 @@ namespace SWLOR.Component.Combat.Feature
 {
     public class NaturalRegeneration
     {
-        private readonly IDatabaseService _db;
-        private readonly IServiceProvider _serviceProvider;
+        private readonly IStatServiceNew _statService;
+        private readonly ICharacterResourceService _characterResourceService;
 
-        public NaturalRegeneration(IDatabaseService db, IServiceProvider serviceProvider)
+        public NaturalRegeneration(
+            IStatServiceNew statService,
+            ICharacterResourceService characterResourceService)
         {
-            _db = db;
-            _serviceProvider = serviceProvider;
-            
-            // Initialize lazy services
-            _statService = new Lazy<IStatService>(() => _serviceProvider.GetRequiredService<IStatService>());
-            _statusEffectService = new Lazy<IStatusEffectService>(() => _serviceProvider.GetRequiredService<IStatusEffectService>());
+            _statService = statService;
+            _characterResourceService = characterResourceService;
         }
-
-        // Lazy-loaded services to break circular dependencies
-        private readonly Lazy<IStatService> _statService;
-        private readonly Lazy<IStatusEffectService> _statusEffectService;
-        
-        private IStatService StatService => _statService.Value;
-        private IStatusEffectService StatusEffectService => _statusEffectService.Value;
         
         /// <summary>
         /// On module heartbeat, process a player's HP/FP/STM regeneration.
@@ -50,37 +35,24 @@ namespace SWLOR.Component.Combat.Feature
             var tick = GetLocalInt(player, "NATURAL_REGENERATION_TICK") + 1;
             if (tick >= 5) // 6 seconds * 5 = 30 seconds
             {
-                var vitalityBonus = GetAbilityModifier(AbilityType.Vitality, player);
-                if (vitalityBonus < 0)
-                    vitalityBonus = 0;
-
-                var playerId = GetObjectUUID(player);
-                var dbPlayer = _db.Get<Player>(playerId);
-                var hpRegen = dbPlayer.HPRegen + vitalityBonus * 4;
-                var fpRegen = 1 + dbPlayer.FPRegen + vitalityBonus / 2;
-                var stmRegen = 1 + dbPlayer.STMRegen + vitalityBonus / 2;
-                var foodEffect = StatusEffectService.GetEffectData<FoodEffectData>(player, StatusEffectType.Food);
-
-                if (foodEffect != null)
-                {
-                    hpRegen += foodEffect.HPRegen;
-                    fpRegen += foodEffect.FPRegen;
-                    stmRegen += foodEffect.STMRegen;
-                }
+                var hpRegen = _statService.CalculateHPRegen(player);
+                var fpRegen = _statService.CalculateFPRegen(player);
+                var stmRegen = _statService.CalculateSTMRegen(player);
 
                 if (hpRegen > 0 && GetCurrentHitPoints(player) < GetMaxHitPoints(player))
                 {
+                    _characterResourceService.RestoreHP(player, hpRegen);
                     ApplyEffectToObject(DurationType.Instant, EffectHeal(hpRegen), player);
                 }
 
                 if (fpRegen > 0)
                 {
-                    StatService.RestoreFP(player, fpRegen, dbPlayer);
+                    _characterResourceService.RestoreFP(player, fpRegen);
                 }
 
                 if (stmRegen > 0)
                 {
-                    StatService.RestoreStamina(player, stmRegen, dbPlayer);
+                    _characterResourceService.RestoreSTM(player, stmRegen);
                 }
 
                 tick = 0;

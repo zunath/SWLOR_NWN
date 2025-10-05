@@ -1,9 +1,9 @@
 using SWLOR.Component.Quest.Contracts;
 using SWLOR.Shared.Domain.Quest.Contracts;
+using SWLOR.Shared.Domain.Quest.Events;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.Creature;
-using SWLOR.Shared.Events.Events.Quest;
 
 namespace SWLOR.Component.Quest.EventHandlers
 {

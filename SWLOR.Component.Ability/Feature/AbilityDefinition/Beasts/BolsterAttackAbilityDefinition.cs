@@ -4,8 +4,6 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
 using SWLOR.Shared.Domain.Perk.Enums;
-using SWLOR.Shared.Domain.StatusEffect.Contracts;
-using SWLOR.Shared.Domain.StatusEffect.Enums;
 
 namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beasts
 {
@@ -19,7 +17,6 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beasts
         }
 
         // Lazy-loaded services to break circular dependencies
-        private IStatusEffectService StatusEffectService => _serviceProvider.GetRequiredService<IStatusEffectService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
@@ -32,7 +29,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beasts
             return builder.Build();
         }
 
-        private void Impact(uint activator, StatusEffectType statusEffect)
+        private void Impact(uint activator)
         {
             var master = GetMaster(activator);
             var beastmasterStat = GetAbilityModifier(AbilityType.Might, master) / 2;
@@ -40,7 +37,6 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beasts
             var totalStat = beastmasterStat + beastStat;
 
             var duration = 5 * 60f + totalStat * 10;
-            StatusEffectService.Apply(activator, activator, statusEffect, duration);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Imp_Flame_S), activator);
         }
 
@@ -56,7 +52,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beasts
                 .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    Impact(activator, StatusEffectType.BolsterAttack1);
+                    Impact(activator);
                 });
         }
         private void BolsterAttack2(IAbilityBuilder builder)
@@ -71,7 +67,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beasts
                 .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    Impact(activator, StatusEffectType.BolsterAttack2);
+                    Impact(activator);
                 });
         }
         private void BolsterAttack3(IAbilityBuilder builder)
@@ -86,7 +82,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beasts
                 .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    Impact(activator, StatusEffectType.BolsterAttack3);
+                    Impact(activator);
                 });
         }
         private void BolsterAttack4(IAbilityBuilder builder)
@@ -101,7 +97,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beasts
                 .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    Impact(activator, StatusEffectType.BolsterAttack4);
+                    Impact(activator);
                 });
         }
         private void BolsterAttack5(IAbilityBuilder builder)
@@ -116,7 +112,7 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beasts
                 .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    Impact(activator, StatusEffectType.BolsterAttack5);
+                    Impact(activator);
                 });
         }
 

@@ -6,7 +6,6 @@ using SWLOR.Shared.Domain.Ability.ValueObjects;
 using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Skill.Enums;
-using SWLOR.Shared.Domain.StatusEffect.Enums;
 
 namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
 {
@@ -52,7 +51,6 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
                 var checkResult = ReflexSave(target, dc, SavingThrowType.None, activator);
                 if (checkResult == SavingThrowResultType.Failed)
                 {
-                    StatusEffectService.Apply(activator, target, StatusEffectType.Bleed, bleedLength);
                 }
             }
 

@@ -4,8 +4,8 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
 using SWLOR.Shared.Domain.Perk.Enums;
-using SWLOR.Shared.Domain.StatusEffect.Contracts;
-using SWLOR.Shared.Domain.StatusEffect.Enums;
+
+
 
 namespace SWLOR.Component.Ability.Feature.AbilityDefinition.NPC
 {
@@ -19,7 +19,6 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.NPC
         }
 
         // Lazy-loaded services to break circular dependencies
-        private IStatusEffectService StatusEffectService => _serviceProvider.GetRequiredService<IStatusEffectService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
@@ -39,7 +38,6 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.NPC
                 .HasImpactAction((activator, target, level, location) =>
                 {
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Imp_Disease_S), target);
-                    StatusEffectService.Apply(activator, target, StatusEffectType.Poison, 120f);
                 });
         }
 

@@ -98,7 +98,6 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.TwoHanded
             {
                 // TODO: Implement DequeueWeaponAbility method
                 // AbilityService.DequeueWeaponAbility(target);
-                AbilityService.EndConcentrationAbility(target);
                 SendMessageToPC(activator, ColorToken.Gray(GetName(target)) + "'s  concentration has been broken.");
                 SendMessageToPC(target, ColorToken.Gray(GetName(activator)) + " broke your concentration.");
             }

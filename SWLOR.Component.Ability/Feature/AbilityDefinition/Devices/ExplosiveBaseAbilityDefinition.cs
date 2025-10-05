@@ -10,7 +10,6 @@ using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Perk.Contracts;
 using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Skill.Enums;
-using SWLOR.Shared.Domain.StatusEffect.Contracts;
 
 namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
 {
@@ -31,7 +30,6 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Devices
         protected ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
         protected ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
         protected IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
-        protected IStatusEffectService StatusEffectService => _serviceProvider.GetRequiredService<IStatusEffectService>();
         protected IAbilityService AbilityService => _serviceProvider.GetRequiredService<IAbilityService>();
         private const string ExplosiveItemResref = "explosives";
 

@@ -1,7 +1,7 @@
 using SWLOR.NWN.API.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Domain.Inventory.Events;
 using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Events.Inventory;
 using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.UI.Service;
 

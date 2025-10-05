@@ -3,7 +3,6 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
 using SWLOR.Shared.Domain.Perk.Enums;
-using SWLOR.Shared.Domain.StatusEffect.Enums;
 
 namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
 {
@@ -24,7 +23,6 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .Level(1)
                 .HasRecastDelay(RecastGroupType.BattleInsight, 60f)
                 .RequirementFP(3)
-                .IsConcentrationAbility(StatusEffectType.BattleInsight1)
                 .UsesAnimation(AnimationType.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }
@@ -35,7 +33,6 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .Level(2)
                 .HasRecastDelay(RecastGroupType.BattleInsight, 60f)
                 .RequirementFP(5)
-                .IsConcentrationAbility(StatusEffectType.BattleInsight2)
                 .UsesAnimation(AnimationType.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }

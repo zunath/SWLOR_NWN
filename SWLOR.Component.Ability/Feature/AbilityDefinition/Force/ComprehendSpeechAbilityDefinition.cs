@@ -5,7 +5,6 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
 using SWLOR.Shared.Domain.Perk.Enums;
-using SWLOR.Shared.Domain.StatusEffect.Enums;
 
 namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
 {
@@ -28,7 +27,6 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .Level(1)
                 .HasRecastDelay(RecastGroupType.ComprehendSpeech, 12f)
                 .RequirementFP(2)
-                .IsConcentrationAbility(StatusEffectType.ComprehendSpeech1)
                 .UsesAnimation(AnimationType.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }
@@ -39,7 +37,6 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .Level(2)
                 .HasRecastDelay(RecastGroupType.ComprehendSpeech, 12f)
                 .RequirementFP(3)
-                .IsConcentrationAbility(StatusEffectType.ComprehendSpeech2)
                 .UsesAnimation(AnimationType.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }
@@ -50,7 +47,6 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .Level(3)
                 .HasRecastDelay(RecastGroupType.ComprehendSpeech, 12f)
                 .RequirementFP(4)
-                .IsConcentrationAbility(StatusEffectType.ComprehendSpeech3)
                 .UsesAnimation(AnimationType.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }
@@ -61,7 +57,6 @@ namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Force
                 .Level(4)
                 .HasRecastDelay(RecastGroupType.ComprehendSpeech, 12f)
                 .RequirementFP(5)
-                .IsConcentrationAbility(StatusEffectType.ComprehendSpeech4)
                 .UsesAnimation(AnimationType.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }

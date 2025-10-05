@@ -609,6 +609,8 @@ public void VerifyMockData()
 - **RULE**: Include parameter descriptions and return value descriptions
 - **RULE**: Document complex business logic with inline comments
 - **RULE**: Update documentation when changing method signatures
+- **RULE**: Method comments should be placed on the interface whenever possible
+- **RULE**: Concrete implementations should use the `<inheritdoc/>` tag so that comments are not duplicated
 
 ## Migration and Refactoring Rules
 

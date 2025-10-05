@@ -4,6 +4,6 @@ namespace SWLOR.Shared.Domain.Combat.Events
 {
     public class OnPitfallTrap : BaseEvent
     {
-        public override string Script => ScriptName.OnPitfallTrap;
+        public override string Script => CombatScriptName.OnPitfallTrap;
     }
 }

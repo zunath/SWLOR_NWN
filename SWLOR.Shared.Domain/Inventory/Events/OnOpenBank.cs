@@ -4,6 +4,6 @@ namespace SWLOR.Shared.Domain.Inventory.Events
 {
     public class OnOpenBank : BaseEvent
     {
-        public override string Script => ScriptName.OnOpenBank;
+        public override string Script => InventoryScriptName.OnOpenBank;
     }
 }

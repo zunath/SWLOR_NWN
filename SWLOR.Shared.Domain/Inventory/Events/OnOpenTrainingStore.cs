@@ -4,6 +4,6 @@ namespace SWLOR.Shared.Domain.Inventory.Events
 {
     public class OnOpenTrainingStore : BaseEvent
     {
-        public override string Script => ScriptName.OnOpenTrainingStore;
+        public override string Script => InventoryScriptName.OnOpenTrainingStore;
     }
 }

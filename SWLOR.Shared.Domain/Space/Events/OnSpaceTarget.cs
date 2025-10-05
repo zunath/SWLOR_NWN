@@ -4,6 +4,6 @@ namespace SWLOR.Shared.Domain.Space.Events
 {
     public class OnSpaceTarget : BaseEvent
     {
-        public override string Script => ScriptName.OnSpaceTarget;
+        public override string Script => SpaceScriptName.OnSpaceTarget;
     }
 }

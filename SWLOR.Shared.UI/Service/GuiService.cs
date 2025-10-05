@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Enums;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.UI.Component;
 using SWLOR.Shared.UI.Contracts;
@@ -10,7 +11,7 @@ using SWLOR.Shared.UI.Model;
 
 namespace SWLOR.Shared.UI.Service
 {
-    public class GuiService: IGuiService
+    public class GuiService: IGuiService, IInitializable
     {
         private readonly IDatabaseService _db;
         private readonly Dictionary<GuiWindowType, GuiConstructedWindow> _windowTemplates = new();
@@ -24,10 +25,7 @@ namespace SWLOR.Shared.UI.Service
             _db = db;
         }
 
-        /// <summary>
-        /// When the module loads, cache all of the GUI windows for later retrieval.
-        /// </summary>
-        public void CacheData()
+        public void Initialize()
         {
             LoadWindowTemplates();
             LoadRefreshableViewModels();
@@ -552,5 +550,6 @@ namespace SWLOR.Shared.UI.Service
             // Compass - Space is used by HP/FP/STM bars.
             SetGuiPanelDisabled(player, GuiPanelType.Compass, true);
         }
+
     }
 }

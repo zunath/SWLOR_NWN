@@ -4,6 +4,6 @@ namespace SWLOR.Shared.Domain.Associate.Events
 {
     public class OnBeastAttacked : BaseEvent
     {
-        public override string Script => ScriptName.OnBeastAttacked;
+        public override string Script => AssociateScriptName.OnBeastAttacked;
     }
 }

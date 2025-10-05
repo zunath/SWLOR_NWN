@@ -66,6 +66,8 @@ namespace SWLOR.Shared.Events.Constants
         public const string OnServerLoaded = "server_loaded";
         public const string OnHookEvents = "events_hooked";
         public const string OnHookNativeOverrides = "native_hooked";
+        public const string OnServerHeartbeat = "swlor_heartbeat";
+
 
         // Character events
         public const string OnPlayerInitialized = "char_init_after";
@@ -73,6 +75,27 @@ namespace SWLOR.Shared.Events.Constants
         public const string OnExitRebuild = "exit_rebuild";
         public const string OnExitSpending = "exit_spending";
         public const string OnBuyStatRebuild = "buy_stat_rebuild";
+
+        // Player events
+        public const string OnPlayerDamaged = "pc_damaged";
+        public const string OnPlayerHeartbeat = "pc_heartbeat";
+        public const string OnPlayerPerception = "pc_perception";
+        public const string OnPlayerSpellCastAt = "pc_spellcastat";
+        public const string OnPlayerAttacked = "pc_attacked";
+        public const string OnPlayerDisturbed = "pc_disturb";
+        public const string OnPlayerRoundEnd = "pc_roundend";
+        public const string OnPlayerSpawn = "pc_spawn";
+        public const string OnPlayerRested = "pc_rested";
+        public const string OnPlayerDeath = "pc_death";
+        public const string OnPlayerUserDefined = "pc_userdef";
+        public const string OnPlayerBlocked = "pc_blocked";
+        public const string OnPlayerFPAdjusted = "pc_fp_adjusted";
+        public const string OnPlayerStaminaAdjusted = "pc_stm_adjusted";
+        public const string OnPlayerShieldAdjusted = "pc_shld_adjusted";
+        public const string OnPlayerHullAdjusted = "pc_hull_adjusted";
+        public const string OnPlayerCapAdjusted = "pc_cap_adjusted";
+        public const string OnPlayerTargetUpdated = "pc_target_upd";
+        public const string OnPlayerCacheData = "pc_cache_data";
 
         // Area events
         public const string OnAreaEnter = "area_enter";
@@ -101,32 +124,12 @@ namespace SWLOR.Shared.Events.Constants
         public const string OnCreatureSpawnBefore = "crea_spawn_bef";
         public const string OnCreatureDeathBefore = "crea_death_bef";
 
-        // Player events
-        public const string OnPlayerDamaged = "pc_damaged";
-        public const string OnPlayerHeartbeat = "pc_heartbeat";
-        public const string OnPlayerPerception = "pc_perception";
-        public const string OnPlayerSpellCastAt = "pc_spellcastat";
-        public const string OnPlayerAttacked = "pc_attacked";
-        public const string OnPlayerDisturbed = "pc_disturb";
-        public const string OnPlayerRoundEnd = "pc_roundend";
-        public const string OnPlayerSpawn = "pc_spawn";
-        public const string OnPlayerRested = "pc_rested";
-        public const string OnPlayerDeath = "pc_death";
-        public const string OnPlayerUserDefined = "pc_userdef";
-        public const string OnPlayerBlocked = "pc_blocked";
-        public const string OnPlayerFPAdjusted = "pc_fp_adjusted";
-        public const string OnPlayerStaminaAdjusted = "pc_stm_adjusted";
-        public const string OnPlayerShieldAdjusted = "pc_shld_adjusted";
-        public const string OnPlayerHullAdjusted = "pc_hull_adjusted";
-        public const string OnPlayerCapAdjusted = "pc_cap_adjusted";
-        public const string OnPlayerTargetUpdated = "pc_target_upd";
-        public const string OnPlayerCacheData = "pc_cache_data";
-
         // NWNX Events - Associate events
         public const string OnAssociateAddBefore = "asso_add_bef";
         public const string OnAssociateAddAfter = "asso_add_aft";
         public const string OnAssociateRemoveBefore = "asso_rem_bef";
         public const string OnAssociateRemoveAfter = "asso_rem_aft";
+
 
         // NWNX Events - Stealth events
         public const string OnStealthEnterBefore = "stlent_add_bef";
@@ -346,6 +349,20 @@ namespace SWLOR.Shared.Events.Constants
         public const string OnBarterEndBefore = "bart_end_bef";
         public const string OnBarterEndAfter = "bart_end_aft";
 
+        // NWNX Events - Store events
+        public const string OnStoreRequestBuyBefore = "store_buy_bef";
+        public const string OnStoreRequestBuyAfter = "store_buy_aft";
+        public const string OnStoreRequestSellBefore = "store_sell_bef";
+        public const string OnStoreRequestSellAfter = "store_sell_aft";
+        public const string OnStoreSellBefore = "store_sell_bef";
+        public const string OnStoreSellAfter = "store_sell_aft";
+
+        // NWNX Events - Attack of opportunity events
+        public const string OnBroadcastAttackOfOpportunityBefore = "brdcast_aoo_bef";
+        public const string OnBroadcastAttackOfOpportunityAfter = "brdcast_aoo_aft";
+        public const string OnCombatAttackOfOpportunityBefore = "combat_aoo_bef";
+        public const string OnCombatAttackOfOpportunityAfter = "combat_aoo_aft";
+
         // NWNX Events - Trap events
         public const string OnTrapDisarmBefore = "trap_disarm_bef";
         public const string OnTrapDisarmAfter = "trap_disarm_aft";
@@ -436,19 +453,7 @@ namespace SWLOR.Shared.Events.Constants
         public const string OnDebugRunScriptChunkBefore = "debug_chunk_bef";
         public const string OnDebugRunScriptChunkAfter = "debug_chunk_aft";
 
-        // NWNX Events - Store events
-        public const string OnStoreRequestBuyBefore = "store_buy_bef";
-        public const string OnStoreRequestBuyAfter = "store_buy_aft";
-        public const string OnStoreRequestSellBefore = "store_sell_bef";
-        public const string OnStoreRequestSellAfter = "store_sell_aft";
-        public const string OnStoreSellBefore = "store_sell_bef";
-        public const string OnStoreSellAfter = "store_sell_aft";
 
-        // NWNX Events - Attack of opportunity events
-        public const string OnBroadcastAttackOfOpportunityBefore = "brdcast_aoo_bef";
-        public const string OnBroadcastAttackOfOpportunityAfter = "brdcast_aoo_aft";
-        public const string OnCombatAttackOfOpportunityBefore = "combat_aoo_bef";
-        public const string OnCombatAttackOfOpportunityAfter = "combat_aoo_aft";
 
         // NWNX Events - Ammunition events
         public const string OnItemAmmoReloadBefore = "ammo_reload_bef";
@@ -484,180 +489,13 @@ namespace SWLOR.Shared.Events.Constants
         // EVENTS WITHOUT CORRESPONDING EVENT CLASSES (Using old ScriptName pattern)
         // =============================================================================
 
-        // Dialog events
-        public const string OnDialogStart = "dialog_start";
-        public const string OnDialogAction0 = "dialog_action_0";
-        public const string OnDialogAction1 = "dialog_action_1";
-        public const string OnDialogAction2 = "dialog_action_2";
-        public const string OnDialogAction3 = "dialog_action_3";
-        public const string OnDialogAction4 = "dialog_action_4";
-        public const string OnDialogAction5 = "dialog_action_5";
-        public const string OnDialogAction6 = "dialog_action_6";
-        public const string OnDialogAction7 = "dialog_action_7";
-        public const string OnDialogAction8 = "dialog_action_8";
-        public const string OnDialogAction9 = "dialog_action_9";
-        public const string OnDialogAction10 = "dialog_action_10";
-        public const string OnDialogAction11 = "dialog_action_11";
-        public const string OnDialogAppears0 = "dialog_appears_0";
-        public const string OnDialogAppears1 = "dialog_appears_1";
-        public const string OnDialogAppears2 = "dialog_appears_2";
-        public const string OnDialogAppears3 = "dialog_appears_3";
-        public const string OnDialogAppears4 = "dialog_appears_4";
-        public const string OnDialogAppears5 = "dialog_appears_5";
-        public const string OnDialogAppears6 = "dialog_appears_6";
-        public const string OnDialogAppears7 = "dialog_appears_7";
-        public const string OnDialogAppears8 = "dialog_appears_8";
-        public const string OnDialogAppears9 = "dialog_appears_9";
-        public const string OnDialogAppears10 = "dialog_appears10";
-        public const string OnDialogAppears11 = "dialog_appears11";
-        public const string OnDialogAppearsHeader = "dialog_appears_h";
-        public const string OnDialogAppearsNext = "dialog_appears_n";
-        public const string OnDialogActionNext = "dialog_action_n";
-        public const string OnDialogAppearsPrevious = "dialog_appears_p";
-        public const string OnDialogActionPrevious = "dialog_action_p";
-        public const string OnDialogAppearsB = "dialog_appears_b";
-        public const string OnDialogActionBack = "dialog_action_b";
-        public const string OnDialogEnd = "dialog_end";
-        public const string OnDialogStartConversation = "start_convo";
-        public const string OnDialogAppear = "appear";
-        public const string OnDialogAppears = "appears";
-        public const string OnDialogCondition = "condition";
-        public const string OnDialogConditions = "conditions";
-        public const string OnDialogAction = "action";
-        public const string OnDialogActions = "actions";
-
         // DMFI events
         public const string OnDMFIClientEnter = "dmfi_onclienter";
-
-        // Party events (without event classes)
-        public const string OnAssociateStateEffect = "assoc_stateffect";
-
-        // Combat events
-
-        // Space events
-        public const string OnSpaceEnter = "space_enter";
-        public const string OnSpaceExit = "space_exit";
-        public const string OnUseShipComputer = "ship_computer";
-        public const string OnSpaceTarget = "spc_target";
-
-        // Beast events
-        public const string OnBeastBlocked = "beast_blocked";
-        public const string OnBeastRoundEnd = "beast_roundend";
-        public const string OnBeastConversation = "beast_convers";
-        public const string OnBeastDamaged = "beast_damaged";
-        public const string OnBeastDeath = "beast_death";
-        public const string OnBeastDisturbed = "beast_disturbed";
-        public const string OnBeastHeartbeat = "beast_hb";
-        public const string OnBeastPerception = "beast_perception";
-        public const string OnBeastAttacked = "beast_attacked";
-        public const string OnBeastRest = "beast_rest";
-        public const string OnBeastSpawn = "beast_spawn";
-        public const string OnBeastSpellCast = "beast_spellcast";
-        public const string OnBeastUserDefined = "beast_userdef";
-        public const string OnBeastTerminate = "beast_term";
-
-        // Droid events
-        public const string OnDroidAssociateUsed = "droid_ass_used";
-        public const string OnDroidBlocked = "droid_blocked";
-        public const string OnDroidRoundEnd = "droid_roundend";
-        public const string OnDroidConversation = "droid_convers";
-        public const string OnDroidDamaged = "droid_damaged";
-        public const string OnDroidDeath = "droid_death";
-        public const string OnDroidDisturbed = "droid_disturbed";
-        public const string OnDroidHeartbeat = "droid_hb";
-        public const string OnDroidPerception = "droid_perception";
-        public const string OnDroidAttacked = "droid_attacked";
-        public const string OnDroidRest = "droid_rest";
-        public const string OnDroidSpawn = "droid_spawn";
-        public const string OnDroidSpellCast = "droid_spellcast";
-        public const string OnDroidUserDefined = "droid_userdef";
-
-        // Craft events
-        public const string OnCraftUsed = "craft_on_used";
-        public const string OnCraftSuccess = "craft_success";
-        public const string OnRefineryUsed = "refinery_used";
-        public const string OnResearchTerminal = "research_term";
-
-        // Fishing events
-        public const string OnFishPoint = "fish_point";
-        public const string OnFinishFishing = "finish_fishing";
-
-        // Guild events
-        public const string OnQuestsRegistered = "qsts_registered";
-
-        // Key item events
-        public const string OnGetKeyItem = "get_key_item";
-
-        // Loot events
-        public const string OnCorpseClosed = "corpse_closed";
-        public const string OnCorpseDisturbed = "corpse_disturbed";
-
-        // Spawn events
-        public const string OnPlaceableDeath = "plc_death";
-        public const string OnSpawnDespawn = "spawn_despawn";
-
-        // Rest events
-        public const string OnRestTriggerEnter = "rest_trg_enter";
-        public const string OnRestTriggerExit = "rest_trg_exit";
-
-        // Placeable events
-        public const string OnPlaceableTeleport = "teleport";
-        public const string OnPlaceablePermanentVfx = "permanent_vfx";
-        public const string OnPlaceableGenericConversation = "generic_convo";
-        public const string OnPlaceableSit = "sit";
-        public const string OnPlaceableBuyRebuild = "buy_rebuild";
-
-        // Property events
-        public const string OnPropertyStarportTerminal = "prop_star_term";
-        public const string OnApartmentTerminal = "apartment_term";
-        public const string OnEnterProperty = "enter_property";
-        public const string OnOpenCitizenship = "open_citizenship";
-        public const string OnOpenCityManage = "open_city_manage";
-        public const string OnOpenPropertyBank = "open_prop_bank";
-
-        // Quest events
-        public const string OnQuestForceCrystal = "qst_force_crys";
-        public const string OnQuestCollectOpen = "qst_collect_open";
-        public const string OnQuestCollectClosed = "qst_collect_clsd";
-        public const string OnQuestCollectDisturbed = "qst_collect_dist";
-        public const string OnQuestPlaceable = "quest_placeable";
-        public const string OnQuestTrigger = "quest_trigger";
-
-        // Trash events
-        public const string OnTrashOpened = "trash_opened";
-        public const string OnTrashClosed = "trash_closed";
-        public const string OnTrashDisturbed = "trash_disturbed";
-
-        // Trap events
-        public const string OnPitfallTrap = "pitfalltrap";
-
-        // Combat point events
-
-        // Incubator events
-        public const string OnIncubatorTerminal = "incubator_term";
-
-        // DNA events
-        public const string OnDNAExtractUsed = "dna_extract_used";
 
         // Appearance events
         public const string OnAppearanceEdit = "appearance_edit";
 
         // SWLOR specific events
-        public const string OnSkillDataCached = "swlor_skl_cache";
-        public const string OnDeleteProperty = "swlor_del_prop";
-        public const string OnServerHeartbeat = "swlor_heartbeat";
-        public const string OnPlayerLoseSkillRank = "swlor_lose_skill";
-        public const string OnPlayerBuyPerk = "swlor_buy_perk";
-        public const string OnPlayerGainSkillRank = "swlor_gain_skill";
-        public const string OnPlayerCompletedQuest = "swlor_comp_qst";
-
-        // Interval events
-        public const string OnIntervalPC6Seconds = "interval_pc_6s";
-
-        // Object events
-        public const string OnObjectDestroyed = "object_destroyed";
-
-        // Application events
         public const string OnSWLORApplicationShutdown = "app_shutdown";
         public const string OnSWLORBuyPerk = "swlor_buy_perk";
         public const string OnSWLORGainSkillPoint = "swlor_gain_skill";
@@ -666,57 +504,5 @@ namespace SWLOR.Shared.Events.Constants
         public const string OnSWLORCombatPointDistributed = "cp_xp_distribute";
         public const string OnSWLORSkillLostByDecay = "swlor_lose_skill";
         public const string OnSWLORDeleteProperty = "swlor_del_prop";
-
-        // GUI events
-        public const string OnOpenHoloNet = "open_holonet";
-        public const string OnOpenBank = "open_bank";
-        public const string OnOpenTrainingStore = "open_train_store";
-        public const string OnEnmityChanged = "enmity_changed";
-
-        // Resource events
-        public const string OnResourceUsed = "res_used";
-        public const string OnResourceHeartbeat = "res_heartbeat";
-
-        // Speeder events
-        public const string OnEnmityAcquired = "enmity_acquired";
-        public const string OnSpeederHook = "speeder_hook";
-
-        // World events
-        public const string OnEnterWorld = "enter_world";
-        public const string OnExploreTrigger = "explore_trigger";
-
-        // Harvester events
-        public const string OnHarvesterUsed = "harvester_used";
-
-        // Grenade events
-        public const string OnGrenadeSmokeEnable = "grenade_smoke_en";
-        public const string OnGrenadeSmokeHeartbeat = "grenade_smoke_hb";
-        public const string OnGrenadeKolto1Enable = "grenade_kolt1_en";
-        public const string OnGrenadeKolto1Heartbeat = "grenade_kolt1_hb";
-        public const string OnGrenadeKolto2Enable = "grenade_kolt2_en";
-        public const string OnGrenadeKolto2Heartbeat = "grenade_kolt2_hb";
-        public const string OnGrenadeKolto3Enable = "grenade_kolt3_en";
-        public const string OnGrenadeKolto3Heartbeat = "grenade_kolt3_hb";
-        public const string OnGrenadeIncendiary1Enable = "grenade_inc1_en";
-        public const string OnGrenadeIncendiary1Heartbeat = "grenade_inc1_hb";
-        public const string OnGrenadeIncendiary2Enable = "grenade_inc2_en";
-        public const string OnGrenadeIncendiary2Heartbeat = "grenade_inc2_hb";
-        public const string OnGrenadeIncendiary3Enable = "grenade_inc3_en";
-        public const string OnGrenadeIncendiary3Heartbeat = "grenade_inc3_hb";
-        public const string OnGrenadeGas1Enable = "grenade_gas1_en";
-        public const string OnGrenadeGas1Heartbeat = "grenade_gas1_hb";
-        public const string OnGrenadeGas2Enable = "grenade_gas2_en";
-        public const string OnGrenadeGas2Heartbeat = "grenade_gas2_hb";
-        public const string OnGrenadeGas3Enable = "grenade_gas3_en";
-        public const string OnGrenadeGas3Heartbeat = "grenade_gas3_hb";
-
-        // Burst of Speed events
-        public const string OnBurstOfSpeedApply = "bspeed_apply";
-        public const string OnBurstOfSpeedRemoved = "bspeed_removed";
-
-        // Scavenge events
-        public const string OnScavengeOpened = "scav_opened";
-        public const string OnScavengeDisturbed = "scav_disturbed";
-        public const string OnScavengeClosed = "scav_closed";
     }
 }

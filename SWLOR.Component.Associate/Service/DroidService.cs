@@ -10,6 +10,7 @@ using SWLOR.Shared.Domain.Ability.Contracts;
 using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.AI.Contracts;
 using SWLOR.Shared.Domain.AI.Enums;
+using SWLOR.Shared.Domain.Associate;
 using SWLOR.Shared.Domain.Associate.Contracts;
 using SWLOR.Shared.Domain.Associate.Enums;
 using SWLOR.Shared.Domain.Associate.ValueObjects;
@@ -19,11 +20,9 @@ using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Perk.Contracts;
 using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Skill.Enums;
-
-
+using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Service;
-using SWLOR.Shared.Events.Constants;
 
 namespace SWLOR.Component.Associate.Service
 {
@@ -733,19 +732,19 @@ namespace SWLOR.Component.Associate.Service
             }
 
             // Scripts
-            SetEventScript(droid, EventScriptType.Creature_OnBlockedByDoor, ScriptName.OnDroidBlocked);
-            SetEventScript(droid, EventScriptType.Creature_OnEndCombatRound, ScriptName.OnDroidRoundEnd);
-            SetEventScript(droid, EventScriptType.Creature_OnDialogue, ScriptName.OnDroidConversation);
-            SetEventScript(droid, EventScriptType.Creature_OnDamaged, ScriptName.OnDroidDamaged);
-            SetEventScript(droid, EventScriptType.Creature_OnDeath, ScriptName.OnDroidDeath);
-            SetEventScript(droid, EventScriptType.Creature_OnDisturbed, ScriptName.OnDroidDisturbed);
-            SetEventScript(droid, EventScriptType.Creature_OnHeartbeat, ScriptName.OnDroidHeartbeat);
-            SetEventScript(droid, EventScriptType.Creature_OnNotice, ScriptName.OnDroidPerception);
-            SetEventScript(droid, EventScriptType.Creature_OnMeleeAttacked, ScriptName.OnDroidAttacked);
-            SetEventScript(droid, EventScriptType.Creature_OnRested, ScriptName.OnDroidRest);
-            SetEventScript(droid, EventScriptType.Creature_OnSpawnIn, ScriptName.OnDroidSpawn);
-            SetEventScript(droid, EventScriptType.Creature_OnSpellCastAt, ScriptName.OnDroidSpellCast);
-            SetEventScript(droid, EventScriptType.Creature_OnUserDefined, ScriptName.OnDroidUserDefined);
+            SetEventScript(droid, EventScriptType.Creature_OnBlockedByDoor, AssociateScriptName.OnDroidBlocked);
+            SetEventScript(droid, EventScriptType.Creature_OnEndCombatRound, AssociateScriptName.OnDroidRoundEnd);
+            SetEventScript(droid, EventScriptType.Creature_OnDialogue, AssociateScriptName.OnDroidConversation);
+            SetEventScript(droid, EventScriptType.Creature_OnDamaged, AssociateScriptName.OnDroidDamaged);
+            SetEventScript(droid, EventScriptType.Creature_OnDeath, AssociateScriptName.OnDroidDeath);
+            SetEventScript(droid, EventScriptType.Creature_OnDisturbed, AssociateScriptName.OnDroidDisturbed);
+            SetEventScript(droid, EventScriptType.Creature_OnHeartbeat, AssociateScriptName.OnDroidHeartbeat);
+            SetEventScript(droid, EventScriptType.Creature_OnNotice, AssociateScriptName.OnDroidPerception);
+            SetEventScript(droid, EventScriptType.Creature_OnMeleeAttacked, AssociateScriptName.OnDroidAttacked);
+            SetEventScript(droid, EventScriptType.Creature_OnRested, AssociateScriptName.OnDroidRest);
+            SetEventScript(droid, EventScriptType.Creature_OnSpawnIn, AssociateScriptName.OnDroidSpawn);
+            SetEventScript(droid, EventScriptType.Creature_OnSpellCastAt, AssociateScriptName.OnDroidSpellCast);
+            SetEventScript(droid, EventScriptType.Creature_OnUserDefined, AssociateScriptName.OnDroidUserDefined);
 
             AssignCommand(droid, () => SpeakString(personality.GreetingPhrase()));
 

@@ -14,11 +14,6 @@ namespace SWLOR.Shared.UI.Contracts
         void DisableWindows();
 
         /// <summary>
-        /// When the module loads, cache all of the GUI windows for later retrieval.
-        /// </summary>
-        void CacheData();
-
-        /// <summary>
         /// When a player enters the server, create instances of every window if they have not already been created this session.
         /// </summary>
         void CreatePlayerWindows();

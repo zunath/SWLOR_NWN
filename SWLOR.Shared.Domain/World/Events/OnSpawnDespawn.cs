@@ -4,6 +4,6 @@ namespace SWLOR.Shared.Domain.World.Events
 {
     public class OnSpawnDespawn : BaseEvent
     {
-        public override string Script => ScriptName.OnSpawnDespawn;
+        public override string Script => WorldScriptName.OnSpawnDespawn;
     }
 }

@@ -4,6 +4,6 @@ namespace SWLOR.Shared.Domain.Associate.Events
 {
     public class OnDroidAssociateUsed : BaseEvent
     {
-        public override string Script => ScriptName.OnDroidAssociateUsed;
+        public override string Script => AssociateScriptName.OnDroidAssociateUsed;
     }
 }

@@ -4,6 +4,6 @@ namespace SWLOR.Shared.Domain.Skill.Events
 {
     public class OnPlayerLoseSkillRank : BaseEvent
     {
-        public override string Script => ScriptName.OnPlayerLoseSkillRank;
+        public override string Script => SkillScriptName.OnPlayerLoseSkillRank;
     }
 }

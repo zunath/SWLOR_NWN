@@ -4,6 +4,6 @@ namespace SWLOR.Shared.Domain.Skill.Events
 {
     public class OnSkillDataCached : BaseEvent
     {
-        public override string Script => ScriptName.OnSkillDataCached;
+        public override string Script => SkillScriptName.OnSkillDataCached;
     }
 }

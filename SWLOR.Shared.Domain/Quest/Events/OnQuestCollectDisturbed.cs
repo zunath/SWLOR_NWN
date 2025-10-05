@@ -4,6 +4,6 @@ namespace SWLOR.Shared.Domain.Quest.Events
 {
     public class OnQuestCollectDisturbed : BaseEvent
     {
-        public override string Script => ScriptName.OnQuestCollectDisturbed;
+        public override string Script => QuestScriptName.OnQuestCollectDisturbed;
     }
 }

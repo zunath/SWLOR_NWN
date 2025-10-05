@@ -4,6 +4,6 @@ namespace SWLOR.Shared.Domain.Combat.Events
 {
     public class OnPlaceableDeath : BaseEvent
     {
-        public override string Script => ScriptName.OnPlaceableDeath;
+        public override string Script => CombatScriptName.OnPlaceableDeath;
     }
 }

@@ -1,9 +1,6 @@
-using SWLOR.Shared.Events.Events.Ability;
-using SWLOR.Shared.Events.Events.Character;
 using SWLOR.Shared.Events.Events.Infrastructure;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.Player;
-using SWLOR.Shared.Events.Events.Space;
 using SWLOR.Shared.Abstractions.Contracts;
 
 namespace SWLOR.Test.Shared.Events.Events
@@ -17,14 +14,6 @@ namespace SWLOR.Test.Shared.Events.Events
             // Test various event classes to ensure they have valid Script properties
             var events = new List<object>
             {
-                new OnAuraEnter(),
-                new OnAuraExit(),
-                new OnBurstOfSpeedApply(),
-                new OnBurstOfSpeedRemoved(),
-                new OnCharacterRebuild(),
-                new OnExitRebuild(),
-                new OnExitSpending(),
-                new OnBuyStatRebuild(),
                 new OnHookEvents(),
                 new OnHookNativeOverrides(),
                 new OnServerLoaded(),
@@ -39,11 +28,7 @@ namespace SWLOR.Test.Shared.Events.Events
                 new OnPlayerDamaged(),
                 new OnPlayerHeartbeat(),
                 new OnPlayerPerception(),
-                new OnPlayerSpellCastAt(),
-                new OnSpaceEnter(),
-                new OnSpaceExit(),
-                new OnUseShipComputer(),
-                new OnSpaceTarget()
+                new OnPlayerSpellCastAt()
             };
 
             // Act & Assert
@@ -64,14 +49,9 @@ namespace SWLOR.Test.Shared.Events.Events
             // Test various event classes to ensure they have valid Timestamp
             var events = new List<object>
             {
-                new OnAuraEnter(),
-                new OnAuraExit(),
-                new OnBurstOfSpeedApply(),
-                new OnCharacterRebuild(),
                 new OnHookEvents(),
                 new OnModuleLoad(),
-                new OnPlayerDamaged(),
-                new OnSpaceEnter()
+                new OnPlayerDamaged()
             };
 
             // Act & Assert
@@ -91,14 +71,9 @@ namespace SWLOR.Test.Shared.Events.Events
             // Test various event classes to ensure they have valid EventId
             var events = new List<object>
             {
-                new OnAuraEnter(),
-                new OnAuraExit(),
-                new OnBurstOfSpeedApply(),
-                new OnCharacterRebuild(),
                 new OnHookEvents(),
                 new OnModuleLoad(),
-                new OnPlayerDamaged(),
-                new OnSpaceEnter()
+                new OnPlayerDamaged()
             };
 
             // Act & Assert
@@ -116,9 +91,9 @@ namespace SWLOR.Test.Shared.Events.Events
         public void AllEventClasses_ShouldHaveUniqueEventIds()
         {
             // Test that multiple instances of the same event class have unique EventIds
-            var event1 = new OnAuraEnter();
-            var event2 = new OnAuraEnter();
-            var event3 = new OnAuraEnter();
+            var event1 = new OnPlayerDamaged();
+            var event2 = new OnPlayerDamaged();
+            var event3 = new OnPlayerDamaged();
 
             // Act & Assert
             Assert.That(event1.EventId, Is.Not.EqualTo(event2.EventId));
@@ -132,14 +107,9 @@ namespace SWLOR.Test.Shared.Events.Events
             // Test that all event classes implement IEvent interface
             var eventTypes = new List<Type>
             {
-                typeof(OnAuraEnter),
-                typeof(OnAuraExit),
-                typeof(OnBurstOfSpeedApply),
-                typeof(OnCharacterRebuild),
                 typeof(OnHookEvents),
                 typeof(OnModuleLoad),
-                typeof(OnPlayerDamaged),
-                typeof(OnSpaceEnter)
+                typeof(OnPlayerDamaged)
             };
 
             // Act & Assert

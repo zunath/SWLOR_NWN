@@ -4,6 +4,6 @@ namespace SWLOR.Shared.Domain.Space.Events
 {
     public class OnPlayerShieldAdjusted : BaseEvent
     {
-        public override string Script => ScriptName.OnPlayerShieldAdjusted;
+        public override string Script => SpaceScriptName.OnPlayerShieldAdjusted;
     }
 }

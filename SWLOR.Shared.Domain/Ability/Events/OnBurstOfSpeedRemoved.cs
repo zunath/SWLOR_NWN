@@ -4,6 +4,6 @@ namespace SWLOR.Shared.Domain.Ability.Events
 {
     public class OnBurstOfSpeedRemoved : BaseEvent
     {
-        public override string Script => ScriptName.OnBurstOfSpeedRemoved;
+        public override string Script => AbilityScriptName.OnBurstOfSpeedRemoved;
     }
 }

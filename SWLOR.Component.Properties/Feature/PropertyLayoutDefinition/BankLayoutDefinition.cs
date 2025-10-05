@@ -4,6 +4,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Inventory.Events;
+using SWLOR.Shared.Domain.Properties;
 using SWLOR.Shared.Domain.Properties.Entities;
 using SWLOR.Shared.Domain.Properties.Enums;
 using SWLOR.Shared.Domain.Properties.Events;
@@ -94,7 +95,7 @@ namespace SWLOR.Component.Properties.Feature.PropertyLayoutDefinition
                 SetLocalInt(placeable, "STORAGE_ITEM_LIMIT", storageCap);
                 SetLocalString(placeable, "STORAGE_ID", bankId);
 
-                SetEventScript(placeable, EventScriptType.Placeable_OnUsed, ScriptName.OnOpenPropertyBank);
+                SetEventScript(placeable, EventScriptType.Placeable_OnUsed, PropertiesScriptName.OnOpenPropertyBank);
             }
         }
 

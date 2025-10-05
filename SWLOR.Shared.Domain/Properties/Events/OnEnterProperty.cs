@@ -4,6 +4,6 @@ namespace SWLOR.Shared.Domain.Properties.Events
 {
     public class OnEnterProperty : BaseEvent
     {
-        public override string Script => ScriptName.OnEnterProperty;
+        public override string Script => PropertiesScriptName.OnEnterProperty;
     }
 }

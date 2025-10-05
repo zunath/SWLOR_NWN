@@ -4,6 +4,6 @@ namespace SWLOR.Shared.Domain.World.Events
 {
     public class OnPlaceablePermanentVfx : BaseEvent
     {
-        public override string Script => ScriptName.OnPlaceablePermanentVfx;
+        public override string Script => WorldScriptName.OnPlaceablePermanentVfx;
     }
 }

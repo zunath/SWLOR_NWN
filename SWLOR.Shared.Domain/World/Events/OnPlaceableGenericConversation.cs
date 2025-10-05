@@ -4,6 +4,6 @@ namespace SWLOR.Shared.Domain.World.Events
 {
     public class OnPlaceableGenericConversation : BaseEvent
     {
-        public override string Script => ScriptName.OnPlaceableGenericConversation;
+        public override string Script => WorldScriptName.OnPlaceableGenericConversation;
     }
 }

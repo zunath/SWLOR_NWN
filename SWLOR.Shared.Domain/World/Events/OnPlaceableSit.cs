@@ -4,6 +4,6 @@ namespace SWLOR.Shared.Domain.World.Events
 {
     public class OnPlaceableSit : BaseEvent
     {
-        public override string Script => ScriptName.OnPlaceableSit;
+        public override string Script => WorldScriptName.OnPlaceableSit;
     }
 }

@@ -4,6 +4,6 @@ namespace SWLOR.Shared.Domain.Inventory.Events
 {
     public class OnHarvesterUsed : BaseEvent
     {
-        public override string Script => ScriptName.OnHarvesterUsed;
+        public override string Script => InventoryScriptName.OnHarvesterUsed;
     }
 }

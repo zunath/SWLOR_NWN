@@ -4,6 +4,6 @@ namespace SWLOR.Shared.Domain.Ability.Events
 {
     public class OnGrenadeGas3Enable : BaseEvent
     {
-        public override string Script => ScriptName.OnGrenadeGas3Enable;
+        public override string Script => AbilityScriptName.OnGrenadeGas3Enable;
     }
 }

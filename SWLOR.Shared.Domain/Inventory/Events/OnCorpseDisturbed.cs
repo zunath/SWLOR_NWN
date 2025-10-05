@@ -4,6 +4,6 @@ namespace SWLOR.Shared.Domain.Inventory.Events
 {
     public class OnCorpseDisturbed : BaseEvent
     {
-        public override string Script => ScriptName.OnCorpseDisturbed;
+        public override string Script => InventoryScriptName.OnCorpseDisturbed;
     }
 }

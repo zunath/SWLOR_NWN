@@ -4,6 +4,6 @@ namespace SWLOR.Shared.Domain.Ability.Events
 {
     public class OnBurstOfSpeedApply : BaseEvent
     {
-        public override string Script => ScriptName.OnBurstOfSpeedApply;
+        public override string Script => AbilityScriptName.OnBurstOfSpeedApply;
     }
 }

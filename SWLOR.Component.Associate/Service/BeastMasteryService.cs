@@ -9,6 +9,7 @@ using SWLOR.Shared.Core.Contracts;
 using SWLOR.Component.Associate.UI.Payload;
 using SWLOR.NWN.API.Contracts;
 using SWLOR.Shared.Abstractions.Enums;
+using SWLOR.Shared.Domain.Associate;
 using SWLOR.Shared.Domain.Associate.Contracts;
 using SWLOR.Shared.Domain.Associate.Enums;
 using SWLOR.Shared.Domain.Associate.ValueObjects;
@@ -355,19 +356,19 @@ namespace SWLOR.Component.Associate.Service
             }
 
             // Scripts
-            SetEventScript(beast, EventScriptType.Creature_OnBlockedByDoor, ScriptName.OnBeastBlocked);
-            SetEventScript(beast, EventScriptType.Creature_OnEndCombatRound, ScriptName.OnBeastRoundEnd);
-            SetEventScript(beast, EventScriptType.Creature_OnDialogue, ScriptName.OnBeastConversation);
-            SetEventScript(beast, EventScriptType.Creature_OnDamaged, ScriptName.OnBeastDamaged);
-            SetEventScript(beast, EventScriptType.Creature_OnDeath, ScriptName.OnBeastDeath);
-            SetEventScript(beast, EventScriptType.Creature_OnDisturbed, ScriptName.OnBeastDisturbed);
-            SetEventScript(beast, EventScriptType.Creature_OnHeartbeat, ScriptName.OnBeastHeartbeat);
-            SetEventScript(beast, EventScriptType.Creature_OnNotice, ScriptName.OnBeastPerception);
-            SetEventScript(beast, EventScriptType.Creature_OnMeleeAttacked, ScriptName.OnBeastAttacked);
-            SetEventScript(beast, EventScriptType.Creature_OnRested, ScriptName.OnBeastRest);
-            SetEventScript(beast, EventScriptType.Creature_OnSpawnIn, ScriptName.OnBeastSpawn);
-            SetEventScript(beast, EventScriptType.Creature_OnSpellCastAt, ScriptName.OnBeastSpellCast);
-            SetEventScript(beast, EventScriptType.Creature_OnUserDefined, ScriptName.OnBeastUserDefined);
+            SetEventScript(beast, EventScriptType.Creature_OnBlockedByDoor, AssociateScriptName.OnBeastBlocked);
+            SetEventScript(beast, EventScriptType.Creature_OnEndCombatRound, AssociateScriptName.OnBeastRoundEnd);
+            SetEventScript(beast, EventScriptType.Creature_OnDialogue, AssociateScriptName.OnBeastConversation);
+            SetEventScript(beast, EventScriptType.Creature_OnDamaged, AssociateScriptName.OnBeastDamaged);
+            SetEventScript(beast, EventScriptType.Creature_OnDeath, AssociateScriptName.OnBeastDeath);
+            SetEventScript(beast, EventScriptType.Creature_OnDisturbed, AssociateScriptName.OnBeastDisturbed);
+            SetEventScript(beast, EventScriptType.Creature_OnHeartbeat, AssociateScriptName.OnBeastHeartbeat);
+            SetEventScript(beast, EventScriptType.Creature_OnNotice, AssociateScriptName.OnBeastPerception);
+            SetEventScript(beast, EventScriptType.Creature_OnMeleeAttacked, AssociateScriptName.OnBeastAttacked);
+            SetEventScript(beast, EventScriptType.Creature_OnRested, AssociateScriptName.OnBeastRest);
+            SetEventScript(beast, EventScriptType.Creature_OnSpawnIn, AssociateScriptName.OnBeastSpawn);
+            SetEventScript(beast, EventScriptType.Creature_OnSpellCastAt, AssociateScriptName.OnBeastSpellCast);
+            SetEventScript(beast, EventScriptType.Creature_OnUserDefined, AssociateScriptName.OnBeastUserDefined);
 
             // Ensure the spawn script gets called as it normally gets skipped
             // because it doesn't exist at the time of the beast being created.

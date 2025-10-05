@@ -4,6 +4,6 @@ namespace SWLOR.Shared.Domain.Inventory.Events
 {
     public class OnTrashClosed : BaseEvent
     {
-        public override string Script => ScriptName.OnTrashClosed;
+        public override string Script => InventoryScriptName.OnTrashClosed;
     }
 }

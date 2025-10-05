@@ -4,6 +4,6 @@ namespace SWLOR.Shared.Domain.Crafting.Events
 {
     public class OnFinishFishing : BaseEvent
     {
-        public override string Script => ScriptName.OnFinishFishing;
+        public override string Script => CraftingScriptName.OnFinishFishing;
     }
 }

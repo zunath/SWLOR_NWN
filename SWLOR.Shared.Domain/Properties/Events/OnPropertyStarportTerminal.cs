@@ -4,6 +4,6 @@ namespace SWLOR.Shared.Domain.Properties.Events
 {
     public class OnPropertyStarportTerminal : BaseEvent
     {
-        public override string Script => ScriptName.OnPropertyStarportTerminal;
+        public override string Script => PropertiesScriptName.OnPropertyStarportTerminal;
     }
 }

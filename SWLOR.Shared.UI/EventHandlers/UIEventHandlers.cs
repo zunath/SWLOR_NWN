@@ -2,7 +2,6 @@ using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Area;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.Player;
-using SWLOR.Shared.Events.Events.Skill;
 using SWLOR.Shared.UI.Contracts;
 
 namespace SWLOR.Shared.UI.EventHandlers
@@ -14,15 +13,6 @@ namespace SWLOR.Shared.UI.EventHandlers
         public UIEventHandlers(IGuiService guiService)
         {
             _guiService = guiService;
-        }
-
-        /// <summary>
-        /// When the module loads, cache all of the GUI windows for later retrieval.
-        /// </summary>
-        [ScriptHandler<OnSkillDataCached>]
-        public void CacheData()
-        {
-            _guiService.CacheData();
         }
 
         /// <summary>

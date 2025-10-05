@@ -4,6 +4,6 @@ namespace SWLOR.Shared.Domain.Combat.Events
 {
     public class OnIntervalPC6Seconds : BaseEvent
     {
-        public override string Script => ScriptName.OnIntervalPC6Seconds;
+        public override string Script => CombatScriptName.OnIntervalPC6Seconds;
     }
 }

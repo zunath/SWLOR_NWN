@@ -4,6 +4,6 @@ namespace SWLOR.Shared.Domain.Associate.Events
 {
     public class OnIncubatorTerminal : BaseEvent
     {
-        public override string Script => ScriptName.OnIncubatorTerminal;
+        public override string Script => AssociateScriptName.OnIncubatorTerminal;
     }
 }

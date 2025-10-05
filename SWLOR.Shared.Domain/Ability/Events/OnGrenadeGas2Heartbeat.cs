@@ -4,6 +4,6 @@ namespace SWLOR.Shared.Domain.Ability.Events
 {
     public class OnGrenadeGas2Heartbeat : BaseEvent
     {
-        public override string Script => ScriptName.OnGrenadeGas2Heartbeat;
+        public override string Script => AbilityScriptName.OnGrenadeGas2Heartbeat;
     }
 }

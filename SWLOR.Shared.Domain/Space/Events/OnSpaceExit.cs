@@ -4,6 +4,6 @@ namespace SWLOR.Shared.Domain.Space.Events
 {
     public class OnSpaceExit : BaseEvent
     {
-        public override string Script => ScriptName.OnSpaceExit;
+        public override string Script => SpaceScriptName.OnSpaceExit;
     }
 }

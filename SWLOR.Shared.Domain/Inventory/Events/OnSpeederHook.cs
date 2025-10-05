@@ -4,6 +4,6 @@ namespace SWLOR.Shared.Domain.Inventory.Events
 {
     public class OnSpeederHook : BaseEvent
     {
-        public override string Script => ScriptName.OnSpeederHook;
+        public override string Script => InventoryScriptName.OnSpeederHook;
     }
 }

@@ -4,6 +4,6 @@ namespace SWLOR.Shared.Domain.Crafting.Events
 {
     public class OnCraftUsed : BaseEvent
     {
-        public override string Script => ScriptName.OnCraftUsed;
+        public override string Script => CraftingScriptName.OnCraftUsed;
     }
 }

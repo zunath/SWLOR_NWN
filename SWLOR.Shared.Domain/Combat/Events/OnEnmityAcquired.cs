@@ -4,6 +4,6 @@ namespace SWLOR.Shared.Domain.Combat.Events
 {
     public class OnEnmityAcquired : BaseEvent
     {
-        public override string Script => ScriptName.OnEnmityAcquired;
+        public override string Script => CombatScriptName.OnEnmityAcquired;
     }
 }

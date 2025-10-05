@@ -1,6 +1,5 @@
 using SWLOR.Shared.Events.Events.Player;
 using SWLOR.Shared.Events.Constants;
-using SWLOR.Shared.Events.Events.Space;
 
 namespace SWLOR.Test.Shared.Events.Events.Player
 {
@@ -175,41 +174,6 @@ namespace SWLOR.Test.Shared.Events.Events.Player
             Assert.That(eventInstance.EventId, Is.Not.EqualTo(Guid.Empty));
         }
 
-        [Test]
-        public void OnPlayerShieldAdjusted_ShouldHaveCorrectScript()
-        {
-            // Arrange & Act
-            var eventInstance = new OnPlayerShieldAdjusted();
-
-            // Assert
-            Assert.That(eventInstance.Script, Is.EqualTo(ScriptName.OnPlayerShieldAdjusted));
-            Assert.That(eventInstance.Timestamp, Is.Not.EqualTo(DateTime.MinValue));
-            Assert.That(eventInstance.EventId, Is.Not.EqualTo(Guid.Empty));
-        }
-
-        [Test]
-        public void OnPlayerHullAdjusted_ShouldHaveCorrectScript()
-        {
-            // Arrange & Act
-            var eventInstance = new OnPlayerHullAdjusted();
-
-            // Assert
-            Assert.That(eventInstance.Script, Is.EqualTo(ScriptName.OnPlayerHullAdjusted));
-            Assert.That(eventInstance.Timestamp, Is.Not.EqualTo(DateTime.MinValue));
-            Assert.That(eventInstance.EventId, Is.Not.EqualTo(Guid.Empty));
-        }
-
-        [Test]
-        public void OnPlayerCapAdjusted_ShouldHaveCorrectScript()
-        {
-            // Arrange & Act
-            var eventInstance = new OnPlayerCapAdjusted();
-
-            // Assert
-            Assert.That(eventInstance.Script, Is.EqualTo(ScriptName.OnPlayerCapAdjusted));
-            Assert.That(eventInstance.Timestamp, Is.Not.EqualTo(DateTime.MinValue));
-            Assert.That(eventInstance.EventId, Is.Not.EqualTo(Guid.Empty));
-        }
 
         [Test]
         public void OnPlayerTargetUpdated_ShouldHaveCorrectScript()

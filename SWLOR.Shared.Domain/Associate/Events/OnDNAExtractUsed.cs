@@ -4,6 +4,6 @@ namespace SWLOR.Shared.Domain.Associate.Events
 {
     public class OnDNAExtractUsed : BaseEvent
     {
-        public override string Script => ScriptName.OnDNAExtractUsed;
+        public override string Script => AssociateScriptName.OnDNAExtractUsed;
     }
 }

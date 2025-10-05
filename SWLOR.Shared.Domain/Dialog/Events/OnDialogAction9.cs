@@ -4,6 +4,6 @@ namespace SWLOR.Shared.Domain.Dialog.Events
 {
     public class OnDialogAction9 : BaseEvent
     {
-        public override string Script => ScriptName.OnDialogAction9;
+        public override string Script => DialogScriptName.OnDialogAction9;
     }
 }

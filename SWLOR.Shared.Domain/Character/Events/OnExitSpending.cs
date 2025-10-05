@@ -4,6 +4,6 @@ namespace SWLOR.Shared.Domain.Character.Events
 {
     public class OnExitSpending : BaseEvent
     {
-        public override string Script => ScriptName.OnExitSpending;
+        public override string Script => CharacterScriptName.OnExitSpending;
     }
 }

@@ -4,6 +4,6 @@ namespace SWLOR.Shared.Domain.Combat.Events
 {
     public class OnCombatPointXPDistribute : BaseEvent
     {
-        public override string Script => ScriptName.OnCombatPointXPDistribute;
+        public override string Script => CombatScriptName.OnCombatPointXPDistribute;
     }
 }

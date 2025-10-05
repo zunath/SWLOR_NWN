@@ -4,6 +4,6 @@ namespace SWLOR.Shared.Domain.Dialog.Events
 {
     public class OnDialogConditions : BaseEvent
     {
-        public override string Script => ScriptName.OnDialogConditions;
+        public override string Script => DialogScriptName.OnDialogConditions;
     }
 }

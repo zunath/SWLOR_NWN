@@ -4,6 +4,6 @@ namespace SWLOR.Shared.Domain.Crafting.Events
 {
     public class OnScavengeDisturbed : BaseEvent
     {
-        public override string Script => ScriptName.OnScavengeDisturbed;
+        public override string Script => CraftingScriptName.OnScavengeDisturbed;
     }
 }

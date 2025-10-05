@@ -3,11 +3,13 @@ using SWLOR.Component.Properties.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Entities;
+using SWLOR.Shared.Domain.Properties;
 using SWLOR.Shared.Domain.Properties.Contracts;
 using SWLOR.Shared.Domain.Properties.Entities;
 using SWLOR.Shared.Domain.Properties.Enums;
 using SWLOR.Shared.Domain.Properties.Events;
 using SWLOR.Shared.Domain.Properties.ValueObjects;
+using SWLOR.Shared.Domain.Space;
 using SWLOR.Shared.Domain.Space.Contracts;
 using SWLOR.Shared.Domain.World.Contracts;
 using SWLOR.Shared.Domain.World.Enums;
@@ -104,7 +106,7 @@ namespace SWLOR.Component.Properties.Feature.PropertyLayoutDefinition
                 SetName(terminal, $"{planet.Name} Starport Flights Terminal");
 
                 SetLocalInt(terminal, "CURRENT_LOCATION", (int)planetType);
-                SetEventScript(terminal, EventScriptType.Placeable_OnUsed, ScriptName.OnPropertyStarportTerminal);
+                SetEventScript(terminal, EventScriptType.Placeable_OnUsed, PropertiesScriptName.OnPropertyStarportTerminal);
             }
 
             const string WaypointTag = "STARPORT_FLIGHTS_TERMINAL";

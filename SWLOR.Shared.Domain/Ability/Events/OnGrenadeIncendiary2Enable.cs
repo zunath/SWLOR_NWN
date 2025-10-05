@@ -4,6 +4,6 @@ namespace SWLOR.Shared.Domain.Ability.Events
 {
     public class OnGrenadeIncendiary2Enable : BaseEvent
     {
-        public override string Script => ScriptName.OnGrenadeIncendiary2Enable;
+        public override string Script => AbilityScriptName.OnGrenadeIncendiary2Enable;
     }
 }

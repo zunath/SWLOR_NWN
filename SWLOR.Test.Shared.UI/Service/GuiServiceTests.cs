@@ -32,13 +32,6 @@ namespace SWLOR.Test.Shared.UI.Service
         }
 
         [Test]
-        public void CacheData_DoesNotThrow()
-        {
-            // Act & Assert
-            Assert.DoesNotThrow(() => _guiService.CacheData());
-        }
-
-        [Test]
         public void CreatePlayerWindows_DoesNotThrow()
         {
             // Act & Assert

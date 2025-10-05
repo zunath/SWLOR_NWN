@@ -4,6 +4,6 @@ namespace SWLOR.Shared.Domain.Character.Events
 {
     public class OnBuyStatRebuild : BaseEvent
     {
-        public override string Script => ScriptName.OnBuyStatRebuild;
+        public override string Script => CharacterScriptName.OnBuyStatRebuild;
     }
 }

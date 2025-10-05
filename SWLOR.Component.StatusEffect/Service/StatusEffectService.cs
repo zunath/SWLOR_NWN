@@ -14,6 +14,7 @@ using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Component.StatusEffect.Service
 {
+    /// <inheritdoc/>
     public class StatusEffectService : IStatusEffectService
     {
         private const string StatusEffectTag = "STATUS_EFFECT";
@@ -45,15 +46,6 @@ namespace SWLOR.Component.StatusEffect.Service
 
             _event.Subscribe<OnModuleEnter>(OnPlayerEnter);
             _event.Subscribe<OnDealtDamage>(OnDealtDamage);
-        }
-
-        [ScriptHandler<TestEvent>]
-        public void Test()
-        {
-            var player = GetLastUsedBy();
-            SendMessageToPC(player, "Applying haste");
-
-            ApplyStatusEffect(OBJECT_SELF, player, StatusEffectType.Haste, 1);
         }
 
         private void OnPlayerEnter(OnModuleEnter evt)
@@ -118,6 +110,7 @@ namespace SWLOR.Component.StatusEffect.Service
             }
         }
 
+        /// <inheritdoc/>
         public StatGroup GetCreatureStatGroup(uint creature)
         {
             var statusEffect = GetCreatureStatusEffects(creature);
@@ -131,6 +124,7 @@ namespace SWLOR.Component.StatusEffect.Service
                 : _creatureEffects[creature];
         }
 
+        /// <inheritdoc/>
         public void ApplyPermanentStatusEffect(uint source, uint creature, StatusEffectType type)
         {
             ApplyStatusEffectInternal(source, creature, type, -1, true);
@@ -199,6 +193,7 @@ namespace SWLOR.Component.StatusEffect.Service
             }
         }
 
+        /// <inheritdoc/>
         public void ApplyStatusEffect(uint source, uint creature, StatusEffectType type, int durationTicks)
         {
             ApplyStatusEffectInternal(source, creature, type, durationTicks, false);
@@ -233,11 +228,13 @@ namespace SWLOR.Component.StatusEffect.Service
             }
         }
 
+        /// <inheritdoc/>
         public void RemoveStatusEffect(uint creature, StatusEffectType type)
         {
             RemoveStatusEffectInternal(creature, OBJECT_INVALID, type);
         }
 
+        /// <inheritdoc/>
         public void RemoveStatusEffectBySourceType(uint creature, StatusEffectSourceType sourceType)
         {
             var creatureEffects = GetCreatureStatusEffects(creature);
@@ -248,6 +245,7 @@ namespace SWLOR.Component.StatusEffect.Service
             }
         }
 
+        /// <inheritdoc/>
         public bool HasEffect(uint creature, StatusEffectType type)
         {
             if (!_creatureEffects.ContainsKey(creature))

@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.CommandLineUtils;
+﻿using McMaster.Extensions.CommandLineUtils;
+using System;
 
 namespace SWLOR.CLI
 {
@@ -16,80 +17,25 @@ namespace SWLOR.CLI
         private static readonly DeployBuild _deployBuild = new();
         private static readonly BeastCodeBuilder _beastBuilder = new();
 
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
             var app = new CommandLineApplication();
+            app.Name = "SWLOR CLI";
+            app.Description = "Command line tools for SWLOR development";
+            app.HelpOption("-?|-h|--help");
 
-            // Set up the options.
-            var adHocToolOption = app.Option(
-                "-$|-a |--adhoc",
-                "Ad-hoc code testing.",
-                CommandOptionType.NoValue);
-            
-            var beastBuilderOption = app.Option(
-                "-$|-b |--beast",
-                "Beast code generator.",
-                CommandOptionType.NoValue);
-
-            var placeableOption = app.Option(
-                "-$|-c |--placeable",
-                "Generates utp files in json format for all of the entries found in placeables.2da.",
-                CommandOptionType.NoValue
-            );
-
-            var droidItemOption = app.Option(
-                "-$|-d |--droid",
-                "Generates uti files in json format for all of the entries found in droid_item_template.tsv.",
-                CommandOptionType.NoValue
-            );
-
-            var enhancementOption = app.Option(
-                "-$|-e |--enhancement",
-                "Generates uti files in json format for all of the entries found in enhancement_list.csv.",
-                CommandOptionType.NoValue
-            );
-
-            var hakBuilderOption = app.Option(
-                "-$|-k |--hak",
-                "Builds hakpak files based on the hakbuilder.json configuration file.",
-                CommandOptionType.NoValue
-            );
-
-            var languageBuilderOption = app.Option(
-                "-$|-l |--language",
-                "Generates code for use with the language system.",
-                CommandOptionType.NoValue
-            );
-
-            var deployOption = app.Option(
-                "-$|-o |--outputDeploy",
-                "Deploys DLLs in the bin folder to the NWN dotnet directory.",
-                CommandOptionType.NoValue
-            );
-
-            var modulePackerOption = app.Option(
-                "-$|-p |--pack",
-                "Packs a module at the specified path. Target must be the path to a .mod file.",
-                CommandOptionType.SingleValue
-            );
-
-            var recipeOption = app.Option(
-                "-$|-r |--recipe",
-                "Generates code file for all of the recipes in the recipes.tsv file.",
-                CommandOptionType.NoValue);
-
-            var structureOption = app.Option(
-                "-$|-s |--structure",
-                "Generates uti files in json format for all of the StructureType.cs enum values.",
-                CommandOptionType.NoValue);
-
-            var moduleUnpackOption = app.Option(
-                "-$|-u |--unpack",
-                "Unpacks a module within the running directory. Target must be the path to a .mod file.",
-                CommandOptionType.SingleValue
-            );
-
-            app.HelpOption("-? | -h | --help");
+            var adHocOption = app.Option("-a|--adhoc", "Ad-hoc code testing.", CommandOptionType.NoValue);
+            var beastOption = app.Option("-b|--beast", "Beast code generator.", CommandOptionType.NoValue);
+            var placeableOption = app.Option("-c|--placeable", "Generates utp files in json format for all of the entries found in placeables.2da.", CommandOptionType.NoValue);
+            var droidOption = app.Option("-d|--droid", "Generates uti files in json format for all of the entries found in droid_item_template.tsv.", CommandOptionType.NoValue);
+            var enhancementOption = app.Option("-e|--enhancement", "Generates uti files in json format for all of the entries found in enhancement_list.csv.", CommandOptionType.NoValue);
+            var hakOption = app.Option("-k|--hak", "Builds hakpak files based on the hakbuilder.json configuration file.", CommandOptionType.NoValue);
+            var languageOption = app.Option("-l|--language", "Generates code for use with the language system.", CommandOptionType.NoValue);
+            var deployOption = app.Option("-o|--outputDeploy", "Deploys DLLs in the bin folder to the NWN dotnet directory.", CommandOptionType.NoValue);
+            var packOption = app.Option("-p|--pack <PATH>", "Packs a module at the specified path. Target must be the path to a .mod file.", CommandOptionType.SingleValue);
+            var recipeOption = app.Option("-r|--recipe", "Generates code file for all of the recipes in the recipes.tsv file.", CommandOptionType.NoValue);
+            var structureOption = app.Option("-s|--structure", "Generates uti files in json format for all of the StructureType.cs enum values.", CommandOptionType.NoValue);
+            var unpackOption = app.Option("-u|--unpack <PATH>", "Unpacks a module within the running directory. Target must be the path to a .mod file.", CommandOptionType.SingleValue);
 
             app.OnExecute(() =>
             {
@@ -103,29 +49,29 @@ namespace SWLOR.CLI
                     _enhancementItemBuilder.Process();
                 }
 
-                if (droidItemOption.HasValue())
+                if (droidOption.HasValue())
                 {
                     _droidItemBuilder.Process();
                 }
 
-                if (hakBuilderOption.HasValue())
+                if (hakOption.HasValue())
                 {
                     _hakBuilder.Process();
                 }
 
-                if (languageBuilderOption.HasValue())
+                if (languageOption.HasValue())
                 {
                     _languageBuilder.Process();
                 }
 
-                if (modulePackerOption.HasValue())
+                if (packOption.HasValue())
                 {
-                    _modulePacker.PackModule(modulePackerOption.Value());
+                    _modulePacker.PackModule(packOption.Value());
                 }
 
-                if (moduleUnpackOption.HasValue())
+                if (unpackOption.HasValue())
                 {
-                    _modulePacker.UnpackModule(moduleUnpackOption.Value());
+                    _modulePacker.UnpackModule(unpackOption.Value());
                 }
 
                 if (recipeOption.HasValue())
@@ -138,7 +84,7 @@ namespace SWLOR.CLI
                     _structureItemCreator.Process();
                 }
 
-                if (adHocToolOption.HasValue())
+                if (adHocOption.HasValue())
                 {
                     _adHocTool.Process();
                 }
@@ -148,7 +94,7 @@ namespace SWLOR.CLI
                     _deployBuild.Process();
                 }
 
-                if (beastBuilderOption.HasValue())
+                if (beastOption.HasValue())
                 {
                     _beastBuilder.Process();
                 }
@@ -156,7 +102,7 @@ namespace SWLOR.CLI
                 return 0;
             });
 
-            app.Execute(args);
+            return app.Execute(args);
         }
     }
 }

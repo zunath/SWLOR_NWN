@@ -5,17 +5,21 @@ using SWLOR.Shared.Abstractions.Contracts;
 
 namespace SWLOR.Component.Migration.Feature.ServerMigration
 {
-    public class _15_UpdateAllShipStats : ServerMigrationBase, IServerMigration
+    public class _19_CombatUpgrade : ServerMigrationBase, IServerMigration
     {
-        public _15_UpdateAllShipStats(ILogger logger, IDatabaseService db, IServiceProvider serviceProvider) : base(logger, db, serviceProvider)
+        public _19_CombatUpgrade(
+            ILogger logger, 
+            IDatabaseService db, 
+            IServiceProvider serviceProvider) 
+            : base(logger, db, serviceProvider)
         {
         }
 
-        public int Version => 15;
+        public int Version => 19;
         public MigrationExecutionType ExecutionType => MigrationExecutionType.PostCacheLoad;
         public void Migrate()
         {
-            RecalculateAllShipStats();
+
         }
     }
 }

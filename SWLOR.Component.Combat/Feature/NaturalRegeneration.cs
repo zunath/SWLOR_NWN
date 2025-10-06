@@ -1,7 +1,7 @@
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Character.Contracts;
+using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Player;
-using SWLOR.Shared.Abstractions.Contracts;
 
 namespace SWLOR.Component.Combat.Feature
 {
@@ -12,19 +12,16 @@ namespace SWLOR.Component.Combat.Feature
 
         public NaturalRegeneration(
             IStatServiceNew statService,
-            ICharacterResourceService characterResourceService,
-            IEventAggregator eventAggregator)
+            ICharacterResourceService characterResourceService)
         {
             _statService = statService;
             _characterResourceService = characterResourceService;
-
-            // Subscribe to events
-            eventAggregator.Subscribe<OnPlayerHeartbeat>(e => ProcessRegeneration());
         }
         
         /// <summary>
         /// On module heartbeat, process a player's HP/FP/STM regeneration.
         /// </summary>
+        [ScriptHandler<OnPlayerHeartbeat>]
         public void ProcessRegeneration()
         {
             ProcessRegenerationInternal();

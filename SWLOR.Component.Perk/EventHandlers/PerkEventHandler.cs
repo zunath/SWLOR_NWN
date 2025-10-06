@@ -1,8 +1,8 @@
 using SWLOR.Component.Perk.Contracts;
-using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Combat.Events;
 using SWLOR.Shared.Domain.Perk.Contracts;
 using SWLOR.Shared.Domain.Skill.Events;
+using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Events.Player;
@@ -21,29 +21,17 @@ namespace SWLOR.Component.Perk.EventHandlers
         public PerkEventHandler(
             IPerkService perkService,
             IUsePerkFeat usePerkFeat,
-            IPerkEffectService perkEffectService,
-            IEventAggregator eventAggregator)
+            IPerkEffectService perkEffectService)
         {
             _perkService = perkService;
             _usePerkFeat = usePerkFeat;
             _perkEffectService = perkEffectService;
-
-            // Subscribe to events
-            eventAggregator.Subscribe<OnModuleCacheBefore>(e => CacheData());
-            eventAggregator.Subscribe<OnPlayerLoseSkillRank>(e => RemovePerkLevelOnSkillDecay());
-            eventAggregator.Subscribe<OnFeatUseBefore>(e => UseFeat());
-            eventAggregator.Subscribe<OnItemHit>(e => ProcessQueuedWeaponAbility());
-            eventAggregator.Subscribe<OnModuleEnter>(e => ClearTemporaryQueuedVariables());
-            eventAggregator.Subscribe<OnPlayerRestStarted>(e => ClearTemporaryQueuedVariablesOnRest());
-            eventAggregator.Subscribe<OnSWLORItemEquipValidBefore>(e => ClearTemporaryQueuedVariablesOnEquip());
-            eventAggregator.Subscribe<OnItemHit>(e => ApplyAlacrityAndClarity());
-            eventAggregator.Subscribe<OnItemHit>(e => OnForceLinkHit());
-            eventAggregator.Subscribe<OnItemHit>(e => OnEnduranceLinkHit());
         }
 
         /// <summary>
         /// When the module loads, cache all perk and character type information.
         /// </summary>
+        [ScriptHandler<OnModuleCacheBefore>]
         public void CacheData()
         {
             _perkService.CacheData();
@@ -53,6 +41,7 @@ namespace SWLOR.Component.Perk.EventHandlers
         /// When a skill receives decay, any perks tied to that skill should be checked.
         /// If the player no longer meets the requirements for those perks, they should be reduced in level.
         /// </summary>
+        [ScriptHandler<OnPlayerLoseSkillRank>]
         public void RemovePerkLevelOnSkillDecay()
         {
             _perkService.RemovePerkLevelOnSkillDecay();
@@ -63,6 +52,7 @@ namespace SWLOR.Component.Perk.EventHandlers
         /// If it is, requirements to use the feat will be checked and then the ability will activate.
         /// If there are errors at any point in this process, the creature will be notified and the execution will end.
         /// </summary>
+        [ScriptHandler<OnFeatUseBefore>]
         public void UseFeat()
         {
             _usePerkFeat.UseFeat();
@@ -71,6 +61,7 @@ namespace SWLOR.Component.Perk.EventHandlers
         /// <summary>
         /// When a weapon hits, process any queued weapon abilities.
         /// </summary>
+        [ScriptHandler<OnItemHit>]
         public void ProcessQueuedWeaponAbility()
         {
             _usePerkFeat.ProcessQueuedWeaponAbility();
@@ -79,6 +70,7 @@ namespace SWLOR.Component.Perk.EventHandlers
         /// <summary>
         /// When a player enters the module, clear any temporary queued variables.
         /// </summary>
+        [ScriptHandler<OnModuleEnter>]
         public void ClearTemporaryQueuedVariables()
         {
             _usePerkFeat.ClearTemporaryQueuedVariables();
@@ -87,6 +79,7 @@ namespace SWLOR.Component.Perk.EventHandlers
         /// <summary>
         /// When a player starts resting, clear any temporary queued variables.
         /// </summary>
+        [ScriptHandler<OnPlayerRestStarted>]
         public void ClearTemporaryQueuedVariablesOnRest()
         {
             _usePerkFeat.ClearTemporaryQueuedVariablesOnRest();
@@ -95,6 +88,7 @@ namespace SWLOR.Component.Perk.EventHandlers
         /// <summary>
         /// When a player equips an item, clear any temporary queued variables.
         /// </summary>
+        [ScriptHandler<OnSWLORItemEquipValidBefore>]
         public void ClearTemporaryQueuedVariablesOnEquip()
         {
             _usePerkFeat.ClearTemporaryQueuedVariablesOnEquip();
@@ -103,6 +97,7 @@ namespace SWLOR.Component.Perk.EventHandlers
         /// <summary>
         /// When a weapon hits, apply Alacrity and Clarity effects for OneHanded perks.
         /// </summary>
+        [ScriptHandler<OnItemHit>]
         public void ApplyAlacrityAndClarity()
         {
             _perkEffectService.ApplyAlacrityAndClarity();
@@ -111,6 +106,7 @@ namespace SWLOR.Component.Perk.EventHandlers
         /// <summary>
         /// When a weapon hits, process Force Link for Beast Force perks.
         /// </summary>
+        [ScriptHandler<OnItemHit>]
         public void OnForceLinkHit()
         {
             _perkEffectService.OnForceLinkHit();
@@ -119,6 +115,7 @@ namespace SWLOR.Component.Perk.EventHandlers
         /// <summary>
         /// When a weapon hits, process Endurance Link for Beast Bruiser perks.
         /// </summary>
+        [ScriptHandler<OnItemHit>]
         public void OnEnduranceLinkHit()
         {
             _perkEffectService.OnEnduranceLinkHit();

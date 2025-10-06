@@ -1,6 +1,7 @@
 using SWLOR.NWN.API.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Player;
@@ -19,13 +20,9 @@ namespace SWLOR.Shared.Events.EventHandlers
         {
             _eventAggregator = eventAggregator;
             _creaturePlugin = creaturePlugin;
-
-            // Subscribe to events
-            eventAggregator.Subscribe<OnServerHeartbeat>(e => ExecuteHeartbeatEvent());
-            eventAggregator.Subscribe<OnModuleEnter>(e => EnterServer());
-            eventAggregator.Subscribe<OnModuleLoad>(e => TriggerNWNXPersistence());
         }
 
+        [ScriptHandler<OnServerHeartbeat>]
         public void ExecuteHeartbeatEvent()
         {
             for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
@@ -38,6 +35,7 @@ namespace SWLOR.Shared.Events.EventHandlers
         /// When a player enters the server, hook their event scripts.
         /// Also add them to a UI processor list.
         /// </summary>
+        [ScriptHandler<OnModuleEnter>]
         public void EnterServer()
         {
             HookPlayerEvents();
@@ -67,6 +65,7 @@ namespace SWLOR.Shared.Events.EventHandlers
         /// A handful of NWNX functions require special calls to load persistence.
         /// When the module loads, run those methods here.
         /// </summary>
+        [ScriptHandler<OnModuleLoad>]
         public void TriggerNWNXPersistence()
         {
             var firstObject = GetFirstObjectInArea(GetFirstArea());

@@ -1,15 +1,11 @@
 using SWLOR.Shared.Domain.World.Events;
-using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Events.Attributes;
+
 namespace SWLOR.Component.World.Feature
 {
     public class GameWorldEntry
     {
-        public GameWorldEntry(IEventAggregator eventAggregator)
-        {
-            // Subscribe to events
-            eventAggregator.Subscribe<OnEnterWorld>(e => EnterGameWorld());
-        }
-
+        [ScriptHandler<OnEnterWorld>]
         public void EnterGameWorld()
         {
             var player = GetPCSpeaker();

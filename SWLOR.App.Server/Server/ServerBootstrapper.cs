@@ -13,6 +13,7 @@ namespace SWLOR.App.Server.Server
         private readonly IDatabaseService _databaseService;
         private readonly ICoreFunctionHandler _coreFunctionHandler;
         private readonly INativeInteropManager _nativeInterop;
+        private readonly IScriptRegistry _scriptRegistry;
         private readonly IScriptExecutionProvider _executionProvider;
 
         public ServerBootstrapper(
@@ -20,12 +21,14 @@ namespace SWLOR.App.Server.Server
             IDatabaseService databaseService,
             INativeInteropManager nativeInterop,
             ICoreFunctionHandler coreFunctionHandler,
+            IScriptRegistry scriptRegistry,
             IScriptExecutionProvider executionProvider)
         {
             _logger = logger;
             _databaseService = databaseService;
             _nativeInterop = nativeInterop;
             _coreFunctionHandler = coreFunctionHandler;
+            _scriptRegistry = scriptRegistry;
             _executionProvider = executionProvider;
         }
 
@@ -39,6 +42,7 @@ namespace SWLOR.App.Server.Server
                 RegisterNativeHandlers();
                 InitializeSWLORSystems();
                 RegisterEventHandlers();
+                LoadScripts();
                 _databaseService.Load();
 
                 Console.WriteLine("SWLOR Server bootstrap complete.");
@@ -75,6 +79,13 @@ namespace SWLOR.App.Server.Server
         private void RegisterEventHandlers()
         {
             AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+        }
+
+        private void LoadScripts()
+        {
+            Console.WriteLine("Registering scripts...");
+            _scriptRegistry.LoadHandlersFromAssembly();
+            Console.WriteLine("Scripts registered successfully.");
         }
 
         private void OnUnhandledException(object sender, UnhandledExceptionEventArgs ex)

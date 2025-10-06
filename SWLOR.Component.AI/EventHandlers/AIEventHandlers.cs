@@ -1,6 +1,6 @@
-using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.AI.Contracts;
 using SWLOR.Shared.Domain.Combat.Events;
+using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Creature;
 using SWLOR.Shared.Events.Events.Module;
 
@@ -14,32 +14,12 @@ namespace SWLOR.Component.AI.EventHandlers
     {
         private readonly IAIService _aiService;
 
-        public AIEventHandlers(
-            IAIService aiService,
-            IEventAggregator eventAggregator)
+        public AIEventHandlers(IAIService aiService)
         {
             _aiService = aiService;
-
-            // Subscribe to events
-            eventAggregator.Subscribe<OnModuleCacheBefore>(e => CacheAIData());
-            eventAggregator.Subscribe<OnCreatureHeartbeatAfter>(e => CreatureHeartbeat());
-            eventAggregator.Subscribe<OnCreaturePerceptionAfter>(e => CreaturePerception());
-            eventAggregator.Subscribe<OnCreatureRoundEndAfter>(e => CreatureCombatRoundEnd());
-            eventAggregator.Subscribe<OnCreatureConversationAfter>(e => CreatureConversation());
-            eventAggregator.Subscribe<OnCreatureAttackAfter>(e => CreaturePhysicalAttacked());
-            eventAggregator.Subscribe<OnCreatureDamagedAfter>(e => CreatureDamaged());
-            eventAggregator.Subscribe<OnCreatureDeathAfter>(e => CreatureDeath());
-            eventAggregator.Subscribe<OnCreatureDisturbedAfter>(e => CreatureDisturbed());
-            eventAggregator.Subscribe<OnCreatureSpawnAfter>(e => CreatureSpawn());
-            eventAggregator.Subscribe<OnCreatureRestedAfter>(e => CreatureRested());
-            eventAggregator.Subscribe<OnCreatureSpellCastAfter>(e => CreatureSpellCastAt());
-            eventAggregator.Subscribe<OnCreatureUserDefinedAfter>(e => CreatureUserDefined());
-            eventAggregator.Subscribe<OnCreatureBlockedAfter>(e => CreatureBlocked());
-            eventAggregator.Subscribe<OnCreatureAggroEnter>(e => CreatureAggroEnter());
-            eventAggregator.Subscribe<OnCreatureAggroExit>(e => CreatureAggroExit());
-            eventAggregator.Subscribe<OnObjectDestroyed>(e => RemoveFromAlliesCache());
         }
 
+        [ScriptHandler<OnModuleCacheBefore>]
         public void CacheAIData()
         {
             _aiService.CacheAIData();
@@ -48,6 +28,7 @@ namespace SWLOR.Component.AI.EventHandlers
         /// <summary>
         /// Entry point for creature heartbeat logic.
         /// </summary>
+        [ScriptHandler<OnCreatureHeartbeatAfter>]
         public void CreatureHeartbeat()
         {
             _aiService.ProcessCreatureHeartbeat(OBJECT_SELF);
@@ -56,6 +37,7 @@ namespace SWLOR.Component.AI.EventHandlers
         /// <summary>
         /// Entry point for creature perception logic.
         /// </summary>
+        [ScriptHandler<OnCreaturePerceptionAfter>]
         public void CreaturePerception()
         {
             _aiService.ProcessCreaturePerception(OBJECT_SELF);
@@ -64,6 +46,7 @@ namespace SWLOR.Component.AI.EventHandlers
         /// <summary>
         /// Entry point for creature combat round end logic.
         /// </summary>
+        [ScriptHandler<OnCreatureRoundEndAfter>]
         public void CreatureCombatRoundEnd()
         {
             _aiService.ProcessCreatureCombatRoundEnd(OBJECT_SELF);
@@ -72,6 +55,7 @@ namespace SWLOR.Component.AI.EventHandlers
         /// <summary>
         /// Entry point for creature conversation logic.
         /// </summary>
+        [ScriptHandler<OnCreatureConversationAfter>]
         public void CreatureConversation()
         {
             _aiService.ProcessCreatureConversation(OBJECT_SELF);
@@ -80,6 +64,7 @@ namespace SWLOR.Component.AI.EventHandlers
         /// <summary>
         /// Entry point for creature physical attacked logic
         /// </summary>
+        [ScriptHandler<OnCreatureAttackAfter>]
         public void CreaturePhysicalAttacked()
         {
             _aiService.ProcessCreaturePhysicalAttacked(OBJECT_SELF);
@@ -88,6 +73,7 @@ namespace SWLOR.Component.AI.EventHandlers
         /// <summary>
         /// Entry point for creature damaged logic
         /// </summary>
+        [ScriptHandler<OnCreatureDamagedAfter>]
         public void CreatureDamaged()
         {
             _aiService.ProcessCreatureDamaged(OBJECT_SELF);
@@ -96,6 +82,7 @@ namespace SWLOR.Component.AI.EventHandlers
         /// <summary>
         /// Entry point for creature death logic
         /// </summary>
+        [ScriptHandler<OnCreatureDeathAfter>]
         public void CreatureDeath()
         {
             _aiService.ProcessCreatureDeath(OBJECT_SELF);
@@ -104,6 +91,7 @@ namespace SWLOR.Component.AI.EventHandlers
         /// <summary>
         /// Entry point for creature disturbed logic
         /// </summary>
+        [ScriptHandler<OnCreatureDisturbedAfter>]
         public void CreatureDisturbed()
         {
             _aiService.ProcessCreatureDisturbed(OBJECT_SELF);
@@ -112,6 +100,7 @@ namespace SWLOR.Component.AI.EventHandlers
         /// <summary>
         /// Entry point for creature spawn logic
         /// </summary>
+        [ScriptHandler<OnCreatureSpawnAfter>]
         public void CreatureSpawn()
         {
             _aiService.ProcessCreatureSpawn(OBJECT_SELF);
@@ -120,6 +109,7 @@ namespace SWLOR.Component.AI.EventHandlers
         /// <summary>
         /// Entry point for creature rested logic
         /// </summary>
+        [ScriptHandler<OnCreatureRestedAfter>]
         public void CreatureRested()
         {
             _aiService.ProcessCreatureRested(OBJECT_SELF);
@@ -128,6 +118,7 @@ namespace SWLOR.Component.AI.EventHandlers
         /// <summary>
         /// Entry point for creature spell cast at logic
         /// </summary>
+        [ScriptHandler<OnCreatureSpellCastAfter>]
         public void CreatureSpellCastAt()
         {
             _aiService.ProcessCreatureSpellCastAt(OBJECT_SELF);
@@ -136,6 +127,7 @@ namespace SWLOR.Component.AI.EventHandlers
         /// <summary>
         /// Entry point for creature user defined logic
         /// </summary>
+        [ScriptHandler<OnCreatureUserDefinedAfter>]
         public void CreatureUserDefined()
         {
             _aiService.ProcessCreatureUserDefined(OBJECT_SELF);
@@ -144,6 +136,7 @@ namespace SWLOR.Component.AI.EventHandlers
         /// <summary>
         /// Entry point for creature blocked logic
         /// </summary>
+        [ScriptHandler<OnCreatureBlockedAfter>]
         public void CreatureBlocked()
         {
             _aiService.ProcessCreatureBlocked(OBJECT_SELF);
@@ -153,6 +146,7 @@ namespace SWLOR.Component.AI.EventHandlers
         /// When a creature enters the aggro aura of another creature, increase their enmity and start the aggro process.
         /// Invisible creatures do not trigger this.
         /// </summary>
+        [ScriptHandler<OnCreatureAggroEnter>]
         public void CreatureAggroEnter()
         {
             _aiService.ProcessCreatureAggroEnter(OBJECT_SELF);
@@ -161,6 +155,7 @@ namespace SWLOR.Component.AI.EventHandlers
         /// <summary>
         /// When a creature exits the aggro aura of another creature, 
         /// </summary>
+        [ScriptHandler<OnCreatureAggroExit>]
         public void CreatureAggroExit()
         {
             _aiService.ProcessCreatureAggroExit(OBJECT_SELF);
@@ -169,6 +164,7 @@ namespace SWLOR.Component.AI.EventHandlers
         /// <summary>
         /// When the creature dies or is destroyed, remove it from all caches.
         /// </summary>
+        [ScriptHandler<OnObjectDestroyed>]
         public void RemoveFromAlliesCache()
         {
             _aiService.RemoveFromAlliesCache(OBJECT_SELF);

@@ -1,7 +1,7 @@
 using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Domain.World.Events;
+using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.UI.Contracts;
-using SWLOR.Shared.Abstractions.Contracts;
 
 namespace SWLOR.Component.World.Feature
 {
@@ -9,20 +9,16 @@ namespace SWLOR.Component.World.Feature
     {
         private readonly IGuiService _guiService;
 
-        public HoloNetTerminal(
-            IGuiService guiService,
-            IEventAggregator eventAggregator)
+        public HoloNetTerminal(IGuiService guiService)
         {
             _guiService = guiService;
-
-            // Subscribe to events
-            eventAggregator.Subscribe<OnOpenHoloNet>(e => OpenHolonetUI());
         }
 
         /// <summary>
         /// When a user click the holonet terminal, a UI will open which lets them enter their message
         /// and pay a fee to send a message over the in-game holonet channel and discord.
         /// </summary>
+        [ScriptHandler<OnOpenHoloNet>]
         public void OpenHolonetUI()
         {
             var player = GetLastUsedBy();

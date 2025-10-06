@@ -1,8 +1,8 @@
 using SWLOR.Component.Admin.Contracts;
 using SWLOR.Component.Admin.Feature;
 using SWLOR.Component.Admin.UI.ViewModel;
-using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Combat.Events;
+using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Events.Server;
@@ -32,8 +32,7 @@ namespace SWLOR.Component.Admin.EventHandlers
             DebugEnmityViewModel debugEnmityViewModel,
             CreatureManagerViewModel creatureManagerViewModel,
             DMAuthorization dmAuthorization,
-            IAuditingService auditingService,
-            IEventAggregator eventAggregator)
+            IAuditingService auditingService)
         {
             _tlkOverrides = tlkOverrides;
             _dmActions = dmActions;
@@ -43,25 +42,12 @@ namespace SWLOR.Component.Admin.EventHandlers
             _creatureManagerViewModel = creatureManagerViewModel;
             _dmAuthorization = dmAuthorization;
             _auditingService = auditingService;
-
-            // Subscribe to events
-            eventAggregator.Subscribe<OnModuleLoad>(e => OverrideTlks());
-            eventAggregator.Subscribe<OnModuleLoad>(e => ProcessBootUp());
-            eventAggregator.Subscribe<OnModuleEnter>(e => OnModuleEnter());
-            eventAggregator.Subscribe<OnModuleExit>(e => OnModuleExit());
-            eventAggregator.Subscribe<OnDMSpawnObjectAfter>(e => OnDMSpawnObject());
-            eventAggregator.Subscribe<OnDMGiveXPBefore>(e => GrantRPXPViaDMCommand());
-            eventAggregator.Subscribe<OnDMGiveLevelBefore>(e => DisableGiveLevel());
-            eventAggregator.Subscribe<OnExamineObjectBefore>(e => ExaminePlayer());
-            eventAggregator.Subscribe<OnServerHeartbeat>(e => ProcessAutoRestart());
-            eventAggregator.Subscribe<OnEnmityChanged>(e => OnEnmityChanged());
-            eventAggregator.Subscribe<OnModulePlayerTarget>(e => RunTargetedLocationAction());
-            eventAggregator.Subscribe<OnNWNXChat>(e => AuditChatMessages());
         }
 
         /// <summary>
         /// When the module loads, override TLK strings.
         /// </summary>
+        [ScriptHandler<OnModuleLoad>]
         public void OverrideTlks()
         {
             _tlkOverrides.OverrideTlks();
@@ -70,6 +56,7 @@ namespace SWLOR.Component.Admin.EventHandlers
         /// <summary>
         /// When the server starts up, process boot up tasks.
         /// </summary>
+        [ScriptHandler<OnModuleLoad>]
         public void ProcessBootUp()
         {
             _serverTasks.ProcessBootUp();
@@ -78,6 +65,7 @@ namespace SWLOR.Component.Admin.EventHandlers
         /// <summary>
         /// When a player enters the server, handle all admin-related initialization.
         /// </summary>
+        [ScriptHandler<OnModuleEnter>]
         public void OnModuleEnter()
         {
             _serverTasks.WelcomeMessage();
@@ -88,6 +76,7 @@ namespace SWLOR.Component.Admin.EventHandlers
         /// <summary>
         /// When a player exits the server, audit the disconnection.
         /// </summary>
+        [ScriptHandler<OnModuleExit>]
         public void OnModuleExit()
         {
             _auditingService.AuditClientDisconnection();
@@ -96,6 +85,7 @@ namespace SWLOR.Component.Admin.EventHandlers
         /// <summary>
         /// When a DM spawns an object, handle the spawn event.
         /// </summary>
+        [ScriptHandler<OnDMSpawnObjectAfter>]
         public void OnDMSpawnObject()
         {
             _dmActions.OnDMSpawnObject();
@@ -104,6 +94,7 @@ namespace SWLOR.Component.Admin.EventHandlers
         /// <summary>
         /// When a DM gives XP, handle RP XP granting.
         /// </summary>
+        [ScriptHandler<OnDMGiveXPBefore>]
         public void GrantRPXPViaDMCommand()
         {
             _dmActions.GrantRPXPViaDMCommand();
@@ -112,6 +103,7 @@ namespace SWLOR.Component.Admin.EventHandlers
         /// <summary>
         /// When a DM tries to give levels, disable the command.
         /// </summary>
+        [ScriptHandler<OnDMGiveLevelBefore>]
         public void DisableGiveLevel()
         {
             _dmActions.DisableGiveLevel();
@@ -120,6 +112,7 @@ namespace SWLOR.Component.Admin.EventHandlers
         /// <summary>
         /// When a player examines an object, handle DM player examination.
         /// </summary>
+        [ScriptHandler<OnExamineObjectBefore>]
         public void ExaminePlayer()
         {
             _dmPlayerExamineViewModel.ExaminePlayer();
@@ -128,6 +121,7 @@ namespace SWLOR.Component.Admin.EventHandlers
         /// <summary>
         /// When the server heartbeat occurs, process auto-restart tasks.
         /// </summary>
+        [ScriptHandler<OnServerHeartbeat>]
         public void ProcessAutoRestart()
         {
             _serverTasks.ProcessAutoRestart();
@@ -136,6 +130,7 @@ namespace SWLOR.Component.Admin.EventHandlers
         /// <summary>
         /// When enmity changes, update debug enmity display.
         /// </summary>
+        [ScriptHandler<OnEnmityChanged>]
         public void OnEnmityChanged()
         {
             _debugEnmityViewModel.OnEnmityChanged();
@@ -144,6 +139,7 @@ namespace SWLOR.Component.Admin.EventHandlers
         /// <summary>
         /// When a player targets something, handle creature manager targeting.
         /// </summary>
+        [ScriptHandler<OnModulePlayerTarget>]
         public void RunTargetedLocationAction()
         {
             CreatureManagerViewModel.RunTargetedLocationAction();
@@ -152,6 +148,7 @@ namespace SWLOR.Component.Admin.EventHandlers
         /// <summary>
         /// When a player sends a chat message, audit the message.
         /// </summary>
+        [ScriptHandler<OnNWNXChat>]
         public void AuditChatMessages()
         {
             _auditingService.AuditChatMessages();

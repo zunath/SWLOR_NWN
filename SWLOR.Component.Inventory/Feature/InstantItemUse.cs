@@ -1,6 +1,6 @@
 using SWLOR.NWN.API.Contracts;
+using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.NWNX;
-using SWLOR.Shared.Abstractions.Contracts;
 
 namespace SWLOR.Component.Inventory.Feature
 {
@@ -8,20 +8,16 @@ namespace SWLOR.Component.Inventory.Feature
     {
         private readonly IEventsPluginService _eventsPlugin;
 
-        public InstantItemUse(
-            IEventsPluginService eventsPlugin,
-            IEventAggregator eventAggregator)
+        public InstantItemUse(IEventsPluginService eventsPlugin)
         {
             _eventsPlugin = eventsPlugin;
-
-            // Subscribe to events
-            eventAggregator.Subscribe<OnItemUseBefore>(e => OnUseItem());
         }
 
         /// <summary>
         /// Before an item is used, if the item has a script specified, it will be run instantly.
         /// This will bypass the "Use Item" animation items normally have.
         /// </summary>
+        [ScriptHandler<OnItemUseBefore>]
         public void OnUseItem()
         {
             var creature = OBJECT_SELF;

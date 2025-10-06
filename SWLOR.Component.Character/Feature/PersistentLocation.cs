@@ -3,6 +3,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.World.Contracts;
+using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Area;
 using SWLOR.Shared.Events.Events.Module;
 
@@ -18,16 +19,10 @@ namespace SWLOR.Component.Character.Feature
 
         public PersistentLocation(
             IDatabaseService db,
-            IServiceProvider serviceProvider,
-            IEventAggregator eventAggregator)
+            IServiceProvider serviceProvider)
         {
             _db = db;
             _serviceProvider = serviceProvider;
-
-            // Subscribe to events
-            eventAggregator.Subscribe<OnAreaEnter>(e => SaveLocationOnAreaEnter());
-            eventAggregator.Subscribe<OnModuleRest>(e => SaveLocationOnRest());
-            eventAggregator.Subscribe<OnAreaEnter>(e => LoadLocationOnEnter());
         }
         
         /// <summary>
@@ -64,6 +59,7 @@ namespace SWLOR.Component.Character.Feature
         /// <summary>
         /// Saves a player's location on area enter.
         /// </summary>
+        [ScriptHandler<OnAreaEnter>]
         public void SaveLocationOnAreaEnter()
         {
             var player = GetEnteringObject();
@@ -73,6 +69,7 @@ namespace SWLOR.Component.Character.Feature
         /// <summary>
         /// Saves a player's location on rest.
         /// </summary>
+        [ScriptHandler<OnModuleRest>]
         public void SaveLocationOnRest()
         {
             var player = GetLastPCRested();
@@ -85,6 +82,7 @@ namespace SWLOR.Component.Character.Feature
         /// <summary>
         /// Loads a player's location if they enter an area with the tag "ooc_area".
         /// </summary>
+        [ScriptHandler<OnAreaEnter>]
         public void LoadLocationOnEnter()
         {
             var player = GetEnteringObject();

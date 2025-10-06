@@ -5,8 +5,8 @@ using SWLOR.Shared.Domain.Dialog.Contracts;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Inventory.Enums;
 using SWLOR.Shared.Domain.World.Events;
+using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.UI.Service;
-using SWLOR.Shared.Abstractions.Contracts;
 
 namespace SWLOR.Component.World.Feature
 {
@@ -21,8 +21,7 @@ namespace SWLOR.Component.World.Feature
         private readonly Lazy<IDialogService> _dialogService;
 
         public PlaceableScripts(
-            IServiceProvider serviceProvider,
-            IEventAggregator eventAggregator)
+            IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
             
@@ -31,13 +30,6 @@ namespace SWLOR.Component.World.Feature
             _enmityService = new Lazy<IEnmityService>(() => _serviceProvider.GetRequiredService<IEnmityService>());
             _currencyService = new Lazy<ICurrencyService>(() => _serviceProvider.GetRequiredService<ICurrencyService>());
             _dialogService = new Lazy<IDialogService>(() => _serviceProvider.GetRequiredService<IDialogService>());
-
-            // Subscribe to events
-            eventAggregator.Subscribe<OnPlaceableTeleport>(e => UseTeleportDevice());
-            eventAggregator.Subscribe<OnPlaceablePermanentVfx>(e => ApplyPermanentVisualEffect());
-            eventAggregator.Subscribe<OnPlaceableGenericConversation>(e => GenericConversation());
-            eventAggregator.Subscribe<OnPlaceableSit>(e => Sit());
-            eventAggregator.Subscribe<OnPlaceableBuyRebuild>(e => PurchaseRebuild());
         }
         
         // Lazy-loaded services to break circular dependencies
@@ -49,6 +41,7 @@ namespace SWLOR.Component.World.Feature
         /// When a teleport placeable is used, send the user to the configured waypoint.
         /// Checks are made for required key items, if specified as local variables on the placeable.
         /// </summary>
+        [ScriptHandler<OnPlaceableTeleport>]
         public void UseTeleportDevice()
         {
             var user = GetLastUsedBy();
@@ -113,6 +106,7 @@ namespace SWLOR.Component.World.Feature
         /// <summary>
         /// Applies a permanent VFX on a placeable or creature on heartbeat, then removes the heartbeat script.
         /// </summary>
+        [ScriptHandler<OnPlaceablePermanentVfx>]
         public void ApplyPermanentVisualEffect()
         {
             var target = OBJECT_SELF;
@@ -135,6 +129,7 @@ namespace SWLOR.Component.World.Feature
         /// <summary>
         /// Handles starting a generic conversation when a placeable is clicked or used by a player or DM.
         /// </summary>
+        [ScriptHandler<OnPlaceableGenericConversation>]
         public void GenericConversation()
         {
             var placeable = OBJECT_SELF;
@@ -157,6 +152,7 @@ namespace SWLOR.Component.World.Feature
         /// <summary>
         /// Handle sitting on an object.        
         /// </summary>
+        [ScriptHandler<OnPlaceableSit>]
         public void Sit()
         {
             var user = GetLastUsedBy();
@@ -175,6 +171,7 @@ namespace SWLOR.Component.World.Feature
         /// Whenever a player purchases a rebuild from the training terminal,
         /// make them spend a rebuild token and send them to the rebuild area.
         /// </summary>
+        [ScriptHandler<OnPlaceableBuyRebuild>]
         public void PurchaseRebuild()
         {
             var player = GetPCSpeaker();

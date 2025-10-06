@@ -1,23 +1,18 @@
-using SWLOR.NWN.API.NWScript.Enum;
+﻿using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Component.Character.UI.Payload;
+using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.UI.Contracts;
-using SWLOR.Shared.Abstractions.Contracts;
 
 namespace SWLOR.Component.Character.EventHandlers
 {
     internal class UIEventHandlers
     {
         private IGuiService _gui;
-        public UIEventHandlers(
-            IGuiService gui,
-            IEventAggregator eventAggregator)
+        public UIEventHandlers(IGuiService gui)
         {
             _gui = gui;
-
-            // Subscribe to events
-            eventAggregator.Subscribe<OnModuleGuiEvent>(e => ReplaceNWNGuis());
         }
 
 
@@ -25,6 +20,7 @@ namespace SWLOR.Component.Character.EventHandlers
         /// Skips the default NWN window open events and shows the SWLOR windows instead.
         /// Applies to the Journal and Character Sheet.
         /// </summary>
+        [ScriptHandler<OnModuleGuiEvent>]
         public void ReplaceNWNGuis()
         {
             var player = GetLastGuiEventPlayer();

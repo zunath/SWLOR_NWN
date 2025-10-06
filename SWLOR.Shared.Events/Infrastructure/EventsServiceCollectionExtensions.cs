@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Events.Contracts;
 using SWLOR.Shared.Events.Service;
 using SWLOR.Shared.Events.EventHandlers;
 
@@ -17,6 +18,7 @@ namespace SWLOR.Shared.Events.Infrastructure
         /// <returns>The service collection for chaining</returns>
         public static IServiceCollection AddEventingServices(this IServiceCollection services)
         {
+            services.AddSingleton<ModuleEventHandlers>();
             services.AddSingleton<IEventRegistrationService, EventRegistrationService>();
             services.AddSingleton<IEventAggregator, EventAggregator.EventAggregator>();
 

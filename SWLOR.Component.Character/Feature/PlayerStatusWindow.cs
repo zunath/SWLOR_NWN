@@ -2,12 +2,12 @@ using SWLOR.NWN.API.Contracts;
 using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Domain.Space.Events;
 using SWLOR.Shared.Domain.UI.Events;
+using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Area;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Events.Player;
 using SWLOR.Shared.UI.Contracts;
-using SWLOR.Shared.Abstractions.Contracts;
 
 namespace SWLOR.Component.Character.Feature
 {
@@ -16,28 +16,13 @@ namespace SWLOR.Component.Character.Feature
         private readonly IGuiService _guiService;
         private readonly IEventsPluginService _eventsPlugin;
 
-        public PlayerStatusWindow(
-            IGuiService guiService,
-            IEventsPluginService eventsPlugin,
-            IEventAggregator eventAggregator)
+        public PlayerStatusWindow(IGuiService guiService, IEventsPluginService eventsPlugin)
         {
             _guiService = guiService;
             _eventsPlugin = eventsPlugin;
-
-            // Subscribe to events
-            eventAggregator.Subscribe<OnSWLORItemEquipValidBefore>(e => PlayerEquipItem());
-            eventAggregator.Subscribe<OnItemUnequipBefore>(e => PlayerUnequipItem());
-            eventAggregator.Subscribe<OnPlayerDamaged>(e => PlayerDamaged());
-            eventAggregator.Subscribe<OnPlayerFPAdjusted>(e => PlayerFPAdjusted());
-            eventAggregator.Subscribe<OnPlayerStaminaAdjusted>(e => PlayerSTMAdjusted());
-            eventAggregator.Subscribe<OnHealAfter>(e => PlayerHealed());
-            eventAggregator.Subscribe<OnPlayerShieldAdjusted>(e => PlayerShieldAdjusted());
-            eventAggregator.Subscribe<OnPlayerHullAdjusted>(e => PlayerHullAdjusted());
-            eventAggregator.Subscribe<OnPlayerCapAdjusted>(e => PlayerCapacitorAdjusted());
-            eventAggregator.Subscribe<OnPlayerTargetUpdated>(e => PlayerSpaceTargetAdjusted());
-            eventAggregator.Subscribe<OnModuleEnter>(e => LoadPlayerStatusWindow());
-            eventAggregator.Subscribe<OnAreaEnter>(e => LoadPlayerStatusWindow());
         }
+
+        [ScriptHandler<OnSWLORItemEquipValidBefore>]
         public void PlayerEquipItem()
         {
             var player = OBJECT_SELF;
@@ -48,6 +33,8 @@ namespace SWLOR.Component.Character.Feature
             _guiService.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.FP));
             _guiService.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.STM));
         }
+
+        [ScriptHandler<OnItemUnequipBefore>]
         public void PlayerUnequipItem()
         {
             var player = OBJECT_SELF;
@@ -58,6 +45,8 @@ namespace SWLOR.Component.Character.Feature
             _guiService.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.FP));
             _guiService.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.STM));
         }
+
+        [ScriptHandler<OnPlayerDamaged>]
         public void PlayerDamaged()
         {
             var player = OBJECT_SELF;
@@ -66,6 +55,8 @@ namespace SWLOR.Component.Character.Feature
 
             _guiService.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.HP));
         }
+
+        [ScriptHandler<OnPlayerFPAdjusted>]
         public void PlayerFPAdjusted()
         {
             var player = OBJECT_SELF;
@@ -74,6 +65,8 @@ namespace SWLOR.Component.Character.Feature
 
             _guiService.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.FP));
         }
+
+        [ScriptHandler<OnPlayerStaminaAdjusted>]
         public void PlayerSTMAdjusted()
         {
             var player = OBJECT_SELF;
@@ -82,11 +75,15 @@ namespace SWLOR.Component.Character.Feature
 
             _guiService.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.STM));
         }
+
+        [ScriptHandler<OnHealAfter>]
         public void PlayerHealed()
         {
             var target = StringToObject(_eventsPlugin.GetEventData("TARGET_OBJECT_ID"));
             _guiService.PublishRefreshEvent(target, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.HP));
         }
+
+        [ScriptHandler<OnPlayerShieldAdjusted>]
         public void PlayerShieldAdjusted()
         {
             var player = OBJECT_SELF;
@@ -95,6 +92,8 @@ namespace SWLOR.Component.Character.Feature
 
             _guiService.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.Shield));
         }
+
+        [ScriptHandler<OnPlayerHullAdjusted>]
         public void PlayerHullAdjusted()
         {
             var player = OBJECT_SELF;
@@ -103,6 +102,8 @@ namespace SWLOR.Component.Character.Feature
 
             _guiService.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.Hull));
         }
+
+        [ScriptHandler<OnPlayerCapAdjusted>]
         public void PlayerCapacitorAdjusted()
         {
             var player = OBJECT_SELF;
@@ -111,6 +112,8 @@ namespace SWLOR.Component.Character.Feature
 
             _guiService.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.Capacitor));
         }
+
+        [ScriptHandler<OnPlayerTargetUpdated>]
         public void PlayerSpaceTargetAdjusted()
         {
             var player = OBJECT_SELF;
@@ -120,6 +123,8 @@ namespace SWLOR.Component.Character.Feature
             _guiService.PublishRefreshEvent(player, new TargetStatusRefreshEvent());
         }
 
+        [ScriptHandler<OnModuleEnter>]
+        [ScriptHandler<OnAreaEnter>]
         public void LoadPlayerStatusWindow()
         {
             var player = GetEnteringObject();

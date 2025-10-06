@@ -9,6 +9,8 @@ using SWLOR.Shared.Domain.Properties.Entities;
 using SWLOR.Shared.Domain.Properties.Enums;
 using SWLOR.Shared.Domain.Properties.Events;
 using SWLOR.Shared.Domain.Properties.ValueObjects;
+using SWLOR.Shared.Events.Attributes;
+
 namespace SWLOR.Component.Properties.Definitions.PropertyLayoutDefinition
 {
     public class BankLayoutDefinition: IPropertyLayoutListDefinition
@@ -38,6 +40,7 @@ namespace SWLOR.Component.Properties.Definitions.PropertyLayoutDefinition
         /// When a bank contained inside a property is used,
         /// ensure the user is a citizen of the city the bank is associated with.
         /// </summary>
+        [ScriptHandler<OnOpenPropertyBank>]
         public void OpenPropertyBank()
         {
             var player = GetLastUsedBy();

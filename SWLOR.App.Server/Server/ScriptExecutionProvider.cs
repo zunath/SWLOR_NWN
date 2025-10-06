@@ -12,16 +12,16 @@ namespace SWLOR.App.Server.Server
     public class ScriptExecutionProvider : IScriptExecutionProvider
     {
         private readonly IClosureManager _closureManager;
-        private readonly ScriptToEventMapper _scriptToEventMapper;
+        private readonly IScriptRegistry _scriptRegistry;
         private readonly IScriptExecutor _scriptExecutor;
 
         public ScriptExecutionProvider(
             IClosureManager closureManager, 
-            ScriptToEventMapper scriptToEventMapper,
+            IScriptRegistry scriptRegistry,
             IScriptExecutor scriptExecutor)
         {
             _closureManager = closureManager;
-            _scriptToEventMapper = scriptToEventMapper;
+            _scriptRegistry = scriptRegistry;
             _scriptExecutor = scriptExecutor;
         }
 
@@ -41,7 +41,17 @@ namespace SWLOR.App.Server.Server
         /// <returns>True if the script exists, false otherwise</returns>
         public bool HasScript(string scriptName)
         {
-            return _scriptToEventMapper.HasEventType(scriptName);
+            return _scriptRegistry.HasScript(scriptName);
+        }
+
+        /// <summary>
+        /// Gets the action scripts for the specified script name.
+        /// </summary>
+        /// <param name="scriptName">The name of the script</param>
+        /// <returns>Collection of action delegates and their names</returns>
+        public IEnumerable<(Action action, string name)> GetActionScripts(string scriptName)
+        {
+            return _scriptRegistry.GetActionScripts(scriptName);
         }
 
         /// <summary>

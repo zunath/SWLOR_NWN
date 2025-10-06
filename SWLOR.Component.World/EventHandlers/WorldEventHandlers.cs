@@ -1,12 +1,12 @@
 using SWLOR.Component.World.Contracts;
 using SWLOR.Shared.Domain.Combat.Events;
 using SWLOR.Shared.Domain.World.Contracts;
+using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Area;
 using SWLOR.Shared.Events.Events.Creature;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Events.Server;
-using SWLOR.Shared.Abstractions.Contracts;
 
 namespace SWLOR.Component.World.EventHandlers
 {
@@ -29,8 +29,7 @@ namespace SWLOR.Component.World.EventHandlers
             IWeatherService weatherService,
             IVisibilityObjectCacheService visibilityObjectCacheService,
             IPlayerVisibilityService playerVisibilityService,
-            ITaxiService taxiService,
-            IEventAggregator eventAggregator)
+            ITaxiService taxiService)
         {
             _spawnService = spawnService;
             _areaService = areaService;
@@ -40,17 +39,9 @@ namespace SWLOR.Component.World.EventHandlers
             _visibilityObjectCacheService = visibilityObjectCacheService;
             _playerVisibilityService = playerVisibilityService;
             _taxiService = taxiService;
-
-            // Subscribe to events
-            eventAggregator.Subscribe<OnModuleCacheBefore>(e => OnModuleCacheBefore());
-            eventAggregator.Subscribe<OnModuleCacheAfter>(e => OnModuleCacheAfter());
-            eventAggregator.Subscribe<OnModuleEnter>(e => OnModuleEnter());
-            eventAggregator.Subscribe<OnAreaEnter>(e => OnAreaEnter());
-            eventAggregator.Subscribe<OnAreaExit>(e => OnAreaExit());
-            eventAggregator.Subscribe<OnCreatureDeathAfter>(e => OnCreatureDeathAfter());
-            eventAggregator.Subscribe<OnServerHeartbeat>(e => OnSwlorHeartbeat());
-            eventAggregator.Subscribe<OnDMSpawnObjectAfter>(e => OnDMSpawnObjectAfter());
         }
+
+        [ScriptHandler<OnModuleCacheBefore>]
         public void OnModuleCacheBefore()
         {
             _spawnService.CacheData();
@@ -60,14 +51,20 @@ namespace SWLOR.Component.World.EventHandlers
             _visibilityObjectCacheService.LoadVisibilityObjects();
             _taxiService.LoadTaxiDestinations();
         }
+
+        [ScriptHandler<OnModuleCacheAfter>]
         public void OnModuleCacheAfter()
         {
             _areaService.RemoveInstancesFromCache();
         }
+
+        [ScriptHandler<OnModuleEnter>]
         public void OnModuleEnter()
         {
             _playerVisibilityService.LoadPlayerVisibilityObjects();
         }
+
+        [ScriptHandler<OnAreaEnter>]
         public void OnAreaEnter()
         {
             _spawnService.SpawnArea();
@@ -75,21 +72,29 @@ namespace SWLOR.Component.World.EventHandlers
             _musicService.ApplyBattleThemeToPlayer();
             _weatherService.OnAreaEnter();
         }
+
+        [ScriptHandler<OnAreaExit>]
         public void OnAreaExit()
         {
             _spawnService.QueueDespawnArea();
             _areaService.ExitArea();
         }
 
+        [ScriptHandler<OnCreatureDeathAfter>]
+        [ScriptHandler<OnPlaceableDeath>]
         public void OnCreatureDeathAfter()
         {
             _spawnService.QueueRespawn();
         }
+
+        [ScriptHandler<OnServerHeartbeat>]
         public void OnSwlorHeartbeat()
         {
             _spawnService.ProcessSpawnSystem();
             _weatherService.OnModuleHeartbeat();
         }
+
+        [ScriptHandler<OnDMSpawnObjectAfter>]
         public void OnDMSpawnObjectAfter()
         {
             _spawnService.DMSpawnCreature();

@@ -9,6 +9,8 @@ using SWLOR.Shared.Domain.Quest.Contracts;
 using SWLOR.Shared.Domain.Quest.Enums;
 using SWLOR.Shared.Domain.Quest.Events;
 using SWLOR.Shared.Domain.World.Contracts;
+using SWLOR.Shared.Events.Attributes;
+
 namespace SWLOR.Component.Quest.Definitions.QuestDefinition
 {
     public class ViscaraQuestDefinition : IQuestListDefinition
@@ -169,6 +171,7 @@ namespace SWLOR.Component.Quest.Definitions.QuestDefinition
         /// <summary>
         /// When a force crystal is touched, run the progression logic for the First Rites quest.
         /// </summary>
+        [ScriptHandler<OnQuestForceCrystal>]
         public void FirstRitesForceCrystal()
         {
             const string InactiveQuestText = "The crystal glows quietly...";

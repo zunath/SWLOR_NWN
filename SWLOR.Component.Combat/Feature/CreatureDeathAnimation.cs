@@ -1,7 +1,7 @@
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.ValueObjects;
+using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Creature;
-using SWLOR.Shared.Abstractions.Contracts;
 
 namespace SWLOR.Component.Combat.Feature
 {
@@ -9,15 +9,12 @@ namespace SWLOR.Component.Combat.Feature
     {
         private readonly IAnimationPlayerService _animationPlayerService;
 
-        public CreatureDeathAnimation(
-            IAnimationPlayerService animationPlayerService,
-            IEventAggregator eventAggregator)
+        public CreatureDeathAnimation(IAnimationPlayerService animationPlayerService)
         {
             _animationPlayerService = animationPlayerService;
-
-            // Subscribe to events
-            eventAggregator.Subscribe<OnCreatureDeathAfter>(e => OnDeath());
         }
+
+        [ScriptHandler<OnCreatureDeathAfter>]
         public void OnDeath()
         {
             var creature = OBJECT_SELF;

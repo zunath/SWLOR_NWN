@@ -6,8 +6,8 @@ using SWLOR.Shared.Domain.Combat.Events;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Inventory.Events;
 using SWLOR.Shared.Domain.Inventory.ValueObjects;
+using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Creature;
-using SWLOR.Shared.Abstractions.Contracts;
 
 namespace SWLOR.Component.Inventory.Definitions.ItemDefinition
 {
@@ -70,6 +70,7 @@ namespace SWLOR.Component.Inventory.Definitions.ItemDefinition
         /// Play a matching animation that lasts the duration of the stun.
         /// Set pheno to normal, tailtype to none and movement rate back to normal after.
         /// </summary>
+        [ScriptHandler<OnCreatureDamagedBefore>]
         public void AttackedDismount()
         {
             var player = OBJECT_SELF; ;
@@ -97,6 +98,7 @@ namespace SWLOR.Component.Inventory.Definitions.ItemDefinition
         /// When a creature acquires emnity and is mounted, dismount. 
         /// Set pheno to normal, tail to none and movement rate to normal.
         /// </summary>
+        [ScriptHandler<OnEnmityAcquired>]
         public void AttackDismount()
         {
             var player = OBJECT_SELF;
@@ -115,6 +117,7 @@ namespace SWLOR.Component.Inventory.Definitions.ItemDefinition
         /// Set pheno to normal, tail to none and movement rate to normal.
         /// Warning: This is not currently working. Need to hook the right script. *****!
         /// </summary>
+        [ScriptHandler<OnSpeederHook>]
         public void AreaTransitionDismount()
         {
             var player = OBJECT_SELF;

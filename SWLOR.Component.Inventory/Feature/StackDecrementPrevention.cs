@@ -1,7 +1,7 @@
 using SWLOR.NWN.API.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.NWNX;
-using SWLOR.Shared.Abstractions.Contracts;
 
 namespace SWLOR.Component.Inventory.Feature
 {
@@ -9,19 +9,15 @@ namespace SWLOR.Component.Inventory.Feature
     {
         private readonly IEventsPluginService _eventsPlugin;
 
-        public StackDecrementPrevention(
-            IEventsPluginService eventsPlugin,
-            IEventAggregator eventAggregator)
+        public StackDecrementPrevention(IEventsPluginService eventsPlugin)
         {
             _eventsPlugin = eventsPlugin;
-
-            // Subscribe to events
-            eventAggregator.Subscribe<OnItemDecrementBefore>(e => PreventStackDecrement());
         }
 
         /// <summary>
         /// When a throwing item (shuriken, dart, throwing axe) is thrown, prevent the stack from decrementing.
         /// </summary>
+        [ScriptHandler<OnItemDecrementBefore>]
         public void PreventStackDecrement()
         {
             var item = OBJECT_SELF;

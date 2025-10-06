@@ -28,6 +28,7 @@ using SWLOR.Shared.Core.Configuration;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Events.Contracts;
 using SWLOR.Shared.Events.Infrastructure;
 using SWLOR.Shared.Events.Service;
 using SWLOR.Shared.UI.Infrastructure;
@@ -93,11 +94,12 @@ namespace SWLOR.App.Server
             // SWLOR Services
             services.AddSingleton<IMainLoopProcessor, MainLoopProcessor>();
             services.AddSingleton<INativeInteropManager, NativeInteropManager>();
-            services.AddSingleton<ScriptToEventMapper>();
+            services.AddSingleton<IScriptRegistry, ScriptRegistry>();
             services.AddSingleton<IScriptExecutor, ScriptExecutor>();
             services.AddSingleton<IServerBootstrapper, ServerBootstrapper>();
             services.AddSingleton<IServerManager, ServerManager>();
             services.AddSingleton<IEventRegistrationService, EventRegistrationService>();
+            services.AddSingleton<IEventHandlerDiscoveryService, EventHandlerDiscoveryService>();
             services.AddSingleton<IScheduler, Scheduler>();
             
             // Service Initialization

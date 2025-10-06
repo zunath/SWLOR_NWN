@@ -2,8 +2,8 @@ using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Inventory.Contracts;
+using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
-using SWLOR.Shared.Abstractions.Contracts;
 
 namespace SWLOR.Component.Combat.Feature
 {
@@ -15,21 +15,16 @@ namespace SWLOR.Component.Combat.Feature
         // Lazy-loaded services to break circular dependencies
         private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
 
-        public WeaponFeatConfiguration(
-            IServiceProvider serviceProvider,
-            IWeaponPluginService weaponPlugin,
-            IEventAggregator eventAggregator)
+        public WeaponFeatConfiguration(IServiceProvider serviceProvider, IWeaponPluginService weaponPlugin)
         {
             _serviceProvider = serviceProvider;
             _weaponPlugin = weaponPlugin;
-
-            // Subscribe to events
-            eventAggregator.Subscribe<OnModuleLoad>(e => ConfigureWeaponFeats());
         }
 
         /// <summary>
         /// When the module loads, set all of the weapon-related feat and item configurations.
         /// </summary>
+        [ScriptHandler<OnModuleLoad>]
         public void ConfigureWeaponFeats()
         {
             // Weapon Focus, Specialization, Improved Critical

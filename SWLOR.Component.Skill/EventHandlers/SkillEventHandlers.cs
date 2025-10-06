@@ -1,6 +1,6 @@
 using SWLOR.Shared.Domain.Skill.Contracts;
+using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
-using SWLOR.Shared.Abstractions.Contracts;
 
 namespace SWLOR.Component.Skill.EventHandlers
 {
@@ -12,22 +12,15 @@ namespace SWLOR.Component.Skill.EventHandlers
     {
         private readonly ISkillService _skillService;
 
-        public SkillEventHandlers(
-            ISkillService skillService,
-            IEventAggregator eventAggregator)
+        public SkillEventHandlers(ISkillService skillService)
         {
             _skillService = skillService;
-
-            // Subscribe to events
-            eventAggregator.Subscribe<OnModuleEnter>(e => AddMissingSkills());
-            eventAggregator.Subscribe<OnModuleLoad>(e => LoadMappings());
-            eventAggregator.Subscribe<OnModuleCacheBefore>(e => CacheData());
-            eventAggregator.Subscribe<OnModuleCacheBefore>(e => CacheXPChartData());
         }
 
         /// <summary>
         /// If a player is missing any skills in their DB record, they will be added here.
         /// </summary>
+        [ScriptHandler<OnModuleEnter>]
         public void AddMissingSkills()
         {
             _skillService.AddMissingSkills();
@@ -36,6 +29,7 @@ namespace SWLOR.Component.Skill.EventHandlers
         /// <summary>
         /// Handles creating all of the mapping dictionaries used by the skill system on module load.
         /// </summary>
+        [ScriptHandler<OnModuleCacheBefore>]
         public void LoadMappings()
         {
             _skillService.LoadMappings();
@@ -44,6 +38,7 @@ namespace SWLOR.Component.Skill.EventHandlers
         /// <summary>
         /// When the module loads, skills and categories are organized into dictionaries for quick look-ups later on.
         /// </summary>
+        [ScriptHandler<OnModuleCacheBefore>]
         public void CacheData()
         {
             _skillService.CacheData();
@@ -52,6 +47,7 @@ namespace SWLOR.Component.Skill.EventHandlers
         /// <summary>
         /// When the module loads, cache all XP chart data used for quick access.
         /// </summary>
+        [ScriptHandler<OnModuleCacheBefore>]
         public void CacheXPChartData()
         {
             _skillService.CacheXPChartData();

@@ -2,7 +2,6 @@ using System;
 using NWN.Native.API;
 using SWLOR.NWN.API.Contracts;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Abstractions.Extensions;
 using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Core.Log.LogGroup;
 
@@ -17,22 +16,19 @@ namespace SWLOR.App.Server.Server
 
         private readonly ILogger _logger;
         private readonly IClosureManager _closureManager;
+        private readonly IScriptRegistry _scriptRegistry;
         private readonly IProfilerPluginService _profilerPlugin;
-        private readonly IEventAggregator _eventAggregator;
-        private readonly ScriptToEventMapper _scriptToEventMapper;
 
         public ScriptExecutor(
             ILogger logger,
             IClosureManager closureManager, 
-            IProfilerPluginService profilerPlugin,
-            IEventAggregator eventAggregator,
-            ScriptToEventMapper scriptToEventMapper)
+            IScriptRegistry scriptRegistry,
+            IProfilerPluginService profilerPlugin)
         {
             _logger = logger;
             _closureManager = closureManager;
+            _scriptRegistry = scriptRegistry;
             _profilerPlugin = profilerPlugin;
-            _eventAggregator = eventAggregator;
-            _scriptToEventMapper = scriptToEventMapper;
         }
 
         public void Initialize()
@@ -59,54 +55,68 @@ namespace SWLOR.App.Server.Server
 
         private int RunScripts(string script)
         {
-            var hasEventType = _scriptToEventMapper.HasEventType(script);
+            var hasConditionalScripts = _scriptRegistry.HasConditionalScript(script);
+            var hasActionScripts = _scriptRegistry.HasScript(script);
 
-            if (!hasEventType)
+            if (!hasConditionalScripts && !hasActionScripts)
             {
                 return ScriptNotHandled;
             }
 
-            // Publish event to IEventAggregator - all event handling now goes through the event aggregator
-            PublishEventToAggregator(script);
+            // Execute conditional scripts first if they exist
+            if (hasConditionalScripts)
+            {
+                return ExecuteConditionalScripts(script);
+            }
+
+            ExecuteActionScripts(script);
 
             return ScriptHandled;
         }
 
-        private void PublishEventToAggregator(string script)
+        private int ExecuteConditionalScripts(string script)
         {
-            try
+            var result = true;
+
+            foreach (var (action, name) in _scriptRegistry.GetConditionalScripts(script))
             {
-                var eventType = _scriptToEventMapper.GetEventType(script);
-                if (eventType != null)
+                _profilerPlugin.PushPerfScope(OBJECT_SELF, name);
+                try
                 {
-                    _profilerPlugin.PushPerfScope(OBJECT_SELF, $"Event:{eventType.Name}");
-                    try
-                    {
-                        // Create an instance of the event
-                        var eventInstance = Activator.CreateInstance(eventType) as IEvent;
-                        if (eventInstance != null)
-                        {
-                            // Get the target object (OBJECT_SELF)
-                            var target = _closureManager.ObjectSelf;
-                            
-                            // Publish to IEventAggregator using reflection since we don't know the type at compile time
-                            var publishMethod = typeof(IEventAggregator)
-                                .GetMethod(nameof(IEventAggregator.Publish))
-                                .MakeGenericMethod(eventType);
-                            
-                            publishMethod.Invoke(_eventAggregator, new object[] { eventInstance, target });
-                        }
-                    }
-                    finally
-                    {
-                        _profilerPlugin.PopPerfScope();
-                    }
+                    var actionResult = action.Invoke();
+                    if (result)
+                        result = actionResult;
+                }
+                catch (Exception ex)
+                {
+                    // Error is already logged by ScriptMethodInvoker, no need to log again
+                    result = false; // If any conditional script fails, return false
+                }
+                finally
+                {
+                    _profilerPlugin.PopPerfScope();
                 }
             }
-            catch (Exception ex)
+
+            return result ? 1 : 0;
+        }
+
+        private int ExecuteActionScripts(string script)
+        {
+            foreach (var (action, name) in _scriptRegistry.GetActionScripts(script))
             {
-                _logger.Write<ErrorLogGroup>($"Error publishing event for script '{script}': {ex.ToMessageAndCompleteStacktrace()}");
+                try
+                {
+                    _profilerPlugin.PushPerfScope(OBJECT_SELF, name);
+                    action();
+                }
+                finally
+                {
+                    _profilerPlugin.PopPerfScope();
+                }
             }
+
+            return ScriptHandled;
         }
 
         public void ExecuteInScriptContext(Action action, uint objectId = OBJECT_INVALID, int scriptEventId = 0)

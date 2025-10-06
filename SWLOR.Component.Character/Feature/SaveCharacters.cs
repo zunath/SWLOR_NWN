@@ -1,7 +1,7 @@
 using SWLOR.NWN.API.Contracts;
+using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Events.Player;
-using SWLOR.Shared.Abstractions.Contracts;
 
 namespace SWLOR.Component.Character.Feature
 {
@@ -11,21 +11,15 @@ namespace SWLOR.Component.Character.Feature
         private const string IsBarteringVariable = "IS_BARTERING";
         private readonly IEventsPluginService _eventsPlugin;
 
-        public SaveCharacters(
-            IEventsPluginService eventsPlugin,
-            IEventAggregator eventAggregator)
+        public SaveCharacters(IEventsPluginService eventsPlugin)
         {
             _eventsPlugin = eventsPlugin;
-
-            // Subscribe to events
-            eventAggregator.Subscribe<OnPlayerHeartbeat>(e => HandleSaveCharacters());
-            eventAggregator.Subscribe<OnBartenderStartBefore>(e => SetBarteringFlag());
-            eventAggregator.Subscribe<OnBartenderEndBefore>(e => RemoveBarteringFlag());
         }
 
         /// <summary>
         /// Saves characters every minute unless they're currently preoccupied (barter)
         /// </summary>
+        [ScriptHandler<OnPlayerHeartbeat>]
         public void HandleSaveCharacters()
         {
             var player = OBJECT_SELF;
@@ -46,6 +40,7 @@ namespace SWLOR.Component.Character.Feature
         /// <summary>
         /// Marks players as bartering. This is used to ensure the PCs are not exported during this process.
         /// </summary>
+        [ScriptHandler<OnBartenderStartBefore>]
         public void SetBarteringFlag()
         {
             var player1 = OBJECT_SELF;
@@ -58,6 +53,7 @@ namespace SWLOR.Component.Character.Feature
         /// <summary>
         /// Removes the bartering flag from PCs involved in a trade. This will ensure their files are exported on the next save occurrence.
         /// </summary>
+        [ScriptHandler<OnBartenderEndBefore>]
         public void RemoveBarteringFlag()
         {
             var player1 = OBJECT_SELF;

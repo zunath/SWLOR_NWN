@@ -1,9 +1,9 @@
 using SWLOR.Component.World.Contracts;
 using SWLOR.Shared.Domain.World.Contracts;
+using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Area;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.Server;
-using SWLOR.Shared.Abstractions.Contracts;
 
 namespace SWLOR.Component.World.EventHandlers
 {
@@ -28,8 +28,7 @@ namespace SWLOR.Component.World.EventHandlers
             IWalkmeshService walkmeshService,
             IWeatherClimateService weatherClimateService,
             IWeatherService weatherService,
-            IWeatherVisualService weatherVisualService,
-            IEventAggregator eventAggregator)
+            IWeatherVisualService weatherVisualService)
         {
             _planetService = planetService;
             _playerVisibilityService = playerVisibilityService;
@@ -40,24 +39,12 @@ namespace SWLOR.Component.World.EventHandlers
             _weatherClimateService = weatherClimateService;
             _weatherService = weatherService;
             _weatherVisualService = weatherVisualService;
-
-            // Subscribe to events
-            eventAggregator.Subscribe<OnModuleEnter>(e => LoadPlayerVisibilityObjects());
-            eventAggregator.Subscribe<OnModuleLoad>(e => ApplyAreaConfiguration());
-            eventAggregator.Subscribe<OnModuleCacheBefore>(e => RetrieveWalkmeshes());
-            eventAggregator.Subscribe<OnModuleCacheBefore>(e => LoadWeatherData());
-            eventAggregator.Subscribe<OnAreaEnter>(e => OnWeatherAreaEnter());
-            eventAggregator.Subscribe<OnServerHeartbeat>(e => OnWeatherHeartbeat());
-            eventAggregator.Subscribe<OnModuleCacheBefore>(e => LoadWeatherClimateData());
-            eventAggregator.Subscribe<OnModuleCacheBefore>(e => CachePlanetData());
-            eventAggregator.Subscribe<OnModuleCacheBefore>(e => LoadWalkmeshes());
-            eventAggregator.Subscribe<OnModuleCacheBefore>(e => LoadVisibilityObjects());
-            eventAggregator.Subscribe<OnModuleCacheBefore>(e => LoadTaxiDestinations());
         }
 
         /// <summary>
         /// Loads visibility objects for a player when they enter the server.
         /// </summary>
+        [ScriptHandler<OnModuleEnter>]
         public void LoadPlayerVisibilityObjects()
         {
             _playerVisibilityService.LoadPlayerVisibilityObjects();
@@ -66,6 +53,7 @@ namespace SWLOR.Component.World.EventHandlers
         /// <summary>
         /// When the module loads, load the tile magic configured on every area.
         /// </summary>
+        [ScriptHandler<OnModuleLoad>]
         public void ApplyAreaConfiguration()
         {
             _tileMagicService.ApplyAreaConfiguration();
@@ -74,6 +62,7 @@ namespace SWLOR.Component.World.EventHandlers
         /// <summary>
         /// When the module loads, retrieve the list of walkable locations from the database.
         /// </summary>
+        [ScriptHandler<OnModuleLoad>]
         public void RetrieveWalkmeshes()
         {
             _walkmeshService.RetrieveWalkmeshes();
@@ -82,6 +71,7 @@ namespace SWLOR.Component.World.EventHandlers
         /// <summary>
         /// When the module loads, cache planet climates and other pertinent data.
         /// </summary>
+        [ScriptHandler<OnModuleCacheBefore>]
         public void LoadWeatherData()
         {
             _weatherService.LoadData();
@@ -90,6 +80,7 @@ namespace SWLOR.Component.World.EventHandlers
         /// <summary>
         /// Handles weather when a player enters an area.
         /// </summary>
+        [ScriptHandler<OnAreaEnter>]
         public void OnWeatherAreaEnter()
         {
             _weatherService.OnAreaEnter();
@@ -98,6 +89,7 @@ namespace SWLOR.Component.World.EventHandlers
         /// <summary>
         /// Handles weather on server heartbeat.
         /// </summary>
+        [ScriptHandler<OnServerHeartbeat>]
         public void OnWeatherHeartbeat()
         {
             _weatherService.OnModuleHeartbeat();
@@ -106,6 +98,7 @@ namespace SWLOR.Component.World.EventHandlers
         /// <summary>
         /// When the module loads, cache planet climates and other pertinent data.
         /// </summary>
+        [ScriptHandler<OnModuleCacheBefore>]
         public void LoadWeatherClimateData()
         {
             _weatherClimateService.LoadData();
@@ -114,6 +107,7 @@ namespace SWLOR.Component.World.EventHandlers
         /// <summary>
         /// When the module loads, cache relevant data needed by the Planet service.
         /// </summary>
+        [ScriptHandler<OnModuleCacheBefore>]
         public void CachePlanetData()
         {
             _planetService.CacheData();
@@ -122,6 +116,7 @@ namespace SWLOR.Component.World.EventHandlers
         /// <summary>
         /// When the module content changes, rerun the baking process.
         /// </summary>
+        [ScriptHandler<OnModuleContentChange>]
         public void LoadWalkmeshes()
         {
             _walkmeshService.LoadWalkmeshes();
@@ -130,6 +125,7 @@ namespace SWLOR.Component.World.EventHandlers
         /// <summary>
         /// Loads all visibility objects from areas and caches them.
         /// </summary>
+        [ScriptHandler<OnModuleCacheBefore>]
         public void LoadVisibilityObjects()
         {
             _visibilityObjectCacheService.LoadVisibilityObjects();
@@ -138,6 +134,7 @@ namespace SWLOR.Component.World.EventHandlers
         /// <summary>
         /// When the module loads, cache all taxi destinations.
         /// </summary>
+        [ScriptHandler<OnModuleCacheBefore>]
         public void LoadTaxiDestinations()
         {
             _taxiService.LoadTaxiDestinations();

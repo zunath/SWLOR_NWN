@@ -80,6 +80,9 @@ namespace SWLOR.App.Server.Server
         /// <returns>The event type, or null if not found</returns>
         public Type GetEventType(string scriptName)
         {
+            if (string.IsNullOrEmpty(scriptName))
+                return null;
+                
             _scriptToEventType.TryGetValue(scriptName, out var eventType);
             return eventType;
         }
@@ -91,6 +94,9 @@ namespace SWLOR.App.Server.Server
         /// <returns>True if an event type is registered, false otherwise</returns>
         public bool HasEventType(string scriptName)
         {
+            if (string.IsNullOrEmpty(scriptName))
+                return false;
+                
             return _scriptToEventType.ContainsKey(scriptName);
         }
     }

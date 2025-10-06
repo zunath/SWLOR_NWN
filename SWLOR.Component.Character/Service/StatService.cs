@@ -247,7 +247,11 @@ namespace SWLOR.Component.Character.Service
             var stats = _statGroupService.LoadStats(creature);
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
 
-            return stats.GetStat(StatType.Paralysis) + effects.GetStat(StatType.Paralysis);
+            var paralysis = stats.GetStat(StatType.Paralysis) + effects.GetStat(StatType.Paralysis);
+            if (paralysis > 75)
+                paralysis = 75;
+
+            return paralysis;
         }
 
         public int CalculateAccuracyModifier(uint creature)
@@ -360,6 +364,53 @@ namespace SWLOR.Component.Character.Service
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
 
             return stats.GetStat(StatType.Level) + effects.GetStat(StatType.Level);
+        }
+
+        private float CalculateAttackSpeedModifier(uint creature)
+        {
+            var stats = _statGroupService.LoadStats(creature);
+            var effects = _statusEffectService.GetCreatureStatGroup(creature);
+
+            // Get haste and slow from both stats and status effects
+            var haste = stats.GetStat(StatType.Haste) + effects.GetStat(StatType.Haste);
+            if (haste < 0)
+                haste = 0;
+            
+            var slow = stats.GetStat(StatType.Slow) + effects.GetStat(StatType.Slow);
+            if (slow < 0)
+                slow = 0;
+
+            // Haste reduces attack delay (negative modifier), slow increases attack delay (positive modifier)
+            // Formula: (slow - haste) * 0.01f
+            // This means:
+            // - Positive haste values result in negative modifier (faster attacks)
+            // - Positive slow values result in positive modifier (slower attacks)
+            var modifier = (slow - haste) * 0.01f;
+            
+            // Cap only negative modifiers (haste) to prevent extreme values
+            // Slow can go beyond +50% to allow for more severe slow effects
+            if (modifier < -0.5f)
+                modifier = -0.5f;
+
+            return modifier;
+        }
+
+        public int CalculateAttackDelay(uint creature)
+        {
+            var stats = _statGroupService.LoadStats(creature);
+            var rightHandDelay = stats.RightHandStat.Delay;
+            var leftHandDelay = stats.LeftHandStat.Delay;
+            var delay = rightHandDelay + leftHandDelay;
+            var attackSpeedModifier = CalculateAttackSpeedModifier(creature);
+
+            // Convert delay units to milliseconds: 60 delay units = 1 second
+            var baseDelay = delay / 60f * 1000;
+            
+            // Apply attack speed modifier
+            // Positive modifier (slow) increases delay, negative modifier (haste) decreases delay
+            var finalDelay = (int)(baseDelay * (1.0f + attackSpeedModifier));
+            
+            return finalDelay;
         }
     }
 }

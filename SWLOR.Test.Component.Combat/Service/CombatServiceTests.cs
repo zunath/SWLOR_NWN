@@ -3,8 +3,10 @@ using NSubstitute;
 using SWLOR.Component.Combat.Service;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Ability.Contracts;
+using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Combat.Enums;
+using SWLOR.Shared.Domain.Communication.Contracts;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Perk.Contracts;
 using SWLOR.Test.Shared;
@@ -22,6 +24,8 @@ namespace SWLOR.Test.Component.Combat.Service
         private IStatService _mockStatService;
         private IItemService _mockItemService;
         private IPerkService _mockPerkService;
+        private IStatServiceNew _mockStatServiceNew;
+        private IMessagingService _mockMessagingService;
         private CombatService _combatService;
 
         [SetUp]
@@ -37,6 +41,8 @@ namespace SWLOR.Test.Component.Combat.Service
             _mockStatService = Substitute.For<IStatService>();
             _mockItemService = Substitute.For<IItemService>();
             _mockPerkService = Substitute.For<IPerkService>();
+            _mockStatServiceNew = Substitute.For<IStatServiceNew>();
+            _mockMessagingService = Substitute.For<IMessagingService>();
             
             // Create a real service provider with the mock services
             var services = new ServiceCollection();
@@ -50,7 +56,9 @@ namespace SWLOR.Test.Component.Combat.Service
                 _mockLogger,
                 _mockDatabaseService,
                 _mockRandomService,
-                _mockServiceProvider);
+                _mockServiceProvider,
+                _mockStatServiceNew,
+                _mockMessagingService);
         }
 
         [TearDown]

@@ -190,5 +190,7 @@ namespace SWLOR.Shared.Domain.Combat.Contracts
             SavingThrowCategoryType type,
             int baseDC,
             AbilityType abilityOverride = AbilityType.Invalid);
+
+        bool HandleParalyze(uint creature);
     }
 }

@@ -1,5 +1,6 @@
 using SWLOR.Component.Combat.Contracts;
-using SWLOR.Component.Combat.Feature.Native;
+using SWLOR.Component.Combat.Native;
+using SWLOR.Game.Server.Native;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Combat.Events;
 using SWLOR.Shared.Events.Attributes;
@@ -8,7 +9,7 @@ using SWLOR.Shared.Events.Events.Creature;
 using SWLOR.Shared.Events.Events.Infrastructure;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.NWNX;
-using GetFortitudeSavingThrow = SWLOR.Component.Combat.Feature.Native.GetFortitudeSavingThrow;
+using GetFortitudeSavingThrow = SWLOR.Component.Combat.Native.GetFortitudeSavingThrow;
 
 namespace SWLOR.Component.Combat.EventHandlers
 {
@@ -179,6 +180,7 @@ namespace SWLOR.Component.Combat.EventHandlers
             GetDamageRoll.RegisterHook();
             GetFortitudeSavingThrow.RegisterHook();
             ResolveAttackRoll.RegisterHook();
+            OnAIActionAttackObject.RegisterHook();
         }
     }
 }

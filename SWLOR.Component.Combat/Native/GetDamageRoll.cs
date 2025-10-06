@@ -18,7 +18,7 @@ using ILogger = SWLOR.Shared.Abstractions.Contracts.ILogger;
 using ObjectType = NWN.Native.API.ObjectType;
 using RacialType = SWLOR.NWN.API.NWScript.Enum.RacialType;
 
-namespace SWLOR.Component.Combat.Feature.Native
+namespace SWLOR.Component.Combat.Native
 {
     public static unsafe class GetDamageRoll
     {

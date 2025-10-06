@@ -6,7 +6,7 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Infrastructure;
 using SavingThrow = NWN.Native.API.SavingThrow;
 
-namespace SWLOR.Component.Combat.Feature.Native
+namespace SWLOR.Component.Combat.Native
 {
     public static unsafe class GetFortitudeSavingThrow
     {

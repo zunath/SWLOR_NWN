@@ -154,7 +154,7 @@ namespace SWLOR.Component.Character.Service
                 }
                 else if (type == ItemPropertyType.Delay)
                 {
-                    stat.Delay = value;
+                    stat.Delay = value * 10;
                 }
             }
 

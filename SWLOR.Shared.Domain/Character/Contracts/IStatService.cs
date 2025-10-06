@@ -44,5 +44,6 @@
         int CalculateXPModifier(uint creature);
         int CalculatePoisonResist(uint creature);
         int CalculateLevel(uint creature);
+        int CalculateAttackDelay(uint creature);
     }
 }

@@ -18,7 +18,7 @@ using ILogger = SWLOR.Shared.Abstractions.Contracts.ILogger;
 using ImmunityType = NWN.Native.API.ImmunityType;
 using ObjectType = NWN.Native.API.ObjectType;
 
-namespace SWLOR.Component.Combat.Feature.Native
+namespace SWLOR.Component.Combat.Native
 {
     public static unsafe class ResolveAttackRoll
     {

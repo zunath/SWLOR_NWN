@@ -5,8 +5,10 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Domain.Ability.Contracts;
 using SWLOR.Shared.Domain.Ability.Enums;
+using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Combat.Enums;
+using SWLOR.Shared.Domain.Communication.Contracts;
 using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Perk.Contracts;
@@ -32,13 +34,24 @@ namespace SWLOR.Component.Combat.Service
         private readonly Lazy<IItemService> _itemService;
         private readonly Lazy<IPerkService> _perkService;
 
-        public CombatService(ILogger logger, IDatabaseService db, IRandomService random, IServiceProvider serviceProvider)
+        private readonly IStatServiceNew _statServiceNew;
+        private readonly IMessagingService _messaging;
+
+        public CombatService(
+            ILogger logger, 
+            IDatabaseService db, 
+            IRandomService random, 
+            IServiceProvider serviceProvider,
+            IStatServiceNew statServiceNew,
+            IMessagingService messagingService)
         {
             _logger = logger;
             _db = db;
             _random = random;
             _serviceProvider = serviceProvider;
-            
+            _statServiceNew = statServiceNew;
+            _messaging = messagingService;
+
             // Initialize lazy services
             _abilityService = new Lazy<IAbilityService>(() => _serviceProvider.GetRequiredService<IAbilityService>());
             _statService = new Lazy<IStatService>(() => _serviceProvider.GetRequiredService<IStatService>());
@@ -565,6 +578,28 @@ namespace SWLOR.Component.Combat.Service
             var modifier = GetAbilityModifier(ability, attacker);
 
             return baseDC + modifier;
+        }
+
+        public bool HandleParalyze(uint creature)
+        {
+            var paralysis = _statServiceNew.CalculateParalysis(creature);
+            if (paralysis <= 0)
+                return false;
+
+            var isParalyzed = _random.D100(1) <= paralysis;
+            if (isParalyzed)
+            {
+                SendParalysisMessage(creature);
+                return true;
+            }
+
+            return false;
+        }
+
+        private void SendParalysisMessage(uint creature)
+        {
+            var name = GetName(creature);
+            _messaging.SendMessageNearbyToPlayers(creature, $"{name} is paralyzed and cannot act!");
         }
     }
 }

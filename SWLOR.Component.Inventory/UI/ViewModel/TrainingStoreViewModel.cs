@@ -8,7 +8,6 @@ using SWLOR.Shared.Domain.Inventory.Events;
 using SWLOR.Shared.Domain.Properties.Contracts;
 using SWLOR.Shared.Domain.Properties.Enums;
 using SWLOR.Shared.Domain.UI.Events;
-using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
@@ -42,8 +41,6 @@ namespace SWLOR.Component.Inventory.UI.ViewModel
         
         // Lazy-loaded service to break circular dependency
         private IPropertyService PropertyService => _propertyService.Value;
-        
-        [ScriptHandler<OnOpenTrainingStore>]
         public void OpenTrainingStore()
         {
             var player = GetPCSpeaker();

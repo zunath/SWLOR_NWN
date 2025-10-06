@@ -1,16 +1,22 @@
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
+using SWLOR.Shared.Abstractions.Contracts;
 
 namespace SWLOR.Component.Inventory.Feature
 {
     public class LightsaberAudio
     {
+        public LightsaberAudio(IEventAggregator eventAggregator)
+        {
+            // Subscribe to events
+            eventAggregator.Subscribe<OnModuleEquip>(e => EquipLightsaber());
+            eventAggregator.Subscribe<OnModuleUnequip>(e => UnequipLightsaber());
+        }
+
         /// <summary>
         /// When a lightsaber or saberstaff is equipped, play an audio sound of the saber turning on and then apply
         /// an effect which plays the saber humming sound effect.
         /// </summary>
-        [ScriptHandler<OnModuleEquip>]
         public void EquipLightsaber()
         {
             var player = GetPCItemLastEquippedBy();
@@ -32,7 +38,6 @@ namespace SWLOR.Component.Inventory.Feature
         /// When a lightsaber or saberstaff is unequipped, remove the audio sound of the saber humming and then
         /// play an audio sound of the saber turning off.
         /// </summary>
-        [ScriptHandler<OnModuleUnequip>]
         public void UnequipLightsaber()
         {
             var player = GetPCItemLastUnequippedBy();

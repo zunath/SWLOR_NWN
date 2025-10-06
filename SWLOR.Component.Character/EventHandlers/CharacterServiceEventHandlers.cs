@@ -4,9 +4,10 @@ using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Events;
 using SWLOR.Shared.Domain.Inventory.Contracts;
-using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.NWNX;
+using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Events.Events.Player;
 
 namespace SWLOR.Component.Character.EventHandlers
 {
@@ -33,7 +34,8 @@ namespace SWLOR.Component.Character.EventHandlers
             PlayerRestService playerRestService,
             IRaceService raceService,
             ITargetingService targetingService,
-            IAchievementService achievementService)
+            IAchievementService achievementService,
+            IEventAggregator eventAggregator)
         {
             _activityService = activityService;
             _clientVersionCheckService = clientVersionCheckService;
@@ -45,12 +47,25 @@ namespace SWLOR.Component.Character.EventHandlers
             _raceService = raceService;
             _targetingService = targetingService;
             _achievementService = achievementService;
+
+            // Subscribe to events
+            eventAggregator.Subscribe<OnModuleEnter>(e => WipeStatusOnEntry());
+            eventAggregator.Subscribe<OnPlayerCacheData>(e => InitializePlayer());
+            eventAggregator.Subscribe<OnPlayerInitialized>(e => ApplyWookieeScaling());
+            eventAggregator.Subscribe<OnModuleLoad>(e => LoadRaces());
+            eventAggregator.Subscribe<OnModuleLoad>(e => ReserveGuiIds());
+            eventAggregator.Subscribe<OnModuleCacheBefore>(e => LoadFactions());
+            eventAggregator.Subscribe<OnModuleCacheBefore>(e => LoadAchievements());
+            eventAggregator.Subscribe<OnModuleCacheBefore>(e => CacheCurrencies());
+            eventAggregator.Subscribe<OnNWNXChat>(e => CheckVersion());
+            eventAggregator.Subscribe<OnPlayerTargetUpdated>(e => RunTargetedItemAction());
+            eventAggregator.Subscribe<OnModuleExit>(e => LeaveServer());
+            eventAggregator.Subscribe<OnModuleRest>(e => HandleRest());
         }
 
         /// <summary>
         /// When a player enters the module, wipe their temporary "busy" status.
         /// </summary>
-        [ScriptHandler<OnModuleEnter>]
         public void WipeStatusOnEntry()
         {
             _activityService.WipeStatusOnEntry();
@@ -59,7 +74,6 @@ namespace SWLOR.Component.Character.EventHandlers
         /// <summary>
         /// Handles player initialization when they enter the module.
         /// </summary>
-        [ScriptHandler<OnModuleEnter>]
         public void InitializePlayer()
         {
             _playerInitializationService.InitializePlayer();
@@ -68,7 +82,6 @@ namespace SWLOR.Component.Character.EventHandlers
         /// <summary>
         /// When a player enters the server, apply the proper scaling to their character.
         /// </summary>
-        [ScriptHandler<OnModuleEnter>]
         public void ApplyWookieeScaling()
         {
             _raceService.ApplyWookieeScaling();
@@ -77,7 +90,6 @@ namespace SWLOR.Component.Character.EventHandlers
         /// <summary>
         /// When the module loads, cache all default race appearances.
         /// </summary>
-        [ScriptHandler<OnModuleLoad>]
         public void LoadRaces()
         {
             _raceService.LoadRaces();
@@ -86,7 +98,6 @@ namespace SWLOR.Component.Character.EventHandlers
         /// <summary>
         /// When the module loads, reserve GUI IDs for achievements.
         /// </summary>
-        [ScriptHandler<OnModuleLoad>]
         public void ReserveGuiIds()
         {
             _achievementService.ReserveGuiIds();
@@ -95,7 +106,6 @@ namespace SWLOR.Component.Character.EventHandlers
         /// <summary>
         /// When the module caches, cache all faction details into memory.
         /// </summary>
-        [ScriptHandler<OnModuleCacheBefore>]
         public void LoadFactions()
         {
             _factionService.LoadFactions();
@@ -104,7 +114,6 @@ namespace SWLOR.Component.Character.EventHandlers
         /// <summary>
         /// When the module caches, read all achievement types and store them into the cache.
         /// </summary>
-        [ScriptHandler<OnModuleCacheBefore>]
         public void LoadAchievements()
         {
             _achievementService.LoadAchievements();
@@ -113,7 +122,6 @@ namespace SWLOR.Component.Character.EventHandlers
         /// <summary>
         /// When the module caches, cache all currency details into memory.
         /// </summary>
-        [ScriptHandler<OnModuleCacheBefore>]
         public void CacheCurrencies()
         {
             _currencyService.CacheCurrencies();
@@ -122,7 +130,6 @@ namespace SWLOR.Component.Character.EventHandlers
         /// <summary>
         /// When a player leaves the server, remove them from the party caches.
         /// </summary>
-        [ScriptHandler<OnModuleExit>]
         public void LeaveServer()
         {
             _partyService.LeaveServer();
@@ -131,7 +138,6 @@ namespace SWLOR.Component.Character.EventHandlers
         /// <summary>
         /// When a player connects to the server, perform a version check on their client.
         /// </summary>
-        [ScriptHandler<OnClientConnectBefore>]
         public void CheckVersion()
         {
             _clientVersionCheckService.CheckVersion();
@@ -140,7 +146,6 @@ namespace SWLOR.Component.Character.EventHandlers
         /// <summary>
         /// When a player dies, wipe their temporary "busy" status.
         /// </summary>
-        [ScriptHandler<OnModuleDeath>]
         public void WipeStatusOnDeath()
         {
             _activityService.WipeStatusOnDeath();
@@ -149,7 +154,6 @@ namespace SWLOR.Component.Character.EventHandlers
         /// <summary>
         /// When a member of a party accepts an invitation, add them to the caches.
         /// </summary>
-        [ScriptHandler<OnPartyAcceptInvitationBefore>]
         public void JoinParty()
         {
             _partyService.JoinParty();
@@ -158,7 +162,6 @@ namespace SWLOR.Component.Character.EventHandlers
         /// <summary>
         /// When an associate (droid, pet, henchman, etc.) joins a party, add them to the caches.
         /// </summary>
-        [ScriptHandler<OnAssociateAddBefore>]
         public void AssociateJoinParty()
         {
             _partyService.AssociateJoinParty();
@@ -167,7 +170,6 @@ namespace SWLOR.Component.Character.EventHandlers
         /// <summary>
         /// When an associate (droid, pet, henchman, etc.) is removed from the party or leaves, remove them from the caches.
         /// </summary>
-        [ScriptHandler<OnAssociateRemoveBefore>]
         public void AssociateLeaveParty()
         {
             _partyService.AssociateLeaveParty();
@@ -176,7 +178,6 @@ namespace SWLOR.Component.Character.EventHandlers
         /// <summary>
         /// When a member of a party leaves, update the caches.
         /// </summary>
-        [ScriptHandler<OnPartyLeaveBefore>]
         public void LeaveParty()
         {
             _partyService.LeaveParty();
@@ -185,7 +186,6 @@ namespace SWLOR.Component.Character.EventHandlers
         /// <summary>
         /// When the leader of a party changes, update the caches.
         /// </summary>
-        [ScriptHandler<OnPartyTransferLeadershipBefore>]
         public void TransferLeadership()
         {
             _partyService.TransferLeadership();
@@ -194,7 +194,6 @@ namespace SWLOR.Component.Character.EventHandlers
         /// <summary>
         /// When a player targets an object, execute the assigned action.
         /// </summary>
-        [ScriptHandler<OnModulePlayerTarget>]
         public void RunTargetedItemAction()
         {
             _targetingService.RunTargetedItemAction();
@@ -204,7 +203,6 @@ namespace SWLOR.Component.Character.EventHandlers
         /// When a player rests, cancel the NWN resting mechanic and apply our custom Rest status effect
         /// which handles recovery of HP, FP, and STM.
         /// </summary>
-        [ScriptHandler<OnModuleRest>]
         public void HandleRest()
         {
             _playerRestService.HandleRest();
@@ -213,7 +211,6 @@ namespace SWLOR.Component.Character.EventHandlers
         /// <summary>
         /// When a player enters a rest trigger, flag them and notify them they can rest.
         /// </summary>
-        [ScriptHandler<OnRestTriggerEnter>]
         public void EnterRestTrigger()
         {
             _playerRestService.EnterRestTrigger();
@@ -222,7 +219,6 @@ namespace SWLOR.Component.Character.EventHandlers
         /// <summary>
         /// When a player exits a rest trigger, unflag them and notify them they can no longer rest.
         /// </summary>
-        [ScriptHandler<OnRestTriggerExit>]
         public void ExitRestTrigger()
         {
             _playerRestService.ExitRestTrigger();

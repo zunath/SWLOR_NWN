@@ -1,5 +1,5 @@
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Caching.Contracts;
-using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Infrastructure;
 using SWLOR.Shared.Events.Events.Module;
 
@@ -20,7 +20,8 @@ namespace SWLOR.Shared.Caching.EventHandlers
             IModuleCacheService moduleCacheService,
             IPortraitCacheService portraitCacheService,
             ISongCacheService songCacheService,
-            ISoundSetCacheService soundSetCacheService)
+            ISoundSetCacheService soundSetCacheService,
+            IEventAggregator eventAggregator)
         {
             _areaCacheService = areaCacheService;
             _itemCacheService = itemCacheService;
@@ -28,39 +29,41 @@ namespace SWLOR.Shared.Caching.EventHandlers
             _portraitCacheService = portraitCacheService;
             _songCacheService = songCacheService;
             _soundSetCacheService = soundSetCacheService;
+
+            // Subscribe to events
+            eventAggregator.Subscribe<OnModuleCacheBefore>(e => LoadAreaCache());
+            eventAggregator.Subscribe<OnModuleContentChange>(e => CacheItemNamesByResref());
+            eventAggregator.Subscribe<OnHookEvents>(e => LoadModuleCache());
+            eventAggregator.Subscribe<OnModuleCacheBefore>(e => LoadPortraitCache());
+            eventAggregator.Subscribe<OnModuleCacheBefore>(e => LoadSongCache());
+            eventAggregator.Subscribe<OnModuleCacheBefore>(e => LoadSoundSetCache());
         }
 
-        [ScriptHandler<OnModuleCacheBefore>]
         public void LoadAreaCache()
         {
             _areaCacheService.LoadCache();
         }
 
-        [ScriptHandler<OnModuleContentChange>]
         public void CacheItemNamesByResref()
         {
             _itemCacheService.CacheItemNamesByResref();
         }
 
-        [ScriptHandler<OnHookEvents>]
         public void LoadModuleCache()
         {
             _moduleCacheService.LoadCache();
         }
 
-        [ScriptHandler<OnModuleCacheBefore>]
         public void LoadPortraitCache()
         {
             _portraitCacheService.LoadCache();
         }
 
-        [ScriptHandler<OnModuleCacheBefore>]
         public void LoadSongCache()
         {
             _songCacheService.LoadCache();
         }
 
-        [ScriptHandler<OnModuleCacheBefore>]
         public void LoadSoundSetCache()
         {
             _soundSetCacheService.LoadCache();

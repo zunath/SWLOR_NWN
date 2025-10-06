@@ -1,8 +1,8 @@
 using SWLOR.Shared.Domain.StatusEffect.Contracts;
 using SWLOR.Shared.Domain.StatusEffect.Enums;
 using SWLOR.Shared.Domain.StatusEffect.Events;
-using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
+using SWLOR.Shared.Abstractions.Contracts;
 
 namespace SWLOR.Component.StatusEffect.EventHandlers
 {
@@ -11,36 +11,34 @@ namespace SWLOR.Component.StatusEffect.EventHandlers
         private readonly IStatusEffectService _statusEffectService;
 
         public StatusEffectEventHandler(
-            IStatusEffectService statusEffectService)
+            IStatusEffectService statusEffectService,
+            IEventAggregator eventAggregator)
         {
             _statusEffectService = statusEffectService;
-        }
 
-        [ScriptHandler<OnModuleEnter>]
+            // Subscribe to events
+            eventAggregator.Subscribe<OnModuleEnter>(e => OnPlayerEnter());
+            eventAggregator.Subscribe<OnApplyStatusEffect>(e => OnApplyNWNEffect());
+            eventAggregator.Subscribe<OnRemoveStatusEffect>(e => OnRemoveNWNEffect());
+            eventAggregator.Subscribe<OnStatusEffectInterval>(e => OnNWNEffectInterval());
+            eventAggregator.Subscribe<TestEvent>(e => Test());
+        }
         public void OnPlayerEnter()
         {
             _statusEffectService.OnModuleEnter();
         }
-
-        [ScriptHandler<OnApplyStatusEffect>]
         public void OnApplyNWNEffect()
         {
             _statusEffectService.OnApplyNWNStatusEffect();
         }
-
-        [ScriptHandler<OnRemoveStatusEffect>]
         public void OnRemoveNWNEffect()
         {
             _statusEffectService.OnRemoveNWNStatusEffect();
         }
-
-        [ScriptHandler<OnStatusEffectInterval>]
         public void OnNWNEffectInterval()
         {
             _statusEffectService.OnNWNStatusEffectInterval();
         }
-
-        [ScriptHandler<TestEvent>]
         public void Test()
         {
             var player = GetLastUsedBy();

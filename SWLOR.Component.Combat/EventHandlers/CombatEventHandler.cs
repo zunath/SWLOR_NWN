@@ -3,13 +3,15 @@ using SWLOR.Component.Combat.Native;
 using SWLOR.Game.Server.Native;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Combat.Events;
-using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Area;
 using SWLOR.Shared.Events.Events.Creature;
 using SWLOR.Shared.Events.Events.Infrastructure;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.NWNX;
 using GetFortitudeSavingThrow = SWLOR.Component.Combat.Native.GetFortitudeSavingThrow;
+using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Events.Events.Player;
+using SWLOR.Shared.Events.Events.Server;
 
 namespace SWLOR.Component.Combat.EventHandlers
 {
@@ -30,19 +32,37 @@ namespace SWLOR.Component.Combat.EventHandlers
             IAttackOfOpportunityService attackOfOpportunityService,
             ICombatPointService combatPointService,
             IEnmityService enmityService,
-            IDeathService deathService)
+            IDeathService deathService,
+            IEventAggregator eventAggregator)
         {
             _combatService = combatService;
             _attackOfOpportunityService = attackOfOpportunityService;
             _combatPointService = combatPointService;
             _enmityService = enmityService;
             _deathService = deathService;
+
+            // Subscribe to events
+            eventAggregator.Subscribe<OnModuleLoad>(e => LoadDamageTypes());
+            eventAggregator.Subscribe<OnModuleEnter>(e => OnModuleEnter());
+            eventAggregator.Subscribe<OnPlayerHeartbeat>(e => ClearCombatState());
+            eventAggregator.Subscribe<OnBroadcastAttackOfOpportunityBefore>(e => OnAttackOfOpportunity());
+            eventAggregator.Subscribe<OnItemHit>(e => OnHitCastSpell());
+            eventAggregator.Subscribe<OnCreatureDeathAfter>(e => OnCreatureDeath());
+            eventAggregator.Subscribe<OnModuleExit>(e => OnPlayerExit());
+            eventAggregator.Subscribe<OnAreaExit>(e => OnPlayerExit());
+            eventAggregator.Subscribe<OnModuleDying>(e => OnPlayerDying());
+            eventAggregator.Subscribe<OnPlayerDeath>(e => OnPlayerDeath());
+            eventAggregator.Subscribe<OnModuleRespawn>(e => OnPlayerRespawn());
+            eventAggregator.Subscribe<OnCreatureDamagedBefore>(e => CreatureDamaged());
+            eventAggregator.Subscribe<OnCreatureAttackBefore>(e => CreatureAttacked());
+            eventAggregator.Subscribe<OnObjectDestroyed>(e => CreatureDestroyed());
+            eventAggregator.Subscribe<OnDMLimboBefore>(e => CreatureLimbo());
+            eventAggregator.Subscribe<OnHookNativeOverrides>(e => HookNativeOverrides());
         }
 
         /// <summary>
         /// When the module loads, add all valid damage types to the cache.
         /// </summary>
-        [ScriptHandler<OnModuleLoad>]
         public void LoadDamageTypes()
         {
             _combatService.LoadDamageTypes();
@@ -51,7 +71,6 @@ namespace SWLOR.Component.Combat.EventHandlers
         /// <summary>
         /// When a player enters the server, apply any defenses towards damage types they don't already have.
         /// </summary>
-        [ScriptHandler<OnModuleEnter>]
         public void OnModuleEnter()
         {
             _combatService.AddDamageTypeDefenses();
@@ -61,7 +80,6 @@ namespace SWLOR.Component.Combat.EventHandlers
         /// <summary>
         /// On module heartbeat, clear a PC's saved combat facing if they are no longer in combat.
         /// </summary>
-        [ScriptHandler<OnIntervalPC6Seconds>]
         public void ClearCombatState()
         {
             _combatService.ClearCombatState();
@@ -71,7 +89,6 @@ namespace SWLOR.Component.Combat.EventHandlers
         /// Whenever an attack of opportunity is broadcast, skip the event to disable it.
         /// This should effectively disable AOOs across the board.
         /// </summary>
-        [ScriptHandler<OnBroadcastAttackOfOpportunityBefore>]
         public void OnAttackOfOpportunity()
         {
             _attackOfOpportunityService.OnAttackOfOpportunity();
@@ -80,7 +97,6 @@ namespace SWLOR.Component.Combat.EventHandlers
         /// <summary>
         /// Adds a combat point to a given NPC creature for a given player and skill type.
         /// </summary>
-        [ScriptHandler<OnItemHit>]
         public void OnHitCastSpell()
         {
             _combatPointService.OnHitCastSpell();
@@ -90,7 +106,6 @@ namespace SWLOR.Component.Combat.EventHandlers
         /// When a creature dies, skill XP is given to all players who contributed during battle.
         /// Then, those combat points are cleared out.
         /// </summary>
-        [ScriptHandler<OnCreatureDeathAfter>]
         public void OnCreatureDeath()
         {
             _combatPointService.OnCreatureDeath();
@@ -101,8 +116,7 @@ namespace SWLOR.Component.Combat.EventHandlers
         /// When a player leaves an area or the server, we need to remove all combat points
         /// that may be referenced to their character.
         /// </summary>
-        [ScriptHandler<OnModuleExit>]
-        [ScriptHandler<OnAreaExit>]
+
         public void OnPlayerExit()
         {
             _combatPointService.OnPlayerExit();
@@ -112,7 +126,6 @@ namespace SWLOR.Component.Combat.EventHandlers
         /// <summary>
         /// When a player starts dying, instantly kill them.
         /// </summary>
-        [ScriptHandler<OnModuleDying>]
         public void OnPlayerDying()
         {
             _deathService.OnPlayerDying();
@@ -121,7 +134,6 @@ namespace SWLOR.Component.Combat.EventHandlers
         /// <summary>
         /// Handles resetting a player's standard faction reputations and displaying the respawn pop-up menu.
         /// </summary>
-        [ScriptHandler<OnModuleDeath>]
         public void OnPlayerDeath()
         {
             _deathService.OnPlayerDeath();
@@ -132,7 +144,6 @@ namespace SWLOR.Component.Combat.EventHandlers
         /// Handles setting player's HP, FP, and STM to half of maximum,
         /// applies penalties for death, and teleports him or her to their home point.
         /// </summary>
-        [ScriptHandler<OnModuleRespawn>]
         public void OnPlayerRespawn()
         {
             _deathService.OnPlayerRespawn();
@@ -141,7 +152,6 @@ namespace SWLOR.Component.Combat.EventHandlers
         /// <summary>
         /// When an enemy is damaged, increase enmity toward that creature by the amount of damage dealt.
         /// </summary>
-        [ScriptHandler<OnCreatureDamagedBefore>]
         public void CreatureDamaged()
         {
             _enmityService.CreatureDamaged();
@@ -150,7 +160,6 @@ namespace SWLOR.Component.Combat.EventHandlers
         /// <summary>
         /// When a creature attacks an enemy, increase enmity by 1.
         /// </summary>
-        [ScriptHandler<OnCreatureAttackBefore>]
         public void CreatureAttacked()
         {
             _enmityService.CreatureAttacked();
@@ -159,7 +168,6 @@ namespace SWLOR.Component.Combat.EventHandlers
         /// <summary>
         /// When a creature is destroyed with DestroyObject, remove all enmity tables it is associated with.
         /// </summary>
-        [ScriptHandler<OnObjectDestroyed>]
         public void CreatureDestroyed()
         {
             _enmityService.CreatureDestroyed();
@@ -168,13 +176,10 @@ namespace SWLOR.Component.Combat.EventHandlers
         /// <summary>
         /// When a DM limbos creatures, ensure their enmity is wiped.
         /// </summary>
-        [ScriptHandler<OnDMLimboBefore>]
         public void CreatureLimbo()
         {
             _enmityService.CreatureLimbo();
         }
-
-        [ScriptHandler<OnHookNativeOverrides>]
         public void HookNativeOverrides()
         {
             GetDamageRoll.RegisterHook();

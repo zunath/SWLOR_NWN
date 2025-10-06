@@ -34,14 +34,6 @@ namespace SWLOR.Test.Shared.Events.EventHandlers
         }
 
         [Test]
-        public void Constructor_WithNullEventAggregator_ShouldNotThrow()
-        {
-            // Act & Assert
-            Assert.DoesNotThrow(() => 
-                new EventRegistrationEventHandlers(null, _mockCreaturePlugin));
-        }
-
-        [Test]
         public void ExecuteHeartbeatEvent_ShouldCallEventAggregatorPublish()
         {
             // Act

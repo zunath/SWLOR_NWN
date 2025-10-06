@@ -7,7 +7,6 @@ using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Skill.Enums;
-using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.NWNX;
 using ItemProperty = SWLOR.NWN.API.Engine.ItemProperty;
@@ -21,7 +20,12 @@ namespace SWLOR.Component.Combat.Feature
         private readonly IEventsPluginService _eventsPlugin;
         private readonly IObjectPluginService _objectPlugin;
 
-        public EquipmentStats(IDatabaseService db, IServiceProvider serviceProvider, IEventsPluginService eventsPlugin, IObjectPluginService objectPlugin)
+        public EquipmentStats(
+            IDatabaseService db,
+            IServiceProvider serviceProvider,
+            IEventsPluginService eventsPlugin,
+            IObjectPluginService objectPlugin,
+            IEventAggregator eventAggregator)
         {
             _db = db;
             _serviceProvider = serviceProvider;
@@ -30,6 +34,11 @@ namespace SWLOR.Component.Combat.Feature
             
             // Initialize lazy services
             _statService = new Lazy<IStatService>(() => _serviceProvider.GetRequiredService<IStatService>());
+
+            // Subscribe to events
+            eventAggregator.Subscribe<OnModuleLoad>(e => RegisterStatActions());
+            eventAggregator.Subscribe<OnSWLORItemEquipValidBefore>(e => ApplyStats());
+            eventAggregator.Subscribe<OnItemUnequipBefore>(e => RemoveStats());
         }
 
         // Lazy-loaded service to break circular dependency
@@ -43,7 +52,6 @@ namespace SWLOR.Component.Combat.Feature
         /// <summary>
         /// When the module loads, cache the actions taken for each type of custom item property.
         /// </summary>
-        [ScriptHandler<OnModuleLoad>]
         public void RegisterStatActions()
         {
             InitializeStatActions();
@@ -104,7 +112,6 @@ namespace SWLOR.Component.Combat.Feature
         /// When an item is equipped, if it has any custom status, apply them now.
         /// This should be run in the "after" event because any restrictions should be checked first.
         /// </summary>
-        [ScriptHandler<OnSWLORItemEquipValidBefore>]
         public void ApplyStats()
         {
             ApplyStatsInternal();
@@ -142,7 +149,6 @@ namespace SWLOR.Component.Combat.Feature
         /// <summary>
         /// When an item is unequipped, if it has any custom stats, remove them now.
         /// </summary>
-        [ScriptHandler<OnItemUnequipBefore>]
         public void RemoveStats()
         {
             RemoveStatsInternal();

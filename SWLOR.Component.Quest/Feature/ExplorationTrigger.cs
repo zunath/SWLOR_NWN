@@ -1,12 +1,17 @@
 using SWLOR.Shared.Domain.Quest.Events;
-using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.UI.Service;
+using SWLOR.Shared.Abstractions.Contracts;
 
 namespace SWLOR.Component.Quest.Feature
 {
     public class ExplorationTrigger
     {
-        [ScriptHandler<OnExploreTrigger>]
+        public ExplorationTrigger(IEventAggregator eventAggregator)
+        {
+            // Subscribe to events
+            eventAggregator.Subscribe<OnExploreTrigger>(e => EnterExplorationTrigger());
+        }
+
         public void EnterExplorationTrigger()
         {
             var player = GetEnteringObject();

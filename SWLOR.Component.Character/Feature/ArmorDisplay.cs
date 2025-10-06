@@ -1,7 +1,6 @@
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Entities;
-using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Component.Character.Feature
@@ -10,15 +9,19 @@ namespace SWLOR.Component.Character.Feature
     {
         private readonly IDatabaseService _db;
 
-        public ArmorDisplay(IDatabaseService db)
+        public ArmorDisplay(
+            IDatabaseService db,
+            IEventAggregator eventAggregator)
         {
             _db = db;
+
+            // Subscribe to events
+            eventAggregator.Subscribe<OnModuleEquip>(e => EquipHelmet());
         }
         
         /// <summary>
         /// When a player equips a type of armor which can be hidden, set whether it is hidden based on the player's setting.
         /// </summary>
-        [ScriptHandler<OnModuleEquip>]
         public void EquipHelmet()
         {
             var player = GetPCItemLastEquippedBy();

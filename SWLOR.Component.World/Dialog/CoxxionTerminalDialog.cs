@@ -2,9 +2,9 @@ using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Shared.Domain.Dialog.Contracts;
 using SWLOR.Shared.Domain.Dialog.ValueObjects;
 using SWLOR.Shared.Domain.World.Contracts;
-using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.UI.Service;
+using SWLOR.Shared.Abstractions.Contracts;
 
 namespace SWLOR.Component.World.Dialog
 {
@@ -28,7 +28,6 @@ namespace SWLOR.Component.World.Dialog
         /// <summary>
         /// When the module loads, store the doors for the Coxxion Base dungeon into cache.
         /// </summary>
-        [ScriptHandler<OnModuleLoad>]
         public void LoadDoors()
         {
             var area = AreaService.GetAreaByResref("v_cox_base");

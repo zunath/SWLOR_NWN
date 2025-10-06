@@ -11,8 +11,6 @@ using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Skill.Contracts;
 using SWLOR.Shared.Domain.Skill.Enums;
 using SWLOR.Shared.Domain.World.Events;
-using SWLOR.Shared.Events.Attributes;
-
 namespace SWLOR.Component.Inventory.Definitions.ItemDefinition
 {
     public class HarvesterItemDefinition: IItemListDefinition
@@ -63,7 +61,6 @@ namespace SWLOR.Component.Inventory.Definitions.ItemDefinition
         /// <summary>
         /// Whenever a resource despawns, if it has an associated prop placeable, destroy it from the game world.
         /// </summary>
-        [ScriptHandler<OnSpawnDespawn>]
         public void CleanupResourcePropPlaceables()
         {
             var resource = OBJECT_SELF;

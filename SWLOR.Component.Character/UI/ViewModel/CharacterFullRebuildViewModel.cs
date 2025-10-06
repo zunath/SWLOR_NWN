@@ -12,7 +12,6 @@ using SWLOR.Shared.Domain.Perk.Contracts;
 using SWLOR.Shared.Domain.Skill.Contracts;
 using SWLOR.Shared.Domain.Skill.Enums;
 using SWLOR.Shared.Domain.World.Contracts;
-using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
@@ -62,7 +61,6 @@ namespace SWLOR.Component.Character.UI.ViewModel
         private IPerkService PerkService => _perkService.Value;
         private IAbilityService AbilityService => _abilityService.Value;
         private IAreaService AreaService => _areaService.Value;
-        [ScriptHandler<OnCharacterRebuild>]
         public void LoadCharacterMigrationWindow()
         {
             var player = GetLastUsedBy();
@@ -78,8 +76,6 @@ namespace SWLOR.Component.Character.UI.ViewModel
             StatService.RestoreStamina(player, StatService.GetMaxStamina(player));
             _guiService.TogglePlayerWindow(player, GuiWindowType.CharacterMigration, null, OBJECT_SELF);
         }
-
-        [ScriptHandler<OnExitRebuild>]
         public void ExitRebuildArea()
         {
             var player = GetLastUsedBy();
@@ -106,8 +102,6 @@ namespace SWLOR.Component.Character.UI.ViewModel
                 ActionJumpToLocation(location);
             });
         }
-
-        [ScriptHandler<OnExitSpending>]
         public void ExitSpendingArea()
         {
             var player = GetLastUsedBy();

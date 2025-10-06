@@ -8,7 +8,6 @@ using SWLOR.Shared.Domain.Perk.Contracts;
 using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Skill.Contracts;
 using SWLOR.Shared.Domain.Skill.Enums;
-using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Component.Crafting.Feature
@@ -25,7 +24,11 @@ namespace SWLOR.Component.Crafting.Feature
         private readonly Lazy<IItemService> _itemService;
         private readonly Lazy<ILootService> _lootService;
 
-        public ScavengePoint(IDatabaseService db, IRandomService random, IServiceProvider serviceProvider)
+        public ScavengePoint(
+            IDatabaseService db,
+            IRandomService random,
+            IServiceProvider serviceProvider,
+            IEventAggregator eventAggregator)
         {
             _db = db;
             _random = random;
@@ -36,6 +39,11 @@ namespace SWLOR.Component.Crafting.Feature
             _skillService = new Lazy<ISkillService>(() => _serviceProvider.GetRequiredService<ISkillService>());
             _itemService = new Lazy<IItemService>(() => _serviceProvider.GetRequiredService<IItemService>());
             _lootService = new Lazy<ILootService>(() => _serviceProvider.GetRequiredService<ILootService>());
+
+            // Subscribe to events
+            eventAggregator.Subscribe<OnScavengeOpened>(e => OnOpened());
+            eventAggregator.Subscribe<OnScavengeDisturbed>(e => OnDisturbed());
+            eventAggregator.Subscribe<OnScavengeClosed>(e => OnClosed());
         }
         
         // Lazy-loaded services to break circular dependencies
@@ -46,7 +54,6 @@ namespace SWLOR.Component.Crafting.Feature
         /// <summary>
         /// 
         /// </summary>
-        [ScriptHandler<OnScavengeOpened>]
         public void OnOpened()
         {
             OnOpenedInternal();
@@ -148,7 +155,6 @@ namespace SWLOR.Component.Crafting.Feature
         /// When an item is added to a scavenge point, return it to the user.
         /// When an item is removed from a scavenge point, if there are no more items in the inventory, destroy the placeable.
         /// </summary>
-        [ScriptHandler<OnScavengeDisturbed>]
         public void OnDisturbed()
         {
             OnDisturbedInternal();
@@ -184,7 +190,6 @@ namespace SWLOR.Component.Crafting.Feature
         /// <summary>
         /// When a scavenge site is closed by a player, if there are no more items in the inventory, destroy the scavenge point.
         /// </summary>
-        [ScriptHandler<OnScavengeClosed>]
         public void OnClosed()
         {
             OnClosedInternal();

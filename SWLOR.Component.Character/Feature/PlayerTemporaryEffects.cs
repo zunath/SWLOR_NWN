@@ -4,7 +4,6 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Entities;
-using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Component.Character.Feature
@@ -18,14 +17,19 @@ namespace SWLOR.Component.Character.Feature
         // Lazy-loaded services to break circular dependencies
         private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
 
-        public PlayerTemporaryEffects(IDatabaseService db, IServiceProvider serviceProvider, ICreaturePluginService creaturePlugin)
+        public PlayerTemporaryEffects(
+            IDatabaseService db,
+            IServiceProvider serviceProvider,
+            ICreaturePluginService creaturePlugin,
+            IEventAggregator eventAggregator)
         {
             _db = db;
             _serviceProvider = serviceProvider;
             _creaturePlugin = creaturePlugin;
-        }
 
-        [ScriptHandler<OnModuleEnter>]
+            // Subscribe to events
+            eventAggregator.Subscribe<OnModuleEnter>(e => ApplyTemporaryEffects());
+        }
         public void ApplyTemporaryEffects()
         {
             var player = GetEnteringObject();

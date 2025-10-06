@@ -1,15 +1,19 @@
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Combat.Events;
-using SWLOR.Shared.Events.Attributes;
-
+using SWLOR.Shared.Abstractions.Contracts;
 namespace SWLOR.Component.Combat.Feature.TrapDefinition
 {
     public class PitfallTrap
     {
+        public PitfallTrap(IEventAggregator eventAggregator)
+        {
+            // Subscribe to events
+            eventAggregator.Subscribe<OnPitfallTrap>(e => TriggeringTrap());
+        }
+
         /// <summary>
         /// When this trap is triggered, it'll toss the players to the designated waypoint after a delay.
         /// </summary>
-        [ScriptHandler<OnPitfallTrap>]
         public void TriggeringTrap()
         {
             var player = GetEnteringObject();

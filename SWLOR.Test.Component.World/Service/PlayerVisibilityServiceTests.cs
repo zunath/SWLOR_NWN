@@ -31,7 +31,7 @@ namespace SWLOR.Test.Component.World.Service
             _service = new PlayerVisibilityService(_mockLogger, _mockDatabaseService, _mockVisibilityObjectCache, _mockVisibilityPlugin);
         }
 
-        // Note: LoadPlayerVisibilityObjects is an event handler method with [ScriptHandler<OnModuleEnter>] attribute
+        // Note: LoadPlayerVisibilityObjects is an event handler method that subscribes to OnModuleEnter via IEventAggregator
         // It's designed to be called by the event system, not directly in unit tests.
         // Testing event handlers requires integration testing rather than unit testing.
 

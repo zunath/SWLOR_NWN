@@ -8,7 +8,6 @@ using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.UI.Events;
 using SWLOR.Shared.Domain.UI.Payloads;
-using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Events.Player;
@@ -87,8 +86,6 @@ namespace SWLOR.Component.Character.UI.ViewModel
 
         private ItemAppearanceArmorColorType _selectedColorChannel;
         private ColorTarget _colorTarget;
-
-        [ScriptHandler<OnModuleLoad>]
         public void LoadAppearances()
         {
             LoadRacialAppearances();
@@ -96,8 +93,6 @@ namespace SWLOR.Component.Character.UI.ViewModel
             LoadWeaponAppearances();
         }
 
-        [ScriptHandler<OnDMPossessBefore>]
-        [ScriptHandler<OnDMPossessFullPowerBefore>]
         public void CloseAppearanceWindowOnPossessionBefore()
         {
             var dm = OBJECT_SELF;

@@ -62,6 +62,6 @@
 
 	<!-- Temporarily disabled post-build step during project rename -->
 	 <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-		<Exec Command="SWLOR.App.CLI.exe -o" WorkingDirectory="$(MSBuildProjectDirectory)\..\Build" />
+		<!--<Exec Command="SWLOR.App.CLI.exe -o" WorkingDirectory="$(MSBuildProjectDirectory)\..\Build" />-->
 	</Target> 
 </Project>

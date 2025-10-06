@@ -1,8 +1,8 @@
 using SWLOR.NWN.API.Contracts;
 using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
+using SWLOR.Shared.Abstractions.Contracts;
 
 namespace SWLOR.Component.Combat.Feature
 {
@@ -10,15 +10,19 @@ namespace SWLOR.Component.Combat.Feature
     {
         private readonly IFeatPluginService _featPlugin;
 
-        public FeatConfiguration(IFeatPluginService featPlugin)
+        public FeatConfiguration(
+            IFeatPluginService featPlugin,
+            IEventAggregator eventAggregator)
         {
             _featPlugin = featPlugin;
+
+            // Subscribe to events
+            eventAggregator.Subscribe<OnModuleLoad>(e => ConfigureFeats());
         }
 
         /// <summary>
         /// When the module loads, configure all custom feats.
         /// </summary>
-        [ScriptHandler<OnModuleLoad>]
         public void ConfigureFeats()
         {
             _featPlugin.SetFeatModifier(FeatType.ShieldConcealment1, FeatModifierType.Concealment, 5);

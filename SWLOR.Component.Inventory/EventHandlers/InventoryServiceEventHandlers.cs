@@ -2,10 +2,11 @@ using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Shared.Domain.Combat.Events;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Inventory.Events;
-using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Creature;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.NWNX;
+using SWLOR.Shared.Events.Events.Player;
+using SWLOR.Shared.Abstractions.Contracts;
 
 namespace SWLOR.Component.Inventory.EventHandlers
 {
@@ -18,7 +19,9 @@ namespace SWLOR.Component.Inventory.EventHandlers
         private readonly Lazy<ILootService> _lootService;
         private readonly Lazy<IKeyItemService> _keyItemService;
 
-        public InventoryServiceEventHandlers(IServiceProvider serviceProvider)
+        public InventoryServiceEventHandlers(
+            IServiceProvider serviceProvider,
+            IEventAggregator eventAggregator)
         {
             _serviceProvider = serviceProvider;
             
@@ -26,69 +29,61 @@ namespace SWLOR.Component.Inventory.EventHandlers
             _itemService = new Lazy<IItemService>(() => _serviceProvider.GetRequiredService<IItemService>());
             _lootService = new Lazy<ILootService>(() => _serviceProvider.GetRequiredService<ILootService>());
             _keyItemService = new Lazy<IKeyItemService>(() => _serviceProvider.GetRequiredService<IKeyItemService>());
+
+            // Subscribe to events
+            eventAggregator.Subscribe<OnModuleCacheBefore>(e => CacheItemData());
+            eventAggregator.Subscribe<OnValidateUseItemAfter>(e => UseItem());
+            eventAggregator.Subscribe<OnModuleCacheBefore>(e => RegisterLootTables());
+            eventAggregator.Subscribe<OnDealtDamage>(e => SpawnStealLoot());
+            eventAggregator.Subscribe<OnCorpseClosed>(e => CloseCorpseContainer());
+            eventAggregator.Subscribe<OnCorpseDisturbed>(e => DisturbCorpseContainer());
+            eventAggregator.Subscribe<OnCreatureDeathAfter>(e => SpawnLootOnCreatureDeath());
+            eventAggregator.Subscribe<OnPlayerTargetUpdated>(e => MarkCreditfinderAndTreasureHunterOnTarget());
+            eventAggregator.Subscribe<OnObjectDestroyed>(e => ProcessCorpse());
+            eventAggregator.Subscribe<OnGetKeyItem>(e => ObtainKeyItem());
         }
 
         // Lazy-loaded services to break circular dependencies
         private IItemService ItemService => _itemService.Value;
         private ILootService LootService => _lootService.Value;
         private IKeyItemService KeyItemService => _keyItemService.Value;
-
-        [ScriptHandler<OnModuleCacheBefore>]
         public void CacheItemData()
         {
             ItemService.CacheData();
             KeyItemService.CacheData();
         }
-
-        [ScriptHandler<OnItemUseBefore>]
         public void UseItem()
         {
             ItemService.UseItem();
         }
-
-        [ScriptHandler<OnModuleCacheBefore>]
         public void RegisterLootTables()
         {
             LootService.RegisterLootTables();
         }
-
-        [ScriptHandler<OnCreatureSpawnBefore>]
         public void SpawnStealLoot()
         {
             LootService.SpawnStealLoot();
         }
-
-        [ScriptHandler<OnCorpseClosed>]
         public void CloseCorpseContainer()
         {
             LootService.CloseCorpseContainer();
         }
-
-        [ScriptHandler<OnCorpseDisturbed>]
         public void DisturbCorpseContainer()
         {
             LootService.DisturbCorpseContainer();
         }
-
-        [ScriptHandler<OnCreatureDeathBefore>]
         public void SpawnLootOnCreatureDeath()
         {
             LootService.SpawnLootOnCreatureDeath();
         }
-
-        [ScriptHandler<OnItemHit>]
         public void MarkCreditfinderAndTreasureHunterOnTarget()
         {
             LootService.MarkCreditfinderAndTreasureHunterOnTarget();
         }
-
-        [ScriptHandler<OnCreatureDeathBefore>]
         public void ProcessCorpse()
         {
             LootService.ProcessCorpse();
         }
-
-        [ScriptHandler<OnGetKeyItem>]
         public void ObtainKeyItem()
         {
             KeyItemService.ObtainKeyItem();

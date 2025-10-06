@@ -6,7 +6,6 @@ using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Perk.Events;
 using SWLOR.Shared.Domain.Quest.Events;
 using SWLOR.Shared.Domain.Skill.Events;
-using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Area;
 using SWLOR.Shared.Events.Events.Creature;
 using SWLOR.Shared.Events.Events.Module;
@@ -18,16 +17,27 @@ namespace SWLOR.Component.Character.Feature
         private readonly IDatabaseService _db;
         private readonly IAchievementService _achievement;
 
-        public AchievementProgression(IDatabaseService db, IAchievementService achievement)
+        public AchievementProgression(
+            IDatabaseService db,
+            IAchievementService achievement,
+            IEventAggregator eventAggregator)
         {
             _db = db;
             _achievement = achievement;
+
+            // Subscribe to events
+            eventAggregator.Subscribe<OnModuleEnter>(e => LogIn());
+            eventAggregator.Subscribe<OnAreaEnter>(e => EnterArea());
+            eventAggregator.Subscribe<OnCreatureDeathBefore>(e => KillEnemy());
+            eventAggregator.Subscribe<OnPlayerBuyPerk>(e => BuyPerk());
+            eventAggregator.Subscribe<OnPlayerGainSkillRank>(e => GainSkillPoint());
+            eventAggregator.Subscribe<OnPlayerCompletedQuest>(e => CompleteQuests());
+            eventAggregator.Subscribe<OnCraftSuccess>(e => CompleteCraftSuccessfully());
         }
         
         /// <summary>
         /// When a player enters the mod, increase their number of logins
         /// </summary>
-        [ScriptHandler<OnModuleEnter>]
         public void LogIn()
         {
             var player = GetEnteringObject();
@@ -43,7 +53,6 @@ namespace SWLOR.Component.Character.Feature
         /// <summary>
         /// When a player enters an area, if an achievement is assigned to the area grant it to them.
         /// </summary>
-        [ScriptHandler<OnAreaEnter>]
         public void EnterArea()
         {
             var area = OBJECT_SELF;
@@ -59,7 +68,6 @@ namespace SWLOR.Component.Character.Feature
         /// <summary>
         /// Handles the Kill Enemy line of achievements.
         /// </summary>
-        [ScriptHandler<OnCreatureDeathBefore>]
         public void KillEnemy()
         {
             var killer = GetLastKiller();
@@ -102,7 +110,6 @@ namespace SWLOR.Component.Character.Feature
         /// <summary>
         /// Handles the Buy Perk line of achievements.
         /// </summary>
-        [ScriptHandler<OnPlayerBuyPerk>]
         public void BuyPerk()
         {
             var player = OBJECT_SELF;
@@ -141,7 +148,6 @@ namespace SWLOR.Component.Character.Feature
         /// <summary>
         /// Handles the Gain Skill line of achievements.
         /// </summary>
-        [ScriptHandler<OnPlayerGainSkillRank>]
         public void GainSkillPoint()
         {
             var player = OBJECT_SELF;
@@ -184,7 +190,6 @@ namespace SWLOR.Component.Character.Feature
         /// <summary>
         /// Handles the Complete Quests line of achievements.
         /// </summary>
-        [ScriptHandler<OnPlayerCompletedQuest>]
         public void CompleteQuests()
         {
             var player = OBJECT_SELF;
@@ -243,7 +248,6 @@ namespace SWLOR.Component.Character.Feature
         /// <summary>
         /// Handles the Craft Item line of achievements
         /// </summary>
-        [ScriptHandler<OnCraftSuccess>]
         public void CompleteCraftSuccessfully()
         {
             var player = OBJECT_SELF;

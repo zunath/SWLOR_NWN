@@ -1,9 +1,10 @@
 using SWLOR.Component.Quest.Contracts;
 using SWLOR.Shared.Domain.Quest.Contracts;
 using SWLOR.Shared.Domain.Quest.Events;
-using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.Creature;
+using SWLOR.Shared.Events.Events.Server;
+using SWLOR.Shared.Abstractions.Contracts;
 
 namespace SWLOR.Component.Quest.EventHandlers
 {
@@ -16,17 +17,30 @@ namespace SWLOR.Component.Quest.EventHandlers
         public QuestServiceEventHandlers(
             IGuildService guildService,
             INPCGroupService npcGroupService,
-            IQuestService questService)
+            IQuestService questService,
+            IEventAggregator eventAggregator)
         {
             _guildService = guildService;
             _npcGroupService = npcGroupService;
             _questService = questService;
+
+            // Subscribe to events
+            eventAggregator.Subscribe<OnModuleEnter>(e => LoadPlayerQuests());
+            eventAggregator.Subscribe<OnModuleCacheBefore>(e => CacheNPCGroupData());
+            eventAggregator.Subscribe<OnModuleCacheBefore>(e => LoadGuildData());
+            eventAggregator.Subscribe<OnModuleCacheBefore>(e => CacheData());
+            eventAggregator.Subscribe<OnCreatureDeathBefore>(e => ProgressKillTargetObjectives());
+            eventAggregator.Subscribe<OnQuestCollectOpen>(e => OpenItemCollector());
+            eventAggregator.Subscribe<OnQuestCollectClosed>(e => CloseItemCollector());
+            eventAggregator.Subscribe<OnQuestCollectDisturbed>(e => DisturbItemCollector());
+            eventAggregator.Subscribe<OnQuestPlaceable>(e => UseQuestPlaceable());
+            eventAggregator.Subscribe<OnQuestTrigger>(e => EnterQuestTrigger());
+            eventAggregator.Subscribe<OnServerHeartbeat>(e => RefreshGuildTasks());
         }
 
         /// <summary>
         /// When a player enters the module, load their quests.
         /// </summary>
-        [ScriptHandler<OnModuleEnter>]
         public void LoadPlayerQuests()
         {
             _questService.LoadPlayerQuests();
@@ -35,7 +49,6 @@ namespace SWLOR.Component.Quest.EventHandlers
         /// <summary>
         /// When the module loads, data is cached to speed up searches later.
         /// </summary>
-        [ScriptHandler<OnModuleCacheBefore>]
         public void CacheNPCGroupData()
         {
             _npcGroupService.CacheData();
@@ -44,7 +57,6 @@ namespace SWLOR.Component.Quest.EventHandlers
         /// <summary>
         /// When the module caches, cache relevant data and load guild tasks.
         /// </summary>
-        [ScriptHandler<OnModuleCacheBefore>]
         public void LoadGuildData()
         {
             _guildService.LoadData();
@@ -53,7 +65,6 @@ namespace SWLOR.Component.Quest.EventHandlers
         /// <summary>
         /// When the module loads, data is cached to speed up searches later.
         /// </summary>
-        [ScriptHandler<OnModuleCacheBefore>]
         public void CacheData()
         {
             _questService.CacheData();
@@ -62,7 +73,6 @@ namespace SWLOR.Component.Quest.EventHandlers
         /// <summary>
         /// When an NPC is killed, any objectives for quests a player currently has active will be updated.
         /// </summary>
-        [ScriptHandler<OnCreatureDeathBefore>]
         public void ProgressKillTargetObjectives()
         {
             _questService.ProgressKillTargetObjectives();
@@ -71,7 +81,6 @@ namespace SWLOR.Component.Quest.EventHandlers
         /// <summary>
         /// When an item collector placeable is opened, 
         /// </summary>
-        [ScriptHandler<OnQuestCollectOpen>]
         public void OpenItemCollector()
         {
             _questService.OpenItemCollector();
@@ -80,7 +89,6 @@ namespace SWLOR.Component.Quest.EventHandlers
         /// <summary>
         /// When an item collector placeable is closed, clear its inventory and destroy it.
         /// </summary>
-        [ScriptHandler<OnQuestCollectClosed>]
         public void CloseItemCollector()
         {
             _questService.CloseItemCollector();
@@ -89,7 +97,6 @@ namespace SWLOR.Component.Quest.EventHandlers
         /// <summary>
         /// When an item collector placeable is disturbed, 
         /// </summary>
-        [ScriptHandler<OnQuestCollectDisturbed>]
         public void DisturbItemCollector()
         {
             _questService.DisturbItemCollector();
@@ -98,7 +105,6 @@ namespace SWLOR.Component.Quest.EventHandlers
         /// <summary>
         /// When a player uses a quest placeable, handle the progression.
         /// </summary>
-        [ScriptHandler<OnQuestPlaceable>]
         public void UseQuestPlaceable()
         {
             _questService.UseQuestPlaceable();
@@ -107,7 +113,6 @@ namespace SWLOR.Component.Quest.EventHandlers
         /// <summary>
         /// When a player enters a quest trigger, handle the progression.
         /// </summary>
-        [ScriptHandler<OnQuestTrigger>]
         public void EnterQuestTrigger()
         {
             _questService.EnterQuestTrigger();
@@ -116,7 +121,6 @@ namespace SWLOR.Component.Quest.EventHandlers
         /// <summary>
         /// After quests are registered, refresh the available guild tasks.
         /// </summary>
-        [ScriptHandler<OnQuestsRegistered>]
         public void RefreshGuildTasks()
         {
             _questService.RefreshGuildTasks();

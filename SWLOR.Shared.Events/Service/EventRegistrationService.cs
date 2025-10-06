@@ -4,7 +4,6 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Infrastructure;
 using SWLOR.Shared.Events.Events.Server;
-using SWLOR.Shared.Events.Contracts;
 
 namespace SWLOR.Shared.Events.Service
 {
@@ -12,30 +11,23 @@ namespace SWLOR.Shared.Events.Service
     {
         private readonly IScheduler _scheduler;
         private readonly IEventAggregator _eventAggregator;
-        private readonly IEventHandlerDiscoveryService _eventHandlerDiscovery;
         private readonly IChatPluginService _chatPlugin;
         private readonly IEventsPluginService _eventsPlugin;
 
         public EventRegistrationService(
             IScheduler scheduler,
             IEventAggregator eventAggregator,
-            IEventHandlerDiscoveryService eventHandlerDiscovery,
             IChatPluginService chatPlugin,
             IEventsPluginService eventsPlugin)
         {
             _scheduler = scheduler;
             _eventAggregator = eventAggregator;
-            _eventHandlerDiscovery = eventHandlerDiscovery;
             _chatPlugin = chatPlugin;
             _eventsPlugin = eventsPlugin;
         }
 
         public void RegisterEvents()
         {
-
-            Console.WriteLine("Discovering and registering event handlers.");
-            _eventHandlerDiscovery.DiscoverAndRegisterHandlers();
-
             Console.WriteLine($"Hooking native overrides.");
             _eventAggregator.Publish(new OnHookNativeOverrides(), GetModule());
 

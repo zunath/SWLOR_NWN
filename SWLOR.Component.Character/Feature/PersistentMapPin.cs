@@ -3,7 +3,6 @@ using SWLOR.NWN.API.Contracts;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.World.Contracts;
-using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.NWNX;
 
@@ -27,11 +26,18 @@ namespace SWLOR.Component.Character.Feature
         public PersistentMapPin(
             IDatabaseService db,
             IServiceProvider serviceProvider,
-            IEventsPluginService eventsPlugin)
+            IEventsPluginService eventsPlugin,
+            IEventAggregator eventAggregator)
         {
             _db = db;
             _serviceProvider = serviceProvider;
             _eventsPlugin = eventsPlugin;
+
+            // Subscribe to events
+            eventAggregator.Subscribe<OnMapPinAddPinBefore>(e => AddMapPin());
+            eventAggregator.Subscribe<OnMapPinDestroyPinBefore>(e => DeleteMapPin());
+            eventAggregator.Subscribe<OnMapPinChangePinBefore>(e => ChangeMapPin());
+            eventAggregator.Subscribe<OnModuleEnter>(e => LoadMapPins());
         }
 
         /// <summary>
@@ -53,7 +59,6 @@ namespace SWLOR.Component.Character.Feature
         /// <summary>
         /// Adds a map pin to the PC entity and saves it to the DB.
         /// </summary>
-        [ScriptHandler<OnMapPinAddPinBefore>]
         public void AddMapPin()
         {
             var player = OBJECT_SELF;
@@ -78,7 +83,6 @@ namespace SWLOR.Component.Character.Feature
         /// <summary>
         /// Removes a map pin from the PC entity and saves it to the DB.
         /// </summary>
-        [ScriptHandler<OnMapPinDestroyPinBefore>]
         public void DeleteMapPin()
         {
             var player = OBJECT_SELF;
@@ -110,7 +114,6 @@ namespace SWLOR.Component.Character.Feature
         /// <summary>
         /// Updates an existing map pin and saves the changes to the DB.
         /// </summary>
-        [ScriptHandler<OnMapPinChangePinBefore>]
         public void ChangeMapPin()
         {
             var player = OBJECT_SELF;
@@ -144,7 +147,6 @@ namespace SWLOR.Component.Character.Feature
         /// <summary>
         /// Loads map pins on all areas for a player. This only happens one time per reset.
         /// </summary>
-        [ScriptHandler<OnModuleEnter>]
         public void LoadMapPins()
         {
             var player = GetEnteringObject();

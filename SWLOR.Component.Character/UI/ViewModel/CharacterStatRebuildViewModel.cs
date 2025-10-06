@@ -9,7 +9,6 @@ using SWLOR.Shared.Domain.Character.Events;
 using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Inventory.Enums;
-using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Service;
 
@@ -44,8 +43,6 @@ namespace SWLOR.Component.Character.UI.ViewModel
         // Lazy-loaded services to break circular dependencies
         private IRecastService RecastService => _recastService.Value;
         private ICurrencyService CurrencyService => _currencyService.Value;
-        
-        [ScriptHandler<OnBuyStatRebuild>]
         public void LoadCharacterStatRebuild()
         {
             var terminal = OBJECT_SELF;

@@ -5,7 +5,6 @@ using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Inventory.Enums;
-using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Area;
 using SWLOR.Shared.Events.Events.Module;
 
@@ -21,18 +20,27 @@ namespace SWLOR.Component.Character.Feature
         // Lazy-loaded services to break circular dependencies
         private IKeyItemService KeyItemService => _serviceProvider.GetRequiredService<IKeyItemService>();
 
-        public PersistentMapProgression(ILogger logger, IDatabaseService db, IServiceProvider serviceProvider, IPlayerPluginService playerPlugin)
+        public PersistentMapProgression(
+            ILogger logger,
+            IDatabaseService db,
+            IServiceProvider serviceProvider,
+            IPlayerPluginService playerPlugin,
+            IEventAggregator eventAggregator)
         {
             _logger = logger;
             _db = db;
             _serviceProvider = serviceProvider;
             _playerPlugin = playerPlugin;
+
+            // Subscribe to events
+            eventAggregator.Subscribe<OnAreaExit>(e => SaveMapProgression());
+            eventAggregator.Subscribe<OnModuleExit>(e => SaveMapProgression());
+            eventAggregator.Subscribe<OnAreaEnter>(e => LoadMapProgression());
         }
         /// <summary>
         /// Saves a player's area map progression when exiting an area.
         /// </summary>
-        [ScriptHandler<OnAreaExit>]
-        [ScriptHandler<OnModuleExit>]
+
         public void SaveMapProgression()
         {
             var player = GetExitingObject();
@@ -56,7 +64,6 @@ namespace SWLOR.Component.Character.Feature
         /// <summary>
         /// Loads a player's area map progression when entering an area for the first time after a reboot.
         /// </summary>
-        [ScriptHandler<OnAreaEnter>]
         public void LoadMapProgression()
         {
             var player = GetEnteringObject();

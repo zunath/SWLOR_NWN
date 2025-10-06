@@ -7,7 +7,6 @@ using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Perk.Contracts;
 using SWLOR.Shared.Domain.Perk.Enums;
-using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Service;
@@ -29,7 +28,8 @@ namespace SWLOR.Component.Combat.Feature
             IPerkService perkService, 
             IDroidService droidService, 
             IGuiService guiService,
-            IEventsPluginService eventsPlugin)
+            IEventsPluginService eventsPlugin,
+            IEventAggregator eventAggregator)
         {
             _db = db;
             _itemService = itemService;
@@ -37,13 +37,15 @@ namespace SWLOR.Component.Combat.Feature
             _droidService = droidService;
             _guiService = guiService;
             _eventsPlugin = eventsPlugin;
+
+            // Subscribe to events
+            eventAggregator.Subscribe<OnItemEquipValidateBefore>(e => ValidateItemEquip());
         }
         
         /// <summary>
         /// When an item is equipped, check the custom rules to see if the item can be equipped by the player.
         /// If not able to be used, an error message will be sent and item will not be equipped.
         /// </summary>
-        [ScriptHandler<OnItemEquipValidateBefore>]
         public void ValidateItemEquip()
         {
             var creature = OBJECT_SELF;
@@ -271,7 +273,6 @@ namespace SWLOR.Component.Combat.Feature
         /// <summary>
         /// When an item is equipped, if any of a player's perks has an Equipped Trigger, run those actions now.
         /// </summary>
-        [ScriptHandler<OnSWLORItemEquipValidBefore>]
         public void ApplyEquipTriggers()
         {
             var player = OBJECT_SELF;
@@ -319,7 +320,6 @@ namespace SWLOR.Component.Combat.Feature
         /// <summary>
         /// When an item is unequipped, if any of a player's perks has an Unequipped Trigger, run those actions now.
         /// </summary>
-        [ScriptHandler<OnItemUnequipBefore>]
         public void ApplyUnequipTriggers()
         {
             var player = OBJECT_SELF;

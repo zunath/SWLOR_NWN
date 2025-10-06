@@ -1,7 +1,6 @@
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Entities;
-using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Component.Combat.Feature
@@ -10,15 +9,20 @@ namespace SWLOR.Component.Combat.Feature
     {
         private readonly IDatabaseService _db;
 
-        public PersistentHitPoints(IDatabaseService db)
+        public PersistentHitPoints(
+            IDatabaseService db,
+            IEventAggregator eventAggregator)
         {
             _db = db;
+
+            // Subscribe to events
+            eventAggregator.Subscribe<OnModuleExit>(e => SaveHP());
+            eventAggregator.Subscribe<OnModuleEnter>(e => LoadHP());
         }
         
         /// <summary>
         /// When a player leaves the server, save their persistent HP.
         /// </summary>
-        [ScriptHandler<OnModuleExit>]
         public void SaveHP()
         {
             var player = GetExitingObject();
@@ -35,7 +39,6 @@ namespace SWLOR.Component.Combat.Feature
         /// <summary>
         /// When a player enters the server, load their persistent HP.
         /// </summary>
-        [ScriptHandler<OnModuleEnter>]
         public void LoadHP()
         {
             var player = GetEnteringObject();

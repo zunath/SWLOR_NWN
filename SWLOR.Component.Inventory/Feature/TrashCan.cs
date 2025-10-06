@@ -1,9 +1,9 @@
 using SWLOR.NWN.API.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Inventory.Events;
-using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.UI.Service;
+using SWLOR.Shared.Abstractions.Contracts;
 
 namespace SWLOR.Component.Inventory.Feature
 {
@@ -20,7 +20,6 @@ namespace SWLOR.Component.Inventory.Feature
         /// When a player attempts to drop an item, prevent them from doing so and send a message to use the trash can.
         /// DMs are exempt from this rule.
         /// </summary>
-        [ScriptHandler<OnInputDropItemBefore>]
         public void PreventItemDrops()
         {
             var player = OBJECT_SELF;
@@ -35,7 +34,6 @@ namespace SWLOR.Component.Inventory.Feature
         /// <summary>
         /// When the trash can is opened, the player is notified anything placed inside will be destroyed.
         /// </summary>
-        [ScriptHandler<OnTrashOpened>]
         public void AlertPlayer()
         {
             var player = GetLastOpenedBy();
@@ -45,7 +43,6 @@ namespace SWLOR.Component.Inventory.Feature
         /// <summary>
         /// When the trash can is closed, any items inside will be destroyed and then the placeable will be destroyed.
         /// </summary>
-        [ScriptHandler<OnTrashClosed>]
         public void CleanUp()
         {
             var container = OBJECT_SELF;
@@ -60,7 +57,6 @@ namespace SWLOR.Component.Inventory.Feature
         /// <summary>
         /// When an item is added to the trash can, it will be destroyed.
         /// </summary>
-        [ScriptHandler<OnTrashDisturbed>]
         public void DestroyItem()
         {
             var item = GetInventoryDisturbItem();

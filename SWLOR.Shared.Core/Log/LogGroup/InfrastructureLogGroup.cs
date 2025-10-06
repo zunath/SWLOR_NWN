@@ -5,8 +5,8 @@ namespace SWLOR.Shared.Core.Log.LogGroup
 {
     public class InfrastructureLogGroup: ILogGroup
     {
-        public string Name => "Attack";
+        public string Name => "Infrastructure";
         public ServerEnvironmentType EnvironmentType => ServerEnvironmentType.Development | ServerEnvironmentType.Test;
-        public bool AlwaysPrintToConsole => false;
+        public bool AlwaysPrintToConsole => true;
     }
 }

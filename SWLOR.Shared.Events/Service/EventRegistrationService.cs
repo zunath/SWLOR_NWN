@@ -12,7 +12,6 @@ namespace SWLOR.Shared.Events.Service
     {
         private readonly IScheduler _scheduler;
         private readonly IEventAggregator _eventAggregator;
-        private readonly IEventHandlerDiscoveryService _eventHandlerDiscovery;
         private readonly IChatPluginService _chatPlugin;
         private readonly IEventsPluginService _eventsPlugin;
 
@@ -25,17 +24,12 @@ namespace SWLOR.Shared.Events.Service
         {
             _scheduler = scheduler;
             _eventAggregator = eventAggregator;
-            _eventHandlerDiscovery = eventHandlerDiscovery;
             _chatPlugin = chatPlugin;
             _eventsPlugin = eventsPlugin;
         }
 
         public void RegisterEvents()
         {
-
-            Console.WriteLine("Discovering and registering event handlers.");
-            _eventHandlerDiscovery.DiscoverAndRegisterHandlers();
-
             Console.WriteLine($"Hooking native overrides.");
             _eventAggregator.Publish(new OnHookNativeOverrides(), GetModule());
 

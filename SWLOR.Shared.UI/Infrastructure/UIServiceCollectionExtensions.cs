@@ -21,6 +21,7 @@ namespace SWLOR.Shared.UI.Infrastructure
         public static IServiceCollection AddUIServices(this IServiceCollection services)
         {
             services.AddSingleton<IGuiService, GuiService>();
+            services.AddSingleton<IInitializable>(provider => (IInitializable)provider.GetRequiredService<IGuiService>());
             services.AddSingleton<UIEventHandlers>();
 
             var viewModelTypes = AppDomain.CurrentDomain.GetAssemblies()

@@ -1,13 +1,14 @@
-using System;
-using System.Runtime.InteropServices;
 using NWNX.NET;
 using NWNX.NET.Native;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Events.Contracts;
 using SWLOR.Shared.Events.Events.Infrastructure;
 using SWLOR.Shared.Events.Events.Module;
+using System;
+using System.Runtime.InteropServices;
 
 namespace SWLOR.App.Server.Server
 {
@@ -19,6 +20,7 @@ namespace SWLOR.App.Server.Server
         private readonly IEventAggregator _eventAggregator;
         private readonly IEventRegistrationService _eventRegistration;
         private readonly IServiceInitializer _serviceInitializer;
+        private readonly IEventHandlerDiscoveryService _eventHandlerDiscovery;
 
         public NativeInteropManager(
             IMainLoopProcessor mainLoopProcessor, 
@@ -26,7 +28,8 @@ namespace SWLOR.App.Server.Server
             IClosureManager closureManager, 
             IEventAggregator eventAggregator,
             IEventRegistrationService eventRegistration,
-            IServiceInitializer serviceInitializer)
+            IServiceInitializer serviceInitializer,
+            IEventHandlerDiscoveryService eventHandlerDiscovery)
         {
             _mainLoopProcessor = mainLoopProcessor;
             _scriptExecutor = scriptExecutor;
@@ -34,6 +37,7 @@ namespace SWLOR.App.Server.Server
             _eventAggregator = eventAggregator;
             _eventRegistration = eventRegistration;
             _serviceInitializer = serviceInitializer;
+            _eventHandlerDiscovery = eventHandlerDiscovery;
         }
 
         public void RegisterHandlers()
@@ -114,11 +118,19 @@ namespace SWLOR.App.Server.Server
             {
                 case "ON_MODULE_LOAD_FINISH":
                     _scriptExecutor.Initialize();
+                    DiscoverAndRegisterHandlers();
+                    RunCacheEvents();
                     InitializeServices();
                     _eventRegistration.RegisterEvents();
-                    RunPreModuleLoadEvents();
+                    RunServerLoadedEvent();
                     break;
             }
+        }
+
+        private void DiscoverAndRegisterHandlers()
+        {
+            Console.WriteLine("Discovering and registering event handlers.");
+            _eventHandlerDiscovery.DiscoverAndRegisterHandlers();
         }
 
         /// <summary>
@@ -137,11 +149,16 @@ namespace SWLOR.App.Server.Server
             }
         }
 
-        private void RunPreModuleLoadEvents()
+        private void RunCacheEvents()
         {
-            _eventAggregator.Publish(new OnServerLoaded(), GetModule());
             _eventAggregator.Publish(new OnModuleCacheBefore(), GetModule());
             _eventAggregator.Publish(new OnModuleCacheAfter(), GetModule());
+        }
+
+        private void RunServerLoadedEvent()
+        {
+            _eventAggregator.Publish(new OnServerLoaded(), GetModule());
+
         }
     }
 }

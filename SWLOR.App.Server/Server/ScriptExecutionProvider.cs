@@ -45,19 +45,6 @@ namespace SWLOR.App.Server.Server
         }
 
         /// <summary>
-        /// Gets the action scripts for the specified script name.
-        /// This method is deprecated and returns an empty collection.
-        /// All event handling now goes through the IEventAggregator.
-        /// </summary>
-        /// <param name="scriptName">The name of the script</param>
-        /// <returns>Empty collection</returns>
-        public IEnumerable<(Action action, string name)> GetActionScripts(string scriptName)
-        {
-            // No longer used - all event handling goes through IEventAggregator
-            return Array.Empty<(Action, string)>();
-        }
-
-        /// <summary>
         /// Executes an action within the proper script context, managing VM state and OBJECT_SELF.
         /// </summary>
         /// <param name="action">The action to execute</param>

@@ -126,34 +126,6 @@ namespace SWLOR.Test.App.Server.Server
         }
 
         [Test]
-        public void GetActionScripts_WithAnyScriptName_ShouldReturnEmptyCollection()
-        {
-            // Arrange
-            const string scriptName = "mod_load";
-
-            // Act
-            var result = _provider.GetActionScripts(scriptName);
-
-            // Assert
-            Assert.That(result, Is.Not.Null);
-            Assert.That(result, Is.Empty, "GetActionScripts is deprecated and should return empty collection");
-        }
-
-        [Test]
-        public void GetActionScripts_CalledMultipleTimes_ShouldAlwaysReturnEmpty()
-        {
-            // Act
-            var result1 = _provider.GetActionScripts("script1");
-            var result2 = _provider.GetActionScripts("script2");
-            var result3 = _provider.GetActionScripts("script3");
-
-            // Assert
-            Assert.That(result1, Is.Empty);
-            Assert.That(result2, Is.Empty);
-            Assert.That(result3, Is.Empty);
-        }
-
-        [Test]
         public void ExecuteInScriptContext_WithAction_ShouldCallExecutor()
         {
             // Arrange

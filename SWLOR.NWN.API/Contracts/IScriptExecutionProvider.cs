@@ -20,13 +20,6 @@ namespace SWLOR.NWN.API.Contracts
         bool HasScript(string scriptName);
 
         /// <summary>
-        /// Gets the action scripts for the specified script name.
-        /// </summary>
-        /// <param name="scriptName">The name of the script</param>
-        /// <returns>Collection of action delegates and their names</returns>
-        IEnumerable<(Action action, string name)> GetActionScripts(string scriptName);
-
-        /// <summary>
         /// Executes an action within the proper script context, managing VM state and OBJECT_SELF.
         /// </summary>
         /// <param name="action">The action to execute</param>

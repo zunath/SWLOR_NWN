@@ -76,6 +76,9 @@ namespace SWLOR.Component.Inventory.Service
                 }
                 _keyItemsByTypeId[(int)keyItem] = keyItem;
             }
+
+            Console.WriteLine($"Loaded {_keyItemCache.AllItems.Count} Key Items");
+            Console.WriteLine($"Loaded {_categoryCache.AllItems.Count} Key Item Categories");
         }
 
         /// <summary>

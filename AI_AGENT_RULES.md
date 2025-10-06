@@ -97,11 +97,15 @@ using SWLOR.Component.Perk.Service; // CORRECT!
 - **RULE**: Event handlers MUST be registered as singletons
 - **RULE**: Builder pattern classes MAY be registered as transient
 - **RULE**: Use dependency injection for all service dependencies
+- **RULE**: Prefer using `RegisterInterfaceImplementations` in DI registrations when many implementations of a given interface must be added to the container
 - **CORRECT PATTERN**:
 ```csharp
 services.AddSingleton<IPerkService, PerkService>();
 services.AddSingleton<PerkEventHandler>();
 services.AddTransient<IPerkBuilder, PerkBuilder>(); // Builder pattern
+
+// When registering multiple implementations of an interface:
+services.RegisterInterfaceImplementations<ISomeInterface>(ServiceLifetime.Singleton);
 ```
 
 ### 6. Event Handler Separation

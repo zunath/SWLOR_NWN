@@ -34,21 +34,10 @@ namespace SWLOR.Component.StatusEffect.Service
             _event = eventAggregator;
             _statusEffectFactory = statusEffectFactory;
             _messagingService = messagingService;
-
-            SubscribeEvents();
         }
 
-        private void SubscribeEvents()
-        {
-            _event.Subscribe<OnApplyStatusEffect>(OnApplyNWNStatusEffect);
-            _event.Subscribe<OnRemoveStatusEffect>(OnRemoveNWNStatusEffect);
-            _event.Subscribe<OnStatusEffectInterval>(OnNWNStatusEffectInterval);
-
-            _event.Subscribe<OnModuleEnter>(OnPlayerEnter);
-            _event.Subscribe<OnDealtDamage>(OnDealtDamage);
-        }
-
-        private void OnPlayerEnter(OnModuleEnter evt)
+        /// <inheritdoc/>
+        public void OnModuleEnter()
         {
             var player = GetEnteringObject();
             ApplyNWNEffect(player);
@@ -70,20 +59,23 @@ namespace SWLOR.Component.StatusEffect.Service
             ApplyEffectToObject(DurationType.Permanent, effect, creature);
         }
 
-        private void OnApplyNWNStatusEffect(OnApplyStatusEffect evt)
+        /// <inheritdoc/>
+        public void OnApplyNWNStatusEffect()
         {
             var creature = OBJECT_SELF;
             _creatureEffects[creature] = new CreatureStatusEffect();
         }
 
-        private void OnRemoveNWNStatusEffect(OnRemoveStatusEffect evt)
+        /// <inheritdoc/>
+        public void OnRemoveNWNStatusEffect()
         {
             var creature = OBJECT_SELF;
             if (_creatureEffects.ContainsKey(creature))
                 _creatureEffects.Remove(creature);
         }
 
-        private void OnNWNStatusEffectInterval(OnStatusEffectInterval evt)
+        /// <inheritdoc/>
+        public void OnNWNStatusEffectInterval()
         {
             var creature = OBJECT_SELF;
             if (!_creatureEffects.ContainsKey(creature))

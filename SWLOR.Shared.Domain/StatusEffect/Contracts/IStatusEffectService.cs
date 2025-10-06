@@ -10,6 +10,26 @@ namespace SWLOR.Shared.Domain.StatusEffect.Contracts;
 public interface IStatusEffectService
 {
     /// <summary>
+    /// Handles the module enter event, applying necessary NWN status effects to entering creatures.
+    /// </summary>
+    void OnModuleEnter();
+
+    /// <summary>
+    /// Handles the application of NWN status effects, initializing creature status effect tracking.
+    /// </summary>
+    void OnApplyNWNStatusEffect();
+
+    /// <summary>
+    /// Handles the removal of NWN status effects, cleaning up creature status effect tracking.
+    /// </summary>
+    void OnRemoveNWNStatusEffect();
+
+    /// <summary>
+    /// Handles the interval tick for NWN status effects, processing tick-based status effects.
+    /// </summary>
+    void OnNWNStatusEffectInterval();
+
+    /// <summary>
     /// Gets the combined stat group for a creature, including all active status effect modifiers.
     /// </summary>
     /// <param name="creature">The creature object ID to get stats for</param>

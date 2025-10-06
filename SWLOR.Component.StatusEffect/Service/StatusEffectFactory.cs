@@ -1,4 +1,3 @@
-using System.Reflection;
 using SWLOR.Component.StatusEffect.Contracts;
 using SWLOR.Shared.Domain.StatusEffect.Contracts;
 using SWLOR.Shared.Domain.StatusEffect.Enums;
@@ -23,20 +22,29 @@ namespace SWLOR.Component.StatusEffect.Service
         /// <summary>
         /// Automatically discovers and registers all status effect implementations using reflection.
         /// Uses the IStatusEffect.Type property to determine the mapping.
+        /// Searches across ALL loaded assemblies to find status effects from any component.
         /// </summary>
         private void DiscoverAndRegisterStatusEffects()
         {
-            var assembly = Assembly.GetExecutingAssembly();
-            var statusEffectTypes = assembly.GetTypes()
+            var statusEffectTypes = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(assembly => assembly.GetTypes())
                 .Where(type => type.IsClass && !type.IsAbstract && typeof(IStatusEffect).IsAssignableFrom(type));
 
             foreach (var statusEffectType in statusEffectTypes)
             {
-                // Create a temporary instance to get the Type property
-                var tempInstance = (IStatusEffect)_serviceProvider.GetService(statusEffectType);
-                if (tempInstance != null)
+                try
                 {
-                    _statusEffectTypes[tempInstance.Type] = statusEffectType;
+                    // Get an instance from the service provider (all status effects should be registered)
+                    var tempInstance = (IStatusEffect)_serviceProvider.GetService(statusEffectType);
+                    if (tempInstance != null)
+                    {
+                        _statusEffectTypes[tempInstance.Type] = statusEffectType;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Log the error but continue with other status effects
+                    Console.WriteLine($"Failed to create instance of status effect type {statusEffectType.Name}: {ex.Message}");
                 }
             }
         }
@@ -52,6 +60,7 @@ namespace SWLOR.Component.StatusEffect.Service
             if (!_statusEffectTypes.TryGetValue(type, out var statusEffectType))
                 throw new ArgumentException($"Status effect type '{type}' is not registered");
 
+            // All status effects are registered in DI, so use service provider
             return (IStatusEffect)_serviceProvider.GetService(statusEffectType);
         }
 

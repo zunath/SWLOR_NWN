@@ -133,15 +133,6 @@ namespace SWLOR.App.Server
             services.AddSpaceServices();
             services.AddStatusEffectServices();
             services.AddWorldServices();
-
-            // Game-Specific Services
-            AddGameSpecificServices(services);
         }
-
-        private static void AddGameSpecificServices(IServiceCollection services)
-        {
-            // Game-specific services can be added here in the future
-        }
-
     }
 }

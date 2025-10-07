@@ -265,14 +265,15 @@ namespace SWLOR.Component.World.Service
 
                 if (now > resourceDespawn.DespawnTime)
                 {
-                    // Execute the despawn script and remove the resource
+                    // Execute the despawn script for cleanup (props, etc.)
                     _eventAggregator.Publish(new OnSpawnDespawn(), resourceDespawn.ResourceObject);
-                    SetPlotFlag(resourceDespawn.ResourceObject, false);
-                    ApplyEffectToObject(DurationType.Instant, EffectDeath(), resourceDespawn.ResourceObject);
 
-                    // Remove from active spawns and queue a respawn
+                    // Remove from active spawns
                     var spawnDetail = _spawns[resourceDespawn.SpawnDetailId];
                     RemoveActiveSpawn(spawnDetail.Area, resourceDespawn.ResourceObject);
+
+                    // Destroy the resource directly (avoids triggering death events which would queue duplicate respawns)
+                    DestroyObject(resourceDespawn.ResourceObject);
 
                     // Queue for respawn
                     var respawnTime = now.AddMinutes(spawnDetail.RespawnDelayMinutes);

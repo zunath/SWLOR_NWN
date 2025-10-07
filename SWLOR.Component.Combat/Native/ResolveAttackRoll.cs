@@ -40,18 +40,10 @@ namespace SWLOR.Component.Combat.Native
         private const int AttackResultCriticalHit = 3;
         private const int AttackResultMiss = 4;
 
-        // Combat mode constants
-        private const int PowerAttackMode = 2;
-        private const int ImprovedPowerAttackMode = 3;
-
         // Modifier constants
-        private const int CircumstanceBonus = 5;
         private const int WeaponFocusBonus = 5;
         private const int SuperiorWeaponFocusBonus = 5;
         private const int PointBlankShotBonus = 5;
-        private const int BackstabBonus = 30;
-        private const int PowerAttackPenalty = -5;
-        private const int ImprovedPowerAttackPenalty = -10;
         private const int CloseRangePenalty = -20;
         private const int LongRangePenalty = -20;
         private const int MediumRangePenalty = -10;
@@ -66,22 +58,9 @@ namespace SWLOR.Component.Combat.Native
         private const float MediumRange = 30.0f;
         private const float LongRange = 40.0f;
 
-        // Backstab constants
-        private const float BackstabAngleThreshold = 0.5f;
-
-        // Critical constants
-        private const int ImprovedCriticalBonus = 5;
-        private const int PrecisionAim1Bonus = 2;
-        private const int PrecisionAim2Bonus = 4;
-        private const int CrushingStyleBonus = 15;
-        private const int CrushingMasteryBonus = 15;
-
         // Deflection constants
         private const int SaberDeflectChance = 5;
         private const int ShieldDeflectChance = 10;
-
-        // NPC object ID constant
-        private const uint NpcActionTargetId = 2130706432;
 
         // Default values
         private const int DefaultMissedBy = 1;
@@ -90,7 +69,6 @@ namespace SWLOR.Component.Combat.Native
 
         // Optimized weapon feat lookups
         private static readonly Dictionary<BaseItemType, FeatType> _weaponFocusLookup = CreateWeaponFocusLookup();
-        private static readonly Dictionary<BaseItemType, FeatType> _improvedCriticalLookup = CreateImprovedCriticalLookup();
 
         private static Dictionary<BaseItemType, FeatType> CreateWeaponFocusLookup()
         {
@@ -120,33 +98,6 @@ namespace SWLOR.Component.Combat.Native
             return lookup;
         }
 
-        private static Dictionary<BaseItemType, FeatType> CreateImprovedCriticalLookup()
-        {
-            var lookup = new Dictionary<BaseItemType, FeatType>();
-
-            void AddItems(IEnumerable<BaseItemType> items, FeatType feat)
-            {
-                foreach (var item in items)
-                    lookup[item] = feat;
-            }
-
-            lookup[BaseItemType.Gloves] = FeatType.ImprovedCritical_UnarmedStrike;
-            AddItems(_itemService.CreatureBaseItemTypes, FeatType.ImprovedCritical_Creature);
-            AddItems(_itemService.VibrobladeBaseItemTypes, FeatType.ImprovedCriticalVibroblades);
-            AddItems(_itemService.FinesseVibrobladeBaseItemTypes, FeatType.ImprovedCriticalFinesseVibroblades);
-            AddItems(_itemService.LightsaberBaseItemTypes, FeatType.ImprovedCriticalLightsabers);
-            AddItems(_itemService.HeavyVibrobladeBaseItemTypes, FeatType.ImprovedCriticalHeavyVibroblades);
-            AddItems(_itemService.PolearmBaseItemTypes, FeatType.ImprovedCriticalPolearms);
-            AddItems(_itemService.TwinBladeBaseItemTypes, FeatType.ImprovedCriticalTwinBlades);
-            AddItems(_itemService.SaberstaffBaseItemTypes, FeatType.ImprovedCriticalSaberstaffs);
-            AddItems(_itemService.KatarBaseItemTypes, FeatType.ImprovedCriticalKatars);
-            AddItems(_itemService.StaffBaseItemTypes, FeatType.ImprovedCritical_Staff);
-            AddItems(_itemService.PistolBaseItemTypes, FeatType.ImprovedCriticalPistol);
-            AddItems(_itemService.ThrowingWeaponBaseItemTypes, FeatType.ImprovedCriticalThrowingWeapons);
-            AddItems(_itemService.RifleBaseItemTypes, FeatType.ImprovedCriticalRifles);
-
-            return lookup;
-        }
         internal delegate void ResolveAttackRollHook(void* thisPtr, void* pTarget);
 
         // ReSharper disable once NotAccessedField.Local
@@ -264,7 +215,7 @@ namespace SWLOR.Component.Combat.Native
                     // Critical
                     if (criticalRoll <= criticalRate)
                     {
-                        _logger.Write<AttackLogGroup>($"Critical hit");
+                        _logger.Write<AttackLogGroup>("Critical hit");
 
                         // Critical Hit - populate variables for feedback
                         pAttackData.m_bCriticalThreat = 1;
@@ -272,7 +223,7 @@ namespace SWLOR.Component.Combat.Native
 
                         if (GetIsImmune(defender, ImmunityType.CriticalHit, attacker))
                         {
-                            _logger.Write<AttackLogGroup>($"Immune to critical hits");
+                            _logger.Write<AttackLogGroup>("Immune to critical hits");
                             // Immune!
                             var defenderName = GetName(defender);
                             SendMessageToPC(attacker, $"{defenderName} is immune to critical hits!");
@@ -280,14 +231,14 @@ namespace SWLOR.Component.Combat.Native
                         }
                         else
                         {
-                            _logger.Write<AttackLogGroup>($"Not immune to critical hits - dealing crit damage");
+                            _logger.Write<AttackLogGroup>("Not immune to critical hits - dealing crit damage");
                             pAttackData.m_nAttackResult = AttackResultCriticalHit;
                         }
                     }
                     // Regular Hit
                     else
                     {
-                        _logger.Write<AttackLogGroup>($"Regular hit - attack result 1");
+                        _logger.Write<AttackLogGroup>("Regular hit - attack result 1");
                         pAttackData.m_nAttackResult = AttackResultRegularHit;
                     }
                 }
@@ -296,23 +247,23 @@ namespace SWLOR.Component.Combat.Native
                 {
                     if (deflected)
                     {
-                        _logger.Write<AttackLogGroup>($"Deflected - setting attack result to 2");
+                        _logger.Write<AttackLogGroup>("Deflected - setting attack result to 2");
                         pAttackData.m_nAttackResult = AttackResultDeflect;
                     }
                     else
                     {
-                        _logger.Write<AttackLogGroup>($"Miss - setting attack result to 4, missed by 0");
+                        _logger.Write<AttackLogGroup>("Miss - setting attack result to 4, missed by 0");
                         pAttackData.m_nAttackResult = AttackResultMiss;
                     }
                     pAttackData.m_nMissedBy = DefaultMissedBy;
                 }
 
-                _logger.Write<AttackLogGroup>($"Resolving NWN defensive effects");
+                _logger.Write<AttackLogGroup>("Resolving NWN defensive effects");
                 // Resolve any defensive effects (like concealment).  Do this after all the above so that the attack data is 
                 // accurate.
                 pAttacker.ResolveDefensiveEffects(pDefender, isHit ? 1 : 0);
 
-                _logger.Write<AttackLogGroup>($"Building combat log message");
+                _logger.Write<AttackLogGroup>("Building combat log message");
                 var message = _combatService.BuildCombatLogMessage(
                     attacker,
                     defender,
@@ -322,11 +273,11 @@ namespace SWLOR.Component.Combat.Native
                 SendMessageToPC(attacker, message);
                 SendMessageToPC(defender, message);
 
-                _logger.Write<AttackLogGroup>($"Setting pAttackData results");
+                _logger.Write<AttackLogGroup>("Setting pAttackData results");
                 pAttackData.m_nToHitMod = DefaultToHitMod;
                 pAttackData.m_nToHitRoll = DefaultToHitRoll;
 
-                _logger.Write<AttackLogGroup>($"Finished ResolveAttackRoll");
+                _logger.Write<AttackLogGroup>("Finished ResolveAttackRoll");
 
                 _profilerPlugin.PopPerfScope();
             });
@@ -349,22 +300,6 @@ namespace SWLOR.Component.Combat.Native
             return false;
         }
 
-        private static int HasImprovedCritical(CNWSCreature attacker, CNWSItem weapon)
-        {
-            if (weapon == null)
-            {
-                return attacker.m_pStats.HasFeat((ushort)FeatType.ImprovedCritical_UnarmedStrike);
-            }
-
-            var baseItemType = (BaseItemType)weapon.m_nBaseItem;
-            if (_improvedCriticalLookup.TryGetValue(baseItemType, out var feat))
-            {
-                return attacker.m_pStats.HasFeat((ushort)feat);
-            }
-
-            _logger.Write<AttackLogGroup>("No improved critical feat found.");
-            return 0;
-        }
 
         private static bool HasSuperiorWeaponFocus(uint attacker, uint weapon)
         {
@@ -403,7 +338,7 @@ namespace SWLOR.Component.Combat.Native
             {
                 if (GetHasFeat(FeatType.PointBlankShot, attacker))
                     return PointBlankShotBonus;
-                else if (isValidWeapon)
+                if (isValidWeapon)
                     return CloseRangePenalty;
             }
             // Long range (over 40.0)
@@ -411,16 +346,14 @@ namespace SWLOR.Component.Combat.Native
             {
                 if (isValidWeapon && !_itemService.RifleBaseItemTypes.Contains(baseItemType))
                     return LongRangePenalty;
-                else
-                    return MediumRangePenalty;
+                return MediumRangePenalty;
             }
             // Medium range (30.0 - 40.0)
             else if (range > MediumRange)
             {
                 if (isValidWeapon && !_itemService.RifleBaseItemTypes.Contains(baseItemType))
                     return MediumRangePenalty;
-                else
-                    return ShortRangePenalty;
+                return ShortRangePenalty;
             }
             // Short range (20.0 - 30.0)
             else if (isValidWeapon && range > ShortRange && !_itemService.RifleBaseItemTypes.Contains(baseItemType))

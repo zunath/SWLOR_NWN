@@ -38,7 +38,7 @@ namespace SWLOR.Shared.Domain.Ability.ValueObjects
         {
             if (GetIsDM(player)) return;
 
-            StatService.ReduceStamina(player, RequiredSTM);
+            CharacterResourceService.ReduceStamina(player, RequiredSTM);
         }
     }
 }

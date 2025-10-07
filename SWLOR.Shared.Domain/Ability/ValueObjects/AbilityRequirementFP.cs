@@ -38,7 +38,7 @@ namespace SWLOR.Shared.Domain.Ability.ValueObjects
         {
             if (GetIsDM(player)) return;
 
-            StatService.ReduceFP(player, RequiredFP);
+            CharacterResourceService.ReduceFP(player, RequiredFP);
         }
     }
 }

@@ -89,10 +89,10 @@ namespace SWLOR.Component.Ability.Definitions.Force
             if (CharacterResourceService.GetCurrentFP(activator) < 2 + (tier))
             {
                 var darkBargain = 7 * ((2 + tier - CharacterResourceService.GetCurrentFP(activator)));
-                statService.ReduceFP(activator, CharacterResourceService.GetCurrentFP(activator));
+                CharacterResourceService.ReduceFP(activator, CharacterResourceService.GetCurrentFP(activator));
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(darkBargain), activator);
             }
-            else { statService.ReduceFP(activator, 2 + tier); }
+            else { CharacterResourceService.ReduceFP(activator, 2 + tier); }
 
             enmityService.ModifyEnmity(activator, target, 150 + damage);
             combatPointService.AddCombatPoint(activator, target, SkillType.Force, 3);

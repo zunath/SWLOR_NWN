@@ -44,14 +44,6 @@ namespace SWLOR.Shared.Domain.Combat.Contracts
         /// <param name="amount">The amount of FP to restore.</param>
         /// <param name="dbPlayer">The player entity to modify. If this is not set, a call to the DB will be made. Leave null for NPCs.</param>
 
-        /// <summary>
-        /// Reduces a creature's FP by a specified amount.
-        /// If creature would fall below 0 FP, they will be reduced to 0 instead.
-        /// </summary>
-        /// <param name="creature">The creature whose FP will be reduced.</param>
-        /// <param name="reduceBy">The amount of FP to reduce by.</param>
-        /// <param name="dbPlayer">The player entity to modify. If this is not set, a DB call will be made. Leave null for NPCs.</param>
-        void ReduceFP(uint creature, int reduceBy, Player dbPlayer = null);
 
         /// <summary>
         /// Restores an entity's Stamina by a specified amount.
@@ -60,14 +52,6 @@ namespace SWLOR.Shared.Domain.Combat.Contracts
         /// <param name="amount">The amount of Stamina to restore.</param>
         /// <param name="dbPlayer">The player entity to modify. If this is not set, a DB call will be made. Leave null for NPCs.</param>
 
-        /// <summary>
-        /// Reduces an entity's Stamina by a specified amount.
-        /// If creature would fall below 0 stamina, they will be reduced to 0 instead.
-        /// </summary>
-        /// <param name="creature">The creature to modify.</param>
-        /// <param name="reduceBy">The amount of Stamina to reduce by.</param>
-        /// <param name="dbPlayer">The entity to modify</param>
-        void ReduceStamina(uint creature, int reduceBy, Player dbPlayer = null);
 
         /// <summary>
         /// After a player's status effects are reassociated,

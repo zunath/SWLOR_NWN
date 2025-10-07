@@ -105,10 +105,10 @@ namespace SWLOR.Component.Ability.Definitions.Force
             if (CharacterResourceService.GetCurrentFP(activator) < 1 + (level * 2))
             {
                 var darkBargain = 7 * ((5 + (level * 2) - CharacterResourceService.GetCurrentFP(activator)));
-                StatService.ReduceFP(activator, CharacterResourceService.GetCurrentFP(activator));
+                CharacterResourceService.ReduceFP(activator, CharacterResourceService.GetCurrentFP(activator));
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(darkBargain), activator);
             }
-            else { StatService.ReduceFP(activator, 5 + (level * 2)); }
+            else { CharacterResourceService.ReduceFP(activator, 5 + (level * 2)); }
         }
 
         private void ForceLightning1(IAbilityBuilder builder)

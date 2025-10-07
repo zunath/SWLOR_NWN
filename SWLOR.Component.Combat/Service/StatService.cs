@@ -26,52 +26,43 @@ namespace SWLOR.Component.Combat.Service
     {
         private readonly IDatabaseService _db;
         private readonly IServiceProvider _serviceProvider;
-        private readonly IEventAggregator _eventAggregator;
         private readonly ICreaturePluginService _creaturePlugin;
         private readonly IObjectPluginService _objectPlugin;
         private readonly ICharacterResourceService _characterResourceService;
         
         // Lazy-loaded services to break circular dependencies
-        private readonly Lazy<ISkillService> _skillService;
         private readonly Lazy<IItemService> _itemService;
         private readonly Lazy<IEnmityService> _enmityService;
         private readonly Lazy<IAbilityService> _abilityService;
         private readonly Lazy<IPerkService> _perkService;
-        private readonly Lazy<IStatGroupService> _statGroupService;
         private readonly Lazy<IStatCalculationService> _statCalculationService;
 
         public StatService(
             IDatabaseService db,
             IServiceProvider serviceProvider,
-            IEventAggregator eventAggregator,
             ICreaturePluginService creaturePlugin,
             IObjectPluginService objectPlugin,
             ICharacterResourceService characterResourceService)
         {
             _db = db;
             _serviceProvider = serviceProvider;
-            _eventAggregator = eventAggregator;
             _creaturePlugin = creaturePlugin;
             _objectPlugin = objectPlugin;
             _characterResourceService = characterResourceService;
             
             // Initialize lazy services
-            _skillService = new Lazy<ISkillService>(() => _serviceProvider.GetRequiredService<ISkillService>());
             _itemService = new Lazy<IItemService>(() => _serviceProvider.GetRequiredService<IItemService>());
             _enmityService = new Lazy<IEnmityService>(() => _serviceProvider.GetRequiredService<IEnmityService>());
             _abilityService = new Lazy<IAbilityService>(() => _serviceProvider.GetRequiredService<IAbilityService>());
             _perkService = new Lazy<IPerkService>(() => _serviceProvider.GetRequiredService<IPerkService>());
-            _statGroupService = new Lazy<IStatGroupService>(() => _serviceProvider.GetRequiredService<IStatGroupService>());
             _statCalculationService = new Lazy<IStatCalculationService>(() => _serviceProvider.GetRequiredService<IStatCalculationService>());
         }
         
         // Lazy-loaded services to break circular dependencies
-        private ISkillService SkillService => _skillService.Value;
         private IItemService ItemService => _itemService.Value;
         private IEnmityService EnmityService => _enmityService.Value;
         private IAbilityService AbilityService => _abilityService.Value;
         private IPerkService PerkService => _perkService.Value;
-        private IStatGroupService StatGroupService => _statGroupService.Value;
         private IStatCalculationService StatCalculationService => _statCalculationService.Value;
         
         public int BaseHP => 70;
@@ -101,85 +92,6 @@ namespace SWLOR.Component.Combat.Service
 
 
 
-
-        /// <summary>
-        /// Reduces a creature's FP by a specified amount.
-        /// If creature would fall below 0 FP, they will be reduced to 0 instead.
-        /// </summary>
-        /// <param name="creature">The creature whose FP will be reduced.</param>
-        /// <param name="reduceBy">The amount of FP to reduce by.</param>
-        /// <param name="dbPlayer">The player entity to modify. If this is not set, a DB call will be made. Leave null for NPCs.</param>
-        public void ReduceFP(uint creature, int reduceBy, Player dbPlayer = null)
-        {
-            if (reduceBy <= 0) return;
-
-            if (GetIsPC(creature) && !GetIsDM(creature))
-            {
-                var playerId = GetObjectUUID(creature);
-                if (dbPlayer == null)
-                {
-                    dbPlayer = _db.Get<Player>(playerId);
-                }
-
-                dbPlayer.FP -= reduceBy;
-
-                if (dbPlayer.FP < 0)
-                    dbPlayer.FP = 0;
-                
-                _db.Set(dbPlayer);
-            }
-            else
-            {
-                var fp = GetLocalInt(creature, "FP");
-                fp -= reduceBy;
-                if (fp < 0)
-                    fp = 0;
-                
-                SetLocalInt(creature, "FP", fp);
-            }
-
-            _eventAggregator.Publish(new OnPlayerFPAdjusted(), creature);
-        }
-
-
-        /// <summary>
-        /// Reduces an entity's Stamina by a specified amount.
-        /// If creature would fall below 0 stamina, they will be reduced to 0 instead.
-        /// </summary>
-        /// <param name="creature">The creature to modify.</param>
-        /// <param name="reduceBy">The amount of Stamina to reduce by.</param>
-        /// <param name="dbPlayer">The entity to modify</param>
-        public void ReduceStamina(uint creature, int reduceBy, Player dbPlayer = null)
-        {
-            if (reduceBy <= 0) return;
-
-            if (GetIsPC(creature) && !GetIsDM(creature))
-            {
-                var playerId = GetObjectUUID(creature);
-                if (dbPlayer == null)
-                {
-                    dbPlayer = _db.Get<Player>(playerId);
-                }
-
-                dbPlayer.Stamina -= reduceBy;
-
-                if (dbPlayer.Stamina < 0)
-                    dbPlayer.Stamina = 0;
-
-                _db.Set(dbPlayer);
-            }
-            else
-            {
-                var stamina = GetLocalInt(creature, "STAMINA");
-                stamina -= reduceBy;
-                if (stamina < 0)
-                    stamina = 0;
-
-                SetLocalInt(creature, "STAMINA", stamina);
-            }
-
-            _eventAggregator.Publish(new OnPlayerStaminaAdjusted(), creature);
-        }
 
         /// <summary>
         /// After a player's status effects are reassociated,

@@ -48,8 +48,8 @@ namespace SWLOR.Component.Ability.Definitions.Force
                 var willRestore = (willBonus / 2) * 4;
                 var duration = 90f + (willBonus * 60f);
                 var effect = EffectRegenerate(willRestore, 24f);
-                StatService.ReduceFP(activator, 10);
-                StatService.ReduceStamina(activator, willRestore);
+                CharacterResourceService.ReduceFP(activator, 10);
+                CharacterResourceService.ReduceStamina(activator, willRestore);
                 CharacterResourceService.RestoreFP(target, willRestore);
                 CharacterResourceService.RestoreSTM(target, willRestore);
                 targetBonus = willBonus * 4;

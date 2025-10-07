@@ -272,7 +272,8 @@ using SWLOR.Shared.Events.Attributes;
 ```
 
 ### 10. Using Statements Rules
-- **RULE**: Add using statements for ALL types used in the file
+- **RULE**: Add using statements for ALL types used in the file (interfaces, classes, enums, etc.)
+- **RULE**: ALWAYS check for compilation errors and add missing using statements immediately
 - **RULE**: Place using statements at the top of the file, before namespace declaration
 - **RULE**: Group using statements in this order:
   1. System namespaces (e.g., `using System;`, `using System.Collections.Generic;`)
@@ -290,6 +291,12 @@ public class PerkService
     {
         return new List<PerkType>();
     }
+}
+
+// ❌ FORBIDDEN: Missing interface using statement (COMPILATION ERROR)
+public class PlayerStatService : IPlayerStatService // IPlayerStatService needs using SWLOR.Component.Character.Contracts;
+{
+    // This will cause: "The type or namespace name 'IPlayerStatService' could not be found"
 }
 
 // ❌ FORBIDDEN: Using statements in wrong order

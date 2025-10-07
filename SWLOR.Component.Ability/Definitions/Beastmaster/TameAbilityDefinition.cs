@@ -6,6 +6,8 @@ using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
 using SWLOR.Shared.Domain.Associate.Contracts;
 using SWLOR.Shared.Domain.Associate.Enums;
+using SWLOR.Shared.Domain.Character.Contracts;
+using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Entities;
@@ -31,6 +33,7 @@ namespace SWLOR.Component.Ability.Definitions.Beastmaster
         private IDatabaseService DB => _serviceProvider.GetRequiredService<IDatabaseService>();
         private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
         private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+        private IStatGroupService StatGroupService => _serviceProvider.GetRequiredService<IStatGroupService>();
         private IBeastMasteryService BeastMastery => _serviceProvider.GetRequiredService<IBeastMasteryService>();
         private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
         private IBeastRepository BeastRepository => _serviceProvider.GetRequiredService<IBeastRepository>();
@@ -85,11 +88,11 @@ namespace SWLOR.Component.Ability.Definitions.Beastmaster
                     }
 
                     var tameLevel = PerkService.GetPerkLevel(activator, PerkType.Tame) * 10;
-                    var npcStats = StatService.GetNPCStats(target);
+                    var statGroup = StatGroupService.LoadStats(target);
 
-                    if (tameLevel < npcStats.Level)
+                    if (tameLevel < statGroup.GetStat(StatType.Level))
                     {
-                        return $"You may only tame creatures between levels 0-{tameLevel}. Your target is level {npcStats.Level}.";
+                        return $"You may only tame creatures between levels 0-{tameLevel}. Your target is level {statGroup.GetStat(StatType.Level)}.";
                     }
 
                     var maxBeasts = 1 + PerkService.GetPerkLevel(activator, PerkType.Stabling);
@@ -107,9 +110,9 @@ namespace SWLOR.Component.Ability.Definitions.Beastmaster
                     var dbPlayer = DB.Get<Player>(playerId);
                     var type = BeastMastery.GetBeastType(target);
                     var skill = dbPlayer.Skills[SkillType.BeastMastery].Rank;
-                    var npcStats = StatService.GetNPCStats(target);
+                    var statGroup = StatGroupService.LoadStats(target);
                     var socialMod = GetAbilityModifier(AbilityType.Social, activator);
-                    var chance = 40 + (skill - npcStats.Level) * 3 + socialMod * 4;
+                    var chance = 40 + (skill - statGroup.GetStat(StatType.Level)) * 3 + socialMod * 4;
 
                     if (chance > 95)
                         chance = 95;

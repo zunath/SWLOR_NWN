@@ -10,6 +10,8 @@ using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Domain.Ability.Contracts;
+using SWLOR.Shared.Domain.Character.Contracts;
+using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Communication.Contracts;
 using SWLOR.Shared.Domain.Entities;
@@ -90,6 +92,7 @@ namespace SWLOR.Component.Space.Service
             _enmityService = new Lazy<IEnmityService>(() => _serviceProvider.GetRequiredService<IEnmityService>());
             _combatService = new Lazy<ICombatService>(() => _serviceProvider.GetRequiredService<ICombatService>());
             _perkService = new Lazy<IPerkService>(() => _serviceProvider.GetRequiredService<IPerkService>());
+            _statGroupService = new Lazy<IStatGroupService>(() => _serviceProvider.GetRequiredService<IStatGroupService>());
         }
 
         // Lazy-loaded services to break circular dependencies
@@ -103,6 +106,7 @@ namespace SWLOR.Component.Space.Service
         private readonly Lazy<IEnmityService> _enmityService;
         private readonly Lazy<ICombatService> _combatService;
         private readonly Lazy<IPerkService> _perkService;
+        private readonly Lazy<IStatGroupService> _statGroupService;
         
         private IAbilityService AbilityService => _abilityService.Value;
         private IStatService StatService => _statService.Value;
@@ -114,6 +118,7 @@ namespace SWLOR.Component.Space.Service
         private IEnmityService EnmityService => _enmityService.Value;
         private ICombatService CombatService => _combatService.Value;
         private IPerkService PerkService => _perkService.Value;
+        private IStatGroupService StatGroupService => _statGroupService.Value;
 
         public int MaxRegisteredShips => 10;
 
@@ -1534,8 +1539,8 @@ namespace SWLOR.Component.Space.Service
             }
             else
             {
-                var npcStats = StatService.GetNPCStats(attacker);
-                level = npcStats.Level;
+                var statGroup = StatGroupService.LoadStats(attacker);
+                level = statGroup.GetStat(StatType.Level);
             }
 
             return stat * 3 + level + bonus;
@@ -1562,8 +1567,8 @@ namespace SWLOR.Component.Space.Service
             }
             else
             {
-                var npcStats = StatService.GetNPCStats(defender);
-                level = npcStats.Level;
+                var statGroup = StatGroupService.LoadStats(defender);
+                level = statGroup.GetStat(StatType.Level);
             }
 
             return stat * 3 + level + bonus;
@@ -1590,8 +1595,8 @@ namespace SWLOR.Component.Space.Service
             }
             else
             {
-                var npcStats = StatService.GetNPCStats(attacker);
-                level = npcStats.Level;
+                var statGroup = StatGroupService.LoadStats(attacker);
+                level = statGroup.GetStat(StatType.Level);
             }
 
             return 8 + (2 * level) + stat + attackBonus;
@@ -1618,8 +1623,8 @@ namespace SWLOR.Component.Space.Service
             }
             else
             {
-                var npcStats = StatService.GetNPCStats(defender);
-                level = npcStats.Level;
+                var statGroup = StatGroupService.LoadStats(defender);
+                level = statGroup.GetStat(StatType.Level);
             }
 
             return (int)(8 + (stat * 1.5f) + level + defenseBonus);

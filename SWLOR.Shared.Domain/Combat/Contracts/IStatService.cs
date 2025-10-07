@@ -237,13 +237,6 @@ namespace SWLOR.Shared.Domain.Combat.Contracts
         int GetStatValueNative(CNWSCreature creature, AbilityType statType);
 
         /// <summary>
-        /// Retrieves the stats of an NPC. This is determined by several item properties located on the NPC's skin.
-        /// If no skin is equipped or the item properties do not exist, an empty NPCStats object will be returned.
-        /// </summary>
-        /// <returns>An NPCStats object.</returns>
-        NPCStats GetNPCStats(uint npc);
-
-        /// <summary>
         /// Applies the total number of attacks per round to a player.
         /// If a valid weapon is passed in the associated mastery perk will also be checked.
         /// </summary>

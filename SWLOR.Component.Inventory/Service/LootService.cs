@@ -4,6 +4,8 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Domain.Associate.Contracts;
 using SWLOR.Shared.Domain.Associate.Enums;
+using SWLOR.Shared.Domain.Character.Contracts;
+using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Inventory.ValueObjects;
@@ -33,6 +35,7 @@ namespace SWLOR.Component.Inventory.Service
             _random = new Lazy<IRandomService>(() => _serviceProvider.GetRequiredService<IRandomService>());
             _perkService = new Lazy<IPerkService>(() => _serviceProvider.GetRequiredService<IPerkService>());
             _statService = new Lazy<IStatService>(() => _serviceProvider.GetRequiredService<IStatService>());
+            _statGroupService = new Lazy<IStatGroupService>(() => _serviceProvider.GetRequiredService<IStatGroupService>());
             _beastMasteryService = new Lazy<IBeastMasteryService>(() => _serviceProvider.GetRequiredService<IBeastMasteryService>());
             _itemService = new Lazy<IItemService>(() => _serviceProvider.GetRequiredService<IItemService>());
         }
@@ -41,12 +44,14 @@ namespace SWLOR.Component.Inventory.Service
         private readonly Lazy<IRandomService> _random;
         private readonly Lazy<IPerkService> _perkService;
         private readonly Lazy<IStatService> _statService;
+        private readonly Lazy<IStatGroupService> _statGroupService;
         private readonly Lazy<IBeastMasteryService> _beastMasteryService;
         private readonly Lazy<IItemService> _itemService;
         
         private IRandomService Random => _random.Value;
         private IPerkService PerkService => _perkService.Value;
         private IStatService StatService => _statService.Value;
+        private IStatGroupService StatGroupService => _statGroupService.Value;
         private IBeastMasteryService BeastMasteryService => _beastMasteryService.Value;
         private IItemService ItemService => _itemService.Value;
 
@@ -337,13 +342,13 @@ namespace SWLOR.Component.Inventory.Service
             var facing = GetFacing(self);
             var lootPosition = Vector3(position.X, position.Y, position.Z - 0.11f);
             var spawnLocation = Location(area, lootPosition, facing);
-            var npcStats = StatService.GetNPCStats(self);
+            var statGroup = StatGroupService.LoadStats(self);
 
             var container = CreateObject(ObjectType.Placeable, "corpse", spawnLocation);
             SetLocalObject(container, CorpseBodyVariable, self);
             SetName(container, $"{GetName(self)}'s Corpse");
             SetLocalInt(container, BeastMasteryService.BeastTypeVariable, GetLocalInt(self, BeastMasteryService.BeastTypeVariable));
-            SetLocalInt(container, BeastMasteryService.BeastLevelVariable, npcStats.Level);
+            SetLocalInt(container, BeastMasteryService.BeastLevelVariable, statGroup.GetStat(StatType.Level));
 
             AssignCommand(container, () =>
             {

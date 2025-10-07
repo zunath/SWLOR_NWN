@@ -4,6 +4,7 @@ using SWLOR.NWN.API.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Associate.Contracts;
+using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Combat.Enums;
@@ -44,6 +45,7 @@ namespace SWLOR.Component.Combat.Service
             _skillService = new Lazy<ISkillService>(() => _serviceProvider.GetRequiredService<ISkillService>());
             _itemService = new Lazy<IItemService>(() => _serviceProvider.GetRequiredService<IItemService>());
             _statService = new Lazy<IStatService>(() => _serviceProvider.GetRequiredService<IStatService>());
+            _statGroupService = new Lazy<IStatGroupService>(() => _serviceProvider.GetRequiredService<IStatGroupService>());
             _beastMastery = new Lazy<IBeastMasteryService>(() => _serviceProvider.GetRequiredService<IBeastMasteryService>());
             _spaceService = new Lazy<ISpaceService>(() => _serviceProvider.GetRequiredService<ISpaceService>());
         }
@@ -52,12 +54,14 @@ namespace SWLOR.Component.Combat.Service
         private readonly Lazy<ISkillService> _skillService;
         private readonly Lazy<IItemService> _itemService;
         private readonly Lazy<IStatService> _statService;
+        private readonly Lazy<IStatGroupService> _statGroupService;
         private readonly Lazy<IBeastMasteryService> _beastMastery;
         private readonly Lazy<ISpaceService> _spaceService;
         
         private ISkillService SkillService => _skillService.Value;
         private IItemService ItemService => _itemService.Value;
         private IStatService StatService => _statService.Value;
+        private IStatGroupService StatGroupService => _statGroupService.Value;
         private IBeastMasteryService BeastMastery => _beastMastery.Value;
         private ISpaceService SpaceService => _spaceService.Value;
 
@@ -133,8 +137,8 @@ namespace SWLOR.Component.Combat.Service
                 var combatPoints = _creatureCombatPointTracker.ContainsKey(npc) ? _creatureCombatPointTracker[npc] : null;
                 if (combatPoints == null) return;
 
-                var npcStats = StatService.GetNPCStats(npc);
-                var npcLevel = npcStats.Level;
+                var statGroup = StatGroupService.LoadStats(npc);
+                var npcLevel = statGroup.GetStat(StatType.Level);
 
                 foreach (var (player, cpList) in combatPoints)
                 {
@@ -263,8 +267,8 @@ namespace SWLOR.Component.Combat.Service
 
             // We track the level of the last creature to add a combat point for two minutes.
             // During this time period, various skills can continue to gain XP even after battle.
-            var npcStats = StatService.GetNPCStats(creature);
-            var level = npcStats.Level;
+            var statGroup = StatGroupService.LoadStats(creature);
+            var level = statGroup.GetStat(StatType.Level);
             UpdateLastCreatureLevel(player, level);
         }
 

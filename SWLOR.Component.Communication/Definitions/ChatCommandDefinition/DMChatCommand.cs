@@ -9,6 +9,7 @@ using SWLOR.Shared.Domain.Ability.Contracts;
 using SWLOR.Shared.Domain.Admin.Enums;
 using SWLOR.Shared.Domain.Associate.Contracts;
 using SWLOR.Shared.Domain.Character.Contracts;
+using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Communication.Contracts;
 using SWLOR.Shared.Domain.Communication.ValueObjects;
@@ -31,6 +32,7 @@ namespace SWLOR.Component.Communication.Definitions.ChatCommandDefinition
         private readonly IDatabaseService _db;
         private readonly IAbilityService _abilityService;
         private readonly IStatService _statService;
+        private readonly IStatGroupService _statGroupService;
         private readonly IBeastMasteryService _beastMastery;
         private readonly IFactionService _faction;
         private readonly ISpaceService _space;
@@ -41,10 +43,11 @@ namespace SWLOR.Component.Communication.Definitions.ChatCommandDefinition
         
 
         public DMChatCommand(
-            IGuiService guiService, 
-            IDatabaseService db, 
-            IAbilityService abilityService, 
-            IStatService statService, 
+            IGuiService guiService,
+            IDatabaseService db,
+            IAbilityService abilityService,
+            IStatService statService,
+            IStatGroupService statGroupService,
             IBeastMasteryService beastMastery,
             IFactionService faction,
             ISpaceService space,
@@ -57,6 +60,7 @@ namespace SWLOR.Component.Communication.Definitions.ChatCommandDefinition
             _db = db;
             _abilityService = abilityService;
             _statService = statService;
+            _statGroupService = statGroupService;
             _beastMastery = beastMastery;
             _faction = faction;
             _space = space;
@@ -1059,8 +1063,8 @@ namespace SWLOR.Component.Communication.Definitions.ChatCommandDefinition
                     {
                         if (_space.GetShipStatus(target) != null)
                         {
-                            var npcStats = _statService.GetNPCStats(target);
-                            var level = npcStats.Level;
+                            var statGroup = _statGroupService.LoadStats(target);
+                            var level = statGroup.GetStat(StatType.Level);
                             if (GetIsPC(target) == true)
                             {
                                 var playerId = GetObjectUUID(target);

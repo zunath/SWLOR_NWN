@@ -6,6 +6,8 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Domain.Ability.Contracts;
 using SWLOR.Shared.Domain.Ability.Enums;
+using SWLOR.Shared.Domain.Character.Contracts;
+using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Combat.ValueObjects;
@@ -34,10 +36,11 @@ namespace SWLOR.Component.Combat.Service
         private readonly Lazy<IEnmityService> _enmityService;
         private readonly Lazy<IAbilityService> _abilityService;
         private readonly Lazy<IPerkService> _perkService;
+        private readonly Lazy<IStatGroupService> _statGroupService;
 
         public StatService(
-            IDatabaseService db, 
-            IServiceProvider serviceProvider, 
+            IDatabaseService db,
+            IServiceProvider serviceProvider,
             IEventAggregator eventAggregator,
             ICreaturePluginService creaturePlugin,
             IObjectPluginService objectPlugin)
@@ -54,6 +57,7 @@ namespace SWLOR.Component.Combat.Service
             _enmityService = new Lazy<IEnmityService>(() => _serviceProvider.GetRequiredService<IEnmityService>());
             _abilityService = new Lazy<IAbilityService>(() => _serviceProvider.GetRequiredService<IAbilityService>());
             _perkService = new Lazy<IPerkService>(() => _serviceProvider.GetRequiredService<IPerkService>());
+            _statGroupService = new Lazy<IStatGroupService>(() => _serviceProvider.GetRequiredService<IStatGroupService>());
         }
         
         // Lazy-loaded services to break circular dependencies
@@ -62,6 +66,7 @@ namespace SWLOR.Component.Combat.Service
         private IEnmityService EnmityService => _enmityService.Value;
         private IAbilityService AbilityService => _abilityService.Value;
         private IPerkService PerkService => _perkService.Value;
+        private IStatGroupService StatGroupService => _statGroupService.Value;
         
         public int BaseHP => 70;
         public int BaseFP => 10;
@@ -116,8 +121,8 @@ namespace SWLOR.Component.Combat.Service
             // NPCs
             else
             {
-                var npcStats = GetNPCStats(creature);
-                baseFP = npcStats.FP;
+                var statGroup = StatGroupService.LoadStats(creature);
+                baseFP = statGroup.GetStat(StatType.MaxFP);
             }
 
             return GetMaxFP(baseFP, modifier, foodBonus);
@@ -182,8 +187,8 @@ namespace SWLOR.Component.Combat.Service
             // NPCs
             else
             {
-                var npcStats = GetNPCStats(creature);
-                baseStamina = npcStats.Stamina;
+                var statGroup = StatGroupService.LoadStats(creature);
+                baseStamina = statGroup.GetStat(StatType.MaxSTM);
             }
 
             return GetMaxStamina(baseStamina, modifier, foodBonus);
@@ -742,61 +747,6 @@ namespace SWLOR.Component.Combat.Service
             if (stat > 128) stat -= 256;
 
             return stat;
-        }
-
-        /// <summary>
-        /// Retrieves the stats of an NPC. This is determined by several item properties located on the NPC's skin.
-        /// If no skin is equipped or the item properties do not exist, an empty NPCStats object will be returned.
-        /// </summary>
-        /// <returns>An NPCStats object.</returns>
-        public NPCStats GetNPCStats(uint npc)
-        {
-            var npcStats = new NPCStats();
-
-            var skin = GetItemInSlot(InventorySlotType.CreatureArmor, npc);
-            if (!GetIsObjectValid(skin))
-                return npcStats;
-
-            for (var ip = GetFirstItemProperty(skin); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(skin))
-            {
-                var type = GetItemPropertyType(ip);
-                if (type == ItemPropertyType.NPCLevel)
-                {
-                    npcStats.Level = GetItemPropertyCostTableValue(ip);
-                }
-                else if (type == ItemPropertyType.Defense)
-                {
-                    var damageType = (CombatDamageType)GetItemPropertySubType(ip);
-                    npcStats.Defenses[damageType] = GetItemPropertyCostTableValue(ip);
-                }
-                else if (type == ItemPropertyType.NPCSkill)
-                {
-                    var skillType = (SkillType)GetItemPropertySubType(ip);
-                    npcStats.Skills[skillType] = GetItemPropertyCostTableValue(ip);
-                }
-                else if (type == ItemPropertyType.Attack)
-                {
-                    npcStats.Attack = GetItemPropertyCostTableValue(ip);
-                }
-                else if (type == ItemPropertyType.ForceAttack)
-                {
-                    npcStats.ForceAttack = GetItemPropertyCostTableValue(ip);
-                }
-                else if (type == ItemPropertyType.Evasion)
-                {
-                    npcStats.Evasion = GetItemPropertyCostTableValue(ip);
-                }
-                else if (type == ItemPropertyType.Stamina)
-                {
-                    npcStats.Stamina = GetItemPropertyCostTableValue(ip);
-                }
-                else if (type == ItemPropertyType.FP)
-                {
-                    npcStats.FP = GetItemPropertyCostTableValue(ip);
-                }
-            }
-
-            return npcStats;
         }
 
         /// <summary>

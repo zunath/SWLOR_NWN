@@ -39,7 +39,7 @@ namespace SWLOR.Component.Combat.Feature
                 var fpRegen = _statService.CalculateFPRegen(player);
                 var stmRegen = _statService.CalculateSTMRegen(player);
 
-                if (hpRegen > 0 && GetCurrentHitPoints(player) < GetMaxHitPoints(player))
+                if (hpRegen > 0 && _characterResourceService.GetCurrentHP(player) < GetMaxHitPoints(player))
                 {
                     _characterResourceService.RestoreHP(player, hpRegen);
                     ApplyEffectToObject(DurationType.Instant, EffectHeal(hpRegen), player);

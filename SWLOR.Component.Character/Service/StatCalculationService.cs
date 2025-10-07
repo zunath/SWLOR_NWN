@@ -56,7 +56,7 @@ namespace SWLOR.Component.Character.Service
             const int BaseSTM = 10;
             var stats = _statGroupService.LoadStats(creature);
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
-            var modifier = stats.GetStat(StatType.Perception) * 10;
+            var modifier = stats.GetStat(StatType.Perception) * 5;
 
             return BaseSTM +
                    modifier +

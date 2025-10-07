@@ -257,7 +257,7 @@ namespace SWLOR.Component.Ability.Service
         /// <returns>An ability builder with the configured options</returns>
         public IAbilityBuilder RequirementStamina(int requiredSTM)
         {
-            var requirement = new AbilityRequirementStamina(requiredSTM, StatService);
+            var requirement = new AbilityRequirementStamina(requiredSTM, _serviceProvider);
             _activeAbility.Requirements.Add(requirement);
 
             return this;

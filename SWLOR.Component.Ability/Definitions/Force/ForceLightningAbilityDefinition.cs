@@ -29,6 +29,7 @@ namespace SWLOR.Component.Ability.Definitions.Force
         // Lazy-loaded services to break circular dependencies
         private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
         private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+        private ICharacterResourceService CharacterResourceService => _serviceProvider.GetRequiredService<ICharacterResourceService>();
         private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
         private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
 
@@ -101,10 +102,10 @@ namespace SWLOR.Component.Ability.Definitions.Force
                 }
                 creature = GetNextObjectInShape(ShapeType.Sphere, RadiusSize.Huge, GetLocation(target), true, ObjectType.Creature);
             }
-            if (StatService.GetCurrentFP(activator) < 1 + (level * 2))
+            if (CharacterResourceService.GetCurrentFP(activator) < 1 + (level * 2))
             {
-                var darkBargain = 7 * ((5 + (level * 2) - StatService.GetCurrentFP(activator)));
-                StatService.ReduceFP(activator, StatService.GetCurrentFP(activator));
+                var darkBargain = 7 * ((5 + (level * 2) - CharacterResourceService.GetCurrentFP(activator)));
+                StatService.ReduceFP(activator, CharacterResourceService.GetCurrentFP(activator));
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(darkBargain), activator);
             }
             else { StatService.ReduceFP(activator, 5 + (level * 2)); }

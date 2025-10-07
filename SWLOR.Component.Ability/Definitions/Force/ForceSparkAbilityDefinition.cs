@@ -31,6 +31,7 @@ namespace SWLOR.Component.Ability.Definitions.Force
         // Lazy-loaded services to break circular dependencies
         private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
         private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+        private ICharacterResourceService CharacterResourceService => _serviceProvider.GetRequiredService<ICharacterResourceService>();
         private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
         private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
         private IMessagingService MessagingService => _serviceProvider.GetRequiredService<IMessagingService>();
@@ -85,10 +86,10 @@ namespace SWLOR.Component.Ability.Definitions.Force
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Imp_Starburst_Red), target);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Beam_Silent_Lightning, false, 2f), target);
 
-            if (statService.GetCurrentFP(activator) < 2 + (tier))
+            if (CharacterResourceService.GetCurrentFP(activator) < 2 + (tier))
             {
-                var darkBargain = 7 * ((2 + tier - statService.GetCurrentFP(activator)));
-                statService.ReduceFP(activator, statService.GetCurrentFP(activator));
+                var darkBargain = 7 * ((2 + tier - CharacterResourceService.GetCurrentFP(activator)));
+                statService.ReduceFP(activator, CharacterResourceService.GetCurrentFP(activator));
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(darkBargain), activator);
             }
             else { statService.ReduceFP(activator, 2 + tier); }

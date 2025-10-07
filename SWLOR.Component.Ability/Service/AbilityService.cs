@@ -43,6 +43,7 @@ namespace SWLOR.Component.Ability.Service
         // Lazy-loaded services to break circular dependencies
         private IGenericCacheService CacheService => _serviceProvider.GetRequiredService<IGenericCacheService>();
         private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+        private ICharacterResourceService CharacterResourceService => _serviceProvider.GetRequiredService<ICharacterResourceService>();
         private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
         private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
         private IPartyService PartyService => _serviceProvider.GetRequiredService<IPartyService>();
@@ -154,7 +155,7 @@ namespace SWLOR.Component.Ability.Service
             }
 
             // Activator is dead.
-            if (GetCurrentHitPoints(activator) <= 0)
+            if (CharacterResourceService.GetCurrentHP(activator) <= 0)
             {
                 SendMessageToPC(activator, "You are dead.");
                 return false;

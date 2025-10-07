@@ -31,7 +31,7 @@ namespace SWLOR.Component.Ability.Definitions.FirstAid
                 return "Your target is too far away.";
             }
 
-            if (GetCurrentHitPoints(target) > 0)
+            if (CharacterResourceService.GetCurrentHP(target) > 0)
             {
                 return "Your target is not unconscious.";
             }

@@ -1,20 +1,26 @@
+using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
-using SWLOR.Shared.Domain.Combat.Contracts;
 
 namespace SWLOR.Test.Shared.Domain.Ability.ValueObjects
 {
     [TestFixture]
-    public class AbilityRequirementStaminaTests
+    public class AbilityRequirementStaminaTests : TestBase
     {
+        [SetUp]
+        public void SetUp()
+        {
+            InitializeMockNWScript();
+        }
+
         [Test]
         public void Constructor_ShouldSetRequiredSTM()
         {
             // Arrange
-            var statService = Substitute.For<IStatService>();
+            var serviceProvider = Substitute.For<IServiceProvider>();
 
             // Act
-            var requirement = new AbilityRequirementStamina(100, statService);
+            var requirement = new AbilityRequirementStamina(100, serviceProvider);
 
             // Assert
             Assert.That(requirement.RequiredSTM, Is.EqualTo(100));
@@ -24,8 +30,8 @@ namespace SWLOR.Test.Shared.Domain.Ability.ValueObjects
         public void RequiredSTM_ShouldBeReadOnly()
         {
             // Arrange
-            var statService = Substitute.For<IStatService>();
-            var requirement = new AbilityRequirementStamina(50, statService);
+            var serviceProvider = Substitute.For<IServiceProvider>();
+            var requirement = new AbilityRequirementStamina(50, serviceProvider);
 
             // Act & Assert
             Assert.That(requirement.RequiredSTM, Is.EqualTo(50));

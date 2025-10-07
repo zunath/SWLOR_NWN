@@ -55,7 +55,7 @@ namespace SWLOR.Component.Ability.Definitions.FirstAid
                 return "Your target is too far away.";
             }
 
-            if (GetCurrentHitPoints(target) >= GetMaxHitPoints(target))
+            if (CharacterResourceService.GetCurrentHP(target) >= GetMaxHitPoints(target))
             {
                 return "Your target is unharmed.";
             }

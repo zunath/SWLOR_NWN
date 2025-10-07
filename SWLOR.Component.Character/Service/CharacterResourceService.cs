@@ -88,5 +88,42 @@ namespace SWLOR.Component.Character.Service
                 SetLocalInt(creature, StaminaLocalVar, stamina);
             }
         }
+
+        public int GetCurrentHP(uint creature)
+        {
+            return GetCurrentHitPoints(creature);
+        }
+
+        public int GetCurrentFP(uint creature)
+        {
+            // Players
+            if (GetIsPC(creature) && !GetIsDM(creature))
+            {
+                var playerId = GetObjectUUID(creature);
+                var dbPlayer = _playerRepository.GetById(playerId);
+                return dbPlayer.FP;
+            }
+            // NPCs
+            else
+            {
+                return GetLocalInt(creature, FPLocalVar);
+            }
+        }
+
+        public int GetCurrentSTM(uint creature)
+        {
+            // Players
+            if (GetIsPC(creature) && !GetIsDM(creature))
+            {
+                var playerId = GetObjectUUID(creature);
+                var dbPlayer = _playerRepository.GetById(playerId);
+                return dbPlayer.Stamina;
+            }
+            // NPCs
+            else
+            {
+                return GetLocalInt(creature, StaminaLocalVar);
+            }
+        }
     }
 }

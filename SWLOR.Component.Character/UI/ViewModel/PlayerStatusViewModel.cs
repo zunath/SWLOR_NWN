@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWScript.Constants;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Models;
+using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Entities;
@@ -22,6 +23,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
         
         // Lazy-loaded services to break circular dependencies
         private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+        private ICharacterResourceService CharacterResourceService => _serviceProvider.GetRequiredService<ICharacterResourceService>();
         private ISpaceService SpaceService => _serviceProvider.GetRequiredService<ISpaceService>();
 
         public PlayerStatusViewModel(
@@ -204,7 +206,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
 
         private void UpdateHP()
         {
-            var currentHP = GetCurrentHitPoints(Player);
+            var currentHP = CharacterResourceService.GetCurrentHP(Player);
             var maxHP = GetMaxHitPoints(Player);
 
             Bar1Value = $"{currentHP} / {maxHP}";

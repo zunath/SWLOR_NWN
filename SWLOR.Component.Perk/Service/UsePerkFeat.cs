@@ -33,6 +33,7 @@ namespace SWLOR.Component.Perk.Service
         private readonly Lazy<IEnmityService> _enmityService;
         private readonly Lazy<IActivityService> _activityService;
         private readonly Lazy<IMessagingService> _messagingService;
+        private readonly Lazy<ICharacterResourceService> _characterResourceService;
         
         private IAbilityService AbilityService => _abilityService.Value;
         private IPerkService PerkService => _perkService.Value;
@@ -41,6 +42,7 @@ namespace SWLOR.Component.Perk.Service
         private IEnmityService EnmityService => _enmityService.Value;
         private IActivityService ActivityService => _activityService.Value;
         private IMessagingService MessagingService => _messagingService.Value;
+        private ICharacterResourceService CharacterResourceService => _characterResourceService.Value;
 
         public UsePerkFeat(IServiceProvider serviceProvider, IEventsPluginService eventsPlugin, IPlayerPluginService playerPlugin)
         {
@@ -56,6 +58,7 @@ namespace SWLOR.Component.Perk.Service
             _enmityService = new Lazy<IEnmityService>(() => _serviceProvider.GetRequiredService<IEnmityService>());
             _activityService = new Lazy<IActivityService>(() => _serviceProvider.GetRequiredService<IActivityService>());
             _messagingService = new Lazy<IMessagingService>(() => _serviceProvider.GetRequiredService<IMessagingService>());
+            _characterResourceService = new Lazy<ICharacterResourceService>(() => _serviceProvider.GetRequiredService<ICharacterResourceService>());
         }
         private enum ActivationStatus
         {
@@ -275,7 +278,7 @@ namespace SWLOR.Component.Perk.Service
                 ActivityService.ClearBusy(activator);
 
                 // Moved during casting or activator died. Cancel the activation.
-                if (GetLocalInt(activator, activationId) == (int)ActivationStatus.Interrupted || GetCurrentHitPoints(activator) <= 0)
+                if (GetLocalInt(activator, activationId) == (int)ActivationStatus.Interrupted || CharacterResourceService.GetCurrentHP(activator) <= 0)
                     return;
                 
 

@@ -33,14 +33,6 @@ namespace SWLOR.Shared.Domain.Combat.Contracts
         int GetMaxFP(int baseFP, int modifier, int bonus);
 
         /// <summary>
-        /// Retrieves the current FP on a creature.
-        /// </summary>
-        /// <param name="creature">The creature to retrieve FP from.</param>
-        /// <param name="dbPlayer">The player entity. If this is not set, a call to the DB will be made. Leave null for NPCs.</param>
-        /// <returns>The current amount of FP.</returns>
-        int GetCurrentFP(uint creature, Player dbPlayer = null);
-
-        /// <summary>
         /// Retrieves the maximum STM on a creature.
         /// CON modifier will be checked. Each modifier grants +2 to max STM.
         /// </summary>
@@ -50,14 +42,6 @@ namespace SWLOR.Shared.Domain.Combat.Contracts
         int GetMaxStamina(uint creature, Player dbPlayer = null);
 
         int GetMaxStamina(int baseFP, int modifier, int bonus);
-
-        /// <summary>
-        /// Retrieves the current STM on a creature.
-        /// </summary>
-        /// <param name="creature">The creature to retrieve STM from.</param>
-        /// <param name="dbPlayer">The player entity. If this is not set, a call to the DB will be made. Leave null for NPCs.</param>
-        /// <returns>The current amount of STM.</returns>
-        int GetCurrentStamina(uint creature, Player dbPlayer = null);
 
         /// <summary>
         /// Restores a creature's FP by a specified amount.

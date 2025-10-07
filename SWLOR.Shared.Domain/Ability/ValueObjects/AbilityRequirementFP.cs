@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Shared.Domain.Ability.Contracts;
+using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
 
 namespace SWLOR.Shared.Domain.Ability.ValueObjects
@@ -20,13 +21,14 @@ namespace SWLOR.Shared.Domain.Ability.ValueObjects
 
         // Lazy-loaded services to break circular dependencies
         private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+        private ICharacterResourceService CharacterResourceService => _serviceProvider.GetRequiredService<ICharacterResourceService>();
 
         public string CheckRequirements(uint player)
         {
             // DMs are assumed to be able to activate.
             if (GetIsDM(player)) return string.Empty;
 
-            var fp = StatService.GetCurrentFP(player);
+            var fp = CharacterResourceService.GetCurrentFP(player);
 
             if (fp >= RequiredFP) return string.Empty;
             return $"Not enough FP. (Required: {RequiredFP})";

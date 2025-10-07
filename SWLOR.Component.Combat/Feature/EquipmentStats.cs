@@ -3,6 +3,7 @@ using SWLOR.NWN.API.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Bioware;
+using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Entities;
@@ -30,12 +31,15 @@ namespace SWLOR.Component.Combat.Feature
             
             // Initialize lazy services
             _statService = new Lazy<IStatService>(() => _serviceProvider.GetRequiredService<IStatService>());
+            _characterResourceService = new Lazy<ICharacterResourceService>(() => _serviceProvider.GetRequiredService<ICharacterResourceService>());
         }
 
         // Lazy-loaded service to break circular dependency
         private readonly Lazy<IStatService> _statService;
-        
+        private readonly Lazy<ICharacterResourceService> _characterResourceService;
+
         private IStatService StatService => _statService.Value;
+        private ICharacterResourceService CharacterResourceService => _characterResourceService.Value;
         
         private delegate void ApplyStatChangeDelegate(uint player, uint item, ItemProperty ip, bool isAdding);
         private readonly Dictionary<ItemPropertyType, ApplyStatChangeDelegate> _statChangeActions = new();
@@ -223,7 +227,7 @@ namespace SWLOR.Component.Combat.Feature
                     _objectPlugin.SetMaxHitPoints(creature, maxHP);
                 }
 
-                if (GetCurrentHitPoints(creature) > GetMaxHitPoints(creature))
+                if (CharacterResourceService.GetCurrentHP(creature) > GetMaxHitPoints(creature))
                 {
                     SetCurrentHitPoints(creature, GetMaxHitPoints(creature));
                 }

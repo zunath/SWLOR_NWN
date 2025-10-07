@@ -1,4 +1,6 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Shared.Domain.Ability.Contracts;
+using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
 
 namespace SWLOR.Shared.Domain.Ability.ValueObjects
@@ -9,20 +11,24 @@ namespace SWLOR.Shared.Domain.Ability.ValueObjects
     public class AbilityRequirementStamina : IAbilityActivationRequirement
     {
         public int RequiredSTM { get; }
-        private readonly IStatService _statService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public AbilityRequirementStamina(int requiredSTM, IStatService statService)
+        public AbilityRequirementStamina(int requiredSTM, IServiceProvider serviceProvider)
         {
             RequiredSTM = requiredSTM;
-            _statService = statService;
+            _serviceProvider = serviceProvider;
         }
+
+        // Lazy-loaded services to break circular dependencies
+        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+        private ICharacterResourceService CharacterResourceService => _serviceProvider.GetRequiredService<ICharacterResourceService>();
 
         public string CheckRequirements(uint player)
         {
             // DMs are assumed to be able to activate.
             if (GetIsDM(player)) return string.Empty;
 
-            var stamina = _statService.GetCurrentStamina(player);
+            var stamina = CharacterResourceService.GetCurrentSTM(player);
 
             if (stamina >= RequiredSTM) return string.Empty;
             return $"Not enough stamina. (Required: {RequiredSTM})";
@@ -32,7 +38,7 @@ namespace SWLOR.Shared.Domain.Ability.ValueObjects
         {
             if (GetIsDM(player)) return;
 
-            _statService.ReduceStamina(player, RequiredSTM);
+            StatService.ReduceStamina(player, RequiredSTM);
         }
     }
 }

@@ -44,6 +44,7 @@ namespace SWLOR.Component.Character.Service
             _skillService = new Lazy<ISkillService>(() => _serviceProvider.GetRequiredService<ISkillService>());
             _migrationService = new Lazy<IMigrationService>(() => _serviceProvider.GetRequiredService<IMigrationService>());
             _raceService = new Lazy<IRaceService>(() => _serviceProvider.GetRequiredService<IRaceService>());
+            _characterResourceService = new Lazy<ICharacterResourceService>(() => _serviceProvider.GetRequiredService<ICharacterResourceService>());
         }
 
         // Lazy-loaded services to break circular dependencies
@@ -51,11 +52,13 @@ namespace SWLOR.Component.Character.Service
         private readonly Lazy<ISkillService> _skillService;
         private readonly Lazy<IMigrationService> _migrationService;
         private readonly Lazy<IRaceService> _raceService;
-        
+        private readonly Lazy<ICharacterResourceService> _characterResourceService;
+
         private IStatService StatService => _statService.Value;
         private ISkillService SkillService => _skillService.Value;
         private IMigrationService MigrationService => _migrationService.Value;
         private IRaceService RaceService => _raceService.Value;
+        private ICharacterResourceService CharacterResourceService => _characterResourceService.Value;
         /// <summary>
         /// Handles 
         /// </summary>
@@ -229,7 +232,7 @@ namespace SWLOR.Component.Character.Service
             StatService.AdjustPlayerMaxFP(dbPlayer, StatService.BaseFP, player);
             StatService.AdjustPlayerMaxSTM(dbPlayer, StatService.BaseSTM, player);
             _creaturePlugin.SetBaseAttackBonus(player, 1);
-            dbPlayer.HP = GetCurrentHitPoints(player);
+            dbPlayer.HP = CharacterResourceService.GetCurrentHP(player);
             dbPlayer.FP = StatService.GetMaxFP(player, dbPlayer);
             dbPlayer.Stamina = StatService.GetMaxStamina(player, dbPlayer);
 

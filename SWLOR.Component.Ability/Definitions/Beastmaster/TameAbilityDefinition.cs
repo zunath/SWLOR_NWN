@@ -33,6 +33,7 @@ namespace SWLOR.Component.Ability.Definitions.Beastmaster
         private IDatabaseService DB => _serviceProvider.GetRequiredService<IDatabaseService>();
         private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
         private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+        private ICharacterResourceService CharacterResourceService => _serviceProvider.GetRequiredService<ICharacterResourceService>();
         private IStatGroupService StatGroupService => _serviceProvider.GetRequiredService<IStatGroupService>();
         private IBeastMasteryService BeastMastery => _serviceProvider.GetRequiredService<IBeastMasteryService>();
         private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
@@ -76,7 +77,7 @@ namespace SWLOR.Component.Ability.Definitions.Beastmaster
                         return "Only NPCs may be targeted.";
                     }
 
-                    if (GetIsObjectValid(GetMaster(target)) || GetIsDead(target) || GetCurrentHitPoints(target) <= 0 || !GetIsObjectValid(target))
+                    if (GetIsObjectValid(GetMaster(target)) || GetIsDead(target) || CharacterResourceService.GetCurrentHP(target) <= 0 || !GetIsObjectValid(target))
                     {
                         return "That target cannot be tamed.";
                     }

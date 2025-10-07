@@ -1,5 +1,7 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
@@ -9,11 +11,15 @@ namespace SWLOR.Component.Combat.Feature
     public class PersistentHitPoints
     {
         private readonly IDatabaseService _db;
+        private readonly IServiceProvider _serviceProvider;
 
-        public PersistentHitPoints(IDatabaseService db)
+        public PersistentHitPoints(IDatabaseService db, IServiceProvider serviceProvider)
         {
             _db = db;
+            _serviceProvider = serviceProvider;
         }
+
+        private ICharacterResourceService CharacterResourceService => _serviceProvider.GetRequiredService<ICharacterResourceService>();
         
         /// <summary>
         /// When a player leaves the server, save their persistent HP.
@@ -27,7 +33,7 @@ namespace SWLOR.Component.Combat.Feature
             var playerId = GetObjectUUID(player);
             var dbPlayer = _db.Get<Player>(playerId);
             if (dbPlayer == null) return;
-            dbPlayer.HP = GetCurrentHitPoints(player);
+            dbPlayer.HP = CharacterResourceService.GetCurrentHP(player);
 
             _db.Set(dbPlayer);
         }
@@ -46,7 +52,7 @@ namespace SWLOR.Component.Combat.Feature
             if (dbPlayer == null) return;
             if (dbPlayer.MaxHP <= 0) return; // Check whether MaxHP is initialized
 
-            int hp = GetCurrentHitPoints(player);
+            int hp = CharacterResourceService.GetCurrentHP(player);
             int damage;
             if (dbPlayer.HP < 0)
             {

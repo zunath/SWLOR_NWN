@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.AI.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Ability.Contracts;
+using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Perk.Contracts;
 
 namespace SWLOR.Component.AI.Model
@@ -13,6 +14,7 @@ namespace SWLOR.Component.AI.Model
         // Lazy-loaded services to break circular dependencies
         protected IAbilityService AbilityService => _serviceProvider.GetRequiredService<IAbilityService>();
         protected IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
+        protected ICharacterResourceService CharacterResourceService => _serviceProvider.GetRequiredService<ICharacterResourceService>();
 
         protected uint Self { get; private set; }
         protected uint Target { get; private set; }
@@ -47,9 +49,9 @@ namespace SWLOR.Component.AI.Model
         /// <inheritdoc />
         public virtual void PreProcessAI(uint self, uint target, List<uint> allies)
         {
-            static float CalculateAverageHP(uint creature)
+            float CalculateAverageHP(uint creature)
             {
-                var currentHP = GetCurrentHitPoints(creature);
+                var currentHP = CharacterResourceService.GetCurrentHP(creature);
                 var maxHP = GetMaxHitPoints(creature);
                 return ((float)currentHP / (float)maxHP) * 100;
             }

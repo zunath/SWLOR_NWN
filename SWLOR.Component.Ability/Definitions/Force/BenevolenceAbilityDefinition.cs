@@ -4,6 +4,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
+using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Skill.Enums;
@@ -23,6 +24,7 @@ namespace SWLOR.Component.Ability.Definitions.Force
         // Lazy-loaded services to break circular dependencies
         private IRandomService Random => _serviceProvider.GetRequiredService<IRandomService>();
         private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+        private ICharacterResourceService CharacterResourceService => _serviceProvider.GetRequiredService<ICharacterResourceService>();
         private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
         private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
 
@@ -39,7 +41,7 @@ namespace SWLOR.Component.Ability.Definitions.Force
         {
             var willBonus = GetAbilityModifier(AbilityType.Willpower, activator);
             var targetBonus = willBonus;
-            if (target != activator && StatService.GetCurrentFP(activator) >= 16)
+            if (target != activator && CharacterResourceService.GetCurrentFP(activator) >= 16)
             {
                 RemoveEffectByTag(target, BeneRegen);
 

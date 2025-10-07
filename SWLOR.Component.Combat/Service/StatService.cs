@@ -29,6 +29,7 @@ namespace SWLOR.Component.Combat.Service
         private readonly IEventAggregator _eventAggregator;
         private readonly ICreaturePluginService _creaturePlugin;
         private readonly IObjectPluginService _objectPlugin;
+        private readonly ICharacterResourceService _characterResourceService;
         
         // Lazy-loaded services to break circular dependencies
         private readonly Lazy<ISkillService> _skillService;
@@ -43,13 +44,15 @@ namespace SWLOR.Component.Combat.Service
             IServiceProvider serviceProvider,
             IEventAggregator eventAggregator,
             ICreaturePluginService creaturePlugin,
-            IObjectPluginService objectPlugin)
+            IObjectPluginService objectPlugin,
+            ICharacterResourceService characterResourceService)
         {
             _db = db;
             _serviceProvider = serviceProvider;
             _eventAggregator = eventAggregator;
             _creaturePlugin = creaturePlugin;
             _objectPlugin = objectPlugin;
+            _characterResourceService = characterResourceService;
             
             // Initialize lazy services
             _skillService = new Lazy<ISkillService>(() => _serviceProvider.GetRequiredService<ISkillService>());
@@ -133,31 +136,6 @@ namespace SWLOR.Component.Combat.Service
             return baseFP + modifier * 10 + bonus;
         }
 
-        /// <summary>
-        /// Retrieves the current FP on a creature.
-        /// </summary>
-        /// <param name="creature">The creature to retrieve FP from.</param>
-        /// <param name="dbPlayer">The player entity. If this is not set, a call to the DB will be made. Leave null for NPCs.</param>
-        /// <returns>The current amount of FP.</returns>
-        public int GetCurrentFP(uint creature, Player dbPlayer = null)
-        {
-            // Players
-            if (GetIsPC(creature) && !GetIsDM(creature))
-            {
-                if (dbPlayer == null)
-                {
-                    var playerId = GetObjectUUID(creature);
-                    dbPlayer = _db.Get<Player>(playerId);
-                }
-
-                return dbPlayer.FP;
-            }
-            // NPCs
-            else
-            {
-                return GetLocalInt(creature, "FP");
-            }
-        }
 
         /// <summary>
         /// Retrieves the maximum STM on a creature.
@@ -199,31 +177,6 @@ namespace SWLOR.Component.Combat.Service
             return baseFP + modifier * 5 + bonus;
         }
 
-        /// <summary>
-        /// Retrieves the current STM on a creature.
-        /// </summary>
-        /// <param name="creature">The creature to retrieve STM from.</param>
-        /// <param name="dbPlayer">The player entity. If this is not set, a call to the DB will be made. Leave null for NPCs.</param>
-        /// <returns>The current amount of STM.</returns>
-        public int GetCurrentStamina(uint creature, Player dbPlayer = null)
-        {
-            // Players
-            if (GetIsPC(creature) && !GetIsDM(creature))
-            {
-                if (dbPlayer == null)
-                {
-                    var playerId = GetObjectUUID(creature);
-                    dbPlayer = _db.Get<Player>(playerId);
-                }
-
-                return dbPlayer.Stamina;
-            }
-            // NPCs
-            else
-            {
-                return GetLocalInt(creature, "STAMINA");
-            }
-        }
 
         /// <summary>
         /// Restores a creature's FP by a specified amount.
@@ -460,7 +413,7 @@ namespace SWLOR.Component.Combat.Service
             }
 
             // If player's current HP is higher than max, deal the difference in damage to bring them back down to their new maximum.
-            var currentHP = GetCurrentHitPoints(player);
+            var currentHP = _characterResourceService.GetCurrentHP(player);
             var maxHP = GetMaxHitPoints(player);
             if (currentHP > maxHP)
             {
@@ -1008,7 +961,7 @@ namespace SWLOR.Component.Combat.Service
                 // If out of combat - restore HP at 10% per tick.
                 if (!GetIsInCombat(self) &&
                     !GetIsObjectValid(EnmityService.GetHighestEnmityTarget(self)) &&
-                    GetCurrentHitPoints(self) < GetMaxHitPoints(self))
+                    _characterResourceService.GetCurrentHP(self) < GetMaxHitPoints(self))
                 {
                     var hpToHeal = GetMaxHitPoints(self) * 0.1f;
                     ApplyEffectToObject(DurationType.Instant, EffectHeal((int)hpToHeal), self);

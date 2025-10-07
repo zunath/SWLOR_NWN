@@ -4,6 +4,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Ability.Contracts;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
+using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Perk.Contracts;
 using SWLOR.Shared.Domain.Perk.Enums;
@@ -25,6 +26,7 @@ namespace SWLOR.Component.Ability.Definitions.FirstAid
         protected ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
         protected IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
         protected IAbilityService AbilityService => _serviceProvider.GetRequiredService<IAbilityService>();
+        protected ICharacterResourceService CharacterResourceService => _serviceProvider.GetRequiredService<ICharacterResourceService>();
         private const string MedicalSuppliesItemTag = "med_supplies";
         private const string StimPackItemTag = "stim_pack";
 

@@ -61,6 +61,8 @@ namespace SWLOR.Component.Character.Service
 
                 SetLocalInt(creature, FPLocalVar, fp);
             }
+
+            _eventAggregator.Publish(new OnPlayerFPAdjusted(), creature);
         }
 
         public void RestoreSTM(uint creature, int amount)
@@ -93,6 +95,8 @@ namespace SWLOR.Component.Character.Service
 
                 SetLocalInt(creature, StaminaLocalVar, stamina);
             }
+
+            _eventAggregator.Publish(new OnPlayerStaminaAdjusted(), creature);
         }
 
         public void ReduceFP(uint creature, int reduceBy, Player dbPlayer = null)

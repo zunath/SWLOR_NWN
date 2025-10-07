@@ -23,6 +23,7 @@ namespace SWLOR.Component.Migration.Definitions.PlayerMigration
         // Lazy-loaded services to break circular dependencies
         private IPlayerInitializationService PlayerInitialization => _serviceProvider.GetRequiredService<IPlayerInitializationService>();
         private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+        private IStatCalculationService StatCalculationService => _serviceProvider.GetRequiredService<IStatCalculationService>();
         private ICharacterResourceService CharacterResourceService => _serviceProvider.GetRequiredService<ICharacterResourceService>();
         private IRacialAppearanceService RacialAppearanceService => _serviceProvider.GetRequiredService<IRacialAppearanceService>();
         private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
@@ -107,8 +108,8 @@ namespace SWLOR.Component.Migration.Definitions.PlayerMigration
             StatService.AdjustPlayerMaxSTM(dbPlayer, 10, player);
             _creaturePlugin.SetBaseAttackBonus(player, 1);
             dbPlayer.HP = CharacterResourceService.GetCurrentHP(player);
-            dbPlayer.FP = StatService.GetMaxFP(player, dbPlayer);
-            dbPlayer.Stamina = StatService.GetMaxStamina(player, dbPlayer);
+            dbPlayer.FP = StatCalculationService.CalculateMaxFP(player);
+            dbPlayer.Stamina = StatCalculationService.CalculateMaxSTM(player);
 
             dbPlayer.BaseStats[AbilityType.Might] = _creaturePlugin.GetRawAbilityScore(player, AbilityType.Might);
             dbPlayer.BaseStats[AbilityType.Perception] = _creaturePlugin.GetRawAbilityScore(player, AbilityType.Perception);

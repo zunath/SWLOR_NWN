@@ -5,6 +5,7 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Domain.Ability.Contracts;
+using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Events;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Entities;
@@ -30,6 +31,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
         
         // Lazy-loaded services to break circular dependencies
         private readonly Lazy<IStatService> _statService;
+        private readonly Lazy<IStatCalculationService> _statCalculationService;
         private readonly Lazy<ISkillService> _skillService;
         private readonly Lazy<IPerkService> _perkService;
         private readonly Lazy<IAbilityService> _abilityService;
@@ -50,6 +52,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
             
             // Initialize lazy services
             _statService = new Lazy<IStatService>(() => _serviceProvider.GetRequiredService<IStatService>());
+            _statCalculationService = new Lazy<IStatCalculationService>(() => _serviceProvider.GetRequiredService<IStatCalculationService>());
             _skillService = new Lazy<ISkillService>(() => _serviceProvider.GetRequiredService<ISkillService>());
             _perkService = new Lazy<IPerkService>(() => _serviceProvider.GetRequiredService<IPerkService>());
             _abilityService = new Lazy<IAbilityService>(() => _serviceProvider.GetRequiredService<IAbilityService>());
@@ -58,6 +61,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
         
         // Lazy-loaded services to break circular dependencies
         private IStatService StatService => _statService.Value;
+        private IStatCalculationService StatCalculationService => _statCalculationService.Value;
         private ISkillService SkillService => _skillService.Value;
         private IPerkService PerkService => _perkService.Value;
         private IAbilityService AbilityService => _abilityService.Value;
@@ -74,8 +78,8 @@ namespace SWLOR.Component.Character.UI.ViewModel
             }
 
             ApplyEffectToObject(DurationType.Instant, EffectHeal(GetMaxHitPoints(player)), player);
-            StatService.RestoreFP(player, StatService.GetMaxFP(player));
-            StatService.RestoreStamina(player, StatService.GetMaxStamina(player));
+            StatService.RestoreFP(player, StatCalculationService.CalculateMaxFP(player));
+            StatService.RestoreStamina(player, StatCalculationService.CalculateMaxSTM(player));
             _guiService.TogglePlayerWindow(player, GuiWindowType.CharacterMigration, null, OBJECT_SELF);
         }
 

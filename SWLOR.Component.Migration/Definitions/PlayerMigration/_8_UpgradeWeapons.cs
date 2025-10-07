@@ -3,6 +3,7 @@ using SWLOR.NWN.API.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Bioware;
+using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Entities;
@@ -16,15 +17,16 @@ namespace SWLOR.Component.Migration.Definitions.PlayerMigration
     public class _8_UpgradeWeapons : PlayerMigrationBase
     {
         public _8_UpgradeWeapons(
-            ILogger logger, 
-            IDatabaseService database, 
-            IStatService statService, 
-            ISkillService skillService, 
-            ICombatService combatService, 
-            IPerkService perkService, 
+            ILogger logger,
+            IDatabaseService database,
+            IStatService statService,
+            IStatCalculationService statCalculationService,
+            ISkillService skillService,
+            ICombatService combatService,
+            IPerkService perkService,
             IItemService itemService,
-            ICreaturePluginService creaturePlugin) 
-            : base(logger, database, statService, skillService, combatService, perkService, itemService, creaturePlugin)
+            ICreaturePluginService creaturePlugin)
+            : base(logger, database, statService, statCalculationService, skillService, combatService, perkService, itemService, creaturePlugin)
         {
         }
         

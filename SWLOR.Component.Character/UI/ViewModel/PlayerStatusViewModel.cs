@@ -23,6 +23,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
         
         // Lazy-loaded services to break circular dependencies
         private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+        private IStatCalculationService StatCalculationService => _serviceProvider.GetRequiredService<IStatCalculationService>();
         private ICharacterResourceService CharacterResourceService => _serviceProvider.GetRequiredService<ICharacterResourceService>();
         private ISpaceService SpaceService => _serviceProvider.GetRequiredService<ISpaceService>();
 
@@ -218,7 +219,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
             var playerId = GetObjectUUID(Player);
             var dbPlayer = _db.Get<Player>(playerId);
             var currentFP = dbPlayer.FP;
-            var maxFP = StatService.GetMaxFP(Player, dbPlayer);
+            var maxFP = StatCalculationService.CalculateMaxFP(Player);
             var isStandard = dbPlayer.CharacterType == CharacterType.Standard;
             Bar3Value = isStandard ? "0 / 0" : $"{currentFP} / {maxFP}";
             Bar3Progress = maxFP <= 0 || isStandard ? 0 : (float)currentFP / (float)maxFP > 1.0f ? 1.0f : (float)currentFP / (float)maxFP;
@@ -229,7 +230,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
             var playerId = GetObjectUUID(Player);
             var dbPlayer = _db.Get<Player>(playerId);
             var currentSTM = dbPlayer.Stamina;
-            var maxSTM = StatService.GetMaxStamina(Player, dbPlayer);
+            var maxSTM = StatCalculationService.CalculateMaxSTM(Player);
 
             Bar2Value = $"{currentSTM} / {maxSTM}";
             Bar2Progress = maxSTM <= 0 ? 0 : (float)currentSTM / (float)maxSTM > 1.0f ? 1.0f : (float)currentSTM / (float)maxSTM;

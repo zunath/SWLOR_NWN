@@ -60,8 +60,20 @@ namespace SWLOR.Component.Character.Service
 
             return BaseSTM +
                    modifier +
-                   stats.GetStat(StatType.MaxSTM) + 
+                   stats.GetStat(StatType.MaxSTM) +
                    effects.GetStat(StatType.MaxSTM);
+        }
+
+        /// <inheritdoc />
+        public int CalculateMaxFP(int baseFP, int modifier, int bonus)
+        {
+            return baseFP + modifier * 10 + bonus;
+        }
+
+        /// <inheritdoc />
+        public int CalculateMaxSTM(int baseSTM, int modifier, int bonus)
+        {
+            return baseSTM + modifier * 5 + bonus;
         }
 
         /// <inheritdoc />

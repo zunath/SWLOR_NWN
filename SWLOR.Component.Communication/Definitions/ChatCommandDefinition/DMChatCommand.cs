@@ -32,6 +32,7 @@ namespace SWLOR.Component.Communication.Definitions.ChatCommandDefinition
         private readonly IDatabaseService _db;
         private readonly IAbilityService _abilityService;
         private readonly IStatService _statService;
+        private readonly IStatCalculationService _statCalculationService;
         private readonly IStatGroupService _statGroupService;
         private readonly IBeastMasteryService _beastMastery;
         private readonly IFactionService _faction;
@@ -47,6 +48,7 @@ namespace SWLOR.Component.Communication.Definitions.ChatCommandDefinition
             IDatabaseService db,
             IAbilityService abilityService,
             IStatService statService,
+            IStatCalculationService statCalculationService,
             IStatGroupService statGroupService,
             IBeastMasteryService beastMastery,
             IFactionService faction,
@@ -60,6 +62,7 @@ namespace SWLOR.Component.Communication.Definitions.ChatCommandDefinition
             _db = db;
             _abilityService = abilityService;
             _statService = statService;
+            _statCalculationService = statCalculationService;
             _statGroupService = statGroupService;
             _beastMastery = beastMastery;
             _faction = faction;
@@ -193,8 +196,8 @@ namespace SWLOR.Component.Communication.Definitions.ChatCommandDefinition
                     }
 
                     ApplyEffectToObject(DurationType.Instant, EffectHeal(999), target);
-                    _statService.RestoreFP(target, _statService.GetMaxFP(target));
-                    _statService.RestoreStamina(target, _statService.GetMaxStamina(target));
+                    _statService.RestoreFP(target, _statCalculationService.CalculateMaxFP(target));
+                    _statService.RestoreStamina(target, _statCalculationService.CalculateMaxSTM(target));
                 });
         }
 

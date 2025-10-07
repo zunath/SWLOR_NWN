@@ -32,6 +32,24 @@ namespace SWLOR.Shared.Domain.Character.Contracts
         int CalculateMaxSTM(uint creature);
 
         /// <summary>
+        /// Calculates the maximum force points using raw inputs.
+        /// </summary>
+        /// <param name="baseFP">The base FP value</param>
+        /// <param name="modifier">The ability modifier</param>
+        /// <param name="bonus">Additional FP bonus</param>
+        /// <returns>The calculated maximum FP</returns>
+        int CalculateMaxFP(int baseFP, int modifier, int bonus);
+
+        /// <summary>
+        /// Calculates the maximum stamina using raw inputs.
+        /// </summary>
+        /// <param name="baseSTM">The base STM value</param>
+        /// <param name="modifier">The ability modifier</param>
+        /// <param name="bonus">Additional STM bonus</param>
+        /// <returns>The calculated maximum STM</returns>
+        int CalculateMaxSTM(int baseSTM, int modifier, int bonus);
+
+        /// <summary>
         /// Calculates the hit point regeneration rate per tick.
         /// </summary>
         /// <param name="creature">The creature to calculate HP regen for</param>

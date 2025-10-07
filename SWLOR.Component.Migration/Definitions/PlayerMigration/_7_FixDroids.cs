@@ -2,6 +2,7 @@ using SWLOR.Component.Migration.Model;
 using SWLOR.NWN.API.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Inventory.Contracts;
@@ -13,21 +14,23 @@ namespace SWLOR.Component.Migration.Definitions.PlayerMigration
     public class _7_FixDroids: PlayerMigrationBase
     {
         public _7_FixDroids(
-            ILogger logger, 
-            IDatabaseService database, 
-            IStatService statService, 
-            ISkillService skillService, 
-            ICombatService combatService, 
+            ILogger logger,
+            IDatabaseService database,
+            IStatService statService,
+            IStatCalculationService statCalculationService,
+            ISkillService skillService,
+            ICombatService combatService,
             IPerkService perkService,
             IItemService itemService,
-            ICreaturePluginService creaturePlugin) 
+            ICreaturePluginService creaturePlugin)
             : base(
-                logger, 
-                database, 
-                statService, 
-                skillService, 
-                combatService, 
-                perkService, 
+                logger,
+                database,
+                statService,
+                statCalculationService,
+                skillService,
+                combatService,
+                perkService,
                 itemService,
                 creaturePlugin)
         {

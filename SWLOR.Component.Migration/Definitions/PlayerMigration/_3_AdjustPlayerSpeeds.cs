@@ -5,6 +5,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Ability.Contracts;
 using SWLOR.Shared.Domain.Ability.Enums;
+using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Perk.Contracts;
@@ -22,16 +23,17 @@ namespace SWLOR.Component.Migration.Definitions.PlayerMigration
         private IAbilityService AbilityService => _abilityService.Value;
 
         public _3_AdjustPlayerSpeeds(
-            ILogger logger, 
-            IDatabaseService database, 
-            IStatService statService, 
-            ISkillService skillService, 
-            ICombatService combatService, 
-            IPerkService perkService, 
+            ILogger logger,
+            IDatabaseService database,
+            IStatService statService,
+            IStatCalculationService statCalculationService,
+            ISkillService skillService,
+            ICombatService combatService,
+            IPerkService perkService,
             IItemService itemService,
             IServiceProvider serviceProvider,
-            ICreaturePluginService creaturePlugin) 
-            : base(logger, database, statService, skillService, combatService, perkService, itemService, creaturePlugin)
+            ICreaturePluginService creaturePlugin)
+            : base(logger, database, statService, statCalculationService, skillService, combatService, perkService, itemService, creaturePlugin)
         {
             _serviceProvider = serviceProvider;
             

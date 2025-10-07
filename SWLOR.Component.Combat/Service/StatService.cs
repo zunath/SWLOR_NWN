@@ -38,6 +38,7 @@ namespace SWLOR.Component.Combat.Service
         private readonly Lazy<IAbilityService> _abilityService;
         private readonly Lazy<IPerkService> _perkService;
         private readonly Lazy<IStatGroupService> _statGroupService;
+        private readonly Lazy<IStatCalculationService> _statCalculationService;
 
         public StatService(
             IDatabaseService db,
@@ -61,6 +62,7 @@ namespace SWLOR.Component.Combat.Service
             _abilityService = new Lazy<IAbilityService>(() => _serviceProvider.GetRequiredService<IAbilityService>());
             _perkService = new Lazy<IPerkService>(() => _serviceProvider.GetRequiredService<IPerkService>());
             _statGroupService = new Lazy<IStatGroupService>(() => _serviceProvider.GetRequiredService<IStatGroupService>());
+            _statCalculationService = new Lazy<IStatCalculationService>(() => _serviceProvider.GetRequiredService<IStatCalculationService>());
         }
         
         // Lazy-loaded services to break circular dependencies
@@ -70,6 +72,7 @@ namespace SWLOR.Component.Combat.Service
         private IAbilityService AbilityService => _abilityService.Value;
         private IPerkService PerkService => _perkService.Value;
         private IStatGroupService StatGroupService => _statGroupService.Value;
+        private IStatCalculationService StatCalculationService => _statCalculationService.Value;
         
         public int BaseHP => 70;
         public int BaseFP => 10;
@@ -94,88 +97,8 @@ namespace SWLOR.Component.Combat.Service
             ApplyPlayerMovementRate(player);
         }
 
-        /// <summary>
-        /// Retrieves the maximum FP on a creature.
-        /// For players:
-        /// Each Vitality modifier grants +2 to max FP.
-        /// For NPCs:
-        /// FP is read from their skin.
-        /// </summary>
-        /// <param name="creature">The creature object</param>
-        /// <param name="dbPlayer">The player entity. If this is not set, a call to the DB will be made. Leave null for NPCs.</param>
-        /// <returns>The max amount of FP</returns>
-        public int GetMaxFP(uint creature, Player dbPlayer = null)
-        {
-            var modifier = GetAbilityModifier(AbilityType.Willpower, creature);
-            var foodBonus = 0;
-            int baseFP;
-
-            // Players
-            if (GetIsPC(creature) && !GetIsDM(creature))
-            {
-                if (dbPlayer == null)
-                {
-                    var playerId = GetObjectUUID(creature);
-                    dbPlayer = _db.Get<Player>(playerId);
-                }
-                baseFP = dbPlayer.MaxFP;
-
-            }
-            // NPCs
-            else
-            {
-                var statGroup = StatGroupService.LoadStats(creature);
-                baseFP = statGroup.GetStat(StatType.MaxFP);
-            }
-
-            return GetMaxFP(baseFP, modifier, foodBonus);
-        }
-
-        public int GetMaxFP(int baseFP, int modifier, int bonus)
-        {
-            return baseFP + modifier * 10 + bonus;
-        }
 
 
-        /// <summary>
-        /// Retrieves the maximum STM on a creature.
-        /// CON modifier will be checked. Each modifier grants +2 to max STM.
-        /// </summary>
-        /// <param name="creature">The creature object</param>
-        /// <param name="dbPlayer">The player entity. If this is not set, a call to the DB will be made. Leave null for NPCs.</param>
-        /// <returns>The max amount of STM</returns>
-        public int GetMaxStamina(uint creature, Player dbPlayer = null)
-        {
-            var modifier = GetAbilityModifier(AbilityType.Agility, creature);
-            var foodBonus = 0;
-            int baseStamina;
-
-            // Players
-            if (GetIsPC(creature) && !GetIsDM(creature))
-            {
-                if (dbPlayer == null)
-                {
-                    var playerId = GetObjectUUID(creature);
-                    dbPlayer = _db.Get<Player>(playerId);
-                }
-
-                baseStamina = dbPlayer.MaxStamina;
-
-            }
-            // NPCs
-            else
-            {
-                var statGroup = StatGroupService.LoadStats(creature);
-                baseStamina = statGroup.GetStat(StatType.MaxSTM);
-            }
-
-            return GetMaxStamina(baseStamina, modifier, foodBonus);
-        }
-
-        public int GetMaxStamina(int baseFP, int modifier, int bonus)
-        {
-            return baseFP + modifier * 5 + bonus;
-        }
 
 
         /// <summary>
@@ -188,7 +111,7 @@ namespace SWLOR.Component.Combat.Service
         {
             if (amount <= 0) return;
 
-            var maxFP = GetMaxFP(creature);
+            var maxFP = StatCalculationService.CalculateMaxFP(creature);
             
             // Players
             if (GetIsPC(creature) && !GetIsDM(creature))
@@ -270,7 +193,7 @@ namespace SWLOR.Component.Combat.Service
         {
             if (amount <= 0) return;
 
-            var maxSTM = GetMaxStamina(creature);
+            var maxSTM = StatCalculationService.CalculateMaxSTM(creature);
 
             // Players
             if (GetIsPC(creature) && !GetIsDM(creature))
@@ -433,9 +356,9 @@ namespace SWLOR.Component.Combat.Service
             // If there are any visual indicators (GUI elements for example) be sure to account for this scenario.
             entity.MaxFP += adjustBy;
 
-            // Note - must call GetMaxFP here to account for ability-based increase to FP cap. 
-            if (entity.FP > GetMaxFP(player))
-                entity.FP = GetMaxFP(player);
+            // Note - must call CalculateMaxFP here to account for ability-based increase to FP cap.
+            if (entity.FP > StatCalculationService.CalculateMaxFP(player))
+                entity.FP = StatCalculationService.CalculateMaxFP(player);
 
             // Current FP, however, should never drop below zero.
             if (entity.FP < 0)
@@ -454,9 +377,9 @@ namespace SWLOR.Component.Combat.Service
             // If there are any visual indicators (GUI elements for example) be sure to account for this scenario.
             entity.MaxStamina += adjustBy;
 
-            // Note - must call GetMaxFP here to account for ability-based increase to STM cap. 
-            if (entity.Stamina > GetMaxStamina(player))
-                entity.Stamina = GetMaxStamina(player);
+            // Note - must call CalculateMaxSTM here to account for ability-based increase to STM cap.
+            if (entity.Stamina > StatCalculationService.CalculateMaxSTM(player))
+                entity.Stamina = StatCalculationService.CalculateMaxSTM(player);
 
             // Current STM, however, should never drop below zero.
             if (entity.Stamina < 0)
@@ -933,8 +856,8 @@ namespace SWLOR.Component.Combat.Service
                 _objectPlugin.SetCurrentHitPoints(self, maxHP);
             }
 
-            SetLocalInt(self, "FP", GetMaxFP(self));
-            SetLocalInt(self, "STAMINA", GetMaxStamina(self));
+            SetLocalInt(self, "FP", StatCalculationService.CalculateMaxFP(self));
+            SetLocalInt(self, "STAMINA", StatCalculationService.CalculateMaxSTM(self));
         }
 
         /// <summary>
@@ -943,8 +866,8 @@ namespace SWLOR.Component.Combat.Service
         public void RestoreNPCStats(bool outOfCombatRegen)
         {
             var self = OBJECT_SELF;
-            var maxFP = GetMaxFP(self);
-            var maxSTM = GetMaxStamina(self);
+            var maxFP = StatCalculationService.CalculateMaxFP(self);
+            var maxSTM = StatCalculationService.CalculateMaxSTM(self);
             var fp = GetLocalInt(self, "FP") + 1;
             var stm = GetLocalInt(self, "STAMINA") + 1;
 

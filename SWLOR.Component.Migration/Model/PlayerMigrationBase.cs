@@ -3,6 +3,7 @@ using SWLOR.NWN.API.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Inventory.Contracts;
@@ -17,6 +18,7 @@ namespace SWLOR.Component.Migration.Model
         protected readonly ILogger Logger;
         protected readonly IDatabaseService Database;
         protected readonly IStatService StatService;
+        protected readonly IStatCalculationService StatCalculationService;
         protected readonly ISkillService SkillService;
         protected readonly ICombatService CombatService;
         protected readonly IPerkService PerkService;
@@ -24,18 +26,20 @@ namespace SWLOR.Component.Migration.Model
         protected readonly ICreaturePluginService CreaturePlugin;
 
         protected PlayerMigrationBase(
-            ILogger logger, 
-            IDatabaseService database, 
-            IStatService statService, 
-            ISkillService skillService, 
-            ICombatService combatService, 
-            IPerkService perkService, 
+            ILogger logger,
+            IDatabaseService database,
+            IStatService statService,
+            IStatCalculationService statCalculationService,
+            ISkillService skillService,
+            ICombatService combatService,
+            IPerkService perkService,
             IItemService itemService,
             ICreaturePluginService creaturePlugin)
         {
             Logger = logger;
             Database = database;
             StatService = statService;
+            StatCalculationService = statCalculationService;
             SkillService = skillService;
             CombatService = combatService;
             PerkService = perkService;
@@ -79,12 +83,12 @@ namespace SWLOR.Component.Migration.Model
 
                 // FP
                 dbPlayer.MaxFP = StatService.BaseFP;
-                dbPlayer.FP = StatService.GetMaxFP(player, dbPlayer);
+                dbPlayer.FP = StatCalculationService.CalculateMaxFP(player);
                 dbPlayer.FPRegen = 0;
 
                 // STM
                 dbPlayer.MaxStamina = StatService.BaseSTM;
-                dbPlayer.Stamina = StatService.GetMaxStamina(player, dbPlayer);
+                dbPlayer.Stamina = StatCalculationService.CalculateMaxSTM(player);
                 dbPlayer.STMRegen = 0;
 
                 // Crafting

@@ -28,9 +28,6 @@ namespace SWLOR.Shared.Domain.Combat.Contracts
         /// <param name="creature">The creature object</param>
         /// <param name="dbPlayer">The player entity. If this is not set, a call to the DB will be made. Leave null for NPCs.</param>
         /// <returns>The max amount of FP</returns>
-        int GetMaxFP(uint creature, Player dbPlayer = null);
-
-        int GetMaxFP(int baseFP, int modifier, int bonus);
 
         /// <summary>
         /// Retrieves the maximum STM on a creature.
@@ -39,9 +36,6 @@ namespace SWLOR.Shared.Domain.Combat.Contracts
         /// <param name="creature">The creature object</param>
         /// <param name="dbPlayer">The player entity. If this is not set, a call to the DB will be made. Leave null for NPCs.</param>
         /// <returns>The max amount of STM</returns>
-        int GetMaxStamina(uint creature, Player dbPlayer = null);
-
-        int GetMaxStamina(int baseFP, int modifier, int bonus);
 
         /// <summary>
         /// Restores a creature's FP by a specified amount.

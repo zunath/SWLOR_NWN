@@ -1296,57 +1296,6 @@ namespace SWLOR.Component.Combat.Service
         }
 
         /// <summary>
-        /// Calculates the total Control for a player in a given crafting skill.
-        /// </summary>
-        /// <param name="player">The player to check</param>
-        /// <param name="craftingSkillType">The skill to check</param>
-        /// <returns>The total control for a player</returns>
-        /// <exception cref="ArgumentException">Thrown if a non-crafting skill is passed in.</exception>
-        public int CalculateControl(uint player, SkillType craftingSkillType)
-        {
-            var skillDetail = SkillService.GetSkillDetails(craftingSkillType);
-            if (!skillDetail.IsShownInCraftMenu)
-                throw new ArgumentException($"Unable to calculate Control because {craftingSkillType} is not a crafting skill.");
-
-            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
-                return 0;
-
-            var playerId = GetObjectUUID(player);
-            var dbPlayer = _db.Get<Player>(playerId);
-
-            var control = dbPlayer.Control.ContainsKey(craftingSkillType)
-                ? dbPlayer.Control[craftingSkillType]
-                : 0;
-
-            return control;
-        }
-        /// <summary>
-        /// Calculates the total Craftsmanship for a player in a given crafting skill.
-        /// </summary>
-        /// <param name="player">The player to check</param>
-        /// <param name="craftingSkillType">The skill to check</param>
-        /// <returns>The total Craftsmanship for a player</returns>
-        /// <exception cref="ArgumentException">Thrown if a non-crafting skill is passed in.</exception>
-        public int CalculateCraftsmanship(uint player, SkillType craftingSkillType)
-        {
-            var skillDetail = SkillService.GetSkillDetails(craftingSkillType);
-            if (!skillDetail.IsShownInCraftMenu)
-                throw new ArgumentException($"Unable to calculate Craftsmanship because {craftingSkillType} is not a crafting skill.");
-
-            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
-                return 0;
-
-            var playerId = GetObjectUUID(player);
-            var dbPlayer = _db.Get<Player>(playerId);
-
-            var control = dbPlayer.Craftsmanship.ContainsKey(craftingSkillType)
-                ? dbPlayer.Craftsmanship[craftingSkillType]
-                : 0;
-
-            return control;
-        }
-
-        /// <summary>
         /// Calculates the base value for a particular type of saving throw.
         /// This does not factor in stat modifiers.
         /// </summary>

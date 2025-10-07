@@ -5,6 +5,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Character.ValueObjects;
+using SWLOR.Shared.Domain.Crafting.Enums;
 using SWLOR.Shared.Domain.StatusEffect.Contracts;
 using SWLOR.Shared.Domain.Skill.Contracts;
 using SWLOR.Shared.Domain.Skill.Enums;
@@ -1840,7 +1841,7 @@ namespace SWLOR.Test.Component.Character.Service
             _mockStatusEffectService.GetCreatureStatGroup(creature).Returns(effects);
 
             // Act
-            var result = _statService.CalculateSmitheryControl(creature);
+            var result = _statService.CalculateControl(creature, CraftType.Smithery);
 
             // Assert
             Assert.That(result, Is.EqualTo(15));
@@ -1861,7 +1862,7 @@ namespace SWLOR.Test.Component.Character.Service
             _mockStatusEffectService.GetCreatureStatGroup(creature).Returns(effects);
 
             // Act
-            var result = _statService.CalculateSmitheryControl(creature);
+            var result = _statService.CalculateControl(creature, CraftType.Smithery);
 
             // Assert
             Assert.That(result, Is.EqualTo(20));
@@ -1882,7 +1883,7 @@ namespace SWLOR.Test.Component.Character.Service
             _mockStatusEffectService.GetCreatureStatGroup(creature).Returns(effects);
 
             // Act
-            var result = _statService.CalculateFabricationControl(creature);
+            var result = _statService.CalculateControl(creature, CraftType.Fabrication);
 
             // Assert
             Assert.That(result, Is.EqualTo(12));
@@ -1903,7 +1904,7 @@ namespace SWLOR.Test.Component.Character.Service
             _mockStatusEffectService.GetCreatureStatGroup(creature).Returns(effects);
 
             // Act
-            var result = _statService.CalculateFabricationControl(creature);
+            var result = _statService.CalculateControl(creature, CraftType.Fabrication);
 
             // Assert
             Assert.That(result, Is.EqualTo(15));
@@ -1924,7 +1925,7 @@ namespace SWLOR.Test.Component.Character.Service
             _mockStatusEffectService.GetCreatureStatGroup(creature).Returns(effects);
 
             // Act
-            var result = _statService.CalculateEngineeringControl(creature);
+            var result = _statService.CalculateControl(creature, CraftType.Engineering);
 
             // Assert
             Assert.That(result, Is.EqualTo(18));
@@ -1945,7 +1946,7 @@ namespace SWLOR.Test.Component.Character.Service
             _mockStatusEffectService.GetCreatureStatGroup(creature).Returns(effects);
 
             // Act
-            var result = _statService.CalculateEngineeringControl(creature);
+            var result = _statService.CalculateControl(creature, CraftType.Engineering);
 
             // Assert
             Assert.That(result, Is.EqualTo(20));
@@ -1966,7 +1967,7 @@ namespace SWLOR.Test.Component.Character.Service
             _mockStatusEffectService.GetCreatureStatGroup(creature).Returns(effects);
 
             // Act
-            var result = _statService.CalculateAgricultureControl(creature);
+            var result = _statService.CalculateControl(creature, CraftType.Agriculture);
 
             // Assert
             Assert.That(result, Is.EqualTo(14));
@@ -1987,7 +1988,7 @@ namespace SWLOR.Test.Component.Character.Service
             _mockStatusEffectService.GetCreatureStatGroup(creature).Returns(effects);
 
             // Act
-            var result = _statService.CalculateAgricultureControl(creature);
+            var result = _statService.CalculateControl(creature, CraftType.Agriculture);
 
             // Assert
             Assert.That(result, Is.EqualTo(18));
@@ -2012,7 +2013,7 @@ namespace SWLOR.Test.Component.Character.Service
             _mockStatusEffectService.GetCreatureStatGroup(creature).Returns(effects);
 
             // Act
-            var result = _statService.CalculateSmitheryCraftsmanship(creature);
+            var result = _statService.CalculateCraftsmanship(creature, CraftType.Smithery);
 
             // Assert
             Assert.That(result, Is.EqualTo(16));
@@ -2033,7 +2034,7 @@ namespace SWLOR.Test.Component.Character.Service
             _mockStatusEffectService.GetCreatureStatGroup(creature).Returns(effects);
 
             // Act
-            var result = _statService.CalculateSmitheryCraftsmanship(creature);
+            var result = _statService.CalculateCraftsmanship(creature, CraftType.Smithery);
 
             // Assert
             Assert.That(result, Is.EqualTo(17));
@@ -2054,7 +2055,7 @@ namespace SWLOR.Test.Component.Character.Service
             _mockStatusEffectService.GetCreatureStatGroup(creature).Returns(effects);
 
             // Act
-            var result = _statService.CalculateFabricationCraftsmanship(creature);
+            var result = _statService.CalculateCraftsmanship(creature, CraftType.Fabrication);
 
             // Assert
             Assert.That(result, Is.EqualTo(13));
@@ -2075,7 +2076,7 @@ namespace SWLOR.Test.Component.Character.Service
             _mockStatusEffectService.GetCreatureStatGroup(creature).Returns(effects);
 
             // Act
-            var result = _statService.CalculateFabricationCraftsmanship(creature);
+            var result = _statService.CalculateCraftsmanship(creature, CraftType.Fabrication);
 
             // Assert
             Assert.That(result, Is.EqualTo(15));
@@ -2096,7 +2097,7 @@ namespace SWLOR.Test.Component.Character.Service
             _mockStatusEffectService.GetCreatureStatGroup(creature).Returns(effects);
 
             // Act
-            var result = _statService.CalculateEngineeringCraftsmanship(creature);
+            var result = _statService.CalculateCraftsmanship(creature, CraftType.Engineering);
 
             // Assert
             Assert.That(result, Is.EqualTo(19));
@@ -2117,7 +2118,7 @@ namespace SWLOR.Test.Component.Character.Service
             _mockStatusEffectService.GetCreatureStatGroup(creature).Returns(effects);
 
             // Act
-            var result = _statService.CalculateEngineeringCraftsmanship(creature);
+            var result = _statService.CalculateCraftsmanship(creature, CraftType.Engineering);
 
             // Assert
             Assert.That(result, Is.EqualTo(20));
@@ -2138,7 +2139,7 @@ namespace SWLOR.Test.Component.Character.Service
             _mockStatusEffectService.GetCreatureStatGroup(creature).Returns(effects);
 
             // Act
-            var result = _statService.CalculateAgricultureCraftsmanship(creature);
+            var result = _statService.CalculateCraftsmanship(creature, CraftType.Agriculture);
 
             // Assert
             Assert.That(result, Is.EqualTo(17));
@@ -2159,7 +2160,7 @@ namespace SWLOR.Test.Component.Character.Service
             _mockStatusEffectService.GetCreatureStatGroup(creature).Returns(effects);
 
             // Act
-            var result = _statService.CalculateAgricultureCraftsmanship(creature);
+            var result = _statService.CalculateCraftsmanship(creature, CraftType.Agriculture);
 
             // Assert
             Assert.That(result, Is.EqualTo(20));

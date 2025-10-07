@@ -1,6 +1,7 @@
 ﻿using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
+using SWLOR.Shared.Domain.Crafting.Enums;
 using SWLOR.Shared.Domain.Skill.Contracts;
 using SWLOR.Shared.Domain.Skill.Enums;
 using SWLOR.Shared.Domain.StatusEffect.Contracts;
@@ -512,74 +513,59 @@ namespace SWLOR.Component.Character.Service
         }
 
         /// <inheritdoc />
-        public int CalculateSmitheryControl(uint creature)
+        public int CalculateControl(uint creature, CraftType craftType)
         {
             var stats = _statGroupService.LoadStats(creature);
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
+            StatType statType;
 
-            return stats.GetStat(StatType.ControlSmithery) + effects.GetStat(StatType.ControlSmithery);
+            switch (craftType)
+            {
+                case CraftType.Smithery:
+                    statType = StatType.ControlSmithery;
+                    break;
+                case CraftType.Engineering:
+                    statType = StatType.ControlEngineering;
+                    break;
+                case CraftType.Fabrication:
+                    statType = StatType.ControlFabrication;
+                    break;
+                case CraftType.Agriculture:
+                    statType = StatType.ControlAgriculture;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(craftType), craftType, null);
+            }
+
+            return stats.GetStat(statType) + effects.GetStat(statType);
         }
 
         /// <inheritdoc />
-        public int CalculateFabricationControl(uint creature)
+        public int CalculateCraftsmanship(uint creature, CraftType craftType)
         {
             var stats = _statGroupService.LoadStats(creature);
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
+            StatType statType;
 
-            return stats.GetStat(StatType.ControlFabrication) + effects.GetStat(StatType.ControlFabrication);
-        }
+            switch (craftType)
+            {
+                case CraftType.Smithery:
+                    statType = StatType.CraftsmanshipSmithery;
+                    break;
+                case CraftType.Engineering:
+                    statType = StatType.CraftsmanshipEngineering;
+                    break;
+                case CraftType.Fabrication:
+                    statType = StatType.CraftsmanshipFabrication;
+                    break;
+                case CraftType.Agriculture:
+                    statType = StatType.CraftsmanshipAgriculture;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(craftType), craftType, null);
+            }
 
-        /// <inheritdoc />
-        public int CalculateEngineeringControl(uint creature)
-        {
-            var stats = _statGroupService.LoadStats(creature);
-            var effects = _statusEffectService.GetCreatureStatGroup(creature);
-
-            return stats.GetStat(StatType.ControlEngineering) + effects.GetStat(StatType.ControlEngineering);
-        }
-
-        /// <inheritdoc />
-        public int CalculateAgricultureControl(uint creature)
-        {
-            var stats = _statGroupService.LoadStats(creature);
-            var effects = _statusEffectService.GetCreatureStatGroup(creature);
-
-            return stats.GetStat(StatType.ControlAgriculture) + effects.GetStat(StatType.ControlAgriculture);
-        }
-        /// <inheritdoc />
-        public int CalculateSmitheryCraftsmanship(uint creature)
-        {
-            var stats = _statGroupService.LoadStats(creature);
-            var effects = _statusEffectService.GetCreatureStatGroup(creature);
-
-            return stats.GetStat(StatType.CraftsmanshipSmithery) + effects.GetStat(StatType.CraftsmanshipSmithery);
-        }
-
-        /// <inheritdoc />
-        public int CalculateFabricationCraftsmanship(uint creature)
-        {
-            var stats = _statGroupService.LoadStats(creature);
-            var effects = _statusEffectService.GetCreatureStatGroup(creature);
-
-            return stats.GetStat(StatType.CraftsmanshipFabrication) + effects.GetStat(StatType.CraftsmanshipFabrication);
-        }
-
-        /// <inheritdoc />
-        public int CalculateEngineeringCraftsmanship(uint creature)
-        {
-            var stats = _statGroupService.LoadStats(creature);
-            var effects = _statusEffectService.GetCreatureStatGroup(creature);
-
-            return stats.GetStat(StatType.CraftsmanshipEngineering) + effects.GetStat(StatType.CraftsmanshipEngineering);
-        }
-
-        /// <inheritdoc />
-        public int CalculateAgricultureCraftsmanship(uint creature)
-        {
-            var stats = _statGroupService.LoadStats(creature);
-            var effects = _statusEffectService.GetCreatureStatGroup(creature);
-
-            return stats.GetStat(StatType.CraftsmanshipAgriculture) + effects.GetStat(StatType.CraftsmanshipAgriculture);
+            return stats.GetStat(statType) + effects.GetStat(statType);
         }
 
         /// <inheritdoc />

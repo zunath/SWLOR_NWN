@@ -307,24 +307,6 @@ namespace SWLOR.Shared.Domain.Combat.Contracts
         string GetAbilityNameShort(AbilityType type);
 
         /// <summary>
-        /// Calculates the total Control for a player in a given crafting skill.
-        /// </summary>
-        /// <param name="player">The player to check</param>
-        /// <param name="craftingSkillType">The skill to check</param>
-        /// <returns>The total control for a player</returns>
-        /// <exception cref="ArgumentException">Thrown if a non-crafting skill is passed in.</exception>
-        int CalculateControl(uint player, SkillType craftingSkillType);
-
-        /// <summary>
-        /// Calculates the total Craftsmanship for a player in a given crafting skill.
-        /// </summary>
-        /// <param name="player">The player to check</param>
-        /// <param name="craftingSkillType">The skill to check</param>
-        /// <returns>The total Craftsmanship for a player</returns>
-        /// <exception cref="ArgumentException">Thrown if a non-crafting skill is passed in.</exception>
-        int CalculateCraftsmanship(uint player, SkillType craftingSkillType);
-
-        /// <summary>
         /// Calculates the base value for a particular type of saving throw.
         /// This does not factor in stat modifiers.
         /// </summary>

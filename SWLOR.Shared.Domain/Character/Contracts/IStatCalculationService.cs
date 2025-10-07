@@ -1,4 +1,5 @@
 ﻿using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Domain.Crafting.Enums;
 using SWLOR.Shared.Domain.Skill.Enums;
 
 namespace SWLOR.Shared.Domain.Character.Contracts
@@ -315,60 +316,22 @@ namespace SWLOR.Shared.Domain.Character.Contracts
         int CalculateAttackDelay(uint creature);
 
         /// <summary>
-        /// Calculates the smithery control rating for a creature.
+        /// Calculates the control rating for a specific crafting type.
+        /// Control affects the success rate and quality of crafted items.
         /// </summary>
-        /// <param name="creature">The creature to calculate smithery control for</param>
-        /// <returns>The smithery control rating</returns>
-        int CalculateSmitheryControl(uint creature);
+        /// <param name="creature">The creature to calculate control for</param>
+        /// <param name="craftType">The type of crafting to calculate control for (Smithery, Engineering, Fabrication, or Agriculture)</param>
+        /// <returns>The control rating for the specified crafting type</returns>
+        int CalculateControl(uint creature, CraftType craftType);
 
         /// <summary>
-        /// Calculates the fabrication control rating for a creature.
+        /// Calculates the craftsmanship rating for a specific crafting type.
+        /// Craftsmanship affects the quality and potential bonuses of crafted items.
         /// </summary>
-        /// <param name="creature">The creature to calculate fabrication control for</param>
-        /// <returns>The fabrication control rating</returns>
-        int CalculateFabricationControl(uint creature);
-
-        /// <summary>
-        /// Calculates the engineering control rating for a creature.
-        /// </summary>
-        /// <param name="creature">The creature to calculate engineering control for</param>
-        /// <returns>The engineering control rating</returns>
-        int CalculateEngineeringControl(uint creature);
-
-        /// <summary>
-        /// Calculates the agriculture control rating for a creature.
-        /// </summary>
-        /// <param name="creature">The creature to calculate agriculture control for</param>
-        /// <returns>The agriculture control rating</returns>
-        int CalculateAgricultureControl(uint creature);
-
-        /// <summary>
-        /// Calculates the smithery craftsmanship rating for a creature.
-        /// </summary>
-        /// <param name="creature">The creature to calculate smithery craftsmanship for</param>
-        /// <returns>The smithery craftsmanship rating</returns>
-        int CalculateSmitheryCraftsmanship(uint creature);
-
-        /// <summary>
-        /// Calculates the fabrication craftsmanship rating for a creature.
-        /// </summary>
-        /// <param name="creature">The creature to calculate fabrication craftsmanship for</param>
-        /// <returns>The fabrication craftsmanship rating</returns>
-        int CalculateFabricationCraftsmanship(uint creature);
-
-        /// <summary>
-        /// Calculates the engineering craftsmanship rating for a creature.
-        /// </summary>
-        /// <param name="creature">The creature to calculate engineering craftsmanship for</param>
-        /// <returns>The engineering craftsmanship rating</returns>
-        int CalculateEngineeringCraftsmanship(uint creature);
-
-        /// <summary>
-        /// Calculates the agriculture craftsmanship rating for a creature.
-        /// </summary>
-        /// <param name="creature">The creature to calculate agriculture craftsmanship for</param>
-        /// <returns>The agriculture craftsmanship rating</returns>
-        int CalculateAgricultureCraftsmanship(uint creature);
+        /// <param name="creature">The creature to calculate craftsmanship for</param>
+        /// <param name="craftType">The type of crafting to calculate craftsmanship for (Smithery, Engineering, Fabrication, or Agriculture)</param>
+        /// <returns>The craftsmanship rating for the specified crafting type</returns>
+        int CalculateCraftsmanship(uint creature, CraftType craftType);
 
         /// <summary>
         /// Calculates the attack rating using raw inputs.

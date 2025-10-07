@@ -11,6 +11,7 @@ using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Component.Crafting.UI.Payload;
 using SWLOR.NWN.API.Contracts;
 using SWLOR.Shared.Abstractions.Models;
+using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Crafting.Contracts;
 using SWLOR.Shared.Domain.Crafting.Enums;
@@ -34,6 +35,7 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
         private readonly ILogger _logger;
         private readonly IDatabaseService _db;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IStatCalculationService _statCalculation;
 
         // Lazy-loaded services to break circular dependencies
         private readonly Lazy<IItemCacheService> _itemCache;
@@ -60,11 +62,18 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
         private IItemPropertyPluginService ItemPropertyPlugin => _itemPropertyPlugin.Value;
         private IObjectPluginService ObjectPlugin => _objectPlugin.Value;
 
-        public CraftViewModel(IGuiService guiService, ILogger logger, IDatabaseService db, IServiceProvider serviceProvider) : base(guiService)
+        public CraftViewModel(
+            IGuiService guiService, 
+            ILogger logger, 
+            IDatabaseService db, 
+            IServiceProvider serviceProvider,
+            IStatCalculationService statCalculation) 
+            : base(guiService)
         {
             _logger = logger;
             _db = db;
             _serviceProvider = serviceProvider;
+            _statCalculation = statCalculation;
             
             // Initialize lazy services
             _itemCache = new Lazy<IItemCacheService>(() => _serviceProvider.GetRequiredService<IItemCacheService>());
@@ -1423,6 +1432,23 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
             }
         };
 
+        private CraftType GetCraftTypeFromSkill(SkillType skillType)
+        {
+            switch (skillType)
+            {
+                case SkillType.Smithery:
+                    return CraftType.Smithery;
+                case SkillType.Agriculture:
+                    return CraftType.Agriculture;
+                case SkillType.Engineering:
+                    return CraftType.Engineering;
+                case SkillType.Fabrication:
+                    return CraftType.Fabrication;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(skillType));
+            }
+        }
+
         private int CalculateProgress(int baseProgress)
         {
             var playerId = GetObjectUUID(Player);
@@ -1430,7 +1456,8 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
             var recipe = CraftService.GetRecipe(_recipe);
             var primaryModifier = GetAbilityModifier(_primaryAbility, Player);
             var secondaryModifier = GetAbilityModifier(_secondaryAbility, Player);
-            var craftsmanship = StatService.CalculateCraftsmanship(Player, recipe.Skill);
+            var craftType = GetCraftTypeFromSkill(recipe.Skill);
+            var craftsmanship = _statCalculation.CalculateCraftsmanship(Player, craftType);
             var delta = dbPlayer.Skills[recipe.Skill].Rank - recipe.Level;
             var recipeDiff = 1 + 0.05f * delta;
             var progress = (int)((baseProgress + primaryModifier * 1.25f + secondaryModifier * 0.75f + craftsmanship * 0.65f) * recipeDiff);
@@ -1445,7 +1472,8 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
             var recipe = CraftService.GetRecipe(_recipe);
             var primaryModifier = GetAbilityModifier(_primaryAbility, Player);
             var secondaryModifier = GetAbilityModifier(_secondaryAbility, Player);
-            var control = StatService.CalculateControl(Player, recipe.Skill);
+            var craftType = GetCraftTypeFromSkill(recipe.Skill);
+            var control = _statCalculation.CalculateControl(Player, craftType);
             var delta = dbPlayer.Skills[recipe.Skill].Rank - recipe.Level;
             var recipeDiff = delta < 0 
                 ? 1 + 0.05f * delta 

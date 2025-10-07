@@ -5,6 +5,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
+using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Inventory.Contracts;
@@ -16,10 +17,14 @@ namespace SWLOR.Component.Ability.Definitions.Force
     public class ThrowLightsaberAbilityDefinition : IAbilityListDefinition
     {
         private readonly IServiceProvider _serviceProvider;
+        private readonly IStatCalculationService _statCalculation;
 
-        public ThrowLightsaberAbilityDefinition(IServiceProvider serviceProvider)
+        public ThrowLightsaberAbilityDefinition(
+            IServiceProvider serviceProvider,
+            IStatCalculationService statCalculation)
         {
             _serviceProvider = serviceProvider;
+            _statCalculation = statCalculation;
         }
 
         // Lazy-loaded services to break circular dependencies
@@ -89,7 +94,7 @@ namespace SWLOR.Component.Ability.Definitions.Force
             }
 
             dmg += CombatService.GetAbilityDamageBonus(activator, SkillType.Force);
-            var attack = StatService.GetAttack(activator, AbilityType.Willpower, SkillType.Force);
+            var attack = _statCalculation.CalculateAttack(activator, AbilityType.Willpower, SkillType.Force);
             CombatPointService.AddCombatPoint(activator, target, SkillType.Force, 3);
 
             // apply to target

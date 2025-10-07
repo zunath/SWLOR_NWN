@@ -3,6 +3,7 @@ using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
+using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Perk.Enums;
@@ -13,10 +14,14 @@ namespace SWLOR.Component.Ability.Definitions.NPC
     public class FireBreathAbilityDefinition : IAbilityListDefinition
     {
         private readonly IServiceProvider _serviceProvider;
+        private readonly IStatCalculationService _statCalculation;
 
-        public FireBreathAbilityDefinition(IServiceProvider serviceProvider)
+        public FireBreathAbilityDefinition(
+            IServiceProvider serviceProvider,
+            IStatCalculationService statCalculation)
         {
             _serviceProvider = serviceProvider;
+            _statCalculation = statCalculation;
         }
 
         // Lazy-loaded services to break circular dependencies
@@ -49,7 +54,7 @@ namespace SWLOR.Component.Ability.Definitions.NPC
                     {
                         if (GetIsEnemy(coneTarget, activator))
                         {
-                            var attack = StatService.GetAttack(activator, AbilityType.Might, SkillType.Invalid);
+                            var attack = _statCalculation.CalculateAttack(activator, AbilityType.Might, SkillType.Invalid);
                             var defense = StatService.GetDefense(coneTarget, CombatDamageType.Fire, AbilityType.Vitality);
                             var defenderStat = GetAbilityScore(coneTarget, AbilityType.Vitality);
                             var damage = CombatService.CalculateDamage(
@@ -87,7 +92,7 @@ namespace SWLOR.Component.Ability.Definitions.NPC
                     {
                         if (GetIsEnemy(coneTarget, activator))
                         {
-                            var attack = StatService.GetAttack(activator, AbilityType.Might, SkillType.Invalid);
+                            var attack = _statCalculation.CalculateAttack(activator, AbilityType.Might, SkillType.Invalid);
                             var defense = StatService.GetDefense(coneTarget, CombatDamageType.Fire, AbilityType.Vitality);
                             var defenderStat = GetAbilityScore(coneTarget, AbilityType.Vitality);
                             var damage = CombatService.CalculateDamage(

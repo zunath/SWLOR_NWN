@@ -3,6 +3,7 @@ using SWLOR.NWN.API.NWScript.Constants;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
+using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Skill.Enums;
@@ -11,8 +12,10 @@ namespace SWLOR.Component.Ability.Definitions.Devices
 {
     public class IonGrenadeAbilityDefinition : ExplosiveBaseAbilityDefinition
     {
-        public IonGrenadeAbilityDefinition(IServiceProvider serviceProvider) 
-            : base(serviceProvider)
+        public IonGrenadeAbilityDefinition(
+            IServiceProvider serviceProvider,
+            IStatCalculationService statCalculation)
+            : base(serviceProvider, statCalculation)
         {
         }
 
@@ -34,7 +37,7 @@ namespace SWLOR.Component.Ability.Definitions.Devices
             dmg += CombatService.GetAbilityDamageBonus(activator, SkillType.Devices);
 
             var attackerStat = GetAbilityScore(activator, AbilityType.Perception);
-            var attack = StatService.GetAttack(activator, AbilityType.Perception, SkillType.Devices);
+            var attack = _statCalculation.CalculateAttack(activator, AbilityType.Perception, SkillType.Devices);
             var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
             var defense = StatService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
             var damage = CombatService.CalculateDamage(

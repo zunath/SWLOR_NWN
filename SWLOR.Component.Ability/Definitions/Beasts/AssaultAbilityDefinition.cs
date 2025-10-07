@@ -3,6 +3,7 @@ using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
+using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Perk.Enums;
@@ -13,10 +14,14 @@ namespace SWLOR.Component.Ability.Definitions.Beasts
     public class AssaultAbilityDefinition : IAbilityListDefinition
     {
         private readonly IServiceProvider _serviceProvider;
+        private readonly IStatCalculationService _statCalculation;
 
-        public AssaultAbilityDefinition(IServiceProvider serviceProvider)
+        public AssaultAbilityDefinition(
+            IServiceProvider serviceProvider,
+            IStatCalculationService statCalculation)
         {
             _serviceProvider = serviceProvider;
+            _statCalculation = statCalculation;
         }
 
         // Lazy-loaded services to break circular dependencies
@@ -42,7 +47,7 @@ namespace SWLOR.Component.Ability.Definitions.Beasts
             var beastStat = GetAbilityScore(activator, AbilityType.Agility) / 2;
 
             var totalStat = beastmasterStat + beastStat;
-            var attack = StatService.GetAttack(activator, AbilityType.Agility, SkillType.Invalid);
+            var attack = _statCalculation.CalculateAttack(activator, AbilityType.Agility, SkillType.Invalid);
             var defense = StatService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
             var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
 

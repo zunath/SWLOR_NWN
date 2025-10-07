@@ -4,6 +4,7 @@ using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
+using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Inventory.Contracts;
@@ -15,10 +16,14 @@ namespace SWLOR.Component.Ability.Definitions.OneHanded
     public class BackstabAbilityDefinition : IAbilityListDefinition
     {
         private readonly IServiceProvider _serviceProvider;
+        private readonly IStatCalculationService _statCalculation;
 
-        public BackstabAbilityDefinition(IServiceProvider serviceProvider)
+        public BackstabAbilityDefinition(
+            IServiceProvider serviceProvider,
+            IStatCalculationService statCalculation)
         {
             _serviceProvider = serviceProvider;
+            _statCalculation = statCalculation;
         }
 
         // Lazy-loaded services to break circular dependencies
@@ -83,7 +88,7 @@ namespace SWLOR.Component.Ability.Definitions.OneHanded
             CombatPointService.AddCombatPoint(activator, target, SkillType.OneHanded, 3);
 
             var attackerStat = GetAbilityScore(activator, AbilityType.Perception);
-            var attack = StatService.GetAttack(activator, AbilityType.Perception, SkillType.OneHanded);
+            var attack = _statCalculation.CalculateAttack(activator, AbilityType.Perception, SkillType.OneHanded);
             var defense = StatService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
             var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
             var damage = CombatService.CalculateDamage(

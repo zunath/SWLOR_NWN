@@ -3,6 +3,7 @@ using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
+using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Communication.Contracts;
@@ -14,13 +15,17 @@ namespace SWLOR.Component.Ability.Definitions.Force
     public class DisturbanceAbilityDefinition : IAbilityListDefinition
     {
         private readonly IServiceProvider _serviceProvider;
+        private readonly IStatCalculationService _statCalculation;
         private const string Tier1Tag = "EFFECT_DISTURBANCE_1";
         private const string Tier2Tag = "EFFECT_DISTURBANCE_2";
         private const string Tier3Tag = "EFFECT_DISTURBANCE_3";
 
-        public DisturbanceAbilityDefinition(IServiceProvider serviceProvider)
+        public DisturbanceAbilityDefinition(
+            IServiceProvider serviceProvider,
+            IStatCalculationService statCalculation)
         {
             _serviceProvider = serviceProvider;
+            _statCalculation = statCalculation;
         }
 
         // Lazy-loaded services to break circular dependencies
@@ -49,7 +54,7 @@ namespace SWLOR.Component.Ability.Definitions.Force
             var enmityService = EnmityService;
             var combatPointService = CombatPointService;
 
-            var attack = statService.GetAttack(activator, AbilityType.Willpower, SkillType.Force);
+            var attack = _statCalculation.CalculateAttack(activator, AbilityType.Willpower, SkillType.Force);
             var defense = statService.GetDefense(target, CombatDamageType.Force, AbilityType.Willpower);
             dmg += (attackerStat * ((tier -1) / 2)) + attackerStat;
             var damage = combatService.CalculateDamage(attack, dmg, attackerStat, defense, defenderStat, 0);

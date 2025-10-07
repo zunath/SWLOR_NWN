@@ -4,6 +4,7 @@ using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
+using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Perk.Enums;
@@ -14,10 +15,14 @@ namespace SWLOR.Component.Ability.Definitions.Beasts
     public class IceBreathAbilityDefinition : IAbilityListDefinition
     {
         private readonly IServiceProvider _serviceProvider;
+        private readonly IStatCalculationService _statCalculation;
 
-        public IceBreathAbilityDefinition(IServiceProvider serviceProvider)
+        public IceBreathAbilityDefinition(
+            IServiceProvider serviceProvider,
+            IStatCalculationService statCalculation)
         {
             _serviceProvider = serviceProvider;
+            _statCalculation = statCalculation;
         }
 
         // Lazy-loaded services to break circular dependencies
@@ -51,7 +56,7 @@ namespace SWLOR.Component.Ability.Definitions.Beasts
             var beastStat = GetAbilityScore(activator, AbilityType.Might) / 2;
             var totalStat = beastStat + beastmasterStat;
 
-            var attack = StatService.GetAttack(activator, AbilityType.Might, SkillType.Invalid);
+            var attack = _statCalculation.CalculateAttack(activator, AbilityType.Might, SkillType.Invalid);
 
             var target = GetFirstObjectInShape(ShapeType.SpellCone, ConeSize, targetLocation, true, ObjectType.Creature);
             while (GetIsObjectValid(target))

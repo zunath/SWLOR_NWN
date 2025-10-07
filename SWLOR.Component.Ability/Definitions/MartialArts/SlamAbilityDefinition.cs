@@ -6,6 +6,7 @@ using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
+using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Inventory.Contracts;
@@ -17,10 +18,14 @@ namespace SWLOR.Component.Ability.Definitions.MartialArts
     public class SlamAbilityDefinition : IAbilityListDefinition
     {
         private readonly IServiceProvider _serviceProvider;
+        private readonly IStatCalculationService _statCalculation;
 
-        public SlamAbilityDefinition(IServiceProvider serviceProvider)
+        public SlamAbilityDefinition(
+            IServiceProvider serviceProvider,
+            IStatCalculationService statCalculation)
         {
             _serviceProvider = serviceProvider;
+            _statCalculation = statCalculation;
         }
 
         // Lazy-loaded services to break circular dependencies
@@ -85,11 +90,11 @@ namespace SWLOR.Component.Ability.Definitions.MartialArts
 
             if (GetHasFeat(FeatType.FlurryStyle, activator))
             {
-                attack = StatService.GetAttack(activator, AbilityType.Perception, SkillType.MartialArts);
+                attack = _statCalculation.CalculateAttack(activator, AbilityType.Perception, SkillType.MartialArts);
             }
             else
             {
-                attack = StatService.GetAttack(activator, AbilityType.Might, SkillType.MartialArts);
+                attack = _statCalculation.CalculateAttack(activator, AbilityType.Might, SkillType.MartialArts);
             }
 
             var defense = StatService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);

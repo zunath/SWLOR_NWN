@@ -520,7 +520,7 @@ namespace SWLOR.Component.Associate.UI.ViewModel
             MainHand = "-";
             OffHand = "-";
 
-            var attack = StatService.GetAttack(dbBeast.Level, level.Stats[beastDetails.DamageStat], (int)(level.MaxAttackBonus * (dbBeast.AttackPurity * 0.01f)));
+            var attack = _statCalculation.CalculateAttack(dbBeast.Level, level.Stats[beastDetails.DamageStat], (int)(level.MaxAttackBonus * (dbBeast.AttackPurity * 0.01f)));
             var accuracy = _statCalculation.CalculateAccuracy(dbBeast.Level, level.Stats[beastDetails.AccuracyStat], (int)(level.MaxAccuracyBonus * (dbBeast.AccuracyPurity * 0.01f)));
             var evasion = _statCalculation.CalculateEvasion(dbBeast.Level, level.Stats[AbilityType.Agility], (int)(level.MaxEvasionBonus * (dbBeast.EvasionPurity * 0.01f)));
             Attack = $"{attack}";

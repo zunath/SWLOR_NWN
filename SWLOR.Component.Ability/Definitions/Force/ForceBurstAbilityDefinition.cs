@@ -5,6 +5,7 @@ using SWLOR.NWN.API.NWScript.Constants;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
+using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Perk.Enums;
@@ -15,10 +16,14 @@ namespace SWLOR.Component.Ability.Definitions.Force
     public class ForceBurstAbilityDefinition : IAbilityListDefinition
     {
         private readonly IServiceProvider _serviceProvider;
+        private readonly IStatCalculationService _statCalculation;
 
-        public ForceBurstAbilityDefinition(IServiceProvider serviceProvider)
+        public ForceBurstAbilityDefinition(
+            IServiceProvider serviceProvider,
+            IStatCalculationService statCalculation)
         {
             _serviceProvider = serviceProvider;
+            _statCalculation = statCalculation;
         }
 
         // Lazy-loaded services to break circular dependencies
@@ -67,7 +72,7 @@ namespace SWLOR.Component.Ability.Definitions.Force
                     var attackerStat = GetAbilityScore(activator, AbilityType.Willpower);
                     var defense = StatService.GetDefense(target, CombatDamageType.Force, AbilityType.Willpower);
                     var defenderStat = GetAbilityScore(target, AbilityType.Willpower);
-                    var attack = StatService.GetAttack(activator, AbilityType.Willpower, SkillType.Force);
+                    var attack = _statCalculation.CalculateAttack(activator, AbilityType.Willpower, SkillType.Force);
                     var damage = CombatService.CalculateDamage(
                         attack,
                         dmg,

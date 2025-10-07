@@ -229,27 +229,6 @@ namespace SWLOR.Shared.Domain.Combat.Contracts
         void AdjustCPBonus(Player entity, SkillType skillType, int adjustBy);
 
         /// <summary>
-        /// Calculates the attack for a given creature.
-        /// </summary>
-        /// <param name="creature">The creature to calculate.</param>
-        /// <param name="abilityType">The type of ability to use.</param>
-        /// <param name="skillType">The type of skill to use.</param>
-        /// <param name="attackBonusOverride">Overrides the attack bonus granted by equipment. Usually only used by Space combat.</param>
-        /// <returns>The total Attack value of a creature.</returns>
-        int GetAttack(uint creature, AbilityType abilityType, SkillType skillType, int attackBonusOverride = 0);
-
-        /// <summary>
-        /// Retrieves the raw attack based on the level, stat, and any bonuses.
-        /// </summary>
-        /// <param name="level">The level (NPC or skill)</param>
-        /// <param name="stat">The raw stat points</param>
-        /// <param name="bonus">The amount of bonus attack or force attack</param>
-        /// <returns></returns>
-        int GetAttack(int level, int stat, int bonus);
-
-        int GetAttackNative(CNWSCreature creature, BaseItemType itemType);
-
-        /// <summary>
         /// Retrieves the total defense toward a specific type of damage.
         /// Physical and Force types include effect bonuses, stats, etc.
         /// Fire/Poison/Electrical/Ice include effect bonuses, stats, etc. at 70% of physical.

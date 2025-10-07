@@ -6,6 +6,7 @@ using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
+using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Inventory.Contracts;
@@ -17,10 +18,14 @@ namespace SWLOR.Component.Ability.Definitions.Ranged
     public class PiercingTossAbilityDefinition : IAbilityListDefinition
     {
         private readonly IServiceProvider _serviceProvider;
+        private readonly IStatCalculationService _statCalculation;
 
-        public PiercingTossAbilityDefinition(IServiceProvider serviceProvider)
+        public PiercingTossAbilityDefinition(
+            IServiceProvider serviceProvider,
+            IStatCalculationService statCalculation)
         {
             _serviceProvider = serviceProvider;
+            _statCalculation = statCalculation;
         }
 
         // Lazy-loaded services to break circular dependencies
@@ -81,7 +86,7 @@ namespace SWLOR.Component.Ability.Definitions.Ranged
             dmg += CombatService.GetAbilityDamageBonus(activator, SkillType.Ranged);
 
             var attackerStat = CombatService.GetPerkAdjustedAbilityScore(activator);
-            var attack = StatService.GetAttack(activator, AbilityType.Might, SkillType.Ranged);
+            var attack = _statCalculation.CalculateAttack(activator, AbilityType.Might, SkillType.Ranged);
             var defense = StatService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
             var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
             var damage = CombatService.CalculateDamage(

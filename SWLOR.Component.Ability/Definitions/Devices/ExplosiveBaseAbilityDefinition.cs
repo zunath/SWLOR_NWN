@@ -5,6 +5,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Ability.Contracts;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
+using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Perk.Contracts;
@@ -16,10 +17,14 @@ namespace SWLOR.Component.Ability.Definitions.Devices
     public abstract class ExplosiveBaseAbilityDefinition: IAbilityListDefinition
     {
         private readonly IServiceProvider _serviceProvider;
+        protected readonly IStatCalculationService _statCalculation;
 
-        protected ExplosiveBaseAbilityDefinition(IServiceProvider serviceProvider)
+        protected ExplosiveBaseAbilityDefinition(
+            IServiceProvider serviceProvider,
+            IStatCalculationService statCalculation)
         {
             _serviceProvider = serviceProvider;
+            _statCalculation = statCalculation;
         }
 
         // Lazy-loaded services to break circular dependencies
@@ -133,7 +138,7 @@ namespace SWLOR.Component.Ability.Definitions.Devices
             var delay = GetDistanceBetweenLocations(activatorLocation, targetLocation) / 18f;
 
             var attackerStat = GetAbilityScore(activator, AbilityType.Perception);
-            var attack = StatService.GetAttack(activator, AbilityType.Perception, SkillType.Devices);
+            var attack = _statCalculation.CalculateAttack(activator, AbilityType.Perception, SkillType.Devices);
             var dmgBonus = CombatService.GetAbilityDamageBonus(activator, SkillType.Devices);
             dmgBonus += attackerStat / 2;
 

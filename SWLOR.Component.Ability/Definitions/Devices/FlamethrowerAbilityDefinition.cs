@@ -4,6 +4,7 @@ using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
+using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Perk.Enums;
@@ -14,10 +15,14 @@ namespace SWLOR.Component.Ability.Definitions.Devices
     public class FlamethrowerAbilityDefinition : IAbilityListDefinition
     {
         private readonly IServiceProvider _serviceProvider;
+        private readonly IStatCalculationService _statCalculation;
 
-        public FlamethrowerAbilityDefinition(IServiceProvider serviceProvider)
+        public FlamethrowerAbilityDefinition(
+            IServiceProvider serviceProvider,
+            IStatCalculationService statCalculation)
         {
             _serviceProvider = serviceProvider;
+            _statCalculation = statCalculation;
         }
 
         // Lazy-loaded services to break circular dependencies
@@ -47,7 +52,7 @@ namespace SWLOR.Component.Ability.Definitions.Devices
             });
 
             var attackerStat = GetAbilityScore( activator, AbilityType.Perception);
-            var attack = StatService.GetAttack(activator, AbilityType.Perception, SkillType.Devices);
+            var attack = _statCalculation.CalculateAttack(activator, AbilityType.Perception, SkillType.Devices);
             var eVFX = EffectVisualEffect(VisualEffectType.Vfx_Imp_Flame_S);
 
             var target = GetFirstObjectInShape(ShapeType.SpellCone, ConeSize, targetLocation, true, ObjectType.Creature);

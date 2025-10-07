@@ -7,6 +7,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Ability.Contracts;
 using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
+using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Inventory.Contracts;
@@ -19,10 +20,14 @@ namespace SWLOR.Component.Ability.Definitions.TwoHanded
     public class SkewerAbilityDefinition : IAbilityListDefinition
     {
         private readonly IServiceProvider _serviceProvider;
+        private readonly IStatCalculationService _statCalculation;
 
-        public SkewerAbilityDefinition(IServiceProvider serviceProvider)
+        public SkewerAbilityDefinition(
+            IServiceProvider serviceProvider,
+            IStatCalculationService statCalculation)
         {
             _serviceProvider = serviceProvider;
+            _statCalculation = statCalculation;
         }
 
         // Lazy-loaded services to break circular dependencies
@@ -80,7 +85,7 @@ namespace SWLOR.Component.Ability.Definitions.TwoHanded
             dmg += CombatService.GetAbilityDamageBonus(activator, SkillType.TwoHanded);
             
             var attackerStat = GetAbilityModifier(AbilityType.Might, activator);
-            var attack = StatService.GetAttack(activator, AbilityType.Might, SkillType.TwoHanded);
+            var attack = _statCalculation.CalculateAttack(activator, AbilityType.Might, SkillType.TwoHanded);
             var defense = StatService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
             var defenderStat = GetAbilityModifier(AbilityType.Vitality, target);
             var damage = CombatService.CalculateDamage(

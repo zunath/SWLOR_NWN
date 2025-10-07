@@ -7,6 +7,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Ability.Contracts;
 using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
+using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Inventory.Contracts;
@@ -18,10 +19,14 @@ namespace SWLOR.Component.Ability.Definitions.TwoHanded
     public class DoubleStrikeAbilityDefinition : IAbilityListDefinition
     {
         private readonly IServiceProvider _serviceProvider;
+        private readonly IStatCalculationService _statCalculation;
 
-        public DoubleStrikeAbilityDefinition(IServiceProvider serviceProvider)
+        public DoubleStrikeAbilityDefinition(
+            IServiceProvider serviceProvider,
+            IStatCalculationService statCalculation)
         {
             _serviceProvider = serviceProvider;
+            _statCalculation = statCalculation;
         }
 
         // Lazy-loaded services to break circular dependencies
@@ -82,7 +87,7 @@ namespace SWLOR.Component.Ability.Definitions.TwoHanded
             }
 
             var attackerStat = CombatService.GetPerkAdjustedAbilityScore(activator);
-            var attack = StatService.GetAttack(activator, stat, SkillType.TwoHanded);
+            var attack = _statCalculation.CalculateAttack(activator, stat, SkillType.TwoHanded);
             var defense = StatService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
             var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
             var damage = CombatService.CalculateDamage(

@@ -7,6 +7,7 @@ using SWLOR.NWN.API.NWScript.Constants;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
+using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Inventory.Contracts;
@@ -18,10 +19,14 @@ namespace SWLOR.Component.Ability.Definitions.Ranged
     public class ExplosiveTossAbilityDefinition : IAbilityListDefinition
     {
         private readonly IServiceProvider _serviceProvider;
+        private readonly IStatCalculationService _statCalculation;
 
-        public ExplosiveTossAbilityDefinition(IServiceProvider serviceProvider)
+        public ExplosiveTossAbilityDefinition(
+            IServiceProvider serviceProvider,
+            IStatCalculationService statCalculation)
         {
             _serviceProvider = serviceProvider;
+            _statCalculation = statCalculation;
         }
 
         // Lazy-loaded services to break circular dependencies
@@ -74,7 +79,7 @@ namespace SWLOR.Component.Ability.Definitions.Ranged
 
             dmg += CombatService.GetAbilityDamageBonus(activator, SkillType.Ranged);
 
-            var attack = StatService.GetAttack(activator, AbilityType.Might, SkillType.Ranged);
+            var attack = _statCalculation.CalculateAttack(activator, AbilityType.Might, SkillType.Ranged);
             var attackerStat = CombatService.GetPerkAdjustedAbilityScore(activator);
             var count = 0;
             var creature = GetFirstObjectInShape(ShapeType.Sphere, RadiusSize.Medium, GetLocation(target), true, ObjectType.Creature);

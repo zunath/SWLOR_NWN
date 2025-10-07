@@ -9,6 +9,7 @@ using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Domain.Ability.Contracts;
 using SWLOR.Shared.Domain.Ability.Enums;
+using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Inventory.Contracts;
@@ -25,6 +26,7 @@ namespace SWLOR.Component.Combat.Native
         private static readonly IItemService _itemService = ServiceContainer.GetService<IItemService>();
         private static readonly IScriptExecutor _scriptExecutor = ServiceContainer.GetService<IScriptExecutor>();
         private static readonly IStatService _statService = ServiceContainer.GetService<IStatService>();
+        private static readonly IStatCalculationService _statCalculationService = ServiceContainer.GetService<IStatCalculationService>();
         private static readonly IAbilityService _abilityService = ServiceContainer.GetService<IAbilityService>();
         private static readonly ICombatService _combatService = ServiceContainer.GetService<ICombatService>();
         private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
@@ -164,7 +166,7 @@ namespace SWLOR.Component.Combat.Native
 
                 // Calculate critical multiplier
                 var critical = CalculateCriticalMultiplier(attacker, weapon, bCritical);
-                var attackerAttack = weapon == null ? 0 : _statService.GetAttackNative(attacker, (BaseItemType)weapon.m_nBaseItem);
+                var attackerAttack = 0; // TODO: Weapon attack bonus calculation - GetAttackNative method was removed
 
                 var physicalDamage = ProcessDamageTypes(pTarget, attacker, weapon, dmgValues, pAttackData,
                     attackerAttack, attackerStat, critical, weaponPerkLevel, attackType, damageFlags, bOffHand, targetObject);

@@ -3,6 +3,7 @@ using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
+using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Skill.Enums;
 
@@ -11,8 +12,10 @@ namespace SWLOR.Component.Ability.Definitions.Devices
     public class KoltoBombAbilityDefinition : ExplosiveBaseAbilityDefinition
     {
 
-        public KoltoBombAbilityDefinition(IServiceProvider serviceProvider) 
-            : base(serviceProvider)
+        public KoltoBombAbilityDefinition(
+            IServiceProvider serviceProvider,
+            IStatCalculationService statCalculation)
+            : base(serviceProvider, statCalculation)
         {
         }
 

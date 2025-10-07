@@ -22,7 +22,6 @@ namespace SWLOR.Component.Combat.Service
 {
     public class StatService : IStatService
     {
-        private readonly ILogger _logger;
         private readonly IDatabaseService _db;
         private readonly IServiceProvider _serviceProvider;
         private readonly IEventAggregator _eventAggregator;
@@ -37,14 +36,12 @@ namespace SWLOR.Component.Combat.Service
         private readonly Lazy<IPerkService> _perkService;
 
         public StatService(
-            ILogger logger, 
             IDatabaseService db, 
             IServiceProvider serviceProvider, 
             IEventAggregator eventAggregator,
             ICreaturePluginService creaturePlugin,
             IObjectPluginService objectPlugin)
         {
-            _logger = logger;
             _db = db;
             _serviceProvider = serviceProvider;
             _eventAggregator = eventAggregator;
@@ -717,125 +714,6 @@ namespace SWLOR.Component.Combat.Service
         private int CalculateEffectDefense(uint creature, int defense, CombatDamageType type)
         {
             return 0;
-        }
-
-        private int CalculateEffectAttack(uint creature, int attack)
-        {
-            return 0;
-        }
-        
-        /// <summary>
-        /// Calculates the attack for a given creature.
-        /// </summary>
-        /// <param name="creature">The creature to calculate.</param>
-        /// <param name="abilityType">The type of ability to use.</param>
-        /// <param name="skillType">The type of skill to use.</param>
-        /// <param name="attackBonusOverride">Overrides the attack bonus granted by equipment. Usually only used by Space combat.</param>
-        /// <returns>The total Attack value of a creature.</returns>
-        public int GetAttack(uint creature, AbilityType abilityType, SkillType skillType, int attackBonusOverride = 0)
-        {
-            if (attackBonusOverride < 0)
-                attackBonusOverride = 0;
-
-            var attackBonus = 0 + attackBonusOverride;
-            var skillLevel = 0;
-            var stat = GetAbilityScore(creature, abilityType);
-            
-            if (GetIsPC(creature) && !GetIsDM(creature))
-            {
-                var playerId = GetObjectUUID(creature);
-                var dbPlayer = _db.Get<Player>(playerId);
-
-                if (skillType != SkillType.Invalid)
-                    skillLevel = dbPlayer.Skills[skillType].Rank;
-
-                if (attackBonusOverride <= 0)
-                {
-                    if (skillType == SkillType.Force)
-                        attackBonus += dbPlayer.ForceAttack;
-                    else
-                        attackBonus += dbPlayer.Attack;
-                }
-            }
-            else
-            {
-                // If a skill value is assigned for this item type, use it.
-                // Otherwise fallback to the NPC's level.
-                var npcStats = GetNPCStats(creature);
-
-                skillLevel = npcStats.Skills.ContainsKey(skillType) 
-                    ? npcStats.Skills[skillType] 
-                    : npcStats.Level;
-
-                if (attackBonusOverride <= 0)
-                {
-                    if (skillType == SkillType.Force)
-                        attackBonus += npcStats.ForceAttack;
-                    else
-                        attackBonus += npcStats.Attack;
-                }
-            }
-
-            attackBonus = CalculateEffectAttack(creature, attackBonus);
-
-            return GetAttack(skillLevel, stat, attackBonus);
-        }
-
-        public int GetAttackNative(CNWSCreature creature, BaseItemType itemType)
-        {
-            var attackBonus = 0;
-            var skillLevel = 0;
-            var statType = ItemService.GetWeaponDamageAbilityType(itemType);
-            var stat = GetStatValueNative(creature, statType);
-            var skillType = SkillService.GetSkillTypeByBaseItem(itemType);
-
-            if (creature.m_bPlayerCharacter == 1)
-            {
-                var playerId = creature.m_pUUID.GetOrAssignRandom().ToString();
-                var dbPlayer = _db.Get<Player>(playerId);
-
-                if (dbPlayer != null)
-                {
-                    if(skillType != SkillType.Invalid)
-                        skillLevel = dbPlayer.Skills[skillType].Rank;
-
-                    if (skillType == SkillType.Force)
-                        attackBonus += dbPlayer.ForceAttack;
-                    else
-                        attackBonus += dbPlayer.Attack;
-                }
-            }
-            else
-            {
-                // If a skill value is assigned for this item type, use it.
-                // Otherwise fallback to the NPC's level.
-                var npcStats = GetNPCStatsNative(creature);
-
-                skillLevel = npcStats.Skills.ContainsKey(skillType) 
-                    ? npcStats.Skills[skillType] 
-                    : npcStats.Level;
-
-                if (skillType == SkillType.Force)
-                    attackBonus += npcStats.ForceAttack;
-                else
-                    attackBonus += npcStats.Attack;
-            }
-
-            attackBonus = CalculateEffectAttack(creature.m_idSelf, attackBonus);
-            
-            return GetAttack(skillLevel, stat, attackBonus);
-        }
-
-        /// <summary>
-        /// Retrieves the raw attack based on the level, stat, and any bonuses.
-        /// </summary>
-        /// <param name="level">The level (NPC or skill)</param>
-        /// <param name="stat">The raw stat points</param>
-        /// <param name="bonus">The amount of bonus attack or force attack</param>
-        /// <returns></returns>
-        public int GetAttack(int level, int stat, int bonus)
-        {
-            return 8 + (2 * level) + stat + bonus;
         }
 
         /// <summary>

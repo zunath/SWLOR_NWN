@@ -2,6 +2,7 @@ using SWLOR.Component.Ability.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
+using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Skill.Enums;
 
@@ -10,8 +11,10 @@ namespace SWLOR.Component.Ability.Definitions.Devices
     public class SmokeBombAbilityDefinition : ExplosiveBaseAbilityDefinition
     {
 
-        public SmokeBombAbilityDefinition(IServiceProvider serviceProvider) 
-            : base(serviceProvider)
+        public SmokeBombAbilityDefinition(
+            IServiceProvider serviceProvider,
+            IStatCalculationService statCalculation)
+            : base(serviceProvider, statCalculation)
         {
         }
 

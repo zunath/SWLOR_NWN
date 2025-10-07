@@ -4,6 +4,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
+using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Perk.Enums;
@@ -14,10 +15,14 @@ namespace SWLOR.Component.Ability.Definitions.NPC
     public class EarthquakeAbilityDefinition : IAbilityListDefinition
     {
         private readonly IServiceProvider _serviceProvider;
+        private readonly IStatCalculationService _statCalculation;
 
-        public EarthquakeAbilityDefinition(IServiceProvider serviceProvider)
+        public EarthquakeAbilityDefinition(
+            IServiceProvider serviceProvider,
+            IStatCalculationService statCalculation)
         {
             _serviceProvider = serviceProvider;
+            _statCalculation = statCalculation;
         }
 
         // Lazy-loaded services to break circular dependencies
@@ -91,7 +96,7 @@ namespace SWLOR.Component.Ability.Definitions.NPC
 
                             SendMessageToPC(nearest, "The earthquake knocks you down!");
 
-                            var attack = StatService.GetAttack(activator, AbilityType.Might, SkillType.Invalid);
+                            var attack = _statCalculation.CalculateAttack(activator, AbilityType.Might, SkillType.Invalid);
                             var defense = StatService.GetDefense(nearest, CombatDamageType.Physical, AbilityType.Vitality);
                             var defenderStat = GetAbilityScore(nearest, AbilityType.Vitality);
                             var damage = CombatService.CalculateDamage(

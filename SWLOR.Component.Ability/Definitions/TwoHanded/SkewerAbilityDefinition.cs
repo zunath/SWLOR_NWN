@@ -86,7 +86,7 @@ namespace SWLOR.Component.Ability.Definitions.TwoHanded
             
             var attackerStat = GetAbilityModifier(AbilityType.Might, activator);
             var attack = _statCalculation.CalculateAttack(activator, AbilityType.Might, SkillType.TwoHanded);
-            var defense = StatService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+            var defense = _statCalculation.CalculateDefense(target);
             var defenderStat = GetAbilityModifier(AbilityType.Vitality, target);
             var damage = CombatService.CalculateDamage(
                 attack, 

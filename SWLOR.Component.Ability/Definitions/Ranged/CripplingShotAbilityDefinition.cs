@@ -87,7 +87,7 @@ namespace SWLOR.Component.Ability.Definitions.Ranged
 
             var attackerStat = CombatService.GetPerkAdjustedAbilityScore(activator);
             var attack = _statCalculation.CalculateAttack(activator, AbilityType.Perception, SkillType.Ranged);
-            var defense = StatService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+            var defense = _statCalculation.CalculateDefense(target);
             var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
             var damage = CombatService.CalculateDamage(
                 attack,

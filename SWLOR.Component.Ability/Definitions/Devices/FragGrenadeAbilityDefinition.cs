@@ -39,7 +39,7 @@ namespace SWLOR.Component.Ability.Definitions.Devices
             var attackerStat = GetAbilityScore(activator, AbilityType.Perception);
             var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
             var attack = _statCalculation.CalculateAttack(activator, AbilityType.Perception, SkillType.Devices);
-            var defense = StatService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+            var defense = _statCalculation.CalculateDefense(target);
             var damage = CombatService.CalculateDamage(
                 attack,
                 dmg, 

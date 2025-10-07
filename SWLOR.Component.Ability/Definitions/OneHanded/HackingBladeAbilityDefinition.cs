@@ -86,7 +86,7 @@ namespace SWLOR.Component.Ability.Definitions.OneHanded
 
             var attackerStat = GetAbilityScore(activator, AbilityType.Might);
             var attack = _statCalculation.CalculateAttack(activator, AbilityType.Might, SkillType.OneHanded);
-            var defense = StatService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+            var defense = _statCalculation.CalculateDefense(target);
             var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
             var damage = CombatService.CalculateDamage(
                 attack,

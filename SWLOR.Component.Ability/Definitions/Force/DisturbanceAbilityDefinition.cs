@@ -55,7 +55,7 @@ namespace SWLOR.Component.Ability.Definitions.Force
             var combatPointService = CombatPointService;
 
             var attack = _statCalculation.CalculateAttack(activator, AbilityType.Willpower, SkillType.Force);
-            var defense = statService.GetDefense(target, CombatDamageType.Force, AbilityType.Willpower);
+            var defense = _statCalculation.CalculateForceDefense(target);
             dmg += (attackerStat * ((tier -1) / 2)) + attackerStat;
             var damage = combatService.CalculateDamage(attack, dmg, attackerStat, defense, defenderStat, 0);
 

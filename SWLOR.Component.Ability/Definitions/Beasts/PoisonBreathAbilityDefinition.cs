@@ -59,7 +59,7 @@ namespace SWLOR.Component.Ability.Definitions.Beasts
             {
                 if (target != activator)
                 {
-                    var defense = StatService.GetDefense(target, CombatDamageType.Poison, AbilityType.Vitality);
+                    var defense = _statCalculation.CalculateDefense(target);
                     var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
                     var damage = CombatService.CalculateDamage(
                         attack,

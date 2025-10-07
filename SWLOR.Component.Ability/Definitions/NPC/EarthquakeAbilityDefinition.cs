@@ -97,7 +97,7 @@ namespace SWLOR.Component.Ability.Definitions.NPC
                             SendMessageToPC(nearest, "The earthquake knocks you down!");
 
                             var attack = _statCalculation.CalculateAttack(activator, AbilityType.Might, SkillType.Invalid);
-                            var defense = StatService.GetDefense(nearest, CombatDamageType.Physical, AbilityType.Vitality);
+                            var defense = _statCalculation.CalculateDefense(nearest);
                             var defenderStat = GetAbilityScore(nearest, AbilityType.Vitality);
                             var damage = CombatService.CalculateDamage(
                                 attack,

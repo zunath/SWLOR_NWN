@@ -88,7 +88,7 @@ namespace SWLOR.Component.Ability.Definitions.Ranged
                 if (GetDistanceBetween(target, creature) <= 3f)
                 {
 
-                    var defense = StatService.GetDefense(creature, CombatDamageType.Physical, AbilityType.Vitality);
+                    var defense = _statCalculation.CalculateDefense(creature);
                     var defenderStat = GetAbilityScore(creature, AbilityType.Vitality);
                     var damage = CombatService.CalculateDamage(
                         attack,

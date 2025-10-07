@@ -97,7 +97,7 @@ namespace SWLOR.Component.Ability.Definitions.MartialArts
                 attack = _statCalculation.CalculateAttack(activator, AbilityType.Might, SkillType.MartialArts);
             }
 
-            var defense = StatService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+            var defense = _statCalculation.CalculateDefense(target);
             var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
             var damage = CombatService.CalculateDamage(
                 attack,

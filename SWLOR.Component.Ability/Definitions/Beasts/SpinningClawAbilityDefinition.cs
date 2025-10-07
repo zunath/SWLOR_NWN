@@ -58,7 +58,7 @@ namespace SWLOR.Component.Ability.Definitions.Beasts
                 if (GetIsReactionTypeHostile(creature, activator))
                 {
                     var attack = _statCalculation.CalculateAttack(activator, AbilityType.Agility, SkillType.Invalid);
-                    var defense = StatService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+                    var defense = _statCalculation.CalculateDefense(target);
                     var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
                     var damage = CombatService.CalculateDamage(
                         attack,

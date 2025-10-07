@@ -527,8 +527,8 @@ namespace SWLOR.Component.Associate.UI.ViewModel
             Accuracy = $"{accuracy}";
             Evasion = $"{evasion}";
 
-            var physicalDefense = StatService.CalculateDefense(level.Stats[AbilityType.Vitality], dbBeast.Level, (int)(level.MaxDefenseBonuses[CombatDamageType.Physical] * (dbBeast.DefensePurities[CombatDamageType.Physical] * 0.01f)));
-            var forceDefense = StatService.CalculateDefense(level.Stats[AbilityType.Willpower], dbBeast.Level, (int)(level.MaxDefenseBonuses[CombatDamageType.Force] * (dbBeast.DefensePurities[CombatDamageType.Force] * 0.01f)));
+            var physicalDefense = _statCalculation.CalculateDefense(level.Stats[AbilityType.Vitality], dbBeast.Level, (int)(level.MaxDefenseBonuses[CombatDamageType.Physical] * (dbBeast.DefensePurities[CombatDamageType.Physical] * 0.01f)));
+            var forceDefense = _statCalculation.CalculateDefense(level.Stats[AbilityType.Willpower], dbBeast.Level, (int)(level.MaxDefenseBonuses[CombatDamageType.Force] * (dbBeast.DefensePurities[CombatDamageType.Force] * 0.01f)));
             var fireDefense = $"{(int)(level.MaxDefenseBonuses[CombatDamageType.Fire] * (dbBeast.DefensePurities[CombatDamageType.Fire] * 0.01f))}";
             var poisonDefense = $"{(int)(level.MaxDefenseBonuses[CombatDamageType.Poison] * (dbBeast.DefensePurities[CombatDamageType.Poison] * 0.01f))}";
             var electricalDefense = $"{(int)(level.MaxDefenseBonuses[CombatDamageType.Electrical] * (dbBeast.DefensePurities[CombatDamageType.Electrical] * 0.01f))}";

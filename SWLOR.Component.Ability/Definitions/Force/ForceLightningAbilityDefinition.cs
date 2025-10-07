@@ -71,7 +71,7 @@ namespace SWLOR.Component.Ability.Definitions.Force
                 if (GetIsReactionTypeHostile(creature, activator) && GetIsDead(creature) == false)
                 {
                     var attackerStat = GetAbilityScore(activator, AbilityType.Willpower);
-                    var defense = StatService.GetDefense(creature, CombatDamageType.Force, AbilityType.Willpower);
+                    var defense = _statCalculation.CalculateForceDefense(creature);
                     var attack = _statCalculation.CalculateAttack(activator, AbilityType.Willpower, SkillType.Force);
                     var defenderStat = GetAbilityScore(creature, AbilityType.Willpower);
                     var damage = CombatService.CalculateDamage(

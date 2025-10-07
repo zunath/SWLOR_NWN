@@ -24,7 +24,7 @@ namespace SWLOR.Component.Ability.Definitions.Devices
             var attack = GetLocalInt(OBJECT_SELF, "DEVICE_ATK");
             dmg += GetLocalInt(OBJECT_SELF, "DEVICE_DMG");
 
-            var defense = StatService.GetDefense(creature, CombatDamageType.Physical, AbilityType.Vitality);
+            var defense = _statCalculation.CalculateDefense(creature);
             var defenderStat = GetAbilityScore(creature, AbilityType.Vitality);
             var damage = CombatService.CalculateDamage(
                 attack,

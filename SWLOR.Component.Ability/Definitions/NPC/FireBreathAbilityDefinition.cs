@@ -55,7 +55,7 @@ namespace SWLOR.Component.Ability.Definitions.NPC
                         if (GetIsEnemy(coneTarget, activator))
                         {
                             var attack = _statCalculation.CalculateAttack(activator, AbilityType.Might, SkillType.Invalid);
-                            var defense = StatService.GetDefense(coneTarget, CombatDamageType.Fire, AbilityType.Vitality);
+                            var defense = _statCalculation.CalculateDefense(coneTarget);
                             var defenderStat = GetAbilityScore(coneTarget, AbilityType.Vitality);
                             var damage = CombatService.CalculateDamage(
                                 attack, 
@@ -93,7 +93,7 @@ namespace SWLOR.Component.Ability.Definitions.NPC
                         if (GetIsEnemy(coneTarget, activator))
                         {
                             var attack = _statCalculation.CalculateAttack(activator, AbilityType.Might, SkillType.Invalid);
-                            var defense = StatService.GetDefense(coneTarget, CombatDamageType.Fire, AbilityType.Vitality);
+                            var defense = _statCalculation.CalculateDefense(coneTarget);
                             var defenderStat = GetAbilityScore(coneTarget, AbilityType.Vitality);
                             var damage = CombatService.CalculateDamage(
                                 attack,

@@ -45,7 +45,7 @@ namespace SWLOR.Component.Ability.Definitions.Devices
         {
             var targetDistance = GetDistanceBetween(activator, target);
             var delay = (float)(targetDistance / (3.0 * log(targetDistance) + 2.0));
-            var defense = StatService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+            var defense = _statCalculation.CalculateDefense(target);
             var attackerStat = GetAbilityScore(activator, AbilityType.Perception);
             var attack = _statCalculation.CalculateAttack(activator, AbilityType.Perception, SkillType.Devices);
             var defenderStat = GetAbilityScore(target, AbilityType.Vitality);

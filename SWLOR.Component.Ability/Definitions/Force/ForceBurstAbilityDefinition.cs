@@ -70,7 +70,7 @@ namespace SWLOR.Component.Ability.Definitions.Force
                 if (GetDistanceBetween(target, creature) <= 4f && GetIsReactionTypeHostile(creature, activator))
                 {
                     var attackerStat = GetAbilityScore(activator, AbilityType.Willpower);
-                    var defense = StatService.GetDefense(target, CombatDamageType.Force, AbilityType.Willpower);
+                    var defense = _statCalculation.CalculateForceDefense(target);
                     var defenderStat = GetAbilityScore(target, AbilityType.Willpower);
                     var attack = _statCalculation.CalculateAttack(activator, AbilityType.Willpower, SkillType.Force);
                     var damage = CombatService.CalculateDamage(

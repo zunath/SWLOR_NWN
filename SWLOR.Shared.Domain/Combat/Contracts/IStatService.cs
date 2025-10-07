@@ -229,36 +229,12 @@ namespace SWLOR.Shared.Domain.Combat.Contracts
         void AdjustCPBonus(Player entity, SkillType skillType, int adjustBy);
 
         /// <summary>
-        /// Retrieves the total defense toward a specific type of damage.
-        /// Physical and Force types include effect bonuses, stats, etc.
-        /// Fire/Poison/Electrical/Ice include effect bonuses, stats, etc. at 70% of physical.
-        /// </summary>
-        /// <param name="creature">The creature to retrieve from.</param>
-        /// <param name="type">The type of damage to retrieve.</param>
-        /// <param name="abilityType"></param>
-        /// <param name="defenseBonusOverride">Overrides the defense bonus granted by equipment. Usually only used for Space combat.</param>
-        /// <returns>The defense value toward a given damage type.</returns>
-        int GetDefense(uint creature, CombatDamageType type, AbilityType abilityType, int defenseBonusOverride = 0);
-
-        int CalculateDefense(int defenderStat, int skillLevel, int defenseBonus);
-
-        /// <summary>
         /// Retrieves the native stat value of a given type on a particular creature.
         /// </summary>
         /// <param name="creature">The creature to check</param>
         /// <param name="statType">The type of stat to check</param>
         /// <returns>The stat value of a creature based on the ability type</returns>
         int GetStatValueNative(CNWSCreature creature, AbilityType statType);
-
-        /// <summary>
-        /// Retrieves the total defense toward a specific type of damage.
-        /// This is specifically for use with Native code and should not be referenced outside of there.
-        /// </summary>
-        /// <param name="creature">The creature to retrieve from.</param>
-        /// <param name="type">The type of damage to retrieve.</param>
-        /// <param name="abilityType"></param>
-        /// <returns>The defense value toward a given damage type.</returns>
-        int GetDefenseNative(CNWSCreature creature, CombatDamageType type, AbilityType abilityType);
 
         /// <summary>
         /// Retrieves the stats of an NPC. This is determined by several item properties located on the NPC's skin.

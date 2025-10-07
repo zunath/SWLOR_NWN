@@ -48,7 +48,7 @@ namespace SWLOR.Component.Ability.Definitions.Beasts
 
             var totalStat = beastmasterStat + beastStat;
             var attack = _statCalculation.CalculateAttack(activator, AbilityType.Perception, SkillType.Invalid);
-            var defense = StatService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+            var defense = _statCalculation.CalculateDefense(target);
             var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
 
             var damage = CombatService.CalculateDamage(

@@ -459,7 +459,7 @@ namespace SWLOR.Component.Combat.Native
             var target = CNWSCreature.FromPointer(pTarget);
             var defenderStat = target.m_pStats.GetCONStat();
             var damagePower = attacker.CalculateDamagePower(target, bOffHand);
-            var defense = _statService.GetDefenseNative(target, damageType, AbilityType.Vitality);
+            var defense = _statCalculationService.CalculateDefense(target.m_idSelf);
 
             _logger.Write<AttackLogGroup>($"DAMAGE: attacker damage attribute: {dmgValues[damageType]} defender defense attribute: {defense}, defender racial type {target.m_pStats.m_nRace}");
 

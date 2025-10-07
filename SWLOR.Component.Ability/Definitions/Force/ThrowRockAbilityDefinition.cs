@@ -70,7 +70,7 @@ namespace SWLOR.Component.Ability.Definitions.Force
             dmg += CombatService.GetAbilityDamageBonus(activator, SkillType.Force);
 
             var attackerStat = GetAbilityScore(activator, AbilityType.Willpower);
-            var defense = StatService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+            var defense = _statCalculation.CalculateForceDefense(target);
             var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
             var attack = _statCalculation.CalculateAttack(activator, AbilityType.Willpower, SkillType.Force);
             var damage = CombatService.CalculateDamage(

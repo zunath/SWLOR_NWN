@@ -100,7 +100,7 @@ namespace SWLOR.Component.Ability.Definitions.Force
             // apply to target
             DelayCommand(delay, () =>
             {
-                var defense = StatService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+                var defense = _statCalculation.CalculateForceDefense(target);
                 var defenderStat = GetAbilityScore(target, AbilityType.Willpower);
                 var damage = CombatService.CalculateDamage(
                     attack,
@@ -123,7 +123,7 @@ namespace SWLOR.Component.Ability.Definitions.Force
                     var nearbyCopy = nearby;
                     DelayCommand(delay, () =>
                     {
-                        var defense = StatService.GetDefense(nearbyCopy, CombatDamageType.Physical, AbilityType.Vitality);
+                        var defense = _statCalculation.CalculateForceDefense(nearbyCopy);
                         var defenderStat = GetAbilityModifier(AbilityType.Willpower, nearbyCopy);
                         var damage = CombatService.CalculateDamage(
                             attack,

@@ -50,8 +50,8 @@ namespace SWLOR.Component.Ability.Definitions.Force
                 var effect = EffectRegenerate(willRestore, 24f);
                 StatService.ReduceFP(activator, 10);
                 StatService.ReduceStamina(activator, willRestore);
-                StatService.RestoreFP(target, willRestore);
-                StatService.RestoreStamina(target, willRestore);
+                CharacterResourceService.RestoreFP(target, willRestore);
+                CharacterResourceService.RestoreSTM(target, willRestore);
                 targetBonus = willBonus * 4;
 
                 effect = TagEffect(effect, BeneRegen);

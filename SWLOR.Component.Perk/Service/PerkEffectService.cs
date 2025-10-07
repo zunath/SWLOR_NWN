@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Perk.Contracts;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Associate.Contracts;
+using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Perk.Contracts;
@@ -19,6 +20,7 @@ namespace SWLOR.Component.Perk.Service
         // Lazy-loaded services to break circular dependencies
         private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
         private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+        private ICharacterResourceService CharacterResourceService => _serviceProvider.GetRequiredService<ICharacterResourceService>();
         private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
         private IRandomService Random => _serviceProvider.GetRequiredService<IRandomService>();
         private IBeastMasteryService BeastMastery => _serviceProvider.GetRequiredService<IBeastMasteryService>();
@@ -43,11 +45,11 @@ namespace SWLOR.Component.Perk.Service
                 {
                     if (PerkService.GetPerkLevel(defender, PerkType.Alacrity) > 0)
                     {
-                        StatService.RestoreStamina(defender, 4);
+                        CharacterResourceService.RestoreSTM(defender, 4);
                     }
                     else if (PerkService.GetPerkLevel(defender, PerkType.Clarity) > 0)
                     {
-                        StatService.RestoreFP(defender, 4);
+                        CharacterResourceService.RestoreFP(defender, 4);
                     }
                 }
             }
@@ -73,7 +75,7 @@ namespace SWLOR.Component.Perk.Service
 
                 if (Random.D100(1) <= chance)
                 {
-                    StatService.RestoreFP(player, 1);
+                    CharacterResourceService.RestoreFP(player, 1);
                 }
             }
         }
@@ -98,7 +100,7 @@ namespace SWLOR.Component.Perk.Service
 
                 if (Random.D100(1) <= chance)
                 {
-                    StatService.RestoreStamina(player, 1);
+                    CharacterResourceService.RestoreSTM(player, 1);
                 }
             }
         }

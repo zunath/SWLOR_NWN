@@ -33,6 +33,7 @@ namespace SWLOR.Component.Communication.Definitions.ChatCommandDefinition
         private readonly IAbilityService _abilityService;
         private readonly IStatService _statService;
         private readonly IStatCalculationService _statCalculationService;
+        private readonly ICharacterResourceService _characterResourceService;
         private readonly IStatGroupService _statGroupService;
         private readonly IBeastMasteryService _beastMastery;
         private readonly IFactionService _faction;
@@ -49,6 +50,7 @@ namespace SWLOR.Component.Communication.Definitions.ChatCommandDefinition
             IAbilityService abilityService,
             IStatService statService,
             IStatCalculationService statCalculationService,
+            ICharacterResourceService characterResourceService,
             IStatGroupService statGroupService,
             IBeastMasteryService beastMastery,
             IFactionService faction,
@@ -63,6 +65,7 @@ namespace SWLOR.Component.Communication.Definitions.ChatCommandDefinition
             _abilityService = abilityService;
             _statService = statService;
             _statCalculationService = statCalculationService;
+            _characterResourceService = characterResourceService;
             _statGroupService = statGroupService;
             _beastMastery = beastMastery;
             _faction = faction;
@@ -196,8 +199,8 @@ namespace SWLOR.Component.Communication.Definitions.ChatCommandDefinition
                     }
 
                     ApplyEffectToObject(DurationType.Instant, EffectHeal(999), target);
-                    _statService.RestoreFP(target, _statCalculationService.CalculateMaxFP(target));
-                    _statService.RestoreStamina(target, _statCalculationService.CalculateMaxSTM(target));
+                    _characterResourceService.RestoreFP(target, _statCalculationService.CalculateMaxFP(target));
+                    _characterResourceService.RestoreSTM(target, _statCalculationService.CalculateMaxSTM(target));
                 });
         }
 

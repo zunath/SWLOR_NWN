@@ -43,7 +43,6 @@ namespace SWLOR.Shared.Domain.Combat.Contracts
         /// <param name="creature">The creature to modify.</param>
         /// <param name="amount">The amount of FP to restore.</param>
         /// <param name="dbPlayer">The player entity to modify. If this is not set, a call to the DB will be made. Leave null for NPCs.</param>
-        void RestoreFP(uint creature, int amount, Player dbPlayer = null);
 
         /// <summary>
         /// Reduces a creature's FP by a specified amount.
@@ -60,7 +59,6 @@ namespace SWLOR.Shared.Domain.Combat.Contracts
         /// <param name="creature">The creature to modify.</param>
         /// <param name="amount">The amount of Stamina to restore.</param>
         /// <param name="dbPlayer">The player entity to modify. If this is not set, a DB call will be made. Leave null for NPCs.</param>
-        void RestoreStamina(uint creature, int amount, Player dbPlayer = null);
 
         /// <summary>
         /// Reduces an entity's Stamina by a specified amount.

@@ -101,48 +101,6 @@ namespace SWLOR.Component.Combat.Service
 
 
 
-        /// <summary>
-        /// Restores a creature's FP by a specified amount.
-        /// </summary>
-        /// <param name="creature">The creature to modify.</param>
-        /// <param name="amount">The amount of FP to restore.</param>
-        /// <param name="dbPlayer">The player entity to modify. If this is not set, a call to the DB will be made. Leave null for NPCs.</param>
-        public void RestoreFP(uint creature, int amount, Player dbPlayer = null)
-        {
-            if (amount <= 0) return;
-
-            var maxFP = StatCalculationService.CalculateMaxFP(creature);
-            
-            // Players
-            if (GetIsPC(creature) && !GetIsDM(creature))
-            {
-                var playerId = GetObjectUUID(creature);
-                if (dbPlayer == null)
-                {
-                    dbPlayer = _db.Get<Player>(playerId);
-                }
-                
-                dbPlayer.FP += amount;
-
-                if (dbPlayer.FP > maxFP)
-                    dbPlayer.FP = maxFP;
-                
-                _db.Set(dbPlayer);
-            }
-            // NPCs
-            else
-            {
-                var fp = GetLocalInt(creature, "FP");
-                fp += amount;
-
-                if (fp > maxFP)
-                    fp = maxFP;
-
-                SetLocalInt(creature, "FP", fp);
-            }
-            
-            _eventAggregator.Publish(new OnPlayerFPAdjusted(), creature);
-        }
 
         /// <summary>
         /// Reduces a creature's FP by a specified amount.
@@ -183,48 +141,6 @@ namespace SWLOR.Component.Combat.Service
             _eventAggregator.Publish(new OnPlayerFPAdjusted(), creature);
         }
 
-        /// <summary>
-        /// Restores an entity's Stamina by a specified amount.
-        /// </summary>
-        /// <param name="creature">The creature to modify.</param>
-        /// <param name="amount">The amount of Stamina to restore.</param>
-        /// <param name="dbPlayer">The player entity to modify. If this is not set, a DB call will be made. Leave null for NPCs.</param>
-        public void RestoreStamina(uint creature, int amount, Player dbPlayer = null)
-        {
-            if (amount <= 0) return;
-
-            var maxSTM = StatCalculationService.CalculateMaxSTM(creature);
-
-            // Players
-            if (GetIsPC(creature) && !GetIsDM(creature))
-            {
-                var playerId = GetObjectUUID(creature);
-                if (dbPlayer == null)
-                {
-                    dbPlayer = _db.Get<Player>(playerId);
-                }
-
-                dbPlayer.Stamina += amount;
-
-                if (dbPlayer.Stamina > maxSTM)
-                    dbPlayer.Stamina = maxSTM;
-
-                _db.Set(dbPlayer);
-            }
-            // NPCs
-            else
-            {
-                var fp = GetLocalInt(creature, "STAMINA");
-                fp += amount;
-
-                if (fp > maxSTM)
-                    fp = maxSTM;
-
-                SetLocalInt(creature, "STAMINA", fp);
-            }
-
-            _eventAggregator.Publish(new OnPlayerStaminaAdjusted(), creature);
-        }
 
         /// <summary>
         /// Reduces an entity's Stamina by a specified amount.

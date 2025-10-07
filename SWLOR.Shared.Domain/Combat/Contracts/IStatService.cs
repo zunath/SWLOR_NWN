@@ -282,58 +282,6 @@ namespace SWLOR.Shared.Domain.Combat.Contracts
         int GetDefenseNative(CNWSCreature creature, CombatDamageType type, AbilityType abilityType);
 
         /// <summary>
-        /// Retrieves the accuracy rating of a creature.
-        /// </summary>
-        /// <param name="creature">The creature to retrieve from.</param>
-        /// <param name="weapon">The weapon being used.</param>
-        /// <param name="statOverride">The stat override used to calculate accuracy. This stat will be used instead of whatever stat is defined for the weapon type.</param>
-        /// <param name="skillOverride">The skill override used to calculate accuracy. This skill will be used instead of whatever skill is defined for the weapon type.</param>
-        /// <returns>The accuracy rating for a creature using a specific weapon.</returns>
-        int GetAccuracy(uint creature, uint weapon, AbilityType statOverride, SkillType skillOverride);
-
-        /// <summary>
-        /// Gets the calculated accuracy for a given level, stat, and bonus.
-        /// </summary>
-        /// <param name="level">The level (skill/NPC)</param>
-        /// <param name="stat">The raw accuracy stat amount</param>
-        /// <param name="bonus">The amount of bonus accuracy.</param>
-        /// <returns>The calculated accuracy result.</returns>
-        int GetAccuracy(int level, int stat, int bonus);
-
-        /// <summary>
-        /// Retrieves the accuracy rating of a creature from a native context.
-        /// </summary>
-        /// <param name="creature">The creature to retrieve from.</param>
-        /// <param name="weapon">The weapon being used.</param>
-        /// <param name="statOverride">The stat override used to calculate accuracy. This stat will be used instead of whatever stat is defined for the weapon type.</param>
-        /// <returns>The accuracy rating for a creature using a specific weapon.</returns>
-        int GetAccuracyNative(CNWSCreature creature, CNWSItem weapon, AbilityType statOverride);
-
-        /// <summary>
-        /// Retrieves a creature's evasion.
-        /// </summary>
-        /// <param name="creature">The creature to retrieve from.</param>
-        /// <param name="skillOverride">The skill override to use instead of Armor for the purposes of calculating evasion.</param>
-        /// <returns>The evasion rating of a creature.</returns>
-        int GetEvasion(uint creature, SkillType skillOverride);
-
-        /// <summary>
-        /// Gets the evasion based on level, stat, and bonuses.
-        /// </summary>
-        /// <param name="level">The level (skill/NPC)</param>
-        /// <param name="stat">The raw agility stat</param>
-        /// <param name="bonus">The amount of bonus evasion</param>
-        /// <returns></returns>
-        int GetEvasion(int level, int stat, int bonus);
-
-        /// <summary>
-        /// Retrieves a creature's evasion rating from a native context.
-        /// </summary>
-        /// <param name="creature">The creature to retrieve from.</param>
-        /// <returns>The evasion rating of a creature.</returns>
-        int GetEvasionNative(CNWSCreature creature);
-
-        /// <summary>
         /// Retrieves the stats of an NPC. This is determined by several item properties located on the NPC's skin.
         /// If no skin is equipped or the item properties do not exist, an empty NPCStats object will be returned.
         /// </summary>

@@ -274,10 +274,10 @@ namespace SWLOR.Shared.UI.Service
         // is a PC or an NPC. 
         //
 
-        public static string GetNameColorNative(CNWSCreature creature)
+        public static string GetNameColor(uint creature)
         {
-            var creatureName = (creature.GetFirstName().GetSimple() + " " + creature.GetLastName().GetSimple()).Trim();
-            return Convert.ToBoolean(creature.m_bPlayerCharacter) 
+            var creatureName = (GetName(creature)).Trim();
+            return Convert.ToBoolean(GetIsPC(creature)) 
                 ? Custom(creatureName, 153, 255, 255) 
                 : Custom(creatureName, 204, 153, 204);
         }

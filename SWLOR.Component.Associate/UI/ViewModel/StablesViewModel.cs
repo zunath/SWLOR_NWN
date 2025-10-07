@@ -6,6 +6,7 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Models;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Domain.Associate.Contracts;
+using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Entities;
@@ -23,17 +24,20 @@ namespace SWLOR.Component.Associate.UI.ViewModel
         private readonly IDatabaseService _db;
         private readonly IServiceProvider _serviceProvider;
         private readonly IBeastRepository _beastRepository;
+        private readonly IStatCalculationService _statCalculation;
 
         public StablesViewModel(
             IGuiService guiService, 
             IDatabaseService db, 
             IServiceProvider serviceProvider,
-            IBeastRepository beastRepository) 
+            IBeastRepository beastRepository,
+            IStatCalculationService statCalculation) 
             : base(guiService)
         {
             _db = db;
             _serviceProvider = serviceProvider;
             _beastRepository = beastRepository;
+            _statCalculation = statCalculation;
             
             // Initialize lazy services
             _statService = new Lazy<IStatService>(() => _serviceProvider.GetRequiredService<IStatService>());
@@ -497,7 +501,7 @@ namespace SWLOR.Component.Associate.UI.ViewModel
             if (fp < 0)
                 fp = 0;
 
-            var stm= StatService.GetMaxStamina(level.STM, (level.Stats[AbilityType.Agility]-10) / 2, 0);
+            var stm = StatService.GetMaxStamina(level.STM, (level.Stats[AbilityType.Agility] - 10) / 2, 0);
             if (stm < 0)
                 stm = 0;
 
@@ -517,8 +521,8 @@ namespace SWLOR.Component.Associate.UI.ViewModel
             OffHand = "-";
 
             var attack = StatService.GetAttack(dbBeast.Level, level.Stats[beastDetails.DamageStat], (int)(level.MaxAttackBonus * (dbBeast.AttackPurity * 0.01f)));
-            var accuracy = StatService.GetAccuracy(dbBeast.Level, level.Stats[beastDetails.AccuracyStat], (int)(level.MaxAccuracyBonus * (dbBeast.AccuracyPurity * 0.01f)));
-            var evasion = StatService.GetEvasion(dbBeast.Level, level.Stats[AbilityType.Agility], (int)(level.MaxEvasionBonus * (dbBeast.EvasionPurity * 0.01f)));
+            var accuracy = _statCalculation.CalculateAccuracy(dbBeast.Level, level.Stats[beastDetails.AccuracyStat], (int)(level.MaxAccuracyBonus * (dbBeast.AccuracyPurity * 0.01f)));
+            var evasion = _statCalculation.CalculateEvasion(dbBeast.Level, level.Stats[AbilityType.Agility], (int)(level.MaxEvasionBonus * (dbBeast.EvasionPurity * 0.01f)));
             Attack = $"{attack}";
             Accuracy = $"{accuracy}";
             Evasion = $"{evasion}";

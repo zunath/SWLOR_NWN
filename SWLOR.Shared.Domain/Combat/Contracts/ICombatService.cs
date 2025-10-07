@@ -115,20 +115,6 @@ namespace SWLOR.Shared.Domain.Combat.Contracts
             int chanceToHit);
 
         /// <summary>
-        /// Builds a combat log message based on the provided information, for native contexts.
-        /// </summary>
-        /// <param name="attacker">The CNWSCreature of the attacker</param>
-        /// <param name="defender">The CNWSCreature of the defender</param>
-        /// <param name="attackResultType">The type of result. 1, 7 = Hit, 3 = Critical, 4 = Miss</param>
-        /// <param name="chanceToHit">The percent chance to hit</param>
-        /// <returns></returns>
-        string BuildCombatLogMessageNative(
-            CNWSCreature attacker,
-            CNWSCreature defender,
-            int attackResultType,
-            int chanceToHit);
-
-        /// <summary>
         /// Check for weapon type and perk. Returns either the default ability score or the perk replaced ability score if the user has the relevant perk or active stance.
         /// This is currently used for zen marksmanship, strong style, crushing style, and flurry style.
         /// </summary>

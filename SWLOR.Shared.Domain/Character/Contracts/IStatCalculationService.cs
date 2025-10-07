@@ -369,5 +369,41 @@ namespace SWLOR.Shared.Domain.Character.Contracts
         /// <param name="creature">The creature to calculate agriculture craftsmanship for</param>
         /// <returns>The agriculture craftsmanship rating</returns>
         int CalculateAgricultureCraftsmanship(uint creature);
+
+        /// <summary>
+        /// Calculates the attack rating using raw inputs.
+        /// </summary>
+        /// <param name="level">The level</param>
+        /// <param name="stat">The relevant stat value</param>
+        /// <param name="bonus">Additional attack bonus</param>
+        /// <returns>The calculated attack rating</returns>
+        int CalculateAttack(int level, int stat, int bonus);
+
+        /// <summary>
+        /// Calculates the accuracy rating using raw inputs.
+        /// </summary>
+        /// <param name="level">The level</param>
+        /// <param name="stat">The relevant stat value</param>
+        /// <param name="bonus">Additional accuracy bonus</param>
+        /// <returns>The calculated accuracy rating</returns>
+        int CalculateAccuracy(int level, int stat, int bonus);
+
+        /// <summary>
+        /// Calculates the evasion rating using raw inputs.
+        /// </summary>
+        /// <param name="level">The level</param>
+        /// <param name="stat">The relevant stat value</param>
+        /// <param name="bonus">Additional evasion bonus</param>
+        /// <returns>The calculated evasion rating</returns>
+        int CalculateEvasion(int level, int stat, int bonus);
+
+        /// <summary>
+        /// Calculates the defense rating using raw inputs.
+        /// </summary>
+        /// <param name="stat">The relevant stat value</param>
+        /// <param name="level">The level</param>
+        /// <param name="bonus">Additional defense bonus</param>
+        /// <returns>The calculated defense rating</returns>
+        int CalculateDefense(int stat, int level, int bonus);
     }
 }

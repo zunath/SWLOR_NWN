@@ -123,7 +123,7 @@ namespace SWLOR.Component.Character.Service
             var bonus = stats.GetStat(StatType.Defense) + 
                         effects.GetStat(StatType.Defense);
 
-            return (int)(8 + (ability * 1.5f) + skill + bonus);
+            return CalculateDefense(skill, ability, bonus);
         }
 
         /// <inheritdoc />
@@ -136,7 +136,7 @@ namespace SWLOR.Component.Character.Service
             var bonus = stats.GetStat(StatType.Evasion) + 
                         effects.GetStat(StatType.Evasion);
 
-            return ability * 3 + skill + bonus;
+            return CalculateEvasion(skill, ability, bonus);
         }
 
         /// <inheritdoc />
@@ -148,7 +148,7 @@ namespace SWLOR.Component.Character.Service
             var ability = stats.GetStat(abilityType);
             var bonus = stats.GetStat(StatType.Accuracy) + effects.GetStat(StatType.Accuracy);
 
-            return ability * 3 + skill + bonus;
+            return CalculateAccuracy(skill, ability, bonus);
         }
 
         /// <inheritdoc />
@@ -160,7 +160,7 @@ namespace SWLOR.Component.Character.Service
             var ability = stats.GetStat(abilityType);
             var bonus = stats.GetStat(StatType.Attack) + effects.GetStat(StatType.Attack);
 
-            return 8 + (2 * skill) + ability + bonus;
+            return CalculateAttack(skill, ability, bonus);
         }
 
         /// <inheritdoc />
@@ -581,5 +581,30 @@ namespace SWLOR.Component.Character.Service
 
             return stats.GetStat(StatType.CraftsmanshipAgriculture) + effects.GetStat(StatType.CraftsmanshipAgriculture);
         }
+
+        /// <inheritdoc />
+        public int CalculateAttack(int level, int stat, int bonus)
+        {
+            return 8 + (2 * level) + stat + bonus;
+        }
+
+        /// <inheritdoc />
+        public int CalculateDefense(int level, int stat, int bonus)
+        {
+            return (int)(8 + (stat * 1.5f) + level + bonus);
+        }
+
+        /// <inheritdoc />
+        public int CalculateAccuracy(int level, int stat, int bonus)
+        {
+            return stat * 3 + level + bonus;
+        }
+
+        /// <inheritdoc />
+        public int CalculateEvasion(int level, int stat, int bonus)
+        {
+            return stat * 3 + level + bonus;
+        }
+
     }
 }

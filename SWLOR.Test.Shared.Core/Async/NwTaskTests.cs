@@ -368,15 +368,15 @@ namespace SWLOR.Test.Shared.Core.Async
         {
             // Arrange
             var condition = false;
-            var cancellationToken = new CancellationTokenSource(TimeSpan.FromMilliseconds(1)).Token; // Reduced from 10ms to 1ms
+            var cancellationToken = new CancellationTokenSource(TimeSpan.FromMilliseconds(10)).Token;
 
             // Act & Assert
             var startTime = DateTime.Now;
             await TestNwTask.WaitUntil(() => condition, cancellationToken);
             var elapsed = DateTime.Now - startTime;
-            
+
             // Should complete after timeout without throwing an exception
-            Assert.That(elapsed.TotalMilliseconds, Is.GreaterThanOrEqualTo(0.5)); // Adjusted threshold
+            Assert.That(elapsed.TotalMilliseconds, Is.GreaterThanOrEqualTo(5));
         }
 
         [Test]

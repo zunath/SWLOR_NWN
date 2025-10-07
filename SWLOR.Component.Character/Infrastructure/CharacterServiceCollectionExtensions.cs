@@ -44,7 +44,7 @@ namespace SWLOR.Component.Character.Infrastructure
             services.AddSingleton<IActivityService, ActivityService>();
             services.AddSingleton<IStatGroupService, StatGroupService>();
             services.AddSingleton<ICharacterResourceService, CharacterResourceService>();
-            services.AddSingleton<IStatServiceNew, StatService>();
+            services.AddSingleton<IStatCalculationService, StatCalculationService>();
 
             // Register feature classes
             services.AddSingleton<PlayerStatusWindow>();

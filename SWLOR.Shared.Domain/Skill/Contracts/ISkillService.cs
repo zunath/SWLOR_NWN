@@ -180,5 +180,7 @@ namespace SWLOR.Shared.Domain.Skill.Contracts
         /// <param name="category">The category whose details we will retrieve.</param>
         /// <returns>An object containing details about a skill category.</returns>
         SkillCategoryAttribute GetSkillCategoryDetails(SkillCategoryType category);
+
+        int GetSkillRank(uint creature, SkillType type);
     }
 }

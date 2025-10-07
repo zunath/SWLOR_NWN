@@ -1,20 +1,24 @@
 using System.Reflection;
 using NSubstitute;
 using SWLOR.Component.Character.Service;
+using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Character.ValueObjects;
 using SWLOR.Shared.Domain.StatusEffect.Contracts;
+using SWLOR.Shared.Domain.Skill.Contracts;
+using SWLOR.Shared.Domain.Skill.Enums;
 using SWLOR.Test.Shared;
 
 namespace SWLOR.Test.Component.Character.Service
 {
     [TestFixture]
-    public class StatServiceTests : TestBase
+    public class StatCalculationServiceTests : TestBase
     {
         private IStatGroupService _mockStatGroupService;
         private IStatusEffectService _mockStatusEffectService;
-        private StatService _statService;
+        private ISkillService _mockSkillService;
+        private StatCalculationService _statService;
 
         [SetUp]
         public void SetUp()
@@ -23,13 +27,14 @@ namespace SWLOR.Test.Component.Character.Service
             
             _mockStatGroupService = Substitute.For<IStatGroupService>();
             _mockStatusEffectService = Substitute.For<IStatusEffectService>();
+            _mockSkillService = Substitute.For<ISkillService>();
             
-            _statService = new StatService(_mockStatGroupService, _mockStatusEffectService);
+            _statService = new StatCalculationService(_mockStatGroupService, _mockStatusEffectService, _mockSkillService);
         }
 
         private float CalculateAttackSpeedModifier(uint creature)
         {
-            var method = typeof(StatService).GetMethod("CalculateAttackSpeedModifier", BindingFlags.NonPublic | BindingFlags.Instance);
+            var method = typeof(StatCalculationService).GetMethod("CalculateAttackSpeedModifier", BindingFlags.NonPublic | BindingFlags.Instance);
             return (float)method.Invoke(_statService, new object[] { creature });
         }
 
@@ -373,7 +378,8 @@ namespace SWLOR.Test.Component.Character.Service
             var result = _statService.CalculateMaxHP(creature);
 
             // Assert
-            Assert.That(result, Is.EqualTo(100));
+            // BaseHP (70) + stats (100) + effects (0) = 170
+            Assert.That(result, Is.EqualTo(170));
         }
 
         [Test]
@@ -394,7 +400,8 @@ namespace SWLOR.Test.Component.Character.Service
             var result = _statService.CalculateMaxHP(creature);
 
             // Assert
-            Assert.That(result, Is.EqualTo(150));
+            // BaseHP (70) + stats (100) + effects (50) = 220
+            Assert.That(result, Is.EqualTo(220));
         }
 
         #endregion
@@ -410,6 +417,7 @@ namespace SWLOR.Test.Component.Character.Service
             var effects = new StatGroup();
             
             stats.SetStat(StatType.MaxFP, 80);
+            stats.SetStat(StatType.Willpower, 5); // Willpower modifier
             effects.SetStat(StatType.MaxFP, 0);
             
             _mockStatGroupService.LoadStats(creature).Returns(stats);
@@ -419,7 +427,8 @@ namespace SWLOR.Test.Component.Character.Service
             var result = _statService.CalculateMaxFP(creature);
 
             // Assert
-            Assert.That(result, Is.EqualTo(80));
+            // BaseFP (10) + Willpower modifier (5 * 10 = 50) + stats (80) + effects (0) = 140
+            Assert.That(result, Is.EqualTo(140));
         }
 
         [Test]
@@ -431,6 +440,7 @@ namespace SWLOR.Test.Component.Character.Service
             var effects = new StatGroup();
             
             stats.SetStat(StatType.MaxFP, 80);
+            stats.SetStat(StatType.Willpower, 5); // Willpower modifier
             effects.SetStat(StatType.MaxFP, 20);
             
             _mockStatGroupService.LoadStats(creature).Returns(stats);
@@ -440,7 +450,8 @@ namespace SWLOR.Test.Component.Character.Service
             var result = _statService.CalculateMaxFP(creature);
 
             // Assert
-            Assert.That(result, Is.EqualTo(100));
+            // BaseFP (10) + Willpower modifier (5 * 10 = 50) + stats (80) + effects (20) = 160
+            Assert.That(result, Is.EqualTo(160));
         }
 
         #endregion
@@ -456,6 +467,7 @@ namespace SWLOR.Test.Component.Character.Service
             var effects = new StatGroup();
             
             stats.SetStat(StatType.MaxSTM, 60);
+            stats.SetStat(StatType.Perception, 4); // Perception modifier
             effects.SetStat(StatType.MaxSTM, 0);
             
             _mockStatGroupService.LoadStats(creature).Returns(stats);
@@ -465,7 +477,8 @@ namespace SWLOR.Test.Component.Character.Service
             var result = _statService.CalculateMaxSTM(creature);
 
             // Assert
-            Assert.That(result, Is.EqualTo(60));
+            // BaseSTM (10) + Perception modifier (4 * 10 = 40) + stats (60) + effects (0) = 110
+            Assert.That(result, Is.EqualTo(110));
         }
 
         [Test]
@@ -477,6 +490,7 @@ namespace SWLOR.Test.Component.Character.Service
             var effects = new StatGroup();
             
             stats.SetStat(StatType.MaxSTM, 60);
+            stats.SetStat(StatType.Perception, 4); // Perception modifier
             effects.SetStat(StatType.MaxSTM, 15);
             
             _mockStatGroupService.LoadStats(creature).Returns(stats);
@@ -486,7 +500,8 @@ namespace SWLOR.Test.Component.Character.Service
             var result = _statService.CalculateMaxSTM(creature);
 
             // Assert
-            Assert.That(result, Is.EqualTo(75));
+            // BaseSTM (10) + Perception modifier (4 * 10 = 40) + stats (60) + effects (15) = 125
+            Assert.That(result, Is.EqualTo(125));
         }
 
         #endregion
@@ -512,7 +527,7 @@ namespace SWLOR.Test.Component.Character.Service
             var result = _statService.CalculateHPRegen(creature);
 
             // Assert
-            // Base HPRegen (5) + Vitality bonus (10 * 4 = 40) = 45
+            // HPRegen (5) + Vitality bonus (10 * 4 = 40) = 45
             Assert.That(result, Is.EqualTo(45));
         }
 
@@ -535,7 +550,7 @@ namespace SWLOR.Test.Component.Character.Service
             var result = _statService.CalculateHPRegen(creature);
 
             // Assert
-            // Base HPRegen (5) + Status effect (3) + Vitality bonus (10 * 4 = 40) = 48
+            // HPRegen (5 + 3 = 8) + Vitality bonus (10 * 4 = 40) = 48
             Assert.That(result, Is.EqualTo(48));
         }
 
@@ -698,16 +713,19 @@ namespace SWLOR.Test.Component.Character.Service
             var effects = new StatGroup();
             
             stats.SetStat(StatType.Defense, 15);
+            stats.SetStat(StatType.Vitality, 10); // Vitality ability
             effects.SetStat(StatType.Defense, 0);
             
             _mockStatGroupService.LoadStats(creature).Returns(stats);
             _mockStatusEffectService.GetCreatureStatGroup(creature).Returns(effects);
-
+            _mockSkillService.GetSkillRank(creature, SkillType.Armor).Returns(5); // Armor skill
+            
             // Act
             var result = _statService.CalculateDefense(creature);
 
             // Assert
-            Assert.That(result, Is.EqualTo(15));
+            // Base (8) + ability (10 * 1.5 = 15) + skill (5) + bonus (15) = 43
+            Assert.That(result, Is.EqualTo(43));
         }
 
         [Test]
@@ -719,16 +737,19 @@ namespace SWLOR.Test.Component.Character.Service
             var effects = new StatGroup();
             
             stats.SetStat(StatType.Defense, 15);
+            stats.SetStat(StatType.Vitality, 10); // Vitality ability
             effects.SetStat(StatType.Defense, 5);
             
             _mockStatGroupService.LoadStats(creature).Returns(stats);
             _mockStatusEffectService.GetCreatureStatGroup(creature).Returns(effects);
-
+            _mockSkillService.GetSkillRank(creature, SkillType.Armor).Returns(5); // Armor skill
+            
             // Act
             var result = _statService.CalculateDefense(creature);
 
             // Assert
-            Assert.That(result, Is.EqualTo(20));
+            // Base (8) + ability (10 * 1.5 = 15) + skill (5) + bonus (15 + 5 = 20) = 48
+            Assert.That(result, Is.EqualTo(48));
         }
 
         [Test]
@@ -740,16 +761,19 @@ namespace SWLOR.Test.Component.Character.Service
             var effects = new StatGroup();
             
             stats.SetStat(StatType.Evasion, 12);
+            stats.SetStat(StatType.Agility, 8); // Agility ability
             effects.SetStat(StatType.Evasion, 0);
             
             _mockStatGroupService.LoadStats(creature).Returns(stats);
             _mockStatusEffectService.GetCreatureStatGroup(creature).Returns(effects);
-
+            _mockSkillService.GetSkillRank(creature, SkillType.Armor).Returns(3); // Armor skill
+            
             // Act
             var result = _statService.CalculateEvasion(creature);
 
             // Assert
-            Assert.That(result, Is.EqualTo(12));
+            // Ability (8 * 3 = 24) + skill (3) + bonus (12) = 39
+            Assert.That(result, Is.EqualTo(39));
         }
 
         [Test]
@@ -761,16 +785,19 @@ namespace SWLOR.Test.Component.Character.Service
             var effects = new StatGroup();
             
             stats.SetStat(StatType.Accuracy, 18);
+            stats.SetStat(StatType.Might, 12); // Might ability
             effects.SetStat(StatType.Accuracy, 0);
             
             _mockStatGroupService.LoadStats(creature).Returns(stats);
             _mockStatusEffectService.GetCreatureStatGroup(creature).Returns(effects);
-
+            _mockSkillService.GetSkillRank(creature, SkillType.OneHanded).Returns(4); // OneHanded skill
+            
             // Act
-            var result = _statService.CalculateAccuracy(creature);
+            var result = _statService.CalculateAccuracy(creature, AbilityType.Might, SkillType.OneHanded);
 
             // Assert
-            Assert.That(result, Is.EqualTo(18));
+            // Ability (12 * 3 = 36) + skill (4) + bonus (18) = 58
+            Assert.That(result, Is.EqualTo(58));
         }
 
         [Test]
@@ -782,16 +809,19 @@ namespace SWLOR.Test.Component.Character.Service
             var effects = new StatGroup();
             
             stats.SetStat(StatType.Attack, 25);
+            stats.SetStat(StatType.Might, 14); // Might ability
             effects.SetStat(StatType.Attack, 0);
             
             _mockStatGroupService.LoadStats(creature).Returns(stats);
             _mockStatusEffectService.GetCreatureStatGroup(creature).Returns(effects);
-
+            _mockSkillService.GetSkillRank(creature, SkillType.OneHanded).Returns(6); // OneHanded skill
+            
             // Act
-            var result = _statService.CalculateAttack(creature);
+            var result = _statService.CalculateAttack(creature, AbilityType.Might, SkillType.OneHanded);
 
             // Assert
-            Assert.That(result, Is.EqualTo(25));
+            // Base (8) + skill (2 * 6 = 12) + ability (14) + bonus (25) = 59
+            Assert.That(result, Is.EqualTo(59));
         }
 
         [Test]
@@ -803,16 +833,67 @@ namespace SWLOR.Test.Component.Character.Service
             var effects = new StatGroup();
             
             stats.SetStat(StatType.ForceAttack, 20);
+            stats.SetStat(StatType.Willpower, 16); // Willpower ability
             effects.SetStat(StatType.ForceAttack, 0);
             
             _mockStatGroupService.LoadStats(creature).Returns(stats);
             _mockStatusEffectService.GetCreatureStatGroup(creature).Returns(effects);
-
+            _mockSkillService.GetSkillRank(creature, SkillType.Force).Returns(8); // Force skill
+            
             // Act
             var result = _statService.CalculateForceAttack(creature);
 
             // Assert
-            Assert.That(result, Is.EqualTo(20));
+            // Base (8) + skill (2 * 8 = 16) + ability (16) + bonus (20) = 60
+            Assert.That(result, Is.EqualTo(60));
+        }
+
+        [Test]
+        public void CalculateForceDefense_WithBaseStats_ReturnsCorrectValue()
+        {
+            // Arrange
+            var creature = 1u;
+            var stats = new StatGroup();
+            var effects = new StatGroup();
+            
+            stats.SetStat(StatType.ForceDefense, 12);
+            stats.SetStat(StatType.Willpower, 10); // Willpower ability
+            effects.SetStat(StatType.ForceDefense, 0);
+            
+            _mockStatGroupService.LoadStats(creature).Returns(stats);
+            _mockStatusEffectService.GetCreatureStatGroup(creature).Returns(effects);
+            _mockSkillService.GetSkillRank(creature, SkillType.Armor).Returns(4); // Armor skill
+            
+            // Act
+            var result = _statService.CalculateForceDefense(creature);
+
+            // Assert
+            // Base (8) + ability (10 * 1.5 = 15) + skill (4) + bonus (12) = 39
+            Assert.That(result, Is.EqualTo(39));
+        }
+
+        [Test]
+        public void CalculateForceDefense_WithStatusEffects_IncludesStatusEffects()
+        {
+            // Arrange
+            var creature = 1u;
+            var stats = new StatGroup();
+            var effects = new StatGroup();
+            
+            stats.SetStat(StatType.ForceDefense, 12);
+            stats.SetStat(StatType.Willpower, 10); // Willpower ability
+            effects.SetStat(StatType.ForceDefense, 8);
+            
+            _mockStatGroupService.LoadStats(creature).Returns(stats);
+            _mockStatusEffectService.GetCreatureStatGroup(creature).Returns(effects);
+            _mockSkillService.GetSkillRank(creature, SkillType.Armor).Returns(4); // Armor skill
+            
+            // Act
+            var result = _statService.CalculateForceDefense(creature);
+
+            // Assert
+            // Base (8) + ability (10 * 1.5 = 15) + skill (4) + bonus (12 + 8 = 20) = 47
+            Assert.That(result, Is.EqualTo(47));
         }
 
         #endregion
@@ -1009,7 +1090,8 @@ namespace SWLOR.Test.Component.Character.Service
             var result = _statService.CalculateCriticalRate(creature);
 
             // Assert
-            Assert.That(result, Is.EqualTo(5));
+            // Base (5) + stats (5) + effects (0) = 10
+            Assert.That(result, Is.EqualTo(10));
         }
 
         [Test]
@@ -1094,27 +1176,6 @@ namespace SWLOR.Test.Component.Character.Service
 
             // Assert
             Assert.That(result, Is.EqualTo(15));
-        }
-
-        [Test]
-        public void CalculateForceDefense_WithBaseStats_ReturnsCorrectValue()
-        {
-            // Arrange
-            var creature = 1u;
-            var stats = new StatGroup();
-            var effects = new StatGroup();
-            
-            stats.SetStat(StatType.ForceDefense, 12);
-            effects.SetStat(StatType.ForceDefense, 0);
-            
-            _mockStatGroupService.LoadStats(creature).Returns(stats);
-            _mockStatusEffectService.GetCreatureStatGroup(creature).Returns(effects);
-
-            // Act
-            var result = _statService.CalculateForceDefense(creature);
-
-            // Assert
-            Assert.That(result, Is.EqualTo(12));
         }
 
         [Test]
@@ -1479,7 +1540,8 @@ namespace SWLOR.Test.Component.Character.Service
             var result = _statService.CalculateMaxHP(creature);
 
             // Assert
-            Assert.That(result, Is.EqualTo(-5)); // -10 + 5 = -5
+            // Base (70) + stats (-10) + effects (5) = 65
+            Assert.That(result, Is.EqualTo(65));
         }
 
         [Test]
@@ -1500,7 +1562,8 @@ namespace SWLOR.Test.Component.Character.Service
             var result = _statService.CalculateMaxHP(creature);
 
             // Assert
-            Assert.That(result, Is.EqualTo(0));
+            // Base (70) + stats (0) + effects (0) = 70
+            Assert.That(result, Is.EqualTo(70));
         }
 
         [Test]
@@ -1643,16 +1706,19 @@ namespace SWLOR.Test.Component.Character.Service
             var effects = new StatGroup();
             
             stats.SetStat(StatType.Defense, 20);
+            stats.SetStat(StatType.Vitality, 10); // Vitality ability
             effects.SetStat(StatType.Defense, -5); // Negative status effect
             
             _mockStatGroupService.LoadStats(creature).Returns(stats);
             _mockStatusEffectService.GetCreatureStatGroup(creature).Returns(effects);
+            _mockSkillService.GetSkillRank(creature, SkillType.Armor).Returns(5); // Armor skill
 
             // Act
             var result = _statService.CalculateDefense(creature);
 
             // Assert
-            Assert.That(result, Is.EqualTo(15)); // 20 + (-5) = 15
+            // Base (8) + ability (10 * 1.5 = 15) + skill (5) + bonus (20 + (-5) = 15) = 43
+            Assert.That(result, Is.EqualTo(43));
         }
 
         [Test]
@@ -1664,16 +1730,19 @@ namespace SWLOR.Test.Component.Character.Service
             var effects = new StatGroup();
             
             stats.SetStat(StatType.Defense, 10);
+            stats.SetStat(StatType.Vitality, 10); // Vitality ability
             effects.SetStat(StatType.Defense, -15); // Status effect exceeds base
             
             _mockStatGroupService.LoadStats(creature).Returns(stats);
             _mockStatusEffectService.GetCreatureStatGroup(creature).Returns(effects);
+            _mockSkillService.GetSkillRank(creature, SkillType.Armor).Returns(5); // Armor skill
 
             // Act
             var result = _statService.CalculateDefense(creature);
 
             // Assert
-            Assert.That(result, Is.EqualTo(-5)); // 10 + (-15) = -5
+            // Base (8) + ability (10 * 1.5 = 15) + skill (5) + bonus (10 + (-15) = -5) = 23
+            Assert.That(result, Is.EqualTo(23));
         }
 
         #endregion
@@ -1700,9 +1769,10 @@ namespace SWLOR.Test.Component.Character.Service
             var result3 = _statService.CalculateMaxHP(creature);
 
             // Assert
-            Assert.That(result1, Is.EqualTo(125));
-            Assert.That(result2, Is.EqualTo(125));
-            Assert.That(result3, Is.EqualTo(125));
+            // Base (70) + stats (100) + effects (25) = 195
+            Assert.That(result1, Is.EqualTo(195));
+            Assert.That(result2, Is.EqualTo(195));
+            Assert.That(result3, Is.EqualTo(195));
             Assert.That(result1, Is.EqualTo(result2));
             Assert.That(result2, Is.EqualTo(result3));
         }
@@ -1749,6 +1819,350 @@ namespace SWLOR.Test.Component.Character.Service
             // Assert
             // Base HPRegen (10) + Vitality bonus (50 * 4 = 200) = 210
             Assert.That(result, Is.EqualTo(210));
+        }
+
+        #endregion
+
+        #region Control Stat Tests
+
+        [Test]
+        public void CalculateSmitheryControl_WithBaseStats_ReturnsCorrectValue()
+        {
+            // Arrange
+            var creature = 1u;
+            var stats = new StatGroup();
+            var effects = new StatGroup();
+
+            stats.SetStat(StatType.ControlSmithery, 15);
+            effects.SetStat(StatType.ControlSmithery, 0);
+
+            _mockStatGroupService.LoadStats(creature).Returns(stats);
+            _mockStatusEffectService.GetCreatureStatGroup(creature).Returns(effects);
+
+            // Act
+            var result = _statService.CalculateSmitheryControl(creature);
+
+            // Assert
+            Assert.That(result, Is.EqualTo(15));
+        }
+
+        [Test]
+        public void CalculateSmitheryControl_WithStatusEffects_IncludesStatusEffects()
+        {
+            // Arrange
+            var creature = 1u;
+            var stats = new StatGroup();
+            var effects = new StatGroup();
+
+            stats.SetStat(StatType.ControlSmithery, 15);
+            effects.SetStat(StatType.ControlSmithery, 5);
+
+            _mockStatGroupService.LoadStats(creature).Returns(stats);
+            _mockStatusEffectService.GetCreatureStatGroup(creature).Returns(effects);
+
+            // Act
+            var result = _statService.CalculateSmitheryControl(creature);
+
+            // Assert
+            Assert.That(result, Is.EqualTo(20));
+        }
+
+        [Test]
+        public void CalculateFabricationControl_WithBaseStats_ReturnsCorrectValue()
+        {
+            // Arrange
+            var creature = 1u;
+            var stats = new StatGroup();
+            var effects = new StatGroup();
+
+            stats.SetStat(StatType.ControlFabrication, 12);
+            effects.SetStat(StatType.ControlFabrication, 0);
+
+            _mockStatGroupService.LoadStats(creature).Returns(stats);
+            _mockStatusEffectService.GetCreatureStatGroup(creature).Returns(effects);
+
+            // Act
+            var result = _statService.CalculateFabricationControl(creature);
+
+            // Assert
+            Assert.That(result, Is.EqualTo(12));
+        }
+
+        [Test]
+        public void CalculateFabricationControl_WithStatusEffects_IncludesStatusEffects()
+        {
+            // Arrange
+            var creature = 1u;
+            var stats = new StatGroup();
+            var effects = new StatGroup();
+
+            stats.SetStat(StatType.ControlFabrication, 12);
+            effects.SetStat(StatType.ControlFabrication, 3);
+
+            _mockStatGroupService.LoadStats(creature).Returns(stats);
+            _mockStatusEffectService.GetCreatureStatGroup(creature).Returns(effects);
+
+            // Act
+            var result = _statService.CalculateFabricationControl(creature);
+
+            // Assert
+            Assert.That(result, Is.EqualTo(15));
+        }
+
+        [Test]
+        public void CalculateEngineeringControl_WithBaseStats_ReturnsCorrectValue()
+        {
+            // Arrange
+            var creature = 1u;
+            var stats = new StatGroup();
+            var effects = new StatGroup();
+
+            stats.SetStat(StatType.ControlEngineering, 18);
+            effects.SetStat(StatType.ControlEngineering, 0);
+
+            _mockStatGroupService.LoadStats(creature).Returns(stats);
+            _mockStatusEffectService.GetCreatureStatGroup(creature).Returns(effects);
+
+            // Act
+            var result = _statService.CalculateEngineeringControl(creature);
+
+            // Assert
+            Assert.That(result, Is.EqualTo(18));
+        }
+
+        [Test]
+        public void CalculateEngineeringControl_WithStatusEffects_IncludesStatusEffects()
+        {
+            // Arrange
+            var creature = 1u;
+            var stats = new StatGroup();
+            var effects = new StatGroup();
+
+            stats.SetStat(StatType.ControlEngineering, 18);
+            effects.SetStat(StatType.ControlEngineering, 2);
+
+            _mockStatGroupService.LoadStats(creature).Returns(stats);
+            _mockStatusEffectService.GetCreatureStatGroup(creature).Returns(effects);
+
+            // Act
+            var result = _statService.CalculateEngineeringControl(creature);
+
+            // Assert
+            Assert.That(result, Is.EqualTo(20));
+        }
+
+        [Test]
+        public void CalculateAgricultureControl_WithBaseStats_ReturnsCorrectValue()
+        {
+            // Arrange
+            var creature = 1u;
+            var stats = new StatGroup();
+            var effects = new StatGroup();
+
+            stats.SetStat(StatType.ControlAgriculture, 14);
+            effects.SetStat(StatType.ControlAgriculture, 0);
+
+            _mockStatGroupService.LoadStats(creature).Returns(stats);
+            _mockStatusEffectService.GetCreatureStatGroup(creature).Returns(effects);
+
+            // Act
+            var result = _statService.CalculateAgricultureControl(creature);
+
+            // Assert
+            Assert.That(result, Is.EqualTo(14));
+        }
+
+        [Test]
+        public void CalculateAgricultureControl_WithStatusEffects_IncludesStatusEffects()
+        {
+            // Arrange
+            var creature = 1u;
+            var stats = new StatGroup();
+            var effects = new StatGroup();
+
+            stats.SetStat(StatType.ControlAgriculture, 14);
+            effects.SetStat(StatType.ControlAgriculture, 4);
+
+            _mockStatGroupService.LoadStats(creature).Returns(stats);
+            _mockStatusEffectService.GetCreatureStatGroup(creature).Returns(effects);
+
+            // Act
+            var result = _statService.CalculateAgricultureControl(creature);
+
+            // Assert
+            Assert.That(result, Is.EqualTo(18));
+        }
+
+        #endregion
+
+        #region Craftsmanship Stat Tests
+
+        [Test]
+        public void CalculateSmitheryCraftsmanship_WithBaseStats_ReturnsCorrectValue()
+        {
+            // Arrange
+            var creature = 1u;
+            var stats = new StatGroup();
+            var effects = new StatGroup();
+
+            stats.SetStat(StatType.CraftsmanshipSmithery, 16);
+            effects.SetStat(StatType.CraftsmanshipSmithery, 0);
+
+            _mockStatGroupService.LoadStats(creature).Returns(stats);
+            _mockStatusEffectService.GetCreatureStatGroup(creature).Returns(effects);
+
+            // Act
+            var result = _statService.CalculateSmitheryCraftsmanship(creature);
+
+            // Assert
+            Assert.That(result, Is.EqualTo(16));
+        }
+
+        [Test]
+        public void CalculateSmitheryCraftsmanship_WithStatusEffects_IncludesStatusEffects()
+        {
+            // Arrange
+            var creature = 1u;
+            var stats = new StatGroup();
+            var effects = new StatGroup();
+
+            stats.SetStat(StatType.CraftsmanshipSmithery, 16);
+            effects.SetStat(StatType.CraftsmanshipSmithery, 1);
+
+            _mockStatGroupService.LoadStats(creature).Returns(stats);
+            _mockStatusEffectService.GetCreatureStatGroup(creature).Returns(effects);
+
+            // Act
+            var result = _statService.CalculateSmitheryCraftsmanship(creature);
+
+            // Assert
+            Assert.That(result, Is.EqualTo(17));
+        }
+
+        [Test]
+        public void CalculateFabricationCraftsmanship_WithBaseStats_ReturnsCorrectValue()
+        {
+            // Arrange
+            var creature = 1u;
+            var stats = new StatGroup();
+            var effects = new StatGroup();
+
+            stats.SetStat(StatType.CraftsmanshipFabrication, 13);
+            effects.SetStat(StatType.CraftsmanshipFabrication, 0);
+
+            _mockStatGroupService.LoadStats(creature).Returns(stats);
+            _mockStatusEffectService.GetCreatureStatGroup(creature).Returns(effects);
+
+            // Act
+            var result = _statService.CalculateFabricationCraftsmanship(creature);
+
+            // Assert
+            Assert.That(result, Is.EqualTo(13));
+        }
+
+        [Test]
+        public void CalculateFabricationCraftsmanship_WithStatusEffects_IncludesStatusEffects()
+        {
+            // Arrange
+            var creature = 1u;
+            var stats = new StatGroup();
+            var effects = new StatGroup();
+
+            stats.SetStat(StatType.CraftsmanshipFabrication, 13);
+            effects.SetStat(StatType.CraftsmanshipFabrication, 2);
+
+            _mockStatGroupService.LoadStats(creature).Returns(stats);
+            _mockStatusEffectService.GetCreatureStatGroup(creature).Returns(effects);
+
+            // Act
+            var result = _statService.CalculateFabricationCraftsmanship(creature);
+
+            // Assert
+            Assert.That(result, Is.EqualTo(15));
+        }
+
+        [Test]
+        public void CalculateEngineeringCraftsmanship_WithBaseStats_ReturnsCorrectValue()
+        {
+            // Arrange
+            var creature = 1u;
+            var stats = new StatGroup();
+            var effects = new StatGroup();
+
+            stats.SetStat(StatType.CraftsmanshipEngineering, 19);
+            effects.SetStat(StatType.CraftsmanshipEngineering, 0);
+
+            _mockStatGroupService.LoadStats(creature).Returns(stats);
+            _mockStatusEffectService.GetCreatureStatGroup(creature).Returns(effects);
+
+            // Act
+            var result = _statService.CalculateEngineeringCraftsmanship(creature);
+
+            // Assert
+            Assert.That(result, Is.EqualTo(19));
+        }
+
+        [Test]
+        public void CalculateEngineeringCraftsmanship_WithStatusEffects_IncludesStatusEffects()
+        {
+            // Arrange
+            var creature = 1u;
+            var stats = new StatGroup();
+            var effects = new StatGroup();
+
+            stats.SetStat(StatType.CraftsmanshipEngineering, 19);
+            effects.SetStat(StatType.CraftsmanshipEngineering, 1);
+
+            _mockStatGroupService.LoadStats(creature).Returns(stats);
+            _mockStatusEffectService.GetCreatureStatGroup(creature).Returns(effects);
+
+            // Act
+            var result = _statService.CalculateEngineeringCraftsmanship(creature);
+
+            // Assert
+            Assert.That(result, Is.EqualTo(20));
+        }
+
+        [Test]
+        public void CalculateAgricultureCraftsmanship_WithBaseStats_ReturnsCorrectValue()
+        {
+            // Arrange
+            var creature = 1u;
+            var stats = new StatGroup();
+            var effects = new StatGroup();
+
+            stats.SetStat(StatType.CraftsmanshipAgriculture, 17);
+            effects.SetStat(StatType.CraftsmanshipAgriculture, 0);
+
+            _mockStatGroupService.LoadStats(creature).Returns(stats);
+            _mockStatusEffectService.GetCreatureStatGroup(creature).Returns(effects);
+
+            // Act
+            var result = _statService.CalculateAgricultureCraftsmanship(creature);
+
+            // Assert
+            Assert.That(result, Is.EqualTo(17));
+        }
+
+        [Test]
+        public void CalculateAgricultureCraftsmanship_WithStatusEffects_IncludesStatusEffects()
+        {
+            // Arrange
+            var creature = 1u;
+            var stats = new StatGroup();
+            var effects = new StatGroup();
+
+            stats.SetStat(StatType.CraftsmanshipAgriculture, 17);
+            effects.SetStat(StatType.CraftsmanshipAgriculture, 3);
+
+            _mockStatGroupService.LoadStats(creature).Returns(stats);
+            _mockStatusEffectService.GetCreatureStatGroup(creature).Returns(effects);
+
+            // Act
+            var result = _statService.CalculateAgricultureCraftsmanship(creature);
+
+            // Assert
+            Assert.That(result, Is.EqualTo(20));
         }
 
         #endregion

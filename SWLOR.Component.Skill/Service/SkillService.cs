@@ -2,8 +2,11 @@ using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Domain.Character.Contracts;
+using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Perk.Contracts;
+using SWLOR.Shared.Domain.Repositories;
 using SWLOR.Shared.Domain.Skill.Contracts;
 using SWLOR.Shared.Domain.Skill.Enums;
 using SWLOR.Shared.Domain.UI.Events;
@@ -19,31 +22,34 @@ namespace SWLOR.Component.Skill.Service
         private readonly IServiceProvider _serviceProvider;
         private readonly IGenericCacheService _cacheService;
         private readonly IEventsPluginService _eventsPlugin;
+        private readonly IStatGroupService _statGroupService;
+        private readonly IPlayerRepository _playerRepo;
 
         public SkillService(
             IDatabaseService db, 
             IRandomService random, 
             IServiceProvider serviceProvider, 
             IGenericCacheService cacheService,
-            IEventsPluginService eventsPlugin)
+            IEventsPluginService eventsPlugin,
+            IStatGroupService statGroupService,
+            IPlayerRepository playerRepo)
         {
             _db = db;
             _random = random;
             _serviceProvider = serviceProvider;
             _cacheService = cacheService;
             _eventsPlugin = eventsPlugin;
-            
+            _statGroupService = statGroupService;
+            _playerRepo = playerRepo;
+
             // Initialize lazy services
             _guiService = new Lazy<IGuiService>(() => _serviceProvider.GetRequiredService<IGuiService>());
-            _perkService = new Lazy<IPerkService>(() => _serviceProvider.GetRequiredService<IPerkService>());
         }
 
         // Lazy-loaded services to break circular dependencies
         private readonly Lazy<IGuiService> _guiService;
-        private readonly Lazy<IPerkService> _perkService;
         
         private IGuiService GuiService => _guiService.Value;
-        private IPerkService PerkService => _perkService.Value;
 
         /// <summary>
         /// This is the maximum number of skill points a single character can have at any time.
@@ -334,6 +340,21 @@ namespace SWLOR.Component.Skill.Service
             }
 
             return totalDistributableXP;
+        }
+
+        public int GetSkillRank(uint creature, SkillType type)
+        {
+            if (GetIsPC(creature))
+            {
+                var playerId = GetObjectUUID(creature);
+                var dbPlayer = _playerRepo.GetById(playerId);
+                return dbPlayer.Skills[type].Rank;
+            }
+            else
+            {
+                var stats = _statGroupService.LoadStats(creature);
+                return stats.GetStat(StatType.Level);
+            }
         }
     }
 }

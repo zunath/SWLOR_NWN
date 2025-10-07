@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Native
     {
         private static readonly IScriptExecutor _executor = ServiceContainer.GetService<IScriptExecutor>();
         private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
-        private static readonly IStatServiceNew _statService = ServiceContainer.GetService<IStatServiceNew>();
+        private static readonly IStatCalculationService _statService = ServiceContainer.GetService<IStatCalculationService>();
         private static readonly ICombatService _combatService = ServiceContainer.GetService<ICombatService>();
 
         private const int ACTION_IN_PROGRESS = 1;

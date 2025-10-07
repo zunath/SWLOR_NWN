@@ -36,14 +36,14 @@ namespace SWLOR.Component.Character.UI.ViewModel
     {
         private readonly IDatabaseService _db;
         private readonly ICreaturePluginService _creaturePlugin;
-        private readonly IStatServiceNew _statService;
+        private readonly IStatCalculationService _statService;
 
         public CharacterSheetViewModel(
             IGuiService guiService, 
             IDatabaseService db, 
             IServiceProvider serviceProvider,
             ICreaturePluginService creaturePlugin,
-            IStatServiceNew statService) 
+            IStatCalculationService statService) 
             : base(guiService)
         {
             _db = db;

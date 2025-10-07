@@ -10,11 +10,11 @@ namespace SWLOR.Component.Character.Service
         private const string StaminaLocalVar = "STAMINA";
         
         private readonly IPlayerRepository _playerRepository;
-        private readonly IStatServiceNew _statService;
+        private readonly IStatCalculationService _statService;
 
         public CharacterResourceService(
             IPlayerRepository playerRepository, 
-            IStatServiceNew statService)
+            IStatCalculationService statService)
         {
             _playerRepository = playerRepository;
             _statService = statService;

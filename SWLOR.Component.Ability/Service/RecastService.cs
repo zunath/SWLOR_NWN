@@ -14,13 +14,13 @@ namespace SWLOR.Component.Ability.Service
     {
         private readonly IDatabaseService _db;
         private readonly ITimeService _time;
-        private readonly IStatServiceNew _statService;
+        private readonly IStatCalculationService _statService;
         private static readonly Dictionary<RecastGroupType, string> _recastDescriptions = new();
 
         public RecastService(
             IDatabaseService db, 
             ITimeService time,
-            IStatServiceNew statService)
+            IStatCalculationService statService)
         {
             _db = db;
             _time = time;

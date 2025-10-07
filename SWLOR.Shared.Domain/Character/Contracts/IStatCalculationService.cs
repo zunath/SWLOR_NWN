@@ -1,0 +1,373 @@
+﻿using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Domain.Skill.Enums;
+
+namespace SWLOR.Shared.Domain.Character.Contracts
+{
+    /// <summary>
+    /// Service responsible for calculating various character statistics and combat-related values.
+    /// All calculations combine base stats, status effects, and other modifiers to provide final values.
+    /// </summary>
+    public interface IStatCalculationService
+    {
+        /// <summary>
+        /// Calculates the maximum hit points for a creature.
+        /// </summary>
+        /// <param name="creature">The creature to calculate HP for</param>
+        /// <returns>The maximum hit points</returns>
+        int CalculateMaxHP(uint creature);
+
+        /// <summary>
+        /// Calculates the maximum force points for a creature.
+        /// </summary>
+        /// <param name="creature">The creature to calculate FP for</param>
+        /// <returns>The maximum force points</returns>
+        int CalculateMaxFP(uint creature);
+
+        /// <summary>
+        /// Calculates the maximum stamina for a creature.
+        /// </summary>
+        /// <param name="creature">The creature to calculate STM for</param>
+        /// <returns>The maximum stamina</returns>
+        int CalculateMaxSTM(uint creature);
+
+        /// <summary>
+        /// Calculates the hit point regeneration rate per tick.
+        /// </summary>
+        /// <param name="creature">The creature to calculate HP regen for</param>
+        /// <returns>The HP regeneration rate</returns>
+        int CalculateHPRegen(uint creature);
+
+        /// <summary>
+        /// Calculates the force point regeneration rate per tick.
+        /// </summary>
+        /// <param name="creature">The creature to calculate FP regen for</param>
+        /// <returns>The FP regeneration rate</returns>
+        int CalculateFPRegen(uint creature);
+
+        /// <summary>
+        /// Calculates the stamina regeneration rate per tick.
+        /// </summary>
+        /// <param name="creature">The creature to calculate STM regen for</param>
+        /// <returns>The STM regeneration rate</returns>
+        int CalculateSTMRegen(uint creature);
+
+        /// <summary>
+        /// Calculates the recast time reduction percentage (0.0 to 0.5).
+        /// </summary>
+        /// <param name="creature">The creature to calculate recast reduction for</param>
+        /// <returns>The recast reduction percentage (capped at 50%)</returns>
+        float CalculateRecastReduction(uint creature);
+
+        /// <summary>
+        /// Calculates the defense rating for a creature.
+        /// </summary>
+        /// <param name="creature">The creature to calculate defense for</param>
+        /// <returns>The defense rating</returns>
+        int CalculateDefense(uint creature);
+
+        /// <summary>
+        /// Calculates the evasion rating for a creature.
+        /// </summary>
+        /// <param name="creature">The creature to calculate evasion for</param>
+        /// <returns>The evasion rating</returns>
+        int CalculateEvasion(uint creature);
+
+        /// <summary>
+        /// Calculates the accuracy rating for a specific ability and skill combination.
+        /// </summary>
+        /// <param name="creature">The creature to calculate accuracy for</param>
+        /// <param name="abilityType">The ability type to use in calculation</param>
+        /// <param name="skillType">The skill type to use in calculation</param>
+        /// <returns>The accuracy rating</returns>
+        int CalculateAccuracy(uint creature, AbilityType abilityType, SkillType skillType);
+
+        /// <summary>
+        /// Calculates the attack rating for a specific ability and skill combination.
+        /// </summary>
+        /// <param name="creature">The creature to calculate attack for</param>
+        /// <param name="abilityType">The ability type to use in calculation</param>
+        /// <param name="skillType">The skill type to use in calculation</param>
+        /// <returns>The attack rating</returns>
+        int CalculateAttack(uint creature, AbilityType abilityType, SkillType skillType);
+
+        /// <summary>
+        /// Calculates the force attack rating for a creature.
+        /// </summary>
+        /// <param name="creature">The creature to calculate force attack for</param>
+        /// <returns>The force attack rating</returns>
+        int CalculateForceAttack(uint creature);
+
+        /// <summary>
+        /// Calculates the Might attribute value for a creature.
+        /// </summary>
+        /// <param name="creature">The creature to calculate Might for</param>
+        /// <returns>The Might attribute value</returns>
+        int CalculateMight(uint creature);
+
+        /// <summary>
+        /// Calculates the Perception attribute value for a creature.
+        /// </summary>
+        /// <param name="creature">The creature to calculate Perception for</param>
+        /// <returns>The Perception attribute value</returns>
+        int CalculatePerception(uint creature);
+
+        /// <summary>
+        /// Calculates the Vitality attribute value for a creature.
+        /// </summary>
+        /// <param name="creature">The creature to calculate Vitality for</param>
+        /// <returns>The Vitality attribute value</returns>
+        int CalculateVitality(uint creature);
+
+        /// <summary>
+        /// Calculates the Agility attribute value for a creature.
+        /// </summary>
+        /// <param name="creature">The creature to calculate Agility for</param>
+        /// <returns>The Agility attribute value</returns>
+        int CalculateAgility(uint creature);
+
+        /// <summary>
+        /// Calculates the Willpower attribute value for a creature.
+        /// </summary>
+        /// <param name="creature">The creature to calculate Willpower for</param>
+        /// <returns>The Willpower attribute value</returns>
+        int CalculateWillpower(uint creature);
+
+        /// <summary>
+        /// Calculates the Social attribute value for a creature.
+        /// </summary>
+        /// <param name="creature">The creature to calculate Social for</param>
+        /// <returns>The Social attribute value</returns>
+        int CalculateSocial(uint creature);
+
+        /// <summary>
+        /// Calculates the shield deflection rating for a creature.
+        /// </summary>
+        /// <param name="creature">The creature to calculate shield deflection for</param>
+        /// <returns>The shield deflection rating</returns>
+        int CalculateShieldDeflection(uint creature);
+
+        /// <summary>
+        /// Calculates the attack deflection rating for a creature.
+        /// </summary>
+        /// <param name="creature">The creature to calculate attack deflection for</param>
+        /// <returns>The attack deflection rating</returns>
+        int CalculateAttackDeflection(uint creature);
+
+        /// <summary>
+        /// Calculates the critical hit rate percentage for a creature.
+        /// </summary>
+        /// <param name="creature">The creature to calculate critical rate for</param>
+        /// <returns>The critical hit rate percentage</returns>
+        int CalculateCriticalRate(uint creature);
+
+        /// <summary>
+        /// Calculates the enmity generation rate for a creature.
+        /// </summary>
+        /// <param name="creature">The creature to calculate enmity for</param>
+        /// <returns>The enmity generation rate</returns>
+        int CalculateEnmity(uint creature);
+
+        /// <summary>
+        /// Calculates the haste effect value for a creature.
+        /// </summary>
+        /// <param name="creature">The creature to calculate haste for</param>
+        /// <returns>The haste effect value</returns>
+        int CalculateHaste(uint creature);
+
+        /// <summary>
+        /// Calculates the slow effect value for a creature.
+        /// </summary>
+        /// <param name="creature">The creature to calculate slow for</param>
+        /// <returns>The slow effect value</returns>
+        int CalculateSlow(uint creature);
+
+        /// <summary>
+        /// Calculates the damage reduction percentage for a creature.
+        /// </summary>
+        /// <param name="creature">The creature to calculate damage reduction for</param>
+        /// <returns>The damage reduction percentage</returns>
+        int CalculateDamageReduction(uint creature);
+
+        /// <summary>
+        /// Calculates the force defense rating for a creature.
+        /// </summary>
+        /// <param name="creature">The creature to calculate force defense for</param>
+        /// <returns>The force defense rating</returns>
+        int CalculateForceDefense(uint creature);
+
+        /// <summary>
+        /// Calculates the queued damage bonus for a creature.
+        /// </summary>
+        /// <param name="creature">The creature to calculate queued damage bonus for</param>
+        /// <returns>The queued damage bonus</returns>
+        int CalculateQueuedDMGBonus(uint creature);
+
+        /// <summary>
+        /// Calculates the paralysis resistance for a creature.
+        /// </summary>
+        /// <param name="creature">The creature to calculate paralysis resistance for</param>
+        /// <returns>The paralysis resistance value</returns>
+        int CalculateParalysis(uint creature);
+
+        /// <summary>
+        /// Calculates the accuracy modifier for a creature.
+        /// </summary>
+        /// <param name="creature">The creature to calculate accuracy modifier for</param>
+        /// <returns>The accuracy modifier</returns>
+        int CalculateAccuracyModifier(uint creature);
+
+        /// <summary>
+        /// Calculates the recast reduction modifier for a creature.
+        /// </summary>
+        /// <param name="creature">The creature to calculate recast reduction modifier for</param>
+        /// <returns>The recast reduction modifier</returns>
+        int CalculateRecastReductionModifier(uint creature);
+
+        /// <summary>
+        /// Calculates the defense bypass modifier for a creature.
+        /// </summary>
+        /// <param name="creature">The creature to calculate defense bypass modifier for</param>
+        /// <returns>The defense bypass modifier</returns>
+        int CalculateDefenseBypassModifier(uint creature);
+
+        /// <summary>
+        /// Calculates the healing modifier for a creature.
+        /// </summary>
+        /// <param name="creature">The creature to calculate healing modifier for</param>
+        /// <returns>The healing modifier</returns>
+        int CalculateHealingModifier(uint creature);
+
+        /// <summary>
+        /// Calculates the force point restore on hit value for a creature.
+        /// </summary>
+        /// <param name="creature">The creature to calculate FP restore on hit for</param>
+        /// <returns>The FP restore on hit value</returns>
+        int CalculateFPRestoreOnHit(uint creature);
+
+        /// <summary>
+        /// Calculates the defense modifier for a creature.
+        /// </summary>
+        /// <param name="creature">The creature to calculate defense modifier for</param>
+        /// <returns>The defense modifier</returns>
+        int CalculateDefenseModifier(uint creature);
+
+        /// <summary>
+        /// Calculates the force defense modifier for a creature.
+        /// </summary>
+        /// <param name="creature">The creature to calculate force defense modifier for</param>
+        /// <returns>The force defense modifier</returns>
+        int CalculateForceDefenseModifier(uint creature);
+
+        /// <summary>
+        /// Calculates the extra attack modifier for a creature.
+        /// </summary>
+        /// <param name="creature">The creature to calculate extra attack modifier for</param>
+        /// <returns>The extra attack modifier</returns>
+        int CalculateExtraAttackModifier(uint creature);
+
+        /// <summary>
+        /// Calculates the attack modifier for a creature.
+        /// </summary>
+        /// <param name="creature">The creature to calculate attack modifier for</param>
+        /// <returns>The attack modifier</returns>
+        int CalculateAttackModifier(uint creature);
+
+        /// <summary>
+        /// Calculates the force attack modifier for a creature.
+        /// </summary>
+        /// <param name="creature">The creature to calculate force attack modifier for</param>
+        /// <returns>The force attack modifier</returns>
+        int CalculateForceAttackModifier(uint creature);
+
+        /// <summary>
+        /// Calculates the evasion modifier for a creature.
+        /// </summary>
+        /// <param name="creature">The creature to calculate evasion modifier for</param>
+        /// <returns>The evasion modifier</returns>
+        int CalculateEvasionModifier(uint creature);
+
+        /// <summary>
+        /// Calculates the experience point modifier for a creature.
+        /// </summary>
+        /// <param name="creature">The creature to calculate XP modifier for</param>
+        /// <returns>The XP modifier</returns>
+        int CalculateXPModifier(uint creature);
+
+        /// <summary>
+        /// Calculates the poison resistance for a creature.
+        /// </summary>
+        /// <param name="creature">The creature to calculate poison resistance for</param>
+        /// <returns>The poison resistance value</returns>
+        int CalculatePoisonResist(uint creature);
+
+        /// <summary>
+        /// Calculates the level for a creature.
+        /// </summary>
+        /// <param name="creature">The creature to calculate level for</param>
+        /// <returns>The creature's level</returns>
+        int CalculateLevel(uint creature);
+
+        /// <summary>
+        /// Calculates the attack delay in milliseconds for a creature.
+        /// </summary>
+        /// <param name="creature">The creature to calculate attack delay for</param>
+        /// <returns>The attack delay in milliseconds</returns>
+        int CalculateAttackDelay(uint creature);
+
+        /// <summary>
+        /// Calculates the smithery control rating for a creature.
+        /// </summary>
+        /// <param name="creature">The creature to calculate smithery control for</param>
+        /// <returns>The smithery control rating</returns>
+        int CalculateSmitheryControl(uint creature);
+
+        /// <summary>
+        /// Calculates the fabrication control rating for a creature.
+        /// </summary>
+        /// <param name="creature">The creature to calculate fabrication control for</param>
+        /// <returns>The fabrication control rating</returns>
+        int CalculateFabricationControl(uint creature);
+
+        /// <summary>
+        /// Calculates the engineering control rating for a creature.
+        /// </summary>
+        /// <param name="creature">The creature to calculate engineering control for</param>
+        /// <returns>The engineering control rating</returns>
+        int CalculateEngineeringControl(uint creature);
+
+        /// <summary>
+        /// Calculates the agriculture control rating for a creature.
+        /// </summary>
+        /// <param name="creature">The creature to calculate agriculture control for</param>
+        /// <returns>The agriculture control rating</returns>
+        int CalculateAgricultureControl(uint creature);
+
+        /// <summary>
+        /// Calculates the smithery craftsmanship rating for a creature.
+        /// </summary>
+        /// <param name="creature">The creature to calculate smithery craftsmanship for</param>
+        /// <returns>The smithery craftsmanship rating</returns>
+        int CalculateSmitheryCraftsmanship(uint creature);
+
+        /// <summary>
+        /// Calculates the fabrication craftsmanship rating for a creature.
+        /// </summary>
+        /// <param name="creature">The creature to calculate fabrication craftsmanship for</param>
+        /// <returns>The fabrication craftsmanship rating</returns>
+        int CalculateFabricationCraftsmanship(uint creature);
+
+        /// <summary>
+        /// Calculates the engineering craftsmanship rating for a creature.
+        /// </summary>
+        /// <param name="creature">The creature to calculate engineering craftsmanship for</param>
+        /// <returns>The engineering craftsmanship rating</returns>
+        int CalculateEngineeringCraftsmanship(uint creature);
+
+        /// <summary>
+        /// Calculates the agriculture craftsmanship rating for a creature.
+        /// </summary>
+        /// <param name="creature">The creature to calculate agriculture craftsmanship for</param>
+        /// <returns>The agriculture craftsmanship rating</returns>
+        int CalculateAgricultureCraftsmanship(uint creature);
+    }
+}

@@ -34,7 +34,7 @@ namespace SWLOR.Component.Combat.Service
         private readonly Lazy<IItemService> _itemService;
         private readonly Lazy<IPerkService> _perkService;
 
-        private readonly IStatServiceNew _statServiceNew;
+        private readonly IStatCalculationService _statServiceNew;
         private readonly IMessagingService _messaging;
 
         public CombatService(
@@ -42,7 +42,7 @@ namespace SWLOR.Component.Combat.Service
             IDatabaseService db, 
             IRandomService random, 
             IServiceProvider serviceProvider,
-            IStatServiceNew statServiceNew,
+            IStatCalculationService statServiceNew,
             IMessagingService messagingService)
         {
             _logger = logger;

@@ -7,11 +7,11 @@ namespace SWLOR.Component.Combat.Feature
 {
     public class NaturalRegeneration
     {
-        private readonly IStatServiceNew _statService;
+        private readonly IStatCalculationService _statService;
         private readonly ICharacterResourceService _characterResourceService;
 
         public NaturalRegeneration(
-            IStatServiceNew statService,
+            IStatCalculationService statService,
             ICharacterResourceService characterResourceService)
         {
             _statService = statService;

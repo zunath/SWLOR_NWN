@@ -24,7 +24,7 @@ namespace SWLOR.Test.Component.Combat.Service
         private IStatService _mockStatService;
         private IItemService _mockItemService;
         private IPerkService _mockPerkService;
-        private IStatServiceNew _mockStatServiceNew;
+        private IStatCalculationService _mockStatServiceNew;
         private IMessagingService _mockMessagingService;
         private CombatService _combatService;
 
@@ -41,7 +41,7 @@ namespace SWLOR.Test.Component.Combat.Service
             _mockStatService = Substitute.For<IStatService>();
             _mockItemService = Substitute.For<IItemService>();
             _mockPerkService = Substitute.For<IPerkService>();
-            _mockStatServiceNew = Substitute.For<IStatServiceNew>();
+            _mockStatServiceNew = Substitute.For<IStatCalculationService>();
             _mockMessagingService = Substitute.For<IMessagingService>();
             
             // Create a real service provider with the mock services

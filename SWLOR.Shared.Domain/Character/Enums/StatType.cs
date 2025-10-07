@@ -46,5 +46,13 @@
         Level = 41,
         MaxSTM = 42,
         STMRegen = 43,
+        ControlSmithery = 44,
+        ControlFabrication = 45,
+        ControlEngineering = 46,
+        ControlAgriculture = 47,
+        CraftsmanshipSmithery = 48,
+        CraftsmanshipFabrication = 49,
+        CraftsmanshipEngineering = 50,
+        CraftsmanshipAgriculture = 51,
     }
 }

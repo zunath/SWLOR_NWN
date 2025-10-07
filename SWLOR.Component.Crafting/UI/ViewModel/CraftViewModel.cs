@@ -438,8 +438,6 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
         private int _cp;
         private int _maxCP;
         private int _levelDifference;
-        private AbilityType _primaryAbility;
-        private AbilityType _secondaryAbility;
         private bool _isSteadyHandActive;
         private bool _isMuscleMemoryActive;
         private int _venerationStepsRemaining;
@@ -507,9 +505,6 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
             switch (detail.Skill)
             {
                 case SkillType.Smithery:
-                    _primaryAbility = AbilityType.Might;
-                    _secondaryAbility = AbilityType.Vitality;
-
                     _rapidSynthesisPerk = PerkType.RapidSynthesisSmithery;
                     _carefulSynthesisPerk = PerkType.CarefulSynthesisSmithery;
                     
@@ -525,9 +520,6 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
                     _wasteNotPerk = PerkType.WasteNotSmithery;
                     break;
                 case SkillType.Fabrication:
-                    _primaryAbility = AbilityType.Perception;
-                    _secondaryAbility = AbilityType.Willpower;
-
                     _rapidSynthesisPerk = PerkType.RapidSynthesisFabrication;
                     _carefulSynthesisPerk = PerkType.CarefulSynthesisFabrication;
 
@@ -543,9 +535,6 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
                     _wasteNotPerk = PerkType.WasteNotFabrication;
                     break;
                 case SkillType.Agriculture:
-                    _primaryAbility = AbilityType.Social;
-                    _secondaryAbility = AbilityType.Willpower;
-
                     _rapidSynthesisPerk = PerkType.RapidSynthesisCooking;
                     _carefulSynthesisPerk = PerkType.CarefulSynthesisCooking;
 
@@ -561,9 +550,6 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
                     _wasteNotPerk = PerkType.WasteNotCooking;
                     break;
                 case SkillType.Engineering:
-                    _primaryAbility = AbilityType.Vitality;
-                    _secondaryAbility = AbilityType.Agility;
-
                     _rapidSynthesisPerk = PerkType.RapidSynthesisEngineering;
                     _carefulSynthesisPerk = PerkType.CarefulSynthesisEngineering;
 
@@ -590,19 +576,16 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
             var levelDetail = CraftService.GetRecipeLevelDetail(recipe.Level);
             _levelDifference = skill - recipe.Level;
             
-            // 33% CP from equipment and other sources, 75% from skill. +2 per primary modifier. +1 per secondary modifier.
-            var primaryModifier = GetAbilityModifier(_primaryAbility, Player);
-            var secondaryModifier = GetAbilityModifier(_secondaryAbility, Player);
-            if (primaryModifier < 0)
-                primaryModifier = 0;
-            if (secondaryModifier < 0)
-                secondaryModifier = 0;
+            // 33% CP from equipment and other sources, 75% from skill. +1 per craftsmanship and control.
+            var craftType = GetCraftTypeFromSkill(recipe.Skill);
+            var craftsmanship = _statCalculation.CalculateCraftsmanship(Player, craftType);
+            var control = _statCalculation.CalculateControl(Player, craftType);
 
             var cp = dbPlayer.CPBonus.ContainsKey(recipe.Skill) 
                 ? dbPlayer.CPBonus[recipe.Skill] 
                 : 0;
 
-            _maxCP = (int)(cp + skill * 0.75f) + primaryModifier * 2 + secondaryModifier;
+            _maxCP = (int)(cp + skill * 0.75f) + craftsmanship + control;
             _cp = _maxCP;
             
             _maxDurability = levelDetail.Durability;
@@ -1454,13 +1437,12 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
             var playerId = GetObjectUUID(Player);
             var dbPlayer = _db.Get<Player>(playerId);
             var recipe = CraftService.GetRecipe(_recipe);
-            var primaryModifier = GetAbilityModifier(_primaryAbility, Player);
-            var secondaryModifier = GetAbilityModifier(_secondaryAbility, Player);
             var craftType = GetCraftTypeFromSkill(recipe.Skill);
             var craftsmanship = _statCalculation.CalculateCraftsmanship(Player, craftType);
+            var control = _statCalculation.CalculateControl(Player, craftType);
             var delta = dbPlayer.Skills[recipe.Skill].Rank - recipe.Level;
             var recipeDiff = 1 + 0.05f * delta;
-            var progress = (int)((baseProgress + primaryModifier * 1.25f + secondaryModifier * 0.75f + craftsmanship * 0.65f) * recipeDiff);
+            var progress = (int)((baseProgress + craftsmanship * 1.25f + control * 0.75f + craftsmanship * 0.65f) * recipeDiff);
 
             return progress;
         }
@@ -1470,16 +1452,15 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
             var playerId = GetObjectUUID(Player);
             var dbPlayer = _db.Get<Player>(playerId);
             var recipe = CraftService.GetRecipe(_recipe);
-            var primaryModifier = GetAbilityModifier(_primaryAbility, Player);
-            var secondaryModifier = GetAbilityModifier(_secondaryAbility, Player);
             var craftType = GetCraftTypeFromSkill(recipe.Skill);
+            var craftsmanship = _statCalculation.CalculateCraftsmanship(Player, craftType);
             var control = _statCalculation.CalculateControl(Player, craftType);
             var delta = dbPlayer.Skills[recipe.Skill].Rank - recipe.Level;
             var recipeDiff = delta < 0 
                 ? 1 + 0.05f * delta 
                 : 1;
 
-            var quality = (int)((baseQuality + primaryModifier * 8 + secondaryModifier * 3 + control * 0.75f) * recipeDiff);
+            var quality = (int)((baseQuality + craftsmanship * 8 + control * 3) * recipeDiff);
             return quality;
         }
 

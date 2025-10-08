@@ -1,16 +1,13 @@
-﻿using NWN.Native.API;
+﻿using System.Runtime.InteropServices;
+using NWN.Native.API;
 using NWNX.NET;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Events.Constants;
-using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
 
-namespace SWLOR.Game.Server.Native
+namespace SWLOR.Component.Combat.Native
 {
     public static unsafe class OnAIActionAttackObject
     {

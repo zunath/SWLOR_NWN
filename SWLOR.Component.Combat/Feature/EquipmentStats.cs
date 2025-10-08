@@ -1,4 +1,3 @@
-using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -6,8 +5,6 @@ using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Combat.Enums;
-using SWLOR.Shared.Domain.Entities;
-using SWLOR.Shared.Domain.Skill.Enums;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.NWNX;
@@ -17,29 +14,22 @@ namespace SWLOR.Component.Combat.Feature
 {
     public class EquipmentStats
     {
-        private readonly IDatabaseService _db;
-        private readonly IServiceProvider _serviceProvider;
         private readonly IEventsPluginService _eventsPlugin;
         private readonly IObjectPluginService _objectPlugin;
+        private readonly ICharacterStatService _characterStatService;
+        private readonly ICharacterResourceService _characterResourceService;
 
-        public EquipmentStats(IDatabaseService db, IServiceProvider serviceProvider, IEventsPluginService eventsPlugin, IObjectPluginService objectPlugin)
+        public EquipmentStats(
+            IEventsPluginService eventsPlugin, 
+            IObjectPluginService objectPlugin,
+            ICharacterStatService characterStatService,
+            ICharacterResourceService characterResourceService)
         {
-            _db = db;
-            _serviceProvider = serviceProvider;
             _eventsPlugin = eventsPlugin;
             _objectPlugin = objectPlugin;
-            
-            // Initialize lazy services
-            _statService = new Lazy<IStatService>(() => _serviceProvider.GetRequiredService<IStatService>());
-            _characterResourceService = new Lazy<ICharacterResourceService>(() => _serviceProvider.GetRequiredService<ICharacterResourceService>());
+            _characterStatService = characterStatService;
+            _characterResourceService = characterResourceService;
         }
-
-        // Lazy-loaded service to break circular dependency
-        private readonly Lazy<IStatService> _statService;
-        private readonly Lazy<ICharacterResourceService> _characterResourceService;
-
-        private IStatService StatService => _statService.Value;
-        private ICharacterResourceService CharacterResourceService => _characterResourceService.Value;
         
         private delegate void ApplyStatChangeDelegate(uint player, uint item, ItemProperty ip, bool isAdding);
         private readonly Dictionary<ItemPropertyType, ApplyStatChangeDelegate> _statChangeActions = new();
@@ -183,20 +173,14 @@ namespace SWLOR.Component.Combat.Feature
 
             if (GetIsPC(creature))
             {
-                var playerId = GetObjectUUID(creature);
-                var dbPlayer = _db.Get<Player>(playerId);
-
                 if (isAdding)
                 {
-                    dbPlayer.MaxHP += amount;
+                    _characterStatService.ModifyMaxHP(creature, amount);
                 }
                 else
                 {
-                    dbPlayer.MaxHP -= amount;
+                    _characterStatService.ModifyMaxHP(creature, -amount);
                 }
-
-                _db.Set(dbPlayer);
-                StatService.ApplyPlayerMaxHP(creature);
             }
             else
             {
@@ -228,7 +212,7 @@ namespace SWLOR.Component.Combat.Feature
                     _objectPlugin.SetMaxHitPoints(creature, maxHP);
                 }
 
-                if (CharacterResourceService.GetCurrentHP(creature) > GetMaxHitPoints(creature))
+                if (_characterResourceService.GetCurrentHP(creature) > GetMaxHitPoints(creature))
                 {
                     SetCurrentHitPoints(creature, GetMaxHitPoints(creature));
                 }
@@ -251,19 +235,14 @@ namespace SWLOR.Component.Combat.Feature
 
             if (GetIsPC(creature))
             {
-                var playerId = GetObjectUUID(creature);
-                var dbPlayer = _db.Get<Player>(playerId);
-
                 if (isAdding)
                 {
-                    StatService.AdjustPlayerMaxFP(dbPlayer, amount, creature);
+                    _characterStatService.ModifyMaxFP(creature, amount);
                 }
                 else
                 {
-                    StatService.AdjustPlayerMaxFP(dbPlayer, -amount, creature);
+                    _characterStatService.ModifyMaxFP(creature, -amount);
                 }
-
-                _db.Set(dbPlayer);
             }
             else
             {
@@ -287,19 +266,14 @@ namespace SWLOR.Component.Combat.Feature
 
             if (GetIsPC(creature))
             {
-                var playerId = GetObjectUUID(creature);
-                var dbPlayer = _db.Get<Player>(playerId);
-
                 if (isAdding)
                 {
-                    StatService.AdjustFPRegen(dbPlayer, amount);
+                    _characterStatService.ModifyFPRegen(creature, amount);
                 }
                 else
                 {
-                    StatService.AdjustFPRegen(dbPlayer, -amount);
+                    _characterStatService.ModifyFPRegen(creature, -amount);
                 }
-
-                _db.Set(dbPlayer);
             }
             else
             {
@@ -323,19 +297,14 @@ namespace SWLOR.Component.Combat.Feature
 
             if (GetIsPC(creature))
             {
-                var playerId = GetObjectUUID(creature);
-                var dbPlayer = _db.Get<Player>(playerId);
-
                 if (isAdding)
                 {
-                    StatService.AdjustPlayerMaxSTM(dbPlayer, amount, creature);
+                    _characterStatService.ModifyMaxSTM(creature, amount);
                 }
                 else
                 {
-                    StatService.AdjustPlayerMaxSTM(dbPlayer, -amount, creature);
+                    _characterStatService.ModifyMaxSTM(creature, -amount);
                 }
-
-                _db.Set(dbPlayer);
             }
             else
             {
@@ -359,19 +328,14 @@ namespace SWLOR.Component.Combat.Feature
 
             if (GetIsPC(creature))
             {
-                var playerId = GetObjectUUID(creature);
-                var dbPlayer = _db.Get<Player>(playerId);
-
                 if (isAdding)
                 {
-                    StatService.AdjustSTMRegen(dbPlayer, amount);
+                    _characterStatService.ModifySTMRegen(creature, amount);
                 }
                 else
                 {
-                    StatService.AdjustSTMRegen(dbPlayer, -amount);
+                    _characterStatService.ModifySTMRegen(creature, -amount);
                 }
-
-                _db.Set(dbPlayer);
             }
             else
             {
@@ -395,19 +359,14 @@ namespace SWLOR.Component.Combat.Feature
 
             if (GetIsPC(creature))
             {
-                var playerId = GetObjectUUID(creature);
-                var dbPlayer = _db.Get<Player>(playerId);
-
                 if (isAdding)
                 {
-                    StatService.AdjustPlayerRecastReduction(dbPlayer, amount);
+                    _characterStatService.ModifyRecastReduction(creature, amount);
                 }
                 else
                 {
-                    StatService.AdjustPlayerRecastReduction(dbPlayer, -amount);
+                    _characterStatService.ModifyRecastReduction(creature, -amount);
                 }
-
-                _db.Set(dbPlayer);
             }
             else
             {
@@ -431,19 +390,14 @@ namespace SWLOR.Component.Combat.Feature
 
             if (GetIsPC(creature))
             {
-                var playerId = GetObjectUUID(creature);
-                var dbPlayer = _db.Get<Player>(playerId);
-
                 if (isAdding)
                 {
-                    StatService.AdjustAttack(dbPlayer, amount);
+                    _characterStatService.ModifyAttack(creature, amount);
                 }
                 else
                 {
-                    StatService.AdjustAttack(dbPlayer, -amount);
+                    _characterStatService.ModifyAttack(creature, -amount);
                 }
-
-                _db.Set(dbPlayer);
             }
             else
             {
@@ -467,19 +421,14 @@ namespace SWLOR.Component.Combat.Feature
 
             if (GetIsPC(creature))
             {
-                var playerId = GetObjectUUID(creature);
-                var dbPlayer = _db.Get<Player>(playerId);
-
                 if (isAdding)
                 {
-                    StatService.AdjustForceAttack(dbPlayer, amount);
+                    _characterStatService.ModifyForceAttack(creature, amount);
                 }
                 else
                 {
-                    StatService.AdjustForceAttack(dbPlayer, -amount);
+                    _characterStatService.ModifyForceAttack(creature, -amount);
                 }
-
-                _db.Set(dbPlayer);
             }
             else
             {
@@ -504,19 +453,28 @@ namespace SWLOR.Component.Combat.Feature
 
             if (GetIsPC(creature))
             {
-                var playerId = GetObjectUUID(creature);
-                var dbPlayer = _db.Get<Player>(playerId);
-
                 if (isAdding)
                 {
-                    StatService.AdjustDefense(dbPlayer, damageType, amount);
+                    if (damageType == CombatDamageType.Force)
+                    {
+                        _characterStatService.ModifyForceDefense(creature, amount);
+                    }
+                    else
+                    {
+                        _characterStatService.ModifyDefense(creature, amount);
+                    }
                 }
                 else
                 {
-                    StatService.AdjustDefense(dbPlayer, damageType, -amount);
+                    if (damageType == CombatDamageType.Force)
+                    {
+                        _characterStatService.ModifyForceDefense(creature, -amount);
+                    }
+                    else
+                    {
+                        _characterStatService.ModifyDefense(creature, -amount);
+                    }
                 }
-
-                _db.Set(dbPlayer);
             }
             else
             {
@@ -572,19 +530,14 @@ namespace SWLOR.Component.Combat.Feature
 
             if (GetIsPC(creature))
             {
-                var playerId = GetObjectUUID(creature);
-                var dbPlayer = _db.Get<Player>(playerId);
-
                 if (isAdding)
                 {
-                    StatService.AdjustEvasion(dbPlayer, amount);
+                    _characterStatService.ModifyEvasion(creature, amount);
                 }
                 else
                 {
-                    StatService.AdjustEvasion(dbPlayer, -amount);
+                    _characterStatService.ModifyEvasion(creature, -amount);
                 }
-
-                _db.Set(dbPlayer);
             }
             else
             {
@@ -608,43 +561,49 @@ namespace SWLOR.Component.Combat.Feature
 
             if (GetIsPC(creature))
             {
-                var playerId = GetObjectUUID(creature);
-                var dbPlayer = _db.Get<Player>(playerId);
                 var subType = GetItemPropertySubType(ip);
-                var skillType = SkillType.Invalid;
 
                 // Types are defined in iprp_crafttype.2da
-                switch (subType)
-                {
-                    case 1:
-                        skillType = SkillType.Smithery;
-                        break;
-                    case 2:
-                        skillType = SkillType.Engineering;
-                        break;
-                    case 3:
-                        skillType = SkillType.Fabrication;
-                        break;
-                    case 4:
-                        skillType = SkillType.Agriculture;
-                        break;
-                }
-
-                if (skillType == SkillType.Invalid)
-                {
-                    throw new Exception($"Unable to determine skill type for {nameof(ApplyControl)}");
-                }
-
                 if (isAdding)
                 {
-                    StatService.AdjustControl(dbPlayer, skillType, amount);
+                    switch (subType)
+                    {
+                        case 1: // Smithery
+                            _characterStatService.ModifyControlSmithery(creature, amount);
+                            break;
+                        case 2: // Engineering
+                            _characterStatService.ModifyControlEngineering(creature, amount);
+                            break;
+                        case 3: // Fabrication
+                            _characterStatService.ModifyControlFabrication(creature, amount);
+                            break;
+                        case 4: // Agriculture
+                            _characterStatService.ModifyControlAgriculture(creature, amount);
+                            break;
+                        default:
+                            throw new Exception($"Unable to determine skill type for {nameof(ApplyControl)}");
+                    }
                 }
                 else
                 {
-                    StatService.AdjustControl(dbPlayer, skillType, -amount);
+                    switch (subType)
+                    {
+                        case 1: // Smithery
+                            _characterStatService.ModifyControlSmithery(creature, -amount);
+                            break;
+                        case 2: // Engineering
+                            _characterStatService.ModifyControlEngineering(creature, -amount);
+                            break;
+                        case 3: // Fabrication
+                            _characterStatService.ModifyControlFabrication(creature, -amount);
+                            break;
+                        case 4: // Agriculture
+                            _characterStatService.ModifyControlAgriculture(creature, -amount);
+                            break;
+                        default:
+                            throw new Exception($"Unable to determine skill type for {nameof(ApplyControl)}");
+                    }
                 }
-
-                _db.Set(dbPlayer);
             }
         }
 
@@ -664,41 +623,49 @@ namespace SWLOR.Component.Combat.Feature
 
             if (GetIsPC(creature))
             {
-                var playerId = GetObjectUUID(creature);
-                var dbPlayer = _db.Get<Player>(playerId);
                 var subType = GetItemPropertySubType(ip);
-                var skillType = SkillType.Invalid;
 
                 // Types are defined in iprp_crafttype.2da
-                switch (subType)
-                {
-                    case 1:
-                        skillType = SkillType.Smithery;
-                        break;
-                    case 2:
-                        skillType = SkillType.Engineering;
-                        break;
-                    case 3:
-                        skillType = SkillType.Fabrication;
-                        break;
-                    case 4:
-                        skillType = SkillType.Agriculture;
-                        break;
-                }
                 if (isAdding)
                 {
-                    StatService.AdjustCraftsmanship(dbPlayer, skillType, amount);
+                    switch (subType)
+                    {
+                        case 1: // Smithery
+                            _characterStatService.ModifyCraftsmanshipSmithery(creature, amount);
+                            break;
+                        case 2: // Engineering
+                            _characterStatService.ModifyCraftsmanshipEngineering(creature, amount);
+                            break;
+                        case 3: // Fabrication
+                            _characterStatService.ModifyCraftsmanshipFabrication(creature, amount);
+                            break;
+                        case 4: // Agriculture
+                            _characterStatService.ModifyCraftsmanshipAgriculture(creature, amount);
+                            break;
+                    }
                 }
                 else
                 {
-                    StatService.AdjustCraftsmanship(dbPlayer, skillType, -amount);
+                    switch (subType)
+                    {
+                        case 1: // Smithery
+                            _characterStatService.ModifyCraftsmanshipSmithery(creature, -amount);
+                            break;
+                        case 2: // Engineering
+                            _characterStatService.ModifyCraftsmanshipEngineering(creature, -amount);
+                            break;
+                        case 3: // Fabrication
+                            _characterStatService.ModifyCraftsmanshipFabrication(creature, -amount);
+                            break;
+                        case 4: // Agriculture
+                            _characterStatService.ModifyCraftsmanshipAgriculture(creature, -amount);
+                            break;
+                    }
                 }
-
-                _db.Set(dbPlayer);
             }
         }
         /// <summary>
-        /// Applies or removes CP bonuses on a player.
+        /// Applies or removes CP bonuses on a creature.
         /// </summary>
         /// <param name="creature">The creature to adjust</param>
         /// <param name="item">The item being equipped or unequipped</param>
@@ -713,37 +680,45 @@ namespace SWLOR.Component.Combat.Feature
 
             if (GetIsPC(creature))
             {
-                var playerId = GetObjectUUID(creature);
-                var dbPlayer = _db.Get<Player>(playerId);
                 var subType = GetItemPropertySubType(ip);
-                var skillType = SkillType.Invalid;
 
                 // Types are defined in iprp_crafttype.2da
-                switch (subType)
-                {
-                    case 1:
-                        skillType = SkillType.Smithery;
-                        break;
-                    case 2:
-                        skillType = SkillType.Engineering;
-                        break;
-                    case 3:
-                        skillType = SkillType.Fabrication;
-                        break;
-                    case 4:
-                        skillType = SkillType.Agriculture;
-                        break;
-                }
                 if (isAdding)
                 {
-                    StatService.AdjustCPBonus(dbPlayer, skillType, amount);
+                    switch (subType)
+                    {
+                        case 1: // Smithery
+                            _characterStatService.ModifyCPSmithery(creature, amount);
+                            break;
+                        case 2: // Engineering
+                            _characterStatService.ModifyCPEngineering(creature, amount);
+                            break;
+                        case 3: // Fabrication
+                            _characterStatService.ModifyCPFabrication(creature, amount);
+                            break;
+                        case 4: // Agriculture
+                            _characterStatService.ModifyCPAgriculture(creature, amount);
+                            break;
+                    }
                 }
                 else
                 {
-                    StatService.AdjustCPBonus(dbPlayer, skillType, -amount);
+                    switch (subType)
+                    {
+                        case 1: // Smithery
+                            _characterStatService.ModifyCPSmithery(creature, -amount);
+                            break;
+                        case 2: // Engineering
+                            _characterStatService.ModifyCPEngineering(creature, -amount);
+                            break;
+                        case 3: // Fabrication
+                            _characterStatService.ModifyCPFabrication(creature, -amount);
+                            break;
+                        case 4: // Agriculture
+                            _characterStatService.ModifyCPAgriculture(creature, -amount);
+                            break;
+                    }
                 }
-
-                _db.Set(dbPlayer);
             }
         }
     }

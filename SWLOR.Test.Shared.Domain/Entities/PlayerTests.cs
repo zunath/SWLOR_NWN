@@ -540,13 +540,11 @@ namespace SWLOR.Test.Shared.Domain.Entities
             player.Attack = 15;
             player.ForceAttack = 20;
             player.Evasion = 12;
-            player.BAB = 5;
 
             // Assert
             Assert.That(player.Attack, Is.EqualTo(15));
             Assert.That(player.ForceAttack, Is.EqualTo(20));
             Assert.That(player.Evasion, Is.EqualTo(12));
-            Assert.That(player.BAB, Is.EqualTo(5));
         }
 
         [Test]
@@ -895,7 +893,6 @@ namespace SWLOR.Test.Shared.Domain.Entities
             Assert.That(player.FP, Is.EqualTo(50));
             Assert.That(player.Stamina, Is.EqualTo(100));
             Assert.That(player.TemporaryFoodHP, Is.EqualTo(25));
-            Assert.That(player.BAB, Is.EqualTo(5));
             Assert.That(player.HPRegen, Is.EqualTo(2));
             Assert.That(player.FPRegen, Is.EqualTo(1));
             Assert.That(player.STMRegen, Is.EqualTo(3));

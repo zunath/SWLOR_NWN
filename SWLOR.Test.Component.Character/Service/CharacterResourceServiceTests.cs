@@ -2,7 +2,6 @@ using NSubstitute;
 using SWLOR.Component.Character.Service;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Character.Contracts;
-using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Repositories;
 using SWLOR.Test.Shared;
 

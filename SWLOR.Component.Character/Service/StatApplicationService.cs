@@ -1,9 +1,7 @@
-﻿using NRediSearch.QueryBuilder;
-using NWN.Core.NWNX;
-using SWLOR.Component.Character.Contracts;
+﻿using SWLOR.Component.Character.Contracts;
 using SWLOR.NWN.API.Contracts;
+using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Character.Contracts;
-using SWLOR.Shared.Domain.Entities;
 
 namespace SWLOR.Component.Character.Service
 {
@@ -36,6 +34,42 @@ namespace SWLOR.Component.Character.Service
             {
                 ApplyCreatureMaxHP(creature);
             }
+        }
+
+        public void ApplyCharacterMight(uint creature)
+        {
+            var might = _statCalculation.CalculateMight(creature);
+            _creaturePlugin.SetRawAbilityScore(creature, AbilityType.Might, might);
+        }
+
+        public void ApplyCharacterPerception(uint creature)
+        {
+            var might = _statCalculation.CalculatePerception(creature);
+            _creaturePlugin.SetRawAbilityScore(creature, AbilityType.Perception, might);
+        }
+
+        public void ApplyCharacterVitality(uint creature)
+        {
+            var might = _statCalculation.CalculateVitality(creature);
+            _creaturePlugin.SetRawAbilityScore(creature, AbilityType.Vitality, might);
+        }
+
+        public void ApplyCharacterWillpower(uint creature)
+        {
+            var might = _statCalculation.CalculateWillpower(creature);
+            _creaturePlugin.SetRawAbilityScore(creature, AbilityType.Willpower, might);
+        }
+
+        public void ApplyCharacterAgility(uint creature)
+        {
+            var might = _statCalculation.CalculateAgility(creature);
+            _creaturePlugin.SetRawAbilityScore(creature, AbilityType.Agility, might);
+        }
+
+        public void ApplyCharacterSocial(uint creature)
+        {
+            var might = _statCalculation.CalculateSocial(creature);
+            _creaturePlugin.SetRawAbilityScore(creature, AbilityType.Social, might);
         }
 
         private void ApplyPlayerMaxHP(uint player)
@@ -87,6 +121,9 @@ namespace SWLOR.Component.Character.Service
 
         private void ApplyCreatureMaxHP(uint creature)
         {
+            if (GetIsPC(creature))
+                return;
+
             var maxHP = _statCalculation.CalculateMaxHP(creature);
             _objectPlugin.SetMaxHitPoints(creature, maxHP);
         }

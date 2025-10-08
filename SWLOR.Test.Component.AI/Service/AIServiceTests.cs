@@ -1,5 +1,4 @@
 using SWLOR.NWN.API.Service;
-using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.AI.Enums;
 using SWLOR.Test.Shared;
 

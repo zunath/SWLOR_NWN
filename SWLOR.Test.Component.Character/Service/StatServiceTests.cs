@@ -1,6 +1,7 @@
 using NSubstitute;
 using SWLOR.Component.Character.Contracts;
 using SWLOR.Component.Character.Service;
+using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.StatusEffect.Contracts;
 using SWLOR.Shared.Domain.Skill.Contracts;

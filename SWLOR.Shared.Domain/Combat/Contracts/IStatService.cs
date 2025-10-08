@@ -1,7 +1,6 @@
 using NWN.Native.API;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Combat.Enums;
-using SWLOR.Shared.Domain.Combat.ValueObjects;
 using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Skill.Enums;
 
@@ -18,40 +17,6 @@ namespace SWLOR.Shared.Domain.Combat.Contracts
         /// </summary>
         void ApplyPlayerStats();
 
-        /// <summary>
-        /// Retrieves the maximum FP on a creature.
-        /// For players:
-        /// Each Vitality modifier grants +2 to max FP.
-        /// For NPCs:
-        /// FP is read from their skin.
-        /// </summary>
-        /// <param name="creature">The creature object</param>
-        /// <param name="dbPlayer">The player entity. If this is not set, a call to the DB will be made. Leave null for NPCs.</param>
-        /// <returns>The max amount of FP</returns>
-
-        /// <summary>
-        /// Retrieves the maximum STM on a creature.
-        /// CON modifier will be checked. Each modifier grants +2 to max STM.
-        /// </summary>
-        /// <param name="creature">The creature object</param>
-        /// <param name="dbPlayer">The player entity. If this is not set, a call to the DB will be made. Leave null for NPCs.</param>
-        /// <returns>The max amount of STM</returns>
-
-        /// <summary>
-        /// Restores a creature's FP by a specified amount.
-        /// </summary>
-        /// <param name="creature">The creature to modify.</param>
-        /// <param name="amount">The amount of FP to restore.</param>
-        /// <param name="dbPlayer">The player entity to modify. If this is not set, a call to the DB will be made. Leave null for NPCs.</param>
-
-
-        /// <summary>
-        /// Restores an entity's Stamina by a specified amount.
-        /// </summary>
-        /// <param name="creature">The creature to modify.</param>
-        /// <param name="amount">The amount of Stamina to restore.</param>
-        /// <param name="dbPlayer">The player entity to modify. If this is not set, a DB call will be made. Leave null for NPCs.</param>
-
 
         /// <summary>
         /// After a player's status effects are reassociated,
@@ -59,22 +24,6 @@ namespace SWLOR.Shared.Domain.Combat.Contracts
         /// </summary>
         void ReapplyFoodHP();
 
-
-        /// <summary>
-        /// Modifies a player's maximum FP by a certain amount.
-        /// This method will not persist the changes so be sure you call _db.Set after calling this.
-        /// </summary>
-        /// <param name="entity">The entity to modify</param>
-        /// <param name="adjustBy">The amount to adjust by</param>
-        void AdjustPlayerMaxFP(Player entity, int adjustBy, uint player);
-
-        /// <summary>
-        /// Modifies a player's maximum STM by a certain amount.
-        /// This method will not persist the changes so be sure you call _db.Set after calling this.
-        /// </summary>
-        /// <param name="entity">The entity to modify</param>
-        /// <param name="adjustBy">The amount to adjust by</param>
-        void AdjustPlayerMaxSTM(Player entity, int adjustBy, uint player);
 
         void ApplyPlayerMovementRate(uint player);
 
@@ -101,20 +50,6 @@ namespace SWLOR.Shared.Domain.Combat.Contracts
         /// <param name="entity">The entity to modify</param>
         /// <param name="adjustBy">The amount to adjust by</param>
         void AdjustHPRegen(Player entity, int adjustBy);
-
-        /// <summary>
-        /// Modifies a player's maximum HP by a certain amount.
-        /// This method will not persist the changes so be sure you call _db.Set after calling this.
-        /// </summary>
-        /// <param name="entity">The entity to modify</param>
-        /// <param name="adjustBy">The amount to adjust by</param>
-        void AdjustPlayerMaxHP(Player entity, uint player, int adjustBy);
-
-        /// <summary>
-        /// Applies the calculated maximum HP to a player.
-        /// </summary>
-        /// <param name="player">The player to apply max HP to</param>
-        void ApplyPlayerMaxHP(uint player);
 
         /// <summary>
         /// Modifies a player's FP Regen by a certain amount.

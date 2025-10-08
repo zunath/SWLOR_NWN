@@ -19,6 +19,7 @@ namespace SWLOR.Component.Migration.Definitions.PlayerMigration
         private readonly IServiceProvider _serviceProvider;
         private readonly ICreaturePluginService _creaturePlugin;
         private readonly IPlayerPluginService _playerPlugin;
+        private readonly ICharacterStatService _characterStatService;
         
         // Lazy-loaded services to break circular dependencies
         private IPlayerInitializationService PlayerInitialization => _serviceProvider.GetRequiredService<IPlayerInitializationService>();
@@ -32,13 +33,15 @@ namespace SWLOR.Component.Migration.Definitions.PlayerMigration
             IDatabaseService db, 
             IServiceProvider serviceProvider,
             ICreaturePluginService creaturePlugin,
-            IPlayerPluginService playerPlugin)
+            IPlayerPluginService playerPlugin,
+            ICharacterStatService characterStatService)
             : base(serviceProvider)
         {
             _db = db;
             _serviceProvider = serviceProvider;
             _creaturePlugin = creaturePlugin;
             _playerPlugin = playerPlugin;
+            _characterStatService = characterStatService;
         }
 
         public int Version => 1;
@@ -55,12 +58,12 @@ namespace SWLOR.Component.Migration.Definitions.PlayerMigration
             ResetAlignment(player);
             ResetSavingThrows(player);
             StoreRacialAppearance(player, dbPlayer);
-
             MigrateItems(player);
             MigrateCyborgsToHuman(player);
             AdjustCatharParts(player);
-
             _db.Set(dbPlayer);
+
+            AdjustResources(player);
         }
 
         private void AutoLevelUp(uint player)
@@ -102,11 +105,7 @@ namespace SWLOR.Component.Migration.Definitions.PlayerMigration
 
         private void ResetStats(uint player, Player dbPlayer)
         {
-            dbPlayer.BAB = 1;
             dbPlayer.MaxHP = 70;
-            StatService.ApplyPlayerMaxHP(player);
-            StatService.AdjustPlayerMaxFP(dbPlayer, 10, player);
-            StatService.AdjustPlayerMaxSTM(dbPlayer, 10, player);
             _creaturePlugin.SetBaseAttackBonus(player, 1);
             dbPlayer.HP = CharacterResourceService.GetCurrentHP(player);
             dbPlayer.FP = StatCalculationService.CalculateMaxFP(player);
@@ -118,6 +117,20 @@ namespace SWLOR.Component.Migration.Definitions.PlayerMigration
             dbPlayer.BaseStats[AbilityType.Willpower] = _creaturePlugin.GetRawAbilityScore(player, AbilityType.Willpower);
             dbPlayer.BaseStats[AbilityType.Agility] = _creaturePlugin.GetRawAbilityScore(player, AbilityType.Agility);
             dbPlayer.BaseStats[AbilityType.Social] = _creaturePlugin.GetRawAbilityScore(player, AbilityType.Social);
+        }
+
+        private void AdjustResources(uint player)
+        {
+            _characterStatService.SetMaxHP(player, 0);
+            _characterStatService.SetMaxFP(player, 0);
+            _characterStatService.SetMaxSTM(player, 0);
+
+            var hp = StatCalculationService.CalculateMaxHP(player);
+            var fp = StatCalculationService.CalculateMaxFP(player);
+            var stm = StatCalculationService.CalculateMaxSTM(player);
+            CharacterResourceService.RestoreHP(player, hp);
+            CharacterResourceService.RestoreFP(player, fp);
+            CharacterResourceService.RestoreSTM(player, stm);
         }
 
         private void ResetHotBar(uint player)

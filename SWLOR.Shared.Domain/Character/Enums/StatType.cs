@@ -54,5 +54,9 @@
         CraftsmanshipFabrication = 49,
         CraftsmanshipEngineering = 50,
         CraftsmanshipAgriculture = 51,
+        CPSmithery = 52,
+        CPFabrication = 53,
+        CPEngineering = 54,
+        CPAgriculture = 55,
     }
 }

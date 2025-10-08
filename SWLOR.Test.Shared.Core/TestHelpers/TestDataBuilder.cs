@@ -342,7 +342,6 @@ namespace SWLOR.Test.Shared.Core.TestHelpers
             player.ActiveBeastId = "beast_1";
             player.AppearanceScale = 1.2f;
             player.TemporaryFoodHP = 25;
-            player.BAB = 5;
             player.HPRegen = 2;
             player.FPRegen = 1;
             player.STMRegen = 3;

@@ -314,7 +314,6 @@ namespace SWLOR.Test.Shared.Core.TestHelpers
             player.Attack = attack;
             player.ForceAttack = forceAttack;
             player.Evasion = evasion;
-            player.BAB = bab;
             return player;
         }
 

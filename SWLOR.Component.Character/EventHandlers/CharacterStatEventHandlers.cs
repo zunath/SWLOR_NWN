@@ -1,7 +1,6 @@
 ﻿using SWLOR.Component.Character.Contracts;
-using SWLOR.Component.Character.Service;
+using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Domain.Character.Events;
 using SWLOR.Shared.Events.Events.Creature;
 
 namespace SWLOR.Component.Character.EventHandlers

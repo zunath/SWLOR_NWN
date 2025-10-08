@@ -24,6 +24,7 @@ namespace SWLOR.Component.Character.Service
         private readonly IEventAggregator _eventAggregator;
         private readonly ICreaturePluginService _creaturePlugin;
         private readonly IPlayerPluginService _playerPlugin;
+        private readonly ICharacterStatService _characterStatService;
 
         public PlayerInitializationService(
             ILogger logger, 
@@ -31,7 +32,8 @@ namespace SWLOR.Component.Character.Service
             IServiceProvider serviceProvider,
             IEventAggregator eventAggregator,
             ICreaturePluginService creaturePlugin,
-            IPlayerPluginService playerPlugin)
+            IPlayerPluginService playerPlugin,
+            ICharacterStatService characterStatService)
         {
             _logger = logger;
             _db = db;
@@ -39,6 +41,7 @@ namespace SWLOR.Component.Character.Service
             _eventAggregator = eventAggregator;
             _creaturePlugin = creaturePlugin;
             _playerPlugin = playerPlugin;
+            _characterStatService = characterStatService;
             
             // Initialize lazy services
             _statService = new Lazy<IStatService>(() => _serviceProvider.GetRequiredService<IStatService>());
@@ -47,7 +50,6 @@ namespace SWLOR.Component.Character.Service
             _raceService = new Lazy<IRaceService>(() => _serviceProvider.GetRequiredService<IRaceService>());
             _characterResourceService = new Lazy<ICharacterResourceService>(() => _serviceProvider.GetRequiredService<ICharacterResourceService>());
             _statCalculationService = new Lazy<IStatCalculationService>(() => _serviceProvider.GetRequiredService<IStatCalculationService>());
-            _playerStatService = new Lazy<ICharacterStatService>(() => _serviceProvider.GetRequiredService<ICharacterStatService>());
         }
 
         // Lazy-loaded services to break circular dependencies
@@ -57,7 +59,6 @@ namespace SWLOR.Component.Character.Service
         private readonly Lazy<IRaceService> _raceService;
         private readonly Lazy<ICharacterResourceService> _characterResourceService;
         private readonly Lazy<IStatCalculationService> _statCalculationService;
-        private readonly Lazy<ICharacterStatService> _playerStatService;
 
         private IStatService StatService => _statService.Value;
         private ISkillService SkillService => _skillService.Value;
@@ -65,7 +66,6 @@ namespace SWLOR.Component.Character.Service
         private IRaceService RaceService => _raceService.Value;
         private ICharacterResourceService CharacterResourceService => _characterResourceService.Value;
         private IStatCalculationService StatCalculationService => _statCalculationService.Value;
-        private ICharacterStatService PlayerStatService => _playerStatService.Value;
         /// <summary>
         /// Handles 
         /// </summary>
@@ -101,8 +101,10 @@ namespace SWLOR.Component.Character.Service
             AssignCharacterType(player, dbPlayer);
             RegisterDefaultRespawnPoint(dbPlayer);
             ApplyMovementRate(player);
-
+            MarkRebuildComplete(dbPlayer);
             _db.Set(dbPlayer);
+
+            AdjustResources(player);
 
             _eventAggregator.Publish(new OnPlayerInitialized(), player);
         }
@@ -234,14 +236,7 @@ namespace SWLOR.Component.Character.Service
             dbPlayer.UnallocatedSP = 10;
             dbPlayer.Version = MigrationService.GetLatestPlayerVersion();
             dbPlayer.Name = GetName(player);
-            dbPlayer.BAB = 1;
-            StatService.AdjustPlayerMaxHP(dbPlayer, player, StatService.BaseHP);
-            StatService.AdjustPlayerMaxFP(dbPlayer, StatService.BaseFP, player);
-            StatService.AdjustPlayerMaxSTM(dbPlayer, StatService.BaseSTM, player);
             _creaturePlugin.SetBaseAttackBonus(player, 1);
-            dbPlayer.HP = CharacterResourceService.GetCurrentHP(player);
-            dbPlayer.FP = StatCalculationService.CalculateMaxFP(player);
-            dbPlayer.Stamina = StatCalculationService.CalculateMaxSTM(player);
 
             dbPlayer.BaseStats[AbilityType.Might] = _creaturePlugin.GetRawAbilityScore(player, AbilityType.Might);
             dbPlayer.BaseStats[AbilityType.Perception] = _creaturePlugin.GetRawAbilityScore(player, AbilityType.Perception);
@@ -249,8 +244,25 @@ namespace SWLOR.Component.Character.Service
             dbPlayer.BaseStats[AbilityType.Willpower] = _creaturePlugin.GetRawAbilityScore(player, AbilityType.Willpower);
             dbPlayer.BaseStats[AbilityType.Agility] = _creaturePlugin.GetRawAbilityScore(player, AbilityType.Agility);
             dbPlayer.BaseStats[AbilityType.Social] = _creaturePlugin.GetRawAbilityScore(player, AbilityType.Social);
+        }
 
+        private void MarkRebuildComplete(Player dbPlayer)
+        {
             dbPlayer.RebuildComplete = true;
+        }
+
+        private void AdjustResources(uint player)
+        {
+            _characterStatService.SetMaxHP(player, 0);
+            _characterStatService.SetMaxFP(player, 0);
+            _characterStatService.SetMaxSTM(player, 0);
+
+            var hp = StatCalculationService.CalculateMaxHP(player);
+            var fp = StatCalculationService.CalculateMaxFP(player);
+            var stm = StatCalculationService.CalculateMaxSTM(player);
+            CharacterResourceService.RestoreHP(player, hp);
+            CharacterResourceService.RestoreFP(player, fp);
+            CharacterResourceService.RestoreSTM(player, stm);
         }
 
         /// <summary>

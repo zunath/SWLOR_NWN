@@ -5,7 +5,6 @@ using SWLOR.Shared.Domain.Skill.Events;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.NWNX;
-using SWLOR.Shared.Events.Events.Player;
 
 namespace SWLOR.Component.Perk.EventHandlers
 {

@@ -84,5 +84,9 @@
         public const string OnCharacterCraftsmanshipFabricationChanged = "char_craft_fab_chg";
         public const string OnCharacterCraftsmanshipEngineeringChanged = "char_craft_eng_chg";
         public const string OnCharacterCraftsmanshipAgricultureChanged = "char_craft_agri_chg";
+        public const string OnCharacterCPSmitheryChanged = "char_cp_smith_chg";
+        public const string OnCharacterCPFabricationChanged = "char_cp_fab_chg";
+        public const string OnCharacterCPEngineeringChanged = "char_cp_eng_chg";
+        public const string OnCharacterCPAgricultureChanged = "char_cp_agri_chg";
     }
 }

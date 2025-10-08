@@ -21,8 +21,19 @@ namespace SWLOR.Component.Migration.Definitions.PlayerMigration
             ICombatService combatService,
             IPerkService perkService,
             IItemService itemService,
-            ICreaturePluginService creaturePlugin)
-            : base(logger, database, statService, statCalculationService, skillService, combatService, perkService, itemService, creaturePlugin)
+            ICreaturePluginService creaturePlugin,
+            IStatApplicationService statApplicationService)
+            : base(
+                logger, 
+                database, 
+                statService, 
+                statCalculationService, 
+                skillService, 
+                combatService, 
+                perkService, 
+                itemService, 
+                creaturePlugin,
+                statApplicationService)
         {
         }
         

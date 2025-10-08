@@ -24,6 +24,7 @@ namespace SWLOR.Component.Migration.Model
         protected readonly IPerkService PerkService;
         protected readonly IItemService ItemService;
         protected readonly ICreaturePluginService CreaturePlugin;
+        private readonly IStatApplicationService _statApplicationService;
 
         protected PlayerMigrationBase(
             ILogger logger,
@@ -34,7 +35,8 @@ namespace SWLOR.Component.Migration.Model
             ICombatService combatService,
             IPerkService perkService,
             IItemService itemService,
-            ICreaturePluginService creaturePlugin)
+            ICreaturePluginService creaturePlugin,
+            IStatApplicationService statApplicationService)
         {
             Logger = logger;
             Database = database;
@@ -45,6 +47,7 @@ namespace SWLOR.Component.Migration.Model
             PerkService = perkService;
             ItemService = itemService;
             CreaturePlugin = creaturePlugin;
+            _statApplicationService = statApplicationService;
         }
         public abstract int Version { get; }
         public abstract void Migrate(uint player);
@@ -113,7 +116,7 @@ namespace SWLOR.Component.Migration.Model
                 dbPlayer.Evasion = 0;
 
                 Database.Set(dbPlayer);
-                StatService.ApplyPlayerMaxHP(player);
+                _statApplicationService.ApplyCharacterMaxHP(player);
                 SetCurrentHitPoints(player, GetMaxHitPoints(player));
 
                 // Attacks

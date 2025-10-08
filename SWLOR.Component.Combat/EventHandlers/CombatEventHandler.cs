@@ -1,6 +1,5 @@
 using SWLOR.Component.Combat.Contracts;
 using SWLOR.Component.Combat.Native;
-using SWLOR.Game.Server.Native;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Combat.Events;
 using SWLOR.Shared.Events.Attributes;

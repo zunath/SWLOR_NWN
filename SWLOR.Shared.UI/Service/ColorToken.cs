@@ -1,6 +1,4 @@
-﻿using NWN.Native.API;
-
-namespace SWLOR.Shared.UI.Service
+﻿namespace SWLOR.Shared.UI.Service
 {
     /// <summary>
     ///      *

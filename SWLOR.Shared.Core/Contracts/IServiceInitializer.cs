@@ -1,9 +1,10 @@
-namespace SWLOR.Shared.Core.Contracts;
-
-public interface IServiceInitializer
+namespace SWLOR.Shared.Core.Contracts
 {
-    /// <summary>
-    /// Initializes all services that implement IServiceInitializer
-    /// </summary>
-    void InitializeAllServices();
+    public interface IServiceInitializer
+    {
+        /// <summary>
+        /// Initializes all services that implement IServiceInitializer
+        /// </summary>
+        void InitializeAllServices();
+    }
 }

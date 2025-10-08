@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Events.Contracts;
 using SWLOR.Shared.Events.Service;
 using SWLOR.Shared.Events.EventHandlers;
 

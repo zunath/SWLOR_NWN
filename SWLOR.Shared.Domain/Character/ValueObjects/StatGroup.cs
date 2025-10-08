@@ -6,8 +6,6 @@ namespace SWLOR.Shared.Domain.Character.ValueObjects
     public class StatGroup
     {
         private readonly Dictionary<StatType, int> _stats = new();
-        public WeaponStat RightHandStat { get; set; } = new();
-        public WeaponStat LeftHandStat { get; set; } = new();
 
         public void SetStat(StatType type, int value)
         {

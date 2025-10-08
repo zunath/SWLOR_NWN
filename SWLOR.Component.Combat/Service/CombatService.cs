@@ -34,7 +34,7 @@ namespace SWLOR.Component.Combat.Service
         private readonly Lazy<IStatService> _statService;
         private readonly Lazy<IItemService> _itemService;
         private readonly Lazy<IPerkService> _perkService;
-        private readonly Lazy<IStatGroupService> _statGroupService;
+        private readonly Lazy<IStatCalculationService> _statCalculationService;
 
         private readonly IStatCalculationService _statServiceNew;
         private readonly IMessagingService _messaging;
@@ -59,7 +59,7 @@ namespace SWLOR.Component.Combat.Service
             _statService = new Lazy<IStatService>(() => _serviceProvider.GetRequiredService<IStatService>());
             _itemService = new Lazy<IItemService>(() => _serviceProvider.GetRequiredService<IItemService>());
             _perkService = new Lazy<IPerkService>(() => _serviceProvider.GetRequiredService<IPerkService>());
-            _statGroupService = new Lazy<IStatGroupService>(() => _serviceProvider.GetRequiredService<IStatGroupService>());
+            _statCalculationService = new Lazy<IStatCalculationService>(() => _serviceProvider.GetRequiredService<IStatCalculationService>());
         }
 
         // Lazy-loaded services to break circular dependencies
@@ -67,7 +67,7 @@ namespace SWLOR.Component.Combat.Service
         private IStatService StatService => _statService.Value;
         private IItemService ItemService => _itemService.Value;
         private IPerkService PerkService => _perkService.Value;
-        private IStatGroupService StatGroupService => _statGroupService.Value;
+        private IStatCalculationService StatCalculationService => _statCalculationService.Value;
 
         /// <summary>
         /// When the module loads, add all valid damage types to the cache.
@@ -275,8 +275,7 @@ namespace SWLOR.Component.Combat.Service
             var level = 0;
             if (!GetIsPC(creature))
             {
-                var statGroup = StatGroupService.LoadStats(creature);
-                level = statGroup.GetStat(StatType.Level);
+                level = StatCalculationService.CalculateLevel(creature);
             }
             else
             {

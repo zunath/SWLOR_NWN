@@ -55,7 +55,7 @@ namespace SWLOR.Component.Combat.Feature
 
         private void InitializeStatActions()
         {
-            _statChangeActions[ItemPropertyType.HPBonus] = ApplyHPBonus;
+            _statChangeActions[ItemPropertyType.HP] = ApplyHPBonus;
             _statChangeActions[ItemPropertyType.FP] = ApplyFPBonus;
             _statChangeActions[ItemPropertyType.FPRegen] = ApplyFPRegenBonus;
             _statChangeActions[ItemPropertyType.Stamina] = ApplySTMBonus;
@@ -188,14 +188,15 @@ namespace SWLOR.Component.Combat.Feature
 
                 if (isAdding)
                 {
-                    StatService.AdjustPlayerMaxHP(dbPlayer, creature, amount);
+                    dbPlayer.MaxHP += amount;
                 }
                 else
                 {
-                    StatService.AdjustPlayerMaxHP(dbPlayer, creature, -amount);
+                    dbPlayer.MaxHP -= amount;
                 }
 
                 _db.Set(dbPlayer);
+                StatService.ApplyPlayerMaxHP(creature);
             }
             else
             {

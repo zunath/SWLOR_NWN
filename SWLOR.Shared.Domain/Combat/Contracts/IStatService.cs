@@ -59,16 +59,6 @@ namespace SWLOR.Shared.Domain.Combat.Contracts
         /// </summary>
         void ReapplyFoodHP();
 
-        /// <summary>
-        /// Increases or decreases a player's HP by a specified amount.
-        /// There is a cap of 255 HP per NWN level. Players are auto-leveled to 40 by default, so this
-        /// gives 255 * 40 = 10,200 HP maximum. If the player's HP would go over this amount, it will be set to 10,200.
-        /// This method will not persist the changes so be sure you call _db.Set after calling this.
-        /// </summary>
-        /// <param name="entity">The entity to modify</param>
-        /// <param name="player">The player to adjust</param>
-        /// <param name="adjustBy">The amount to adjust by.</param>
-        void AdjustPlayerMaxHP(Player entity, uint player, int adjustBy);
 
         /// <summary>
         /// Modifies a player's maximum FP by a certain amount.
@@ -111,6 +101,20 @@ namespace SWLOR.Shared.Domain.Combat.Contracts
         /// <param name="entity">The entity to modify</param>
         /// <param name="adjustBy">The amount to adjust by</param>
         void AdjustHPRegen(Player entity, int adjustBy);
+
+        /// <summary>
+        /// Modifies a player's maximum HP by a certain amount.
+        /// This method will not persist the changes so be sure you call _db.Set after calling this.
+        /// </summary>
+        /// <param name="entity">The entity to modify</param>
+        /// <param name="adjustBy">The amount to adjust by</param>
+        void AdjustPlayerMaxHP(Player entity, uint player, int adjustBy);
+
+        /// <summary>
+        /// Applies the calculated maximum HP to a player.
+        /// </summary>
+        /// <param name="player">The player to apply max HP to</param>
+        void ApplyPlayerMaxHP(uint player);
 
         /// <summary>
         /// Modifies a player's FP Regen by a certain amount.

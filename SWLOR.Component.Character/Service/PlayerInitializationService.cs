@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using SWLOR.Component.Character.Contracts;
 using SWLOR.NWN.API.Contracts;
 using SWLOR.NWN.API.NWNX.Model;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -46,6 +47,7 @@ namespace SWLOR.Component.Character.Service
             _raceService = new Lazy<IRaceService>(() => _serviceProvider.GetRequiredService<IRaceService>());
             _characterResourceService = new Lazy<ICharacterResourceService>(() => _serviceProvider.GetRequiredService<ICharacterResourceService>());
             _statCalculationService = new Lazy<IStatCalculationService>(() => _serviceProvider.GetRequiredService<IStatCalculationService>());
+            _playerStatService = new Lazy<ICharacterStatService>(() => _serviceProvider.GetRequiredService<ICharacterStatService>());
         }
 
         // Lazy-loaded services to break circular dependencies
@@ -55,6 +57,7 @@ namespace SWLOR.Component.Character.Service
         private readonly Lazy<IRaceService> _raceService;
         private readonly Lazy<ICharacterResourceService> _characterResourceService;
         private readonly Lazy<IStatCalculationService> _statCalculationService;
+        private readonly Lazy<ICharacterStatService> _playerStatService;
 
         private IStatService StatService => _statService.Value;
         private ISkillService SkillService => _skillService.Value;
@@ -62,6 +65,7 @@ namespace SWLOR.Component.Character.Service
         private IRaceService RaceService => _raceService.Value;
         private ICharacterResourceService CharacterResourceService => _characterResourceService.Value;
         private IStatCalculationService StatCalculationService => _statCalculationService.Value;
+        private ICharacterStatService PlayerStatService => _playerStatService.Value;
         /// <summary>
         /// Handles 
         /// </summary>

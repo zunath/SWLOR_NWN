@@ -201,13 +201,6 @@ namespace SWLOR.Shared.Domain.Character.Contracts
         int CalculateSlow(uint creature);
 
         /// <summary>
-        /// Calculates the damage reduction percentage for a creature.
-        /// </summary>
-        /// <param name="creature">The creature to calculate damage reduction for</param>
-        /// <returns>The damage reduction percentage</returns>
-        int CalculateDamageReduction(uint creature);
-
-        /// <summary>
         /// Calculates the force defense rating for a creature.
         /// </summary>
         /// <param name="creature">The creature to calculate force defense for</param>
@@ -276,13 +269,6 @@ namespace SWLOR.Shared.Domain.Character.Contracts
         /// <param name="creature">The creature to calculate force defense modifier for</param>
         /// <returns>The force defense modifier</returns>
         int CalculateForceDefenseModifier(uint creature);
-
-        /// <summary>
-        /// Calculates the extra attack modifier for a creature.
-        /// </summary>
-        /// <param name="creature">The creature to calculate extra attack modifier for</param>
-        /// <returns>The extra attack modifier</returns>
-        int CalculateExtraAttackModifier(uint creature);
 
         /// <summary>
         /// Calculates the attack modifier for a creature.

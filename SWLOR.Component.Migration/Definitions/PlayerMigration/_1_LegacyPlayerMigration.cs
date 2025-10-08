@@ -103,7 +103,8 @@ namespace SWLOR.Component.Migration.Definitions.PlayerMigration
         private void ResetStats(uint player, Player dbPlayer)
         {
             dbPlayer.BAB = 1;
-            StatService.AdjustPlayerMaxHP(dbPlayer, player, 70);
+            dbPlayer.MaxHP = 70;
+            StatService.ApplyPlayerMaxHP(player);
             StatService.AdjustPlayerMaxFP(dbPlayer, 10, player);
             StatService.AdjustPlayerMaxSTM(dbPlayer, 10, player);
             _creaturePlugin.SetBaseAttackBonus(player, 1);

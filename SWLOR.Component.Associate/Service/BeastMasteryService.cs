@@ -67,7 +67,7 @@ namespace SWLOR.Component.Associate.Service
             _perkService = new Lazy<IPerkService>(() => _serviceProvider.GetRequiredService<IPerkService>());
             _itemService = new Lazy<IItemService>(() => _serviceProvider.GetRequiredService<IItemService>());
             _statService = new Lazy<IStatService>(() => _serviceProvider.GetRequiredService<IStatService>());
-            _statGroupService = new Lazy<IStatGroupService>(() => _serviceProvider.GetRequiredService<IStatGroupService>());
+            _statCalculationService = new Lazy<IStatCalculationService>(() => _serviceProvider.GetRequiredService<IStatCalculationService>());
         }
 
         // Lazy-loaded services to break circular dependencies
@@ -79,7 +79,7 @@ namespace SWLOR.Component.Associate.Service
         private readonly Lazy<IPerkService> _perkService;
         private readonly Lazy<IItemService> _itemService;
         private readonly Lazy<IStatService> _statService;
-        private readonly Lazy<IStatGroupService> _statGroupService;
+        private readonly Lazy<IStatCalculationService> _statCalculationService;
         
         private IGenericCacheService CacheService => _cacheService.Value;
         private IGuiService GuiService => _guiService.Value;
@@ -89,7 +89,7 @@ namespace SWLOR.Component.Associate.Service
         private IPerkService PerkService => _perkService.Value;
         private IItemService ItemService => _itemService.Value;
         private IStatService StatService => _statService.Value;
-        private IStatGroupService StatGroupService => _statGroupService.Value;
+        private IStatCalculationService StatCalculationService => _statCalculationService.Value;
         
         // Cached data
         private IInterfaceCache<BeastType, BeastDetail> _beastCache;
@@ -470,11 +470,11 @@ namespace SWLOR.Component.Associate.Service
                 return;
 
             var npc = StringToObject(_eventsPlugin.GetEventData("NPC"));
-            var statGroup = StatGroupService.LoadStats(npc);
+            var npcLevel = StatCalculationService.CalculateLevel(npc);
             var beastId = GetBeastId(beast);
             var dbBeast = _db.Get<Beast>(beastId);
 
-            var delta = statGroup.GetStat(StatType.Level) - dbBeast.Level;
+            var delta = npcLevel - dbBeast.Level;
             if (delta > _highestDelta)
                 delta = _highestDelta;
 

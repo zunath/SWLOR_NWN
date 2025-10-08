@@ -24,6 +24,7 @@ namespace SWLOR.Component.Inventory.Infrastructure
         public static IServiceCollection AddInventoryServices(this IServiceCollection services)
         {
             services.AddSingleton<IInventoryItemRepository, InventoryItemRepository>();
+            services.AddSingleton<IWeaponStatService, WeaponStatService>();
             services.AddSingleton<IKeyItemService, KeyItemService>();
             services.AddSingleton<ILootTableBuilder, LootTableBuilder>();
             services.AddSingleton<ILootService, LootService>();

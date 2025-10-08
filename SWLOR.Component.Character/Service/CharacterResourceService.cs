@@ -163,6 +163,58 @@ namespace SWLOR.Component.Character.Service
             _eventAggregator.Publish(new OnPlayerStaminaAdjusted(), creature);
         }
 
+        public void SetCurrentFP(uint creature, int amount)
+        {
+            var maxFP = _statService.CalculateMaxFP(creature);
+
+            if (amount < 0) amount = 0;
+            if (amount > maxFP) amount = maxFP;
+
+            // Players
+            if (GetIsPC(creature) && !GetIsDM(creature))
+            {
+                var playerId = GetObjectUUID(creature);
+                var dbPlayer = _playerRepository.GetById(playerId);
+
+                dbPlayer.FP = amount;
+
+                _playerRepository.Save(dbPlayer);
+            }
+            // NPCs
+            else
+            {
+                SetLocalInt(creature, FPLocalVar, amount);
+            }
+
+            _eventAggregator.Publish(new OnPlayerFPAdjusted(), creature);
+        }
+
+        public void SetCurrentSTM(uint creature, int amount)
+        {
+            var maxSTM = _statService.CalculateMaxSTM(creature);
+
+            if (amount < 0) amount = 0;
+            if (amount > maxSTM) amount = maxSTM;
+
+            // Players
+            if (GetIsPC(creature) && !GetIsDM(creature))
+            {
+                var playerId = GetObjectUUID(creature);
+                var dbPlayer = _playerRepository.GetById(playerId);
+
+                dbPlayer.Stamina = amount;
+
+                _playerRepository.Save(dbPlayer);
+            }
+            // NPCs
+            else
+            {
+                SetLocalInt(creature, StaminaLocalVar, amount);
+            }
+
+            _eventAggregator.Publish(new OnPlayerStaminaAdjusted(), creature);
+        }
+
         public int GetCurrentHP(uint creature)
         {
             return GetCurrentHitPoints(creature);

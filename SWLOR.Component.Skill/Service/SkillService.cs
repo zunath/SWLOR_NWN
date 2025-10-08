@@ -22,7 +22,7 @@ namespace SWLOR.Component.Skill.Service
         private readonly IServiceProvider _serviceProvider;
         private readonly IGenericCacheService _cacheService;
         private readonly IEventsPluginService _eventsPlugin;
-        private readonly IStatGroupService _statGroupService;
+        private readonly IStatCalculationService _statCalculationService;
         private readonly IPlayerRepository _playerRepo;
 
         public SkillService(
@@ -31,7 +31,7 @@ namespace SWLOR.Component.Skill.Service
             IServiceProvider serviceProvider, 
             IGenericCacheService cacheService,
             IEventsPluginService eventsPlugin,
-            IStatGroupService statGroupService,
+            IStatCalculationService statCalculationService,
             IPlayerRepository playerRepo)
         {
             _db = db;
@@ -39,7 +39,7 @@ namespace SWLOR.Component.Skill.Service
             _serviceProvider = serviceProvider;
             _cacheService = cacheService;
             _eventsPlugin = eventsPlugin;
-            _statGroupService = statGroupService;
+            _statCalculationService = statCalculationService;
             _playerRepo = playerRepo;
 
             // Initialize lazy services
@@ -352,8 +352,7 @@ namespace SWLOR.Component.Skill.Service
             }
             else
             {
-                var stats = _statGroupService.LoadStats(creature);
-                return stats.GetStat(StatType.Level);
+                return _statCalculationService.CalculateLevel(creature);
             }
         }
     }

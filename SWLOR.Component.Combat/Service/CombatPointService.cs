@@ -45,7 +45,7 @@ namespace SWLOR.Component.Combat.Service
             _skillService = new Lazy<ISkillService>(() => _serviceProvider.GetRequiredService<ISkillService>());
             _itemService = new Lazy<IItemService>(() => _serviceProvider.GetRequiredService<IItemService>());
             _statService = new Lazy<IStatService>(() => _serviceProvider.GetRequiredService<IStatService>());
-            _statGroupService = new Lazy<IStatGroupService>(() => _serviceProvider.GetRequiredService<IStatGroupService>());
+            _statCalculationService = new Lazy<IStatCalculationService>(() => _serviceProvider.GetRequiredService<IStatCalculationService>());
             _beastMastery = new Lazy<IBeastMasteryService>(() => _serviceProvider.GetRequiredService<IBeastMasteryService>());
             _spaceService = new Lazy<ISpaceService>(() => _serviceProvider.GetRequiredService<ISpaceService>());
         }
@@ -54,14 +54,14 @@ namespace SWLOR.Component.Combat.Service
         private readonly Lazy<ISkillService> _skillService;
         private readonly Lazy<IItemService> _itemService;
         private readonly Lazy<IStatService> _statService;
-        private readonly Lazy<IStatGroupService> _statGroupService;
+        private readonly Lazy<IStatCalculationService> _statCalculationService;
         private readonly Lazy<IBeastMasteryService> _beastMastery;
         private readonly Lazy<ISpaceService> _spaceService;
         
         private ISkillService SkillService => _skillService.Value;
         private IItemService ItemService => _itemService.Value;
         private IStatService StatService => _statService.Value;
-        private IStatGroupService StatGroupService => _statGroupService.Value;
+        private IStatCalculationService StatCalculationService => _statCalculationService.Value;
         private IBeastMasteryService BeastMastery => _beastMastery.Value;
         private ISpaceService SpaceService => _spaceService.Value;
 
@@ -137,8 +137,7 @@ namespace SWLOR.Component.Combat.Service
                 var combatPoints = _creatureCombatPointTracker.ContainsKey(npc) ? _creatureCombatPointTracker[npc] : null;
                 if (combatPoints == null) return;
 
-                var statGroup = StatGroupService.LoadStats(npc);
-                var npcLevel = statGroup.GetStat(StatType.Level);
+                var npcLevel = StatCalculationService.CalculateLevel(npc);
 
                 foreach (var (player, cpList) in combatPoints)
                 {
@@ -267,8 +266,7 @@ namespace SWLOR.Component.Combat.Service
 
             // We track the level of the last creature to add a combat point for two minutes.
             // During this time period, various skills can continue to gain XP even after battle.
-            var statGroup = StatGroupService.LoadStats(creature);
-            var level = statGroup.GetStat(StatType.Level);
+            var level = StatCalculationService.CalculateLevel(creature);
             UpdateLastCreatureLevel(player, level);
         }
 

@@ -113,7 +113,7 @@ namespace SWLOR.Component.Migration.Model
                 dbPlayer.Evasion = 0;
 
                 Database.Set(dbPlayer);
-                StatService.AdjustPlayerMaxHP(dbPlayer, player, 0);
+                StatService.ApplyPlayerMaxHP(player);
                 SetCurrentHitPoints(player, GetMaxHitPoints(player));
 
                 // Attacks

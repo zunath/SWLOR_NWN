@@ -34,7 +34,7 @@ namespace SWLOR.Component.Ability.Definitions.Beastmaster
         private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
         private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
         private ICharacterResourceService CharacterResourceService => _serviceProvider.GetRequiredService<ICharacterResourceService>();
-        private IStatGroupService StatGroupService => _serviceProvider.GetRequiredService<IStatGroupService>();
+        private IStatCalculationService StatCalculationService => _serviceProvider.GetRequiredService<IStatCalculationService>();
         private IBeastMasteryService BeastMastery => _serviceProvider.GetRequiredService<IBeastMasteryService>();
         private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
         private IBeastRepository BeastRepository => _serviceProvider.GetRequiredService<IBeastRepository>();
@@ -89,11 +89,11 @@ namespace SWLOR.Component.Ability.Definitions.Beastmaster
                     }
 
                     var tameLevel = PerkService.GetPerkLevel(activator, PerkType.Tame) * 10;
-                    var statGroup = StatGroupService.LoadStats(target);
+                    var targetLevel = StatCalculationService.CalculateLevel(target);
 
-                    if (tameLevel < statGroup.GetStat(StatType.Level))
+                    if (tameLevel < targetLevel)
                     {
-                        return $"You may only tame creatures between levels 0-{tameLevel}. Your target is level {statGroup.GetStat(StatType.Level)}.";
+                        return $"You may only tame creatures between levels 0-{tameLevel}. Your target is level {targetLevel}.";
                     }
 
                     var maxBeasts = 1 + PerkService.GetPerkLevel(activator, PerkType.Stabling);
@@ -111,9 +111,9 @@ namespace SWLOR.Component.Ability.Definitions.Beastmaster
                     var dbPlayer = DB.Get<Player>(playerId);
                     var type = BeastMastery.GetBeastType(target);
                     var skill = dbPlayer.Skills[SkillType.BeastMastery].Rank;
-                    var statGroup = StatGroupService.LoadStats(target);
+                    var targetLevel = StatCalculationService.CalculateLevel(target);
                     var socialMod = GetAbilityModifier(AbilityType.Social, activator);
-                    var chance = 40 + (skill - statGroup.GetStat(StatType.Level)) * 3 + socialMod * 4;
+                    var chance = 40 + (skill - targetLevel) * 3 + socialMod * 4;
 
                     if (chance > 95)
                         chance = 95;

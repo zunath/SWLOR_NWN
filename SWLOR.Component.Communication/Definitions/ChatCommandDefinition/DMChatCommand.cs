@@ -34,7 +34,6 @@ namespace SWLOR.Component.Communication.Definitions.ChatCommandDefinition
         private readonly IStatService _statService;
         private readonly IStatCalculationService _statCalculationService;
         private readonly ICharacterResourceService _characterResourceService;
-        private readonly IStatGroupService _statGroupService;
         private readonly IBeastMasteryService _beastMastery;
         private readonly IFactionService _faction;
         private readonly ISpaceService _space;
@@ -51,7 +50,6 @@ namespace SWLOR.Component.Communication.Definitions.ChatCommandDefinition
             IStatService statService,
             IStatCalculationService statCalculationService,
             ICharacterResourceService characterResourceService,
-            IStatGroupService statGroupService,
             IBeastMasteryService beastMastery,
             IFactionService faction,
             ISpaceService space,
@@ -66,7 +64,6 @@ namespace SWLOR.Component.Communication.Definitions.ChatCommandDefinition
             _statService = statService;
             _statCalculationService = statCalculationService;
             _characterResourceService = characterResourceService;
-            _statGroupService = statGroupService;
             _beastMastery = beastMastery;
             _faction = faction;
             _space = space;
@@ -1069,8 +1066,7 @@ namespace SWLOR.Component.Communication.Definitions.ChatCommandDefinition
                     {
                         if (_space.GetShipStatus(target) != null)
                         {
-                            var statGroup = _statGroupService.LoadStats(target);
-                            var level = statGroup.GetStat(StatType.Level);
+                            var level = _statCalculationService.CalculateLevel(target);
                             if (GetIsPC(target) == true)
                             {
                                 var playerId = GetObjectUUID(target);

@@ -42,9 +42,9 @@ namespace SWLOR.Component.Character.Infrastructure
             services.AddSingleton<AchievementService>();
             services.AddSingleton<IRaceService, RaceService>();
             services.AddSingleton<IActivityService, ActivityService>();
-            services.AddSingleton<IStatGroupService, StatGroupService>();
             services.AddSingleton<ICharacterResourceService, CharacterResourceService>();
             services.AddSingleton<IStatCalculationService, StatCalculationService>();
+            services.AddSingleton<ICharacterStatService, CharacterStatService>();
 
             // Register feature classes
             services.AddSingleton<PlayerStatusWindow>();

@@ -1,7 +1,9 @@
-﻿using SWLOR.NWN.API.NWScript.Enum;
+﻿using SWLOR.Component.Character.Contracts;
+using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Crafting.Enums;
+using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Skill.Contracts;
 using SWLOR.Shared.Domain.Skill.Enums;
 using SWLOR.Shared.Domain.StatusEffect.Contracts;
@@ -11,56 +13,76 @@ namespace SWLOR.Component.Character.Service
     /// <inheritdoc />
     internal class StatCalculationService: IStatCalculationService
     {
-        private readonly IStatGroupService _statGroupService;
+        private readonly ICharacterStatService _characterStatService;
+        private readonly IWeaponStatService _weaponStatService;
         private readonly IStatusEffectService _statusEffectService;
         private readonly ISkillService _skillService;
 
         public StatCalculationService(
-            IStatGroupService statGroupService,
+            ICharacterStatService characterStatService,
+            IWeaponStatService weaponStatService,
             IStatusEffectService statusEffectService,
             ISkillService skillService)
         {
-            _statGroupService = statGroupService;
+            _characterStatService = characterStatService;
+            _weaponStatService = weaponStatService;
             _statusEffectService = statusEffectService;
             _skillService = skillService;
+        }
+
+        /// <inheritdoc />
+        public int CalculateLevel(uint creature)
+        {
+            var level = GetIsPC(creature) 
+                ? _skillService.GetSkillRank(creature, SkillType.Armor) 
+                : _characterStatService.GetStat(creature, StatType.Level);
+            return level;
         }
 
         /// <inheritdoc />
         public int CalculateMaxHP(uint creature)
         {
             const int BaseHP = 70;
-            var stats = _statGroupService.LoadStats(creature);
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
+            var maxHP = BaseHP +
+                        _characterStatService.GetStat(creature, StatType.MaxHP) +
+                        effects.GetStat(StatType.MaxHP);
 
-            return BaseHP + 
-                   stats.GetStat(StatType.MaxHP) + 
-                   effects.GetStat(StatType.MaxHP);
+            if (!GetIsPC(creature))
+            {
+                const int MaxNPCHP = 30000;
+                if (maxHP > MaxNPCHP)
+                    maxHP = MaxNPCHP;
+            }
+
+            if (maxHP < 1)
+                maxHP = 1;
+
+            return maxHP;
         }
 
         /// <inheritdoc />
         public int CalculateMaxFP(uint creature)
         {
             const int BaseFP = 10;
-            var stats = _statGroupService.LoadStats(creature);
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
-            var modifier = stats.GetStat(StatType.Willpower) * 10;
+            var modifier = _characterStatService.GetStat(creature, StatType.Willpower) * 10;
 
             return BaseFP +
                    modifier +
-                   stats.GetStat(StatType.MaxFP) + 
+                   _characterStatService.GetStat(creature, StatType.MaxFP) +
                    effects.GetStat(StatType.MaxFP);
         }
         /// <inheritdoc />
         public int CalculateMaxSTM(uint creature)
         {
             const int BaseSTM = 10;
-            var stats = _statGroupService.LoadStats(creature);
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
-            var modifier = stats.GetStat(StatType.Perception) * 10;
+            var modifier = _characterStatService.GetStat(creature, StatType.Perception) * 10;
 
             return BaseSTM +
                    modifier +
-                   stats.GetStat(StatType.MaxSTM) +
+                   _characterStatService.GetStat(creature, StatType.MaxSTM) +
                    effects.GetStat(StatType.MaxSTM);
         }
 
@@ -79,46 +101,42 @@ namespace SWLOR.Component.Character.Service
         /// <inheritdoc />
         public int CalculateHPRegen(uint creature)
         {
-            var stats = _statGroupService.LoadStats(creature);
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
-            
-            var hpRegen = stats.GetStat(StatType.HPRegen) + 
+
+            var hpRegen = _characterStatService.GetStat(creature, StatType.HPRegen) +
                           effects.GetStat(StatType.HPRegen);
-            var vitalityBonus = stats.GetStat(StatType.Vitality) * 4;
+            var vitalityBonus = _characterStatService.GetStat(creature, StatType.Vitality) * 4;
             return hpRegen + vitalityBonus;
         }
 
         /// <inheritdoc />
         public int CalculateFPRegen(uint creature)
         {
-            var stats = _statGroupService.LoadStats(creature);
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
-            
-            var fpRegen = stats.GetStat(StatType.FPRegen) + 
+
+            var fpRegen = _characterStatService.GetStat(creature, StatType.FPRegen) +
                           effects.GetStat(StatType.FPRegen);
-            var vitalityBonus = stats.GetStat(StatType.Vitality) / 2;
+            var vitalityBonus = _characterStatService.GetStat(creature, StatType.Vitality) / 2;
             return 1 + fpRegen + vitalityBonus;
         }
 
         /// <inheritdoc />
         public int CalculateSTMRegen(uint creature)
         {
-            var stats = _statGroupService.LoadStats(creature);
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
-            
-            var stmRegen = stats.GetStat(StatType.STMRegen) + 
+
+            var stmRegen = _characterStatService.GetStat(creature, StatType.STMRegen) +
                            effects.GetStat(StatType.STMRegen);
-            var vitalityBonus = stats.GetStat(StatType.Vitality) / 2;
+            var vitalityBonus = _characterStatService.GetStat(creature, StatType.Vitality) / 2;
             return 1 + stmRegen + vitalityBonus;
         }
 
         /// <inheritdoc />
         public float CalculateRecastReduction(uint creature)
         {
-            var stats = _statGroupService.LoadStats(creature);
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
-            
-            var recastReduction = (stats.GetStat(StatType.RecastReduction) + 
+
+            var recastReduction = (_characterStatService.GetStat(creature, StatType.RecastReduction) +
                                    effects.GetStat(StatType.RecastReduction)) * 0.01f;
             if (recastReduction > 0.5f)
                 recastReduction = 0.5f;
@@ -129,11 +147,10 @@ namespace SWLOR.Component.Character.Service
         /// <inheritdoc />
         public int CalculateDefense(uint creature)
         {
-            var stats = _statGroupService.LoadStats(creature);
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
             var skill = _skillService.GetSkillRank(creature, SkillType.Armor);
-            var ability = stats.GetStat(AbilityType.Vitality);
-            var bonus = stats.GetStat(StatType.Defense) + 
+            var ability = _characterStatService.GetStat(creature, StatType.Vitality);
+            var bonus = _characterStatService.GetStat(creature, StatType.Defense) +
                         effects.GetStat(StatType.Defense);
 
             return CalculateDefense(skill, ability, bonus);
@@ -142,11 +159,10 @@ namespace SWLOR.Component.Character.Service
         /// <inheritdoc />
         public int CalculateEvasion(uint creature)
         {
-            var stats = _statGroupService.LoadStats(creature);
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
             var skill = _skillService.GetSkillRank(creature, SkillType.Armor);
-            var ability = stats.GetStat(AbilityType.Agility);
-            var bonus = stats.GetStat(StatType.Evasion) + 
+            var ability = _characterStatService.GetStat(creature, StatType.Agility);
+            var bonus = _characterStatService.GetStat(creature, StatType.Evasion) +
                         effects.GetStat(StatType.Evasion);
 
             return CalculateEvasion(skill, ability, bonus);
@@ -155,11 +171,15 @@ namespace SWLOR.Component.Character.Service
         /// <inheritdoc />
         public int CalculateAccuracy(uint creature, AbilityType abilityType, SkillType skillType)
         {
-            var stats = _statGroupService.LoadStats(creature);
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
             var skill = _skillService.GetSkillRank(creature, skillType);
-            var ability = stats.GetStat(abilityType);
-            var bonus = stats.GetStat(StatType.Accuracy) + effects.GetStat(StatType.Accuracy);
+            var ability = _characterStatService.GetStat(creature, abilityType == AbilityType.Might ? StatType.Might :
+                                                               abilityType == AbilityType.Perception ? StatType.Perception :
+                                                               abilityType == AbilityType.Vitality ? StatType.Vitality :
+                                                               abilityType == AbilityType.Agility ? StatType.Agility :
+                                                               abilityType == AbilityType.Willpower ? StatType.Willpower :
+                                                               StatType.Social);
+            var bonus = _characterStatService.GetStat(creature, StatType.Accuracy) + effects.GetStat(StatType.Accuracy);
 
             return CalculateAccuracy(skill, ability, bonus);
         }
@@ -167,11 +187,15 @@ namespace SWLOR.Component.Character.Service
         /// <inheritdoc />
         public int CalculateAttack(uint creature, AbilityType abilityType, SkillType skillType)
         {
-            var stats = _statGroupService.LoadStats(creature);
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
             var skill = _skillService.GetSkillRank(creature, skillType);
-            var ability = stats.GetStat(abilityType);
-            var bonus = stats.GetStat(StatType.Attack) + effects.GetStat(StatType.Attack);
+            var ability = _characterStatService.GetStat(creature, abilityType == AbilityType.Might ? StatType.Might :
+                                                               abilityType == AbilityType.Perception ? StatType.Perception :
+                                                               abilityType == AbilityType.Vitality ? StatType.Vitality :
+                                                               abilityType == AbilityType.Agility ? StatType.Agility :
+                                                               abilityType == AbilityType.Willpower ? StatType.Willpower :
+                                                               StatType.Social);
+            var bonus = _characterStatService.GetStat(creature, StatType.Attack) + effects.GetStat(StatType.Attack);
 
             return CalculateAttack(skill, ability, bonus);
         }
@@ -179,11 +203,10 @@ namespace SWLOR.Component.Character.Service
         /// <inheritdoc />
         public int CalculateForceAttack(uint creature)
         {
-            var stats = _statGroupService.LoadStats(creature);
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
             var skill = _skillService.GetSkillRank(creature, SkillType.Force);
-            var ability = stats.GetStat(AbilityType.Willpower);
-            var bonus = stats.GetStat(StatType.ForceAttack) + 
+            var ability = _characterStatService.GetStat(creature, StatType.Willpower);
+            var bonus = _characterStatService.GetStat(creature, StatType.ForceAttack) +
                         effects.GetStat(StatType.ForceAttack);
 
             return 8 + (2 * skill) + ability + bonus;
@@ -192,84 +215,75 @@ namespace SWLOR.Component.Character.Service
         /// <inheritdoc />
         public int CalculateMight(uint creature)
         {
-            var stats = _statGroupService.LoadStats(creature);
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
 
-            return stats.GetStat(StatType.Might) + effects.GetStat(StatType.Might);
+            return _characterStatService.GetStat(creature, StatType.Might) + effects.GetStat(StatType.Might);
         }
 
         /// <inheritdoc />
         public int CalculatePerception(uint creature)
         {
-            var stats = _statGroupService.LoadStats(creature);
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
 
-            return stats.GetStat(StatType.Perception) + effects.GetStat(StatType.Perception);
+            return _characterStatService.GetStat(creature, StatType.Perception) + effects.GetStat(StatType.Perception);
         }
 
         /// <inheritdoc />
         public int CalculateVitality(uint creature)
         {
-            var stats = _statGroupService.LoadStats(creature);
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
 
-            return stats.GetStat(StatType.Vitality) + effects.GetStat(StatType.Vitality);
+            return _characterStatService.GetStat(creature, StatType.Vitality) + effects.GetStat(StatType.Vitality);
         }
 
         /// <inheritdoc />
         public int CalculateAgility(uint creature)
         {
-            var stats = _statGroupService.LoadStats(creature);
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
 
-            return stats.GetStat(StatType.Agility) + effects.GetStat(StatType.Agility);
+            return _characterStatService.GetStat(creature, StatType.Agility) + effects.GetStat(StatType.Agility);
         }
 
         /// <inheritdoc />
         public int CalculateWillpower(uint creature)
         {
-            var stats = _statGroupService.LoadStats(creature);
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
 
-            return stats.GetStat(StatType.Willpower) + effects.GetStat(StatType.Willpower);
+            return _characterStatService.GetStat(creature, StatType.Willpower) + effects.GetStat(StatType.Willpower);
         }
 
         /// <inheritdoc />
         public int CalculateSocial(uint creature)
         {
-            var stats = _statGroupService.LoadStats(creature);
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
 
-            return stats.GetStat(StatType.Social) + effects.GetStat(StatType.Social);
+            return _characterStatService.GetStat(creature, StatType.Social) + effects.GetStat(StatType.Social);
         }
 
         /// <inheritdoc />
         public int CalculateShieldDeflection(uint creature)
         {
-            var stats = _statGroupService.LoadStats(creature);
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
 
-            return stats.GetStat(StatType.ShieldDeflection) + effects.GetStat(StatType.ShieldDeflection);
+            return _characterStatService.GetStat(creature, StatType.ShieldDeflection) + effects.GetStat(StatType.ShieldDeflection);
         }
 
         /// <inheritdoc />
         public int CalculateAttackDeflection(uint creature)
         {
-            var stats = _statGroupService.LoadStats(creature);
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
 
-            return stats.GetStat(StatType.AttackDeflection) + effects.GetStat(StatType.AttackDeflection);
+            return _characterStatService.GetStat(creature, StatType.AttackDeflection) + effects.GetStat(StatType.AttackDeflection);
         }
 
         /// <inheritdoc />
         public int CalculateCriticalRate(uint creature)
         {
             const int BaseRate = 5;
-            var stats = _statGroupService.LoadStats(creature);
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
 
-            var rate = BaseRate + 
-                       stats.GetStat(StatType.CriticalRate) + 
+            var rate = BaseRate +
+                       _characterStatService.GetStat(creature, StatType.CriticalRate) +
                        effects.GetStat(StatType.CriticalRate);
 
             if (rate < 0)
@@ -283,47 +297,34 @@ namespace SWLOR.Component.Character.Service
         /// <inheritdoc />
         public int CalculateEnmity(uint creature)
         {
-            var stats = _statGroupService.LoadStats(creature);
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
 
-            return stats.GetStat(StatType.Enmity) + effects.GetStat(StatType.Enmity);
+            return _characterStatService.GetStat(creature, StatType.Enmity) + effects.GetStat(StatType.Enmity);
         }
 
         /// <inheritdoc />
         public int CalculateHaste(uint creature)
         {
-            var stats = _statGroupService.LoadStats(creature);
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
 
-            return stats.GetStat(StatType.Haste) + effects.GetStat(StatType.Haste);
+            return _characterStatService.GetStat(creature, StatType.Haste) + effects.GetStat(StatType.Haste);
         }
 
         /// <inheritdoc />
         public int CalculateSlow(uint creature)
         {
-            var stats = _statGroupService.LoadStats(creature);
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
 
-            return stats.GetStat(StatType.Slow) + effects.GetStat(StatType.Slow);
-        }
-
-        /// <inheritdoc />
-        public int CalculateDamageReduction(uint creature)
-        {
-            var stats = _statGroupService.LoadStats(creature);
-            var effects = _statusEffectService.GetCreatureStatGroup(creature);
-
-            return stats.GetStat(StatType.DamageReduction) + effects.GetStat(StatType.DamageReduction);
+            return _characterStatService.GetStat(creature, StatType.Slow) + effects.GetStat(StatType.Slow);
         }
 
         /// <inheritdoc />
         public int CalculateForceDefense(uint creature)
         {
-            var stats = _statGroupService.LoadStats(creature);
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
             var skill = _skillService.GetSkillRank(creature, SkillType.Armor);
-            var ability = stats.GetStat(AbilityType.Willpower);
-            var bonus = stats.GetStat(StatType.ForceDefense) + effects.GetStat(StatType.ForceDefense);
+            var ability = _characterStatService.GetStat(creature, StatType.Willpower);
+            var bonus = _characterStatService.GetStat(creature, StatType.ForceDefense) + effects.GetStat(StatType.ForceDefense);
 
             return (int)(8 + (ability * 1.5f) + skill + bonus);
         }
@@ -331,19 +332,17 @@ namespace SWLOR.Component.Character.Service
         /// <inheritdoc />
         public int CalculateQueuedDMGBonus(uint creature)
         {
-            var stats = _statGroupService.LoadStats(creature);
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
 
-            return stats.GetStat(StatType.QueuedDMGBonus) + effects.GetStat(StatType.QueuedDMGBonus);
+            return _characterStatService.GetStat(creature, StatType.QueuedDMGBonus) + effects.GetStat(StatType.QueuedDMGBonus);
         }
 
         /// <inheritdoc />
         public int CalculateParalysis(uint creature)
         {
-            var stats = _statGroupService.LoadStats(creature);
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
 
-            var paralysis = stats.GetStat(StatType.Paralysis) + effects.GetStat(StatType.Paralysis);
+            var paralysis = _characterStatService.GetStat(creature, StatType.Paralysis) + effects.GetStat(StatType.Paralysis);
             if (paralysis > 75)
                 paralysis = 75;
 
@@ -353,140 +352,109 @@ namespace SWLOR.Component.Character.Service
         /// <inheritdoc />
         public int CalculateAccuracyModifier(uint creature)
         {
-            var stats = _statGroupService.LoadStats(creature);
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
 
-            return stats.GetStat(StatType.AccuracyModifier) + effects.GetStat(StatType.AccuracyModifier);
+            return _characterStatService.GetStat(creature, StatType.AccuracyModifier) + effects.GetStat(StatType.AccuracyModifier);
         }
 
         /// <inheritdoc />
         public int CalculateRecastReductionModifier(uint creature)
         {
-            var stats = _statGroupService.LoadStats(creature);
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
 
-            return stats.GetStat(StatType.RecastReductionModifier) + effects.GetStat(StatType.RecastReductionModifier);
+            return _characterStatService.GetStat(creature, StatType.RecastReductionModifier) + effects.GetStat(StatType.RecastReductionModifier);
         }
 
         /// <inheritdoc />
         public int CalculateDefenseBypassModifier(uint creature)
         {
-            var stats = _statGroupService.LoadStats(creature);
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
 
-            return stats.GetStat(StatType.DefenseBypassModifier) + effects.GetStat(StatType.DefenseBypassModifier);
+            return _characterStatService.GetStat(creature, StatType.DefenseBypassModifier) + effects.GetStat(StatType.DefenseBypassModifier);
         }
 
         /// <inheritdoc />
         public int CalculateHealingModifier(uint creature)
         {
-            var stats = _statGroupService.LoadStats(creature);
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
 
-            return stats.GetStat(StatType.HealingModifier) + effects.GetStat(StatType.HealingModifier);
+            return _characterStatService.GetStat(creature, StatType.HealingModifier) + effects.GetStat(StatType.HealingModifier);
         }
 
         /// <inheritdoc />
         public int CalculateFPRestoreOnHit(uint creature)
         {
-            var stats = _statGroupService.LoadStats(creature);
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
 
-            return stats.GetStat(StatType.FPRestoreOnHit) + effects.GetStat(StatType.FPRestoreOnHit);
+            return _characterStatService.GetStat(creature, StatType.FPRestoreOnHit) + effects.GetStat(StatType.FPRestoreOnHit);
         }
 
         /// <inheritdoc />
         public int CalculateDefenseModifier(uint creature)
         {
-            var stats = _statGroupService.LoadStats(creature);
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
 
-            return stats.GetStat(StatType.DefenseModifier) + effects.GetStat(StatType.DefenseModifier);
+            return _characterStatService.GetStat(creature, StatType.DefenseModifier) + effects.GetStat(StatType.DefenseModifier);
         }
 
         /// <inheritdoc />
         public int CalculateForceDefenseModifier(uint creature)
         {
-            var stats = _statGroupService.LoadStats(creature);
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
 
-            return stats.GetStat(StatType.ForceDefenseModifier) + effects.GetStat(StatType.ForceDefenseModifier);
-        }
-
-        /// <inheritdoc />
-        public int CalculateExtraAttackModifier(uint creature)
-        {
-            var stats = _statGroupService.LoadStats(creature);
-            var effects = _statusEffectService.GetCreatureStatGroup(creature);
-
-            return stats.GetStat(StatType.ExtraAttackModifier) + effects.GetStat(StatType.ExtraAttackModifier);
+            return _characterStatService.GetStat(creature, StatType.ForceDefenseModifier) + effects.GetStat(StatType.ForceDefenseModifier);
         }
 
         /// <inheritdoc />
         public int CalculateAttackModifier(uint creature)
         {
-            var stats = _statGroupService.LoadStats(creature);
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
 
-            return stats.GetStat(StatType.AttackModifier) + effects.GetStat(StatType.AttackModifier);
+            return _characterStatService.GetStat(creature, StatType.AttackModifier) + effects.GetStat(StatType.AttackModifier);
         }
 
         /// <inheritdoc />
         public int CalculateForceAttackModifier(uint creature)
         {
-            var stats = _statGroupService.LoadStats(creature);
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
 
-            return stats.GetStat(StatType.ForceAttackModifier) + effects.GetStat(StatType.ForceAttackModifier);
+            return _characterStatService.GetStat(creature, StatType.ForceAttackModifier) + effects.GetStat(StatType.ForceAttackModifier);
         }
 
         /// <inheritdoc />
         public int CalculateEvasionModifier(uint creature)
         {
-            var stats = _statGroupService.LoadStats(creature);
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
 
-            return stats.GetStat(StatType.EvasionModifier) + effects.GetStat(StatType.EvasionModifier);
+            return _characterStatService.GetStat(creature, StatType.EvasionModifier) + effects.GetStat(StatType.EvasionModifier);
         }
 
         /// <inheritdoc />
         public int CalculateXPModifier(uint creature)
         {
-            var stats = _statGroupService.LoadStats(creature);
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
 
-            return stats.GetStat(StatType.XPModifier) + effects.GetStat(StatType.XPModifier);
+            return _characterStatService.GetStat(creature, StatType.XPModifier) + effects.GetStat(StatType.XPModifier);
         }
 
         /// <inheritdoc />
         public int CalculatePoisonResist(uint creature)
         {
-            var stats = _statGroupService.LoadStats(creature);
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
 
-            return stats.GetStat(StatType.PoisonResist) + effects.GetStat(StatType.PoisonResist);
-        }
-
-        /// <inheritdoc />
-        public int CalculateLevel(uint creature)
-        {
-            var stats = _statGroupService.LoadStats(creature);
-            var effects = _statusEffectService.GetCreatureStatGroup(creature);
-
-            return stats.GetStat(StatType.Level) + effects.GetStat(StatType.Level);
+            return _characterStatService.GetStat(creature, StatType.PoisonResist) + effects.GetStat(StatType.PoisonResist);
         }
 
         private float CalculateAttackSpeedModifier(uint creature)
         {
-            var stats = _statGroupService.LoadStats(creature);
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
 
             // Get haste and slow from both stats and status effects
-            var haste = stats.GetStat(StatType.Haste) + effects.GetStat(StatType.Haste);
+            var haste = _characterStatService.GetStat(creature, StatType.Haste) + effects.GetStat(StatType.Haste);
             if (haste < 0)
                 haste = 0;
-            
-            var slow = stats.GetStat(StatType.Slow) + effects.GetStat(StatType.Slow);
+
+            var slow = _characterStatService.GetStat(creature, StatType.Slow) + effects.GetStat(StatType.Slow);
             if (slow < 0)
                 slow = 0;
 
@@ -496,7 +464,7 @@ namespace SWLOR.Component.Character.Service
             // - Positive haste values result in negative modifier (faster attacks)
             // - Positive slow values result in positive modifier (slower attacks)
             var modifier = (slow - haste) * 0.01f;
-            
+
             // Cap only negative modifiers (haste) to prevent extreme values
             // Slow can go beyond +50% to allow for more severe slow effects
             if (modifier < -0.5f)
@@ -508,9 +476,10 @@ namespace SWLOR.Component.Character.Service
         /// <inheritdoc />
         public int CalculateAttackDelay(uint creature)
         {
-            var stats = _statGroupService.LoadStats(creature);
-            var rightHandDelay = stats.RightHandStat.Delay;
-            var leftHandDelay = stats.LeftHandStat.Delay;
+            var rightHand = _weaponStatService.LoadWeaponStat(GetItemInSlot(InventorySlotType.RightHand, creature));
+            var leftHand = _weaponStatService.LoadWeaponStat(GetItemInSlot(InventorySlotType.LeftHand, creature));
+            var rightHandDelay = rightHand.Delay;
+            var leftHandDelay = leftHand.Delay;
             var delay = rightHandDelay + leftHandDelay;
             var attackSpeedModifier = CalculateAttackSpeedModifier(creature);
 
@@ -527,7 +496,6 @@ namespace SWLOR.Component.Character.Service
         /// <inheritdoc />
         public int CalculateControl(uint creature, CraftType craftType)
         {
-            var stats = _statGroupService.LoadStats(creature);
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
             StatType statType;
 
@@ -549,13 +517,13 @@ namespace SWLOR.Component.Character.Service
                     throw new ArgumentOutOfRangeException(nameof(craftType), craftType, null);
             }
 
-            return stats.GetStat(statType) + effects.GetStat(statType);
+            var stat = _characterStatService.GetStat(creature, statType);
+            return stat + effects.GetStat(statType);
         }
 
         /// <inheritdoc />
         public int CalculateCraftsmanship(uint creature, CraftType craftType)
         {
-            var stats = _statGroupService.LoadStats(creature);
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
             StatType statType;
 
@@ -577,7 +545,8 @@ namespace SWLOR.Component.Character.Service
                     throw new ArgumentOutOfRangeException(nameof(craftType), craftType, null);
             }
 
-            return stats.GetStat(statType) + effects.GetStat(statType);
+            var stat = _characterStatService.GetStat(creature, statType);
+            return stat + effects.GetStat(statType);
         }
 
         /// <inheritdoc />

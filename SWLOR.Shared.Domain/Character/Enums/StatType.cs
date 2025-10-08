@@ -26,7 +26,7 @@
         Enmity = 21,
         Haste = 22,
         Slow = 23,
-        DamageReduction = 24,
+        // 24 is free
         ForceDefense = 25,
         QueuedDMGBonus = 26,
         Paralysis = 27,
@@ -37,7 +37,7 @@
         FPRestoreOnHit = 32,
         DefenseModifier = 33,
         ForceDefenseModifier = 34,
-        ExtraAttackModifier = 35,
+        // 35 is free
         AttackModifier = 36,
         ForceAttackModifier = 37,
         EvasionModifier = 38,

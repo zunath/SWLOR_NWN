@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Shared.Domain.Character.ValueObjects
+﻿namespace SWLOR.Shared.Domain.Inventory.ValueObjects
 {
     public class WeaponStat
     {

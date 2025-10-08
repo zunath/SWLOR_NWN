@@ -574,7 +574,7 @@ namespace SWLOR.Component.Crafting.Service
                 case EnhancementSubType.Evasion: // Evasion
                     return ItemPropertyCustom(ItemPropertyType.Evasion, -1, amount);
                 case EnhancementSubType.HP: // HP
-                    return ItemPropertyCustom(ItemPropertyType.HPBonus, -1, amount);
+                    return ItemPropertyCustom(ItemPropertyType.HP, -1, amount);
                 case EnhancementSubType.FP: // FP
                     return ItemPropertyCustom(ItemPropertyType.FP, -1, amount);
                 case EnhancementSubType.Stamina: // Stamina

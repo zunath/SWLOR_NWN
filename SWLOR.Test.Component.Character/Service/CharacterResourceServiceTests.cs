@@ -1,5 +1,6 @@
 using NSubstitute;
 using SWLOR.Component.Character.Service;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Repositories;
@@ -12,6 +13,7 @@ namespace SWLOR.Test.Component.Character.Service
     {
         private IPlayerRepository _mockPlayerRepository;
         private IStatCalculationService _mockStatService;
+        private IEventAggregator _mockEventAggregator;
         private CharacterResourceService _characterResourceService;
 
         [SetUp]
@@ -21,8 +23,9 @@ namespace SWLOR.Test.Component.Character.Service
 
             _mockPlayerRepository = Substitute.For<IPlayerRepository>();
             _mockStatService = Substitute.For<IStatCalculationService>();
+            _mockEventAggregator = Substitute.For<IEventAggregator>();
 
-            _characterResourceService = new CharacterResourceService(_mockPlayerRepository, _mockStatService);
+            _characterResourceService = new CharacterResourceService(_mockPlayerRepository, _mockStatService, _mockEventAggregator);
         }
 
         [Test]
@@ -100,6 +103,30 @@ namespace SWLOR.Test.Component.Character.Service
             // Act & Assert
             // The method will use NWScript mocking defaults (NPC behavior)
             Assert.DoesNotThrow(() => _characterResourceService.RestoreSTM(creature, amount));
+        }
+
+        [Test]
+        public void SetCurrentFP_ShouldNotThrow()
+        {
+            // Arrange
+            var creature = 1u;
+            var amount = 50;
+
+            // Act & Assert
+            // The method will use NWScript mocking defaults (NPC behavior)
+            Assert.DoesNotThrow(() => _characterResourceService.SetCurrentFP(creature, amount));
+        }
+
+        [Test]
+        public void SetCurrentSTM_ShouldNotThrow()
+        {
+            // Arrange
+            var creature = 1u;
+            var amount = 75;
+
+            // Act & Assert
+            // The method will use NWScript mocking defaults (NPC behavior)
+            Assert.DoesNotThrow(() => _characterResourceService.SetCurrentSTM(creature, amount));
         }
     }
 }

@@ -3,22 +3,16 @@ using NWN.Native.API;
 using SWLOR.NWN.API.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Domain.Ability.Contracts;
 using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Character.Contracts;
-using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Combat.Enums;
-using SWLOR.Shared.Domain.Combat.ValueObjects;
 using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Perk.Contracts;
 using SWLOR.Shared.Domain.Perk.Enums;
-using SWLOR.Shared.Domain.Skill.Contracts;
 using SWLOR.Shared.Domain.Skill.Enums;
-using SWLOR.Shared.Events.Events.Player;
-using EquipmentSlot = NWN.Native.API.EquipmentSlot;
 
 namespace SWLOR.Component.Combat.Service
 {
@@ -110,66 +104,86 @@ namespace SWLOR.Component.Combat.Service
             // Reduce their HP by the amount tracked in the DB.
             if (dbPlayer.TemporaryFoodHP > 0 )//&& !_statusEffectService.HasStatusEffect(player, StatusEffectType.Food))
             {
-                AdjustPlayerMaxHP(dbPlayer, player, -dbPlayer.TemporaryFoodHP);
+                // Reduce the player's stored MaxHP by the temporary food HP amount
+                dbPlayer.MaxHP -= dbPlayer.TemporaryFoodHP;
                 dbPlayer.TemporaryFoodHP = 0;
                 _db.Set(dbPlayer);
+
+                // Apply the new max HP to the creature
+                const int MaxHPPerLevel = 254;
+                var nwnLevelCount = GetLevelByPosition(1, player) +
+                                    GetLevelByPosition(2, player) +
+                                    GetLevelByPosition(3, player);
+
+                var hpToApply = dbPlayer.MaxHP;
+
+                // All levels must have at least 1 HP, so apply those right now.
+                for (var nwnLevel = 1; nwnLevel <= nwnLevelCount; nwnLevel++)
+                {
+                    hpToApply--;
+                    _creaturePlugin.SetMaxHitPointsByLevel(player, nwnLevel, 1);
+                }
+
+                // Apply the remaining HP.
+                if (hpToApply > 0)
+                {
+                    for (var nwnLevel = 1; nwnLevel <= nwnLevelCount; nwnLevel++)
+                    {
+                        if (hpToApply > MaxHPPerLevel) // Levels can only contain a max of 255 HP
+                        {
+                            _creaturePlugin.SetMaxHitPointsByLevel(player, nwnLevel, 255);
+                            hpToApply -= 254;
+                        }
+                        else // Remaining value gets set to the level. (<255 hp)
+                        {
+                            _creaturePlugin.SetMaxHitPointsByLevel(player, nwnLevel, hpToApply + 1);
+                            break;
+                        }
+                    }
+                }
+
+                // If player's current HP is higher than max, deal the difference in damage to bring them back down to their new maximum.
+                var currentHP = _characterResourceService.GetCurrentHP(player);
+                var maxHP = GetMaxHitPoints(player);
+                if (currentHP > maxHP)
+                {
+                    SetCurrentHitPoints(player, maxHP);
+                }
             }
         }
 
         /// <summary>
-        /// Increases or decreases a player's HP by a specified amount.
-        /// There is a cap of 255 HP per NWN level. Players are auto-leveled to 40 by default, so this
-        /// gives 255 * 40 = 10,200 HP maximum. If the player's HP would go over this amount, it will be set to 10,200.
+        /// Modifies a player's maximum HP by a certain amount.
         /// This method will not persist the changes so be sure you call _db.Set after calling this.
         /// </summary>
         /// <param name="entity">The entity to modify</param>
-        /// <param name="player">The player to adjust</param>
-        /// <param name="adjustBy">The amount to adjust by.</param>
+        /// <param name="adjustBy">The amount to adjust by</param>
         public void AdjustPlayerMaxHP(Player entity, uint player, int adjustBy)
         {
-            const int MaxHPPerLevel = 254;
+            // Note: It's possible for Max HP to drop to a negative number. This is expected to ensure calculations stay in sync.
+            // If there are any visual indicators (GUI elements for example) be sure to account for this scenario.
             entity.MaxHP += adjustBy;
-            var nwnLevelCount = GetLevelByPosition(1, player) +
-                                GetLevelByPosition(2, player) +
-                                GetLevelByPosition(3, player);
 
-            var hpToApply = entity.MaxHP;
+            // Note - must call CalculateMaxHP here to account for ability-based increase to HP cap.
+            if (entity.HP > StatCalculationService.CalculateMaxHP(player))
+                entity.HP = StatCalculationService.CalculateMaxHP(player);
 
-            // All levels must have at least 1 HP, so apply those right now.
-            for (var nwnLevel = 1; nwnLevel <= nwnLevelCount; nwnLevel++)
-            {
-                hpToApply--;
-                _creaturePlugin.SetMaxHitPointsByLevel(player, nwnLevel, 1);
-            }
+            // Current HP, however, should never drop below zero.
+            if (entity.HP < 0)
+                entity.HP = 0;
+        }
 
-            // It's possible for the MaxHP value to be a negative if builders misuse item properties, etc.
-            // Players cannot go under 'nwnLevel' HP, so we apply that first. If our HP to apply is zero, we don't want to
-            // do any more logic with HP application.
-            if (hpToApply > 0)
-            {
-                // Apply the remaining HP.
-                for (var nwnLevel = 1; nwnLevel <= nwnLevelCount; nwnLevel++)
-                {
-                    if (hpToApply > MaxHPPerLevel) // Levels can only contain a max of 255 HP
-                    {
-                        _creaturePlugin.SetMaxHitPointsByLevel(player, nwnLevel, 255);
-                        hpToApply -= 254;
-                    }
-                    else // Remaining value gets set to the level. (<255 hp)
-                    {
-                        _creaturePlugin.SetMaxHitPointsByLevel(player, nwnLevel, hpToApply + 1);
-                        break;
-                    }
-                }
-            }
+        /// <summary>
+        /// Applies the calculated maximum HP to a player.
+        /// </summary>
+        /// <param name="player">The player to apply max HP to</param>
+        public void ApplyPlayerMaxHP(uint player)
+        {
+            if (!GetIsPC(player) || GetIsDM(player))
+                return;
 
-            // If player's current HP is higher than max, deal the difference in damage to bring them back down to their new maximum.
-            var currentHP = _characterResourceService.GetCurrentHP(player);
-            var maxHP = GetMaxHitPoints(player);
-            if (currentHP > maxHP)
-            {
-                SetCurrentHitPoints(player, maxHP);
-            }
+            var maxHP = StatCalculationService.CalculateMaxHP(player);
+            SetCurrentHitPoints(player, maxHP);
         }
 
         /// <summary>

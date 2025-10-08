@@ -737,6 +737,34 @@ public static class NWScript
 ```
 - **CORRECT APPROACH**: Create extension methods in appropriate service layers or use the existing NWScript API.
 
+#### 21.6 Reflection Method Access Restrictions in Unit Tests
+- **RULE**: Using reflection to get methods is NOT allowed in unit tests
+- **RULE**: Direct method calls through reflection (e.g., `GetMethod()`, `Invoke()`) MUST NOT be used in tests
+- **RULE**: Test business logic through public APIs, not by bypassing encapsulation with reflection
+- **VIOLATION EXAMPLE**:
+```csharp
+// ❌ FORBIDDEN: Using reflection to access methods in tests
+[Test]
+public void TestUsingReflection()
+{
+    var service = new MyService();
+    var method = typeof(MyService).GetMethod("PrivateMethod", BindingFlags.NonPublic | BindingFlags.Instance);
+    var result = method.Invoke(service, new object[] { "param" });
+    // This violates encapsulation and makes tests brittle
+}
+```
+- **CORRECT APPROACH**:
+```csharp
+// ✅ CORRECT: Test through public APIs
+[Test]
+public void TestThroughPublicAPI()
+{
+    var service = new MyService();
+    var result = service.PublicMethod("param"); // Test the public interface
+    Assert.That(result, Is.EqualTo(expectedValue));
+}
+```
+
 ## Documentation Rules
 
 ### 22. Code Documentation
@@ -791,6 +819,7 @@ Before submitting any changes, verify:
 - [ ] All unit test files inherit from TestBase and call InitializeMockNWScript() in [SetUp]
 - [ ] TestBase class is never modified or extended
 - [ ] Nothing is added directly to NWScript.cs (use proper service layers instead)
+- [ ] No reflection used to access methods in unit tests (test through public APIs)
 - [ ] Services registered as singletons (unless transient needed)
 - [ ] Event handlers separated from services
 - [ ] No wrapper methods in services for event handlers

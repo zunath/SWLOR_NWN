@@ -179,8 +179,6 @@ namespace SWLOR.Game.Server.Service.KeyItemService
         
         [KeyItem(KeyItemCategoryType.Maps, "Viscara - West Crossroads Map", true, "Map of the West Crossroads.")]
         WestCrossroadsMap = 81,
-        [KeyItem(KeyItemCategoryType.Maps, "Viscara - West Crossroads Map", true, "Map of the West Crossroads.")]
-        WestCrossroadsMap = 81,
         [KeyItem(KeyItemCategoryType.Maps, "Viscara - Mountain Ascent Map", true, "Map of the Mountain Ascent.")]
         MountainAscentMap = 82,
     }

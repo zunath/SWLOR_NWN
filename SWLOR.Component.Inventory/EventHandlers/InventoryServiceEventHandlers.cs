@@ -3,13 +3,13 @@ using SWLOR.Shared.Domain.Combat.Events;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Inventory.Events;
 using SWLOR.Shared.Events.Attributes;
+using SWLOR.Shared.Events.Contracts;
 using SWLOR.Shared.Events.Events.Creature;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.NWNX;
-
 namespace SWLOR.Component.Inventory.EventHandlers
 {
-    public class InventoryServiceEventHandlers
+    public class InventoryServiceEventHandlers : IEventHandler
     {
         private readonly IServiceProvider _serviceProvider;
         
@@ -95,3 +95,5 @@ namespace SWLOR.Component.Inventory.EventHandlers
         }
     }
 }
+
+

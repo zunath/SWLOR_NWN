@@ -1,17 +1,17 @@
 using SWLOR.Shared.Domain.Properties.Contracts;
 using SWLOR.Shared.Domain.Properties.Events;
 using SWLOR.Shared.Events.Attributes;
+using SWLOR.Shared.Events.Contracts;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.Area;
 using SWLOR.Shared.Events.Events.NWNX;
-
 namespace SWLOR.Component.Properties.EventHandlers
 {
     /// <summary>
     /// Event handlers for Properties-related game events.
     /// This class handles the infrastructure layer of receiving game events and delegating to the appropriate services.
     /// </summary>
-    public class PropertiesEventHandlers
+    public class PropertiesEventHandlers : IEventHandler
     {
         private readonly IPropertyService _propertyService;
 
@@ -120,3 +120,5 @@ namespace SWLOR.Component.Properties.EventHandlers
         }
     }
 }
+
+

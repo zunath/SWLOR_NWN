@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Perk.Contracts;
 using SWLOR.Component.Perk.EventHandlers;
 using SWLOR.Component.Perk.Service;
+using SWLOR.Shared.Abstractions.Extensions;
 using SWLOR.Shared.Domain.Perk.Contracts;
 using SWLOR.Shared.Core.Infrastructure;
 
@@ -19,27 +20,14 @@ namespace SWLOR.Component.Perk.Infrastructure
         /// <returns>The service collection for chaining</returns>
         public static IServiceCollection AddPerkServices(this IServiceCollection services)
         {
-            // Register PerkBuilder as transient since it's a builder pattern
             services.AddSingleton<IPerkBuilder, PerkBuilder>();
-            
-            // Register PerkRequirementFactory as transient
             services.AddSingleton<IPerkRequirementFactory, PerkRequirementFactory>();
-            
-            // Register UsePerkFeat as singleton
             services.AddSingleton<IUsePerkFeat, UsePerkFeat>();
-            
-            // Register PerkEffectService as singleton
             services.AddSingleton<IPerkEffectService, PerkEffectService>();
-            
-            // Register Perk service as singleton
             services.AddSingleton<IPerkService, PerkService>();
-            
-            // Register PerkEventHandler as singleton
             services.AddSingleton<PerkEventHandler>();
-            
-            // Automatically register all IPerkListDefinition implementations
             services.RegisterInterfaceImplementations<IPerkListDefinition>();
-            
+
             return services;
         }
     }

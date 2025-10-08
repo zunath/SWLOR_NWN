@@ -3,6 +3,7 @@ using SWLOR.Component.Combat.Native;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Combat.Events;
 using SWLOR.Shared.Events.Attributes;
+using SWLOR.Shared.Events.Contracts;
 using SWLOR.Shared.Events.Events.Area;
 using SWLOR.Shared.Events.Events.Creature;
 using SWLOR.Shared.Events.Events.Infrastructure;
@@ -16,7 +17,7 @@ namespace SWLOR.Component.Combat.EventHandlers
     /// Event handlers for Combat-related game events.
     /// This class handles the infrastructure layer of receiving game events and delegating to the appropriate services.
     /// </summary>
-    public class CombatEventHandler
+    public class CombatEventHandler : IEventHandler
     {
         private readonly ICombatService _combatService;
         private readonly IAttackOfOpportunityService _attackOfOpportunityService;

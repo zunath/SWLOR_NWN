@@ -4,6 +4,7 @@ using SWLOR.Component.World.EventHandlers;
 using SWLOR.Component.World.Feature;
 using SWLOR.Component.World.Repository;
 using SWLOR.Component.World.Service;
+using SWLOR.Shared.Abstractions.Extensions;
 using SWLOR.Shared.Domain.Repositories;
 using SWLOR.Shared.Domain.World.Contracts;
 using SWLOR.Shared.Core.Infrastructure;

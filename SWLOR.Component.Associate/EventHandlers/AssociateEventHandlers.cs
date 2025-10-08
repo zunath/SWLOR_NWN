@@ -5,16 +5,16 @@ using SWLOR.Shared.Domain.Combat.Events;
 using SWLOR.Shared.Domain.Properties.Events;
 using SWLOR.Shared.Domain.Space.Events;
 using SWLOR.Shared.Events.Attributes;
+using SWLOR.Shared.Events.Contracts;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.NWNX;
-
 namespace SWLOR.Component.Associate.EventHandlers
 {
     /// <summary>
     /// Event handlers for Associate-related game events.
     /// This class handles the infrastructure layer of receiving game events and delegating to the appropriate services.
     /// </summary>
-    public class AssociateEventHandlers
+    public class AssociateEventHandlers : IEventHandler
     {
         private readonly IServiceProvider _serviceProvider;
         
@@ -247,3 +247,5 @@ namespace SWLOR.Component.Associate.EventHandlers
         }
     }
 }
+
+

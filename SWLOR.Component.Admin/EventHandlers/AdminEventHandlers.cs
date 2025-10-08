@@ -3,17 +3,17 @@ using SWLOR.Component.Admin.Feature;
 using SWLOR.Component.Admin.UI.ViewModel;
 using SWLOR.Shared.Domain.Combat.Events;
 using SWLOR.Shared.Events.Attributes;
+using SWLOR.Shared.Events.Contracts;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Events.Server;
-
 namespace SWLOR.Component.Admin.EventHandlers
 {
     /// <summary>
     /// Event handlers for Admin-related game events.
     /// This class handles the infrastructure layer of receiving game events and delegating to the appropriate services.
     /// </summary>
-    public class AdminEventHandlers
+    public class AdminEventHandlers : IEventHandler
     {
         private readonly TlkOverrides _tlkOverrides;
         private readonly DMActions _dmActions;
@@ -155,3 +155,5 @@ namespace SWLOR.Component.Admin.EventHandlers
         }
     }
 }
+
+

@@ -1,16 +1,16 @@
 using SWLOR.Component.Market.Contracts;
 using SWLOR.Component.Market.Feature;
 using SWLOR.Shared.Events.Attributes;
+using SWLOR.Shared.Events.Contracts;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.NWNX;
-
 namespace SWLOR.Component.Market.EventHandlers
 {
     /// <summary>
     /// Event handlers for Market-related game events.
     /// This class handles the infrastructure layer of receiving game events and delegating to the appropriate services.
     /// </summary>
-    public class MarketEventHandlers
+    public class MarketEventHandlers : IEventHandler
     {
         private readonly IPlayerMarketService _playerMarketService;
         private readonly StoreManagement _storeManagement;
@@ -86,3 +86,5 @@ namespace SWLOR.Component.Market.EventHandlers
         }
     }
 }
+
+

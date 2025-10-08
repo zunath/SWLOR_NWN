@@ -38,10 +38,6 @@ namespace SWLOR.Component.Combat.Infrastructure
             
             // Register script handler classes
             services.AddSingleton<Feature.TrapDefinition.SpawnLarvaeOnSlugDeath>();
-
-            // Register event handlers as singletons
-            services.AddSingleton<CombatEventHandler>();
-            services.AddSingleton<CombatServiceEventHandlers>();
             
             return services;
         }

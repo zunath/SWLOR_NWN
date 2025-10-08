@@ -2,12 +2,12 @@ using SWLOR.Component.Quest.Contracts;
 using SWLOR.Shared.Domain.Quest.Contracts;
 using SWLOR.Shared.Domain.Quest.Events;
 using SWLOR.Shared.Events.Attributes;
+using SWLOR.Shared.Events.Contracts;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.Creature;
-
 namespace SWLOR.Component.Quest.EventHandlers
 {
-    internal class QuestServiceEventHandlers
+    internal class QuestServiceEventHandlers : IEventHandler
     {
         private readonly IGuildService _guildService;
         private readonly INPCGroupService _npcGroupService;
@@ -123,3 +123,5 @@ namespace SWLOR.Component.Quest.EventHandlers
         }
     }
 }
+
+

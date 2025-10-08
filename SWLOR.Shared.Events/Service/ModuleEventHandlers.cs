@@ -1,12 +1,12 @@
-﻿using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Events.Attributes;
+using SWLOR.Shared.Events.Contracts;
 using SWLOR.Shared.Events.Events.Eventing;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.Player;
-
 namespace SWLOR.Shared.Events.Service
 {
-    internal class ModuleEventHandlers
+    internal class ModuleEventHandlers : IEventHandler
     {
         private readonly IEventAggregator _eventAggregator;
 
@@ -149,3 +149,5 @@ namespace SWLOR.Shared.Events.Service
         }
     }
 }
+
+

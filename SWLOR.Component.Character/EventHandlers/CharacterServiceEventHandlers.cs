@@ -5,12 +5,12 @@ using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Events;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Events.Attributes;
+using SWLOR.Shared.Events.Contracts;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.NWNX;
-
 namespace SWLOR.Component.Character.EventHandlers
 {
-    internal class CharacterServiceEventHandlers
+    internal class CharacterServiceEventHandlers : IEventHandler
     {
         private readonly IActivityService _activityService;
         private readonly IClientVersionCheck _clientVersionCheckService;
@@ -229,3 +229,5 @@ namespace SWLOR.Component.Character.EventHandlers
         }
     }
 }
+
+

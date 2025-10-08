@@ -1,5 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Abstractions.Extensions;
+using SWLOR.Shared.Events.Contracts;
 using SWLOR.Shared.Events.Service;
 using SWLOR.Shared.Events.EventHandlers;
 
@@ -22,7 +24,7 @@ namespace SWLOR.Shared.Events.Infrastructure
             services.AddSingleton<IEventAggregator, EventAggregator.EventAggregator>();
 
             // Register event handlers as singletons
-            services.AddSingleton<EventRegistrationEventHandlers>();
+            services.RegisterInterfaceImplementations<IEventHandler>();
 
             return services;
         }

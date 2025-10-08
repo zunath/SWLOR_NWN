@@ -4,12 +4,13 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Contracts;
 using SWLOR.Shared.Events.Events.Player;
 using SWLOR.Shared.Events.Events.Server;
 
 namespace SWLOR.Shared.Events.EventHandlers
 {
-    internal class EventRegistrationEventHandlers
+    internal class EventRegistrationEventHandlers: IEventHandler
     {
         private readonly IEventAggregator _eventAggregator;
         private readonly ICreaturePluginService _creaturePlugin;

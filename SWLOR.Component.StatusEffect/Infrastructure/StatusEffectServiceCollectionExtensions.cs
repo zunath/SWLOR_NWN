@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.StatusEffect.Contracts;
 using SWLOR.Component.StatusEffect.EventHandlers;
 using SWLOR.Component.StatusEffect.Service;
+using SWLOR.Shared.Abstractions.Extensions;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Domain.StatusEffect.Contracts;
 
@@ -23,8 +24,6 @@ namespace SWLOR.Component.StatusEffect.Infrastructure
             services.AddSingleton<IStatusEffectFactory, StatusEffectFactory>();
             services.AddSingleton<IStatusEffectService, StatusEffectService>();
             services.AddSingleton<StatusEffectEventHandler>();
-            
-            // Automatically register all status effect implementations
             services.RegisterInterfaceImplementations<IStatusEffect>();
             
             return services;

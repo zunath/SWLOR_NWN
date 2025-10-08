@@ -3,11 +3,11 @@ using SWLOR.Shared.Domain.Crafting.Events;
 using SWLOR.Shared.Domain.Properties.Events;
 using SWLOR.Shared.Domain.Skill.Events;
 using SWLOR.Shared.Events.Attributes;
+using SWLOR.Shared.Events.Contracts;
 using SWLOR.Shared.Events.Events.Module;
-
 namespace SWLOR.Component.Crafting.EventHandlers
 {
-    internal class CraftingServiceEventHandlers
+    internal class CraftingServiceEventHandlers : IEventHandler
     {
         private readonly ICraftService _craftService;
         private readonly IFishingService _fishingService;
@@ -87,3 +87,5 @@ namespace SWLOR.Component.Crafting.EventHandlers
         }
     }
 }
+
+

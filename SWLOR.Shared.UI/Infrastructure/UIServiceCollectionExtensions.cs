@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using SWLOR.Shared.Abstractions.Extensions;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Service;
 using SWLOR.Shared.Core.Contracts;

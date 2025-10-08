@@ -2,15 +2,15 @@ using SWLOR.Component.World.Contracts;
 using SWLOR.Shared.Domain.Combat.Events;
 using SWLOR.Shared.Domain.World.Contracts;
 using SWLOR.Shared.Events.Attributes;
+using SWLOR.Shared.Events.Contracts;
 using SWLOR.Shared.Events.Events.Area;
 using SWLOR.Shared.Events.Events.Creature;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Events.Server;
-
 namespace SWLOR.Component.World.EventHandlers
 {
-    internal class WorldEventHandlers
+    internal class WorldEventHandlers : IEventHandler
     {
         private readonly ISpawnService _spawnService;
         private readonly IAreaService _areaService;
@@ -101,3 +101,5 @@ namespace SWLOR.Component.World.EventHandlers
         }
     }
 }
+
+

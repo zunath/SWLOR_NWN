@@ -1,11 +1,11 @@
 using SWLOR.Shared.Domain.Associate.Events;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Events.Attributes;
+using SWLOR.Shared.Events.Contracts;
 using SWLOR.Shared.Events.Events.Module;
-
 namespace SWLOR.Component.Combat.EventHandlers
 {
-    internal class CombatServiceEventHandlers
+    internal class CombatServiceEventHandlers : IEventHandler
     {
         private readonly IStatService _statService;
 
@@ -34,3 +34,5 @@ namespace SWLOR.Component.Combat.EventHandlers
         }
     }
 }
+
+

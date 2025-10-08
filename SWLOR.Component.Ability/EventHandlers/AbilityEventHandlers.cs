@@ -6,16 +6,16 @@ using SWLOR.Shared.Domain.Ability.Events;
 using SWLOR.Shared.Domain.Combat.Events;
 using SWLOR.Shared.Domain.Inventory.Events;
 using SWLOR.Shared.Events.Attributes;
+using SWLOR.Shared.Events.Contracts;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.Player;
-
 namespace SWLOR.Component.Ability.EventHandlers
 {
     /// <summary>
     /// Event handlers for Ability-related game events.
     /// This class handles the infrastructure layer of receiving game events and delegating to the appropriate services.
     /// </summary>
-    public class AbilityEventHandlers
+    public class AbilityEventHandlers : IEventHandler
     {
         private readonly IAbilityService _abilityService;
         private readonly IRecastService _recastService;
@@ -208,3 +208,5 @@ namespace SWLOR.Component.Ability.EventHandlers
         }
     }
 }
+
+

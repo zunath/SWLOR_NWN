@@ -1,4 +1,5 @@
 using SWLOR.Shared.Events.Attributes;
+using SWLOR.Shared.Events.Contracts;
 using SWLOR.Shared.Events.Events.Area;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.Player;
@@ -6,7 +7,7 @@ using SWLOR.Shared.UI.Contracts;
 
 namespace SWLOR.Shared.UI.EventHandlers
 {
-    internal class UIEventHandlers
+    internal class UIEventHandlers : IEventHandler
     {
         private readonly IGuiService _guiService;
 

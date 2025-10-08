@@ -1,14 +1,14 @@
 using SWLOR.Shared.Domain.Skill.Contracts;
 using SWLOR.Shared.Events.Attributes;
+using SWLOR.Shared.Events.Contracts;
 using SWLOR.Shared.Events.Events.Module;
-
 namespace SWLOR.Component.Skill.EventHandlers
 {
     /// <summary>
     /// Event handlers for Skill-related game events.
     /// This class handles the infrastructure layer of receiving game events and delegating to the skill service.
     /// </summary>
-    public class SkillEventHandlers
+    public class SkillEventHandlers : IEventHandler
     {
         private readonly ISkillService _skillService;
 
@@ -54,3 +54,5 @@ namespace SWLOR.Component.Skill.EventHandlers
         }
     }
 }
+
+

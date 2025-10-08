@@ -1,13 +1,13 @@
 using SWLOR.Component.World.Contracts;
 using SWLOR.Shared.Domain.World.Contracts;
 using SWLOR.Shared.Events.Attributes;
+using SWLOR.Shared.Events.Contracts;
 using SWLOR.Shared.Events.Events.Area;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.Server;
-
 namespace SWLOR.Component.World.EventHandlers
 {
-    internal class WorldServiceEventHandlers
+    internal class WorldServiceEventHandlers : IEventHandler
     {
         private readonly IPlanetService _planetService;
         private readonly IPlayerVisibilityService _playerVisibilityService;
@@ -141,3 +141,5 @@ namespace SWLOR.Component.World.EventHandlers
         }
     }
 }
+
+

@@ -1,11 +1,12 @@
 ﻿using SWLOR.Component.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Events.Attributes;
+using SWLOR.Shared.Events.Contracts;
 using SWLOR.Shared.Events.Events.Creature;
 
 namespace SWLOR.Component.Character.EventHandlers
 {
-    internal class CharacterStatEventHandlers
+    internal class CharacterStatEventHandlers : IEventHandler
     {
         private readonly ICharacterStatService _characterStatService;
 

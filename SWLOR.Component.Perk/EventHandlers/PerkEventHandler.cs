@@ -3,6 +3,7 @@ using SWLOR.Shared.Domain.Combat.Events;
 using SWLOR.Shared.Domain.Perk.Contracts;
 using SWLOR.Shared.Domain.Skill.Events;
 using SWLOR.Shared.Events.Attributes;
+using SWLOR.Shared.Events.Contracts;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.NWNX;
 
@@ -11,7 +12,7 @@ namespace SWLOR.Component.Perk.EventHandlers
     /// <summary>
     /// Event handlers for the Perk component.
     /// </summary>
-    public class PerkEventHandler
+    public class PerkEventHandler : IEventHandler
     {
         private readonly IPerkService _perkService;
         private readonly IUsePerkFeat _usePerkFeat;

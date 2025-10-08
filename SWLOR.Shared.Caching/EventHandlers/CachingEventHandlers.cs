@@ -1,11 +1,11 @@
 using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Events.Attributes;
+using SWLOR.Shared.Events.Contracts;
 using SWLOR.Shared.Events.Events.Infrastructure;
 using SWLOR.Shared.Events.Events.Module;
-
 namespace SWLOR.Shared.Caching.EventHandlers
 {
-    internal class CachingEventHandlers
+    internal class CachingEventHandlers : IEventHandler
     {
         private readonly IAreaCacheService _areaCacheService;
         private readonly IItemCacheService _itemCacheService;
@@ -67,3 +67,5 @@ namespace SWLOR.Shared.Caching.EventHandlers
         }
     }
 }
+
+

@@ -1,13 +1,14 @@
-﻿using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Component.Character.UI.Payload;
 using SWLOR.Shared.Events.Attributes;
+using SWLOR.Shared.Events.Contracts;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.UI.Contracts;
 
 namespace SWLOR.Component.Character.EventHandlers
 {
-    internal class UIEventHandlers
+    internal class UIEventHandlers : IEventHandler
     {
         private IGuiService _gui;
         public UIEventHandlers(IGuiService gui)
@@ -51,3 +52,5 @@ namespace SWLOR.Component.Character.EventHandlers
         }
     }
 }
+
+

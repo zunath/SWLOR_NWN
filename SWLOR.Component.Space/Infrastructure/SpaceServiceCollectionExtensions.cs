@@ -3,6 +3,7 @@ using SWLOR.Component.Space.Contracts;
 using SWLOR.Component.Space.EventHandlers;
 using SWLOR.Component.Space.Repository;
 using SWLOR.Component.Space.Service;
+using SWLOR.Shared.Abstractions.Extensions;
 using SWLOR.Shared.Domain.Repositories;
 using SWLOR.Shared.Domain.Space.Contracts;
 using SWLOR.Shared.Core.Infrastructure;
@@ -23,15 +24,15 @@ namespace SWLOR.Component.Space.Infrastructure
         {
             services.AddSingleton<IPlayerShipRepository, PlayerShipRepository>();
             services.AddSingleton<ISpaceService, SpaceService>();
+            services.AddSingleton<SpaceEventHandler>();
             services.AddTransient<IShipBuilder, ShipBuilder>();
             services.AddTransient<IShipModuleBuilder, ShipModuleBuilder>();
             services.AddTransient<ISpaceObjectBuilder, SpaceObjectBuilder>();
-            services.AddSingleton<SpaceEventHandler>();
-            
+
             services.RegisterInterfaceImplementationsWithInterface<IShipListDefinition>();
             services.RegisterInterfaceImplementationsWithInterface<IShipModuleListDefinition>();
             services.RegisterInterfaceImplementationsWithInterface<ISpaceObjectListDefinition>();
-            
+
             return services;
         }
     }

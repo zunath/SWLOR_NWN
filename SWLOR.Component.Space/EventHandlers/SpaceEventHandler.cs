@@ -1,14 +1,14 @@
 using SWLOR.Shared.Domain.Space.Contracts;
 using SWLOR.Shared.Domain.Space.Events;
 using SWLOR.Shared.Events.Attributes;
+using SWLOR.Shared.Events.Contracts;
 using SWLOR.Shared.Events.Events.Area;
 using SWLOR.Shared.Events.Events.Creature;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.NWNX;
-
 namespace SWLOR.Component.Space.EventHandlers
 {
-    public class SpaceEventHandler
+    public class SpaceEventHandler : IEventHandler
     {
         private readonly ISpaceService _spaceService;
 
@@ -158,3 +158,5 @@ namespace SWLOR.Component.Space.EventHandlers
         }
     }
 }
+
+

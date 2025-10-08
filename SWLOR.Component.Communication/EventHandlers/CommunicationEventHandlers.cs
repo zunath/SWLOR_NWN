@@ -2,17 +2,17 @@ using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Communication.Contracts;
 using SWLOR.Shared.Domain.Communication.Contracts;
 using SWLOR.Shared.Events.Attributes;
+using SWLOR.Shared.Events.Contracts;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Events.Player;
-
 namespace SWLOR.Component.Communication.EventHandlers
 {
     /// <summary>
     /// Event handlers for Communication-related game events.
     /// This class handles the infrastructure layer of receiving game events and delegating to the appropriate services.
     /// </summary>
-    public class CommunicationEventHandlers
+    public class CommunicationEventHandlers : IEventHandler
     {
         private readonly IServiceProvider _serviceProvider;
 
@@ -134,3 +134,5 @@ namespace SWLOR.Component.Communication.EventHandlers
 
     }
 }
+
+

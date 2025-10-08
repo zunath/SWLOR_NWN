@@ -1,16 +1,16 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Shared.Domain.Migration.Contracts;
 using SWLOR.Shared.Events.Attributes;
+using SWLOR.Shared.Events.Contracts;
 using SWLOR.Shared.Events.Events.Infrastructure;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Events.Player;
-
 namespace SWLOR.Component.Migration.EventHandlers
 {
     /// <summary>
     /// Event handlers for the Migration component.
     /// </summary>
-    public class MigrationEventHandler
+    public class MigrationEventHandler : IEventHandler
     {
         private readonly IServiceProvider _serviceProvider;
 
@@ -55,3 +55,5 @@ namespace SWLOR.Component.Migration.EventHandlers
         }
     }
 }
+
+

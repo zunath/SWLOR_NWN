@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Ability.Contracts;
 using SWLOR.Component.Ability.EventHandlers;
 using SWLOR.Component.Ability.Service;
+using SWLOR.Shared.Abstractions.Extensions;
 using SWLOR.Shared.Domain.Ability.Contracts;
 using SWLOR.Shared.Core.Infrastructure;
 
@@ -23,7 +24,7 @@ namespace SWLOR.Component.Ability.Infrastructure
             services.AddSingleton<IRecastService, RecastService>();
             services.AddSingleton<IAbilityBuilder, AbilityBuilder>();
             services.AddSingleton<AbilityEventHandlers>();
-            
+
             services.RegisterInterfaceImplementations<IAbilityListDefinition>();
 
             return services;

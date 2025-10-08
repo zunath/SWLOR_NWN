@@ -1,11 +1,12 @@
 ﻿using SWLOR.Component.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Events.Attributes;
+using SWLOR.Shared.Events.Contracts;
 using SWLOR.Shared.Domain.Character.Events;
 
 namespace SWLOR.Component.Character.EventHandlers
 {
-    internal class StatApplicationEventHandlers
+    internal class StatApplicationEventHandlers : IEventHandler
     {
         private readonly IStatApplicationService _statApplication;
         public StatApplicationEventHandlers(

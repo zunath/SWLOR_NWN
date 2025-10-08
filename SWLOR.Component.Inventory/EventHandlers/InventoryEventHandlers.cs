@@ -1,11 +1,12 @@
-﻿using SWLOR.Shared.Domain.UI.Events;
+using SWLOR.Shared.Domain.UI.Events;
 using SWLOR.Shared.Events.Attributes;
+using SWLOR.Shared.Events.Contracts;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.UI.Contracts;
 
 namespace SWLOR.Component.Inventory.EventHandlers
 {
-    internal class InventoryEventHandlers
+    internal class InventoryEventHandlers : IEventHandler
     {
         private IGuiService _gui;
 
@@ -36,3 +37,5 @@ namespace SWLOR.Component.Inventory.EventHandlers
 
     }
 }
+
+

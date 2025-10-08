@@ -2,11 +2,11 @@ using SWLOR.Shared.Domain.StatusEffect.Contracts;
 using SWLOR.Shared.Domain.StatusEffect.Enums;
 using SWLOR.Shared.Domain.StatusEffect.Events;
 using SWLOR.Shared.Events.Attributes;
+using SWLOR.Shared.Events.Contracts;
 using SWLOR.Shared.Events.Events.Module;
-
 namespace SWLOR.Component.StatusEffect.EventHandlers
 {
-    public class StatusEffectEventHandler
+    public class StatusEffectEventHandler : IEventHandler
     {
         private readonly IStatusEffectService _statusEffectService;
 
@@ -50,3 +50,5 @@ namespace SWLOR.Component.StatusEffect.EventHandlers
         }
     }
 }
+
+

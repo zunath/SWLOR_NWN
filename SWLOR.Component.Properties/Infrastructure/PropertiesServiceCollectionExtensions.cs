@@ -3,6 +3,7 @@ using SWLOR.Component.Properties.Contracts;
 using SWLOR.Component.Properties.EventHandlers;
 using SWLOR.Component.Properties.Repository;
 using SWLOR.Component.Properties.Service;
+using SWLOR.Shared.Abstractions.Extensions;
 using SWLOR.Shared.Domain.Properties.Contracts;
 using SWLOR.Shared.Domain.Repositories;
 using SWLOR.Shared.Core.Infrastructure;

@@ -1,11 +1,11 @@
 using SWLOR.Shared.Domain.Dialog.Contracts;
 using SWLOR.Shared.Domain.Dialog.Events;
 using SWLOR.Shared.Events.Attributes;
+using SWLOR.Shared.Events.Contracts;
 using SWLOR.Shared.Events.Events.Module;
-
 namespace SWLOR.Component.Communication.EventHandlers
 {
-    internal class CommunicationServiceEventHandlers
+    internal class CommunicationServiceEventHandlers : IEventHandler
     {
         private readonly IDialogService _dialogService;
         private readonly ISnippetService _snippetService;
@@ -283,3 +283,5 @@ namespace SWLOR.Component.Communication.EventHandlers
         }
     }
 }
+
+

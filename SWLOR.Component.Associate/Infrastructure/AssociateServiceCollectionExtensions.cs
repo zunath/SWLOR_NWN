@@ -4,6 +4,7 @@ using SWLOR.Component.Associate.Repository;
 using SWLOR.Component.Associate.Service;
 using SWLOR.Component.Associate.Contracts;
 using SWLOR.Component.Associate.Definitions.ItemDefinition;
+using SWLOR.Shared.Abstractions.Extensions;
 using SWLOR.Shared.Domain.Associate.Contracts;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Repositories;

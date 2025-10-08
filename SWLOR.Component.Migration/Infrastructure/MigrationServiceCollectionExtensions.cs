@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Migration.Contracts;
 using SWLOR.Component.Migration.EventHandlers;
 using SWLOR.Component.Migration.Service;
+using SWLOR.Shared.Abstractions.Extensions;
 using SWLOR.Shared.Domain.Migration.Contracts;
 using SWLOR.Shared.Core.Infrastructure;
 
@@ -20,7 +21,6 @@ namespace SWLOR.Component.Migration.Infrastructure
         public static IServiceCollection AddMigrationServices(this IServiceCollection services)
         {
             services.AddSingleton<IMigrationService, MigrationService>();
-            services.AddSingleton<MigrationEventHandler>();
             
             services.RegisterInterfaceImplementations<IServerMigration>();
             services.RegisterInterfaceImplementations<IPlayerMigration>();

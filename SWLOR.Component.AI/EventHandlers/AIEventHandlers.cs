@@ -1,16 +1,16 @@
 using SWLOR.Shared.Domain.AI.Contracts;
 using SWLOR.Shared.Domain.Combat.Events;
 using SWLOR.Shared.Events.Attributes;
+using SWLOR.Shared.Events.Contracts;
 using SWLOR.Shared.Events.Events.Creature;
 using SWLOR.Shared.Events.Events.Module;
-
 namespace SWLOR.Component.AI.EventHandlers
 {
     /// <summary>
     /// Event handlers for AI-related game events.
     /// This class handles the infrastructure layer of receiving game events and delegating to the AI service.
     /// </summary>
-    public class AIEventHandlers
+    public class AIEventHandlers : IEventHandler
     {
         private readonly IAIService _aiService;
 
@@ -171,3 +171,5 @@ namespace SWLOR.Component.AI.EventHandlers
         }
     }
 }
+
+

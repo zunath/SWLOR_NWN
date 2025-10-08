@@ -174,8 +174,6 @@ namespace SWLOR.Game.Server.Service.KeyItemService
         DantooineShovel = 79,
         [KeyItem(KeyItemCategoryType.Keys, "Viscara Lake Basement Key", true, "This key allows you to enter the super secret sith basement! Shhhhhh!")]
         SithBasementKey = 80,
-        [KeyItem(KeyItemCategoryType.Keys, "Viscara Lake Basement Key", true, "This key allows you to enter the super secret sith basement! Shhhhhh!")]
-        SithBasementKey = 80,
         
         [KeyItem(KeyItemCategoryType.Maps, "Viscara - West Crossroads Map", true, "Map of the West Crossroads.")]
         WestCrossroadsMap = 81,

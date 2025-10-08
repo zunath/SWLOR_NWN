@@ -47006,6 +47006,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Viscara - Mountain Ascent"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_082"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Viscara - Mountain Valley Map"
                     },
                     "RESREF": {

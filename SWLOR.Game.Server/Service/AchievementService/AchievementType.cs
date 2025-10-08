@@ -329,6 +329,12 @@ namespace SWLOR.Game.Server.Service.AchievementService
 
         [Achievement("Explore Dathomir Hidden Cave ", "Explore Dathomir's Hidden Cave.", true)]
         ExploreDathomirHiddenCave = 120,
+		
+		[Achievement("Explore Viscara Crossroads West", "Explore the Crossroads West on Viscara.", true)]
+        ExploreCrossroadsWest = 121,
+        
+        [Achievement("Explore Viscara Mountain Ascent", "Explore the Mountain Ascent on Viscara.", true)]
+        ExploreViscaraMountainAscent = 122,
     }
 
     public class AchievementAttribute: Attribute

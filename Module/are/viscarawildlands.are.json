@@ -44187,17 +44187,13 @@
       }
     ]
   },
-  "TileBrdrDisabled": {
-    "type": "byte",
-    "value": 0
-  },
   "Tileset": {
     "type": "resref",
     "value": "twl01"
   },
   "Version": {
     "type": "dword",
-    "value": 67
+    "value": 68
   },
   "Width": {
     "type": "int",

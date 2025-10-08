@@ -711,13 +711,6 @@
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
-          "value": "jeditemp_int"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
           "value": "karthviscdun1"
         }
       },
@@ -2216,13 +2209,6 @@
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
-          "value": "viscaradeepmount"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
           "value": "viscaradeepwo001"
         }
       },
@@ -2252,20 +2238,6 @@
         "Area_Name": {
           "type": "resref",
           "value": "viscaraorbit"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "viscarawildlands"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "viscarawildwest"
         }
       },
       {
@@ -2601,13 +2573,6 @@
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
-          "value": "v_repubbase_1"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
           "value": "v_repubbase_2"
         }
       },
@@ -2616,27 +2581,6 @@
         "Area_Name": {
           "type": "resref",
           "value": "v_repubbase_cd"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "v_repubbase_ext"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "v_repubbase_hang"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "v_repubbase_jnrm"
         }
       },
       {
@@ -2903,6 +2847,76 @@
         "Area_Name": {
           "type": "resref",
           "value": "tat_smeskspalace"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "viscaradeepmount"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "viscarawildwest"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "v_repubbase_1"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "v_repubbase_jnrm"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "v_repubbase_hang"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "viscarawildlands"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "viscara_mountasc"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "v_repubbase_ext"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "viscara_forkwest"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "jeditemp_int"
         }
       }
     ]
@@ -3215,7 +3229,7 @@
   },
   "Mod_MinGameVer": {
     "type": "cexostring",
-    "value": "1.80"
+    "value": "1.88"
   },
   "Mod_MinPerHour": {
     "type": "byte",

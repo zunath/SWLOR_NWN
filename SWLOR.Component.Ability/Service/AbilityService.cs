@@ -8,7 +8,6 @@ using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
-using SWLOR.Shared.Domain.Communication.Contracts;
 using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Perk.Contracts;
 using SWLOR.Shared.Domain.Perk.Enums;
@@ -46,9 +45,7 @@ namespace SWLOR.Component.Ability.Service
         private ICharacterResourceService CharacterResourceService => _serviceProvider.GetRequiredService<ICharacterResourceService>();
         private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
         private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
-        private IPartyService PartyService => _serviceProvider.GetRequiredService<IPartyService>();
         private IActivityService ActivityService => _serviceProvider.GetRequiredService<IActivityService>();
-        private IMessagingService MessagingService => _serviceProvider.GetRequiredService<IMessagingService>();
         private IRecastService RecastService => _serviceProvider.GetRequiredService<IRecastService>();
         private IAbilityBuilder AbilityBuilder => _serviceProvider.GetRequiredService<IAbilityBuilder>();
         private ISpaceService SpaceService => _serviceProvider.GetRequiredService<ISpaceService>();

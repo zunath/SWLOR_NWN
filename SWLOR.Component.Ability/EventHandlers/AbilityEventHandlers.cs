@@ -19,26 +19,20 @@ namespace SWLOR.Component.Ability.EventHandlers
     {
         private readonly IAbilityService _abilityService;
         private readonly IRecastService _recastService;
-        private readonly BurstOfSpeedAbilityDefinition _burstOfSpeedAbilityDefinition;
         private readonly GasBombAbilityDefinition _gasBombAbilityDefinition;
-        private readonly StealthGeneratorAbilityDefinition _stealthGeneratorAbilityDefinition;
         private readonly IncendiaryBombAbilityDefinition _incendiaryBombAbilityDefinition;
         private readonly DashAbilityDefinition _dashAbilityDefinition;
 
         public AbilityEventHandlers(
             IAbilityService abilityService,
             IRecastService recastService,
-            BurstOfSpeedAbilityDefinition burstOfSpeedAbilityDefinition,
             GasBombAbilityDefinition gasBombAbilityDefinition,
-            StealthGeneratorAbilityDefinition stealthGeneratorAbilityDefinition,
             IncendiaryBombAbilityDefinition incendiaryBombAbilityDefinition,
             DashAbilityDefinition dashAbilityDefinition)
         {
             _abilityService = abilityService;
             _recastService = recastService;
-            _burstOfSpeedAbilityDefinition = burstOfSpeedAbilityDefinition;
             _gasBombAbilityDefinition = gasBombAbilityDefinition;
-            _stealthGeneratorAbilityDefinition = stealthGeneratorAbilityDefinition;
             _incendiaryBombAbilityDefinition = incendiaryBombAbilityDefinition;
             _dashAbilityDefinition = dashAbilityDefinition;
         }

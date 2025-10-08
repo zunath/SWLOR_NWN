@@ -31,7 +31,6 @@ namespace SWLOR.Component.Ability.Definitions.Beastmaster
         private IRandomService Random => _serviceProvider.GetRequiredService<IRandomService>();
         private IDatabaseService DB => _serviceProvider.GetRequiredService<IDatabaseService>();
         private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
-        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
         private ICharacterResourceService CharacterResourceService => _serviceProvider.GetRequiredService<ICharacterResourceService>();
         private IStatCalculationService StatCalculationService => _serviceProvider.GetRequiredService<IStatCalculationService>();
         private IBeastMasteryService BeastMastery => _serviceProvider.GetRequiredService<IBeastMasteryService>();

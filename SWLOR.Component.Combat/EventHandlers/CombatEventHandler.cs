@@ -40,31 +40,12 @@ namespace SWLOR.Component.Combat.EventHandlers
         }
 
         /// <summary>
-        /// When the module loads, add all valid damage types to the cache.
-        /// </summary>
-        [ScriptHandler<OnModuleLoad>]
-        public void LoadDamageTypes()
-        {
-            _combatService.LoadDamageTypes();
-        }
-
-        /// <summary>
         /// When a player enters the server, apply any defenses towards damage types they don't already have.
         /// </summary>
         [ScriptHandler<OnModuleEnter>]
         public void OnModuleEnter()
         {
-            _combatService.AddDamageTypeDefenses();
             _deathService.InitializeRespawnPoint();
-        }
-
-        /// <summary>
-        /// On module heartbeat, clear a PC's saved combat facing if they are no longer in combat.
-        /// </summary>
-        [ScriptHandler<OnIntervalPC6Seconds>]
-        public void ClearCombatState()
-        {
-            _combatService.ClearCombatState();
         }
 
         /// <summary>

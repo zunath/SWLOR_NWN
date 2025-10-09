@@ -25,7 +25,6 @@ namespace SWLOR.Component.Ability.Definitions.NPC
 
         // Lazy-loaded services to break circular dependencies
         private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
-        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
@@ -63,3 +62,4 @@ namespace SWLOR.Component.Ability.Definitions.NPC
         }
     }
 }
+

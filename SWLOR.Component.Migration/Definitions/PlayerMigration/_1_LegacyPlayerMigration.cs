@@ -23,7 +23,7 @@ namespace SWLOR.Component.Migration.Definitions.PlayerMigration
         
         // Lazy-loaded services to break circular dependencies
         private IPlayerInitializationService PlayerInitialization => _serviceProvider.GetRequiredService<IPlayerInitializationService>();
-        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+
         private IStatCalculationService StatCalculationService => _serviceProvider.GetRequiredService<IStatCalculationService>();
         private ICharacterResourceService CharacterResourceService => _serviceProvider.GetRequiredService<ICharacterResourceService>();
         private IRacialAppearanceService RacialAppearanceService => _serviceProvider.GetRequiredService<IRacialAppearanceService>();
@@ -254,3 +254,6 @@ namespace SWLOR.Component.Migration.Definitions.PlayerMigration
         }
     }
 }
+
+
+

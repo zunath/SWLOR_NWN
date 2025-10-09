@@ -82,7 +82,6 @@ namespace SWLOR.Component.Space.Service
             
             // Initialize lazy services
             _abilityService = new Lazy<IAbilityService>(() => _serviceProvider.GetRequiredService<IAbilityService>());
-            _statService = new Lazy<IStatService>(() => _serviceProvider.GetRequiredService<IStatService>());
             _guiService = new Lazy<IGuiService>(() => _serviceProvider.GetRequiredService<IGuiService>());
             _propertyService = new Lazy<IPropertyService>(() => _serviceProvider.GetRequiredService<IPropertyService>());
             _planetService = new Lazy<IPlanetService>(() => _serviceProvider.GetRequiredService<IPlanetService>());
@@ -96,7 +95,6 @@ namespace SWLOR.Component.Space.Service
 
         // Lazy-loaded services to break circular dependencies
         private readonly Lazy<IAbilityService> _abilityService;
-        private readonly Lazy<IStatService> _statService;
         private readonly Lazy<IGuiService> _guiService;
         private readonly Lazy<IPropertyService> _propertyService;
         private readonly Lazy<IPlanetService> _planetService;
@@ -108,7 +106,6 @@ namespace SWLOR.Component.Space.Service
         private readonly Lazy<IStatCalculationService> _statCalculationService;
         
         private IAbilityService AbilityService => _abilityService.Value;
-        private IStatService StatService => _statService.Value;
         private IGuiService GuiService => _guiService.Value;
         private IPropertyService PropertyService => _propertyService.Value;
         private IPlanetService PlanetService => _planetService.Value;

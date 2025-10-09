@@ -30,7 +30,6 @@ namespace SWLOR.Component.Communication.Definitions.ChatCommandDefinition
         private readonly ChatCommandBuilder _builder = new();
         private readonly IDatabaseService _db;
         private readonly IAbilityService _abilityService;
-        private readonly IStatService _statService;
         private readonly IStatCalculationService _statCalculationService;
         private readonly ICharacterResourceService _characterResourceService;
         private readonly IBeastMasteryService _beastMastery;
@@ -46,7 +45,6 @@ namespace SWLOR.Component.Communication.Definitions.ChatCommandDefinition
             IGuiService guiService,
             IDatabaseService db,
             IAbilityService abilityService,
-            IStatService statService,
             IStatCalculationService statCalculationService,
             ICharacterResourceService characterResourceService,
             IBeastMasteryService beastMastery,
@@ -60,7 +58,6 @@ namespace SWLOR.Component.Communication.Definitions.ChatCommandDefinition
             _guiService = guiService;
             _db = db;
             _abilityService = abilityService;
-            _statService = statService;
             _statCalculationService = statCalculationService;
             _characterResourceService = characterResourceService;
             _beastMastery = beastMastery;

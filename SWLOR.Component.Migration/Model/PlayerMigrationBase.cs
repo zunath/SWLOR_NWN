@@ -17,7 +17,6 @@ namespace SWLOR.Component.Migration.Model
     {
         protected readonly ILogger Logger;
         protected readonly IDatabaseService Database;
-        protected readonly IStatService StatService;
         protected readonly IStatCalculationService StatCalculationService;
         protected readonly ISkillService SkillService;
         protected readonly ICombatService CombatService;
@@ -29,7 +28,6 @@ namespace SWLOR.Component.Migration.Model
         protected PlayerMigrationBase(
             ILogger logger,
             IDatabaseService database,
-            IStatService statService,
             IStatCalculationService statCalculationService,
             ISkillService skillService,
             ICombatService combatService,
@@ -40,7 +38,6 @@ namespace SWLOR.Component.Migration.Model
         {
             Logger = logger;
             Database = database;
-            StatService = statService;
             StatCalculationService = statCalculationService;
             SkillService = skillService;
             CombatService = combatService;
@@ -80,17 +77,17 @@ namespace SWLOR.Component.Migration.Model
                 var dbPlayer = Database.Get<Player>(playerId);
 
                 // HP
-                dbPlayer.MaxHP = StatService.BaseHP;
+                dbPlayer.MaxHP = StatCalculationService.BaseHP;
                 dbPlayer.HP = GetMaxHitPoints(player);
                 dbPlayer.HPRegen = 0;
 
                 // FP
-                dbPlayer.MaxFP = StatService.BaseFP;
+                dbPlayer.MaxFP = StatCalculationService.BaseFP;
                 dbPlayer.FP = StatCalculationService.CalculateMaxFP(player);
                 dbPlayer.FPRegen = 0;
 
                 // STM
-                dbPlayer.MaxStamina = StatService.BaseSTM;
+                dbPlayer.MaxStamina = StatCalculationService.BaseSTM;
                 dbPlayer.Stamina = StatCalculationService.CalculateMaxSTM(player);
                 dbPlayer.STMRegen = 0;
 
@@ -118,9 +115,6 @@ namespace SWLOR.Component.Migration.Model
                 Database.Set(dbPlayer);
                 _statApplicationService.ApplyCharacterMaxHP(player);
                 SetCurrentHitPoints(player, GetMaxHitPoints(player));
-
-                // Attacks
-                StatService.ApplyAttacksPerRound(player, OBJECT_INVALID);
             });
         }
 

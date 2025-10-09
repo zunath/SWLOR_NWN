@@ -152,5 +152,6 @@ namespace SWLOR.NWN.API.NWScript.Enum
         Agility = 151,
         Social = 152,
         HPRegen = 153,
+        DamageType = 154,
     }
 }

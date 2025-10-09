@@ -23,7 +23,7 @@ namespace SWLOR.Component.Ability.Definitions.Force
 
         // Lazy-loaded services to break circular dependencies
         private IRandomService Random => _serviceProvider.GetRequiredService<IRandomService>();
-        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+
         private ICharacterResourceService CharacterResourceService => _serviceProvider.GetRequiredService<ICharacterResourceService>();
         private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
         private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
@@ -121,3 +121,4 @@ namespace SWLOR.Component.Ability.Definitions.Force
         }
     }
 }
+

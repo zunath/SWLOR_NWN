@@ -8,84 +8,6 @@ namespace SWLOR.Shared.Domain.Combat.Contracts
     public interface ICombatService
     {
         /// <summary>
-        /// When the module loads, add all valid damage types to the cache.
-        /// </summary>
-        void LoadDamageTypes();
-
-        /// <summary>
-        /// When a player enters the server, apply any defenses towards damage types they don't already have.
-        /// </summary>
-        void AddDamageTypeDefenses();
-
-        /// <summary>
-        /// Retrieves all valid damage types available in the system.
-        /// </summary>
-        /// <returns>A list of damage types</returns>
-        List<CombatDamageType> GetAllDamageTypes();
-
-        /// <summary>
-        /// Calculates the minimum and maximum damage possible with the provided stats.
-        /// </summary>
-        /// <param name="attackerAttack">The attacker's attack rating.</param>
-        /// <param name="attackerDMG">The attacker's DMG rating</param>
-        /// <param name="attackerStat">The attacker's attack stat value</param>
-        /// <param name="defenderDefense">The defender's defense rating.</param>
-        /// <param name="defenderStat">The defender's defend stat value</param>
-        /// <param name="critical">the critical rating of the attack, or 0 if the attack is not critical.</param>
-        /// <param name="deltaCap">Value to cap the lower and upper bounds of stat delta to. For weapons, should be weapon rank.</param>
-        /// <returns>A minimum and maximum damage range</returns>
-        (int, int) CalculateDamageRange(
-            int attackerAttack,
-            int attackerDMG,
-            int attackerStat,
-            int defenderDefense,
-            int defenderStat,
-            int critical,
-            int deltaCap = 0);
-
-        /// <summary>
-        /// Calculates the hit rate against a given target.
-        /// Range is clamped to values between 20 and 95, inclusive.
-        /// </summary>
-        /// <param name="attackerAccuracy">The total accuracy of the attacker.</param>
-        /// <param name="defenderEvasion">The total evasion of the defender.</param>
-        /// <param name="percentageModifier">Modifies the raw hit change by a certain percentage. This is done after all prior calculations.</param>
-        /// <returns>The hit rate, clamped between 20 and 95, inclusive.</returns>
-        int CalculateHitRate(
-            int attackerAccuracy,
-            int defenderEvasion,
-            int percentageModifier);
-
-        /// <summary>
-        /// Calculates the critical hit rate against a given target.
-        /// </summary>
-        /// <param name="attackerPER">The attacker's perception stat</param>
-        /// <param name="defenderMGT">The defender's might stat.</param>
-        /// <param name="criticalModifier">A modifier to the critical rating based on external factors.</param>
-        /// <returns>The critical rate, in a percentage</returns>
-        int CalculateCriticalRate(int attackerPER, int defenderMGT, int criticalModifier);
-
-        /// <summary>
-        /// Calculates a random damage amount based on the provided stats of the attacker and defender.
-        /// </summary>
-        /// <param name="attackerAttack">The attacker's attack rating.</param>
-        /// <param name="attackerDMG">The attacker's DMG rating</param>
-        /// <param name="attackerStat">The attacker's attack stat value</param>
-        /// <param name="defenderDefense">The defender's defense rating.</param>
-        /// <param name="defenderStat">The defender's defend stat value</param>
-        /// <param name="critical">the critical rating of the attack, or 0 if the attack is not critical.</param>
-        /// <param name="deltaCap">Value to cap the lower and upper bounds of stat delta to. For weapons, should be weapon rank.</param>
-        /// <returns>A damage value to apply to the target.</returns>
-        int CalculateDamage(
-            int attackerAttack,
-            int attackerDMG,
-            int attackerStat,
-            int defenderDefense,
-            int defenderStat,
-            int critical,
-            int deltaCap = 0);
-
-        /// <summary>
         /// Return a damage bonus equal to 0.15 of the player's relevant skill or an NPC's level.
         /// This helps abilities as the player progresses. 
         ///
@@ -94,11 +16,6 @@ namespace SWLOR.Shared.Domain.Combat.Contracts
         /// </summary>
         /// <returns> 0.15 * the player's rank in the specified skill, or the level for NPCs.</returns>
         int GetAbilityDamageBonus(uint creature, SkillType skill);
-
-        /// <summary>
-        /// On module heartbeat, clear a PC's saved combat facing if they are no longer in combat.
-        /// </summary>
-        void ClearCombatState();
 
         /// <summary>
         /// Builds a combat log message based on the provided information.
@@ -177,6 +94,6 @@ namespace SWLOR.Shared.Domain.Combat.Contracts
             int baseDC,
             AbilityType abilityOverride = AbilityType.Invalid);
 
-        bool HandleParalyze(uint creature);
+        bool IsParalyzed(uint creature);
     }
 }

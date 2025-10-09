@@ -2,6 +2,7 @@
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
+using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Crafting.Enums;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Skill.Contracts;
@@ -29,6 +30,9 @@ namespace SWLOR.Component.Character.Service
             _statusEffectService = statusEffectService;
             _skillService = skillService;
         }
+        public int BaseHP => 70;
+        public int BaseFP => 10;
+        public int BaseSTM => 10;
 
         /// <inheritdoc />
         public int CalculateLevel(uint creature)
@@ -42,7 +46,6 @@ namespace SWLOR.Component.Character.Service
         /// <inheritdoc />
         public int CalculateMaxHP(uint creature)
         {
-            const int BaseHP = 70;
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
             var maxHP = BaseHP +
                         _characterStatService.GetStat(creature, StatType.MaxHP) +
@@ -64,7 +67,6 @@ namespace SWLOR.Component.Character.Service
         /// <inheritdoc />
         public int CalculateMaxFP(uint creature)
         {
-            const int BaseFP = 10;
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
             var modifier = _characterStatService.GetStat(creature, StatType.Willpower) * 10;
 
@@ -76,7 +78,6 @@ namespace SWLOR.Component.Character.Service
         /// <inheritdoc />
         public int CalculateMaxSTM(uint creature)
         {
-            const int BaseSTM = 10;
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
             var modifier = _characterStatService.GetStat(creature, StatType.Perception) * 10;
 
@@ -210,6 +211,27 @@ namespace SWLOR.Component.Character.Service
                         effects.GetStat(StatType.ForceAttack);
 
             return 8 + (2 * skill) + ability + bonus;
+        }
+
+        public int CalculateAttribute(uint creature, AbilityType ability)
+        {
+            switch (ability)
+            {
+                case AbilityType.Might:
+                    return CalculateMight(creature);
+                case AbilityType.Perception:
+                    return CalculatePerception(creature);
+                case AbilityType.Vitality:
+                    return CalculateVitality(creature);
+                case AbilityType.Agility:
+                    return CalculateAgility(creature);
+                case AbilityType.Willpower:
+                    return CalculateWillpower(creature);
+                case AbilityType.Social:
+                    return CalculateSocial(creature);
+                default:
+                    return 0;
+            }
         }
 
         /// <inheritdoc />
@@ -443,6 +465,50 @@ namespace SWLOR.Component.Character.Service
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
 
             return _characterStatService.GetStat(creature, StatType.PoisonResist) + effects.GetStat(StatType.PoisonResist);
+        }
+
+        /// <inheritdoc />
+        public int CalculateFireResist(uint creature)
+        {
+            var effects = _statusEffectService.GetCreatureStatGroup(creature);
+
+            return _characterStatService.GetStat(creature, StatType.FireResist) + effects.GetStat(StatType.FireResist);
+        }
+
+
+        /// <inheritdoc />
+        public int CalculateIceResist(uint creature)
+        {
+            var effects = _statusEffectService.GetCreatureStatGroup(creature);
+
+            return _characterStatService.GetStat(creature, StatType.IceResist) + effects.GetStat(StatType.IceResist);
+        }
+
+
+        /// <inheritdoc />
+        public int CalculateElectricalResist(uint creature)
+        {
+            var effects = _statusEffectService.GetCreatureStatGroup(creature);
+
+            return _characterStatService.GetStat(creature, StatType.ElectricalResist) + effects.GetStat(StatType.ElectricalResist);
+        }
+
+        /// <inheritdoc />
+        public int CalculateResistance(uint creature, CombatDamageType damageType)
+        {
+            switch (damageType)
+            {
+                case CombatDamageType.Fire:
+                    return CalculateFireResist(creature);
+                case CombatDamageType.Poison:
+                    return CalculatePoisonResist(creature);
+                case CombatDamageType.Electrical:
+                    return CalculateElectricalResist(creature);
+                case CombatDamageType.Ice:
+                    return CalculateIceResist(creature);
+                default:
+                    return 0;
+            }
         }
 
         private float CalculateAttackSpeedModifier(uint creature)

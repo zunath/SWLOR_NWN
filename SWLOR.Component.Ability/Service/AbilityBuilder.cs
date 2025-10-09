@@ -20,7 +20,6 @@ namespace SWLOR.Component.Ability.Service
         }
 
         // Lazy-loaded services to break circular dependencies
-        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
 
         /// <summary>
         /// Creates a new ability.
@@ -318,3 +317,4 @@ namespace SWLOR.Component.Ability.Service
         }
     }
 }
+

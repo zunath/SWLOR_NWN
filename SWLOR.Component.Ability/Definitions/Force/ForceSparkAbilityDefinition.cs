@@ -29,7 +29,7 @@ namespace SWLOR.Component.Ability.Definitions.Force
 
         // Lazy-loaded services to break circular dependencies
         private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
-        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+
         private ICharacterResourceService CharacterResourceService => _serviceProvider.GetRequiredService<ICharacterResourceService>();
         private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
         private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
@@ -47,7 +47,6 @@ namespace SWLOR.Component.Ability.Definitions.Force
         {
             var attackerStat = GetAbilityScore(activator, AbilityType.Willpower);
             var defenderStat = GetAbilityScore(target, AbilityType.Willpower);
-            var statService = StatService;
             var combatService = CombatService;
             var messagingService = MessagingService;
             var enmityService = EnmityService;
@@ -155,3 +154,4 @@ namespace SWLOR.Component.Ability.Definitions.Force
         }
     }
 }
+

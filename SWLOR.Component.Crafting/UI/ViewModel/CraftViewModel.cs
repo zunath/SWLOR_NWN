@@ -44,7 +44,7 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
         private readonly Lazy<ICraftService> _craftService;
         private readonly Lazy<ISkillService> _skillService;
         private readonly Lazy<IPerkService> _perkService;
-        private readonly Lazy<IStatService> _statService;
+
         private readonly Lazy<ITargetingService> _targetingService;
         private readonly Lazy<IItemPluginService> _itemPlugin;
         private readonly Lazy<IItemPropertyPluginService> _itemPropertyPlugin;
@@ -56,7 +56,7 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
         private ICraftService CraftService => _craftService.Value;
         private ISkillService SkillService => _skillService.Value;
         private IPerkService PerkService => _perkService.Value;
-        private IStatService StatService => _statService.Value;
+
         private ITargetingService TargetingService => _targetingService.Value;
         private IItemPluginService ItemPlugin => _itemPlugin.Value;
         private IItemPropertyPluginService ItemPropertyPlugin => _itemPropertyPlugin.Value;
@@ -82,7 +82,7 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
             _craftService = new Lazy<ICraftService>(() => _serviceProvider.GetRequiredService<ICraftService>());
             _skillService = new Lazy<ISkillService>(() => _serviceProvider.GetRequiredService<ISkillService>());
             _perkService = new Lazy<IPerkService>(() => _serviceProvider.GetRequiredService<IPerkService>());
-            _statService = new Lazy<IStatService>(() => _serviceProvider.GetRequiredService<IStatService>());
+
             _targetingService = new Lazy<ITargetingService>(() => _serviceProvider.GetRequiredService<ITargetingService>());
             _itemPlugin = new Lazy<IItemPluginService>(() => _serviceProvider.GetRequiredService<IItemPluginService>());
             _itemPropertyPlugin = new Lazy<IItemPropertyPluginService>(() => _serviceProvider.GetRequiredService<IItemPropertyPluginService>());
@@ -1951,3 +1951,6 @@ namespace SWLOR.Component.Crafting.UI.ViewModel
         }
     }
 }
+
+
+

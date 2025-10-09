@@ -22,7 +22,6 @@ namespace SWLOR.Component.Ability.Definitions.Force
         }
 
         // Lazy-loaded services to break circular dependencies
-        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
         private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
         private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
 
@@ -75,16 +74,10 @@ namespace SWLOR.Component.Ability.Definitions.Force
             effect = TagEffect(effect, tag);
 
             ApplyEffectToObject(DurationType.Temporary, effect, target, 600f);
-
-            var statService = ServiceContainer.GetService<IStatService>();
-            statService.ApplyPlayerMovementRate(target);
         }
 
         public static void RemoveEffect()
         {
-            var target = OBJECT_SELF;
-            var statService = ServiceContainer.GetService<IStatService>();
-            statService.ApplyPlayerMovementRate(target);
         }
 
         private void Impact(uint activator, uint target, int tier, string effectTag)

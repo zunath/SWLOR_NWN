@@ -21,12 +21,12 @@
         Social = 16,
         ShieldDeflection = 17,
         AttackDeflection = 18,
-        // 19 is free
+        FireResist = 19,
         CriticalRate = 20,
         Enmity = 21,
         Haste = 22,
         Slow = 23,
-        // 24 is free
+        ElectricalResist = 24,
         ForceDefense = 25,
         QueuedDMGBonus = 26,
         Paralysis = 27,
@@ -37,7 +37,7 @@
         FPRestoreOnHit = 32,
         DefenseModifier = 33,
         ForceDefenseModifier = 34,
-        // 35 is free
+        IceResist = 35,
         AttackModifier = 36,
         ForceAttackModifier = 37,
         EvasionModifier = 38,

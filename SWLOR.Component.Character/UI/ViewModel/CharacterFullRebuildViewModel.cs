@@ -30,7 +30,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
         private readonly ICreaturePluginService _creaturePlugin;
         
         // Lazy-loaded services to break circular dependencies
-        private readonly Lazy<IStatService> _statService;
+
         private readonly Lazy<IStatCalculationService> _statCalculationService;
         private readonly Lazy<ICharacterResourceService> _characterResourceService;
         private readonly Lazy<ISkillService> _skillService;
@@ -52,7 +52,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
             _creaturePlugin = creaturePlugin;
             
             // Initialize lazy services
-            _statService = new Lazy<IStatService>(() => _serviceProvider.GetRequiredService<IStatService>());
+
             _statCalculationService = new Lazy<IStatCalculationService>(() => _serviceProvider.GetRequiredService<IStatCalculationService>());
             _characterResourceService = new Lazy<ICharacterResourceService>(() => _serviceProvider.GetRequiredService<ICharacterResourceService>());
             _skillService = new Lazy<ISkillService>(() => _serviceProvider.GetRequiredService<ISkillService>());
@@ -62,7 +62,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
         }
         
         // Lazy-loaded services to break circular dependencies
-        private IStatService StatService => _statService.Value;
+
         private IStatCalculationService StatCalculationService => _statCalculationService.Value;
         private ICharacterResourceService CharacterResourceService => _characterResourceService.Value;
         private ISkillService SkillService => _skillService.Value;
@@ -751,3 +751,6 @@ namespace SWLOR.Component.Character.UI.ViewModel
         };
     }
 }
+
+
+

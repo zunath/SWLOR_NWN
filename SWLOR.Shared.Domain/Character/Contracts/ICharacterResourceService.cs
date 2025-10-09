@@ -17,5 +17,7 @@ namespace SWLOR.Shared.Domain.Character.Contracts
         int GetCurrentHP(uint creature);
         int GetCurrentFP(uint creature);
         int GetCurrentSTM(uint creature);
+
+        void NPCNaturalRegen();
     }
 }

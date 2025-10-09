@@ -84,7 +84,6 @@ namespace SWLOR.Component.Associate.Service
             _recastService = new Lazy<IRecastService>(() => _serviceProvider.GetRequiredService<IRecastService>());
             _itemService = new Lazy<IItemService>(() => _serviceProvider.GetRequiredService<IItemService>());
             _perkService = new Lazy<IPerkService>(() => _serviceProvider.GetRequiredService<IPerkService>());
-            _statService = new Lazy<IStatService>(() => _serviceProvider.GetRequiredService<IStatService>());
         }
 
         // Lazy-loaded services to break circular dependencies
@@ -95,7 +94,6 @@ namespace SWLOR.Component.Associate.Service
         private readonly Lazy<IRecastService> _recastService;
         private readonly Lazy<IItemService> _itemService;
         private readonly Lazy<IPerkService> _perkService;
-        private readonly Lazy<IStatService> _statService;
         
         private IGuiService GuiService => _guiService.Value;
         private IRaceService RaceService => _raceService.Value;
@@ -104,7 +102,6 @@ namespace SWLOR.Component.Associate.Service
         private IRecastService RecastService => _recastService.Value;
         private IItemService ItemService => _itemService.Value;
         private IPerkService PerkService => _perkService.Value;
-        private IStatService StatService => _statService.Value;
         
 
         /// <summary>
@@ -1116,7 +1113,6 @@ namespace SWLOR.Component.Associate.Service
         private void DroidOnHeartbeatInternal()
         {
             ExecuteNWScript("x0_ch_hen_heart", OBJECT_SELF);
-            StatService.RestoreNPCStats(false);
         }
 
         public void DroidOnPerception()
@@ -1160,7 +1156,6 @@ namespace SWLOR.Component.Associate.Service
             {
                 SetIsDestroyable(true, false, false);
             }); 
-            StatService.LoadNPCStats();
         }
 
         public void DroidOnSpellCastAt()

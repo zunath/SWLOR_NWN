@@ -1,4 +1,5 @@
 ﻿using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Crafting.Enums;
 using SWLOR.Shared.Domain.Skill.Enums;
 
@@ -10,6 +11,10 @@ namespace SWLOR.Shared.Domain.Character.Contracts
     /// </summary>
     public interface IStatCalculationService
     {
+        public int BaseHP => 70;
+        public int BaseFP => 10;
+        public int BaseSTM => 10;
+
         /// <summary>
         /// Calculates the maximum hit points for a creature.
         /// </summary>
@@ -159,6 +164,14 @@ namespace SWLOR.Shared.Domain.Character.Contracts
         int CalculateSocial(uint creature);
 
         /// <summary>
+        /// Calculates the specified attribute value for a creature.
+        /// </summary>
+        /// <param name="creature">The creature to calculate the attribute for</param>
+        /// <param name="attributeType">The type of attribute to calculate</param>
+        /// <returns>The attribute value</returns>
+        int CalculateAttribute(uint creature, AbilityType attributeType);
+
+        /// <summary>
         /// Calculates the shield deflection rating for a creature.
         /// </summary>
         /// <param name="creature">The creature to calculate shield deflection for</param>
@@ -304,6 +317,35 @@ namespace SWLOR.Shared.Domain.Character.Contracts
         /// <param name="creature">The creature to calculate poison resistance for</param>
         /// <returns>The poison resistance value</returns>
         int CalculatePoisonResist(uint creature);
+
+        /// <summary>
+        /// Calculates the fire resistance for a creature.
+        /// </summary>
+        /// <param name="creature">The creature to calculate fire resistance for</param>
+        /// <returns>The fire resistance value</returns>
+        int CalculateFireResist(uint creature);
+
+        /// <summary>
+        /// Calculates the ice resistance for a creature.
+        /// </summary>
+        /// <param name="creature">The creature to calculate ice resistance for</param>
+        /// <returns>The ice resistance value</returns>
+        int CalculateIceResist(uint creature);
+
+        /// <summary>
+        /// Calculates the electrical resistance for a creature.
+        /// </summary>
+        /// <param name="creature">The creature to calculate electrical resistance for</param>
+        /// <returns>The electrical resistance value</returns>
+        int CalculateElectricalResist(uint creature);
+
+        /// <summary>
+        /// Calculates the resistance for a specific damage type.
+        /// </summary>
+        /// <param name="creature">The creature to calculate resistance for</param>
+        /// <param name="damageType">The type of damage to calculate resistance for</param>
+        /// <returns>The resistance value for the specified damage type</returns>
+        int CalculateResistance(uint creature, CombatDamageType damageType);
 
         /// <summary>
         /// Calculates the level for a creature.

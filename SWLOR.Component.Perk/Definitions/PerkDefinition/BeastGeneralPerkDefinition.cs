@@ -18,7 +18,7 @@ namespace SWLOR.Component.Perk.Definitions.PerkDefinition
         }
 
         // Lazy-loaded services to break circular dependencies
-        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+
         private IBeastMasteryService BeastMastery => _serviceProvider.GetRequiredService<IBeastMasteryService>();
 
         public Dictionary<PerkType, PerkDetail> BuildPerks(IPerkBuilder builder)
@@ -153,7 +153,6 @@ namespace SWLOR.Component.Perk.Definitions.PerkDefinition
                     if (!BeastMastery.IsPlayerBeast(beast))
                         return;
 
-                    StatService.ApplyAttacksPerRound(beast, GetItemInSlot(InventorySlotType.CreatureLeft));
                 })
                 .TriggerRefund((player) =>
                 {
@@ -161,7 +160,6 @@ namespace SWLOR.Component.Perk.Definitions.PerkDefinition
                     if (!BeastMastery.IsPlayerBeast(beast))
                         return;
 
-                    StatService.ApplyAttacksPerRound(beast, GetItemInSlot(InventorySlotType.CreatureLeft));
                 })
 
                 .AddPerkLevel()
@@ -182,3 +180,4 @@ namespace SWLOR.Component.Perk.Definitions.PerkDefinition
 
     }
 }
+

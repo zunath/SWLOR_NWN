@@ -3,6 +3,7 @@ using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Contracts;
 using SWLOR.Shared.Domain.Character.Events;
+using SWLOR.Shared.Events.Events.Creature;
 
 namespace SWLOR.Component.Character.EventHandlers
 {
@@ -61,6 +62,12 @@ namespace SWLOR.Component.Character.EventHandlers
         public void ApplySocialChange()
         {
             _statApplication.ApplyCharacterSocial(OBJECT_SELF);
+        }
+
+        [ScriptHandler<OnCreatureSpawnBefore>]
+        public void ApplyNPCStats()
+        {
+            _statApplication.ApplyNPCStats(OBJECT_SELF);
         }
 
     }

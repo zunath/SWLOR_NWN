@@ -31,7 +31,6 @@ namespace SWLOR.Component.Ability.Definitions.Devices
         protected IRandomService Random => _serviceProvider.GetRequiredService<IRandomService>();
         protected IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
         protected IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
-        protected IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
         protected ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
         protected ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
         protected IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();

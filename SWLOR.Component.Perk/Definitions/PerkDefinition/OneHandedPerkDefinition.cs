@@ -29,8 +29,7 @@ namespace SWLOR.Component.Perk.Definitions.PerkDefinition
         // Lazy-loaded services to break circular dependencies
         private IRandomService Random => _serviceProvider.GetRequiredService<IRandomService>();
         private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
-        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
-        private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
+
         private IAbilityService AbilityService => _serviceProvider.GetRequiredService<IAbilityService>();
                 public Dictionary<PerkType, PerkDetail> BuildPerks(IPerkBuilder builder)
         {
@@ -39,29 +38,22 @@ namespace SWLOR.Component.Perk.Definitions.PerkDefinition
             WeaponFocusVibroblades(builder);
             ImprovedCriticalVibroblades(builder);
             VibrobladeProficiency(builder);
-            VibrobladeMastery(builder);
             HackingBlade(builder);
             RiotBlade(builder);
             WeaponFocusFinesseVibroblades(builder);
             ImprovedCriticalFinesseVibroblades(builder);
             FinesseVibrobladeProficiency(builder);
-            FinesseVibrobladeMastery(builder);
             PoisonStab(builder);
             Backstab(builder);
             WeaponFocusLightsabers(builder);
             ImprovedCriticalLightsabers(builder);
             LightsaberProficiency(builder);
-            LightsaberMastery(builder);
             ForceLeap(builder);
             SaberStrike(builder);
             ImprovedTwoWeaponFighting(builder);
             StrongStyleLightsaber(builder);
-            Duelist(builder);
-            WailingBlows(builder);
-            ShieldMaster(builder);
             ShieldBash(builder);
             Bulwark(builder);
-            ShieldResistance(builder);
             Alacrity(builder);
             Clarity(builder);
 
@@ -121,128 +113,7 @@ namespace SWLOR.Component.Perk.Definitions.PerkDefinition
                 .GrantsFeat(FeatType.DualWield);
         }
 
-        private void WailingBlows(IPerkBuilder builder)
-        {
-            builder.Create(PerkCategoryType.OneHandedGeneral, PerkType.WailingBlows)
-                .Name("Wailing Blows")
 
-                .AddPerkLevel()
-                .Description("While dual-wielding one-handed weapons, you gain 15% critical chance.")
-                .Price(4)
-                .RequirementSkill(SkillType.OneHanded, 25)
-                .GrantsFeat(FeatType.WailingBlows)
-
-                .TriggerEquippedItem((player, item, slot, type, level) =>
-                 {
-                     if (slot != InventorySlotType.RightHand) return;
-
-                     StatService.ApplyCritModifier(player, item);
-                 })
-                .TriggerUnequippedItem((player, item, slot, type, level) =>
-                {
-                    if (slot != InventorySlotType.RightHand) return;
-
-                    StatService.ApplyCritModifier(player, OBJECT_INVALID);
-                })
-                .TriggerPurchase((player) =>
-                {
-                    var item = GetItemInSlot(InventorySlotType.RightHand, player);
-                    StatService.ApplyCritModifier(player, item);
-                })
-                .TriggerRefund((player) =>
-                {
-                    var item = GetItemInSlot(InventorySlotType.RightHand, player);
-                    StatService.ApplyCritModifier(player, item);
-                });
-        }
-
-        private void Duelist(IPerkBuilder builder)
-        {
-            builder.Create(PerkCategoryType.OneHandedGeneral, PerkType.Duelist)
-                .Name("Duelist")
-
-                .AddPerkLevel()
-                .Description("While wielding one-handed weapons with a shield or free hand, you gain 5% to hit and 5% critical chance. [Cross Skill]")
-                .Price(3)
-                .RequirementSkill(SkillType.OneHanded, 15)
-                .GrantsFeat(FeatType.Duelist)
-
-                .TriggerEquippedItem((player, item, slot, type, level) =>
-                 {
-                     if (slot != InventorySlotType.RightHand) return;
-
-                     StatService.ApplyCritModifier(player, item);
-                 })
-                .TriggerUnequippedItem((player, item, slot, type, level) =>
-                {
-                    if (slot != InventorySlotType.RightHand) return;
-
-                    StatService.ApplyCritModifier(player, OBJECT_INVALID);
-                })
-                .TriggerPurchase((player) =>
-                {
-                    var item = GetItemInSlot(InventorySlotType.RightHand, player);
-                    StatService.ApplyCritModifier(player, item);
-                })
-                .TriggerRefund((player) =>
-                {
-                    var item = GetItemInSlot(InventorySlotType.RightHand, player);
-                    StatService.ApplyCritModifier(player, item);
-                });
-        }
-
-        private void ShieldMaster(IPerkBuilder builder)
-        {
-            builder.Create(PerkCategoryType.OneHandedShield, PerkType.ShieldMaster)
-                .Name("Shield Master")
-                .TriggerEquippedItem((player, item, slot, type, level) =>
-                {
-                    if (slot == InventorySlotType.RightHand)
-                    {
-                        var offHand = GetItemInSlot(InventorySlotType.LeftHand, player);
-                        StatService.ApplyAttacksPerRound(player, item, offHand);
-                    }
-                    else if (slot == InventorySlotType.LeftHand)
-                    {
-                        var mainHand = GetItemInSlot(InventorySlotType.RightHand, player);
-                        StatService.ApplyAttacksPerRound(player, mainHand, item);
-                    }
-                })
-                .TriggerUnequippedItem((player, item, slot, type, level) =>
-                {
-                    if (slot == InventorySlotType.RightHand)
-                    {
-                        var offHand = GetItemInSlot(InventorySlotType.LeftHand, player);
-                        StatService.ApplyAttacksPerRound(player, item, offHand);
-                    }
-                    else if (slot == InventorySlotType.LeftHand)
-                    {
-                        var mainHand = GetItemInSlot(InventorySlotType.RightHand, player);
-                        StatService.ApplyAttacksPerRound(player, mainHand, item);
-                    }
-
-                    StatService.ApplyAttacksPerRound(player, OBJECT_INVALID);
-                })
-                .TriggerPurchase((player) =>
-                {
-                    var mainHand = GetItemInSlot(InventorySlotType.RightHand, player);
-                    var offHand = GetItemInSlot(InventorySlotType.LeftHand, player);
-                    StatService.ApplyAttacksPerRound(player, mainHand, offHand);
-                })
-                .TriggerRefund((player) =>
-                {
-                    var mainHand = GetItemInSlot(InventorySlotType.RightHand, player);
-                    var offHand = GetItemInSlot(InventorySlotType.LeftHand, player);
-                    StatService.ApplyAttacksPerRound(player, mainHand, offHand);
-                })
-
-                .AddPerkLevel()
-                .Description("While equipped with a shield, you gain an additional attack with your main-hand weapon.")
-                .Price(4)
-                .DroidAISlots(3)
-                .RequirementSkill(SkillType.OneHanded, 30)
-                .GrantsFeat(FeatType.ShieldMaster);
-        }
 
         private void ShieldBash(IPerkBuilder builder)
         {
@@ -283,62 +154,6 @@ namespace SWLOR.Component.Perk.Definitions.PerkDefinition
                 .RequirementSkill(SkillType.OneHanded, 10)
                 .GrantsFeat(FeatType.Bulwark);
         }
-
-        private void ShieldResistance(IPerkBuilder builder)
-        {
-            void AdjustSavingThrows(uint player, uint item)
-            {
-                _creaturePlugin.SetBaseSavingThrow(player, SavingThrowCategoryType.Fortitude, StatService.CalculateBaseSavingThrow(player, SavingThrowCategoryType.Fortitude, item));
-                _creaturePlugin.SetBaseSavingThrow(player, SavingThrowCategoryType.Will, StatService.CalculateBaseSavingThrow(player, SavingThrowCategoryType.Will, item));
-                _creaturePlugin.SetBaseSavingThrow(player, SavingThrowCategoryType.Reflex, StatService.CalculateBaseSavingThrow(player, SavingThrowCategoryType.Reflex, item));
-            }
-
-            builder.Create(PerkCategoryType.OneHandedShield, PerkType.ShieldResistance)
-                .Name("Shield Resistance")
-
-                .AddPerkLevel()
-                .Description("Grants +1 to Will, Fortitude, and Reflex saves when equipped with a shield.")
-                .Price(2)
-                .DroidAISlots(3)
-                .RequirementSkill(SkillType.OneHanded, 20)
-
-                .AddPerkLevel()
-                .Description("Grants +2 to Will, Fortitude, and Reflex saves when equipped with a shield.")
-                .Price(3)
-                .DroidAISlots(4)
-                .RequirementSkill(SkillType.OneHanded, 40)
-                
-                .TriggerEquippedItem((player, item, slot, type, level) =>
-                {
-                    var itemType = GetBaseItemType(item);
-                    if (slot == InventorySlotType.LeftHand &&
-                        ItemService.ShieldBaseItemTypes.Contains(itemType))
-                    {
-                        AdjustSavingThrows(player, item);
-                    }
-                })
-                .TriggerUnequippedItem((player, item, slot, type, level) =>
-                {
-                    var itemType = GetBaseItemType(item);
-                    if (slot == InventorySlotType.LeftHand &&
-                        ItemService.ShieldBaseItemTypes.Contains(itemType))
-                    {
-                        AdjustSavingThrows(player, OBJECT_INVALID);
-                    }
-                })
-                .TriggerPurchase((player) =>
-                {
-                    var item = GetItemInSlot(InventorySlotType.LeftHand, player);
-                    AdjustSavingThrows(player, item);
-                })
-                .TriggerRefund((player) =>
-                {
-                    var item = GetItemInSlot(InventorySlotType.LeftHand, player);
-                    AdjustSavingThrows(player, item);
-                });
-        }
-
-
         private void Alacrity(IPerkBuilder builder)
         {
             builder.Create(PerkCategoryType.OneHandedShield, PerkType.Alacrity)
@@ -428,46 +243,6 @@ namespace SWLOR.Component.Perk.Definitions.PerkDefinition
                 .Price(2)
                 .RequirementSkill(SkillType.OneHanded, 40)
                 .GrantsFeat(FeatType.VibrobladeProficiency5);
-        }
-
-        private void VibrobladeMastery(IPerkBuilder builder)
-        {
-            builder.Create(PerkCategoryType.OneHandedVibroblade, PerkType.VibrobladeMastery)
-                .Name("Vibroblade Mastery")
-                .TriggerEquippedItem((player, item, slot, type, level) =>
-                {
-                    if (slot != InventorySlotType.RightHand) return;
-
-                    StatService.ApplyAttacksPerRound(player, item);
-                })
-                .TriggerUnequippedItem((player, item, slot, type, level) =>
-                {
-                    if (slot != InventorySlotType.RightHand) return;
-
-                    StatService.ApplyAttacksPerRound(player, OBJECT_INVALID);
-                })
-                .TriggerPurchase((player) =>
-                {
-                    var item = GetItemInSlot(InventorySlotType.RightHand, player);
-                    StatService.ApplyAttacksPerRound(player, item);
-                })
-                .TriggerRefund((player) =>
-                {
-                    var item = GetItemInSlot(InventorySlotType.RightHand, player);
-                    StatService.ApplyAttacksPerRound(player, item);
-                })
-
-                .AddPerkLevel()
-                .Description("Grants an additional attack when equipped with a Vibroblade.")
-                .Price(8)
-                .RequirementSkill(SkillType.OneHanded, 25)
-                .GrantsFeat(FeatType.VibrobladeMastery1)
-                
-                .AddPerkLevel()
-                .Description("Grants an additional attack when equipped with a Vibroblade.")
-                .Price(8)
-                .RequirementSkill(SkillType.OneHanded, 50)
-                .GrantsFeat(FeatType.VibrobladeMastery2);
         }
 
         private void HackingBlade(IPerkBuilder builder)
@@ -587,46 +362,6 @@ namespace SWLOR.Component.Perk.Definitions.PerkDefinition
                 .Price(2)
                 .RequirementSkill(SkillType.OneHanded, 40)
                 .GrantsFeat(FeatType.FinesseVibrobladeProficiency5);
-        }
-
-        private void FinesseVibrobladeMastery(IPerkBuilder builder)
-        {
-            builder.Create(PerkCategoryType.OneHandedFinesseVibroblade, PerkType.FinesseVibrobladeMastery)
-                .Name("Finesse Vibroblade Mastery")
-                .TriggerEquippedItem((player, item, slot, type, level) =>
-                {
-                    if (slot != InventorySlotType.RightHand) return;
-
-                    StatService.ApplyAttacksPerRound(player, item);
-                })
-                .TriggerUnequippedItem((player, item, slot, type, level) =>
-                {
-                    if (slot != InventorySlotType.RightHand) return;
-
-                    StatService.ApplyAttacksPerRound(player, OBJECT_INVALID);
-                })
-                .TriggerPurchase((player) =>
-                {
-                    var item = GetItemInSlot(InventorySlotType.RightHand, player);
-                    StatService.ApplyAttacksPerRound(player, item);
-                })
-                .TriggerRefund((player) =>
-                {
-                    var item = GetItemInSlot(InventorySlotType.RightHand, player);
-                    StatService.ApplyAttacksPerRound(player, item);
-                })
-
-                .AddPerkLevel()
-                .Description("Grants an additional attack with a Finesse Vibroblade.")
-                .Price(8)
-                .RequirementSkill(SkillType.OneHanded, 25)
-                .GrantsFeat(FeatType.FinesseVibrobladeMastery1)
-
-                .AddPerkLevel()
-                .Description("Grants an additional attack with a Finesse Vibroblade.")
-                .Price(8)
-                .RequirementSkill(SkillType.OneHanded, 50)
-                .GrantsFeat(FeatType.FinesseVibrobladeMastery2);
         }
 
         private void PoisonStab(IPerkBuilder builder)
@@ -762,48 +497,6 @@ namespace SWLOR.Component.Perk.Definitions.PerkDefinition
                 .GrantsFeat(FeatType.LightsaberProficiency5);
         }
 
-        private void LightsaberMastery(IPerkBuilder builder)
-        {
-            builder.Create(PerkCategoryType.OneHandedLightsaber, PerkType.LightsaberMastery)
-                .Name("Lightsaber Mastery")
-                .TriggerEquippedItem((player, item, slot, type, level) =>
-                {
-                    if (slot != InventorySlotType.RightHand) return;
-
-                    StatService.ApplyAttacksPerRound(player, item);
-                })
-                .TriggerUnequippedItem((player, item, slot, type, level) =>
-                {
-                    if (slot != InventorySlotType.RightHand) return;
-
-                    StatService.ApplyAttacksPerRound(player, OBJECT_INVALID);
-                })
-                .TriggerPurchase((player) =>
-                {
-                    var item = GetItemInSlot(InventorySlotType.RightHand, player);
-                    StatService.ApplyAttacksPerRound(player, item);
-                })
-                .TriggerRefund((player) =>
-                {
-                    var item = GetItemInSlot(InventorySlotType.RightHand, player);
-                    StatService.ApplyAttacksPerRound(player, item);
-                })
-
-                .AddPerkLevel()
-                .Description("Grants an additional attack when equipped with a Lightsaber.")
-                .Price(8)
-                .RequirementSkill(SkillType.OneHanded, 25)
-                .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.LightsaberMastery1)
-                
-                .AddPerkLevel()
-                .Description("Grants an additional attack when equipped with a Lightsaber.")
-                .Price(8)
-                .RequirementSkill(SkillType.OneHanded, 50)
-                .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.LightsaberMastery2);
-        }
-
         private void ForceLeap(IPerkBuilder builder)
         {
             builder.Create(PerkCategoryType.OneHandedLightsaber, PerkType.ForceLeap)
@@ -892,3 +585,4 @@ namespace SWLOR.Component.Perk.Definitions.PerkDefinition
         }
     }
 }
+

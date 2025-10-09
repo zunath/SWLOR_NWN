@@ -21,10 +21,10 @@ namespace SWLOR.Test.Component.Combat.Service
         private IRandomService _mockRandomService;
         private IServiceProvider _mockServiceProvider;
         private IAbilityService _mockAbilityService;
-        private IStatService _mockStatService;
         private IItemService _mockItemService;
         private IPerkService _mockPerkService;
-        private IStatCalculationService _mockStatServiceNew;
+        private IStatCalculationService _mockStatCalculationService;
+        private IWeaponStatService _mockWeaponStatService;
         private IMessagingService _mockMessagingService;
         private CombatService _combatService;
 
@@ -38,18 +38,19 @@ namespace SWLOR.Test.Component.Combat.Service
             _mockDatabaseService = Substitute.For<IDatabaseService>();
             _mockRandomService = Substitute.For<IRandomService>();
             _mockAbilityService = Substitute.For<IAbilityService>();
-            _mockStatService = Substitute.For<IStatService>();
             _mockItemService = Substitute.For<IItemService>();
             _mockPerkService = Substitute.For<IPerkService>();
-            _mockStatServiceNew = Substitute.For<IStatCalculationService>();
+            _mockStatCalculationService = Substitute.For<IStatCalculationService>();
+            _mockWeaponStatService = Substitute.For<IWeaponStatService>();
             _mockMessagingService = Substitute.For<IMessagingService>();
-            
+
+
             // Create a real service provider with the mock services
             var services = new ServiceCollection();
             services.AddSingleton(_mockAbilityService);
-            services.AddSingleton(_mockStatService);
             services.AddSingleton(_mockItemService);
             services.AddSingleton(_mockPerkService);
+            services.AddSingleton(_mockStatCalculationService);
             _mockServiceProvider = services.BuildServiceProvider();
 
             _combatService = new CombatService(
@@ -57,8 +58,8 @@ namespace SWLOR.Test.Component.Combat.Service
                 _mockDatabaseService,
                 _mockRandomService,
                 _mockServiceProvider,
-                _mockStatServiceNew,
-                _mockMessagingService);
+                _mockMessagingService,
+                _mockWeaponStatService);
         }
 
         [TearDown]
@@ -94,7 +95,7 @@ namespace SWLOR.Test.Component.Combat.Service
             const int attackerStat = 20;
             const int defenderDefense = 80;
             const int defenderStat = 15;
-            const int critical = 0;
+            const bool isCritical = false;
             const int deltaCap = 0;
 
             // Act
@@ -104,7 +105,7 @@ namespace SWLOR.Test.Component.Combat.Service
                 attackerStat,
                 defenderDefense,
                 defenderStat,
-                critical,
+                isCritical,
                 deltaCap);
 
             // Assert

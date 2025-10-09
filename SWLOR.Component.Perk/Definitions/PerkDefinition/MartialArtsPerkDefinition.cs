@@ -11,16 +11,6 @@ namespace SWLOR.Component.Perk.Definitions.PerkDefinition
 {
     public class MartialArtsPerkDefinition : IPerkListDefinition
     {
-        private readonly IServiceProvider _serviceProvider;
-
-        public MartialArtsPerkDefinition(IServiceProvider serviceProvider)
-        {
-            _serviceProvider = serviceProvider;
-        }
-
-        // Lazy-loaded service to break circular dependency
-        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
-
         public Dictionary<PerkType, PerkDetail> BuildPerks(IPerkBuilder builder)
         {
             Knockdown(builder);
@@ -30,16 +20,13 @@ namespace SWLOR.Component.Perk.Definitions.PerkDefinition
             WeaponFocusKatars(builder);
             ImprovedCriticalKatars(builder);
             KatarProficiency(builder);
-            KatarMastery(builder);
             ElectricFist(builder);
             StrikingCobra(builder);
             WeaponFocusStaves(builder);
             ImprovedCriticalStaves(builder);
             StaffProficiency(builder);
-            StaffMastery(builder);
             Slam(builder);
             LegSweep(builder);
-            FlurryStyle(builder);
             CrushingStyle(builder);
 
             return builder.Build();
@@ -90,30 +77,7 @@ namespace SWLOR.Component.Perk.Definitions.PerkDefinition
                 .DroidAISlots(4)
                 .RequirementSkill(SkillType.MartialArts, 45)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.InnerStrength2)
-
-                .TriggerEquippedItem((player, item, slot, type, level) =>
-                {
-                    if (slot != InventorySlotType.RightHand) return;
-
-                    StatService.ApplyCritModifier(player, item);
-                })
-                .TriggerUnequippedItem((player, item, slot, type, level) =>
-                {
-                    if (slot != InventorySlotType.RightHand) return;
-
-                    StatService.ApplyCritModifier(player, OBJECT_INVALID);
-                })
-                .TriggerPurchase((player) =>
-                {
-                    var item = GetItemInSlot(InventorySlotType.RightHand, player);
-                    StatService.ApplyCritModifier(player, item);
-                })
-                .TriggerRefund((player) =>
-                {
-                    var item = GetItemInSlot(InventorySlotType.RightHand, player);
-                    StatService.ApplyCritModifier(player, item);
-                });
+                .GrantsFeat(FeatType.InnerStrength2);
         }
 
         private void Chi(IPerkBuilder builder)
@@ -208,46 +172,6 @@ namespace SWLOR.Component.Perk.Definitions.PerkDefinition
                 .Price(2)
                 .RequirementSkill(SkillType.MartialArts, 40)
                 .GrantsFeat(FeatType.KatarProficiency5);
-        }
-
-        private void KatarMastery(IPerkBuilder builder)
-        {
-            builder.Create(PerkCategoryType.MartialArtsKatars, PerkType.KatarMastery)
-                .Name("Katar Mastery")
-                .TriggerEquippedItem((player, item, slot, type, level) =>
-                {
-                    if (slot != InventorySlotType.RightHand) return;
-
-                    StatService.ApplyAttacksPerRound(player, item);
-                })
-                .TriggerUnequippedItem((player, item, slot, type, level) =>
-                {
-                    if (slot != InventorySlotType.RightHand) return;
-
-                    StatService.ApplyAttacksPerRound(player, OBJECT_INVALID);
-                })
-                .TriggerPurchase((player) =>
-                {
-                    var item = GetItemInSlot(InventorySlotType.RightHand, player);
-                    StatService.ApplyAttacksPerRound(player, item);
-                })
-                .TriggerRefund((player) =>
-                {
-                    var item = GetItemInSlot(InventorySlotType.RightHand, player);
-                    StatService.ApplyAttacksPerRound(player, item);
-                })
-
-                .AddPerkLevel()
-                .Description("Grants an additional attack when equipped with a Katars.")
-                .Price(8)
-                .RequirementSkill(SkillType.MartialArts, 25)
-                .GrantsFeat(FeatType.KatarMastery1)
-                
-                .AddPerkLevel()
-                .Description("Grants an additional attack when equipped with a Katars.")
-                .Price(8)
-                .RequirementSkill(SkillType.MartialArts, 50)
-                .GrantsFeat(FeatType.KatarMastery2);
         }
 
         private void ElectricFist(IPerkBuilder builder)
@@ -375,46 +299,6 @@ namespace SWLOR.Component.Perk.Definitions.PerkDefinition
                 .GrantsFeat(FeatType.StaffProficiency5);
         }
 
-        private void StaffMastery(IPerkBuilder builder)
-        {
-            builder.Create(PerkCategoryType.MartialArtsStaff, PerkType.StaffMastery)
-                .Name("Staff Mastery")
-                .TriggerEquippedItem((player, item, slot, type, level) =>
-                {
-                    if (slot != InventorySlotType.RightHand) return;
-
-                    StatService.ApplyAttacksPerRound(player, item);
-                })
-                .TriggerUnequippedItem((player, item, slot, type, level) =>
-                {
-                    if (slot != InventorySlotType.RightHand) return;
-
-                    StatService.ApplyAttacksPerRound(player, OBJECT_INVALID);
-                })
-                .TriggerPurchase((player) =>
-                {
-                    var item = GetItemInSlot(InventorySlotType.RightHand, player);
-                    StatService.ApplyAttacksPerRound(player, item);
-                })
-                .TriggerRefund((player) =>
-                {
-                    var item = GetItemInSlot(InventorySlotType.RightHand, player);
-                    StatService.ApplyAttacksPerRound(player, item);
-                })
-
-                .AddPerkLevel()
-                .Description("Grants an additional attack when equipped with a Staff.")
-                .Price(8)
-                .RequirementSkill(SkillType.MartialArts, 25)
-                .GrantsFeat(FeatType.StaffMastery1)
-                
-                .AddPerkLevel()
-                .Description("Grants an additional attack when equipped with a Staff.")
-                .Price(8)
-                .RequirementSkill(SkillType.MartialArts, 50)
-                .GrantsFeat(FeatType.StaffMastery2);
-        }
-
         private void Slam(IPerkBuilder builder)
         {
             builder.Create(PerkCategoryType.MartialArtsStaff, PerkType.Slam)
@@ -475,35 +359,6 @@ namespace SWLOR.Component.Perk.Definitions.PerkDefinition
                 .GrantsFeat(FeatType.LegSweep3);
         }
 
-        private void FlurryStyle(IPerkBuilder builder)
-        {
-            builder.Create(PerkCategoryType.MartialArtsStaff, PerkType.FlurryStyle)
-                .Name("Flurry Style")
-                .TriggerEquippedItem((player, item, slot, type, level) =>
-                {
-                    if (slot != InventorySlotType.RightHand) return;
-
-                    StatService.ApplyAttacksPerRound(player, item);
-                })
-                .TriggerUnequippedItem((player, item, slot, type, level) =>
-                {
-                    if (slot != InventorySlotType.RightHand) return;
-
-                    StatService.ApplyAttacksPerRound(player, OBJECT_INVALID);
-                })
-
-                .AddPerkLevel()
-                .Description("Your staff attacks now use Agility for accuracy and Perception for damage. In addition, you gain an additional attack with staves, but all staff attacks are made with a -10% to-hit penalty.")
-                .Price(1)
-                .RequirementCannotHavePerk(PerkType.CrushingStyle)
-                .GrantsFeat(FeatType.FlurryStyle)
-
-                .AddPerkLevel()
-                .Description("You gain an additional attack with staves, and no longer suffer a to-hit penalty for attacks made with staves.")
-                .Price(4)
-                .RequirementSkill(SkillType.MartialArts, 35)
-                .GrantsFeat(FeatType.FlurryMastery);
-        }
         private void CrushingStyle(IPerkBuilder builder)
         {
             builder.Create(PerkCategoryType.MartialArtsStaff, PerkType.CrushingStyle)

@@ -41,7 +41,7 @@ namespace SWLOR.Component.Ability.Service
 
         // Lazy-loaded services to break circular dependencies
         private IGenericCacheService CacheService => _serviceProvider.GetRequiredService<IGenericCacheService>();
-        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+
         private ICharacterResourceService CharacterResourceService => _serviceProvider.GetRequiredService<ICharacterResourceService>();
         private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
         private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
@@ -87,7 +87,6 @@ namespace SWLOR.Component.Ability.Service
                     ? ColorToken.Green("Dash enabled") 
                     : ColorToken.Red("Dash disabled");
 
-                StatService.ApplyPlayerMovementRate(player);
                 SendMessageToPC(player, message);
             };
         }
@@ -429,3 +428,4 @@ namespace SWLOR.Component.Ability.Service
         }
     }
 }
+

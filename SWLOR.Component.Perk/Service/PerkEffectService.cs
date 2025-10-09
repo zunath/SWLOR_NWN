@@ -19,7 +19,7 @@ namespace SWLOR.Component.Perk.Service
         
         // Lazy-loaded services to break circular dependencies
         private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
-        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+
         private ICharacterResourceService CharacterResourceService => _serviceProvider.GetRequiredService<ICharacterResourceService>();
         private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
         private IRandomService Random => _serviceProvider.GetRequiredService<IRandomService>();
@@ -106,3 +106,4 @@ namespace SWLOR.Component.Perk.Service
         }
     }
 }
+

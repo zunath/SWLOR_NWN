@@ -127,5 +127,16 @@ namespace SWLOR.Component.Character.Service
             var maxHP = _statCalculation.CalculateMaxHP(creature);
             _objectPlugin.SetMaxHitPoints(creature, maxHP);
         }
+
+        public void ApplyNPCStats(uint npc)
+        {
+            var fp = _statCalculation.CalculateMaxFP(npc);
+            var stamina = _statCalculation.CalculateMaxSTM(npc);
+
+            ApplyCreatureMaxHP(npc);
+            SetCurrentHitPoints(npc, GetMaxHitPoints(npc));
+            SetLocalInt(npc, "FP", fp);
+            SetLocalInt(npc, "STAMINA", stamina);
+        }
     }
 }

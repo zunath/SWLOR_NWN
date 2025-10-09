@@ -21,7 +21,7 @@ namespace SWLOR.Component.Perk.Definitions.PerkDefinition
         }
 
         // Lazy-loaded services to break circular dependencies
-        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+
         private IAbilityService AbilityService => _serviceProvider.GetRequiredService<IAbilityService>();
         public Dictionary<PerkType, PerkDetail> BuildPerks(IPerkBuilder builder)
         {
@@ -32,25 +32,21 @@ namespace SWLOR.Component.Perk.Definitions.PerkDefinition
             WeaponFocusHeavyVibroblades(builder);
             ImprovedCriticalHeavyVibroblades(builder);
             HeavyVibrobladeProficiency(builder);
-            HeavyVibrobladeMastery(builder);
             CrescentMoon(builder);
             HardSlash(builder);
             WeaponFocusPolearms(builder);
             ImprovedCriticalPolearms(builder);
             PolearmProficiency(builder);
-            PolearmMastery(builder);
             Skewer(builder);
             DoubleThrust(builder);
             WeaponFocusTwinBlades(builder);
             ImprovedCriticalTwinBlades(builder);
             TwinBladeProficiency(builder);
-            TwinBladeMastery(builder);
             SpinningWhirl(builder);
             CrossCut(builder);
             WeaponFocusSaberstaffs(builder);
             ImprovedCriticalSaberstaffs(builder);
             SaberstaffProficiency(builder);
-            SaberstaffMastery(builder);
             CircleSlash(builder);
             DoubleStrike(builder);
             ImprovedTwoWeaponFighting(builder);
@@ -183,46 +179,6 @@ namespace SWLOR.Component.Perk.Definitions.PerkDefinition
                 .GrantsFeat(FeatType.HeavyVibrobladeProficiency5);
         }
 
-        private void HeavyVibrobladeMastery(IPerkBuilder builder)
-        {
-            builder.Create(PerkCategoryType.TwoHandedHeavyVibroblade, PerkType.HeavyVibrobladeMastery)
-                .Name("Heavy Vibroblade Mastery")
-                .TriggerEquippedItem((player, item, slot, type, level) =>
-                {
-                    if (slot != InventorySlotType.RightHand) return;
-
-                    StatService.ApplyAttacksPerRound(player, item);
-                })
-                .TriggerUnequippedItem((player, item, slot, type, level) =>
-                {
-                    if (slot != InventorySlotType.RightHand) return;
-
-                    StatService.ApplyAttacksPerRound(player, OBJECT_INVALID);
-                })
-                .TriggerPurchase((player) =>
-                {
-                    var item = GetItemInSlot(InventorySlotType.RightHand, player);
-                    StatService.ApplyAttacksPerRound(player, item);
-                })
-                .TriggerRefund((player) =>
-                {
-                    var item = GetItemInSlot(InventorySlotType.RightHand, player);
-                    StatService.ApplyAttacksPerRound(player, item);
-                })
-
-                .AddPerkLevel()
-                .Description("Grants an additional attack when equipped with a Heavy Vibroblade.")
-                .Price(8)
-                .RequirementSkill(SkillType.TwoHanded, 25)
-                .GrantsFeat(FeatType.HeavyVibrobladeMastery1)
-
-                .AddPerkLevel()
-                .Description("Grants an additional attack when equipped with a Heavy Vibroblade.")
-                .Price(8)
-                .RequirementSkill(SkillType.TwoHanded, 50)
-                .GrantsFeat(FeatType.HeavyVibrobladeMastery2);
-        }
-
         private void CrescentMoon(IPerkBuilder builder)
         {
             builder.Create(PerkCategoryType.TwoHandedHeavyVibroblade, PerkType.CrescentMoon)
@@ -348,46 +304,6 @@ namespace SWLOR.Component.Perk.Definitions.PerkDefinition
                 .GrantsFeat(FeatType.PolearmProficiency5);
         }
 
-        private void PolearmMastery(IPerkBuilder builder)
-        {
-            builder.Create(PerkCategoryType.TwoHandedPolearm, PerkType.PolearmMastery)
-                .Name("Polearm Mastery")
-                .TriggerEquippedItem((player, item, slot, type, level) =>
-                {
-                    if (slot != InventorySlotType.RightHand) return;
-
-                    StatService.ApplyAttacksPerRound(player, item);
-                })
-                .TriggerUnequippedItem((player, item, slot, type, level) =>
-                {
-                    if (slot != InventorySlotType.RightHand) return;
-
-                    StatService.ApplyAttacksPerRound(player, OBJECT_INVALID);
-                })
-                .TriggerPurchase((player) =>
-                {
-                    var item = GetItemInSlot(InventorySlotType.RightHand, player);
-                    StatService.ApplyAttacksPerRound(player, item);
-                })
-                .TriggerRefund((player) =>
-                {
-                    var item = GetItemInSlot(InventorySlotType.RightHand, player);
-                    StatService.ApplyAttacksPerRound(player, item);
-                })
-
-                .AddPerkLevel()
-                .Description("Grants an additional attack when equipped with a Polearm.")
-                .Price(8)
-                .RequirementSkill(SkillType.TwoHanded, 25)
-                .GrantsFeat(FeatType.PolearmMastery1)
-                
-                .AddPerkLevel()
-                .Description("Grants an additional attack when equipped with a Polearm.")
-                .Price(8)
-                .RequirementSkill(SkillType.TwoHanded, 50)
-                .GrantsFeat(FeatType.PolearmMastery2);
-        }
-
         private void Skewer(IPerkBuilder builder)
         {
             builder.Create(PerkCategoryType.TwoHandedPolearm, PerkType.Skewer)
@@ -511,46 +427,6 @@ namespace SWLOR.Component.Perk.Definitions.PerkDefinition
                 .Price(2)
                 .RequirementSkill(SkillType.TwoHanded, 40)
                 .GrantsFeat(FeatType.TwinBladeProficiency5);
-        }
-
-        private void TwinBladeMastery(IPerkBuilder builder)
-        {
-            builder.Create(PerkCategoryType.TwoHandedTwinBlade, PerkType.TwinBladeMastery)
-                .Name("Twin Blade Mastery")
-                .TriggerEquippedItem((player, item, slot, type, level) =>
-                {
-                    if (slot != InventorySlotType.RightHand) return;
-
-                    StatService.ApplyAttacksPerRound(player, item);
-                })
-                .TriggerUnequippedItem((player, item, slot, type, level) =>
-                {
-                    if (slot != InventorySlotType.RightHand) return;
-
-                    StatService.ApplyAttacksPerRound(player, OBJECT_INVALID);
-                })
-                .TriggerPurchase((player) =>
-                {
-                    var item = GetItemInSlot(InventorySlotType.RightHand, player);
-                    StatService.ApplyAttacksPerRound(player, item);
-                })
-                .TriggerRefund((player) =>
-                {
-                    var item = GetItemInSlot(InventorySlotType.RightHand, player);
-                    StatService.ApplyAttacksPerRound(player, item);
-                })
-
-                .AddPerkLevel()
-                .Description("Grants an additional attack while equipped with twin blades.")
-                .Price(8)
-                .RequirementSkill(SkillType.TwoHanded, 25)
-                .GrantsFeat(FeatType.TwinBladeMastery1)
-                
-                .AddPerkLevel()
-                .Description("Grants an additional attack while equipped with twin blades.")
-                .Price(8)
-                .RequirementSkill(SkillType.TwoHanded, 50)
-                .GrantsFeat(FeatType.TwinBladeMastery2);
         }
 
         private void SpinningWhirl(IPerkBuilder builder)
@@ -686,48 +562,6 @@ namespace SWLOR.Component.Perk.Definitions.PerkDefinition
                 .GrantsFeat(FeatType.SaberstaffProficiency5);
         }
 
-        private void SaberstaffMastery(IPerkBuilder builder)
-        {
-            builder.Create(PerkCategoryType.TwoHandedSaberstaff, PerkType.SaberstaffMastery)
-                .Name("Saberstaff Mastery")
-                .TriggerEquippedItem((player, item, slot, type, level) =>
-                {
-                    if (slot != InventorySlotType.RightHand) return;
-
-                    StatService.ApplyAttacksPerRound(player, item);
-                })
-                .TriggerUnequippedItem((player, item, slot, type, level) =>
-                {
-                    if (slot != InventorySlotType.RightHand) return;
-
-                    StatService.ApplyAttacksPerRound(player, OBJECT_INVALID);
-                })
-                .TriggerPurchase((player) =>
-                {
-                    var item = GetItemInSlot(InventorySlotType.RightHand, player);
-                    StatService.ApplyAttacksPerRound(player, item);
-                })
-                .TriggerRefund((player) =>
-                {
-                    var item = GetItemInSlot(InventorySlotType.RightHand, player);
-                    StatService.ApplyAttacksPerRound(player, item);
-                })
-
-                .AddPerkLevel()
-                .Description("Grants an additional attack when equipped with a Saberstaff.")
-                .Price(8)
-                .RequirementSkill(SkillType.TwoHanded, 25)
-                .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.SaberstaffMastery1)
-                
-                .AddPerkLevel()
-                .Description("Grants an additional attack when equipped with a Saberstaff.")
-                .Price(8)
-                .RequirementSkill(SkillType.TwoHanded, 50)
-                .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.SaberstaffMastery2);
-        }
-
         private void CircleSlash(IPerkBuilder builder)
         {
             builder.Create(PerkCategoryType.TwoHandedSaberstaff, PerkType.CircleSlash)
@@ -816,3 +650,4 @@ namespace SWLOR.Component.Perk.Definitions.PerkDefinition
         }
     }
 }
+

@@ -1,6 +1,7 @@
 ﻿using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Character.Contracts;
+using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Repositories;
 using SWLOR.Shared.Events.Events.Player;
@@ -13,16 +14,16 @@ namespace SWLOR.Component.Character.Service
         private const string StaminaLocalVar = "STAMINA";
         
         private readonly IPlayerRepository _playerRepository;
-        private readonly IStatCalculationService _statService;
+        private readonly IStatCalculationService _statCalculationService;
         private readonly IEventAggregator _eventAggregator;
 
         public CharacterResourceService(
             IPlayerRepository playerRepository,
-            IStatCalculationService statService,
+            IStatCalculationService statCalculationService,
             IEventAggregator eventAggregator)
         {
             _playerRepository = playerRepository;
-            _statService = statService;
+            _statCalculationService = statCalculationService;
             _eventAggregator = eventAggregator;
         }
         public void RestoreHP(uint creature, int amount)
@@ -35,7 +36,7 @@ namespace SWLOR.Component.Character.Service
         {
             if (amount <= 0) return;
 
-            var maxFP = _statService.CalculateMaxFP(creature);
+            var maxFP = _statCalculationService.CalculateMaxFP(creature);
             
             // Players
             if (GetIsPC(creature) && !GetIsDM(creature))
@@ -69,7 +70,7 @@ namespace SWLOR.Component.Character.Service
         {
             if (amount <= 0) return;
 
-            var maxSTM = _statService.CalculateMaxSTM(creature);
+            var maxSTM = _statCalculationService.CalculateMaxSTM(creature);
 
             // Players
             if (GetIsPC(creature) && !GetIsDM(creature))
@@ -165,7 +166,7 @@ namespace SWLOR.Component.Character.Service
 
         public void SetCurrentFP(uint creature, int amount)
         {
-            var maxFP = _statService.CalculateMaxFP(creature);
+            var maxFP = _statCalculationService.CalculateMaxFP(creature);
 
             if (amount < 0) amount = 0;
             if (amount > maxFP) amount = maxFP;
@@ -191,7 +192,7 @@ namespace SWLOR.Component.Character.Service
 
         public void SetCurrentSTM(uint creature, int amount)
         {
-            var maxSTM = _statService.CalculateMaxSTM(creature);
+            var maxSTM = _statCalculationService.CalculateMaxSTM(creature);
 
             if (amount < 0) amount = 0;
             if (amount > maxSTM) amount = maxSTM;
@@ -249,6 +250,31 @@ namespace SWLOR.Component.Character.Service
             else
             {
                 return GetLocalInt(creature, StaminaLocalVar);
+            }
+        }
+
+        public void NPCNaturalRegen()
+        {
+            var self = OBJECT_SELF;
+            var maxFP = _statCalculationService.CalculateMaxFP(self);
+            var maxSTM = _statCalculationService.CalculateMaxSTM(self);
+            var fp = GetLocalInt(self, FPLocalVar) + 1;
+            var stm = GetLocalInt(self, StaminaLocalVar) + 1;
+
+            if (fp > maxFP)
+                fp = maxFP;
+            if (stm > maxSTM)
+                stm = maxSTM;
+
+            SetLocalInt(self, FPLocalVar, fp);
+            SetLocalInt(self, StaminaLocalVar, stm);
+
+            // If out of combat - restore HP at 10% per tick.
+            if (!GetIsInCombat(self) &&
+                GetCurrentHP(self) < GetMaxHitPoints(self))
+            {
+                var hpToHeal = GetMaxHitPoints(self) * 0.1f;
+                ApplyEffectToObject(DurationType.Instant, EffectHeal((int)hpToHeal), self);
             }
         }
     }

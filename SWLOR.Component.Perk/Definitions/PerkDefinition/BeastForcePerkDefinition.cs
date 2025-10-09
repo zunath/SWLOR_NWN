@@ -26,7 +26,7 @@ namespace SWLOR.Component.Perk.Definitions.PerkDefinition
 
         // Lazy-loaded services to break circular dependencies
         private IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
-        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+
         private IBeastMasteryService BeastMastery => _serviceProvider.GetRequiredService<IBeastMasteryService>();
 
         public Dictionary<PerkType, PerkDetail> BuildPerks(IPerkBuilder builder)
@@ -151,3 +151,4 @@ namespace SWLOR.Component.Perk.Definitions.PerkDefinition
         }
     }
 }
+

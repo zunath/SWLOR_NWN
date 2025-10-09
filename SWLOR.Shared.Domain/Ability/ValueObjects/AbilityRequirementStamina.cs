@@ -20,7 +20,6 @@ namespace SWLOR.Shared.Domain.Ability.ValueObjects
         }
 
         // Lazy-loaded services to break circular dependencies
-        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
         private ICharacterResourceService CharacterResourceService => _serviceProvider.GetRequiredService<ICharacterResourceService>();
 
         public string CheckRequirements(uint player)

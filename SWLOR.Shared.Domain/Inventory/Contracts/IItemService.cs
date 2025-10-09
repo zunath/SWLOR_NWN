@@ -13,24 +13,6 @@ namespace SWLOR.Shared.Domain.Inventory.Contracts
         void CacheData();
 
         void Load2DACache();
-        void LoadItemToDamageStatMapping();
-        void LoadItemToAccuracyStatMapping();
-
-        /// <summary>
-        /// Retrieves the ability type tied to a particular base item type for the purposes of damage calculation.
-        /// If the base item does not have an associated ability type, AbilityType.Invalid will be returned.
-        /// </summary>
-        /// <param name="itemType">The item type</param>
-        /// <returns>The ability type or AbilityType.Invalid if none is associated with the item.</returns>
-        AbilityType GetWeaponDamageAbilityType(BaseItemType itemType);
-
-        /// <summary>
-        /// Retrieves the ability type tied to a particular base item type for the purposes of accuracy calculation.
-        /// If the base item does not have an associated ability type, AbilityType.Invalid will be returned.
-        /// </summary>
-        /// <param name="itemType">The item type</param>
-        /// <returns>The ability type or AbilityType.Invalid if none is associated with the item.</returns>
-        AbilityType GetWeaponAccuracyAbilityType(BaseItemType itemType);
 
         /// <summary>
         /// When an item is used, if its tag is in the item cache, run it through the action item process.

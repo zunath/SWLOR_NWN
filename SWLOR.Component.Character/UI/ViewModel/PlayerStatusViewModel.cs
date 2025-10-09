@@ -22,7 +22,7 @@ namespace SWLOR.Component.Character.UI.ViewModel
         private readonly IServiceProvider _serviceProvider;
         
         // Lazy-loaded services to break circular dependencies
-        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+
         private IStatCalculationService StatCalculationService => _serviceProvider.GetRequiredService<IStatCalculationService>();
         private ICharacterResourceService CharacterResourceService => _serviceProvider.GetRequiredService<ICharacterResourceService>();
         private ISpaceService SpaceService => _serviceProvider.GetRequiredService<ISpaceService>();
@@ -314,3 +314,4 @@ namespace SWLOR.Component.Character.UI.ViewModel
         }
     }
 }
+

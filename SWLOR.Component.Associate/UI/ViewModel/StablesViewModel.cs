@@ -40,17 +40,16 @@ namespace SWLOR.Component.Associate.UI.ViewModel
             _statCalculation = statCalculation;
             
             // Initialize lazy services
-            _statService = new Lazy<IStatService>(() => _serviceProvider.GetRequiredService<IStatService>());
+
             _perkService = new Lazy<IPerkService>(() => _serviceProvider.GetRequiredService<IPerkService>());
             _beastMasteryService = new Lazy<IBeastMasteryService>(() => _serviceProvider.GetRequiredService<IBeastMasteryService>());
         }
 
         // Lazy-loaded services to break circular dependencies
-        private readonly Lazy<IStatService> _statService;
+
         private readonly Lazy<IPerkService> _perkService;
         private readonly Lazy<IBeastMasteryService> _beastMasteryService;
-        
-        private IStatService StatService => _statService.Value;
+
         private IPerkService PerkService => _perkService.Value;
         private IBeastMasteryService BeastMasteryService => _beastMasteryService.Value;
         
@@ -816,3 +815,6 @@ namespace SWLOR.Component.Associate.UI.ViewModel
         };
     }
 }
+
+
+

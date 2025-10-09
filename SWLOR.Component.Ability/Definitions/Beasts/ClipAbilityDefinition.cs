@@ -26,7 +26,6 @@ namespace SWLOR.Component.Ability.Definitions.Beasts
 
         // Lazy-loaded services to break circular dependencies
         private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
-        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
         private IAbilityService AbilityService => _serviceProvider.GetRequiredService<IAbilityService>();
         private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
 

@@ -65,7 +65,6 @@ namespace SWLOR.Component.Associate.Service
             _timeService = new Lazy<ITimeService>(() => _serviceProvider.GetRequiredService<ITimeService>());
             _perkService = new Lazy<IPerkService>(() => _serviceProvider.GetRequiredService<IPerkService>());
             _itemService = new Lazy<IItemService>(() => _serviceProvider.GetRequiredService<IItemService>());
-            _statService = new Lazy<IStatService>(() => _serviceProvider.GetRequiredService<IStatService>());
             _statCalculationService = new Lazy<IStatCalculationService>(() => _serviceProvider.GetRequiredService<IStatCalculationService>());
         }
 
@@ -77,7 +76,6 @@ namespace SWLOR.Component.Associate.Service
         private readonly Lazy<ITimeService> _timeService;
         private readonly Lazy<IPerkService> _perkService;
         private readonly Lazy<IItemService> _itemService;
-        private readonly Lazy<IStatService> _statService;
         private readonly Lazy<IStatCalculationService> _statCalculationService;
         
         private IGenericCacheService CacheService => _cacheService.Value;
@@ -87,7 +85,6 @@ namespace SWLOR.Component.Associate.Service
         private ITimeService TimeService => _timeService.Value;
         private IPerkService PerkService => _perkService.Value;
         private IItemService ItemService => _itemService.Value;
-        private IStatService StatService => _statService.Value;
         private IStatCalculationService StatCalculationService => _statCalculationService.Value;
         
         // Cached data
@@ -569,7 +566,6 @@ namespace SWLOR.Component.Associate.Service
         public void BeastOnHeartbeat()
         {
             ExecuteNWScript("x0_ch_hen_heart", OBJECT_SELF);
-            StatService.RestoreNPCStats(false);
         }
 
         public void BeastOnPerception()
@@ -603,8 +599,6 @@ namespace SWLOR.Component.Associate.Service
             {
                 SetIsDestroyable(true, false, false);
             });
-            StatService.LoadNPCStats();
-            StatService.ApplyAttacksPerRound(beast, GetItemInSlot(InventorySlotType.CreatureLeft));
         }
 
         public void BeastOnSpellCastAt()

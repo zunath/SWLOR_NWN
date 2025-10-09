@@ -29,9 +29,6 @@ namespace SWLOR.Component.AI.Service
             _partyService = new Lazy<IPartyService>(() => _serviceProvider.GetRequiredService<IPartyService>());
             _activityService = new Lazy<IActivityService>(() => _serviceProvider.GetRequiredService<IActivityService>());
             _dialogService = new Lazy<IDialogService>(() => _serviceProvider.GetRequiredService<IDialogService>());
-            _statService = new Lazy<IStatService>(() => _serviceProvider.GetRequiredService<IStatService>());
-            _abilityService = new Lazy<IAbilityService>(() => _serviceProvider.GetRequiredService<IAbilityService>());
-            _perkService = new Lazy<IPerkService>(() => _serviceProvider.GetRequiredService<IPerkService>());
         }
         
         // Lazy-loaded services to break circular dependencies
@@ -40,18 +37,12 @@ namespace SWLOR.Component.AI.Service
         private readonly Lazy<IPartyService> _partyService;
         private readonly Lazy<IActivityService> _activityService;
         private readonly Lazy<IDialogService> _dialogService;
-        private readonly Lazy<IStatService> _statService;
-        private readonly Lazy<IAbilityService> _abilityService;
-        private readonly Lazy<IPerkService> _perkService;
         
         private IRandomService Random => _random.Value;
         private IEnmityService Enmity => _enmity.Value;
         private IPartyService PartyService => _partyService.Value;
         private IActivityService ActivityService => _activityService.Value;
         private IDialogService DialogService => _dialogService.Value;
-        private IStatService StatService => _statService.Value;
-        private IAbilityService AbilityService => _abilityService.Value;
-        private IPerkService PerkService => _perkService.Value;
 
         public void CacheAIData()
         {
@@ -69,7 +60,6 @@ namespace SWLOR.Component.AI.Service
             if (GetAILevel(creature) == AILevelType.VeryLow)
                 return;
 
-            StatService.RestoreNPCStats(true);
             ProcessFlags(creature);
             Enmity.AttackHighestEnmityTarget(creature);
         }
@@ -157,7 +147,6 @@ namespace SWLOR.Component.AI.Service
         {
             SetLocalString(creature, "X2_SPECIAL_COMBAT_AI_SCRIPT", "xxx");
 
-            StatService.LoadNPCStats();
             LoadAggroEffect(creature);
             DoVFX(creature);
             SetLocalLocation(creature, "HOME_LOCATION", GetLocation(creature));

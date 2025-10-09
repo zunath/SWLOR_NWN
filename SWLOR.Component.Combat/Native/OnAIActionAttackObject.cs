@@ -480,7 +480,7 @@ namespace SWLOR.Component.Combat.Native
                                             pCreature.SetLockOrientationToObject(oidTarget);
 
                                             // Process the attack (delay already checked at function start)
-                                            var isParalyzed = _combatService.HandleParalyze(pCreature.m_idSelf);
+                                            var isParalyzed = _combatService.IsParalyzed(pCreature.m_idSelf);
 
                                             if (isParalyzed)
                                             {

@@ -15,7 +15,6 @@ namespace SWLOR.Component.Migration.Definitions.PlayerMigration
         public _11_RemoveMobility(
             ILogger logger,
             IDatabaseService database,
-            IStatService statService,
             IStatCalculationService statCalculationService,
             ISkillService skillService,
             ICombatService combatService,
@@ -26,7 +25,6 @@ namespace SWLOR.Component.Migration.Definitions.PlayerMigration
             : base(
                 logger, 
                 database, 
-                statService, 
                 statCalculationService, 
                 skillService, 
                 combatService, 
@@ -44,3 +42,5 @@ namespace SWLOR.Component.Migration.Definitions.PlayerMigration
         }
     }
 }
+
+

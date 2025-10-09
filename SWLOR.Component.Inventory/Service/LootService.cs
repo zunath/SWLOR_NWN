@@ -33,7 +33,6 @@ namespace SWLOR.Component.Inventory.Service
             // Initialize lazy services
             _random = new Lazy<IRandomService>(() => _serviceProvider.GetRequiredService<IRandomService>());
             _perkService = new Lazy<IPerkService>(() => _serviceProvider.GetRequiredService<IPerkService>());
-            _statService = new Lazy<IStatService>(() => _serviceProvider.GetRequiredService<IStatService>());
             _statCalculationService = new Lazy<IStatCalculationService>(() => _serviceProvider.GetRequiredService<IStatCalculationService>());
             _beastMasteryService = new Lazy<IBeastMasteryService>(() => _serviceProvider.GetRequiredService<IBeastMasteryService>());
             _itemService = new Lazy<IItemService>(() => _serviceProvider.GetRequiredService<IItemService>());
@@ -42,14 +41,12 @@ namespace SWLOR.Component.Inventory.Service
         // Lazy-loaded services to break circular dependencies
         private readonly Lazy<IRandomService> _random;
         private readonly Lazy<IPerkService> _perkService;
-        private readonly Lazy<IStatService> _statService;
         private readonly Lazy<IStatCalculationService> _statCalculationService;
         private readonly Lazy<IBeastMasteryService> _beastMasteryService;
         private readonly Lazy<IItemService> _itemService;
         
         private IRandomService Random => _random.Value;
         private IPerkService PerkService => _perkService.Value;
-        private IStatService StatService => _statService.Value;
         private IStatCalculationService StatCalculationService => _statCalculationService.Value;
         private IBeastMasteryService BeastMasteryService => _beastMasteryService.Value;
         private IItemService ItemService => _itemService.Value;

@@ -44,7 +44,7 @@ namespace SWLOR.Component.Combat.Service
             // Initialize lazy services
             _skillService = new Lazy<ISkillService>(() => _serviceProvider.GetRequiredService<ISkillService>());
             _itemService = new Lazy<IItemService>(() => _serviceProvider.GetRequiredService<IItemService>());
-            _statService = new Lazy<IStatService>(() => _serviceProvider.GetRequiredService<IStatService>());
+
             _statCalculationService = new Lazy<IStatCalculationService>(() => _serviceProvider.GetRequiredService<IStatCalculationService>());
             _beastMastery = new Lazy<IBeastMasteryService>(() => _serviceProvider.GetRequiredService<IBeastMasteryService>());
             _spaceService = new Lazy<ISpaceService>(() => _serviceProvider.GetRequiredService<ISpaceService>());
@@ -53,14 +53,14 @@ namespace SWLOR.Component.Combat.Service
         // Lazy-loaded services to break circular dependencies
         private readonly Lazy<ISkillService> _skillService;
         private readonly Lazy<IItemService> _itemService;
-        private readonly Lazy<IStatService> _statService;
+
         private readonly Lazy<IStatCalculationService> _statCalculationService;
         private readonly Lazy<IBeastMasteryService> _beastMastery;
         private readonly Lazy<ISpaceService> _spaceService;
         
         private ISkillService SkillService => _skillService.Value;
         private IItemService ItemService => _itemService.Value;
-        private IStatService StatService => _statService.Value;
+
         private IStatCalculationService StatCalculationService => _statCalculationService.Value;
         private IBeastMasteryService BeastMastery => _beastMastery.Value;
         private ISpaceService SpaceService => _spaceService.Value;
@@ -404,3 +404,6 @@ namespace SWLOR.Component.Combat.Service
         }
     }
 }
+
+
+

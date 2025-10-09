@@ -16,7 +16,6 @@ namespace SWLOR.Component.Migration.Definitions.PlayerMigration
         public _5_UpdatePerks(
             ILogger logger,
             IDatabaseService database,
-            IStatService statService,
             IStatCalculationService statCalculationService,
             ISkillService skillService,
             ICombatService combatService,
@@ -27,7 +26,6 @@ namespace SWLOR.Component.Migration.Definitions.PlayerMigration
             : base(
                 logger, 
                 database, 
-                statService, 
                 statCalculationService, 
                 skillService, 
                 combatService, 
@@ -41,10 +39,7 @@ namespace SWLOR.Component.Migration.Definitions.PlayerMigration
         public override int Version => 5;
         public override void Migrate(uint player)
         {
-            var rightHandWeapon = GetItemInSlot(InventorySlotType.RightHand, player);
-
             CreaturePlugin.RemoveFeat(player, FeatType.RapidShot);
-            StatService.ApplyAttacksPerRound(player, rightHandWeapon);
 
             var innerStrength = PerkService.GetPerkLevel(player, PerkType.InnerStrength);
             if (innerStrength > 0)
@@ -58,3 +53,5 @@ namespace SWLOR.Component.Migration.Definitions.PlayerMigration
         }
     }
 }
+
+

@@ -9,5 +9,6 @@
         void ApplyCharacterWillpower(uint creature);
         void ApplyCharacterAgility(uint creature);
         void ApplyCharacterSocial(uint creature);
+        void ApplyNPCStats(uint npc);
     }
 }

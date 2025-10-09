@@ -30,7 +30,7 @@ namespace SWLOR.Component.Ability.Definitions.OneHanded
         private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
         private IAbilityService AbilityService => _serviceProvider.GetRequiredService<IAbilityService>();
         private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
-        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
+
         private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
         private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
 
@@ -166,3 +166,4 @@ namespace SWLOR.Component.Ability.Definitions.OneHanded
         }
     }
 }
+

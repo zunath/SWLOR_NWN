@@ -12,16 +12,14 @@ namespace SWLOR.Component.Character.Feature
     public class PlayerTemporaryEffects
     {
         private readonly IDatabaseService _db;
-        private readonly IServiceProvider _serviceProvider;
         private readonly ICreaturePluginService _creaturePlugin;
         
-        // Lazy-loaded services to break circular dependencies
-        private IStatService StatService => _serviceProvider.GetRequiredService<IStatService>();
 
-        public PlayerTemporaryEffects(IDatabaseService db, IServiceProvider serviceProvider, ICreaturePluginService creaturePlugin)
+        public PlayerTemporaryEffects(
+            IDatabaseService db, 
+            ICreaturePluginService creaturePlugin)
         {
             _db = db;
-            _serviceProvider = serviceProvider;
             _creaturePlugin = creaturePlugin;
         }
 
@@ -35,7 +33,6 @@ namespace SWLOR.Component.Character.Feature
             ApplyCutsceneGhostToPlayer(player);
             ApplyHeight(player);
             RemoveImmobility(player);
-            ReapplyBAB(player);
             ReapplySpeed(player);
         }
 
@@ -64,10 +61,6 @@ namespace SWLOR.Component.Character.Feature
             }
         }
 
-        private void ReapplyBAB(uint player)
-        {
-            StatService.ApplyAttacksPerRound(player, GetItemInSlot(InventorySlotType.RightHand, player));
-        }
 
         private void ReapplySpeed(uint player)
         {

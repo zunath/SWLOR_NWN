@@ -44,7 +44,7 @@ namespace SWLOR.Component.Character.Service
             _characterStatService = characterStatService;
             
             // Initialize lazy services
-            _statService = new Lazy<IStatService>(() => _serviceProvider.GetRequiredService<IStatService>());
+
             _skillService = new Lazy<ISkillService>(() => _serviceProvider.GetRequiredService<ISkillService>());
             _migrationService = new Lazy<IMigrationService>(() => _serviceProvider.GetRequiredService<IMigrationService>());
             _raceService = new Lazy<IRaceService>(() => _serviceProvider.GetRequiredService<IRaceService>());
@@ -53,14 +53,13 @@ namespace SWLOR.Component.Character.Service
         }
 
         // Lazy-loaded services to break circular dependencies
-        private readonly Lazy<IStatService> _statService;
+
         private readonly Lazy<ISkillService> _skillService;
         private readonly Lazy<IMigrationService> _migrationService;
         private readonly Lazy<IRaceService> _raceService;
         private readonly Lazy<ICharacterResourceService> _characterResourceService;
         private readonly Lazy<IStatCalculationService> _statCalculationService;
 
-        private IStatService StatService => _statService.Value;
         private ISkillService SkillService => _skillService.Value;
         private IMigrationService MigrationService => _migrationService.Value;
         private IRaceService RaceService => _raceService.Value;
@@ -447,3 +446,6 @@ namespace SWLOR.Component.Character.Service
 
     }
 }
+
+
+

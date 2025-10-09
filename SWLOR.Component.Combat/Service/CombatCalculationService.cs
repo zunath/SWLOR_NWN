@@ -31,6 +31,9 @@ namespace SWLOR.Component.Combat.Service
             uint weapon,
             bool isCritical)
         {
+            if (GetPlotFlag(defender))
+                return 0;
+
             var weaponStat = _weaponStatService.LoadWeaponStat(weapon);
             var attackerAttack = _statCalculationService.CalculateAttack(
                 attacker, 

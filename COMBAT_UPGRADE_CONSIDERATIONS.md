@@ -52,6 +52,37 @@ This document tracks items that need to be considered and implemented for the co
   - Ensure new stat system properly handles ability recast reduction
   - Plan migration strategy for existing player data
 
+### 6. New Item Properties Implementation
+- **Task**: Add the new item properties introduced to the 2das and tlk
+- **Status**: Pending
+- **Details**:
+  - Identify all new item properties needed for the combat upgrade
+  - Add corresponding entries to the 2da files
+  - Add appropriate string references to the TLK file
+  - Ensure proper integration with the NWN item property system
+  - Update any code that references these new properties
+
+### 7. DMG Item Property Simplification
+- **Task**: Change DMG to be a single value, no sub-type. Migrate all existing items to this new single value.
+- **Status**: Pending
+- **Details**:
+  - Modify DMG item property to remove sub-type functionality
+  - Design new single-value DMG property structure
+  - Create migration script to convert existing DMG properties
+  - Update all code that handles DMG calculations
+  - Test compatibility with existing items and combat system
+
+### 8. Damage Type Item Property
+- **Task**: Add an item property which specifies the damage type (Fire, Ice, Force, Poison, etc.) to the 2das and tlk
+- **Status**: Pending
+- **Details**:
+  - Design new damage type item property structure
+  - Add damage type constants (Fire, Ice, Force, Poison, etc.) to the system
+  - Create corresponding 2da entries for the new property
+  - Add TLK string references for damage types
+  - Implement logic to apply damage type effects in combat
+  - Ensure compatibility with existing damage type handling code
+
 ## Implementation Notes
 
 ### Database Considerations

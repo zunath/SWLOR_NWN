@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Service
         /// sent to them during the possession.
         /// </summary>
         [NWNEventHandler(ScriptName.OnDMPossessBefore)]
-        [NWNEventHandler(ScriptName.OnDMPossessFullBefore)]
+        [NWNEventHandler(ScriptName.OnDMPossessFullPowerBefore)]
         public static void OnDMPossess()
         {
             var dm = OBJECT_SELF;

@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature
         /// When a player attempts to drop an item, prevent them from doing so and send a message to use the trash can.
         /// DMs are exempt from this rule.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnItemDropBefore)]
+        [NWNEventHandler(ScriptName.OnInputDropItemBefore)]
         public static void PreventItemDrops()
         {
             var player = OBJECT_SELF;

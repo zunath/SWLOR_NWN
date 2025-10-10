@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Feature
     public static class PlayerStatusWindow
     {
 
-        [NWNEventHandler(ScriptName.OnItemEquipBefore)]
+        [NWNEventHandler(ScriptName.OnSWLORItemEquipValidBefore)]
         public static void PlayerEquipItem()
         {
             var player = OBJECT_SELF;

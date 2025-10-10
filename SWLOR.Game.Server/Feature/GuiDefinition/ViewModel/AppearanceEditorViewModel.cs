@@ -84,7 +84,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         [NWNEventHandler(ScriptName.OnDMPossessBefore)]
-        [NWNEventHandler(ScriptName.OnDMPossessFullBefore)]
+        [NWNEventHandler(ScriptName.OnDMPossessFullPowerBefore)]
         public static void CloseAppearanceWindowOnPossessionBefore()
         {
             var dm = OBJECT_SELF;

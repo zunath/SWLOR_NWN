@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     {
         private const int MaxNotes = 50;
 
-        [NWNEventHandler(ScriptName.OnExamineBefore)]
+        [NWNEventHandler(ScriptName.OnExamineObjectBefore)]
         public static void ExaminePlayer()
         {
             var dm = OBJECT_SELF;

@@ -53,7 +53,13 @@ namespace SWLOR.Component.Character.Service
                         _characterStatService.GetStat(creature, StatType.MaxHP) +
                         effects.GetStat(StatType.MaxHP);
 
-            if (!GetIsPC(creature))
+            if (GetIsPC(creature))
+            {
+                const int MaxPCHP = 10200;
+                if (maxHP > MaxPCHP)
+                    maxHP = MaxPCHP;
+            }
+            else
             {
                 const int MaxNPCHP = 30000;
                 if (maxHP > MaxNPCHP)
@@ -72,10 +78,15 @@ namespace SWLOR.Component.Character.Service
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
             var modifier = _characterStatService.GetStat(creature, StatType.Willpower) * 10;
 
-            return BaseFP +
-                   modifier +
-                   _characterStatService.GetStat(creature, StatType.MaxFP) +
-                   effects.GetStat(StatType.MaxFP);
+            var maxFP = BaseFP +
+                        modifier +
+                        _characterStatService.GetStat(creature, StatType.MaxFP) +
+                        effects.GetStat(StatType.MaxFP);
+
+            if (maxFP > 9999)
+                maxFP = 9999;
+
+            return maxFP;
         }
         /// <inheritdoc />
         public int CalculateMaxSTM(uint creature)
@@ -83,10 +94,15 @@ namespace SWLOR.Component.Character.Service
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
             var modifier = _characterStatService.GetStat(creature, StatType.Perception) * 10;
 
-            return BaseSTM +
-                   modifier +
-                   _characterStatService.GetStat(creature, StatType.MaxSTM) +
-                   effects.GetStat(StatType.MaxSTM);
+            var maxSTM = BaseSTM +
+                         modifier +
+                         _characterStatService.GetStat(creature, StatType.MaxSTM) +
+                         effects.GetStat(StatType.MaxSTM);
+
+            if (maxSTM > 999)
+                maxSTM = 999;
+
+            return maxSTM;
         }
 
         /// <inheritdoc />
@@ -109,7 +125,12 @@ namespace SWLOR.Component.Character.Service
             var hpRegen = _characterStatService.GetStat(creature, StatType.HPRegen) +
                           effects.GetStat(StatType.HPRegen);
             var vitalityBonus = _characterStatService.GetStat(creature, StatType.Vitality) * 4;
-            return hpRegen + vitalityBonus;
+            var totalHPRegen = hpRegen + vitalityBonus;
+
+            if (totalHPRegen > 999)
+                totalHPRegen = 999;
+
+            return totalHPRegen;
         }
 
         /// <inheritdoc />
@@ -120,7 +141,12 @@ namespace SWLOR.Component.Character.Service
             var fpRegen = _characterStatService.GetStat(creature, StatType.FPRegen) +
                           effects.GetStat(StatType.FPRegen);
             var vitalityBonus = _characterStatService.GetStat(creature, StatType.Vitality) / 2;
-            return 1 + fpRegen + vitalityBonus;
+            var totalFPRegen = 1 + fpRegen + vitalityBonus;
+
+            if (totalFPRegen > 999)
+                totalFPRegen = 999;
+
+            return totalFPRegen;
         }
 
         /// <inheritdoc />
@@ -131,7 +157,12 @@ namespace SWLOR.Component.Character.Service
             var stmRegen = _characterStatService.GetStat(creature, StatType.STMRegen) +
                            effects.GetStat(StatType.STMRegen);
             var vitalityBonus = _characterStatService.GetStat(creature, StatType.Vitality) / 2;
-            return 1 + stmRegen + vitalityBonus;
+            var totalSTMRegen = 1 + stmRegen + vitalityBonus;
+
+            if (totalSTMRegen > 999)
+                totalSTMRegen = 999;
+
+            return totalSTMRegen;
         }
 
         /// <inheritdoc />
@@ -156,7 +187,12 @@ namespace SWLOR.Component.Character.Service
             var bonus = _characterStatService.GetStat(creature, StatType.Defense) +
                         effects.GetStat(StatType.Defense);
 
-            return CalculateDefense(skill, ability, bonus);
+            var defense = CalculateDefense(skill, ability, bonus);
+
+            if (defense > 9999)
+                defense = 9999;
+
+            return defense;
         }
 
         /// <inheritdoc />
@@ -168,7 +204,12 @@ namespace SWLOR.Component.Character.Service
             var bonus = _characterStatService.GetStat(creature, StatType.Evasion) +
                         effects.GetStat(StatType.Evasion);
 
-            return CalculateEvasion(skill, ability, bonus);
+            var evasion = CalculateEvasion(skill, ability, bonus);
+
+            if (evasion > 999)
+                evasion = 999;
+
+            return evasion;
         }
 
         /// <inheritdoc />
@@ -184,7 +225,12 @@ namespace SWLOR.Component.Character.Service
                                                                StatType.Social);
             var bonus = _characterStatService.GetStat(creature, StatType.Accuracy) + effects.GetStat(StatType.Accuracy);
 
-            return CalculateAccuracy(skill, ability, bonus);
+            var accuracy = CalculateAccuracy(skill, ability, bonus);
+
+            if (accuracy > 999)
+                accuracy = 999;
+
+            return accuracy;
         }
 
         /// <inheritdoc />
@@ -200,7 +246,12 @@ namespace SWLOR.Component.Character.Service
                                                                StatType.Social);
             var bonus = _characterStatService.GetStat(creature, StatType.Attack) + effects.GetStat(StatType.Attack);
 
-            return CalculateAttack(skill, ability, bonus);
+            var attack = CalculateAttack(skill, ability, bonus);
+
+            if (attack > 999)
+                attack = 999;
+
+            return attack;
         }
 
         /// <inheritdoc />
@@ -212,7 +263,12 @@ namespace SWLOR.Component.Character.Service
             var bonus = _characterStatService.GetStat(creature, StatType.ForceAttack) +
                         effects.GetStat(StatType.ForceAttack);
 
-            return 8 + (2 * skill) + ability + bonus;
+            var forceAttack = 8 + (2 * skill) + ability + bonus;
+
+            if (forceAttack > 999)
+                forceAttack = 999;
+
+            return forceAttack;
         }
 
         public int CalculateAttribute(uint creature, AbilityType ability)
@@ -252,7 +308,12 @@ namespace SWLOR.Component.Character.Service
                     break;
             }
 
-            return GetAbilityModifier(ability, creature);
+            var savingThrow = GetAbilityModifier(ability, creature);
+
+            if (savingThrow > 50)
+                savingThrow = 50;
+
+            return savingThrow;
         }
 
         /// <inheritdoc />
@@ -260,7 +321,12 @@ namespace SWLOR.Component.Character.Service
         {
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
 
-            return _characterStatService.GetStat(creature, StatType.Might) + effects.GetStat(StatType.Might);
+            var might = _characterStatService.GetStat(creature, StatType.Might) + effects.GetStat(StatType.Might);
+
+            if (might > 100)
+                might = 100;
+
+            return might;
         }
 
         /// <inheritdoc />
@@ -268,7 +334,12 @@ namespace SWLOR.Component.Character.Service
         {
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
 
-            return _characterStatService.GetStat(creature, StatType.Perception) + effects.GetStat(StatType.Perception);
+            var perception = _characterStatService.GetStat(creature, StatType.Perception) + effects.GetStat(StatType.Perception);
+
+            if (perception > 100)
+                perception = 100;
+
+            return perception;
         }
 
         /// <inheritdoc />
@@ -276,7 +347,12 @@ namespace SWLOR.Component.Character.Service
         {
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
 
-            return _characterStatService.GetStat(creature, StatType.Vitality) + effects.GetStat(StatType.Vitality);
+            var vitality = _characterStatService.GetStat(creature, StatType.Vitality) + effects.GetStat(StatType.Vitality);
+
+            if (vitality > 100)
+                vitality = 100;
+
+            return vitality;
         }
 
         /// <inheritdoc />
@@ -284,7 +360,12 @@ namespace SWLOR.Component.Character.Service
         {
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
 
-            return _characterStatService.GetStat(creature, StatType.Agility) + effects.GetStat(StatType.Agility);
+            var agility = _characterStatService.GetStat(creature, StatType.Agility) + effects.GetStat(StatType.Agility);
+
+            if (agility > 100)
+                agility = 100;
+
+            return agility;
         }
 
         /// <inheritdoc />
@@ -292,7 +373,12 @@ namespace SWLOR.Component.Character.Service
         {
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
 
-            return _characterStatService.GetStat(creature, StatType.Willpower) + effects.GetStat(StatType.Willpower);
+            var willpower = _characterStatService.GetStat(creature, StatType.Willpower) + effects.GetStat(StatType.Willpower);
+
+            if (willpower > 100)
+                willpower = 100;
+
+            return willpower;
         }
 
         /// <inheritdoc />
@@ -300,7 +386,12 @@ namespace SWLOR.Component.Character.Service
         {
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
 
-            return _characterStatService.GetStat(creature, StatType.Social) + effects.GetStat(StatType.Social);
+            var social = _characterStatService.GetStat(creature, StatType.Social) + effects.GetStat(StatType.Social);
+
+            if (social > 100)
+                social = 100;
+
+            return social;
         }
 
         /// <inheritdoc />
@@ -308,7 +399,12 @@ namespace SWLOR.Component.Character.Service
         {
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
 
-            return _characterStatService.GetStat(creature, StatType.ShieldDeflection) + effects.GetStat(StatType.ShieldDeflection);
+            var shieldDeflection = _characterStatService.GetStat(creature, StatType.ShieldDeflection) + effects.GetStat(StatType.ShieldDeflection);
+
+            if (shieldDeflection > 75)
+                shieldDeflection = 75;
+
+            return shieldDeflection;
         }
 
         /// <inheritdoc />
@@ -316,7 +412,12 @@ namespace SWLOR.Component.Character.Service
         {
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
 
-            return _characterStatService.GetStat(creature, StatType.AttackDeflection) + effects.GetStat(StatType.AttackDeflection);
+            var attackDeflection = _characterStatService.GetStat(creature, StatType.AttackDeflection) + effects.GetStat(StatType.AttackDeflection);
+
+            if (attackDeflection > 50)
+                attackDeflection = 50;
+
+            return attackDeflection;
         }
 
         /// <inheritdoc />
@@ -342,7 +443,14 @@ namespace SWLOR.Component.Character.Service
         {
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
 
-            return _characterStatService.GetStat(creature, StatType.Enmity) + effects.GetStat(StatType.Enmity);
+            var enmity = _characterStatService.GetStat(creature, StatType.Enmity) + effects.GetStat(StatType.Enmity);
+
+            if (enmity < -50)
+                enmity = -50;
+            else if (enmity > 50)
+                enmity = 50;
+
+            return enmity;
         }
 
         /// <inheritdoc />
@@ -350,7 +458,12 @@ namespace SWLOR.Component.Character.Service
         {
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
 
-            return _characterStatService.GetStat(creature, StatType.Haste) + effects.GetStat(StatType.Haste);
+            var haste = _characterStatService.GetStat(creature, StatType.Haste) + effects.GetStat(StatType.Haste);
+
+            if (haste > 50)
+                haste = 50;
+
+            return haste;
         }
 
         /// <inheritdoc />
@@ -358,7 +471,12 @@ namespace SWLOR.Component.Character.Service
         {
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
 
-            return _characterStatService.GetStat(creature, StatType.Slow) + effects.GetStat(StatType.Slow);
+            var slow = _characterStatService.GetStat(creature, StatType.Slow) + effects.GetStat(StatType.Slow);
+
+            if (slow > 999)
+                slow = 999;
+
+            return slow;
         }
 
         /// <inheritdoc />
@@ -369,7 +487,12 @@ namespace SWLOR.Component.Character.Service
             var ability = _characterStatService.GetStat(creature, StatType.Willpower);
             var bonus = _characterStatService.GetStat(creature, StatType.ForceDefense) + effects.GetStat(StatType.ForceDefense);
 
-            return (int)(8 + (ability * 1.5f) + skill + bonus);
+            var forceDefense = (int)(8 + (ability * 1.5f) + skill + bonus);
+
+            if (forceDefense > 9999)
+                forceDefense = 9999;
+
+            return forceDefense;
         }
 
         /// <inheritdoc />
@@ -485,7 +608,12 @@ namespace SWLOR.Component.Character.Service
         {
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
 
-            return _characterStatService.GetStat(creature, StatType.PoisonResist) + effects.GetStat(StatType.PoisonResist);
+            var poisonResist = _characterStatService.GetStat(creature, StatType.PoisonResist) + effects.GetStat(StatType.PoisonResist);
+
+            if (poisonResist > 100)
+                poisonResist = 100;
+
+            return poisonResist;
         }
 
         /// <inheritdoc />
@@ -493,7 +621,12 @@ namespace SWLOR.Component.Character.Service
         {
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
 
-            return _characterStatService.GetStat(creature, StatType.FireResist) + effects.GetStat(StatType.FireResist);
+            var fireResist = _characterStatService.GetStat(creature, StatType.FireResist) + effects.GetStat(StatType.FireResist);
+
+            if (fireResist > 100)
+                fireResist = 100;
+
+            return fireResist;
         }
 
 
@@ -502,7 +635,12 @@ namespace SWLOR.Component.Character.Service
         {
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
 
-            return _characterStatService.GetStat(creature, StatType.IceResist) + effects.GetStat(StatType.IceResist);
+            var iceResist = _characterStatService.GetStat(creature, StatType.IceResist) + effects.GetStat(StatType.IceResist);
+
+            if (iceResist > 100)
+                iceResist = 100;
+
+            return iceResist;
         }
 
 
@@ -511,7 +649,12 @@ namespace SWLOR.Component.Character.Service
         {
             var effects = _statusEffectService.GetCreatureStatGroup(creature);
 
-            return _characterStatService.GetStat(creature, StatType.ElectricalResist) + effects.GetStat(StatType.ElectricalResist);
+            var electricalResist = _characterStatService.GetStat(creature, StatType.ElectricalResist) + effects.GetStat(StatType.ElectricalResist);
+
+            if (electricalResist > 100)
+                electricalResist = 100;
+
+            return electricalResist;
         }
 
         /// <inheritdoc />
@@ -605,7 +748,12 @@ namespace SWLOR.Component.Character.Service
             }
 
             var stat = _characterStatService.GetStat(creature, statType);
-            return stat + effects.GetStat(statType);
+            var control = stat + effects.GetStat(statType);
+
+            if (control > 999)
+                control = 999;
+
+            return control;
         }
 
         /// <inheritdoc />
@@ -633,7 +781,12 @@ namespace SWLOR.Component.Character.Service
             }
 
             var stat = _characterStatService.GetStat(creature, statType);
-            return stat + effects.GetStat(statType);
+            var craftsmanship = stat + effects.GetStat(statType);
+
+            if (craftsmanship > 999)
+                craftsmanship = 999;
+
+            return craftsmanship;
         }
 
         /// <inheritdoc />

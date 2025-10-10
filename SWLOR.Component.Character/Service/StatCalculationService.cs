@@ -85,6 +85,8 @@ namespace SWLOR.Component.Character.Service
 
             if (maxFP > 9999)
                 maxFP = 9999;
+            else if (maxFP < 0)
+                maxFP = 0;
 
             return maxFP;
         }
@@ -101,6 +103,8 @@ namespace SWLOR.Component.Character.Service
 
             if (maxSTM > 999)
                 maxSTM = 999;
+            else if (maxSTM < 0)
+                maxSTM = 0;
 
             return maxSTM;
         }
@@ -129,6 +133,8 @@ namespace SWLOR.Component.Character.Service
 
             if (totalHPRegen > 999)
                 totalHPRegen = 999;
+            else if (totalHPRegen < 0)
+                totalHPRegen = 0;
 
             return totalHPRegen;
         }
@@ -145,6 +151,8 @@ namespace SWLOR.Component.Character.Service
 
             if (totalFPRegen > 999)
                 totalFPRegen = 999;
+            else if (totalFPRegen < 0)
+                totalFPRegen = 0;
 
             return totalFPRegen;
         }
@@ -161,6 +169,8 @@ namespace SWLOR.Component.Character.Service
 
             if (totalSTMRegen > 999)
                 totalSTMRegen = 999;
+            else if (totalSTMRegen < 0)
+                totalSTMRegen = 0;
 
             return totalSTMRegen;
         }
@@ -174,6 +184,8 @@ namespace SWLOR.Component.Character.Service
                                    effects.GetStat(StatType.RecastReduction)) * 0.01f;
             if (recastReduction > 0.5f)
                 recastReduction = 0.5f;
+            else if (recastReduction < 0.0f)
+                recastReduction = 0.0f;
 
             return recastReduction;
         }
@@ -191,6 +203,8 @@ namespace SWLOR.Component.Character.Service
 
             if (defense > 9999)
                 defense = 9999;
+            else if (defense < 0)
+                defense = 0;
 
             return defense;
         }
@@ -208,6 +222,8 @@ namespace SWLOR.Component.Character.Service
 
             if (evasion > 999)
                 evasion = 999;
+            else if (evasion < 0)
+                evasion = 0;
 
             return evasion;
         }
@@ -229,6 +245,8 @@ namespace SWLOR.Component.Character.Service
 
             if (accuracy > 999)
                 accuracy = 999;
+            else if (accuracy < 0)
+                accuracy = 0;
 
             return accuracy;
         }
@@ -250,6 +268,8 @@ namespace SWLOR.Component.Character.Service
 
             if (attack > 999)
                 attack = 999;
+            else if (attack < 0)
+                attack = 0;
 
             return attack;
         }
@@ -267,6 +287,8 @@ namespace SWLOR.Component.Character.Service
 
             if (forceAttack > 999)
                 forceAttack = 999;
+            else if (forceAttack < 0)
+                forceAttack = 0;
 
             return forceAttack;
         }
@@ -312,6 +334,8 @@ namespace SWLOR.Component.Character.Service
 
             if (savingThrow > 50)
                 savingThrow = 50;
+            else if (savingThrow < 0)
+                savingThrow = 0;
 
             return savingThrow;
         }
@@ -403,6 +427,8 @@ namespace SWLOR.Component.Character.Service
 
             if (shieldDeflection > 75)
                 shieldDeflection = 75;
+            else if (shieldDeflection < 0)
+                shieldDeflection = 0;
 
             return shieldDeflection;
         }
@@ -416,6 +442,8 @@ namespace SWLOR.Component.Character.Service
 
             if (attackDeflection > 50)
                 attackDeflection = 50;
+            else if (attackDeflection < 0)
+                attackDeflection = 0;
 
             return attackDeflection;
         }
@@ -462,6 +490,8 @@ namespace SWLOR.Component.Character.Service
 
             if (haste > 50)
                 haste = 50;
+            else if (haste < 0)
+                haste = 0;
 
             return haste;
         }
@@ -475,6 +505,8 @@ namespace SWLOR.Component.Character.Service
 
             if (slow > 999)
                 slow = 999;
+            else if (slow < 0)
+                slow = 0;
 
             return slow;
         }
@@ -491,6 +523,8 @@ namespace SWLOR.Component.Character.Service
 
             if (forceDefense > 9999)
                 forceDefense = 9999;
+            else if (forceDefense < 0)
+                forceDefense = 0;
 
             return forceDefense;
         }
@@ -511,6 +545,8 @@ namespace SWLOR.Component.Character.Service
             var paralysis = _characterStatService.GetStat(creature, StatType.Paralysis) + effects.GetStat(StatType.Paralysis);
             if (paralysis > 75)
                 paralysis = 75;
+            else if (paralysis < 0)
+                paralysis = 0;
 
             return paralysis;
         }
@@ -612,6 +648,8 @@ namespace SWLOR.Component.Character.Service
 
             if (poisonResist > 100)
                 poisonResist = 100;
+            else if (poisonResist < 0)
+                poisonResist = 0;
 
             return poisonResist;
         }
@@ -625,6 +663,8 @@ namespace SWLOR.Component.Character.Service
 
             if (fireResist > 100)
                 fireResist = 100;
+            else if (fireResist < 0)
+                fireResist = 0;
 
             return fireResist;
         }
@@ -639,6 +679,8 @@ namespace SWLOR.Component.Character.Service
 
             if (iceResist > 100)
                 iceResist = 100;
+            else if (iceResist < 0)
+                iceResist = 0;
 
             return iceResist;
         }
@@ -653,6 +695,8 @@ namespace SWLOR.Component.Character.Service
 
             if (electricalResist > 100)
                 electricalResist = 100;
+            else if (electricalResist < 0)
+                electricalResist = 0;
 
             return electricalResist;
         }
@@ -752,6 +796,8 @@ namespace SWLOR.Component.Character.Service
 
             if (control > 999)
                 control = 999;
+            else if (control < 0)
+                control = 0;
 
             return control;
         }
@@ -785,6 +831,8 @@ namespace SWLOR.Component.Character.Service
 
             if (craftsmanship > 999)
                 craftsmanship = 999;
+            else if (craftsmanship < 0)
+                craftsmanship = 0;
 
             return craftsmanship;
         }

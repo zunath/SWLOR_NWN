@@ -3,6 +3,8 @@ using SWLOR.Component.Space.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
+using SWLOR.Shared.Domain.Combat.Enums;
+using SWLOR.Component.Combat.Contracts;
 using SWLOR.Shared.Domain.Communication.Contracts;
 using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Skill.Enums;
@@ -19,11 +21,12 @@ namespace SWLOR.Component.Space.Definitions.ShipModuleDefinition
         
         // Lazy-loaded services to break circular dependencies
         private IRandomService Random => _serviceProvider.GetRequiredService<IRandomService>();
-        private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
         private ISpaceService SpaceService => _serviceProvider.GetRequiredService<ISpaceService>();
         private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
         private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
         private IMessagingService MessagingService => _serviceProvider.GetRequiredService<IMessagingService>();
+        private ICombatCalculationService CombatCalculationService => _serviceProvider.GetRequiredService<ICombatCalculationService>();
+        private ICombatMessagingService CombatMessagingService => _serviceProvider.GetRequiredService<ICombatMessagingService>();
 
         public LaserCannonBatteryModuleDefinition(IServiceProvider serviceProvider, IShipModuleBuilder builder)
         {
@@ -80,6 +83,13 @@ namespace SWLOR.Component.Space.Definitions.ShipModuleDefinition
                 var attack = SpaceService.GetShipAttack(activator, attackBonus);
 
                 var moduleDMG = dmg + moduleBonus;
+
+                // Determine attacker stat type (Willpower or Perception based on Intuitive Piloting feat)
+                var wil = GetAbilityScore(activator, AbilityType.Willpower);
+                var per = GetAbilityScore(activator, AbilityType.Perception);
+                var attackerStatType = (GetHasFeat(FeatType.IntuitivePiloting, activator) && wil > per)
+                    ? AbilityType.Willpower
+                    : AbilityType.Perception;
                 var missile = EffectVisualEffect(VisualEffectType.Mirv_StarWars_Bolt2);
 
                 for (var i = 0; i < 9; i++)
@@ -101,13 +111,14 @@ namespace SWLOR.Component.Space.Definitions.ShipModuleDefinition
                                     var nearbyDefenseBonus = nearbyShipStatus.ThermalDefense * 2;
                                     var nearbyDefense = SpaceService.GetShipDefense(nearbyTarget, nearbyDefenseBonus);
                                     var nearbyDefenderStat = GetAbilityScore(nearbyTarget, AbilityType.Vitality);
-                                    var damage = CombatService.CalculateDamage(
-                                        attack,
-                                        moduleDMG,
-                                        attackerStat,
-                                        nearbyDefense,
-                                        nearbyDefenderStat,
-                                        0);
+                                    var damage = CombatCalculationService.CalculateAbilityDamage(
+                        activator,
+                        target,
+                        moduleDMG,
+                        CombatDamageType.Thermal,
+                        SkillType.Piloting,
+                        attackerStatType,
+                        AbilityType.Vitality);
                                     var chanceToHit = SpaceService.CalculateChanceToHit(activator, nearbyTarget);
                                     var roll = Random.D100(1);
                                     var isHit = roll <= chanceToHit;
@@ -118,7 +129,7 @@ namespace SWLOR.Component.Space.Definitions.ShipModuleDefinition
                                     }
 
                                     var attackId = isHit ? 1 : 4;
-                                    var combatLogMessage = CombatService.BuildCombatLogMessage(activator, target, attackId, chanceToHit);
+                                    var combatLogMessage = CombatMessagingService.BuildCombatLogMessage(activator, target, attackId, chanceToHit);
                                     MessagingService.SendMessageNearbyToPlayers(nearbyTarget, combatLogMessage, 60f);
 
                                     EnmityService.ModifyEnmity(activator, nearbyTarget, damage);
@@ -133,3 +144,7 @@ namespace SWLOR.Component.Space.Definitions.ShipModuleDefinition
         }
     }
 }
+
+
+
+

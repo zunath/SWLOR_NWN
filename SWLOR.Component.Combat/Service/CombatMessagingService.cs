@@ -4,7 +4,7 @@ using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Component.Combat.Service
 {
-    internal class CombatMessagingService : ICombatMessagingService
+    public class CombatMessagingService : ICombatMessagingService
     {
         private readonly IMessagingService _messaging;
 

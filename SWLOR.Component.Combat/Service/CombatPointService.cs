@@ -21,6 +21,7 @@ namespace SWLOR.Component.Combat.Service
         private readonly IDatabaseService _db;
         private readonly IServiceProvider _serviceProvider;
         private readonly IEventsPluginService _eventsPlugin;
+        private readonly IWeaponStatService _weaponStatService;
         
         /// <summary>
         /// Tracks the combat points earned by players during combat.
@@ -35,11 +36,13 @@ namespace SWLOR.Component.Combat.Service
         public CombatPointService(
             IDatabaseService db,
             IServiceProvider serviceProvider,
-            IEventsPluginService eventsPlugin)
+            IEventsPluginService eventsPlugin,
+            IWeaponStatService weaponStatService)
         {
             _db = db;
             _serviceProvider = serviceProvider;
             _eventsPlugin = eventsPlugin;
+            _weaponStatService = weaponStatService;
             
             // Initialize lazy services
             _skillService = new Lazy<ISkillService>(() => _serviceProvider.GetRequiredService<ISkillService>());
@@ -78,7 +81,8 @@ namespace SWLOR.Component.Combat.Service
             var target = GetSpellTargetObject();
             if (GetIsPC(target) || GetIsDM(target)) return;
 
-            var skill = SkillService.GetSkillTypeByBaseItem(baseItemType);
+            var weaponStat = _weaponStatService.LoadWeaponStat(item);
+            var skill = weaponStat.Skill;
             if (skill == SkillType.Invalid) return;
             var playerId = GetObjectUUID(player);
             var dbPlayer = _db.Get<Player>(playerId);

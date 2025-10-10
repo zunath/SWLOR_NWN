@@ -4,6 +4,7 @@ using SWLOR.Component.Combat.EventHandlers;
 using SWLOR.Component.Combat.Feature;
 using SWLOR.Component.Combat.Service;
 using SWLOR.Shared.Domain.Combat.Contracts;
+using SWLOR.Shared.Events.Contracts;
 
 namespace SWLOR.Component.Combat.Infrastructure
 {
@@ -20,10 +21,10 @@ namespace SWLOR.Component.Combat.Infrastructure
         public static IServiceCollection AddCombatServices(this IServiceCollection services)
         {
             services.AddSingleton<IAttackOfOpportunityService, AttackOfOpportunityService>();
-            services.AddSingleton<ICombatService, CombatService>();
             services.AddSingleton<ICombatPointService, CombatPointService>();
             services.AddSingleton<IEnmityService, EnmityService>();
             services.AddSingleton<IDeathService, DeathService>();
+            services.AddSingleton<CombatEventHandler>();
 
             // Register feature classes
             services.AddSingleton<EquipmentStats>();

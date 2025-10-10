@@ -25,7 +25,7 @@ namespace SWLOR.Component.Ability.Definitions.Force
         }
 
         // Lazy-loaded services to break circular dependencies
-        private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
+        private ICombatCalculationService CombatCalculationService => _serviceProvider.GetRequiredService<ICombatCalculationService>();
 
         private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
         private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
@@ -45,7 +45,6 @@ namespace SWLOR.Component.Ability.Definitions.Force
         {
             var dmg = 0;
             var willBonus = GetAbilityScore(activator, AbilityType.Willpower);
-            var perBonus = GetAbilityScore(activator, AbilityType.Perception);
 
             switch (level)
             {
@@ -66,19 +65,10 @@ namespace SWLOR.Component.Ability.Definitions.Force
                     break;
             }
 
-            dmg += CombatService.GetAbilityDamageBonus(activator, SkillType.Force);
-
-            var attackerStat = GetAbilityScore(activator, AbilityType.Willpower);
-            var defense = _statCalculation.CalculateForceDefense(target);
-            var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-            var attack = _statCalculation.CalculateAttack(activator, AbilityType.Willpower, SkillType.Force);
-            var damage = CombatService.CalculateDamage(
-                attack,
-                dmg,
-                attackerStat,
-                defense,
-                defenderStat,
-                0);
+            var damage = CombatCalculationService.CalculateForceDamage(
+                activator,
+                target,
+                dmg);
             var delay = GetDistanceBetweenLocations(GetLocation(activator), targetLocation) / 25.0f;
 
             AssignCommand(activator, () => DoThrowRock(target, level));

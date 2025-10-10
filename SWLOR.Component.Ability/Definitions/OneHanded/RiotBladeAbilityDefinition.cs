@@ -8,6 +8,7 @@ using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
+using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Skill.Enums;
@@ -29,7 +30,7 @@ namespace SWLOR.Component.Ability.Definitions.OneHanded
 
         // Lazy-loaded services to break circular dependencies
         private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
-        private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
+        private ICombatCalculationService CombatCalculationService => _serviceProvider.GetRequiredService<ICombatCalculationService>();
 
         private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
         private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
@@ -77,15 +78,17 @@ namespace SWLOR.Component.Ability.Definitions.OneHanded
                     break;
             }
 
-            dmg += CombatService.GetAbilityDamageBonus(activator, SkillType.OneHanded);
-
             CombatPointService.AddCombatPoint(activator, target, SkillType.OneHanded, 3);
 
-            var might = GetAbilityScore(activator, AbilityType.Might);
-            var attack = _statCalculation.CalculateAttack(activator, AbilityType.Might, SkillType.OneHanded);
-            var defense = _statCalculation.CalculateDefense(target);
-            var vitality = GetAbilityModifier(AbilityType.Vitality, target);
-            var damage = CombatService.CalculateDamage(attack, dmg, might, defense, vitality, 0);
+            var damage = CombatCalculationService.CalculateAbilityDamage(
+                activator,
+                target,
+                dmg,
+                CombatDamageType.Physical,
+                SkillType.OneHanded,
+                AbilityType.Might,
+                AbilityType.Vitality
+            );
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
 
             AssignCommand(activator, () => ActionPlayAnimation(AnimationType.RiotBlade));

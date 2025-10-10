@@ -7,6 +7,7 @@ using SWLOR.Shared.Domain.Ability.Contracts;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
+using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Perk.Contracts;
 using SWLOR.Shared.Domain.Perk.Enums;
@@ -31,7 +32,7 @@ namespace SWLOR.Component.Ability.Definitions.Devices
         protected IRandomService Random => _serviceProvider.GetRequiredService<IRandomService>();
         protected IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
         protected IPerkService PerkService => _serviceProvider.GetRequiredService<IPerkService>();
-        protected ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
+        protected ICombatCalculationService CombatCalculationService => _serviceProvider.GetRequiredService<ICombatCalculationService>();
         protected ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
         protected IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
         protected IAbilityService AbilityService => _serviceProvider.GetRequiredService<IAbilityService>();
@@ -138,8 +139,7 @@ namespace SWLOR.Component.Ability.Definitions.Devices
 
             var attackerStat = GetAbilityScore(activator, AbilityType.Perception);
             var attack = _statCalculation.CalculateAttack(activator, AbilityType.Perception, SkillType.Devices);
-            var dmgBonus = CombatService.GetAbilityDamageBonus(activator, SkillType.Devices);
-            dmgBonus += attackerStat / 2;
+            var dmgBonus = attackerStat / 2;
 
             DelayCommand(delay, () =>
             {

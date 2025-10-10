@@ -36,7 +36,7 @@ namespace SWLOR.Component.Ability.Definitions.Devices
             var effect = EffectSlow();
             if (immobilizeDC > 0)
             {
-                var dc = CombatService.CalculateSavingThrowDC(activator, SavingThrowCategoryType.Fortitude, immobilizeDC);
+                var dc = immobilizeDC + _statCalculation.CalculateSavingThrow(activator, SavingThrowCategoryType.Fortitude);
                 var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
                 if (checkResult == SavingThrowResultType.Failed)
                 {

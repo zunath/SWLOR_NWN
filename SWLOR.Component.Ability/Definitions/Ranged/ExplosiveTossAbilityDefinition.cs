@@ -9,6 +9,7 @@ using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
+using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Skill.Enums;
@@ -30,7 +31,7 @@ namespace SWLOR.Component.Ability.Definitions.Ranged
 
         // Lazy-loaded services to break circular dependencies
         private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
-        private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
+        private ICombatCalculationService CombatCalculationService => _serviceProvider.GetRequiredService<ICombatCalculationService>();
 
         private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
         private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
@@ -76,10 +77,6 @@ namespace SWLOR.Component.Ability.Definitions.Ranged
                     break;
             }
 
-            dmg += CombatService.GetAbilityDamageBonus(activator, SkillType.Ranged);
-
-            var attack = _statCalculation.CalculateAttack(activator, AbilityType.Might, SkillType.Ranged);
-            var attackerStat = CombatService.GetPerkAdjustedAbilityScore(activator);
             var count = 0;
             var creature = GetFirstObjectInShape(ShapeType.Sphere, RadiusSize.Medium, GetLocation(target), true, ObjectType.Creature);
             while (GetIsObjectValid(creature) && count < 3)
@@ -87,15 +84,15 @@ namespace SWLOR.Component.Ability.Definitions.Ranged
                 if (GetDistanceBetween(target, creature) <= 3f)
                 {
 
-                    var defense = _statCalculation.CalculateDefense(creature);
-                    var defenderStat = GetAbilityScore(creature, AbilityType.Vitality);
-                    var damage = CombatService.CalculateDamage(
-                        attack,
-                        dmg, 
-                        attackerStat, 
-                        defense, 
-                        defenderStat, 
-                        0);
+                    var damage = CombatCalculationService.CalculateAbilityDamage(
+                        activator,
+                        creature,
+                        dmg,
+                        CombatDamageType.Physical,
+                        SkillType.Ranged,
+                        AbilityType.Might,
+                        AbilityType.Vitality
+                    );
 
                     var dTarget = creature;
                     DelayCommand(0.1f, () =>

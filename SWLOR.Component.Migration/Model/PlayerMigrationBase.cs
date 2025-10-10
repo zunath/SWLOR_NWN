@@ -5,6 +5,7 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
+using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Perk.Contracts;
@@ -19,7 +20,6 @@ namespace SWLOR.Component.Migration.Model
         protected readonly IDatabaseService Database;
         protected readonly IStatCalculationService StatCalculationService;
         protected readonly ISkillService SkillService;
-        protected readonly ICombatService CombatService;
         protected readonly IPerkService PerkService;
         protected readonly IItemService ItemService;
         protected readonly ICreaturePluginService CreaturePlugin;
@@ -30,7 +30,6 @@ namespace SWLOR.Component.Migration.Model
             IDatabaseService database,
             IStatCalculationService statCalculationService,
             ISkillService skillService,
-            ICombatService combatService,
             IPerkService perkService,
             IItemService itemService,
             ICreaturePluginService creaturePlugin,
@@ -40,7 +39,6 @@ namespace SWLOR.Component.Migration.Model
             Database = database;
             StatCalculationService = statCalculationService;
             SkillService = skillService;
-            CombatService = combatService;
             PerkService = perkService;
             ItemService = itemService;
             CreaturePlugin = creaturePlugin;
@@ -104,7 +102,7 @@ namespace SWLOR.Component.Migration.Model
                 dbPlayer.ForceAttack = 0;
 
                 // Defenses
-                foreach (var defense in CombatService.GetAllDamageTypes())
+                foreach (var defense in Enum.GetValues<CombatDamageType>())
                 {
                     dbPlayer.Defenses[defense] = 0;
                 }

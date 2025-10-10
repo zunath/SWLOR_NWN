@@ -5,6 +5,7 @@ using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
+using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Communication.Contracts;
 using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Skill.Enums;
@@ -28,7 +29,7 @@ namespace SWLOR.Component.Ability.Definitions.Force
         }
 
         // Lazy-loaded services to break circular dependencies
-        private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
+        private ICombatCalculationService CombatCalculationService => _serviceProvider.GetRequiredService<ICombatCalculationService>();
 
         private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
         private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
@@ -46,16 +47,12 @@ namespace SWLOR.Component.Ability.Definitions.Force
         private void Impact(uint activator, uint target, int dmg, int accDecrease, int tier, string effectTag, int dc)
         {
             var attackerStat = GetAbilityScore(activator, AbilityType.Willpower);
-            var defenderStat = GetAbilityScore(target, AbilityType.Willpower);
-            var combatService = CombatService;
             var messagingService = MessagingService;
             var enmityService = EnmityService;
             var combatPointService = CombatPointService;
 
-            var attack = _statCalculation.CalculateAttack(activator, AbilityType.Willpower, SkillType.Force);
-            var defense = _statCalculation.CalculateForceDefense(target);
             dmg += (attackerStat * ((tier -1) / 2)) + attackerStat;
-            var damage = combatService.CalculateDamage(attack, dmg, attackerStat, defense, defenderStat, 0);
+            var damage = CombatCalculationService.CalculateForceDamage(activator, target, dmg);
 
             if (HasMorePowerfulEffect(target, tier,
                     new(Tier1Tag, 1),
@@ -68,7 +65,7 @@ namespace SWLOR.Component.Ability.Definitions.Force
             {
                 RemoveEffectByTag(target, Tier1Tag, Tier2Tag, Tier3Tag);
 
-                dc = combatService.CalculateSavingThrowDC(activator, SavingThrowCategoryType.Will, dc);
+                dc += _statCalculation.CalculateSavingThrow(activator, SavingThrowCategoryType.Will);
                 var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
 
                 if (checkResult == SavingThrowResultType.Failed)

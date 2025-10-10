@@ -9,6 +9,7 @@ using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
+using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Skill.Enums;
@@ -30,7 +31,7 @@ namespace SWLOR.Component.Ability.Definitions.TwoHanded
 
         // Lazy-loaded services to break circular dependencies
         private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
-        private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
+        private ICombatCalculationService CombatCalculationService => _serviceProvider.GetRequiredService<ICombatCalculationService>();
 
         private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
         private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
@@ -75,8 +76,6 @@ namespace SWLOR.Component.Ability.Definitions.TwoHanded
                     break;
             }
 
-            dmg += CombatService.GetAbilityDamageBonus(activator, SkillType.TwoHanded);
-
             var count = 0;
             var creature = GetFirstObjectInShape(ShapeType.Sphere, RadiusSize.Large, GetLocation(activator), true, ObjectType.Creature);
             while (GetIsObjectValid(creature) && count < 3)
@@ -85,15 +84,17 @@ namespace SWLOR.Component.Ability.Definitions.TwoHanded
                 {
                     var attackerStat = GetAbilityScore(activator, AbilityType.Might);
                     var attack = _statCalculation.CalculateAttack(activator, AbilityType.Might, SkillType.TwoHanded);
-                    var defense = _statCalculation.CalculateDefense(target);
+                    var defense = _statCalculation.CalculateDefense(creature);
                     var defenderStat = GetAbilityScore(creature, AbilityType.Vitality);
-                    var damage = CombatService.CalculateDamage(
-                        attack,
+                    var damage = CombatCalculationService.CalculateAbilityDamage(
+                        activator,
+                        creature,
                         dmg,
-                        attackerStat,
-                        defense,
-                        defenderStat,
-                        0);
+                        CombatDamageType.Physical,
+                        SkillType.TwoHanded,
+                        AbilityType.Might,
+                        AbilityType.Vitality
+                    );
 
                     var dTarget = creature;
 

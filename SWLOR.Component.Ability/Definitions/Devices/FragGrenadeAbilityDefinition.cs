@@ -4,6 +4,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
 using SWLOR.Shared.Domain.Character.Contracts;
+using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Skill.Enums;
 
@@ -11,7 +12,6 @@ namespace SWLOR.Component.Ability.Definitions.Devices
 {
     public class FragGrenadeAbilityDefinition: ExplosiveBaseAbilityDefinition
     {
-
         public FragGrenadeAbilityDefinition(
             IServiceProvider serviceProvider,
             IStatCalculationService statCalculation)
@@ -33,23 +33,18 @@ namespace SWLOR.Component.Ability.Definitions.Devices
             if (GetFactionEqual(activator, target))
                 return;
 
-            dmg += CombatService.GetAbilityDamageBonus(activator, SkillType.Devices);
-
-            var attackerStat = GetAbilityScore(activator, AbilityType.Perception);
-            var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-            var attack = _statCalculation.CalculateAttack(activator, AbilityType.Perception, SkillType.Devices);
-            var defense = _statCalculation.CalculateDefense(target);
-            var damage = CombatService.CalculateDamage(
-                attack,
+            var damage = CombatCalculationService.CalculateAbilityDamage(
+                activator, 
+                target, 
                 dmg, 
-                attackerStat, 
-                defense, 
-                defenderStat, 
-                0);
+                CombatDamageType.Physical, 
+                SkillType.Devices, 
+                AbilityType.Perception, 
+                AbilityType.Vitality);
 
             if (dc > 0)
             {
-                dc = CombatService.CalculateSavingThrowDC(activator, SavingThrowCategoryType.Reflex, dc);
+                dc += _statCalculation.CalculateSavingThrow(activator, SavingThrowCategoryType.Reflex);
                 var checkResult = ReflexSave(target, dc, SavingThrowType.None, activator);
                 if (checkResult == SavingThrowResultType.Failed)
                 {
@@ -142,3 +137,4 @@ namespace SWLOR.Component.Ability.Definitions.Devices
         }
     }
 }
+

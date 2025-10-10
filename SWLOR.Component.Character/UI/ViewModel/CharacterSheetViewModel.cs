@@ -53,7 +53,6 @@ namespace SWLOR.Component.Character.UI.ViewModel
             // Initialize lazy services
             _skillService = new Lazy<ISkillService>(serviceProvider.GetRequiredService<ISkillService>);
             _itemService = new Lazy<IItemService>(serviceProvider.GetRequiredService<IItemService>);
-            _combatService = new Lazy<ICombatService>(serviceProvider.GetRequiredService<ICombatService>);
             _abilityService = new Lazy<IAbilityService>(serviceProvider.GetRequiredService<IAbilityService>);
             _spaceService = new Lazy<ISpaceService>(serviceProvider.GetRequiredService<ISpaceService>);
             _beastMasteryService = new Lazy<IBeastMasteryService>(serviceProvider.GetRequiredService<IBeastMasteryService>);
@@ -65,7 +64,6 @@ namespace SWLOR.Component.Character.UI.ViewModel
         // Lazy-loaded services to break circular dependencies
         private readonly Lazy<ISkillService> _skillService;
         private readonly Lazy<IItemService> _itemService;
-        private readonly Lazy<ICombatService> _combatService;
         private readonly Lazy<IAbilityService> _abilityService;
         private readonly Lazy<ISpaceService> _spaceService;
         private readonly Lazy<IBeastMasteryService> _beastMasteryService;
@@ -73,7 +71,6 @@ namespace SWLOR.Component.Character.UI.ViewModel
         
         private ISkillService SkillService => _skillService.Value;
         private IItemService ItemService => _itemService.Value;
-        private ICombatService CombatService => _combatService.Value;
         private IAbilityService AbilityService => _abilityService.Value;
         private ISpaceService SpaceService => _spaceService.Value;
         private IBeastMasteryService BeastMasteryService => _beastMasteryService.Value;

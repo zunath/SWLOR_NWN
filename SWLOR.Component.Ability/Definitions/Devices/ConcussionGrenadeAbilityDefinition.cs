@@ -7,6 +7,7 @@ using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
+using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Skill.Enums;
 
@@ -14,22 +15,12 @@ namespace SWLOR.Component.Ability.Definitions.Devices
 {
     public class ConcussionGrenadeAbilityDefinition : ExplosiveBaseAbilityDefinition
     {
-        private readonly IServiceProvider _serviceProvider;
-        private readonly IStatCalculationService _statCalculation;
-
         public ConcussionGrenadeAbilityDefinition(
             IServiceProvider serviceProvider,
             IStatCalculationService statCalculation)
             : base(serviceProvider, statCalculation)
         {
-            _serviceProvider = serviceProvider;
-            _statCalculation = statCalculation;
         }
-
-        // Lazy-loaded services to break circular dependencies
-        private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
-        private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
-        private IAbilityService AbilityService => _serviceProvider.GetRequiredService<IAbilityService>();
 
         public override Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
@@ -45,23 +36,18 @@ namespace SWLOR.Component.Ability.Definitions.Devices
             if (GetFactionEqual(activator, target))
                 return;
 
-            dmg += CombatService.GetAbilityDamageBonus(activator, SkillType.Devices);
-
-            var attackerStat = GetAbilityScore(activator, AbilityType.Perception);
-            var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-            var defense = _statCalculation.CalculateDefense(target);
-            var attack = _statCalculation.CalculateAttack(activator, AbilityType.Perception, SkillType.Devices);
-            var damage = CombatService.CalculateDamage(
-                attack,
-                dmg,
-                attackerStat, 
-                defense, 
-                defenderStat, 
-                0);
+            var damage = CombatCalculationService.CalculateAbilityDamage(
+                activator, 
+                target, 
+                dmg, 
+                CombatDamageType.Physical, 
+                SkillType.Devices, 
+                AbilityType.Perception, 
+                AbilityType.Vitality);
 
             if (dc > 0)
             {
-                dc = CombatService.CalculateSavingThrowDC(activator, SavingThrowCategoryType.Reflex, dc);
+                dc += _statCalculation.CalculateSavingThrow(activator, SavingThrowCategoryType.Reflex);
                 var checkResult = ReflexSave(target, dc, SavingThrowType.None, activator);
                 if (checkResult == SavingThrowResultType.Failed)
                 {
@@ -162,3 +148,4 @@ namespace SWLOR.Component.Ability.Definitions.Devices
         }
     }
 }
+

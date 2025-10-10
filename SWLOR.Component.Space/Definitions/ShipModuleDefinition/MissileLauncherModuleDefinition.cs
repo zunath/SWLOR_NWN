@@ -3,6 +3,8 @@ using SWLOR.Component.Space.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
+using SWLOR.Shared.Domain.Combat.Enums;
+using SWLOR.Component.Combat.Contracts;
 using SWLOR.Shared.Domain.Communication.Contracts;
 using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Skill.Enums;
@@ -19,11 +21,12 @@ namespace SWLOR.Component.Space.Definitions.ShipModuleDefinition
         
         // Lazy-loaded services to break circular dependencies
         private IRandomService Random => _serviceProvider.GetRequiredService<IRandomService>();
-        private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
         private ISpaceService SpaceService => _serviceProvider.GetRequiredService<ISpaceService>();
         private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
         private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
         private IMessagingService MessagingService => _serviceProvider.GetRequiredService<IMessagingService>();
+        private ICombatCalculationService CombatCalculationService => _serviceProvider.GetRequiredService<ICombatCalculationService>();
+        private ICombatMessagingService CombatMessagingService => _serviceProvider.GetRequiredService<ICombatMessagingService>();
 
         public MissileLauncherModuleDefinition(IServiceProvider serviceProvider, IShipModuleBuilder builder)
         {
@@ -63,20 +66,29 @@ namespace SWLOR.Component.Space.Definitions.ShipModuleDefinition
                 var defenseBonus = targetShipStatus.ExplosiveDefense * 2;
                 var defense = SpaceService.GetShipDefense(target, defenseBonus);
                 var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-                var damage = CombatService.CalculateDamage(
-                    attack,
+
+                // Determine attacker stat type (Willpower or Perception based on Intuitive Piloting feat)
+                var wil = GetAbilityScore(activator, AbilityType.Willpower);
+                var per = GetAbilityScore(activator, AbilityType.Perception);
+                var attackerStatType = (GetHasFeat(FeatType.IntuitivePiloting, activator) && wil > per)
+                    ? AbilityType.Willpower
+                    : AbilityType.Perception;
+
+                var damage = CombatCalculationService.CalculateAbilityDamage(
+                    activator,
+                    target,
                     dmg,
-                    attackerStat,
-                    defense,
-                    defenderStat,
-                    0);
+                    CombatDamageType.Explosive,
+                    SkillType.Piloting,
+                    attackerStatType,
+                    AbilityType.Vitality);
 
                 SpaceService.ApplyShipDamage(activator, target, damage);
                 EnmityService.ModifyEnmity(activator, target, damage);
             }
 
             var attackId = isHit ? 1 : 4;
-            var combatLogMessage = CombatService.BuildCombatLogMessage(activator, target, attackId, chanceToHit);
+            var combatLogMessage = CombatMessagingService.BuildCombatLogMessage(activator, target, attackId, chanceToHit);
             MessagingService.SendMessageNearbyToPlayers(target, combatLogMessage, 60f);
             CombatPointService.AddCombatPoint(activator, target, SkillType.Piloting);
         }
@@ -157,3 +169,7 @@ namespace SWLOR.Component.Space.Definitions.ShipModuleDefinition
         }
     }
 }
+
+
+
+

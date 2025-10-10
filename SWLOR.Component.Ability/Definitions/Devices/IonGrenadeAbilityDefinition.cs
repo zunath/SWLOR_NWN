@@ -4,6 +4,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
 using SWLOR.Shared.Domain.Character.Contracts;
+using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Skill.Enums;
 
@@ -33,19 +34,15 @@ namespace SWLOR.Component.Ability.Definitions.Devices
                 return;
 
             const float Duration = 6f;
-            dmg += CombatService.GetAbilityDamageBonus(activator, SkillType.Devices);
 
-            var attackerStat = GetAbilityScore(activator, AbilityType.Perception);
-            var attack = _statCalculation.CalculateAttack(activator, AbilityType.Perception, SkillType.Devices);
-            var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-            var defense = _statCalculation.CalculateDefense(target);
-            var damage = CombatService.CalculateDamage(
-                attack,
+            var damage = CombatCalculationService.CalculateAbilityDamage(
+                activator, 
+                target, 
                 dmg, 
-                attackerStat, 
-                defense, 
-                defenderStat, 
-                0);
+                CombatDamageType.Physical, 
+                SkillType.Devices, 
+                AbilityType.Perception, 
+                AbilityType.Vitality);
 
             var race = GetRacialType(target);
             if (dc > 0 &&
@@ -53,7 +50,7 @@ namespace SWLOR.Component.Ability.Definitions.Devices
                 race == RacialType.Droid ||
                 race == RacialType.Cyborg))
             {
-                dc = CombatService.CalculateSavingThrowDC(activator, SavingThrowCategoryType.Fortitude, dc);
+                dc += _statCalculation.CalculateSavingThrow(activator, SavingThrowCategoryType.Fortitude);
                 var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
                 if (checkResult == SavingThrowResultType.Failed)
                 {
@@ -164,3 +161,4 @@ namespace SWLOR.Component.Ability.Definitions.Devices
         }
     }
 }
+

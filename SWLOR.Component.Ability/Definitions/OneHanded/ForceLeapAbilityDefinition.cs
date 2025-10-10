@@ -7,6 +7,7 @@ using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
+using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Skill.Enums;
@@ -29,7 +30,7 @@ namespace SWLOR.Component.Ability.Definitions.OneHanded
         // Lazy-loaded services to break circular dependencies
         private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
         private IAbilityService AbilityService => _serviceProvider.GetRequiredService<IAbilityService>();
-        private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
+        private ICombatCalculationService CombatCalculationService => _serviceProvider.GetRequiredService<ICombatCalculationService>();
 
         private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
         private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
@@ -81,8 +82,6 @@ namespace SWLOR.Component.Ability.Definitions.OneHanded
                     break;
             }
 
-            dmg += CombatService.GetAbilityDamageBonus(activator, SkillType.OneHanded);
-
             const float Delay = 1.2f;
             ClearAllActions();
             AssignCommand(activator, () =>
@@ -100,17 +99,15 @@ namespace SWLOR.Component.Ability.Definitions.OneHanded
                 stat = AbilityType.Might;
             }
 
-            var attackerStat = CombatService.GetPerkAdjustedAbilityScore(activator);
-            var attack = _statCalculation.CalculateAttack(activator, stat, SkillType.OneHanded);
-            var defense = _statCalculation.CalculateDefense(target);
-            var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-            var damage = CombatService.CalculateDamage(
-                attack,
-                dmg, 
-                attackerStat, 
-                defense, 
-                defenderStat, 
-                0);
+            var damage = CombatCalculationService.CalculateAbilityDamage(
+                activator,
+                target,
+                dmg,
+                CombatDamageType.Physical,
+                SkillType.OneHanded,
+                stat,
+                AbilityType.Vitality
+            );
             var weapon = GetItemInSlot(InventorySlotType.RightHand, activator);
             var rightHandBaseItemType = GetBaseItemType(weapon);
             

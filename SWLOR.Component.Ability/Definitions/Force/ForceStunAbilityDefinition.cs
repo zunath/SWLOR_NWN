@@ -5,6 +5,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Ability.Contracts;
 using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
+using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Skill.Enums;
@@ -15,14 +16,17 @@ namespace SWLOR.Component.Ability.Definitions.Force
     {
         private const float AOESize = RadiusSize.Medium;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IStatCalculationService _statCalculationService;
 
-        public ForceStunAbilityDefinition(IServiceProvider serviceProvider)
+        public ForceStunAbilityDefinition(
+            IServiceProvider serviceProvider,
+            IStatCalculationService statCalculationService)
         {
             _serviceProvider = serviceProvider;
+            _statCalculationService = statCalculationService;
         }
 
         // Lazy-loaded services to break circular dependencies
-        private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
         private IAbilityService AbilityService => _serviceProvider.GetRequiredService<IAbilityService>();
         private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
         private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
@@ -38,7 +42,7 @@ namespace SWLOR.Component.Ability.Definitions.Force
 
         private void Impact(uint source, uint target)
         {
-            var dc = CombatService.CalculateSavingThrowDC(source, SavingThrowCategoryType.Will, 12);
+            var dc = 12 + _statCalculationService.CalculateSavingThrow(source, SavingThrowCategoryType.Will);
             const string EffectTag = "StatusEffectType.ForceStun";
             var checkResult = WillSave(target, dc, SavingThrowType.None, source);
             const float Duration = 6.1f;

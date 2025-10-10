@@ -3,6 +3,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
 using SWLOR.Shared.Domain.Character.Contracts;
+using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Skill.Enums;
 
@@ -26,7 +27,15 @@ namespace SWLOR.Component.Ability.Definitions.Devices
 
             var defense = _statCalculation.CalculateDefense(creature);
             var defenderStat = GetAbilityScore(creature, AbilityType.Vitality);
-            var damage = CombatService.CalculateDamage(attack, dmg, attackerStat, defense, defenderStat, 0);
+            var damage = CombatCalculationService.CalculateAbilityDamage(
+                OBJECT_SELF,
+                creature,
+                dmg,
+                CombatDamageType.Physical,
+                SkillType.Devices,
+                AbilityType.Perception,
+                AbilityType.Vitality
+            );
 
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Acid), creature);
         }

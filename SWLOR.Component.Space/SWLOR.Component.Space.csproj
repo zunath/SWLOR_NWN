@@ -9,6 +9,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\SWLOR.Component.Combat\SWLOR.Component.Combat.csproj" />
 		<ProjectReference Include="..\SWLOR.Shared.Abstractions\SWLOR.Shared.Abstractions.csproj" />
 		<ProjectReference Include="..\SWLOR.Shared.Caching\SWLOR.Shared.Caching.csproj" />
 		<ProjectReference Include="..\SWLOR.Shared.Core\SWLOR.Shared.Core.csproj" />

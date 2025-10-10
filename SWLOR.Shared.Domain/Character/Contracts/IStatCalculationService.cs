@@ -171,6 +171,8 @@ namespace SWLOR.Shared.Domain.Character.Contracts
         /// <returns>The attribute value</returns>
         int CalculateAttribute(uint creature, AbilityType attributeType);
 
+        int CalculateSavingThrow(uint creature, SavingThrowCategoryType type);
+
         /// <summary>
         /// Calculates the shield deflection rating for a creature.
         /// </summary>

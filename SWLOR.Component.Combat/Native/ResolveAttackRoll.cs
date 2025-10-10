@@ -2,10 +2,11 @@ using System.Runtime.InteropServices;
 using NWN.Native.API;
 using NWNX.NET;
 using SWLOR.Component.Combat.Contracts;
-using SWLOR.Component.Combat.Enums;
 using SWLOR.NWN.API.Contracts;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Infrastructure;
+using SWLOR.Shared.Domain.Combat.Contracts;
+using SWLOR.Shared.Domain.Combat.Enums;
 using ObjectType = SWLOR.NWN.API.NWScript.Enum.ObjectType;
 
 namespace SWLOR.Component.Combat.Native

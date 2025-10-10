@@ -6,6 +6,7 @@ using SWLOR.NWN.API.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Infrastructure;
+using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 using DamageType = NWN.Native.API.DamageType;
@@ -70,7 +71,7 @@ namespace SWLOR.Component.Combat.Native
                 }
 
                 var weaponStat = _weaponStatService.LoadWeaponStat(weapon);
-                var damage = _combatCalculationService.CalculateDamage(
+                var damage = _combatCalculationService.CalculatePhysicalDamage(
                     attacker,
                     defender,
                     weapon,

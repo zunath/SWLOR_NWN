@@ -5,6 +5,7 @@ using SWLOR.NWN.API.NWScript.Constants;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
+using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Skill.Enums;
@@ -14,14 +15,17 @@ namespace SWLOR.Component.Ability.Definitions.Force
     public class MindTrickAbilityDefinition : IAbilityListDefinition
     {
         private readonly IServiceProvider _serviceProvider;
+        private readonly IStatCalculationService _statCalculationService;
 
-        public MindTrickAbilityDefinition(IServiceProvider serviceProvider)
+        public MindTrickAbilityDefinition(
+            IServiceProvider serviceProvider,
+            IStatCalculationService statCalculationService)
         {
             _serviceProvider = serviceProvider;
+            _statCalculationService = statCalculationService;
         }
 
         // Lazy-loaded services to break circular dependencies
-        private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
         private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
         private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
 
@@ -57,7 +61,7 @@ namespace SWLOR.Component.Ability.Definitions.Force
                 return;
             }
 
-            var dc = CombatService.CalculateSavingThrowDC(activator, SavingThrowCategoryType.Will, 12);
+            var dc = 12 + _statCalculationService.CalculateSavingThrow(activator, SavingThrowCategoryType.Will);
             const string EffectTag = "StatusEffectType.MindTrick";
             var checkResult = WillSave(target, dc, SavingThrowType.None, activator);
 

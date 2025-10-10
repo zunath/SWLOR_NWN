@@ -2,6 +2,8 @@ using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Space.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Combat.Contracts;
+using SWLOR.Shared.Domain.Combat.Enums;
+using SWLOR.Component.Combat.Contracts;
 using SWLOR.Shared.Domain.Communication.Contracts;
 using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Skill.Enums;
@@ -87,3 +89,5 @@ namespace SWLOR.Component.Space.Definitions.ShipModuleDefinition
         }
     }
 }
+
+

@@ -1,6 +1,6 @@
 ﻿namespace SWLOR.Component.Combat.Contracts;
 
-internal interface ICombatMessagingService
+public interface ICombatMessagingService
 {
     /// <summary>
     /// Builds a combat log message based on the provided information.

@@ -6,6 +6,7 @@ using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
+using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Skill.Enums;
 
@@ -27,7 +28,7 @@ namespace SWLOR.Component.Ability.Definitions.NPC
         // Lazy-loaded services to break circular dependencies
         private IRandomService Random => _serviceProvider.GetRequiredService<IRandomService>();
 
-        private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
+        private ICombatCalculationService CombatCalculationService => _serviceProvider.GetRequiredService<ICombatCalculationService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
@@ -98,13 +99,15 @@ namespace SWLOR.Component.Ability.Definitions.NPC
                             var attack = _statCalculation.CalculateAttack(activator, AbilityType.Might, SkillType.Invalid);
                             var defense = _statCalculation.CalculateDefense(nearest);
                             var defenderStat = GetAbilityScore(nearest, AbilityType.Vitality);
-                            var damage = CombatService.CalculateDamage(
-                                attack,
+                            var damage = CombatCalculationService.CalculateAbilityDamage(
+                                activator,
+                                nearest,
                                 dmg,
-                                attackerStat,
-                                defense,
-                                defenderStat,
-                                0);
+                                CombatDamageType.Physical,
+                                SkillType.Invalid,
+                                AbilityType.Might,
+                                AbilityType.Vitality
+                            );
 
                             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Sonic), nearest);
                         }

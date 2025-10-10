@@ -88,7 +88,6 @@ namespace SWLOR.Component.Space.Service
             _areaService = new Lazy<IAreaService>(() => _serviceProvider.GetRequiredService<IAreaService>());
             _messagingService = new Lazy<IMessagingService>(() => _serviceProvider.GetRequiredService<IMessagingService>());
             _enmityService = new Lazy<IEnmityService>(() => _serviceProvider.GetRequiredService<IEnmityService>());
-            _combatService = new Lazy<ICombatService>(() => _serviceProvider.GetRequiredService<ICombatService>());
             _perkService = new Lazy<IPerkService>(() => _serviceProvider.GetRequiredService<IPerkService>());
             _statCalculationService = new Lazy<IStatCalculationService>(() => _serviceProvider.GetRequiredService<IStatCalculationService>());
         }
@@ -101,7 +100,6 @@ namespace SWLOR.Component.Space.Service
         private readonly Lazy<IAreaService> _areaService;
         private readonly Lazy<IMessagingService> _messagingService;
         private readonly Lazy<IEnmityService> _enmityService;
-        private readonly Lazy<ICombatService> _combatService;
         private readonly Lazy<IPerkService> _perkService;
         private readonly Lazy<IStatCalculationService> _statCalculationService;
         
@@ -112,7 +110,6 @@ namespace SWLOR.Component.Space.Service
         private IAreaService AreaService => _areaService.Value;
         private IMessagingService MessagingService => _messagingService.Value;
         private IEnmityService EnmityService => _enmityService.Value;
-        private ICombatService CombatService => _combatService.Value;
         private IPerkService PerkService => _perkService.Value;
         private IStatCalculationService StatCalculationService => _statCalculationService.Value;
 
@@ -1511,7 +1508,15 @@ namespace SWLOR.Component.Space.Service
             var attackerAccuracy = GetShipAccuracy(attacker);
             var defenderEvasion = GetShipEvasion(defender);
 
-            return CombatService.CalculateHitRate(attackerAccuracy, defenderEvasion, 0);
+            const int BaseHitRate = 75;
+            var hitRate = BaseHitRate + (int)Math.Floor((attackerAccuracy - defenderEvasion) / 2.0f);
+
+            if (hitRate < 20)
+                hitRate = 20;
+            else if (hitRate > 95)
+                hitRate = 95;
+
+            return hitRate;
         }
 
         /// <summary>

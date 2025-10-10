@@ -6,6 +6,7 @@ using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
+using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Skill.Enums;
@@ -27,7 +28,7 @@ namespace SWLOR.Component.Ability.Definitions.Ranged
 
         // Lazy-loaded services to break circular dependencies
         private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
-        private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
+        private ICombatCalculationService CombatCalculationService => _serviceProvider.GetRequiredService<ICombatCalculationService>();
 
         private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
         private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
@@ -72,26 +73,30 @@ namespace SWLOR.Component.Ability.Definitions.Ranged
                     break;
             }
 
-            dmg += CombatService.GetAbilityDamageBonus(activator, SkillType.Ranged);
-
             CombatPointService.AddCombatPoint(activator, target, SkillType.Ranged, 3);
 
             // First attack
-            var attackerStat = CombatService.GetPerkAdjustedAbilityScore(activator);
-            var attack = _statCalculation.CalculateAttack(activator, AbilityType.Perception, SkillType.Ranged);
-            var defense = _statCalculation.CalculateDefense(target);
-            var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-            var damage = CombatService.CalculateDamage(
-                attack, 
-                dmg, 
-                attackerStat, 
-                defense, 
-                defenderStat, 
-                0);
+            var damage = CombatCalculationService.CalculateAbilityDamage(
+                activator,
+                target,
+                dmg,
+                CombatDamageType.Physical,
+                SkillType.Ranged,
+                AbilityType.Perception,
+                AbilityType.Vitality
+            );
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Piercing), target);
 
             // Second attack
-            damage = CombatService.CalculateDamage(attack, dmg, attackerStat, defense, defenderStat, 0);
+            damage = CombatCalculationService.CalculateAbilityDamage(
+                activator,
+                target,
+                dmg,
+                CombatDamageType.Physical,
+                SkillType.Ranged,
+                AbilityType.Perception,
+                AbilityType.Vitality
+            );
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Piercing), target);
             AssignCommand(activator, () => ActionPlayAnimation(AnimationType.DoubleShot));
             AssignCommand(activator, () => ActionPlayAnimation(AnimationType.DoubleShot));

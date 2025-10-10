@@ -17,18 +17,16 @@ namespace SWLOR.Component.Migration.Definitions.PlayerMigration
             IDatabaseService database,
             IStatCalculationService statCalculationService,
             ISkillService skillService,
-            ICombatService combatService,
             IPerkService perkService,
             IItemService itemService,
             ICreaturePluginService creaturePlugin,
             IStatApplicationService statApplicationService)
             : base(
-                logger, 
-                database, 
-                statCalculationService, 
-                skillService, 
-                combatService, 
-                perkService, 
+                logger,
+                database,
+                statCalculationService,
+                skillService,
+                perkService,
                 itemService, 
                 creaturePlugin, 
                 statApplicationService)

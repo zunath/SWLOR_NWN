@@ -1,6 +1,6 @@
-﻿namespace SWLOR.Component.Combat.Enums
+﻿namespace SWLOR.Shared.Domain.Combat.Enums
 {
-    internal enum HitType
+    public enum HitType
     {
         Invalid = 0,
         Normal = 1,

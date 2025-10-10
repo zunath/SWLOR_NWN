@@ -5,6 +5,7 @@ using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
+using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Skill.Enums;
 
@@ -24,7 +25,7 @@ namespace SWLOR.Component.Ability.Definitions.Beasts
         }
 
         // Lazy-loaded services to break circular dependencies
-        private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
+        private ICombatCalculationService CombatCalculationService => _serviceProvider.GetRequiredService<ICombatCalculationService>();
         private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
@@ -40,22 +41,14 @@ namespace SWLOR.Component.Ability.Definitions.Beasts
 
         private void ImpactAction(uint activator, uint target, int dmg, int dc, int level)
         {
-            var beastmaster = GetMaster(activator);
-            var beastmasterStat = GetAbilityScore(beastmaster, AbilityType.Might) / 2;
-            var beastStat = GetAbilityScore(activator, AbilityType.Might) / 2;
-
-            var totalStat = beastmasterStat + beastStat;
-            var attack = _statCalculation.CalculateAttack(activator, AbilityType.Might, SkillType.Invalid);
-            var defense = _statCalculation.CalculateDefense(target);
-            var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-
-            var damage = CombatService.CalculateDamage(
-                attack,
+            var damage = CombatCalculationService.CalculateAbilityDamage(
+                activator,
+                target,
                 dmg,
-                totalStat,
-                defense,
-                defenderStat,
-                0
+                CombatDamageType.Physical,
+                SkillType.Invalid,
+                AbilityType.Might,
+                AbilityType.Vitality
             );
 
             AssignCommand(activator, () =>
@@ -64,7 +57,7 @@ namespace SWLOR.Component.Ability.Definitions.Beasts
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Com_Blood_Spark_Small), target);
             });
             
-            dc = CombatService.CalculateSavingThrowDC(activator, SavingThrowCategoryType.Fortitude, dc);
+            dc += _statCalculation.CalculateSavingThrow(activator, SavingThrowCategoryType.Fortitude);
             var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
             if (checkResult == SavingThrowResultType.Failed)
             {

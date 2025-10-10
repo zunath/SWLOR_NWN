@@ -6,6 +6,7 @@ using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
+using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Skill.Enums;
 
@@ -25,7 +26,7 @@ namespace SWLOR.Component.Ability.Definitions.Beasts
         }
 
         // Lazy-loaded services to break circular dependencies
-        private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
+        private ICombatCalculationService CombatCalculationService => _serviceProvider.GetRequiredService<ICombatCalculationService>();
 
         private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
 
@@ -64,13 +65,15 @@ namespace SWLOR.Component.Ability.Definitions.Beasts
                 {
                     var defense = _statCalculation.CalculateDefense(target);
                     var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-                    var damage = CombatService.CalculateDamage(
-                        attack,
+                    var damage = CombatCalculationService.CalculateAbilityDamage(
+                        activator,
+                        target,
                         dmg,
-                        totalStat,
-                        defense,
-                        defenderStat,
-                        0);
+                        CombatDamageType.Physical,
+                        SkillType.Invalid,
+                        AbilityType.Might,
+                        AbilityType.Vitality
+                    );
 
                     var eDMG = EffectDamage(damage, DamageType.Cold);
                     EnmityService.ModifyEnmity(activator, target, 220);
@@ -84,7 +87,7 @@ namespace SWLOR.Component.Ability.Definitions.Beasts
                             ApplyEffectToObject(DurationType.Instant, eDMG, targetCopy);
                         });
 
-                        dc = CombatService.CalculateSavingThrowDC(activator, SavingThrowCategoryType.Reflex, baseDC);
+                        dc += _statCalculation.CalculateSavingThrow(activator, SavingThrowCategoryType.Reflex);
                         var checkResult = ReflexSave(targetCopy, dc, SavingThrowType.None, activator);
                         if (checkResult == SavingThrowResultType.Failed)
                         {

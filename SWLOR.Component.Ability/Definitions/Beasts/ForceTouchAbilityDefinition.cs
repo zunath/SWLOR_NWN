@@ -24,7 +24,7 @@ namespace SWLOR.Component.Ability.Definitions.Beasts
         }
 
         // Lazy-loaded services to break circular dependencies
-        private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
+        private ICombatCalculationService CombatCalculationService => _serviceProvider.GetRequiredService<ICombatCalculationService>();
 
         private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
 
@@ -50,13 +50,10 @@ namespace SWLOR.Component.Ability.Definitions.Beasts
             var defense = _statCalculation.CalculateForceDefense(target);
             var defenderStat = GetAbilityScore(target, AbilityType.Willpower);
 
-            var damage = CombatService.CalculateDamage(
-                attack,
-                dmg,
-                totalStat,
-                defense,
-                defenderStat,
-                0
+            var damage = CombatCalculationService.CalculateForceDamage(
+                activator,
+                target,
+                dmg
             );
 
             AssignCommand(activator, () =>

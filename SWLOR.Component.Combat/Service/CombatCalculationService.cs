@@ -1,11 +1,12 @@
 ﻿using SWLOR.Component.Combat.Contracts;
-using SWLOR.Component.Combat.Enums;
-using SWLOR.Component.Combat.Model;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Character.Contracts;
+using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Combat.Enums;
+using SWLOR.Shared.Domain.Combat.ValueObjects;
 using SWLOR.Shared.Domain.Inventory.Contracts;
+using SWLOR.Shared.Domain.Skill.Enums;
 
 namespace SWLOR.Component.Combat.Service
 {
@@ -25,9 +26,10 @@ namespace SWLOR.Component.Combat.Service
             _random = random;
         }
 
-        public int CalculateDamage(
-            uint attacker, 
-            uint defender, 
+        /// <inheritdoc />
+        public int CalculatePhysicalDamage(
+            uint attacker,
+            uint defender,
             uint weapon,
             bool isCritical)
         {
@@ -55,28 +57,80 @@ namespace SWLOR.Component.Combat.Service
                 deltaCap);
 
             var damage = (int)_random.NextFloat(min, max);
-            damage = CalculateElementalDamage(defender, weapon, damage);
+            damage = CalculateElementalDamage(defender, weaponStat.DamageType, damage);
+
+            return damage;
+        }
+
+        /// <inheritdoc />
+        public int CalculateForceDamage(
+            uint attacker,
+            uint defender,
+            int dmg)
+        {
+            var attackerForceAttack = _statCalculationService.CalculateForceAttack(attacker);
+            var attackerStat = _statCalculationService.CalculateWillpower(attacker);
+            var defenderForceDefense = _statCalculationService.CalculateForceDefense(defender);
+            var defenderStat = _statCalculationService.CalculateWillpower(defender);
+
+            var (min, max) = CalculateDamageRange(
+                attackerForceAttack,
+                dmg,
+                attackerStat,
+                defenderForceDefense,
+                defenderStat,
+                false);
+
+            return (int)_random.NextFloat(min, max);
+        }
+
+        /// <inheritdoc />
+        public int CalculateAbilityDamage(
+            uint attacker,
+            uint defender,
+            int dmg,
+            CombatDamageType damageType,
+            SkillType skillType,
+            AbilityType attackerStatType,
+            AbilityType defenderStatType
+        )
+        {
+            var attackerAttack = _statCalculationService.CalculateAttack(attacker, attackerStatType, skillType);
+            var attackerStat = _statCalculationService.CalculateAttribute(attacker, attackerStatType);
+            var defenderDefense = _statCalculationService.CalculateDefense(defender);
+            var defenderStat = _statCalculationService.CalculateAttribute(defender, defenderStatType);
+
+            var (min, max) = CalculateDamageRange(
+                attackerAttack,
+                dmg,
+                attackerStat,
+                defenderDefense,
+                defenderStat,
+                false);
+
+            var damage = (int)_random.NextFloat(min, max);
+            damage = CalculateElementalDamage(defender, damageType, damage);
 
             return damage;
         }
 
         private int CalculateElementalDamage(
             uint defender,
-            uint weapon,
+            CombatDamageType damageType,
             int damage)
         {
-            var weaponStat = _weaponStatService.LoadWeaponStat(weapon);
-            if (weaponStat.DamageType == CombatDamageType.Physical)
+            if (damageType == CombatDamageType.Physical)
                 return damage;
 
-            var resistance = _statCalculationService.CalculateResistance(defender, weaponStat.DamageType);
+            var resistance = _statCalculationService.CalculateResistance(defender, damageType);
             var percentResist = resistance * 0.01f;
 
             return (int)(damage * percentResist);
         }
 
+        /// <inheritdoc />
         public HitResult CalculateHitType(
-            uint attacker, 
+            uint attacker,
             uint defender,
             uint weapon)
         {

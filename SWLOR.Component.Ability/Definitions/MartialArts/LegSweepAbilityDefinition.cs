@@ -7,6 +7,7 @@ using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
+using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Skill.Enums;
@@ -28,7 +29,7 @@ namespace SWLOR.Component.Ability.Definitions.MartialArts
 
         // Lazy-loaded services to break circular dependencies
         private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
-        private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
+        private ICombatCalculationService CombatCalculationService => _serviceProvider.GetRequiredService<ICombatCalculationService>();
 
         private IAbilityService AbilityService => _serviceProvider.GetRequiredService<IAbilityService>();
         private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
@@ -79,34 +80,21 @@ namespace SWLOR.Component.Ability.Definitions.MartialArts
                     break;
             }
 
-            dmg += CombatService.GetAbilityDamageBonus(activator, SkillType.MartialArts);
-
             EnmityService.ModifyEnmityOnAll(activator, 250 * level);
             CombatPointService.AddCombatPoint(activator, target, SkillType.MartialArts, 3);
 
-            var attackerStat = CombatService.GetPerkAdjustedAbilityScore(activator);
-            int attack;
-
-            if(GetHasFeat(FeatType.FlurryStyle, activator))
-            {
-                attack = _statCalculation.CalculateAttack(activator, AbilityType.Perception, SkillType.MartialArts);
-            } 
-            else
-            {
-                attack = _statCalculation.CalculateAttack(activator, AbilityType.Might, SkillType.MartialArts);
-            }
-            var defense = _statCalculation.CalculateDefense(target);
-            var defenderStat = GetAbilityModifier(AbilityType.Vitality, target);
-            var damage = CombatService.CalculateDamage(
-                attack,
-                dmg, 
-                attackerStat, 
-                defense, 
-                defenderStat, 
-                0);
+            var damage = CombatCalculationService.CalculateAbilityDamage(
+                activator,
+                target,
+                dmg,
+                CombatDamageType.Physical,
+                SkillType.MartialArts,
+                AbilityType.Perception,
+                AbilityType.Vitality
+            );
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Bludgeoning), target);
 
-            dc = CombatService.CalculateSavingThrowDC(activator, SavingThrowCategoryType.Reflex, dc);
+            dc += _statCalculation.CalculateSavingThrow(activator, SavingThrowCategoryType.Reflex);
             var checkResult = ReflexSave(target, dc, SavingThrowType.None, activator);
             if (checkResult == SavingThrowResultType.Failed)
             {

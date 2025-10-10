@@ -6,6 +6,7 @@ using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
+using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Skill.Enums;
 
@@ -25,7 +26,7 @@ namespace SWLOR.Component.Ability.Definitions.Beasts
         }
 
         // Lazy-loaded services to break circular dependencies
-        private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
+        private ICombatCalculationService CombatCalculationService => _serviceProvider.GetRequiredService<ICombatCalculationService>();
 
         private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
 
@@ -46,10 +47,6 @@ namespace SWLOR.Component.Ability.Definitions.Beasts
             var beastmasterStat = GetAbilityScore(beastmaster, AbilityType.Agility) / 2;
             var beastStat = GetAbilityScore(activator, AbilityType.Agility) / 2;
 
-            var totalStat = beastmasterStat + beastStat;
-            dmg += CombatService.GetAbilityDamageBonus(activator, SkillType.Invalid);
-
-
             var count = 0;
             var creature = GetFirstObjectInShape(ShapeType.Sphere, RadiusSize.Large, GetLocation(activator), true);
             while (GetIsObjectValid(creature) && count < 3)
@@ -57,15 +54,17 @@ namespace SWLOR.Component.Ability.Definitions.Beasts
                 if (GetIsReactionTypeHostile(creature, activator))
                 {
                     var attack = _statCalculation.CalculateAttack(activator, AbilityType.Agility, SkillType.Invalid);
-                    var defense = _statCalculation.CalculateDefense(target);
-                    var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-                    var damage = CombatService.CalculateDamage(
-                        attack,
+                    var defense = _statCalculation.CalculateDefense(creature);
+                    var defenderStat = GetAbilityScore(creature, AbilityType.Vitality);
+                    var damage = CombatCalculationService.CalculateAbilityDamage(
+                        activator,
+                        creature,
                         dmg,
-                        totalStat,
-                        defense,
-                        defenderStat,
-                        0);
+                        CombatDamageType.Physical,
+                        SkillType.Invalid,
+                        AbilityType.Agility,
+                        AbilityType.Vitality
+                    );
 
                     var dTarget = creature;
 

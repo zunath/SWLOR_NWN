@@ -6,6 +6,7 @@ using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
+using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Skill.Enums;
 
@@ -25,8 +26,7 @@ namespace SWLOR.Component.Ability.Definitions.Devices
         }
 
         // Lazy-loaded services to break circular dependencies
-        private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
-
+        private ICombatCalculationService CombatCalculationService => _serviceProvider.GetRequiredService<ICombatCalculationService>();
         private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
         private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
 
@@ -61,13 +61,7 @@ namespace SWLOR.Component.Ability.Definitions.Devices
                 {
                     var defense = _statCalculation.CalculateDefense(target);
                     var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-                    var damage = CombatService.CalculateDamage(
-                        attack,
-                        dmg,
-                        attackerStat,
-                        defense,
-                        defenderStat,
-                        0);
+                    var damage = CombatCalculationService.CalculateAbilityDamage(activator, target, dmg, CombatDamageType.Physical, SkillType.Devices, AbilityType.Perception, AbilityType.Vitality);
 
                     var eDMG = EffectDamage(damage, DamageType.Fire);
                     EnmityService.ModifyEnmity(activator, target, 280);
@@ -80,7 +74,7 @@ namespace SWLOR.Component.Ability.Definitions.Devices
                         ApplyEffectToObject(DurationType.Instant, eDMG, targetCopy);
                         ApplyEffectToObject(DurationType.Instant, eVFX, targetCopy);
 
-                        dc = CombatService.CalculateSavingThrowDC(activator, SavingThrowCategoryType.Reflex, baseDC);
+                        dc += _statCalculation.CalculateSavingThrow(activator, SavingThrowCategoryType.Reflex);
                         var checkResult = ReflexSave(targetCopy, dc, SavingThrowType.None, activator);
                         if (checkResult == SavingThrowResultType.Failed)
                         {
@@ -149,4 +143,5 @@ namespace SWLOR.Component.Ability.Definitions.Devices
         }
     }
 }
+
 

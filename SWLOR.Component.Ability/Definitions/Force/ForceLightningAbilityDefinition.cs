@@ -26,7 +26,7 @@ namespace SWLOR.Component.Ability.Definitions.Force
         }
 
         // Lazy-loaded services to break circular dependencies
-        private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
+        private ICombatCalculationService CombatCalculationService => _serviceProvider.GetRequiredService<ICombatCalculationService>();
 
         private ICharacterResourceService CharacterResourceService => _serviceProvider.GetRequiredService<ICharacterResourceService>();
         private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
@@ -63,7 +63,6 @@ namespace SWLOR.Component.Ability.Definitions.Force
                     break;
             }
 
-            dmg += CombatService.GetAbilityDamageBonus(activator, SkillType.Force);
             var count = 0;
             var creature = GetFirstObjectInShape(ShapeType.Sphere, RadiusSize.Huge, GetLocation(target), true, ObjectType.Creature);
             while (GetIsObjectValid(creature) && count <= 5)
@@ -74,13 +73,10 @@ namespace SWLOR.Component.Ability.Definitions.Force
                     var defense = _statCalculation.CalculateForceDefense(creature);
                     var attack = _statCalculation.CalculateAttack(activator, AbilityType.Willpower, SkillType.Force);
                     var defenderStat = GetAbilityScore(creature, AbilityType.Willpower);
-                    var damage = CombatService.CalculateDamage(
-                        attack,
-                        dmg,
-                        attackerStat,
-                        defense,
-                        defenderStat,
-                        0);
+                    var damage = CombatCalculationService.CalculateForceDamage(
+                        activator,
+                        creature,
+                        dmg);
 
                     var elecBeam = EffectBeam(VisualEffectType.Vfx_Beam_Silent_Lightning, activator, BodyNodeType.Hand, true);
                     var elecBurst = EffectVisualEffect(VisualEffectType.Vfx_Imp_Lightning_S);

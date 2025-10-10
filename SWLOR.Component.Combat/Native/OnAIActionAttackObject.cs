@@ -14,7 +14,7 @@ namespace SWLOR.Component.Combat.Native
         private static readonly IScriptExecutor _executor = ServiceContainer.GetService<IScriptExecutor>();
         private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
         private static readonly IStatCalculationService _statService = ServiceContainer.GetService<IStatCalculationService>();
-        private static readonly ICombatService _combatService = ServiceContainer.GetService<ICombatService>();
+        private static readonly IRandomService _randomService = ServiceContainer.GetService<IRandomService>();
 
         private const int ACTION_IN_PROGRESS = 1;
         private const int ACTION_COMPLETE = 2;
@@ -480,7 +480,8 @@ namespace SWLOR.Component.Combat.Native
                                             pCreature.SetLockOrientationToObject(oidTarget);
 
                                             // Process the attack (delay already checked at function start)
-                                            var isParalyzed = _combatService.IsParalyzed(pCreature.m_idSelf);
+                                            var paralysis = _statService.CalculateParalysis(pCreature.m_idSelf);
+                                            var isParalyzed = paralysis > 0 && _randomService.D100(1) <= paralysis;
 
                                             if (isParalyzed)
                                             {

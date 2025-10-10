@@ -5,6 +5,7 @@ using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
+using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Skill.Enums;
 
@@ -24,7 +25,7 @@ namespace SWLOR.Component.Ability.Definitions.NPC
         }
 
         // Lazy-loaded services to break circular dependencies
-        private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
+        private ICombatCalculationService CombatCalculationService => _serviceProvider.GetRequiredService<ICombatCalculationService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
@@ -55,13 +56,15 @@ namespace SWLOR.Component.Ability.Definitions.NPC
                             var attack = _statCalculation.CalculateAttack(activator, AbilityType.Might, SkillType.Invalid);
                             var defense = _statCalculation.CalculateDefense(coneTarget);
                             var defenderStat = GetAbilityScore(coneTarget, AbilityType.Vitality);
-                            var damage = CombatService.CalculateDamage(
-                                attack, 
-                                dmg, 
-                                attackerStat, 
-                                defense, 
-                                defenderStat, 
-                                0);
+                            var damage = CombatCalculationService.CalculateAbilityDamage(
+                                activator,
+                                coneTarget,
+                                dmg,
+                                CombatDamageType.Physical,
+                                SkillType.Invalid,
+                                AbilityType.Might,
+                                AbilityType.Vitality
+                            );
 
                             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Com_Hit_Fire), coneTarget);
                             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Fire), coneTarget);
@@ -93,13 +96,15 @@ namespace SWLOR.Component.Ability.Definitions.NPC
                             var attack = _statCalculation.CalculateAttack(activator, AbilityType.Might, SkillType.Invalid);
                             var defense = _statCalculation.CalculateDefense(coneTarget);
                             var defenderStat = GetAbilityScore(coneTarget, AbilityType.Vitality);
-                            var damage = CombatService.CalculateDamage(
-                                attack,
+                            var damage = CombatCalculationService.CalculateAbilityDamage(
+                                activator,
+                                coneTarget,
                                 dmg,
-                                attackerStat,
-                                defense,
-                                defenderStat,
-                                0);
+                                CombatDamageType.Physical,
+                                SkillType.Invalid,
+                                AbilityType.Might,
+                                AbilityType.Vitality
+                            );
 
                             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffectType.Vfx_Com_Hit_Fire), coneTarget);
                             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Fire), coneTarget);

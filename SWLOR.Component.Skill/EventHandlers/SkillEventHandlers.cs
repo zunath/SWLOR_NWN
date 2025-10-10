@@ -27,15 +27,6 @@ namespace SWLOR.Component.Skill.EventHandlers
         }
 
         /// <summary>
-        /// Handles creating all of the mapping dictionaries used by the skill system on module load.
-        /// </summary>
-        [ScriptHandler<OnModuleCacheBefore>]
-        public void LoadMappings()
-        {
-            _skillService.LoadMappings();
-        }
-
-        /// <summary>
         /// When the module loads, skills and categories are organized into dictionaries for quick look-ups later on.
         /// </summary>
         [ScriptHandler<OnModuleCacheBefore>]

@@ -7,19 +7,6 @@ namespace SWLOR.Shared.Domain.Skill.Contracts
     {
         public int SkillCap { get; }
         /// <summary>
-        /// Handles creating all of the mapping dictionaries used by the skill system on module load.
-        /// </summary>
-        void LoadMappings();
-
-        /// <summary>
-        /// Retrieves the skill type associated with a base item type.
-        /// If no skill is associated with the item, SkillType.Invalid will be returned.
-        /// </summary>
-        /// <param name="baseItem">The type of base item to look for.</param>
-        /// <returns>A skill type associated with the given base item type.</returns>
-        SkillType GetSkillTypeByBaseItem(BaseItemType baseItem);
-
-        /// <summary>
         /// When the module loads, cache all XP chart data used for quick access.
         /// </summary>
         void CacheXPChartData();

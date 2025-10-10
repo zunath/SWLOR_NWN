@@ -21,7 +21,6 @@ namespace SWLOR.Component.Ability.Definitions.Force
         }
 
         // Lazy-loaded services to break circular dependencies
-        private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
         private IAbilityService AbilityService => _serviceProvider.GetRequiredService<IAbilityService>();
         private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
         private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
@@ -60,7 +59,6 @@ namespace SWLOR.Component.Ability.Definitions.Force
 
             var willpowerBonus = 0.5f * GetAbilityModifier(AbilityType.Willpower, activator);
 
-            dc = CombatService.CalculateSavingThrowDC(activator, SavingThrowCategoryType.Will, dc);
             var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
             var duration = BaseDuration + willpowerBonus;
 

@@ -1,4 +1,5 @@
-﻿using SWLOR.Component.Character.Contracts;
+﻿using NWN.Native.API;
+using SWLOR.Component.Character.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
@@ -8,6 +9,7 @@ using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Skill.Contracts;
 using SWLOR.Shared.Domain.Skill.Enums;
 using SWLOR.Shared.Domain.StatusEffect.Contracts;
+using System.Buffers.Text;
 
 namespace SWLOR.Component.Character.Service
 {
@@ -232,6 +234,25 @@ namespace SWLOR.Component.Character.Service
                 default:
                     return 0;
             }
+        }
+
+        public int CalculateSavingThrow(uint creature, SavingThrowCategoryType type)
+        {
+            var ability = AbilityType.Invalid;
+            switch (type)
+            {
+                case SavingThrowCategoryType.Fortitude:
+                    ability = AbilityType.Might;
+                    break;
+                case SavingThrowCategoryType.Reflex:
+                    ability = AbilityType.Perception;
+                    break;
+                case SavingThrowCategoryType.Will:
+                    ability = AbilityType.Willpower;
+                    break;
+            }
+
+            return GetAbilityModifier(ability, creature);
         }
 
         /// <inheritdoc />
@@ -638,6 +659,7 @@ namespace SWLOR.Component.Character.Service
         {
             return stat * 3 + level + bonus;
         }
+
 
     }
 }

@@ -5,6 +5,7 @@ using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
+using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Skill.Enums;
 
@@ -24,7 +25,7 @@ namespace SWLOR.Component.Ability.Definitions.Beasts
         }
 
         // Lazy-loaded services to break circular dependencies
-        private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
+        private ICombatCalculationService CombatCalculationService => _serviceProvider.GetRequiredService<ICombatCalculationService>();
         private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
@@ -49,13 +50,14 @@ namespace SWLOR.Component.Ability.Definitions.Beasts
             var defense = _statCalculation.CalculateDefense(target);
             var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
 
-            var damage = CombatService.CalculateDamage(
-                attack,
+            var damage = CombatCalculationService.CalculateAbilityDamage(
+                activator,
+                target,
                 dmg,
-                totalStat,
-                defense,
-                defenderStat,
-                0
+                CombatDamageType.Physical,
+                SkillType.Invalid,
+                AbilityType.Agility,
+                AbilityType.Vitality
             );
 
             AssignCommand(activator, () =>

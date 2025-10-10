@@ -9,6 +9,7 @@ using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
+using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Skill.Enums;
@@ -31,7 +32,7 @@ namespace SWLOR.Component.Ability.Definitions.TwoHanded
         // Lazy-loaded services to break circular dependencies
         private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
         private IAbilityService AbilityService => _serviceProvider.GetRequiredService<IAbilityService>();
-        private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
+        private ICombatCalculationService CombatCalculationService => _serviceProvider.GetRequiredService<ICombatCalculationService>();
 
         private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
         private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
@@ -77,25 +78,21 @@ namespace SWLOR.Component.Ability.Definitions.TwoHanded
                     break;
             }
 
-            dmg += CombatService.GetAbilityDamageBonus(activator, SkillType.TwoHanded);
-
             var stat = AbilityType.Perception;
             if (AbilityService.IsAbilityToggled(activator, AbilityToggleType.StrongStyleSaberstaff))
             {
                 stat = AbilityType.Might;
             }
 
-            var attackerStat = CombatService.GetPerkAdjustedAbilityScore(activator);
-            var attack = _statCalculation.CalculateAttack(activator, stat, SkillType.TwoHanded);
-            var defense = _statCalculation.CalculateDefense(target);
-            var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-            var damage = CombatService.CalculateDamage(
-                attack, 
-                dmg, 
-                attackerStat, 
-                defense, 
-                defenderStat, 
-                0);
+            var damage = CombatCalculationService.CalculateAbilityDamage(
+                activator,
+                target,
+                dmg,
+                CombatDamageType.Physical,
+                SkillType.TwoHanded,
+                stat,
+                AbilityType.Vitality
+            );
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Sonic), target);
 
             AssignCommand(activator, () => ActionPlayAnimation(AnimationType.DoubleStrike));

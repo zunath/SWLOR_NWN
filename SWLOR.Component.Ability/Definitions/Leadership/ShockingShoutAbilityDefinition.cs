@@ -4,6 +4,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Ability.Contracts;
 using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
+using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Skill.Enums;
@@ -13,14 +14,17 @@ namespace SWLOR.Component.Ability.Definitions.Leadership
     public class ShockingShoutAbilityDefinition : IAbilityListDefinition
     {
         private readonly IServiceProvider _serviceProvider;
+        private readonly IStatCalculationService _statCalculationService;
 
-        public ShockingShoutAbilityDefinition(IServiceProvider serviceProvider)
+        public ShockingShoutAbilityDefinition(
+            IServiceProvider serviceProvider,
+            IStatCalculationService statCalculationService)
         {
             _serviceProvider = serviceProvider;
+            _statCalculationService = statCalculationService;
         }
 
         // Lazy-loaded services to break circular dependencies
-        private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
         private IAbilityService AbilityService => _serviceProvider.GetRequiredService<IAbilityService>();
         private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
         private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
@@ -64,7 +68,7 @@ namespace SWLOR.Component.Ability.Definitions.Leadership
                         {
                             count++;
 
-                            var dc = CombatService.CalculateSavingThrowDC(activator, SavingThrowCategoryType.Will, 14);
+                            var dc = 14 + _statCalculationService.CalculateSavingThrow(activator, SavingThrowCategoryType.Will);
                             const float BaseDuration = 2f;
                             var bonusDuration = GetAbilityModifier(AbilityType.Social, activator) * 0.5f;
                             var duration = BaseDuration + bonusDuration;

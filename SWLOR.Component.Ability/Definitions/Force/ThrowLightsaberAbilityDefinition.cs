@@ -28,7 +28,7 @@ namespace SWLOR.Component.Ability.Definitions.Force
 
         // Lazy-loaded services to break circular dependencies
         private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
-        private ICombatService CombatService => _serviceProvider.GetRequiredService<ICombatService>();
+        private ICombatCalculationService CombatCalculationService => _serviceProvider.GetRequiredService<ICombatCalculationService>();
 
         private ICombatPointService CombatPointService => _serviceProvider.GetRequiredService<ICombatPointService>();
         private IEnmityService EnmityService => _serviceProvider.GetRequiredService<IEnmityService>();
@@ -92,22 +92,15 @@ namespace SWLOR.Component.Ability.Definitions.Force
                     break;
             }
 
-            dmg += CombatService.GetAbilityDamageBonus(activator, SkillType.Force);
-            var attack = _statCalculation.CalculateAttack(activator, AbilityType.Willpower, SkillType.Force);
             CombatPointService.AddCombatPoint(activator, target, SkillType.Force, 3);
 
             // apply to target
             DelayCommand(delay, () =>
             {
-                var defense = _statCalculation.CalculateForceDefense(target);
-                var defenderStat = GetAbilityScore(target, AbilityType.Willpower);
-                var damage = CombatService.CalculateDamage(
-                    attack,
-                    dmg,
-                    attackerStat,
-                    defense,
-                    defenderStat,
-                    0);
+                var damage = CombatCalculationService.CalculateForceDamage(
+                    activator,
+                    target,
+                    dmg);
                 ApplyEffectToObject(DurationType.Instant, EffectLinkEffects(EffectVisualEffect(VisualEffectType.Vfx_Imp_Sonic), EffectDamage(damage, DamageType.Sonic)), target);
                 EnmityService.ModifyEnmity(activator, target, damage + 200 * level);
             });
@@ -122,15 +115,10 @@ namespace SWLOR.Component.Ability.Definitions.Force
                     var nearbyCopy = nearby;
                     DelayCommand(delay, () =>
                     {
-                        var defense = _statCalculation.CalculateForceDefense(nearbyCopy);
-                        var defenderStat = GetAbilityModifier(AbilityType.Willpower, nearbyCopy);
-                        var damage = CombatService.CalculateDamage(
-                            attack,
-                            dmg,
-                            attackerStat,
-                            defense,
-                            defenderStat,
-                            0);
+                        var damage = CombatCalculationService.CalculateForceDamage(
+                            activator,
+                            nearbyCopy,
+                            dmg);
                         ApplyEffectToObject(DurationType.Instant, EffectLinkEffects(EffectVisualEffect(VisualEffectType.Vfx_Imp_Sonic), EffectDamage(damage, DamageType.Sonic)), nearbyCopy);
                         CombatPointService.AddCombatPoint(activator, nearbyCopy, SkillType.Force, 3);
                         EnmityService.ModifyEnmity(activator, nearbyCopy, damage + 200 * level);

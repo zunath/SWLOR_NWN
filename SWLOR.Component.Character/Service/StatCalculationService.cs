@@ -349,6 +349,8 @@ namespace SWLOR.Component.Character.Service
 
             if (might > 100)
                 might = 100;
+            else if (might < 3)
+                might = 3;
 
             return might;
         }
@@ -362,6 +364,8 @@ namespace SWLOR.Component.Character.Service
 
             if (perception > 100)
                 perception = 100;
+            else if (perception < 3)
+                perception = 3;
 
             return perception;
         }
@@ -375,6 +379,8 @@ namespace SWLOR.Component.Character.Service
 
             if (vitality > 100)
                 vitality = 100;
+            else if (vitality < 3)
+                vitality = 3;
 
             return vitality;
         }
@@ -388,6 +394,8 @@ namespace SWLOR.Component.Character.Service
 
             if (agility > 100)
                 agility = 100;
+            else if (agility < 3)
+                agility = 3;
 
             return agility;
         }
@@ -401,6 +409,8 @@ namespace SWLOR.Component.Character.Service
 
             if (willpower > 100)
                 willpower = 100;
+            else if (willpower < 3)
+                willpower = 3;
 
             return willpower;
         }
@@ -414,6 +424,8 @@ namespace SWLOR.Component.Character.Service
 
             if (social > 100)
                 social = 100;
+            else if (social < 3)
+                social = 3;
 
             return social;
         }

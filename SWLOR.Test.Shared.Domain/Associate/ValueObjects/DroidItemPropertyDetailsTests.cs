@@ -55,7 +55,7 @@ namespace SWLOR.Test.Shared.Domain.Associate.ValueObjects
             details.WIL = 14;
             details.PersonalityType = DroidPersonalityType.Sarcastic;
             details.Skills.Add(SkillType.OneHanded, 5);
-            details.Perks.Add(PerkType.WeaponFocusVibroblades, 3);
+            details.Perks.Add(PerkType.AdrenalStim, 1);
 
             // Assert
             Assert.That(details.CustomName, Is.EqualTo("Test Droid"));
@@ -91,24 +91,6 @@ namespace SWLOR.Test.Shared.Domain.Associate.ValueObjects
             Assert.That(details.Skills[SkillType.OneHanded], Is.EqualTo(5));
             Assert.That(details.Skills[SkillType.TwoHanded], Is.EqualTo(3));
             Assert.That(details.Skills[SkillType.MartialArts], Is.EqualTo(7));
-        }
-
-        [Test]
-        public void Perks_ShouldBeMutable()
-        {
-            // Arrange
-            var details = new DroidItemPropertyDetails();
-
-            // Act
-            details.Perks.Add(PerkType.WeaponFocusVibroblades, 3);
-            details.Perks.Add(PerkType.SuperiorWeaponFocus, 2);
-            details.Perks.Add(PerkType.ImprovedCriticalVibroblades, 1);
-
-            // Assert
-            Assert.That(details.Perks.Count, Is.EqualTo(3));
-            Assert.That(details.Perks[PerkType.WeaponFocusVibroblades], Is.EqualTo(3));
-            Assert.That(details.Perks[PerkType.SuperiorWeaponFocus], Is.EqualTo(2));
-            Assert.That(details.Perks[PerkType.ImprovedCriticalVibroblades], Is.EqualTo(1));
         }
     }
 }

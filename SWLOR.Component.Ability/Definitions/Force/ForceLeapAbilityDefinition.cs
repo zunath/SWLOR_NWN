@@ -5,26 +5,22 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Ability.Contracts;
 using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Ability.ValueObjects;
-using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Combat.Enums;
 using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Skill.Enums;
 
-namespace SWLOR.Component.Ability.Definitions.OneHanded
+namespace SWLOR.Component.Ability.Definitions.Force
 {
     public class ForceLeapAbilityDefinition : IAbilityListDefinition
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly IStatCalculationService _statCalculation;
 
         public ForceLeapAbilityDefinition(
-            IServiceProvider serviceProvider,
-            IStatCalculationService statCalculation)
+            IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
-            _statCalculation = statCalculation;
         }
 
         // Lazy-loaded services to break circular dependencies
@@ -46,14 +42,6 @@ namespace SWLOR.Component.Ability.Definitions.OneHanded
 
         private string Validation(uint activator, uint target, int level, Location targetLocation)
         {
-            var weapon = GetItemInSlot(InventorySlotType.RightHand, activator);
-            var rightHandType = GetBaseItemType(weapon);
-
-            if (!ItemService.LightsaberBaseItemTypes.Contains(rightHandType))
-            {
-                return "A lightsaber must be equipped in your right hand to use this ability.";
-            }
-
             if (GetDistanceBetween(activator, target) < 8)
             {
                 return "You must get further away from the target to use this ability.";

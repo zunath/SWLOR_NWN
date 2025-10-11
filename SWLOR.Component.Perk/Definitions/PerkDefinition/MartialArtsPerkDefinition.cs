@@ -14,17 +14,10 @@ namespace SWLOR.Component.Perk.Definitions.PerkDefinition
         public Dictionary<PerkType, PerkDetail> BuildPerks(IPerkBuilder builder)
         {
             Knockdown(builder);
-            Furor(builder);
             InnerStrength(builder);
             Chi(builder);
-            WeaponFocusKatars(builder);
-            ImprovedCriticalKatars(builder);
-            KatarProficiency(builder);
             ElectricFist(builder);
             StrikingCobra(builder);
-            WeaponFocusStaves(builder);
-            ImprovedCriticalStaves(builder);
-            StaffProficiency(builder);
             Slam(builder);
             LegSweep(builder);
             CrushingStyle(builder);
@@ -43,19 +36,6 @@ namespace SWLOR.Component.Perk.Definitions.PerkDefinition
                 .DroidAISlots(2)
                 .RequirementSkill(SkillType.MartialArts, 15)
                 .GrantsFeat(FeatType.Knockdown);
-        }
-
-        private void Furor(IPerkBuilder builder)
-        {
-            builder.Create(PerkCategoryType.MartialArtsGeneral, PerkType.Furor)
-                .Name("Furor")
-
-                .AddPerkLevel()
-                .Description("Grants an additional attack to the user for one minute. [Cross Skill]")
-                .Price(4)
-                .RequirementSkill(SkillType.MartialArts, 25)
-                .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.Furor);
         }
 
         private void InnerStrength(IPerkBuilder builder)
@@ -107,71 +87,6 @@ namespace SWLOR.Component.Perk.Definitions.PerkDefinition
                 .RequirementSkill(SkillType.MartialArts, 40)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.Chi3);
-        }
-
-        private void WeaponFocusKatars(IPerkBuilder builder)
-        {
-            builder.Create(PerkCategoryType.MartialArtsKatars, PerkType.WeaponFocusKatars)
-                .Name("Weapon Focus - Katars")
-
-                .AddPerkLevel()
-                .Description("Your accuracy with katars is increased by 5.")
-                .Price(3)
-                .RequirementSkill(SkillType.MartialArts, 5)
-                .GrantsFeat(FeatType.WeaponFocusKatars)
-
-                .AddPerkLevel()
-                .Description("Your base damage with katars is increased by 2 DMG.")
-                .Price(4)
-                .RequirementSkill(SkillType.MartialArts, 15)
-                .GrantsFeat(FeatType.WeaponSpecializationKatars);
-        }
-
-        private void ImprovedCriticalKatars(IPerkBuilder builder)
-        {
-            builder.Create(PerkCategoryType.MartialArtsKatars, PerkType.ImprovedCriticalKatars)
-                .Name("Improved Critical - Katars")
-
-                .AddPerkLevel()
-                .Description("Improves the chance to critically hit with katars by 5%.")
-                .Price(3)
-                .RequirementSkill(SkillType.MartialArts, 25)
-                .GrantsFeat(FeatType.ImprovedCriticalKatars);
-        }
-
-        private void KatarProficiency(IPerkBuilder builder)
-        {
-            builder.Create(PerkCategoryType.MartialArtsKatars, PerkType.KatarProficiency)
-                .Name("Katar Proficiency")
-
-                .AddPerkLevel()
-                .Description("Grants the ability to equip tier 1 Katars.")
-                .Price(2)
-                .GrantsFeat(FeatType.KatarProficiency1)
-
-                .AddPerkLevel()
-                .Description("Grants the ability to equip tier 2 Katars.")
-                .Price(2)
-                .RequirementSkill(SkillType.MartialArts, 10)
-                .GrantsFeat(FeatType.KatarProficiency2)
-
-                .AddPerkLevel()
-                .Description("Grants the ability to equip tier 3 Katars.")
-                .Price(2)
-                .RequirementSkill(SkillType.MartialArts, 20)
-                .GrantsFeat(FeatType.KatarProficiency3)
-
-                .AddPerkLevel()
-                .Description("Grants the ability to equip tier 4 Katars.")
-                .Price(2)
-                .RequirementSkill(SkillType.MartialArts, 30)
-                .GrantsFeat(FeatType.KatarProficiency4)
-
-                .AddPerkLevel()
-                .Description("Grants the ability to equip tier 5 Katars.")
-                .Price(2)
-                .RequirementSkill(SkillType.MartialArts, 40)
-                .GrantsFeat(FeatType.KatarProficiency5);
         }
 
         private void ElectricFist(IPerkBuilder builder)
@@ -232,71 +147,6 @@ namespace SWLOR.Component.Perk.Definitions.PerkDefinition
                 .RequirementSkill(SkillType.MartialArts, 35)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.StrikingCobra3);
-        }
-
-        private void WeaponFocusStaves(IPerkBuilder builder)
-        {
-            builder.Create(PerkCategoryType.MartialArtsStaff, PerkType.WeaponFocusStaves)
-                .Name("Weapon Focus - Staves")
-
-                .AddPerkLevel()
-                .Description("Your accuracy with staves is increased by 5.")
-                .Price(3)
-                .RequirementSkill(SkillType.MartialArts, 5)
-                .GrantsFeat(FeatType.WeaponFocusStaves)
-
-                .AddPerkLevel()
-                .Description("Your base damage with staves is increased by 2 DMG.")
-                .Price(4)
-                .RequirementSkill(SkillType.MartialArts, 15)
-                .GrantsFeat(FeatType.WeaponSpecializationStaves);
-        }
-
-        private void ImprovedCriticalStaves(IPerkBuilder builder)
-        {
-            builder.Create(PerkCategoryType.MartialArtsStaff, PerkType.ImprovedCriticalStaves)
-                .Name("Improved Critical - Staves")
-
-                .AddPerkLevel()
-                .Description("Improves the chance to critically hit with staves by 5%.")
-                .Price(3)
-                .RequirementSkill(SkillType.MartialArts, 25)
-                .GrantsFeat(FeatType.ImprovedCriticalStaff);
-        }
-
-        private void StaffProficiency(IPerkBuilder builder)
-        {
-            builder.Create(PerkCategoryType.MartialArtsStaff, PerkType.StaffProficiency)
-                .Name("Staff Proficiency")
-
-                .AddPerkLevel()
-                .Description("Grants the ability to equip tier 1 Staves.")
-                .Price(2)
-                .GrantsFeat(FeatType.StaffProficiency1)
-
-                .AddPerkLevel()
-                .Description("Grants the ability to equip tier 2 Staves.")
-                .Price(2)
-                .RequirementSkill(SkillType.MartialArts, 10)
-                .GrantsFeat(FeatType.StaffProficiency2)
-
-                .AddPerkLevel()
-                .Description("Grants the ability to equip tier 3 Staves.")
-                .Price(2)
-                .RequirementSkill(SkillType.MartialArts, 20)
-                .GrantsFeat(FeatType.StaffProficiency3)
-
-                .AddPerkLevel()
-                .Description("Grants the ability to equip tier 4 Staves.")
-                .Price(2)
-                .RequirementSkill(SkillType.MartialArts, 30)
-                .GrantsFeat(FeatType.StaffProficiency4)
-
-                .AddPerkLevel()
-                .Description("Grants the ability to equip tier 5 Staves.")
-                .Price(2)
-                .RequirementSkill(SkillType.MartialArts, 40)
-                .GrantsFeat(FeatType.StaffProficiency5);
         }
 
         private void Slam(IPerkBuilder builder)

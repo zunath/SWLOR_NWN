@@ -100,7 +100,6 @@ namespace SWLOR.Component.Migration.Definitions.PlayerMigration
             List<PerkType> refundList = new()
             {
                 PerkType.DualWield,
-                PerkType.ImprovedTwoWeaponFightingOneHanded,
                 PerkType.ImprovedTwoWeaponFightingTwoHanded
             };
 

@@ -1,6 +1,5 @@
 using SWLOR.Component.Ability.Definitions.Devices;
 using SWLOR.Component.Ability.Definitions.Force;
-using SWLOR.Component.Ability.Definitions.General;
 using SWLOR.Shared.Domain.Ability.Contracts;
 using SWLOR.Shared.Domain.Ability.Events;
 using SWLOR.Shared.Domain.Combat.Events;
@@ -21,20 +20,17 @@ namespace SWLOR.Component.Ability.EventHandlers
         private readonly IRecastService _recastService;
         private readonly GasBombAbilityDefinition _gasBombAbilityDefinition;
         private readonly IncendiaryBombAbilityDefinition _incendiaryBombAbilityDefinition;
-        private readonly DashAbilityDefinition _dashAbilityDefinition;
 
         public AbilityEventHandlers(
             IAbilityService abilityService,
             IRecastService recastService,
             GasBombAbilityDefinition gasBombAbilityDefinition,
-            IncendiaryBombAbilityDefinition incendiaryBombAbilityDefinition,
-            DashAbilityDefinition dashAbilityDefinition)
+            IncendiaryBombAbilityDefinition incendiaryBombAbilityDefinition)
         {
             _abilityService = abilityService;
             _recastService = recastService;
             _gasBombAbilityDefinition = gasBombAbilityDefinition;
             _incendiaryBombAbilityDefinition = incendiaryBombAbilityDefinition;
-            _dashAbilityDefinition = dashAbilityDefinition;
         }
 
         /// <summary>
@@ -54,15 +50,6 @@ namespace SWLOR.Component.Ability.EventHandlers
         public void AddLeadershipCombatPoint()
         {
             _abilityService.AddLeadershipCombatPoint();
-        }
-
-        /// <summary>
-        /// When a player enters the server, apply the Aura AOE effect.
-        /// </summary>
-        [ScriptHandler<OnModuleEnter>]
-        public void OnModuleEnter()
-        {
-            _dashAbilityDefinition.EnterSpace();
         }
 
         /// <summary>

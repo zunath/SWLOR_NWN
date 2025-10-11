@@ -77,9 +77,7 @@ namespace SWLOR.Test.Shared.Core.TestHelpers
             var player = CreatePlayerWithSkills(id, name);
             
             // Add some perks
-            player.Perks[PerkType.LightsaberProficiency] = 3;
             player.Perks[PerkType.ForceLeap] = 2;
-            player.Perks[PerkType.VibrobladeProficiency] = 1;
 
             return player;
         }

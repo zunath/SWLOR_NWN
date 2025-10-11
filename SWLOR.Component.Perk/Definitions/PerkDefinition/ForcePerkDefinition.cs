@@ -9,7 +9,7 @@ namespace SWLOR.Component.Perk.Definitions.PerkDefinition
 {
     public class ForcePerkDefinition : IPerkListDefinition
     {
-                public Dictionary<PerkType, PerkDetail> BuildPerks(IPerkBuilder builder)
+        public Dictionary<PerkType, PerkDetail> BuildPerks(IPerkBuilder builder)
         {
             ForcePush(builder);
             BurstOfSpeed(builder);
@@ -33,6 +33,7 @@ namespace SWLOR.Component.Perk.Definitions.PerkDefinition
             ForceRage(builder);
             ThrowRock(builder);
             ForceInspiration(builder);
+            ForceLeap(builder);
 
             return builder.Build();
         }
@@ -121,7 +122,7 @@ namespace SWLOR.Component.Perk.Definitions.PerkDefinition
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 10)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.BurstOfSpeed1)                
+                .GrantsFeat(FeatType.BurstOfSpeed1)
 
                 .AddPerkLevel()
                 .Description("Increases the speed of your target by 25% and increases evasion by 10 for ten minutes.")
@@ -674,6 +675,33 @@ namespace SWLOR.Component.Perk.Definitions.PerkDefinition
                 .RequirementSkill(SkillType.Force, 45)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForceInspiration3);
+        }
+
+        private void ForceLeap(IPerkBuilder builder)
+        {
+            builder.Create(PerkCategoryType.ForceUniversal, PerkType.ForceLeap)
+                .Name("Force Leap")
+
+                .AddPerkLevel()
+                .Description("Leap to a distant target instantly, inflicting 8 DMG and stunning for 2 seconds.")
+                .Price(3)
+                .RequirementSkill(SkillType.Force, 15)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .GrantsFeat(FeatType.ForceLeap1)
+
+                .AddPerkLevel()
+                .Description("Leap to a distant target instantly, inflicting 15 DMG and stunning for 2 seconds.")
+                .Price(3)
+                .RequirementSkill(SkillType.Force, 30)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .GrantsFeat(FeatType.ForceLeap2)
+
+                .AddPerkLevel()
+                .Description("Leap to a distant target instantly, inflicting 23 DMG and stunning for 2 seconds.")
+                .Price(3)
+                .RequirementSkill(SkillType.Force, 45)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .GrantsFeat(FeatType.ForceLeap3);
         }
     }
 }

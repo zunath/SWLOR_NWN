@@ -201,14 +201,10 @@ namespace SWLOR.Test.Shared.Domain.Entities
             var beast = new Beast();
 
             // Act
-            beast.Perks[PerkType.LightsaberProficiency] = 3;
             beast.Perks[PerkType.ForceLeap] = 2;
-            beast.Perks[PerkType.VibrobladeProficiency] = 1;
 
             // Assert
-            Assert.That(beast.Perks[PerkType.LightsaberProficiency], Is.EqualTo(3));
             Assert.That(beast.Perks[PerkType.ForceLeap], Is.EqualTo(2));
-            Assert.That(beast.Perks[PerkType.VibrobladeProficiency], Is.EqualTo(1));
         }
 
         [Test]
@@ -320,7 +316,6 @@ namespace SWLOR.Test.Shared.Domain.Entities
             beast.Type = BeastType.KathHound;
             beast.FavoriteFood = BeastFoodType.CookedMeat;
             beast.HatedFood = BeastFoodType.SourFruit;
-            beast.Perks[PerkType.LightsaberProficiency] = 3;
             beast.AttackPurity = 10;
             beast.AccuracyPurity = 15;
             beast.EvasionPurity = 12;
@@ -341,7 +336,6 @@ namespace SWLOR.Test.Shared.Domain.Entities
             Assert.That(beast.Type, Is.EqualTo(BeastType.KathHound));
             Assert.That(beast.FavoriteFood, Is.EqualTo(BeastFoodType.CookedMeat));
             Assert.That(beast.HatedFood, Is.EqualTo(BeastFoodType.SourFruit));
-            Assert.That(beast.Perks[PerkType.LightsaberProficiency], Is.EqualTo(3));
             Assert.That(beast.AttackPurity, Is.EqualTo(10));
             Assert.That(beast.AccuracyPurity, Is.EqualTo(15));
             Assert.That(beast.EvasionPurity, Is.EqualTo(12));
@@ -483,48 +477,6 @@ namespace SWLOR.Test.Shared.Domain.Entities
             Assert.That(beast.AccuracyPurity, Is.EqualTo(int.MinValue));
             Assert.That(beast.EvasionPurity, Is.EqualTo(int.MinValue));
             Assert.That(beast.LearningPurity, Is.EqualTo(int.MinValue));
-        }
-
-        [Test]
-        public void Beast_WithPerkIncrement_ShouldIncrementPerk()
-        {
-            // Arrange
-            var beast = new Beast();
-
-            // Act
-            beast.Perks[PerkType.LightsaberProficiency] = 1;
-            beast.Perks[PerkType.LightsaberProficiency]++;
-
-            // Assert
-            Assert.That(beast.Perks[PerkType.LightsaberProficiency], Is.EqualTo(2));
-        }
-
-        [Test]
-        public void Beast_WithPerkDecrement_ShouldDecrementPerk()
-        {
-            // Arrange
-            var beast = new Beast();
-
-            // Act
-            beast.Perks[PerkType.LightsaberProficiency] = 5;
-            beast.Perks[PerkType.LightsaberProficiency]--;
-
-            // Assert
-            Assert.That(beast.Perks[PerkType.LightsaberProficiency], Is.EqualTo(4));
-        }
-
-        [Test]
-        public void Beast_WithPerkRemoval_ShouldRemovePerk()
-        {
-            // Arrange
-            var beast = new Beast();
-            beast.Perks[PerkType.LightsaberProficiency] = 3;
-
-            // Act
-            beast.Perks.Remove(PerkType.LightsaberProficiency);
-
-            // Assert
-            Assert.That(beast.Perks.ContainsKey(PerkType.LightsaberProficiency), Is.False);
         }
 
         [Test]

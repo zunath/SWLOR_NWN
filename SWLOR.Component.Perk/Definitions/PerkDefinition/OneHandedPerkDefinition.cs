@@ -1,14 +1,8 @@
-using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Component.Perk.Contracts;
-using SWLOR.NWN.API.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Ability.Contracts;
 using SWLOR.Shared.Domain.Ability.Enums;
 using SWLOR.Shared.Domain.Character.Enums;
-using SWLOR.Shared.Domain.Combat.Contracts;
-using SWLOR.Shared.Domain.Inventory.Contracts;
-using SWLOR.Shared.Domain.Perk.Contracts;
 using SWLOR.Shared.Domain.Perk.Enums;
 using SWLOR.Shared.Domain.Perk.ValueObjects;
 using SWLOR.Shared.Domain.Skill.Enums;
@@ -17,40 +11,23 @@ namespace SWLOR.Component.Perk.Definitions.PerkDefinition
 {
     public class OneHandedPerkDefinition : IPerkListDefinition
     {
-        private readonly IServiceProvider _serviceProvider;
-        private readonly ICreaturePluginService _creaturePlugin;
+        private readonly IAbilityService _abilityService;
 
-        public OneHandedPerkDefinition(IServiceProvider serviceProvider, ICreaturePluginService creaturePlugin)
+        public OneHandedPerkDefinition(
+            IAbilityService abilityService)
         {
-            _serviceProvider = serviceProvider;
-            _creaturePlugin = creaturePlugin;
+            _abilityService = abilityService;
         }
 
-        // Lazy-loaded services to break circular dependencies
-        private IRandomService Random => _serviceProvider.GetRequiredService<IRandomService>();
-        private IItemService ItemService => _serviceProvider.GetRequiredService<IItemService>();
-
-        private IAbilityService AbilityService => _serviceProvider.GetRequiredService<IAbilityService>();
-                public Dictionary<PerkType, PerkDetail> BuildPerks(IPerkBuilder builder)
+        public Dictionary<PerkType, PerkDetail> BuildPerks(IPerkBuilder builder)
         {
             Doublehand(builder);
             DualWield(builder);
-            WeaponFocusVibroblades(builder);
-            ImprovedCriticalVibroblades(builder);
-            VibrobladeProficiency(builder);
             HackingBlade(builder);
             RiotBlade(builder);
-            WeaponFocusFinesseVibroblades(builder);
-            ImprovedCriticalFinesseVibroblades(builder);
-            FinesseVibrobladeProficiency(builder);
             PoisonStab(builder);
             Backstab(builder);
-            WeaponFocusLightsabers(builder);
-            ImprovedCriticalLightsabers(builder);
-            LightsaberProficiency(builder);
-            ForceLeap(builder);
             SaberStrike(builder);
-            ImprovedTwoWeaponFighting(builder);
             StrongStyleLightsaber(builder);
             ShieldBash(builder);
             Bulwark(builder);
@@ -180,71 +157,6 @@ namespace SWLOR.Component.Perk.Definitions.PerkDefinition
                 .RequirementSkill(SkillType.OneHanded, 25);
         }
 
-        private void WeaponFocusVibroblades(IPerkBuilder builder)
-        {
-            builder.Create(PerkCategoryType.OneHandedVibroblade, PerkType.WeaponFocusVibroblades)
-                .Name("Weapon Focus - Vibroblades")
-
-                .AddPerkLevel()
-                .Description("Your accuracy with vibroblades is increased by 5.")
-                .Price(3)
-                .RequirementSkill(SkillType.OneHanded, 5)
-                .GrantsFeat(FeatType.WeaponFocusVibroblades)
-
-                .AddPerkLevel()
-                .Description("Your base damage with vibroblades is increased by 2 DMG.")
-                .Price(4)
-                .RequirementSkill(SkillType.OneHanded, 15)
-                .GrantsFeat(FeatType.WeaponSpecializationVibroblades);
-        }
-
-        private void ImprovedCriticalVibroblades(IPerkBuilder builder)
-        {
-            builder.Create(PerkCategoryType.OneHandedVibroblade, PerkType.ImprovedCriticalVibroblades)
-                .Name("Improved Critical - Vibroblades")
-
-                .AddPerkLevel()
-                .Description("Improves the chance to critically hit with vibroblades by 5%.")
-                .Price(3)
-                .RequirementSkill(SkillType.OneHanded, 25)
-                .GrantsFeat(FeatType.ImprovedCriticalVibroblades);
-        }
-
-        private void VibrobladeProficiency(IPerkBuilder builder)
-        {
-            builder.Create(PerkCategoryType.OneHandedVibroblade, PerkType.VibrobladeProficiency)
-                .Name("Vibroblade Proficiency")
-
-                .AddPerkLevel()
-                .Description("Grants the ability to equip tier 1 Vibroblades.")
-                .Price(2)
-                .GrantsFeat(FeatType.VibrobladeProficiency1)
-
-                .AddPerkLevel()
-                .Description("Grants the ability to equip tier 2 Vibroblades.")
-                .Price(2)
-                .RequirementSkill(SkillType.OneHanded, 10)
-                .GrantsFeat(FeatType.VibrobladeProficiency2)
-
-                .AddPerkLevel()
-                .Description("Grants the ability to equip tier 3 Vibroblades.")
-                .Price(2)
-                .RequirementSkill(SkillType.OneHanded, 20)
-                .GrantsFeat(FeatType.VibrobladeProficiency3)
-
-                .AddPerkLevel()
-                .Description("Grants the ability to equip tier 4 Vibroblades.")
-                .Price(2)
-                .RequirementSkill(SkillType.OneHanded, 30)
-                .GrantsFeat(FeatType.VibrobladeProficiency4)
-
-                .AddPerkLevel()
-                .Description("Grants the ability to equip tier 5 Vibroblades.")
-                .Price(2)
-                .RequirementSkill(SkillType.OneHanded, 40)
-                .GrantsFeat(FeatType.VibrobladeProficiency5);
-        }
-
         private void HackingBlade(IPerkBuilder builder)
         {
             builder.Create(PerkCategoryType.OneHandedVibroblade, PerkType.HackingBlade)
@@ -297,71 +209,6 @@ namespace SWLOR.Component.Perk.Definitions.PerkDefinition
                 .RequirementSkill(SkillType.OneHanded, 35)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.RiotBlade3);
-        }
-
-        private void WeaponFocusFinesseVibroblades(IPerkBuilder builder)
-        {
-            builder.Create(PerkCategoryType.OneHandedFinesseVibroblade, PerkType.WeaponFocusFinesseVibroblades)
-                .Name("Weapon Focus - Finesse Vibroblades")
-
-                .AddPerkLevel()
-                .Description("Your accuracy with finesse vibroblades is increased by 5.")
-                .Price(3)
-                .RequirementSkill(SkillType.OneHanded, 5)
-                .GrantsFeat(FeatType.WeaponFocusFinesseVibroblades)
-
-                .AddPerkLevel()
-                .Description("Your base damage with finesse vibroblades is increased by 2 DMG.")
-                .Price(4)
-                .RequirementSkill(SkillType.OneHanded, 15)
-                .GrantsFeat(FeatType.WeaponSpecializationFinesseVibroblades);
-        }
-
-        private void ImprovedCriticalFinesseVibroblades(IPerkBuilder builder)
-        {
-            builder.Create(PerkCategoryType.OneHandedFinesseVibroblade, PerkType.ImprovedCriticalFinesseVibroblades)
-                .Name("Improved Critical - Finesse Vibroblades")
-
-                .AddPerkLevel()
-                .Description("Improves the chance to critically hit with finesse vibroblades by 5%.")
-                .Price(3)
-                .RequirementSkill(SkillType.OneHanded, 25)
-                .GrantsFeat(FeatType.ImprovedCriticalFinesseVibroblades);
-        }
-
-        private void FinesseVibrobladeProficiency(IPerkBuilder builder)
-        {
-            builder.Create(PerkCategoryType.OneHandedFinesseVibroblade, PerkType.FinesseVibrobladeProficiency)
-                .Name("Finesse Vibroblade Proficiency")
-
-                .AddPerkLevel()
-                .Description("Grants the ability to equip tier 1 Finesse Vibroblades.")
-                .Price(2)
-                .GrantsFeat(FeatType.FinesseVibrobladeProficiency1)
-
-                .AddPerkLevel()
-                .Description("Grants the ability to equip tier 2 Finesse Vibroblades.")
-                .Price(2)
-                .RequirementSkill(SkillType.OneHanded, 10)
-                .GrantsFeat(FeatType.FinesseVibrobladeProficiency2)
-
-                .AddPerkLevel()
-                .Description("Grants the ability to equip tier 3 Finesse Vibroblades.")
-                .Price(2)
-                .RequirementSkill(SkillType.OneHanded, 20)
-                .GrantsFeat(FeatType.FinesseVibrobladeProficiency3)
-
-                .AddPerkLevel()
-                .Description("Grants the ability to equip tier 4 Finesse Vibroblades.")
-                .Price(2)
-                .RequirementSkill(SkillType.OneHanded, 30)
-                .GrantsFeat(FeatType.FinesseVibrobladeProficiency4)
-
-                .AddPerkLevel()
-                .Description("Grants the ability to equip tier 5 Finesse Vibroblades.")
-                .Price(2)
-                .RequirementSkill(SkillType.OneHanded, 40)
-                .GrantsFeat(FeatType.FinesseVibrobladeProficiency5);
         }
 
         private void PoisonStab(IPerkBuilder builder)
@@ -424,105 +271,6 @@ namespace SWLOR.Component.Perk.Definitions.PerkDefinition
                 .GrantsFeat(FeatType.Backstab3);
         }
 
-        private void WeaponFocusLightsabers(IPerkBuilder builder)
-        {
-            builder.Create(PerkCategoryType.OneHandedLightsaber, PerkType.WeaponFocusLightsabers)
-                .Name("Weapon Focus - Lightsabers")
-
-                .AddPerkLevel()
-                .Description("Your accuracy with lightsabers is increased by 5.")
-                .Price(3)
-                .RequirementSkill(SkillType.OneHanded, 5)
-                .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.WeaponFocusLightsabers)
-
-                .AddPerkLevel()
-                .Description("Your base damage with lightsabers is increased by 2 DMG.")
-                .Price(4)
-                .RequirementSkill(SkillType.OneHanded, 15)
-                .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.WeaponSpecializationLightsabers);
-        }
-
-        private void ImprovedCriticalLightsabers(IPerkBuilder builder)
-        {
-            builder.Create(PerkCategoryType.OneHandedLightsaber, PerkType.ImprovedCriticalLightsabers)
-                .Name("Improved Critical - Lightsabers")
-
-                .AddPerkLevel()
-                .Description("Improves the chance to critically hit with lightsabers by 5%.")
-                .Price(3)
-                .RequirementSkill(SkillType.OneHanded, 25)
-                .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.ImprovedCriticalLightsabers);
-        }
-
-        private void LightsaberProficiency(IPerkBuilder builder)
-        {
-            builder.Create(PerkCategoryType.OneHandedLightsaber, PerkType.LightsaberProficiency)
-                .Name("Lightsaber Proficiency")
-
-                .AddPerkLevel()
-                .Description("Grants the ability to equip tier 1 Lightsabers.")
-                .Price(2)
-                .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.LightsaberProficiency1)
-
-                .AddPerkLevel()
-                .Description("Grants the ability to equip tier 2 Lightsabers.")
-                .Price(2)
-                .RequirementSkill(SkillType.OneHanded, 10)
-                .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.LightsaberProficiency2)
-
-                .AddPerkLevel()
-                .Description("Grants the ability to equip tier 3 Lightsabers.")
-                .Price(2)
-                .RequirementSkill(SkillType.OneHanded, 20)
-                .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.LightsaberProficiency3)
-
-                .AddPerkLevel()
-                .Description("Grants the ability to equip tier 4 Lightsabers.")
-                .Price(2)
-                .RequirementSkill(SkillType.OneHanded, 30)
-                .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.LightsaberProficiency4)
-
-                .AddPerkLevel()
-                .Description("Grants the ability to equip tier 5 Lightsabers.")
-                .Price(2)
-                .RequirementSkill(SkillType.OneHanded, 40)
-                .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.LightsaberProficiency5);
-        }
-
-        private void ForceLeap(IPerkBuilder builder)
-        {
-            builder.Create(PerkCategoryType.OneHandedLightsaber, PerkType.ForceLeap)
-                .Name("Force Leap")
-
-                .AddPerkLevel()
-                .Description("Leap to a distant target instantly, inflicting 8 DMG and stunning for 2 seconds.")
-                .Price(3)
-                .RequirementSkill(SkillType.OneHanded, 15)
-                .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.ForceLeap1)
-
-                .AddPerkLevel()
-                .Description("Leap to a distant target instantly, inflicting 15 DMG and stunning for 2 seconds.")
-                .Price(3)
-                .RequirementSkill(SkillType.OneHanded, 30)
-                .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.ForceLeap2)
-
-                .AddPerkLevel()
-                .Description("Leap to a distant target instantly, inflicting 23 DMG and stunning for 2 seconds.")
-                .Price(3)
-                .RequirementSkill(SkillType.OneHanded, 45)
-                .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.ForceLeap3);
-        }
 
         private void SaberStrike(IPerkBuilder builder)
         {
@@ -551,32 +299,19 @@ namespace SWLOR.Component.Perk.Definitions.PerkDefinition
                 .GrantsFeat(FeatType.SaberStrike3);
         }
 
-        private void ImprovedTwoWeaponFighting(IPerkBuilder builder)
-        {
-            builder.Create(PerkCategoryType.OneHandedGeneral, PerkType.ImprovedTwoWeaponFightingOneHanded)
-                .Name("Improved Two Weapon Fighting (One-Handed)")
-
-                .AddPerkLevel()
-                .Description("Grants an additional off-hand attack when dual wielding or using a double-sided weapon, and reduces the two-weapon fighting penalty to 0%/-10%. [Cross Skill]")
-                .Price(4)
-                .RequirementSkill(SkillType.OneHanded, 40)
-                .RequirementCannotHavePerk(PerkType.ImprovedTwoWeaponFightingTwoHanded)
-                .GrantsFeat(FeatType.ImprovedTwoWeaponFighting);
-        }
-
         private void StrongStyleLightsaber(IPerkBuilder builder)
         {
             builder.Create(PerkCategoryType.OneHandedLightsaber, PerkType.StrongStyleLightsaber)
                 .Name("Strong Style (Lightsaber)")
                 .TriggerRefund((player) =>
                 {
-                    AbilityService.ToggleAbility(player, AbilityToggleType.StrongStyleLightsaber, false);
+                    _abilityService.ToggleAbility(player, AbilityToggleType.StrongStyleLightsaber, false);
                 })
                 .TriggerPurchase((player) =>
                 {
-                    AbilityService.ToggleAbility(player, AbilityToggleType.StrongStyleLightsaber, false);
+                    _abilityService.ToggleAbility(player, AbilityToggleType.StrongStyleLightsaber, false);
                 })
-                
+
                 .AddPerkLevel()
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .Description("While active, attacks with a lightsaber use PER to-hit and MGT for damage, and gain bonus damage equal to half your MGT modifier.")

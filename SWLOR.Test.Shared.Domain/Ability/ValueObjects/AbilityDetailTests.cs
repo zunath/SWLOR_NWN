@@ -160,19 +160,6 @@ namespace SWLOR.Test.Shared.Domain.Ability.ValueObjects
         }
 
         [Test]
-        public void AbilityDetail_WithEffectiveLevelPerkType_ShouldStoreEffectiveLevelPerkTypeCorrectly()
-        {
-            // Arrange
-            var abilityDetail = new AbilityDetail();
-
-            // Act
-            abilityDetail.EffectiveLevelPerkType = PerkType.LightsaberProficiency;
-
-            // Assert
-            Assert.That(abilityDetail.EffectiveLevelPerkType, Is.EqualTo(PerkType.LightsaberProficiency));
-        }
-
-        [Test]
         public void AbilityDetail_WithAnimationType_ShouldStoreAnimationTypeCorrectly()
         {
             // Arrange
@@ -298,7 +285,6 @@ namespace SWLOR.Test.Shared.Domain.Ability.ValueObjects
             abilityDetail.ActivationVisualEffect = VisualEffectType.Fnf_Fireball;
             abilityDetail.RecastGroup = RecastGroupType.ForceHeal;
             abilityDetail.ActivationType = AbilityActivationType.Casted;
-            abilityDetail.EffectiveLevelPerkType = PerkType.LightsaberProficiency;
             abilityDetail.AnimationType = AnimationType.LoopingConjure1;
             abilityDetail.CanBeUsedInSpace = true;
             abilityDetail.IgnoreHeavyArmorPenalty = true;
@@ -318,7 +304,6 @@ namespace SWLOR.Test.Shared.Domain.Ability.ValueObjects
             Assert.That(abilityDetail.ActivationVisualEffect, Is.EqualTo(VisualEffectType.Fnf_Fireball));
             Assert.That(abilityDetail.RecastGroup, Is.EqualTo(RecastGroupType.ForceHeal));
             Assert.That(abilityDetail.ActivationType, Is.EqualTo(AbilityActivationType.Casted));
-            Assert.That(abilityDetail.EffectiveLevelPerkType, Is.EqualTo(PerkType.LightsaberProficiency));
             Assert.That(abilityDetail.AnimationType, Is.EqualTo(AnimationType.LoopingConjure1));
             Assert.That(abilityDetail.CanBeUsedInSpace, Is.True);
             Assert.That(abilityDetail.IgnoreHeavyArmorPenalty, Is.True);
@@ -542,9 +527,6 @@ namespace SWLOR.Test.Shared.Domain.Ability.ValueObjects
             abilityDetail.EffectiveLevelPerkType = PerkType.Invalid;
             Assert.That(abilityDetail.EffectiveLevelPerkType, Is.EqualTo(PerkType.Invalid));
 
-            abilityDetail.EffectiveLevelPerkType = PerkType.LightsaberProficiency;
-            Assert.That(abilityDetail.EffectiveLevelPerkType, Is.EqualTo(PerkType.LightsaberProficiency));
-
             abilityDetail.EffectiveLevelPerkType = PerkType.ForceLeap;
             Assert.That(abilityDetail.EffectiveLevelPerkType, Is.EqualTo(PerkType.ForceLeap));
         }
@@ -558,7 +540,6 @@ namespace SWLOR.Test.Shared.Domain.Ability.ValueObjects
             abilityDetail.ActivationVisualEffect = VisualEffectType.Fnf_Fireball;
             abilityDetail.RecastGroup = RecastGroupType.ForceHeal;
             abilityDetail.ActivationType = AbilityActivationType.Casted;
-            abilityDetail.EffectiveLevelPerkType = PerkType.LightsaberProficiency;
             abilityDetail.AnimationType = AnimationType.LoopingConjure1;
             abilityDetail.CanBeUsedInSpace = true;
             abilityDetail.IgnoreHeavyArmorPenalty = true;

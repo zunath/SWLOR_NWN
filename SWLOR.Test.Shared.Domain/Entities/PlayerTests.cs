@@ -181,14 +181,10 @@ namespace SWLOR.Test.Shared.Domain.Entities
             var player = TestDataBuilder.CreatePlayer();
 
             // Act
-            player.Perks[PerkType.LightsaberProficiency] = 3;
             player.Perks[PerkType.ForceLeap] = 2;
-            player.Perks[PerkType.VibrobladeProficiency] = 1;
 
             // Assert
-            Assert.That(player.Perks[PerkType.LightsaberProficiency], Is.EqualTo(3));
             Assert.That(player.Perks[PerkType.ForceLeap], Is.EqualTo(2));
-            Assert.That(player.Perks[PerkType.VibrobladeProficiency], Is.EqualTo(1));
         }
 
         [Test]

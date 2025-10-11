@@ -373,7 +373,7 @@ namespace SWLOR.Component.Perk.Service
 ### 15. Data Hardcoding Restrictions
 - **RULE**: NO hardcoded data values in business logic or service implementations
 - **RULE**: Data values MUST be stored in database, configuration, or constants files
-- **ALLOWED EXCEPTIONS**: 
+- **ALLOWED EXCEPTIONS**:
   - Enum values and their attributes
   - Magic numbers that are truly constant (like array indices, mathematical constants)
   - Default values in constructors or optional parameters
@@ -392,9 +392,33 @@ namespace SWLOR.Component.Perk.Service
   var skillId = SkillType.OneHanded; // Using enum
   ```
 
+### 16. NWN Resource Name Limitations
+- **RULE**: All resrefs (resource references) MUST be 16 characters or less due to NWN limitations
+- **RULE**: Script names used in event handling MUST be 16 characters or less
+- **RULE**: Portrait names MUST be 16 characters or less
+- **RULE**: Area export filenames MUST be 16 characters or less
+- **RULE**: All resource identifiers in NWN API calls MUST respect the 16-character limit
+- **VIOLATION EXAMPLES**:
+  ```csharp
+  // ❌ FORBIDDEN: Resref too long (17 characters)
+  public const string OnVeryLongScriptName = "very_long_script_name"; // 22 characters
+
+  // ❌ FORBIDDEN: Portrait name too long
+  var portraitName = "very_long_portrait_name"; // 23 characters
+  ```
+- **CORRECT APPROACH**:
+  ```csharp
+  // ✅ CORRECT: Within 16-character limit
+  public const string OnLongScriptName = "long_script_nm"; // 14 characters
+
+  // ✅ CORRECT: Portrait name within limit
+  var portraitName = "portrait_name"; // 13 characters
+  ```
+- **ENFORCEMENT**: Script names are validated by unit tests in `ScriptNameTests.cs`
+
 ## Anti-Patterns to AVOID
 
-### 16. Forbidden Patterns
+### 17. Forbidden Patterns
 - **NEVER**: Create circular dependencies between components
 - **NEVER**: Put business logic in event handlers
 - **NEVER**: Create wrapper methods in services for event handlers
@@ -406,7 +430,7 @@ namespace SWLOR.Component.Perk.Service
 - **NEVER**: Use regular C# async/await patterns
 - **NEVER**: Hardcode data values in business logic (use config/database instead)
 
-### 17. Common Mistakes to Avoid
+### 18. Common Mistakes to Avoid
 - **MISTAKE**: `using SWLOR.Component.Inventory.Service;` in Perk component
 - **CORRECT**: `using SWLOR.Shared.Domain.Inventory.Contracts;`
 - **MISTAKE**: Putting `[ScriptHandler<>]` in service classes
@@ -426,7 +450,7 @@ namespace SWLOR.Component.Perk.Service
 
 ## Testing Rules
 
-### 18. Testability Requirements
+### 19. Testability Requirements
 - **RULE**: Services MUST be testable without event infrastructure
 - **RULE**: Use dependency injection for all external dependencies
 - **RULE**: Mock interfaces, not concrete classes
@@ -434,9 +458,9 @@ namespace SWLOR.Component.Perk.Service
 - **RULE**: Use NSubstitute for mocking and NUnit for unit testing framework
 - **RULE**: All unit tests MUST be in corresponding Test projects (e.g., `SWLOR.Test.Component.Perk`)
 
-### 19. Testing Framework Architecture - CRITICAL FOR AI AGENTS
+### 20. Testing Framework Architecture - CRITICAL FOR AI AGENTS
 
-#### 19.1 TestBase Class - Automatic Mocking System
+#### 20.1 TestBase Class - Automatic Mocking System
 The `TestBase` class provides a **COMPLETE AUTOMATIC MOCKING SYSTEM** for all NWScript and NWNX plugin services. This is the **ONLY** way to handle mocking in tests.
 
 **KEY POINTS FOR AI AGENTS:**
@@ -445,7 +469,7 @@ The `TestBase` class provides a **COMPLETE AUTOMATIC MOCKING SYSTEM** for all NW
 - **NO GetMockService() calls** should be made in tests
 - **NO manual mock creation** for NWScript or NWNX services
 
-#### 19.2 How the Mocking System Works
+#### 20.2 How the Mocking System Works
 ```csharp
 [TestFixture]
 public class MyServiceTests : TestBase
@@ -463,7 +487,7 @@ public class MyServiceTests : TestBase
 }
 ```
 
-#### 19.3 Using NWScript in Tests - CORRECT PATTERN
+#### 20.3 Using NWScript in Tests - CORRECT PATTERN
 **✅ CORRECT**: Use direct NWScript static calls - the mocking is handled automatically:
 ```csharp
 [Test]
@@ -483,7 +507,7 @@ public void MyTest()
 }
 ```
 
-#### 19.4 What TestBase.InitializeMockNWScript() Does
+#### 20.4 What TestBase.InitializeMockNWScript() Does
 This method automatically:
 1. **Replaces NWScript service** with `NWScriptServiceMock`
 2. **Replaces ALL NWNX plugin services** with their mock implementations:
@@ -505,7 +529,7 @@ This method automatically:
 
 **IMPORTANT**: All NWNX plugin services are now registered as dependency-injected services in `ServiceRegistration.cs` under the `AddAPIServices()` method. The static wrapper classes have been removed and replaced with proper service interfaces and implementations.
 
-#### 19.5 Common AI Agent Mistakes - DO NOT DO THESE
+#### 20.5 Common AI Agent Mistakes - DO NOT DO THESE
 **❌ WRONG**: Trying to mock NWScript manually
 ```csharp
 // DON'T DO THIS
@@ -551,7 +575,7 @@ protected static void VerifyMockCall(string method) { ... } // WRONG!
 protected static T GetMockData<T>(string key) { ... } // WRONG!
 ```
 
-#### 19.6 What You CAN Mock with NSubstitute
+#### 20.6 What You CAN Mock with NSubstitute
 **✅ CORRECT**: Mock other services (database, cache, etc.) and NWNX plugin services
 ```csharp
 [SetUp]
@@ -579,13 +603,13 @@ public void SetUp()
 
 **IMPORTANT**: For tests that use NWNX plugin services, you MUST mock them with NSubstitute since the static classes no longer exist. The `InitializeMockNWScript()` method only handles NWScript mocking, not NWNX plugin services.
 
-#### 19.7 Test Isolation and Cleanup
+#### 20.7 Test Isolation and Cleanup
 - **TestBase automatically resets mock state** between tests
 - **No manual cleanup** of NWScript/NWNX mocks needed
 - **Each test gets a fresh mock state** automatically
 - **Mock data persists within a single test** but is reset between tests
 
-#### 19.8 Mock Data Verification
+#### 20.8 Mock Data Verification
 The mock implementations store data that can be verified:
 ```csharp
 [Test]
@@ -604,7 +628,7 @@ public void VerifyMockData()
 }
 ```
 
-### 20. Testing Best Practices
+### 21. Testing Best Practices
 - **RULE**: Always inherit from `TestBase` for any test that uses NWScript or NWNX
 - **RULE**: Call `InitializeMockNWScript()` in `[SetUp]` method
 - **RULE**: Use direct NWScript static calls in tests - no manual mocking
@@ -615,9 +639,9 @@ public void VerifyMockData()
 - **RULE**: NEVER add helper methods like `GetMockService()` to TestBase
 - **RULE**: TestBase is a complete, final implementation - do not extend it
 
-### 21. Unit Testing Infrastructure Rules - CRITICAL FOR AI AGENTS
+### 22. Unit Testing Infrastructure Rules - CRITICAL FOR AI AGENTS
 
-#### 21.1 NWScript Global Availability
+#### 22.1 NWScript Global Availability
 - **RULE**: NWScript has a `GlobalUsings.cs` file which automatically imports NWScript to all other files
 - **RULE**: NWScript is available globally in all test files - DO NOT add `using SWLOR.NWN.API.Service;` statements
 - **RULE**: Direct NWScript static calls work in tests without any using statements or manual setup
@@ -637,7 +661,7 @@ public class MyServiceTests : TestBase
 }
 ```
 
-#### 21.2 TestBase Inheritance Requirement
+#### 22.2 TestBase Inheritance Requirement
 - **RULE**: Every unit test file MUST inherit from `TestBase`
 - **RULE**: All unit tests that use NWScript or NWNX plugin services MUST inherit from `TestBase`
 - **VIOLATION EXAMPLE**:
@@ -663,7 +687,7 @@ public class MyServiceTests : TestBase // CORRECT!
 }
 ```
 
-#### 21.3 InitializeMockNWScript() Setup Requirement
+#### 22.3 InitializeMockNWScript() Setup Requirement
 - **RULE**: There MUST be a call to `InitializeMockNWScript()` in the `[SetUp]` method of each test file
 - **RULE**: This call MUST be the first line in the `[SetUp]` method
 - **RULE**: This method automatically sets up ALL NWScript and NWNX plugin mocking
@@ -702,7 +726,7 @@ public class MyServiceTests : TestBase
 }
 ```
 
-#### 21.4 TestBase Modification Restrictions
+#### 22.4 TestBase Modification Restrictions
 - **RULE**: TestBase MUST NOT be modified by anyone
 - **RULE**: NO methods or properties should be added to TestBase
 - **RULE**: NO modifications to TestBase.cs are allowed
@@ -722,7 +746,7 @@ public class TestBase
 }
 ```
 
-#### 21.5 NWScript.cs Modification Restrictions
+#### 22.5 NWScript.cs Modification Restrictions
 - **RULE**: NOTHING should be added directly to NWScript.cs
 - **RULE**: NWScript.cs is a generated file that should not be modified manually
 - **RULE**: All NWScript extensions should be handled through proper service layers
@@ -737,7 +761,7 @@ public static class NWScript
 ```
 - **CORRECT APPROACH**: Create extension methods in appropriate service layers or use the existing NWScript API.
 
-#### 21.6 Reflection Method Access Restrictions in Unit Tests
+#### 22.6 Reflection Method Access Restrictions in Unit Tests
 - **RULE**: Using reflection to get methods is NOT allowed in unit tests
 - **RULE**: Direct method calls through reflection (e.g., `GetMethod()`, `Invoke()`) MUST NOT be used in tests
 - **RULE**: Test business logic through public APIs, not by bypassing encapsulation with reflection
@@ -767,7 +791,7 @@ public void TestThroughPublicAPI()
 
 ## Documentation Rules
 
-### 22. Code Documentation
+### 23. Code Documentation
 - **RULE**: All public methods MUST have XML documentation
 - **RULE**: Include parameter descriptions and return value descriptions
 - **RULE**: Document complex business logic with inline comments
@@ -777,14 +801,14 @@ public void TestThroughPublicAPI()
 
 ## Migration and Refactoring Rules
 
-### 23. When Adding New Features
+### 24. When Adding New Features
 - **RULE**: Start with component-specific implementation
 - **RULE**: Only move to shared domain when second component needs it
 - **RULE**: Create interfaces before implementations
 - **RULE**: Register services in appropriate DI container
 - **RULE**: Separate event handling from business logic from the start
 
-### 24. When Modifying Existing Code
+### 25. When Modifying Existing Code
 - **RULE**: Maintain existing architecture patterns
 - **RULE**: Don't break component boundaries
 - **RULE**: Update all references when moving entities
@@ -792,13 +816,13 @@ public void TestThroughPublicAPI()
 
 ## Specific Component Rules
 
-### 25. Perk Component Specifics
+### 26. Perk Component Specifics
 - **RULE**: Perk services are split into focused services (Data, Level, Trigger, Cache)
 - **RULE**: Main PerkService acts as a facade
 - **RULE**: Use caching for expensive perk calculations
 - **RULE**: Perk requirements are handled by dedicated factory
 
-### 26. Event System Rules
+### 27. Event System Rules
 - **RULE**: Use `[ScriptHandler<>]` attributes for event registration
 - **RULE**: Event handlers MUST be in `EventHandlers/` folder
 - **RULE**: One event handler class per component
@@ -820,6 +844,7 @@ Before submitting any changes, verify:
 - [ ] TestBase class is never modified or extended
 - [ ] Nothing is added directly to NWScript.cs (use proper service layers instead)
 - [ ] No reflection used to access methods in unit tests (test through public APIs)
+- [ ] All resrefs and resource names respect 16-character limit (NWN limitation)
 - [ ] Services registered as singletons (unless transient needed)
 - [ ] Event handlers separated from services
 - [ ] No wrapper methods in services for event handlers

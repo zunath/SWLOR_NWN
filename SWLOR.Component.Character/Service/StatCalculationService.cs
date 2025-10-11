@@ -1,6 +1,4 @@
-﻿using NWN.Native.API;
-using SWLOR.Component.Character.Contracts;
-using SWLOR.NWN.API.NWScript.Enum;
+﻿using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
 using SWLOR.Shared.Domain.Combat.Enums;
@@ -9,7 +7,6 @@ using SWLOR.Shared.Domain.Inventory.Contracts;
 using SWLOR.Shared.Domain.Skill.Contracts;
 using SWLOR.Shared.Domain.Skill.Enums;
 using SWLOR.Shared.Domain.StatusEffect.Contracts;
-using System.Buffers.Text;
 
 namespace SWLOR.Component.Character.Service
 {
@@ -847,6 +844,22 @@ namespace SWLOR.Component.Character.Service
                 craftsmanship = 0;
 
             return craftsmanship;
+        }
+
+        public float CalculateMovementRate(uint creature)
+        {
+            var effects = _statusEffectService.GetCreatureStatGroup(creature);
+            var movement = _characterStatService.GetStat(creature, StatType.MovementSpeed) + 
+                            effects.GetStat(StatType.MovementSpeed);
+            var adjustedStat = movement * 0.01f;
+            var rate = 1.0f + adjustedStat;
+
+            if (rate > 1.5f)
+                rate = 1.5f;
+            else if (rate < 0.5f)
+                rate = 0.5f;
+
+            return rate;
         }
 
         /// <inheritdoc />

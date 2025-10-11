@@ -76,6 +76,7 @@
         public const string OnCharacterXPModifierChanged = "char_xpmod_chg";
         public const string OnCharacterPoisonResistChanged = "char_poisonres_chg";
         public const string OnCharacterLevelChanged = "char_level_chg";
+        public const string OnCharacterMovementSpeedChanged = "char_movspd_chg";
         public const string OnCharacterControlSmitheryChanged = "char_ctrl_smith_chg";
         public const string OnCharacterControlFabricationChanged = "char_ctrl_fab_chg";
         public const string OnCharacterControlEngineeringChanged = "char_ctrl_eng_chg";

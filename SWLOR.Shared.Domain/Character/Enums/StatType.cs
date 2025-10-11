@@ -58,5 +58,6 @@
         CPFabrication = 53,
         CPEngineering = 54,
         CPAgriculture = 55,
+        MovementSpeed = 56,
     }
 }

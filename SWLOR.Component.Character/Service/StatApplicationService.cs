@@ -1,5 +1,4 @@
-﻿using SWLOR.Component.Character.Contracts;
-using SWLOR.NWN.API.Contracts;
+﻿using SWLOR.NWN.API.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Domain.Character.Contracts;
 
@@ -137,6 +136,12 @@ namespace SWLOR.Component.Character.Service
             SetCurrentHitPoints(npc, GetMaxHitPoints(npc));
             SetLocalInt(npc, "FP", fp);
             SetLocalInt(npc, "STAMINA", stamina);
+        }
+
+        public void ApplyMovementRateFactor(uint creature)
+        {
+            var movementRate = _statCalculation.CalculateMovementRate(creature);
+            _creaturePlugin.SetMovementRateFactor(creature, movementRate);
         }
     }
 }

@@ -1,4 +1,3 @@
-using SWLOR.Component.Character.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Domain.Character.Contracts;
@@ -340,6 +339,11 @@ namespace SWLOR.Component.Character.Service
             SetStat(creature, StatType.Level, value, new OnCharacterLevelChanged());
         }
         /// <inheritdoc />
+        public void SetMovementSpeed(uint creature, int value)
+        {
+            SetStat(creature, StatType.MovementSpeed, value, new OnCharacterMovementSpeedChanged());
+        }
+        /// <inheritdoc />
         public void SetControlSmithery(uint creature, int value)
         {
             SetStat(creature, StatType.ControlSmithery, value, new OnCharacterControlSmitheryChanged());
@@ -638,6 +642,12 @@ namespace SWLOR.Component.Character.Service
         {
             var currentValue = GetStat(creature, StatType.Level);
             SetLevel(creature, currentValue + adjustment);
+        }
+        /// <inheritdoc />
+        public void ModifyMovementSpeed(uint creature, int adjustment)
+        {
+            var currentValue = GetStat(creature, StatType.MovementSpeed);
+            SetMovementSpeed(creature, currentValue + adjustment);
         }
         /// <inheritdoc />
         public void ModifyControlSmithery(uint creature, int adjustment)

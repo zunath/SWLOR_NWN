@@ -1,5 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using SWLOR.Component.Character.Contracts;
 using SWLOR.NWN.API.Contracts;
 using SWLOR.NWN.API.NWNX.Model;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -7,7 +6,6 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Domain.Character.Contracts;
 using SWLOR.Shared.Domain.Character.Enums;
-using SWLOR.Shared.Domain.Combat.Contracts;
 using SWLOR.Shared.Domain.Entities;
 using SWLOR.Shared.Domain.Migration.Contracts;
 using SWLOR.Shared.Domain.Skill.Contracts;

@@ -64,6 +64,13 @@ namespace SWLOR.Component.Character.EventHandlers
             _statApplication.ApplyCharacterSocial(OBJECT_SELF);
         }
 
+
+        [ScriptHandler<OnCharacterMovementSpeedChanged>]
+        public void ApplyMovementSpeedChange()
+        {
+            _statApplication.ApplyMovementRateFactor(OBJECT_SELF);
+        }
+
         [ScriptHandler<OnCreatureSpawnBefore>]
         public void ApplyNPCStats()
         {

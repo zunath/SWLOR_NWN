@@ -381,6 +381,8 @@ namespace SWLOR.Shared.Domain.Character.Contracts
         /// <returns>The craftsmanship rating for the specified crafting type</returns>
         int CalculateCraftsmanship(uint creature, CraftType craftType);
 
+        float CalculateMovementRate(uint creature);
+
         /// <summary>
         /// Calculates the attack rating using raw inputs.
         /// </summary>

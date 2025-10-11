@@ -308,6 +308,13 @@ namespace SWLOR.Shared.Domain.Character.Contracts
         void SetLevel(uint creature, int value);
 
         /// <summary>
+        /// Sets the movement speed stat for a creature.
+        /// </summary>
+        /// <param name="creature">The creature to modify.</param>
+        /// <param name="value">The new movement speed value.</param>
+        void SetMovementSpeed(uint creature, int value);
+
+        /// <summary>
         /// Sets the control smithery stat for a creature.
         /// </summary>
         /// <param name="creature">The creature to modify.</param>
@@ -670,6 +677,13 @@ namespace SWLOR.Shared.Domain.Character.Contracts
         /// <param name="creature">The creature to modify.</param>
         /// <param name="adjustment">The value to add to the current level.</param>
         void ModifyLevel(uint creature, int adjustment);
+
+        /// <summary>
+        /// Modifies the movement speed stat for a creature by adding the adjustment value.
+        /// </summary>
+        /// <param name="creature">The creature to modify.</param>
+        /// <param name="adjustment">The value to add to the current movement speed.</param>
+        void ModifyMovementSpeed(uint creature, int adjustment);
 
         /// <summary>
         /// Modifies the control smithery stat for a creature by adding the adjustment value.

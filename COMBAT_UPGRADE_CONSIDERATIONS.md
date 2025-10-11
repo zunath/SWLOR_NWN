@@ -102,6 +102,47 @@ This document tracks items that need to be considered and implemented for the co
 - Test new Resistance item property functionality
 
 ## Future Considerations
+
+### 1. Update iprp_resperk.2da
+- **Task**: Update iprp_resperk.2da to reflect changes in the perk list
+- **Status**: Pending
+- **Details**:
+  - Review changes made to perk definitions during combat upgrade
+  - Update the 2da file to include any new perks or modified perk references
+  - Ensure proper indexing and naming conventions are maintained
+  - Test that perk item properties function correctly after update
+
+### 2. Weapon Proficiency Restrictions
+- **Task**: Implement equipment restrictions to prevent standard characters from equipping Force-specific weapons (lightsabers)
+- **Status**: Pending
+- **Details**:
+  - Review all Force-specific weapons that should be restricted
+  - Implement skill-based equipment validation system
+  - Add checks during item equipping to verify character has appropriate skills/perks
+  - Provide clear feedback to players when equipment is restricted
+  - Test with various character builds to ensure proper restrictions
+
+### 3. Skill Level Equipment Checks
+- **Task**: Add skill level validation when equipping items
+- **Status**: Pending
+- **Details**:
+  - Implement skill requirement checking for equipment
+  - Add minimum skill level thresholds for various item types
+  - Update equipment validation logic to include skill checks
+  - Ensure proper error messaging when skill requirements aren't met
+  - Test skill progression and equipment availability
+
+### 4. Item Property Migration - Perk to Skill Requirements
+- **Task**: Replace perk requirement item properties with skill requirement item properties
+- **Status**: Pending
+- **Details**:
+  - Identify all items with perk-based requirements
+  - Design new skill requirement item property structure
+  - Create migration script to convert existing perk requirements to skill requirements
+  - Update item property handling code
+  - Test that migrated items work correctly with new skill system
+  - Ensure backward compatibility during transition period
+
 - Additional items will be added to this list as the project progresses
 - Each item should include status, priority, and implementation details
 - Consider impact on existing player data and gameplay balance

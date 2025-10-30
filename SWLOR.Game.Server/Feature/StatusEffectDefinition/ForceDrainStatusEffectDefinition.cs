@@ -152,6 +152,18 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         private void ProcessForceDrainTick(VisualEffect vfx, int damage, int heal, uint target, uint source)
         {
+
+            // Check if caster and target are within 20.0f range limit
+            var distance = GetDistanceBetween(source, target);
+            if (distance > 20.0f)
+            {
+                // End the concentration ability if range is exceeded
+                Ability.EndConcentrationAbility(source);
+                SendMessageToPC(source, "Your Force Drain connection has been broken due to exceeding a distance of 20m.");
+                return;
+            }
+
+
             var dc = Combat.CalculateSavingThrowDC(source, SavingThrow.Will, 14);
             var checkResult = WillSave(target, dc, SavingThrowType.None, source);
 

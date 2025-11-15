@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Knockdown")
 
                 .AddPerkLevel()
-                .Description("Your next attack has a 12DC fortitude check to inflict knockdown on your target for 4 seconds. [Cross Skill]")
+                .Description("Your next attack has a 15DC fortitude check to inflict knockdown on your target for 4 seconds. [Cross Skill]")
                 .Price(3)
                 .DroidAISlots(2)
                 .RequirementSkill(SkillType.MartialArts, 15)

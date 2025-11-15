@@ -293,7 +293,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Shocking Shout")
 
                 .AddPerkLevel()
-                .Description("Attempts to stun all nearby enemies for 2 seconds with a 14DC will check. (Max: 6 targets)")
+                .Description("Attempts to stun all nearby enemies for 2 seconds with a will check of 12+SOC/2. (Max: 6 targets)")
                 .Price(3)
                 .RequirementSkill(SkillType.Leadership, 25)
                 .RequirementCharacterType(CharacterType.Standard)

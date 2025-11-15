@@ -25,10 +25,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
             _builder.Create(FeatType.ShockingShout, PerkType.ShockingShout)
                 .Name("Shocking Shout")
                 .Level(1)
-                .HasRecastDelay(RecastGroup.ShockingShout, 180f)
-                .HasActivationDelay(4f)
+                .HasRecastDelay(RecastGroup.ShockingShout, 120f)
+                .HasActivationDelay(0f)
                 .UnaffectedByHeavyArmor()
-                .IsCastedAbility()
                 .UsesAnimation(Animation.FireForgetTaunt)
                 .HasImpactAction((activator, target, level, location) =>
                 {
@@ -52,7 +51,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                         {
                             count++;
 
-                            var dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Will, 14);
+                            var social = GetAbilityScore(activator, AbilityType.Social);
+                            var dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Will, 12 + (social / 2));
                             const float BaseDuration = 2f;
                             var bonusDuration = GetAbilityModifier(AbilityType.Social, activator) * 0.5f;
                             var duration = BaseDuration + bonusDuration;

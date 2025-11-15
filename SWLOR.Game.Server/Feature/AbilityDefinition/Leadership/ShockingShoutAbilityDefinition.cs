@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                             count++;
 
                             var social = GetAbilityScore(activator, AbilityType.Social);
-                            var dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Will, 12 + (social / 2));
+                            var dc = 12 + (social / 2);
                             const float BaseDuration = 2f;
                             var bonusDuration = GetAbilityModifier(AbilityType.Social, activator) * 0.5f;
                             var duration = BaseDuration + bonusDuration;

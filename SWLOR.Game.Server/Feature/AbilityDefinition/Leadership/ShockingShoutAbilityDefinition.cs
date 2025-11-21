@@ -27,6 +27,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                 .Level(1)
                 .HasRecastDelay(RecastGroup.ShockingShout, 120f)
                 .HasActivationDelay(0f)
+                .HasRecastDelay(RecastGroup.ShockingShout, 120f)
+                .HasActivationDelay(0.5f)
                 .UnaffectedByHeavyArmor()
                 .UsesAnimation(Animation.FireForgetTaunt)
                 .HasImpactAction((activator, target, level, location) =>
@@ -61,15 +63,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                             if (checkResult == SavingThrowResultType.Failed)
                             {
                                 ApplyEffectToObject(DurationType.Temporary, EffectStunned(), nearest, duration);
-                                Ability.ApplyTemporaryImmunity(target, duration, ImmunityType.Stun);
+                                Ability.ApplyTemporaryImmunity(nearest, duration, ImmunityType.Stun);
                                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Sonic), nearest);
                             }
 
                             CombatPoint.AddCombatPoint(activator, nearest, SkillType.Leadership, 3);
-                            Enmity.ModifyEnmity(activator, target, 650);
+                            Enmity.ModifyEnmity(activator, nearest, 650);
                         }
 
-                        if (count > MaxTargets)
+                        if (count >= MaxTargets)
                         {
                             break;
                         }

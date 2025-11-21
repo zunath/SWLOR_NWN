@@ -90,6 +90,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("dantari_iknife", 20);
 
             _builder.Create("DANTOOINE_DANTARI_HUNTER_GEAR_RARES")
+                .IsRare()
                 .AddItem("dan_heavy_armor", 1)
                 .AddItem("dan_hyper_gloves", 1)
                 .AddItem("dan_h_cloak", 1)
@@ -114,9 +115,10 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("bantha_milk", 1);
 
             _builder.Create("DANTOOINE_DANTARI_SHAMAN_GEAR_RARES")
-                    .AddItem("dan_h_cloak", 10)
-                    .AddItem("dan_shuriken", 10)
-                    .AddItem("dan_spear", 10);
+                .IsRare()
+                .AddItem("dan_h_cloak", 10)
+                .AddItem("dan_shuriken", 10)
+                .AddItem("dan_spear", 10);
 
             _builder.Create("DANTOOINE_DANTARI_SHAMAN_RARES")
                 .IsRare()

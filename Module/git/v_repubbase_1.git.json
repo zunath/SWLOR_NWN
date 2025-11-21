@@ -34454,6 +34454,21 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
+                "value": "SCRIPT_1"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "Placeable.WarpDevice.OnUsed"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
                 "value": "DESTINATION"
               },
               "Type": {
@@ -34462,7 +34477,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "RepBase_Exit"
+                "value": "WP_V_RepBaseExt_to_RepBaseInt"
               }
             },
             {
@@ -134588,7 +134603,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "RepBase_Entrance"
+          "value": "WP_V_RepBaseInt_to_RepBaseExt"
         },
         "TemplateResRef": {
           "type": "resref",

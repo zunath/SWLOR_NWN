@@ -32333,7 +32333,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "JEDI_TEMPLE_CAVE_TO_TEMPLE"
+                "value": "WP_VE_TempleToCave"
               }
             },
             {
@@ -32657,7 +32657,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "JEDI_TEMPLE_TO_CAVE"
+          "value": "WP_VE_CaveToTemple"
         },
         "TemplateResRef": {
           "type": "resref",

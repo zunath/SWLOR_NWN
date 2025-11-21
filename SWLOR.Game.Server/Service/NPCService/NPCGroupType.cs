@@ -127,7 +127,8 @@ namespace SWLOR.Game.Server.Service.NPCService
         Korriban_RogueInitiates = 58,
         [NPCGroup("Korriban Frog")]
         Korriban_AlchemizedFrog = 59,
-
+        [NPCGroup("Dantari Shaman")]
+        Dantooine_DantariShaman = 60,
 
     }
 

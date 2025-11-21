@@ -2881,9 +2881,6 @@
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
-
-          "value": "prefabdarkbase"
-
           "value": "tat_anc_junix"
         }
       },
@@ -2899,7 +2896,13 @@
         "Area_Name": {
           "type": "resref",
           "value": "tat_smeskspalace"
-
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "prefabdarkbase"
         }
       }
     ]
@@ -3204,7 +3207,7 @@
   },
   "Mod_ID": {
     "type": "void",
-    "value": "Ã¿Ã¿Ã¿Ã¿\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000"
+    "value": "ÿÿÿÿ\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000"
   },
   "Mod_IsSaveGame": {
     "type": "byte",
@@ -3212,7 +3215,7 @@
   },
   "Mod_MinGameVer": {
     "type": "cexostring",
-    "value": "1.80"
+    "value": "1.89"
   },
   "Mod_MinPerHour": {
     "type": "byte",

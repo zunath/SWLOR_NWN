@@ -5867,7 +5867,7 @@
         },
         "ChallengeRating": {
           "type": "float",
-          "value": 15.0
+          "value": 23.0
         },
         "ClassList": {
           "type": "list",
@@ -7595,7 +7595,7 @@
         },
         "ChallengeRating": {
           "type": "float",
-          "value": 15.0
+          "value": 23.0
         },
         "ClassList": {
           "type": "list",
@@ -9323,7 +9323,7 @@
         },
         "ChallengeRating": {
           "type": "float",
-          "value": 15.0
+          "value": 23.0
         },
         "ClassList": {
           "type": "list",
@@ -11051,7 +11051,7 @@
         },
         "ChallengeRating": {
           "type": "float",
-          "value": 15.0
+          "value": 23.0
         },
         "ClassList": {
           "type": "list",
@@ -12779,7 +12779,7 @@
         },
         "ChallengeRating": {
           "type": "float",
-          "value": 15.0
+          "value": 23.0
         },
         "ClassList": {
           "type": "list",
@@ -14507,7 +14507,7 @@
         },
         "ChallengeRating": {
           "type": "float",
-          "value": 15.0
+          "value": 23.0
         },
         "ClassList": {
           "type": "list",
@@ -16731,7 +16731,7 @@
         },
         "ChallengeRating": {
           "type": "float",
-          "value": 15.0
+          "value": 23.0
         },
         "ClassList": {
           "type": "list",
@@ -18535,7 +18535,7 @@
         },
         "ChallengeRating": {
           "type": "float",
-          "value": 15.0
+          "value": 23.0
         },
         "ClassList": {
           "type": "list",
@@ -19488,7 +19488,7 @@
         },
         "ChallengeRating": {
           "type": "float",
-          "value": 15.0
+          "value": 23.0
         },
         "ClassList": {
           "type": "list",
@@ -27155,7 +27155,7 @@
         },
         "ChallengeRating": {
           "type": "float",
-          "value": 15.0
+          "value": 23.0
         },
         "ClassList": {
           "type": "list",
@@ -28883,7 +28883,7 @@
         },
         "ChallengeRating": {
           "type": "float",
-          "value": 15.0
+          "value": 23.0
         },
         "ClassList": {
           "type": "list",

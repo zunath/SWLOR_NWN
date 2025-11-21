@@ -5761,7 +5761,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Revêtement de droïde éboueur"
+                      "value": "Revï¿½tement de droï¿½de ï¿½boueur"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -27324,6 +27324,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Frog Guts"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "frogguts"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Frog Legs"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "froglegs"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Furniture"
                     },
                     "RESREF": {
@@ -36861,6 +36883,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Tukata Hide"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tukata_hide"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Turmeric I"
                     },
                     "RESREF": {
@@ -41815,6 +41848,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Forbidden Gumbo"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "forbid_gumbo"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Fresh Bread"
                     },
                     "RESREF": {
@@ -43394,6 +43438,17 @@
               "LIST": {
                 "type": "list",
                 "value": [
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Alchemized Spear"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_alcspear"
+                    }
+                  },
                   {
                     "__struct_id": 0,
                     "NAME": {
@@ -46703,6 +46758,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "recipe_dosushi"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Recipe: Forbidden Gumbo"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_gumbo"
                     }
                   },
                   {
@@ -50729,7 +50795,7 @@
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "key_sith_01"
+                      "value": "key_leg"
                     }
                   },
                   {
@@ -50813,22 +50879,22 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Revanite ID Codes - Level 2"
+                      "value": "Sith ID Codes - Level 2"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "key_sith_02"
+                      "value": "key_sith_2"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Revanite ID Codes - Level 3"
+                      "value": "Sith ID Codes - Level 3"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "key_sith_03"
+                      "value": "key_sith_3"
                     }
                   },
                   {
@@ -55483,6 +55549,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "vdathbiteshaman"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Alchemized Spear"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "alc_spear"
                     }
                   },
                   {

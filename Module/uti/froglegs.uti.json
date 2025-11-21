@@ -2,11 +2,11 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 0
+    "value": 1020
   },
   "BaseItem": {
     "type": "int",
-    "value": 24
+    "value": 526
   },
   "Charges": {
     "type": "byte",
@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 0
+    "value": 1020
   },
   "Cursed": {
     "type": "byte",
@@ -26,11 +26,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Alchemized frog legs, warped by forbidden magic, exude an eerie, dark-side pulse. Their slimy texture and sinister aura make them a rare and unsettling ingredient for only the boldest of alchemists. A relic of corrupted nature."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": ""
+    }
   },
   "Identified": {
     "type": "byte",
@@ -39,20 +43,20 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Revanite ID Codes - Level 2"
+      "0": "Frog Legs"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 240
+    "value": 127
   },
   "PaletteID": {
     "type": "byte",
-    "value": 1
+    "value": 64
   },
   "Plot": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "PropertiesList": {
     "type": "list",
@@ -68,14 +72,14 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "Key_S_2"
+    "value": "froglegs"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "key_sith_02"
+    "value": "froglegs"
   },
   "xModelPart1": {
     "type": "word",
-    "value": 240
+    "value": 127
   }
 }

@@ -11466,6 +11466,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 51.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Alchemized Frog Boss"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "frogboss"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 84.0
                     },
                     "FACTION": {

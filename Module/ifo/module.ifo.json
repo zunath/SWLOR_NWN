@@ -2804,13 +2804,6 @@
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
-          "value": "vlegthird"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
           "value": "ar_scor_kacademy"
         }
       },
@@ -2903,6 +2896,13 @@
         "Area_Name": {
           "type": "resref",
           "value": "tat_smeskspalace"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "prefabdarkbase"
         }
       }
     ]
@@ -3215,7 +3215,7 @@
   },
   "Mod_MinGameVer": {
     "type": "cexostring",
-    "value": "1.80"
+    "value": "1.89"
   },
   "Mod_MinPerHour": {
     "type": "byte",

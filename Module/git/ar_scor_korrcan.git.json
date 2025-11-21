@@ -41631,6 +41631,21 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
+                "value": "SCRIPT_1"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "Placeable.WarpDevice.OnUsed"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
                 "value": "DESTINATION"
               },
               "Type": {
@@ -41951,6 +41966,21 @@
         "VarTable": {
           "type": "list",
           "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SCRIPT_1"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "Placeable.WarpDevice.OnUsed"
+              }
+            },
             {
               "__struct_id": 0,
               "Name": {
@@ -44321,15 +44351,15 @@
         },
         "X": {
           "type": "float",
-          "value": 24.12273406982422
+          "value": 33.17399597167969
         },
         "Y": {
           "type": "float",
-          "value": 26.6374397277832
+          "value": 27.77535820007324
         },
         "Z": {
           "type": "float",
-          "value": 3.921318531036377
+          "value": -5.7220458984375e-006
         }
       },
       {

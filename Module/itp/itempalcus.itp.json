@@ -5761,7 +5761,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Revï¿½tement de droï¿½de ï¿½boueur"
+                      "value": "Revêtement de droïde éboueur"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -50873,6 +50873,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "key_rep_003"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Revanite ID Codes - Level 3"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "key_sith_03"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith ID Codes - Level 2"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "key_ren_2"
                     }
                   },
                   {

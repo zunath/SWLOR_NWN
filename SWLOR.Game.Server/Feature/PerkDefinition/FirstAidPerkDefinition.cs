@@ -309,7 +309,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Infusion")
 
                 .AddPerkLevel()
-                .Description("Grants your target regeneration which heals 20 HP every six seconds for 24 seconds. Consumes stim pack on use.")
+                .Description("Grants your target regeneration which heals 60 HP every six seconds for 24 seconds. Consumes stim pack on use.")
                 .Price(3)
                 .DroidAISlots(2)
                 .RequirementSkill(SkillType.FirstAid, 25)
@@ -317,7 +317,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Infusion1)
 
                 .AddPerkLevel()
-                .Description("Grants your target regeneration which heals 40 HP every six seconds for 24 seconds. Consumes stim pack on use.")
+                .Description("Grants your target regeneration which heals 120 HP every six seconds for 24 seconds. Consumes stim pack on use.")
                 .Price(4)
                 .DroidAISlots(4)
                 .RequirementSkill(SkillType.FirstAid, 45)

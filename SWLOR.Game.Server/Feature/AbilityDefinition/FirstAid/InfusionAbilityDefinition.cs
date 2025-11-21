@@ -77,7 +77,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 })
                 .HasImpactAction((activator, target, _, _) =>
                 {
-                    Impact(activator, target, 20, Tier1Tag);
+                    Impact(activator, target, 60, Tier1Tag);
                 });
         }
 
@@ -99,7 +99,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 })
                 .HasImpactAction((activator, target, _, _) =>
                 {
-                    Impact(activator, target, 40, Tier2Tag);
+                    Impact(activator, target, 120, Tier2Tag);
                 });
         }
     }

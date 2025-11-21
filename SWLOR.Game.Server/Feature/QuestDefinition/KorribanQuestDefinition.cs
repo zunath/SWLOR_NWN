@@ -15,7 +15,9 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             TheSithCodeTest();
             ProvingYourDominance();
             EliminateKlorSlug();
+            SkinsInTheShadows();
             FactoryWorkerParts();
+            FrogBoss();
             return _builder.Build();
         }
 
@@ -83,6 +85,22 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddGoldReward(3000)
                 .AddItemReward("apprentice_dark_", 1);
         }
+        private void FrogBoss()
+        {
+            _builder.Create("alchemized_frog", "Curse of the Alchemized One")
+                .PrerequisiteQuest("prove_dominance")
+
+                .AddState()
+                .SetStateJournalText("Warrior Camila has sensed dark alchemical energy emanating from the ancient tombs. She tasks you with investigating the disturbance.")
+                .AddKillObjective(NPCGroupType.Korriban_AlchemizedFrog, 1)
+                .AddState()
+
+                .AddState()
+                .SetStateJournalText("The creature is slain. Return to Dral'kor Keth and report your findings.")
+                .AddXPReward(10000)
+                .AddGoldReward(4000);
+                
+        }
         private void EliminateKlorSlug()
         {
             _builder.Create("eliminate_klorslug", "Eliminate the K'lor'slug")
@@ -97,7 +115,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddGoldReward(1000)
                 .AddItemReward("slug_surprise", 1);
         }
+        private void SkinsInTheShadows()
+        {
+            _builder.Create("hides_tukata", "Skins in the Shadows")
 
+                .AddState()
+                .SetStateJournalText("A nervous smuggler in the shadows has asked you to gather hides from the fierce Tuk’ata beasts roaming the inside of the tombs. Be cautious.")
+                .AddCollectItemObjective("tukata_hide", 5)
+
+                .AddState()
+                .SetStateJournalText("You've gathered the Tuk'ata hides. Return to the smuggler — and don't draw any attention.")
+                .AddXPReward(6000)
+                .AddGoldReward(2000);
+
+        }
         private void FactoryWorkerParts()
         {
             _builder.Create("factory_worker_parts", "Factory Worker Needs Parts")

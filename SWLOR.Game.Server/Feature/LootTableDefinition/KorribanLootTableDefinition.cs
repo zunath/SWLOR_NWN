@@ -18,7 +18,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             KorribanFortressLoot();
             SithCryptCrates();
             RogueSith();
-            Tukata(); 
+            Tukata();
+            FrogBoss();
             return _builder.Build();
         }
 
@@ -338,14 +339,68 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         {
             _builder.Create("KORRIBAN_TUKATA")
                 .AddItem("lth_ruined", 5)
-                .AddItem("lth_good", 5);
-                
+                .AddItem("tukata_hide", 5);
+
 
             _builder.Create("KORRIBAN_TUKATA_RARES")
                 .IsRare()
-                .AddItem("map_56", 11, 1, true)
                 .AddGold(32, 5);
 
+        }
+        private void FrogBoss()
+        {
+            _builder.Create("FROG_BOSS")
+                .AddItem("froglegs", 5)
+                .AddItem("frogguts", 5)
+                .AddItem("chiro_shard", 1);
+
+
+            _builder.Create("FROG_BOSS_RARES")
+                .IsRare()
+                .AddItem("chiro_shard", 1, 1, true)
+                .AddGold(1000, 5);
+
+            _builder.Create("FROG_BOSS_RECIPE")
+                .AddItem("recipe_gumbo", 10)
+                .AddItem("recipe_alcstaff", 10)
+                .AddItem("recipe_chispear", 10)
+                .AddItem("recipe_chiknife", 10)
+                .AddItem("recipe_chipistol", 10)
+                .AddItem("recipe_chistaff", 10)
+                .AddItem("recipe_chilngswd", 10)
+                .AddItem("recipe_chikatar", 10)
+                .AddItem("recipe_chishuri", 10)
+                .AddItem("recipe_chirifle", 10)
+                .AddItem("recipe_chitwinbl", 10)
+                .AddItem("recipe_chielec", 10)
+                .AddItem("recipe_saberupg1", 10)
+                .AddItem("recipe_staffupg1", 10)
+                .AddItem("recipe_chitelec", 10)
+                .AddItem("recipe_chshield", 10)
+                .AddItem("recipe_chcloak", 10)
+                .AddItem("recipe_chbelt", 10)
+                .AddItem("recipe_chring", 10)
+                .AddItem("recipe_chneck", 10)
+                .AddItem("recipe_chbreast", 10)
+                .AddItem("recipe_chhelm", 10)
+                .AddItem("recipe_chbracer", 10)
+                .AddItem("recipe_chlegg", 10)
+                .AddItem("recipe_mgcloak", 10)
+                .AddItem("recipe_mgbelt", 10)
+                .AddItem("recipe_mgring", 10)
+                .AddItem("recipe_mgneck", 10)
+                .AddItem("recipe_mgtunic", 10)
+                .AddItem("recipe_mgcap", 10)
+                .AddItem("recipe_mggloves", 10)
+                .AddItem("recipe_mgboots", 10)
+                .AddItem("recipe_imcloak", 10)
+                .AddItem("recipe_imbelt", 10)
+                .AddItem("recipe_imring", 10)
+                .AddItem("recipe_imneck", 10)
+                .AddItem("recipe_imtunic", 10)
+                .AddItem("recipe_imcap", 10)
+                .AddItem("recipe_imgloves", 10)
+                .AddItem("recipe_imboots", 10);
         }
     }
 }

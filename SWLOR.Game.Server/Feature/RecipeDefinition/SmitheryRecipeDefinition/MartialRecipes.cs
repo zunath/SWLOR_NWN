@@ -191,6 +191,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_scordspar", 5)
                 .Component("ref_plagionite", 5)
                 .Component("ref_keromber", 5);
+
         }
 
     }

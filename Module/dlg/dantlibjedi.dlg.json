@@ -1105,7 +1105,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "collect_herbs_librarian"
+                "value": "collect_herbs_librarian 2"
               }
             }
           ]
@@ -1132,7 +1132,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "collect_herbs_librarian 2"
+                "value": "collect_herbs_librarian"
               }
             }
           ]

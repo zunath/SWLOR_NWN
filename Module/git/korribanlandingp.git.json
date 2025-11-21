@@ -101190,15 +101190,15 @@
         },
         "X": {
           "type": "float",
-          "value": 52.69322204589844
+          "value": 41.64819717407227
         },
         "Y": {
           "type": "float",
-          "value": 115.1292724609375
+          "value": 119.0230331420898
         },
         "Z": {
           "type": "float",
-          "value": 0.4627285003662109
+          "value": -5.222045729169622e-006
         }
       },
       {
@@ -127309,6 +127309,21 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
+                "value": "SCRIPT_1"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "Placeable.WarpDevice.OnUsed"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
                 "value": "VISIBILITY_HIDDEN_DEFAULT"
               },
               "Type": {
@@ -132094,6 +132109,21 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
+                "value": "SCRIPT_1"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "Placeable.WarpDevice.OnUsed"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
                 "value": "DESTINATION"
               },
               "Type": {
@@ -132414,6 +132444,21 @@
         "VarTable": {
           "type": "list",
           "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SCRIPT_1"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "Placeable.WarpDevice.OnUsed"
+              }
+            },
             {
               "__struct_id": 0,
               "Name": {

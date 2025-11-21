@@ -2804,13 +2804,6 @@
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
-          "value": "vlegthird"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
           "value": "ar_scor_kacademy"
         }
       },
@@ -2888,6 +2881,9 @@
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
+
+          "value": "prefabdarkbase"
+
           "value": "tat_anc_junix"
         }
       },
@@ -2903,6 +2899,7 @@
         "Area_Name": {
           "type": "resref",
           "value": "tat_smeskspalace"
+
         }
       }
     ]
@@ -3207,7 +3204,7 @@
   },
   "Mod_ID": {
     "type": "void",
-    "value": "ÿÿÿÿ\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000"
+    "value": "Ã¿Ã¿Ã¿Ã¿\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000"
   },
   "Mod_IsSaveGame": {
     "type": "byte",

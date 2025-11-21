@@ -6,7 +6,7 @@
   },
   "Appearance": {
     "type": "dword",
-    "value": 930
+    "value": 924
   },
   "AutoRemoveKey": {
     "type": "byte",
@@ -87,7 +87,7 @@
     "id": 16813378,
     "type": "cexolocstring",
     "value": {
-      "0": "Pile of Herbs"
+      "0": "Dantooine Herbs"
     }
   },
   "OnClick": {
@@ -176,11 +176,11 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "dantooine_herb"
+    "value": "dant_starwort"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "dantooine_herb"
+    "value": "dant_starwort"
   },
   "TrapDetectable": {
     "type": "byte",

@@ -285,6 +285,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Korriban - Frog Boss"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "frogboss"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Korriban - Rogue Sith"
                     },
                     "RESREF": {

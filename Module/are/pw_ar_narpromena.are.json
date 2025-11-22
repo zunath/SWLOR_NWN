@@ -87,7 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "[Prefab] Smuggler's Moon - Promnade"
+      "0": "[Prefab] Smuggler's Moon - Promenade"
     }
   },
   "NoRest": {
@@ -6347,13 +6347,17 @@
       }
     ]
   },
+  "TileBrdrDisabled": {
+    "type": "byte",
+    "value": 0
+  },
   "Tileset": {
     "type": "resref",
     "value": "fcx01"
   },
   "Version": {
     "type": "dword",
-    "value": 8
+    "value": 9
   },
   "Width": {
     "type": "int",

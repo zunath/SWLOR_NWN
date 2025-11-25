@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
 
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
 
-            // DC calculation: 12 + PER/2 for daze
+            // DC calculation: 15 + PER/2 for daze
             var dc = 15 + (GetAbilityModifier(AbilityType.Perception, activator) / 2);
             dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Will, dc);
             var checkResult = WillSave(target, dc, SavingThrowType.None, activator);

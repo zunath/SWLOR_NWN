@@ -1929,13 +1929,7 @@ namespace SWLOR.Game.Server.Service
                 }
             }
         }
-        private static int GetForceValorAccuracyBonus(uint creature)
-        {
-            if (StatusEffect.HasStatusEffect(creature, StatusEffectType.ForceValor2))
-                return 10;
-            if (StatusEffect.HasStatusEffect(creature, StatusEffectType.ForceValor1))
-                return 5;
-            return 0;
-        }
+
     }
 }
+

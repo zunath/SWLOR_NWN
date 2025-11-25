@@ -45,10 +45,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                     dmg = 16;
                     break;
                 case 2:
-                    dmg = 29;
+                    dmg = 24;
                     break;
                 case 3:
-                    dmg = 43;
+                    dmg = 38;
                     break;
                 default:
                     break;

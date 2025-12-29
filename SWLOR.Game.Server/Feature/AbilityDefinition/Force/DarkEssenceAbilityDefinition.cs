@@ -55,7 +55,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             _builder.Create(FeatType.DarkEssence1, PerkType.DarkEssence)
                 .Name("Dark Essence I")
                 .Level(1)
-                .HasRecastDelay(RecastGroup.Benevolence, 12f)
+                .HasRecastDelay(RecastGroup.DarkEssence, 12f)
                 .HasActivationDelay(2f)
                 .RequirementFP(6)
                 .IsCastedAbility()

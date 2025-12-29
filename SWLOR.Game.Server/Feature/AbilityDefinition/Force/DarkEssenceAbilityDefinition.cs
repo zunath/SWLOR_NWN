@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             }
 
             RemoveEffectByTag(target, DEssTempHP);
-            var tempHP = EffectTemporaryHitpoints(baseAmount + (willBonus * 12) + Random.D10(willBonus));
+            var tempHP = EffectTemporaryHitpoints(baseAmount + (willBonus * 6) + Random.D10(willBonus));
             var tempHPEffect = TagEffect(tempHP, DEssTempHP);
 
             ApplyEffectToObject(DurationType.Temporary, tempHPEffect, target, duration);
@@ -55,7 +55,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             _builder.Create(FeatType.DarkEssence1, PerkType.DarkEssence)
                 .Name("Dark Essence I")
                 .Level(1)
-                .HasRecastDelay(RecastGroup.DarkEssence, 12f)
+                .HasRecastDelay(RecastGroup.DarkEssence, 18f)
                 .HasActivationDelay(2f)
                 .RequirementFP(6)
                 .IsCastedAbility()
@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             _builder.Create(FeatType.DarkEssence2, PerkType.DarkEssence)
                 .Name("Dark Essence II")
                 .Level(2)
-                .HasRecastDelay(RecastGroup.DarkEssence, 12f)
+                .HasRecastDelay(RecastGroup.DarkEssence, 18f)
                 .HasActivationDelay(2f)
                 .RequirementFP(8)
                 .IsCastedAbility()
@@ -91,7 +91,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             _builder.Create(FeatType.DarkEssence3, PerkType.DarkEssence)
                 .Name("Dark Essence III")
                 .Level(3)
-                .HasRecastDelay(RecastGroup.DarkEssence, 12f)
+                .HasRecastDelay(RecastGroup.DarkEssence, 18f)
                 .HasActivationDelay(2f)
                 .RequirementFP(10)
                 .IsCastedAbility()

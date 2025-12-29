@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 ApplyEffectToObject(DurationType.Temporary, regen, target, duration);
             }
 
-            RemoveEffectByTag(activator, DEssTempHP);
+            RemoveEffectByTag(target, DEssTempHP);
             var tempHP = EffectTemporaryHitpoints(baseAmount + (willBonus * 12) + Random.D10(willBonus));
             var tempHPEffect = TagEffect(tempHP, DEssTempHP);
 

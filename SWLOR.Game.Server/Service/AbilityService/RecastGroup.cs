@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         [RecastGroup("Poison Stab", "Poison Stab", true)]
         PoisonStab = 16,
         [RecastGroup("Backstab", "Backstab", true)]
-        Backstab = 17,        
+        Backstab = 17,
         [RecastGroup("Force Leap", "Force Leap", true)]
         ForceLeap = 18,
         [RecastGroup("Saber Strike", "Saber Strike", true)]
@@ -257,6 +257,8 @@ namespace SWLOR.Game.Server.Service.AbilityService
         ForceRestore = 124,
         [RecastGroup("Adrenal Stim", "Adr. Stim", true)]
         AdrenalStim = 125,
+        [RecastGroup("Dark Essence", "Dark Ess.", true)]
+        DarkEssence = 126,
     }
 
     public class RecastGroupAttribute: Attribute

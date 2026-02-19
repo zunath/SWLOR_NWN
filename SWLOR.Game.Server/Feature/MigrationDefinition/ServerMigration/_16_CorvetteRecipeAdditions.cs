@@ -25,11 +25,6 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                 }
                 DB.Set(player);
 
-                if (player.UnlockedRecipes.ContainsKey(Service.CraftService.RecipeType.CorvetteNeutThranta))
-                {
-                    player.UnlockedRecipes[Service.CraftService.RecipeType.CorvetteCrusader] = DateTime.UtcNow;
-                }
-                DB.Set(player);
             }
         }
     }

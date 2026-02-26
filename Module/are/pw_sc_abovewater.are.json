@@ -148,7 +148,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "PW_SC_ABOWATER"
+    "value": "PW_SC_ABOVEWATER"
   },
   "Tile_List": {
     "type": "list",

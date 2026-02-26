@@ -2953,27 +2953,27 @@
   },
   "Mod_Entry_Area": {
     "type": "resref",
-    "value": "pw_sc_abovewater"
+    "value": "ooc_area"
   },
   "Mod_Entry_Dir_X": {
     "type": "float",
-    "value": 0.0
+    "value": 1.0
   },
   "Mod_Entry_Dir_Y": {
     "type": "float",
-    "value": 1.0
+    "value": 7.549790126404332e-008
   },
   "Mod_Entry_X": {
     "type": "float",
-    "value": 41.32121658325195
+    "value": 25.75213623046875
   },
   "Mod_Entry_Y": {
     "type": "float",
-    "value": 42.93668746948242
+    "value": 27.38717460632324
   },
   "Mod_Entry_Z": {
     "type": "float",
-    "value": 3.0
+    "value": 0.0
   },
   "Mod_Expan_List": {
     "type": "list",

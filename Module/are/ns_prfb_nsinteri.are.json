@@ -13313,13 +13313,17 @@
       }
     ]
   },
+  "TileBrdrDisabled": {
+    "type": "byte",
+    "value": 0
+  },
   "Tileset": {
     "type": "resref",
     "value": "tmi"
   },
   "Version": {
     "type": "dword",
-    "value": 8
+    "value": 9
   },
   "Width": {
     "type": "int",

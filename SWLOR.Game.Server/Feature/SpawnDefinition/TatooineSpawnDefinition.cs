@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             Flatlands();
             NorthernDunes();
             TatooineWorldBoss();
-            Ancientworm();
+            AncientWorm();
             return _builder.Build();
         }
 

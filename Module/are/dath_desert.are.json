@@ -4885,13 +4885,17 @@
       }
     ]
   },
+  "TileBrdrDisabled": {
+    "type": "byte",
+    "value": 0
+  },
   "Tileset": {
     "type": "resref",
     "value": "ztd01"
   },
   "Version": {
     "type": "dword",
-    "value": 17
+    "value": 19
   },
   "Width": {
     "type": "int",

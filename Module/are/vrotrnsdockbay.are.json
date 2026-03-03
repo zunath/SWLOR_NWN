@@ -116,7 +116,7 @@
   },
   "ResRef": {
     "type": "resref",
-    "value": "area006"
+    "value": "vrotrnsdockbay"
   },
   "ShadowOpacity": {
     "type": "byte",
@@ -4068,13 +4068,17 @@
       }
     ]
   },
+  "TileBrdrDisabled": {
+    "type": "byte",
+    "value": 0
+  },
   "Tileset": {
     "type": "resref",
     "value": "fcx01"
   },
   "Version": {
     "type": "dword",
-    "value": 29
+    "value": 30
   },
   "Width": {
     "type": "int",

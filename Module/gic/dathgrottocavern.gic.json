@@ -668,13 +668,6 @@
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": "Source: Torture, Taxidermy, and High Tea by Gnomad"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
           "value": "Source: Coulisfu Oriental Rural Tileset v2.3"
         }
       },
@@ -704,27 +697,6 @@
         "Comment": {
           "type": "cexostring",
           "value": "Source: Megalith Placeables v1.0 by Mr._X & Chanteur"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Source: Tir Na Og Tree Pack 1 v2.01 By Martin E"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Source: Tir Na Og Tree Pack 1 v2.01 By Martin E"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Source: Tir Na Og Tree Pack 1 v2.01 By Martin E"
         }
       },
       {

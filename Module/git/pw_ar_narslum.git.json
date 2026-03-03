@@ -301429,7 +301429,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 20705
+          "value": 20091
         },
         "AutoRemoveKey": {
           "type": "byte",
@@ -301506,7 +301506,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Landspeeder AV"
+            "0": "[mdrn]Landspeeder blue"
           }
         },
         "OnClick": {
@@ -301635,11 +301635,11 @@
         },
         "X": {
           "type": "float",
-          "value": 113.424690246582
+          "value": 114.0350341796875
         },
         "Y": {
           "type": "float",
-          "value": 27.34573173522949
+          "value": 26.47674560546875
         },
         "Z": {
           "type": "float",

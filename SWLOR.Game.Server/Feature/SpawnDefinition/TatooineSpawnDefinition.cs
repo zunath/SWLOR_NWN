@@ -156,7 +156,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .ReturnsHome();
         }
 
-        private void Ancientworm()
+        private void AncientWorm()
         {
             _builder.Create("TATOOINE_ANCIENT_WORM")
                 .AddSpawn(ObjectType.Creature, "ancientsandwor")

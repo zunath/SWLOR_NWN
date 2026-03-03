@@ -2896,6 +2896,7 @@
         "Area_Name": {
           "type": "resref",
           "value": "tat_tuskcavemain"
+          "value": "pw_sc_abovewater"
         }
       },
       {
@@ -2910,6 +2911,7 @@
         "Area_Name": {
           "type": "resref",
           "value": "tat_tuskcavebot"
+          "value": "pw_sc_aboveland"
         }
       }
     ]
@@ -2958,11 +2960,11 @@
   },
   "Mod_Entry_X": {
     "type": "float",
-    "value": 26.0
+    "value": 25.75213623046875
   },
   "Mod_Entry_Y": {
     "type": "float",
-    "value": 27.0
+    "value": 27.38717460632324
   },
   "Mod_Entry_Z": {
     "type": "float",
@@ -3214,7 +3216,7 @@
   },
   "Mod_ID": {
     "type": "void",
-    "value": "ÿÿÿÿ\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000"
+    "value": "Ã¿Ã¿Ã¿Ã¿\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000"
   },
   "Mod_IsSaveGame": {
     "type": "byte",

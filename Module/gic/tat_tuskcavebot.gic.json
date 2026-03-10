@@ -132,6 +132,13 @@
           "type": "cexostring",
           "value": ""
         }
+      },
+      {
+        "__struct_id": 8,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Places an Area Transition in the Doorway (Similar to how a transition would appear after a Door is destroyed)."
+        }
       }
     ]
   },

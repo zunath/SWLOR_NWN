@@ -417,6 +417,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Tatooine - Ancient Worm"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tatancworm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Tatooine - Sand Beetle"
                     },
                     "RESREF": {

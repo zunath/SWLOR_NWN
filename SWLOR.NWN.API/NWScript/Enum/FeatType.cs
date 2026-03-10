@@ -1963,5 +1963,8 @@ namespace SWLOR.NWN.API.NWScript.Enum
         ForceLink3 = 1994,
         ZenMarksmanship = 1995,
         IntuitivePiloting = 1996,
+        PommelStrike1 = 1997,
+        PommelStrike2 = 1998,
+        PommelStrike3 = 1999,
     }
 }

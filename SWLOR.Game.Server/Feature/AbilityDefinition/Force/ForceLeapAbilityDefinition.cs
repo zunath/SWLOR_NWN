@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -7,7 +7,7 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 
-namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
+namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
     public class ForceLeapAbilityDefinition : IAbilityListDefinition
     {
@@ -26,9 +26,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
             var rightHandType = GetBaseItemType(weapon);
 
-            if (!Item.LightsaberBaseItemTypes.Contains(rightHandType))
+            if (!Item.OneHandedMeleeItemTypes.Contains(rightHandType) &&
+                !Item.TwoHandedMeleeItemTypes.Contains(rightHandType))
             {
-                return "A lightsaber must be equipped in your right hand to use this ability.";
+                return "A melee weapon must be equipped in your right hand to use this ability.";
             }
 
             if (GetDistanceBetween(activator, target) < 8)
@@ -59,7 +60,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                     break;
             }
 
-            dmg += Combat.GetAbilityDamageBonus(activator, SkillType.OneHanded);
+            dmg += Combat.GetAbilityDamageBonus(activator, SkillType.Force);
 
             const float Delay = 1.2f;
             ClearAllActions();
@@ -69,8 +70,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 ActionPlayAnimation(Animation.ForceLeap, 2.0f, 1.0f);
                 SetCommandable(false, activator);
             });
-            
-            CombatPoint.AddCombatPoint(activator, target, SkillType.OneHanded, 3);
+
+            CombatPoint.AddCombatPoint(activator, target, SkillType.Force, 3);
 
             var stat = AbilityType.Perception;
             if (Ability.IsAbilityToggled(activator, AbilityToggleType.StrongStyleLightsaber))
@@ -79,19 +80,19 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             }
 
             var attackerStat = Combat.GetPerkAdjustedAbilityScore(activator);
-            var attack = Stat.GetAttack(activator, stat, SkillType.OneHanded);
+            var attack = Stat.GetAttack(activator, stat, SkillType.Force);
             var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
             var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
             var damage = Combat.CalculateDamage(
                 attack,
-                dmg, 
-                attackerStat, 
-                defense, 
-                defenderStat, 
+                dmg,
+                attackerStat,
+                defense,
+                defenderStat,
                 0);
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
             var rightHandBaseItemType = GetBaseItemType(weapon);
-            
+
             DelayCommand(Delay, () =>
             {
                 const float Duration = 2f;
@@ -122,7 +123,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 .Level(1)
                 .HasRecastDelay(RecastGroup.ForceLeap, 30f)
                 .HasActivationDelay(0.5f)
-                .RequirementStamina(3)
+                .RequirementFP(3)
                 .HasMaxRange(20f)
                 .IsCastedAbility()
                 .IsHostileAbility()
@@ -137,7 +138,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 .Name("Force Leap II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.ForceLeap, 30f)
-                .RequirementStamina(4)
+                .RequirementFP(4)
                 .HasActivationDelay(0.5f)
                 .HasMaxRange(20f)
                 .IsCastedAbility()
@@ -153,7 +154,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 .Name("Force Leap III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.ForceLeap, 30f)
-                .RequirementStamina(5)
+                .RequirementFP(5)
                 .HasActivationDelay(0.5f)
                 .HasMaxRange(20f)
                 .IsCastedAbility()

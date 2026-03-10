@@ -33,6 +33,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             CreepingTerror();
             ForceRage();
             ThrowRock();
+            ForceLeap();
             ForceInspiration();
 
             return _builder.Build();
@@ -110,6 +111,33 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Force, 50)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ThrowRock5);
+        }
+
+        private void ForceLeap()
+        {
+            _builder.Create(PerkCategoryType.ForceUniversal, PerkType.ForceLeap)
+                .Name("Force Leap")
+
+                .AddPerkLevel()
+                .Description("Leap to a distant target instantly, inflicting 8 DMG and stunning for 2 seconds.")
+                .Price(3)
+                .RequirementSkill(SkillType.Force, 15)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .GrantsFeat(FeatType.ForceLeap1)
+
+                .AddPerkLevel()
+                .Description("Leap to a distant target instantly, inflicting 15 DMG and stunning for 2 seconds.")
+                .Price(3)
+                .RequirementSkill(SkillType.Force, 30)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .GrantsFeat(FeatType.ForceLeap2)
+
+                .AddPerkLevel()
+                .Description("Leap to a distant target instantly, inflicting 23 DMG and stunning for 2 seconds.")
+                .Price(3)
+                .RequirementSkill(SkillType.Force, 45)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .GrantsFeat(FeatType.ForceLeap3);
         }
 
         private void BurstOfSpeed()

@@ -34,7 +34,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             ImprovedCriticalLightsabers();
             LightsaberProficiency();
             LightsaberMastery();
-            ForceLeap();
             SaberStrike();
             ImprovedTwoWeaponFighting();
             StrongStyleLightsaber();
@@ -46,6 +45,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             ShieldResistance();
             Alacrity();
             Clarity();
+            PommelStrike();
 
             return _builder.Build();
         }
@@ -808,32 +808,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.LightsaberMastery2);
         }
 
-        private void ForceLeap()
-        {
-            _builder.Create(PerkCategoryType.OneHandedLightsaber, PerkType.ForceLeap)
-                .Name("Force Leap")
 
-                .AddPerkLevel()
-                .Description("Leap to a distant target instantly, inflicting 8 DMG and stunning for 2 seconds.")
-                .Price(3)
-                .RequirementSkill(SkillType.OneHanded, 15)
-                .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.ForceLeap1)
-
-                .AddPerkLevel()
-                .Description("Leap to a distant target instantly, inflicting 15 DMG and stunning for 2 seconds.")
-                .Price(3)
-                .RequirementSkill(SkillType.OneHanded, 30)
-                .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.ForceLeap2)
-
-                .AddPerkLevel()
-                .Description("Leap to a distant target instantly, inflicting 23 DMG and stunning for 2 seconds.")
-                .Price(3)
-                .RequirementSkill(SkillType.OneHanded, 45)
-                .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.ForceLeap3);
-        }
 
         private void SaberStrike()
         {
@@ -894,5 +869,37 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(1)
                 .GrantsFeat(FeatType.StrongStyleLightsaber);
         }
+
+        private void PommelStrike()
+        {
+            _builder.Create(PerkCategoryType.OneHandedLightsaber, PerkType.PommelStrike)
+                .Name("Pommel Strike")
+
+                .AddPerkLevel()
+                .Description("Strike your enemy with the pommel of your saber, doing damage and dazing them.")
+                .Price(2)
+                .DroidAISlots(1)
+                .RequirementSkill(SkillType.OneHanded, 5)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .GrantsFeat(FeatType.PommelStrike1)
+
+                .AddPerkLevel()
+                .Description("Strike your enemy with the pommel of your saber, doing damage and dazing them.")
+                .Price(3)
+                .DroidAISlots(2)
+                .RequirementSkill(SkillType.OneHanded, 20)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .GrantsFeat(FeatType.PommelStrike2)
+
+                .AddPerkLevel()
+                .Description("Strike your enemy with the pommel of your saber, doing damage and dazing them.")
+                .Price(3)
+                .DroidAISlots(3)
+                .RequirementSkill(SkillType.OneHanded, 35)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .GrantsFeat(FeatType.PommelStrike3);
+        }
+
     }
 }
+    

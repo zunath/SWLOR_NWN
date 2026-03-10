@@ -304,5 +304,6 @@
         Research = 297,
         AdrenalStim = 298,
         ResearchProjects = 299,
+        PommelStrike = 300,
     }
 }

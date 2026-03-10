@@ -1963,5 +1963,8 @@ namespace SWLOR.NWN.API.NWScript.Enum
         ForceLink3 = 1994,
         ZenMarksmanship = 1995,
         IntuitivePiloting = 1996,
+        DarkEssence1 = 1997,
+        DarkEssence2 = 1998,
+        DarkEssence3 = 1999,
     }
 }

@@ -300,7 +300,7 @@
         ForceTouch = 293,
         Innervate = 294,
         ForceLink = 295,
-        // 296 is free
+        DarkEssence = 296,
         Research = 297,
         AdrenalStim = 298,
         ResearchProjects = 299,

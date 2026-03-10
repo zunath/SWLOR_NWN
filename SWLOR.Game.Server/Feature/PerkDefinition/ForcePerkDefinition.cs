@@ -34,6 +34,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             ForceRage();
             ThrowRock();
             ForceInspiration();
+            DarkEssence();
 
             return _builder.Build();
         }
@@ -526,7 +527,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 10)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .RequirementCannotHavePerk(PerkType.CreepingTerror)
+                .RequirementCannotHavePerk(PerkType.DarkEssence)
                 .GrantsFeat(FeatType.Benevolence1)
 
                 .AddPerkLevel()
@@ -534,7 +535,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .RequirementCannotHavePerk(PerkType.CreepingTerror)
+                .RequirementCannotHavePerk(PerkType.DarkEssence)
                 .GrantsFeat(FeatType.Benevolence2)
 
                 .AddPerkLevel()
@@ -542,7 +543,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 30)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .RequirementCannotHavePerk(PerkType.CreepingTerror)
+                .RequirementCannotHavePerk(PerkType.DarkEssence)
                 .GrantsFeat(FeatType.Benevolence3);
         }
 
@@ -675,6 +676,36 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Force, 45)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForceInspiration3);
+        }
+
+        private void DarkEssence()
+        {
+            _builder.Create(PerkCategoryType.ForceDark, PerkType.DarkEssence)
+                .Name("Dark Essence")
+
+                .AddPerkLevel()
+                .Description("Grant 30 temporary HP to a single target. If you are the target, you also gain regeneration over the duration. Healing, temporary HP and duration are improved with higher Willpower.")
+                .Price(2)
+                .RequirementSkill(SkillType.Force, 10)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .RequirementCannotHavePerk(PerkType.Benevolence)
+                .GrantsFeat(FeatType.DarkEssence1)
+
+                .AddPerkLevel()
+                .Description("Grant 60 temporary HP to a single target. If you are the target, you also gain regeneration over the duration. Healing, temporary HP and duration are improved with higher Willpower.")
+                .Price(2)
+                .RequirementSkill(SkillType.Force, 20)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .RequirementCannotHavePerk(PerkType.Benevolence)
+                .GrantsFeat(FeatType.DarkEssence2)
+
+                .AddPerkLevel()
+                .Description("Grant 90 temporary HP to a single target. If you are the target, you also gain regeneration over the duration. Healing, temporary HP and duration are improved with higher Willpower.")
+                .Price(3)
+                .RequirementSkill(SkillType.Force, 30)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .RequirementCannotHavePerk(PerkType.Benevolence)
+                .GrantsFeat(FeatType.DarkEssence3);
         }
     }
 }

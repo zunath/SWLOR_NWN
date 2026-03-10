@@ -3,7 +3,7 @@ using SWLOR.Game.Server.Service.LootService;
 
 namespace SWLOR.Game.Server.Feature.LootTableDefinition
 {
-    public class TatooineLootTableDefinition: ILootTableDefinition
+    public class TatooineLootTableDefinition : ILootTableDefinition
     {
         private readonly LootTableBuilder _builder = new();
 
@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             TuskenRaider();
             TuskenElite();
             TuskenCrate();
+            AncientWorm();
 
             return _builder.Build();
         }
@@ -151,8 +152,29 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("dried_bonito", 1, 1, true)
                 .AddItem("ruby", 2, 1, true)
                 .AddItem("p_flour", 1, 1, true)
-                .AddGold(100,30);
+                .AddGold(100, 30);
 
+        }
+
+        private void AncientWorm()
+        {
+            _builder.Create("TATOOINE_ANCIENT_WORM")
+                .AddItem("fiberp_high", 20)
+                .AddItem("lth_high", 20)
+                .AddItem("wild_meat", 10)
+                .AddItem("wild_innards", 10)
+                .AddItem("sandwormtooth", 5)
+                .AddItem("chiro_shard", 1);
+
+            _builder.Create("TATOOINE_ANCIENT_WORM_GEMS")
+                .AddItem("emerald", 100, 1, true)
+                .AddItem("chiro_shard", 50, 1, true);
+
+            _builder.Create("TATOOINE_ANCIENT_WORM_RARES")
+                .IsRare()
+                .AddItem("emerald", 1, 1, true)
+                .AddItem("chiro_shard", 1, 1, true)
+                .AddGold(1000, 5);
         }
     }
 }

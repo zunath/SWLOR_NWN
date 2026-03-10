@@ -12040,11 +12040,41 @@
               "__struct_id": 0,
               "ID": {
                 "type": "byte",
+                "value": 158
+              },
+              "STRREF": {
+                "type": "dword",
+                "value": 16778366
+              }
+            },
+            {
+              "__struct_id": 0,
+              "ID": {
+                "type": "byte",
                 "value": 154
               },
               "LIST": {
                 "type": "list",
                 "value": [
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 33.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ancient Sand Worm"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ancientsandwor"
+                    }
+                  },
                   {
                     "__struct_id": 0,
                     "CR": {

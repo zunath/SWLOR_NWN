@@ -5,7 +5,7 @@ using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.SpawnDefinition
 {
-    public class TatooineSpawnDefinition: ISpawnListDefinition
+    public class TatooineSpawnDefinition : ISpawnListDefinition
     {
         private readonly SpawnTableBuilder _builder = new SpawnTableBuilder();
 
@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             Flatlands();
             NorthernDunes();
             TatooineWorldBoss();
-
+            AncientWorm();
             return _builder.Build();
         }
 
@@ -156,6 +156,15 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .ReturnsHome();
         }
 
+        private void AncientWorm()
+        {
+            _builder.Create("TATOOINE_ANCIENT_WORM")
+                .AddSpawn(ObjectType.Creature, "ancientsandwor")
+                .WithFrequency(30)
+                .RandomlyWalks()
+                .ReturnsHome()
+                .RespawnDelay(60 + Random.D100(1));
+        }
         private void TatooineWorldBoss()
         {
             _builder.Create("TATOOINE_WORLD_BOSS")
@@ -177,3 +186,4 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         }
     }
 }
+

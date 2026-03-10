@@ -2090,20 +2090,6 @@
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
-          "value": "tat_tuskcavebot"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "tat_tuskcavemain"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
           "value": "tat_tuskcavetunn"
         }
       },
@@ -2909,6 +2895,7 @@
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
+          "value": "tat_tuskcavemain"
           "value": "pw_sc_abovewater"
         }
       },
@@ -2916,6 +2903,14 @@
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
+          "value": "tat_wormden"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "tat_tuskcavebot"
           "value": "pw_sc_aboveland"
         }
       }
@@ -3221,7 +3216,7 @@
   },
   "Mod_ID": {
     "type": "void",
-    "value": "ÿÿÿÿ\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000"
+    "value": "Ã¿Ã¿Ã¿Ã¿\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000"
   },
   "Mod_IsSaveGame": {
     "type": "byte",

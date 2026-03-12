@@ -52,20 +52,6 @@
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": "Desert Boulder 2"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Desert Rocks"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
           "value": "Desert Rocks"
         }
       },
@@ -74,6 +60,13 @@
         "Comment": {
           "type": "cexostring",
           "value": "Desert Boulder"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Desert Boulder 2"
         }
       }
     ]

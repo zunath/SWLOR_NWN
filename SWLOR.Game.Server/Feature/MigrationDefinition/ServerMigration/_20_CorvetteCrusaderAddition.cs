@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 {
     public class _20_CorvetteCrusaderAddition: ServerMigrationBase, IServerMigration
     {
-        public int Version => 16;
+        public int Version => 20;
         public MigrationExecutionType ExecutionType => MigrationExecutionType.PostDatabaseLoad;
         public void Migrate()
         {
@@ -17,14 +17,17 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             var dbPlayers = DB.Search(query
                 .AddPaging(count, 0));
 
-            foreach (var player in dbPlayers)
-            {
-                if (player.UnlockedRecipes.ContainsKey(Service.CraftService.RecipeType.CorvetteNeutThranta))
+             foreach (var player in dbPlayers)
                 {
-                    player.UnlockedRecipes[Service.CraftService.RecipeType.CorvetteCrusader] = DateTime.UtcNow;
+                    var hasBaseCorvetteRecipe = player.UnlockedRecipes.ContainsKey(Service.CraftService.RecipeType.CorvetteNeutThranta);
+                    var alreadyHasCrusaderRecipe = player.UnlockedRecipes.ContainsKey(Service.CraftService.RecipeType.CorvetteCrusader);
+                    if (hasBaseCorvetteRecipe && !alreadyHasCrusaderRecipe)
+                    {
+                        player.UnlockedRecipes[Service.CraftService.RecipeType.CorvetteCrusader] = DateTime.UtcNow;
+                        DB.Set(player);
+                    }
                 }
-                DB.Set(player);
-            }
         }
     }
 }
+

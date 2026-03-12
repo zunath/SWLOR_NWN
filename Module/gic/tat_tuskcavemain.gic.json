@@ -180,6 +180,13 @@
           "type": "cexostring",
           "value": "Magic Sparks - Yellow"
         }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
       }
     ]
   },

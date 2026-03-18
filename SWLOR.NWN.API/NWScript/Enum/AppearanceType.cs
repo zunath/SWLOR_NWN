@@ -5214,6 +5214,7 @@ namespace SWLOR.NWN.API.NWScript.Enum
         SWLORShipJediTransport = 10119,
         SWLORShipMandalorianBasilisk = 10120,
         SWLORShipMandalorianCruiser = 10121,
+        SWLORShipMandalorianCrusaderCorvette = 10260,
         SWLORShipRepublicInexpungeable = 10122,
         SWLORShipRepublicThranta = 10123,
         SWLORShipRepublicPreator = 10124,

@@ -397,6 +397,21 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .ShipConfigurationNodes(1)
                 .CapitalShip()
                 .InteriorLayout(PropertyLayoutType.Corvette);
+
+            _builder.Create("capdeed_cruscor")
+                .ItemResref("capdeed_cruscor")
+                .Name("Crusader Corvette")
+                .Appearance(AppearanceType.SWLORShipMandalorianCrusaderCorvette)
+                .RequirePerk(PerkType.Starships, 5)
+                .MaxArmor(750)
+                .MaxCapacitor(500)
+                .MaxShield(750)
+                .ShieldRechargeRate(30)
+                .HighPowerNodes(3)
+                .LowPowerNodes(4)
+                .ShipConfigurationNodes(1)
+                .CapitalShip()
+                .InteriorLayout(PropertyLayoutType.Corvette);
         }
     }
 }

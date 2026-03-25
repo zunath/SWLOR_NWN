@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.SpaceService;
 
 namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 {
@@ -47,6 +48,21 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("aluminum", 3)
                 .Component("fiberp_ruined", 3)
                 .Component("elec_ruined", 3);
+
+            foreach (var variant in StarfighterVariantCatalog.GetTier(1))
+            {
+                _builder.Create(variant.RecipeType, SkillType.Engineering)
+                    .Category(RecipeCategoryType.Starship)
+                    .Resref(variant.DeedResref)
+                    .Level(variant.RecipeLevel)
+                    .Quantity(1)
+                    .RequirementPerk(PerkType.StarshipBlueprints, variant.PerkLevel)
+                    .EnhancementSlots(RecipeEnhancementType.Starship, variant.EnhancementSlots)
+                    .Component(variant.RefinedComponentResref, variant.RefinedComponentQuantity)
+                    .Component(variant.MaterialComponentResref, variant.MaterialComponentQuantity)
+                    .Component(variant.FiberComponentResref, variant.FiberComponentQuantity)
+                    .Component(variant.ElectronicsComponentResref, variant.ElectronicsComponentQuantity);
+            }
         }
 
         private void Tier2()
@@ -76,6 +92,21 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("steel", 3)
                 .Component("fiberp_flawed", 3)
                 .Component("elec_flawed", 3);
+
+            foreach (var variant in StarfighterVariantCatalog.GetTier(2))
+            {
+                _builder.Create(variant.RecipeType, SkillType.Engineering)
+                    .Category(RecipeCategoryType.Starship)
+                    .Resref(variant.DeedResref)
+                    .Level(variant.RecipeLevel)
+                    .Quantity(1)
+                    .RequirementPerk(PerkType.StarshipBlueprints, variant.PerkLevel)
+                    .EnhancementSlots(RecipeEnhancementType.Starship, variant.EnhancementSlots)
+                    .Component(variant.RefinedComponentResref, variant.RefinedComponentQuantity)
+                    .Component(variant.MaterialComponentResref, variant.MaterialComponentQuantity)
+                    .Component(variant.FiberComponentResref, variant.FiberComponentQuantity)
+                    .Component(variant.ElectronicsComponentResref, variant.ElectronicsComponentQuantity);
+            }
         }
 
         private void Tier3()
@@ -105,6 +136,21 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("obsidian", 3)
                 .Component("fiberp_good", 3)
                 .Component("elec_good", 3);
+
+            foreach (var variant in StarfighterVariantCatalog.GetTier(3))
+            {
+                _builder.Create(variant.RecipeType, SkillType.Engineering)
+                    .Category(RecipeCategoryType.Starship)
+                    .Resref(variant.DeedResref)
+                    .Level(variant.RecipeLevel)
+                    .Quantity(1)
+                    .RequirementPerk(PerkType.StarshipBlueprints, variant.PerkLevel)
+                    .EnhancementSlots(RecipeEnhancementType.Starship, variant.EnhancementSlots)
+                    .Component(variant.RefinedComponentResref, variant.RefinedComponentQuantity)
+                    .Component(variant.MaterialComponentResref, variant.MaterialComponentQuantity)
+                    .Component(variant.FiberComponentResref, variant.FiberComponentQuantity)
+                    .Component(variant.ElectronicsComponentResref, variant.ElectronicsComponentQuantity);
+            }
         }
 
         private void Tier4()
@@ -134,6 +180,21 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("crystal", 3)
                 .Component("fiberp_imperfect", 3)
                 .Component("elec_imperfect", 3);
+
+            foreach (var variant in StarfighterVariantCatalog.GetTier(4))
+            {
+                _builder.Create(variant.RecipeType, SkillType.Engineering)
+                    .Category(RecipeCategoryType.Starship)
+                    .Resref(variant.DeedResref)
+                    .Level(variant.RecipeLevel)
+                    .Quantity(1)
+                    .RequirementPerk(PerkType.StarshipBlueprints, variant.PerkLevel)
+                    .EnhancementSlots(RecipeEnhancementType.Starship, variant.EnhancementSlots)
+                    .Component(variant.RefinedComponentResref, variant.RefinedComponentQuantity)
+                    .Component(variant.MaterialComponentResref, variant.MaterialComponentQuantity)
+                    .Component(variant.FiberComponentResref, variant.FiberComponentQuantity)
+                    .Component(variant.ElectronicsComponentResref, variant.ElectronicsComponentQuantity);
+            }
         }
 
         private void Tier5()
@@ -335,6 +396,21 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("capc_corhull", 1)
                 .Component("capc_powsys", 1)
                 .Component("capc_eng", 1);
+
+            foreach (var variant in StarfighterVariantCatalog.GetTier(5))
+            {
+                _builder.Create(variant.RecipeType, SkillType.Engineering)
+                    .Category(RecipeCategoryType.Starship)
+                    .Resref(variant.DeedResref)
+                    .Level(variant.RecipeLevel)
+                    .Quantity(1)
+                    .RequirementPerk(PerkType.StarshipBlueprints, variant.PerkLevel)
+                    .EnhancementSlots(RecipeEnhancementType.Starship, variant.EnhancementSlots)
+                    .Component(variant.RefinedComponentResref, variant.RefinedComponentQuantity)
+                    .Component(variant.MaterialComponentResref, variant.MaterialComponentQuantity)
+                    .Component(variant.FiberComponentResref, variant.FiberComponentQuantity)
+                    .Component(variant.ElectronicsComponentResref, variant.ElectronicsComponentQuantity);
+            }
         }
     }
 }

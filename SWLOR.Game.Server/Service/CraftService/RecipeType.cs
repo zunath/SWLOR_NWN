@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Game.Server.Service.CraftService
+namespace SWLOR.Game.Server.Service.CraftService
 {
     public enum RecipeType
     {
@@ -2582,6 +2582,11 @@
         WeaponsComputer = 4795,
         CapitalEWar = 4796,
         CapitalPowerDiverter = 4797,
+        StarfighterVariantTier1Start = 5000,
+        StarfighterVariantTier2Start = 5100,
+        StarfighterVariantTier3Start = 5200,
+        StarfighterVariantTier4Start = 5300,
+        StarfighterVariantTier5Start = 5400,
 
 
         #endregion

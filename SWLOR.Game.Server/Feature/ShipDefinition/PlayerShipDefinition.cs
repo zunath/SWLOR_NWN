@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SpaceService;
@@ -82,6 +82,23 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .LowPowerNodes(3)
                 .ShipConfigurationNodes(1)
                 .InteriorLayout(PropertyLayoutType.Condor);
+
+            foreach (var variant in StarfighterVariantCatalog.GetTier(1))
+            {
+                _builder.Create(variant.DeedTag)
+                    .ItemResref(variant.DeedResref)
+                    .Name(variant.DisplayName)
+                    .Appearance((AppearanceType)variant.AppearanceId)
+                    .RequirePerk(PerkType.Starships, variant.PerkLevel)
+                    .MaxArmor(variant.MaxHull)
+                    .MaxCapacitor(variant.MaxCapacitor)
+                    .MaxShield(variant.MaxShield)
+                    .ShieldRechargeRate(variant.ShieldRechargeRate)
+                    .HighPowerNodes(variant.HighPowerNodes)
+                    .LowPowerNodes(variant.LowPowerNodes)
+                    .ShipConfigurationNodes(1)
+                    .InteriorLayout(variant.Layout);
+            }
         }
 
         private void Tier2()
@@ -113,6 +130,23 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .LowPowerNodes(4)
                 .ShipConfigurationNodes(1)
                 .InteriorLayout(PropertyLayoutType.Panther);
+
+            foreach (var variant in StarfighterVariantCatalog.GetTier(2))
+            {
+                _builder.Create(variant.DeedTag)
+                    .ItemResref(variant.DeedResref)
+                    .Name(variant.DisplayName)
+                    .Appearance((AppearanceType)variant.AppearanceId)
+                    .RequirePerk(PerkType.Starships, variant.PerkLevel)
+                    .MaxArmor(variant.MaxHull)
+                    .MaxCapacitor(variant.MaxCapacitor)
+                    .MaxShield(variant.MaxShield)
+                    .ShieldRechargeRate(variant.ShieldRechargeRate)
+                    .HighPowerNodes(variant.HighPowerNodes)
+                    .LowPowerNodes(variant.LowPowerNodes)
+                    .ShipConfigurationNodes(1)
+                    .InteriorLayout(variant.Layout);
+            }
         }
 
         private void Tier3()
@@ -144,6 +178,23 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .LowPowerNodes(5)
                 .ShipConfigurationNodes(1)
                 .InteriorLayout(PropertyLayoutType.Falchion);
+
+            foreach (var variant in StarfighterVariantCatalog.GetTier(3))
+            {
+                _builder.Create(variant.DeedTag)
+                    .ItemResref(variant.DeedResref)
+                    .Name(variant.DisplayName)
+                    .Appearance((AppearanceType)variant.AppearanceId)
+                    .RequirePerk(PerkType.Starships, variant.PerkLevel)
+                    .MaxArmor(variant.MaxHull)
+                    .MaxCapacitor(variant.MaxCapacitor)
+                    .MaxShield(variant.MaxShield)
+                    .ShieldRechargeRate(variant.ShieldRechargeRate)
+                    .HighPowerNodes(variant.HighPowerNodes)
+                    .LowPowerNodes(variant.LowPowerNodes)
+                    .ShipConfigurationNodes(1)
+                    .InteriorLayout(variant.Layout);
+            }
         }
 
         private void Tier4()
@@ -175,6 +226,23 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .LowPowerNodes(5)
                 .ShipConfigurationNodes(1)
                 .InteriorLayout(PropertyLayoutType.Merchant);
+
+            foreach (var variant in StarfighterVariantCatalog.GetTier(4))
+            {
+                _builder.Create(variant.DeedTag)
+                    .ItemResref(variant.DeedResref)
+                    .Name(variant.DisplayName)
+                    .Appearance((AppearanceType)variant.AppearanceId)
+                    .RequirePerk(PerkType.Starships, variant.PerkLevel)
+                    .MaxArmor(variant.MaxHull)
+                    .MaxCapacitor(variant.MaxCapacitor)
+                    .MaxShield(variant.MaxShield)
+                    .ShieldRechargeRate(variant.ShieldRechargeRate)
+                    .HighPowerNodes(variant.HighPowerNodes)
+                    .LowPowerNodes(variant.LowPowerNodes)
+                    .ShipConfigurationNodes(1)
+                    .InteriorLayout(variant.Layout);
+            }
         }
 
         private void Tier5()
@@ -397,6 +465,23 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .ShipConfigurationNodes(1)
                 .CapitalShip()
                 .InteriorLayout(PropertyLayoutType.Corvette);
+
+            foreach (var variant in StarfighterVariantCatalog.GetTier(5))
+            {
+                _builder.Create(variant.DeedTag)
+                    .ItemResref(variant.DeedResref)
+                    .Name(variant.DisplayName)
+                    .Appearance((AppearanceType)variant.AppearanceId)
+                    .RequirePerk(PerkType.Starships, variant.PerkLevel)
+                    .MaxArmor(variant.MaxHull)
+                    .MaxCapacitor(variant.MaxCapacitor)
+                    .MaxShield(variant.MaxShield)
+                    .ShieldRechargeRate(variant.ShieldRechargeRate)
+                    .HighPowerNodes(variant.HighPowerNodes)
+                    .LowPowerNodes(variant.LowPowerNodes)
+                    .ShipConfigurationNodes(1)
+                    .InteriorLayout(variant.Layout);
+            }
         }
     }
 }

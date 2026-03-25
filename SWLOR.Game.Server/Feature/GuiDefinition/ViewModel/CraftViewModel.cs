@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core.Bioware;
@@ -12,6 +12,7 @@ using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -390,7 +391,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var blueprint = Craft.GetBlueprintDetails(_blueprintItem);
             _hasBlueprint = blueprint.Recipe != RecipeType.Invalid;
             
-            var itemName = Cache.GetItemNameByResref(recipe.Resref);
+            var itemName = StarfighterVariantCatalog.GetRecipeDisplayName(_recipe, Cache.GetItemNameByResref(recipe.Resref));
             
             SwitchToSetUpMode();
             StatusColor = GuiColor.Green;
@@ -1449,6 +1450,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var dbPlayer = DB.Get<Player>(playerId);
             var recipe = Craft.GetRecipe(_recipe);
             var item = CreateItemOnObject(recipe.Resref, Player, recipe.Quantity);
+            if (StarfighterVariantCatalog.TryGetByRecipeType(_recipe, out var starfighter))
+            {
+                SetTag(item, starfighter.DeedTag);
+                SetName(item, $"Ship Deed: {starfighter.DisplayName}");
+            }
             var firstTime = !dbPlayer.CraftedRecipes.ContainsKey(_recipe);
             var propertyTransferChance = (int)(((float)_quality / (float)_maxQuality) * 100);
             var qualityPercent = (float)_quality / (float)_maxQuality; 

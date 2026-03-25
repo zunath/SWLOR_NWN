@@ -1,10 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.ItemService;
+using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.ItemDefinition
@@ -87,7 +88,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 
                         var recipeDetail = Craft.GetRecipe(recipeType);
                         var skillDetail = Skill.GetSkillDetails(recipeDetail.Skill);
-                        var itemName = Cache.GetItemNameByResref(recipeDetail.Resref);
+                        var itemName = StarfighterVariantCatalog.GetRecipeDisplayName(recipeType, Cache.GetItemNameByResref(recipeDetail.Resref));
                         SendMessageToPC(user, $"You learn the {skillDetail.Name} recipe: {itemName}.");
                     }
 

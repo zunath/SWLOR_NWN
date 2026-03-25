@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
@@ -360,7 +361,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 recipes = recipes
                     .Where(x =>
-                        Cache.GetItemNameByResref(x.Value.Resref)
+                        StarfighterVariantCatalog.GetRecipeDisplayName(x.Key, Cache.GetItemNameByResref(x.Value.Resref))
                             .ToLower()
                             .Contains(SearchText.ToLower()))
                     .ToDictionary(x => x.Key, y => y.Value);
@@ -414,7 +415,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var canCraft = _mode == RecipesUIMode.Research
                     ? Craft.CanPlayerResearchRecipe(Player, type)
                     : Craft.CanPlayerCraftRecipe(Player, type);
-                var name = $"{Cache.GetItemNameByResref(detail.Resref)} [Lvl. {detail.Level}]";
+                var recipeName = StarfighterVariantCatalog.GetRecipeDisplayName(type, Cache.GetItemNameByResref(detail.Resref));
+                var name = $"{recipeName} [Lvl. {detail.Level}]";
 
                 recipeNames.Add(name);
                 recipeColors.Add(canCraft ? GuiColor.Green : GuiColor.Red);
@@ -640,7 +642,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void DisplayRecipeDetail(RecipeType recipe, BlueprintDetail blueprint)
         {
             var detail = Craft.GetRecipe(recipe);
-            var itemName = Cache.GetItemNameByResref(detail.Resref);
+            var itemName = StarfighterVariantCatalog.GetRecipeDisplayName(recipe, Cache.GetItemNameByResref(detail.Resref));
             var enhancementSlotType = "N/A";
 
             if (detail.EnhancementType == RecipeEnhancementType.Weapon)

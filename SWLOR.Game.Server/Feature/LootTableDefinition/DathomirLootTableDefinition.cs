@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.LootService;
 
 namespace SWLOR.Game.Server.Feature.LootTableDefinition
@@ -104,7 +104,36 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("recipe_iksushi", 10)
                 .AddItem("recipe_wisushi", 10)
                 .AddItem("recipe_tesushi", 10)
-                .AddItem("recipe_dosushi", 10);
+                .AddItem("recipe_dosushi", 10)
+                // Rare locked starfighter blueprint drops.
+                .AddItem("recipe_sv004", 10)
+                .AddItem("recipe_sv006", 10)
+                .AddItem("recipe_sv016", 10)
+                .AddItem("recipe_sv019", 10)
+                .AddItem("recipe_sv029", 10)
+                .AddItem("recipe_sv041", 10)
+                .AddItem("recipe_sv042", 10)
+                .AddItem("recipe_sv046", 10)
+                .AddItem("recipe_sv047", 10)
+                .AddItem("recipe_sv049", 10)
+                .AddItem("recipe_sv050", 10)
+                .AddItem("recipe_sv053", 10)
+                .AddItem("recipe_sv054", 10)
+                .AddItem("recipe_sv056", 10)
+                .AddItem("recipe_sv057", 10)
+                .AddItem("recipe_sv058", 10)
+                .AddItem("recipe_sv063", 10)
+                .AddItem("recipe_sv064", 10)
+                .AddItem("recipe_sv067", 10)
+                .AddItem("recipe_sv068", 10)
+                .AddItem("recipe_sv070", 10)
+                .AddItem("recipe_sv071", 10)
+                .AddItem("recipe_sv073", 10)
+                .AddItem("recipe_sv074", 10)
+                .AddItem("recipe_sv076", 10)
+                .AddItem("recipe_sv077", 10)
+                .AddItem("recipe_sv078", 10)
+                .AddItem("recipe_sv079", 10);
         }
 
         private void DragonTurtle()

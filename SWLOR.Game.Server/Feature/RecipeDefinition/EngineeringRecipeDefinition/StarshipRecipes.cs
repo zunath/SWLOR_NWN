@@ -9,6 +9,46 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
     public class StarshipRecipes: IRecipeListDefinition
     {
         private readonly RecipeBuilder _builder = new();
+        private static readonly HashSet<int> _lockedVariantAppearanceIds = new()
+        {
+            10192, // Civilian Elite Fighter
+            10194, // Corsair Mk2
+            10106, // Hutt Bomber
+            10105, // Hutt Fighter
+            10107, // Hutt Gunship
+            10205, // Kusari Mk2
+            10200, // Liberty Mk2
+            10156, // Mandalorian Brute Patrol Ship
+            10155, // Davaab-type Starfighter
+            10153, // Teroch-type Gunship
+            10056, // ST-07 Assault ship
+            10059, // Military Bomber MK 2
+            10060, // Military Bomber MK 3
+            10149, // S-250 Chela Starfighter
+            10062, // Military Gunship MK 2
+            10063, // Military Gunship MK 3
+            10065, // Infiltrator MK 2 (Variant 1)
+            10066, // Infiltrator MK 3 (Variant 1)
+            10069, // Advanced Scout MK 2 (Variant 1)
+            10070, // Star Saber XC-01
+            10072, // Advanced Striker MK 2 (Variant 1)
+            10073, // Advanced Striker MK 3 (Variant 1)
+            10211, // Rheinland Mk 2
+            10241, // Twin Bomber
+            10078, // Advanced Bomber MK 2
+            10079, // Advanced Bomber MK 3
+            10081, // Advanced Gunship MK 2
+            10082, // Advanced Gunship MK 3
+            10084, // Infiltrator MK 2 (Variant 2)
+            10085, // Infiltrator MK 3 (Variant 2)
+            10087, // Advanced Scout MK 2 (Variant 2)
+            10088, // Advanced Scout MK 3
+            10090, // Advanced Striker Mk 2 (Variant 2)
+            10091, // Advanced Striker Mk 3 (Variant 2)
+            10240, // KT-400 Light Freighter
+            10147, // Trandoshan Transport
+            10259, // Legion Fighter
+        };
 
         public Dictionary<RecipeType, RecipeDetail> BuildRecipes()
         {
@@ -51,17 +91,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             foreach (var variant in StarfighterVariantCatalog.GetTier(1))
             {
-                _builder.Create(variant.RecipeType, SkillType.Engineering)
-                    .Category(RecipeCategoryType.Starship)
-                    .Resref(variant.DeedResref)
-                    .Level(variant.RecipeLevel)
-                    .Quantity(1)
-                    .RequirementPerk(PerkType.StarshipBlueprints, variant.PerkLevel)
-                    .EnhancementSlots(RecipeEnhancementType.Starship, variant.EnhancementSlots)
-                    .Component(variant.RefinedComponentResref, variant.RefinedComponentQuantity)
-                    .Component(variant.MaterialComponentResref, variant.MaterialComponentQuantity)
-                    .Component(variant.FiberComponentResref, variant.FiberComponentQuantity)
-                    .Component(variant.ElectronicsComponentResref, variant.ElectronicsComponentQuantity);
+                CreateVariantRecipe(variant);
             }
         }
 
@@ -95,17 +125,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             foreach (var variant in StarfighterVariantCatalog.GetTier(2))
             {
-                _builder.Create(variant.RecipeType, SkillType.Engineering)
-                    .Category(RecipeCategoryType.Starship)
-                    .Resref(variant.DeedResref)
-                    .Level(variant.RecipeLevel)
-                    .Quantity(1)
-                    .RequirementPerk(PerkType.StarshipBlueprints, variant.PerkLevel)
-                    .EnhancementSlots(RecipeEnhancementType.Starship, variant.EnhancementSlots)
-                    .Component(variant.RefinedComponentResref, variant.RefinedComponentQuantity)
-                    .Component(variant.MaterialComponentResref, variant.MaterialComponentQuantity)
-                    .Component(variant.FiberComponentResref, variant.FiberComponentQuantity)
-                    .Component(variant.ElectronicsComponentResref, variant.ElectronicsComponentQuantity);
+                CreateVariantRecipe(variant);
             }
         }
 
@@ -139,17 +159,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             foreach (var variant in StarfighterVariantCatalog.GetTier(3))
             {
-                _builder.Create(variant.RecipeType, SkillType.Engineering)
-                    .Category(RecipeCategoryType.Starship)
-                    .Resref(variant.DeedResref)
-                    .Level(variant.RecipeLevel)
-                    .Quantity(1)
-                    .RequirementPerk(PerkType.StarshipBlueprints, variant.PerkLevel)
-                    .EnhancementSlots(RecipeEnhancementType.Starship, variant.EnhancementSlots)
-                    .Component(variant.RefinedComponentResref, variant.RefinedComponentQuantity)
-                    .Component(variant.MaterialComponentResref, variant.MaterialComponentQuantity)
-                    .Component(variant.FiberComponentResref, variant.FiberComponentQuantity)
-                    .Component(variant.ElectronicsComponentResref, variant.ElectronicsComponentQuantity);
+                CreateVariantRecipe(variant);
             }
         }
 
@@ -183,17 +193,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             foreach (var variant in StarfighterVariantCatalog.GetTier(4))
             {
-                _builder.Create(variant.RecipeType, SkillType.Engineering)
-                    .Category(RecipeCategoryType.Starship)
-                    .Resref(variant.DeedResref)
-                    .Level(variant.RecipeLevel)
-                    .Quantity(1)
-                    .RequirementPerk(PerkType.StarshipBlueprints, variant.PerkLevel)
-                    .EnhancementSlots(RecipeEnhancementType.Starship, variant.EnhancementSlots)
-                    .Component(variant.RefinedComponentResref, variant.RefinedComponentQuantity)
-                    .Component(variant.MaterialComponentResref, variant.MaterialComponentQuantity)
-                    .Component(variant.FiberComponentResref, variant.FiberComponentQuantity)
-                    .Component(variant.ElectronicsComponentResref, variant.ElectronicsComponentQuantity);
+                CreateVariantRecipe(variant);
             }
         }
 
@@ -399,18 +399,28 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             foreach (var variant in StarfighterVariantCatalog.GetTier(5))
             {
-                _builder.Create(variant.RecipeType, SkillType.Engineering)
-                    .Category(RecipeCategoryType.Starship)
-                    .Resref(variant.DeedResref)
-                    .Level(variant.RecipeLevel)
-                    .Quantity(1)
-                    .RequirementPerk(PerkType.StarshipBlueprints, variant.PerkLevel)
-                    .EnhancementSlots(RecipeEnhancementType.Starship, variant.EnhancementSlots)
-                    .Component(variant.RefinedComponentResref, variant.RefinedComponentQuantity)
-                    .Component(variant.MaterialComponentResref, variant.MaterialComponentQuantity)
-                    .Component(variant.FiberComponentResref, variant.FiberComponentQuantity)
-                    .Component(variant.ElectronicsComponentResref, variant.ElectronicsComponentQuantity);
+                CreateVariantRecipe(variant);
             }
+        }
+
+        private void CreateVariantRecipe(StarfighterVariantCatalog.StarfighterVariantDefinition variant)
+        {
+            var recipe = _builder.Create(variant.RecipeType, SkillType.Engineering)
+                .Category(RecipeCategoryType.Starship)
+                .Resref(variant.DeedResref)
+                .Level(variant.RecipeLevel)
+                .Quantity(1);
+
+            if (_lockedVariantAppearanceIds.Contains(variant.AppearanceId))
+                recipe.RequirementUnlocked();
+
+            recipe
+                .RequirementPerk(PerkType.StarshipBlueprints, variant.PerkLevel)
+                .EnhancementSlots(RecipeEnhancementType.Starship, variant.EnhancementSlots)
+                .Component(variant.RefinedComponentResref, variant.RefinedComponentQuantity)
+                .Component(variant.MaterialComponentResref, variant.MaterialComponentQuantity)
+                .Component(variant.FiberComponentResref, variant.FiberComponentQuantity)
+                .Component(variant.ElectronicsComponentResref, variant.ElectronicsComponentQuantity);
         }
     }
 }

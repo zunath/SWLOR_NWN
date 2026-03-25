@@ -119,6 +119,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var playerId = GetObjectUUID(Player);
                     var dbPlayer = DB.Get<Player>(playerId);
+                    if (!dbPlayer.Skills.ContainsKey(skillType))
+                    {
+                        AssignCommand(Player, () => SpeakString(message));
+                        return;
+                    }
                     var skillDetail = Skill.GetSkillDetails(skillType);
                     var totalSkill = dbPlayer.Skills[skillType].Rank;
                     var modifier = totalSkill / 2;

@@ -421,6 +421,18 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component(variant.MaterialComponentResref, variant.MaterialComponentQuantity)
                 .Component(variant.FiberComponentResref, variant.FiberComponentQuantity)
                 .Component(variant.ElectronicsComponentResref, variant.ElectronicsComponentQuantity);
+            // Crusader Corvette
+            _builder.Create(RecipeType.CorvetteCrusader, SkillType.Engineering)
+                .Category(RecipeCategoryType.Starship)
+                .Resref("capdeed_cruscor")
+                .Level(53)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .RequirementPerk(PerkType.StarshipBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Starship, 2)
+                .Component("capc_corhull", 1)
+                .Component("capc_powsys", 1)
+                .Component("capc_eng", 1);
         }
     }
 }

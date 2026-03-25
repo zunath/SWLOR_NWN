@@ -2587,6 +2587,7 @@ namespace SWLOR.Game.Server.Service.CraftService
         StarfighterVariantTier3Start = 5200,
         StarfighterVariantTier4Start = 5300,
         StarfighterVariantTier5Start = 5400,
+        CorvetteCrusader = 4798,
 
 
         #endregion

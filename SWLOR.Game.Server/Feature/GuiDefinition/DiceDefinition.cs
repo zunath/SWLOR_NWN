@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             _builder.CreateWindow(GuiWindowType.Dice)
-                .SetInitialGeometry(0, 0, 350f, 350f)
+                .SetInitialGeometry(0, 0, 190f, 430f)
                 .SetTitle("Dice Bag")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
@@ -20,55 +20,100 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     col.AddRow(row =>
                     {
                         row.AddLabel()
-                            .BindText(model => model.DiceCountText)
+                            .SetText("DICE")
                             .SetHorizontalAlign(NuiHorizontalAlign.Center)
                             .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHeight(26f);
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        row.AddButton()
-                            .SetText("-")
-                            .SetWidth(35f)
-                            .SetHeight(35f)
-                            .BindOnClicked(model => model.OnClickRemoveDie());
-
-                        row.AddButton()
-                            .SetText("+")
-                            .SetWidth(35f)
-                            .SetHeight(35f)
-                            .BindOnClicked(model => model.OnClickAddDie());
+                            .SetHeight(20f);
                     });
 
                     col.AddRow(row =>
                     {
                         row.AddLabel()
+                            .BindText(model => model.DiceCountText)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Center)
+                            .SetVerticalAlign(NuiVerticalAlign.Top)
+                            .SetHeight(20f);
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddSpacer();
+
+                        row.AddButton()
+                            .SetText("-")
+                            .SetWidth(28f)
+                            .SetHeight(18f)
+                            .BindOnClicked(model => model.OnClickRemoveDie());
+
+                        row.AddButton()
+                            .SetText("+")
+                            .SetWidth(28f)
+                            .SetHeight(18f)
+                            .BindOnClicked(model => model.OnClickAddDie());
+
+                        row.AddSpacer();
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.BindIsVisible(model => model.IsSkillSelectionVisible);
+                        row.AddSpacer();
+
+                        row.AddLabel()
                             .SetText("Skill")
-                            .SetWidth(45f)
+                            .SetWidth(35f)
                             .SetHeight(26f)
-                            .BindIsVisible(model => model.IsSkillSelectionVisible);
+                            .SetHorizontalAlign(NuiHorizontalAlign.Center);
+
+                        row.AddSpacer();
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.BindIsVisible(model => model.IsSkillSelectionVisible);
+                        row.AddSpacer();
 
                         row.AddComboBox()
                             .BindSelectedIndex(model => model.SelectedSkillId)
                             .BindOptions(model => model.Skills)
-                            .SetWidth(250f)
-                            .BindIsVisible(model => model.IsSkillSelectionVisible);
+                            .SetWidth(120f);
+
+                        row.AddSpacer();
                     });
 
                     col.AddRow(row =>
                     {
-                        row.AddButton().SetText("d2").BindOnClicked(model => model.OnClickRollD2());
-                        row.AddButton().SetText("d4").BindOnClicked(model => model.OnClickRollD4());
-                        row.AddButton().SetText("d6").BindOnClicked(model => model.OnClickRollD6());
-                        row.AddButton().SetText("d8").BindOnClicked(model => model.OnClickRollD8());
+                        row.AddButton().SetText("d2").SetHeight(18f).BindOnClicked(model => model.OnClickRollD2());
                     });
 
                     col.AddRow(row =>
                     {
-                        row.AddButton().SetText("d10").BindOnClicked(model => model.OnClickRollD10());
-                        row.AddButton().SetText("d20").BindOnClicked(model => model.OnClickRollD20());
-                        row.AddButton().SetText("d100").BindOnClicked(model => model.OnClickRollD100());
+                        row.AddButton().SetText("d4").SetHeight(18f).BindOnClicked(model => model.OnClickRollD4());
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddButton().SetText("d6").SetHeight(18f).BindOnClicked(model => model.OnClickRollD6());
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddButton().SetText("d8").SetHeight(18f).BindOnClicked(model => model.OnClickRollD8());
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddButton().SetText("d10").SetHeight(18f).BindOnClicked(model => model.OnClickRollD10());
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddButton().SetText("d20").SetHeight(18f).BindOnClicked(model => model.OnClickRollD20());
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddButton().SetText("d100").SetHeight(18f).BindOnClicked(model => model.OnClickRollD100());
                     });
                 });
 

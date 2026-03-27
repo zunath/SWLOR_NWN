@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using NWN.Native.API;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition.StatusEffectData;
@@ -1638,23 +1639,34 @@ namespace SWLOR.Game.Server.Service
                 return 1;
             }
 
-            static int GetRapidShotBonus(uint pc)
-            {
-                return Perk.GetPerkLevel(pc, PerkType.RapidShot);
-            }
-
-            static int GetFlurryBonus(uint pc)
-            {
-                return Perk.GetPerkLevel(pc, PerkType.FlurryStyle);
-            }
-
-            static int GetShieldBonus(uint pc)
-            {
-                return Perk.GetPerkLevel(pc, PerkType.ShieldMaster);
-            }
-
             if (GetIsDM(creature) || GetIsDMPossessed(creature))
                 return;
+
+            Dictionary<PerkType, int> droidPerks = null;
+            if (Droid.IsDroid(creature))
+            {
+                droidPerks = new Dictionary<PerkType, int>();
+                var controller = Droid.GetControllerItem(creature);
+                if (GetIsObjectValid(controller))
+                {
+                    droidPerks = Droid.LoadDroidItemPropertyDetails(controller).Perks;
+                }
+            }
+
+            int GetAPRPerkLevel(PerkType perkType)
+            {
+                if (perkType == PerkType.Invalid)
+                    return 0;
+
+                if (droidPerks != null)
+                {
+                    return droidPerks.TryGetValue(perkType, out var droidPerkLevel)
+                        ? droidPerkLevel
+                        : 0;
+                }
+
+                return Perk.GetPerkLevel(creature, perkType);
+            }
 
             var itemType = GetBaseItemType(rightHandWeapon);
             var offHandType = GetBaseItemType(offHandItem);
@@ -1669,13 +1681,13 @@ namespace SWLOR.Game.Server.Service
             else if (Item.StaffBaseItemTypes.Contains(itemType))
             {
                 perkType = PerkType.StaffMastery;
-                numberOfAttacks += GetFlurryBonus(creature);
+                numberOfAttacks += GetAPRPerkLevel(PerkType.FlurryStyle);
             }
             // Ranged (Pistol & Rifle only. Throwing is intentionally excluded from Rapid Shot because they get Doublehand)
             else if (Item.PistolBaseItemTypes.Contains(itemType))
             {
                 perkType = PerkType.PistolMastery;
-                numberOfAttacks += GetRapidShotBonus(creature);
+                numberOfAttacks += GetAPRPerkLevel(PerkType.RapidShot);
             }
             else if (Item.ThrowingWeaponBaseItemTypes.Contains(itemType))
             {
@@ -1717,13 +1729,13 @@ namespace SWLOR.Game.Server.Service
             }
 
             if (Item.ShieldBaseItemTypes.Contains(offHandType)) 
-                numberOfAttacks += GetShieldBonus(creature);
+                numberOfAttacks += GetAPRPerkLevel(PerkType.ShieldMaster);
 
-            var effectiveMasteryLevel = Perk.GetPerkLevel(creature, perkType);
+            var effectiveMasteryLevel = GetAPRPerkLevel(perkType);
             numberOfAttacks += effectiveMasteryLevel;
 
             // Beast Speed (1-3)
-            numberOfAttacks += Perk.GetPerkLevel(creature, PerkType.BeastSpeed);
+            numberOfAttacks += GetAPRPerkLevel(PerkType.BeastSpeed);
 
             var bab = GetBABForAttacks(numberOfAttacks);
             CreaturePlugin.SetBaseAttackBonus(creature, bab);

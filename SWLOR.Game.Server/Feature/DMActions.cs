@@ -1,4 +1,5 @@
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
@@ -14,6 +15,7 @@ namespace SWLOR.Game.Server.Feature
         {
             var obj = StringToObject(EventsPlugin.GetEventData("OBJECT"));
             var type = GetObjectType(obj);
+            var objectType = (InternalObjectType)int.Parse(EventsPlugin.GetEventData("OBJECT_TYPE"));
 
             if (type == ObjectType.Creature)
             {
@@ -21,6 +23,18 @@ namespace SWLOR.Game.Server.Feature
                 {
                     SetDroppableFlag(item, false);
                 }
+            }
+
+            // Track DM-spawned placeables so the DM tools NUI can list non-native objects.
+            if (type == ObjectType.Placeable && objectType == InternalObjectType.Placeable)
+            {
+                var dm = OBJECT_SELF;
+                if (GetIsDMPossessed(dm))
+                    dm = GetMaster(dm);
+
+                SetLocalInt(obj, "DM_SPAWNED_PLACEABLE", 1);
+                SetLocalString(obj, "DM_SPAWNED_BY", GetObjectUUID(dm));
+                SetLocalString(obj, "DM_SPAWNED_BY_NAME", GetName(dm));
             }
         }
 

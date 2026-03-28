@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
@@ -51,6 +51,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             GetTag();
             Notes();
             CreatureManager();
+            DMTools();
             Broadcast();
             SetScale();
             GetScale();
@@ -919,6 +920,19 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     Gui.TogglePlayerWindow(user, GuiWindowType.CreatureManager);
                 });
         }
+
+        private void DMTools()
+        {
+            _builder.Create("dmtools", "plctools")
+                .Description("Toggles the DM Placeable Tools window.")
+                .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .AvailableToAllOnTestEnvironment()
+                .Action((user, target, location, args) =>
+                {
+                    Gui.TogglePlayerWindow(user, GuiWindowType.DMTools);
+                });
+        }
+
         private void Broadcast()
         {
             _builder.Create("broadcast", "bc")

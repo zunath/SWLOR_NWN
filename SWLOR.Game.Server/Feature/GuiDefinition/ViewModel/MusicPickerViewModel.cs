@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void Search()
         {
-            var normalizedSearchText = SearchText?.ToLower() ?? string.Empty;
+            var searchText = SearchText ?? string.Empty;
 
             _songIds.Clear();
             _songDisplayNames.Clear();
@@ -41,8 +41,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var songs = new GuiBindingList<string>();
             foreach (var song in Music.GetAllSongs().OrderBy(x => x.DisplayName))
             {
-                if (!string.IsNullOrWhiteSpace(normalizedSearchText) &&
-                    !song.DisplayName.ToLower().Contains(normalizedSearchText))
+                if (!string.IsNullOrWhiteSpace(searchText) &&
+                    !song.DisplayName.Contains(searchText, StringComparison.OrdinalIgnoreCase))
                 {
                     continue;
                 }

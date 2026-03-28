@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     {
                         row.AddTextEdit()
                             .BindValue(model => model.SearchText)
-                            .SetPlaceholder("Search by track name");
+                            .SetPlaceholder("Search");
 
                         row.AddButton()
                             .SetText("X")

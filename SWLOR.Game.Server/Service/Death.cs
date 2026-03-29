@@ -46,6 +46,7 @@ namespace SWLOR.Game.Server.Service
                     SendMessageToPC(player, "You have been subdued.");
                     Messaging.SendMessageNearbyToPlayers(player, $"{GetName(player)} has been subdued by {GetName(hostile)}.");
                     ApplyEffectToObject(DurationType.Instant, EffectResurrection(), player);
+                    DelayCommand(0.1f, () => Ability.ReapplyAuraEffectsForCreature(player));
                     ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), player, 60f);
                     ApplyEffectToObject(DurationType.Temporary, EffectSlow(), player, 300f);
                     ApplyEffectToObject(DurationType.Temporary, EffectACDecrease(10), player, 300f);

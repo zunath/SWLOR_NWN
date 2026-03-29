@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.StatusEffectService;
@@ -29,6 +29,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             const string EffectTag = "AURA_CHARGE_EFFECT";
             _builder.Create(StatusEffectType.Charge)
                 .Name("Charge")
+                .IsAura()
                 .EffectIcon(EffectIconType.Charge)
                 .GrantAction((source, target, length, data) => 
                 {
@@ -69,6 +70,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             _builder.Create(StatusEffectType.Dedication)
                 .Name("Dedication")
+                .IsAura()
                 .EffectIcon(EffectIconType.Dedication);
         }
 
@@ -76,6 +78,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             _builder.Create(StatusEffectType.FrenziedShout)
                 .Name("Frenzied Shout")
+                .IsAura()
                 .EffectIcon(EffectIconType.FrenziedShout);
         }
 
@@ -83,6 +86,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             _builder.Create(StatusEffectType.Rejuvenation)
                 .Name("Rejuvenation")
+                .IsAura()
                 .EffectIcon(EffectIconType.Rejuvenation)
                 .TickAction((source, target, data) =>
                 {
@@ -95,6 +99,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             _builder.Create(StatusEffectType.SoldiersPrecision)
                 .Name("Soldier's Precision")
+                .IsAura()
                 .EffectIcon(EffectIconType.SoldiersPrecision);
         }
 
@@ -102,6 +107,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             _builder.Create(StatusEffectType.SoldiersSpeed)
                 .Name("Soldier's Speed")
+                .IsAura()
                 .EffectIcon(EffectIconType.SoldiersSpeed);
         }
 
@@ -109,6 +115,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             _builder.Create(StatusEffectType.SoldiersStrike)
                 .Name("Soldier's Strike")
+                .IsAura()
                 .EffectIcon(EffectIconType.SoldiersStrike);
         }
     }

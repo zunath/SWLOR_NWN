@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     public class DMToolsViewModel: GuiViewModelBase<DMToolsViewModel, GuiPayloadBase>
     {
         private const int PlaceablesPerPage = 20;
+        private const int MaxSpawnAttemptsPerEntry = 200;
         private bool _skipPaginationSearch;
         private int SelectedPlaceableIndex { get; set; }
         private readonly List<uint> _allPlaceables = new();
@@ -428,16 +429,25 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
+            var areaResref = GetAreaResref();
             var query = new DBQuery<DMAreaPlaceableLayout>()
-                .AddFieldSearch(nameof(DMAreaPlaceableLayout.AreaResref), GetAreaResref(), false);
-            var existing = DB.Search(query)
-                .FirstOrDefault(x => string.Equals(x.Name, LayoutName, StringComparison.OrdinalIgnoreCase));
+                .AddFieldSearch(nameof(DMAreaPlaceableLayout.AreaResref), areaResref, false)
+                .AddFieldSearch(nameof(DMAreaPlaceableLayout.Name), LayoutName, false);
+            var existing = DB.Search(query).FirstOrDefault();
+
+            if (existing == null)
+            {
+                var areaQuery = new DBQuery<DMAreaPlaceableLayout>()
+                    .AddFieldSearch(nameof(DMAreaPlaceableLayout.AreaResref), areaResref, false);
+                existing = DB.Search(areaQuery)
+                    .FirstOrDefault(x => string.Equals(x.Name, LayoutName, StringComparison.OrdinalIgnoreCase));
+            }
 
             if (existing == null)
             {
                 existing = new DMAreaPlaceableLayout
                 {
-                    AreaResref = GetAreaResref(),
+                    AreaResref = areaResref,
                     Name = LayoutName
                 };
             }
@@ -460,7 +470,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             var layout = DB.Get<DMAreaPlaceableLayout>(_layoutIds[_selectedLayoutIndex]);
-            if (layout == null || layout.Entries.Count <= 0)
+            if (layout?.Entries == null || layout.Entries.Count <= 0)
             {
                 Instructions = "Selected layout is empty or missing.";
                 InstructionColor = GuiColor.Red;
@@ -490,17 +500,30 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var skippedCount = 0;
             foreach (var entry in layout.Entries)
             {
+                if (entry == null || entry.MatchIndex < 0 || string.IsNullOrWhiteSpace(entry.Resref))
+                {
+                    skippedCount++;
+                    continue;
+                }
+
                 var key = $"{entry.Tag}|{entry.Resref}";
-                if (!groupedPlaceables.ContainsKey(key))
-                    groupedPlaceables[key] = new List<uint>();
+                if (!groupedPlaceables.TryGetValue(key, out var keyedPlaceables))
+                {
+                    keyedPlaceables = new List<uint>();
+                    groupedPlaceables[key] = keyedPlaceables;
+                }
 
                 // If this keyed position doesn't exist yet, spawn a new placeable for it.
-                while (entry.MatchIndex >= groupedPlaceables[key].Count)
+                var spawnAttempts = 0;
+                while (entry.MatchIndex >= keyedPlaceables.Count && spawnAttempts < MaxSpawnAttemptsPerEntry)
                 {
                     var location = Location(area, new Vector3(entry.X, entry.Y, entry.Z), entry.Facing);
                     var spawn = CreateObject(ObjectType.Placeable, entry.Resref, location);
                     if (!GetIsObjectValid(spawn))
+                    {
+                        skippedCount++;
                         break;
+                    }
 
                     if (!string.IsNullOrWhiteSpace(entry.Tag))
                         SetTag(spawn, entry.Tag);
@@ -509,17 +532,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     SetLocalString(spawn, "DM_SPAWNED_BY", dmId);
                     SetLocalString(spawn, "DM_SPAWNED_BY_NAME", dmName);
 
-                    groupedPlaceables[key].Add(spawn);
+                    keyedPlaceables.Add(spawn);
                     spawnedCount++;
+                    spawnAttempts++;
                 }
 
-                if (entry.MatchIndex < 0 || entry.MatchIndex >= groupedPlaceables[key].Count)
+                if (entry.MatchIndex >= keyedPlaceables.Count)
                 {
                     skippedCount++;
                     continue;
                 }
 
-                var placeable = groupedPlaceables[key][entry.MatchIndex];
+                var placeable = keyedPlaceables[entry.MatchIndex];
                 if (!GetIsObjectValid(placeable))
                 {
                     skippedCount++;
@@ -534,7 +558,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             RebuildPlaceables();
             Search();
             Instructions = $"Loaded '{layout.Name}': moved {movedCount}, spawned {spawnedCount}, skipped {skippedCount}.";
-            InstructionColor = movedCount > 0 ? GuiColor.Green : GuiColor.Red;
+            InstructionColor = movedCount + spawnedCount > 0 ? GuiColor.Green : GuiColor.Red;
         };
 
         public Action OnDeleteLayout() => () =>
@@ -688,13 +712,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var position = GetPosition(placeable);
             var facing = GetFacing(placeable);
-
-            SetLocalFloat(placeable, "DM_SAVED_X", position.X);
-            SetLocalFloat(placeable, "DM_SAVED_Y", position.Y);
-            SetLocalFloat(placeable, "DM_SAVED_Z", position.Z);
-            SetLocalFloat(placeable, "DM_SAVED_FACING", facing);
-
-            Instructions = $"Saved: {_placeableDisplayNames[SelectedPlaceableIndex]}";
+            var targetName = _placeableDisplayNames[SelectedPlaceableIndex];
+            Instructions = $"Changes are live for {targetName} ({position.X:0.00}, {position.Y:0.00}, {position.Z:0.00}, {facing:0.0}). Use Save Layout to persist.";
             InstructionColor = GuiColor.Green;
         };
     }

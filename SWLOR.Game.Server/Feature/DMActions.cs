@@ -15,7 +15,10 @@ namespace SWLOR.Game.Server.Feature
         {
             var obj = StringToObject(EventsPlugin.GetEventData("OBJECT"));
             var type = GetObjectType(obj);
-            var objectType = (InternalObjectType)int.Parse(EventsPlugin.GetEventData("OBJECT_TYPE"));
+            if (!int.TryParse(EventsPlugin.GetEventData("OBJECT_TYPE"), out var rawObjectType))
+                return;
+
+            var objectType = (InternalObjectType)rawObjectType;
 
             if (type == ObjectType.Creature)
             {

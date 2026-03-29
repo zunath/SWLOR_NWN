@@ -331,8 +331,12 @@ namespace SWLOR.Game.Server.Service
             if (!_creaturesWithStatusEffects.ContainsKey(player))
                 return;
 
-            var effects = _creaturesWithStatusEffects[player].ToDictionary(x => x.Key, y => y.Value);
-            _loggedOutPlayersWithEffects[player] = effects;
+            var effects = _creaturesWithStatusEffects[player]
+                .Where(x => !_statusEffects[x.Key].IsAura)
+                .ToDictionary(x => x.Key, y => y.Value);
+
+            if (effects.Count > 0)
+                _loggedOutPlayersWithEffects[player] = effects;
 
             _creaturesWithStatusEffects.Remove(player);
         }

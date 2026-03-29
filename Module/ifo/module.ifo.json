@@ -2896,6 +2896,12 @@
         "Area_Name": {
           "type": "resref",
           "value": "tat_tuskcavemain"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
           "value": "pw_sc_abovewater"
         }
       },
@@ -2911,6 +2917,12 @@
         "Area_Name": {
           "type": "resref",
           "value": "tat_tuskcavebot"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
           "value": "pw_sc_aboveland"
         }
       }

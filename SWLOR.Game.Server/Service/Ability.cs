@@ -528,7 +528,7 @@ namespace SWLOR.Game.Server.Service
             {
                 foreach (var member in aura.PartyMembersInRange)
                 {
-                    if (!StatusEffect.HasStatusEffect(member, type))
+                    if (Party.IsInParty(activator, member) && !StatusEffect.HasStatusEffect(member, type))
                         StatusEffect.Apply(activator, member, type, 0f, activator);
                 }
             }
@@ -537,7 +537,9 @@ namespace SWLOR.Game.Server.Service
             {
                 foreach (var npc in aura.CreaturesInRange)
                 {
-                    if (!StatusEffect.HasStatusEffect(npc, type))
+                    if (!GetIsDMPossessed(npc) && !GetIsDM(npc) &&
+                        (GetIsEnemy(activator, npc) || GetIsEnemy(npc, activator)) &&
+                        !StatusEffect.HasStatusEffect(npc, type))
                         StatusEffect.Apply(activator, npc, type, 0f, activator);
                 }
             }
@@ -670,7 +672,7 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var (leader, playerAura) in _playerAuras)
             {
-                if (playerAura.PartyMembersInRange.Contains(target))
+                if (playerAura.PartyMembersInRange.Contains(target) && Party.IsInParty(leader, target))
                 {
                     foreach (var aura in playerAura.Auras)
                     {
@@ -679,7 +681,9 @@ namespace SWLOR.Game.Server.Service
                     }
                 }
 
-                if (playerAura.CreaturesInRange.Contains(target))
+                if (playerAura.CreaturesInRange.Contains(target) &&
+                    !GetIsDMPossessed(target) && !GetIsDM(target) &&
+                    (GetIsEnemy(leader, target) || GetIsEnemy(target, leader)))
                 {
                     foreach (var aura in playerAura.Auras)
                     {

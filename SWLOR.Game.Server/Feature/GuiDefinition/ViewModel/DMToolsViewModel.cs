@@ -17,7 +17,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     public class DMToolsViewModel: GuiViewModelBase<DMToolsViewModel, GuiPayloadBase>
     {
         private const int PlaceablesPerPage = 20;
+        private const int MaxLayoutsPerArea = 30;
         private const int MaxSpawnAttemptsPerEntry = 200;
+        private const int LayoutLoadCooldownSeconds = 5;
+        private const string NextLayoutLoadTimestampVariable = "DMTOOLS_NEXT_LAYOUT_LOAD_TS";
         private bool _skipPaginationSearch;
         private int SelectedPlaceableIndex { get; set; }
         private readonly List<uint> _allPlaceables = new();
@@ -430,17 +433,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             var areaResref = GetAreaResref();
-            var query = new DBQuery<DMAreaPlaceableLayout>()
-                .AddFieldSearch(nameof(DMAreaPlaceableLayout.AreaResref), areaResref, false)
-                .AddFieldSearch(nameof(DMAreaPlaceableLayout.Name), LayoutName, false);
-            var existing = DB.Search(query).FirstOrDefault();
+            var areaQuery = new DBQuery<DMAreaPlaceableLayout>()
+                .AddFieldSearch(nameof(DMAreaPlaceableLayout.AreaResref), areaResref, false);
+            var areaLayouts = DB.Search(areaQuery).ToList();
+            var existing = areaLayouts
+                .FirstOrDefault(x => string.Equals(x.Name, LayoutName, StringComparison.OrdinalIgnoreCase));
 
-            if (existing == null)
+            if (existing == null && areaLayouts.Count >= MaxLayoutsPerArea)
             {
-                var areaQuery = new DBQuery<DMAreaPlaceableLayout>()
-                    .AddFieldSearch(nameof(DMAreaPlaceableLayout.AreaResref), areaResref, false);
-                existing = DB.Search(areaQuery)
-                    .FirstOrDefault(x => string.Equals(x.Name, LayoutName, StringComparison.OrdinalIgnoreCase));
+                Instructions = $"This area already has {MaxLayoutsPerArea} layouts. Delete one before saving a new layout.";
+                InstructionColor = GuiColor.Red;
+                return;
             }
 
             if (existing == null)
@@ -468,6 +471,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 InstructionColor = GuiColor.Red;
                 return;
             }
+
+            var now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+            var nextAllowedLoad = GetLocalInt(Player, NextLayoutLoadTimestampVariable);
+            if (nextAllowedLoad > now)
+            {
+                var secondsRemaining = nextAllowedLoad - now;
+                Instructions = $"Please wait {secondsRemaining}s before loading another layout.";
+                InstructionColor = GuiColor.Red;
+                return;
+            }
+
+            SetLocalInt(Player, NextLayoutLoadTimestampVariable, (int)now + LayoutLoadCooldownSeconds);
 
             var layout = DB.Get<DMAreaPlaceableLayout>(_layoutIds[_selectedLayoutIndex]);
             if (layout?.Entries == null || layout.Entries.Count <= 0)

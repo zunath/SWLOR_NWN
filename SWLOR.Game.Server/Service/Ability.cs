@@ -519,7 +519,7 @@ namespace SWLOR.Game.Server.Service
 
             aura.Auras.Add(new PlayerAuraDetail(type, targetsSelf, targetsParty, targetsEnemies));
 
-            if (targetsSelf)
+            if (targetsSelf && !StatusEffect.HasStatusEffect(activator, type))
             {
                 StatusEffect.Apply(activator, activator, type, 0f, activator);
             }
@@ -667,7 +667,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="target">The creature to re-enroll in active auras.</param>
         public static void ReapplyAuraEffectsForCreature(uint target)
         {
-            if (!GetIsObjectValid(target))
+            if (!GetIsObjectValid(target) || GetIsDead(target))
                 return;
 
             foreach (var (leader, playerAura) in _playerAuras)
@@ -736,22 +736,26 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// When a player exits the server, remove all of their Aura effects.
+        /// Also removes the player from any aura ranges they are receiving as a recipient.
         /// </summary>
         [NWNEventHandler(ScriptName.OnModuleExit)]
         public static void ClearAurasOnExit()
         {
             var player = GetExitingObject();
             RemoveAllAuras(player);
+            RemoveCreatureFromAllAuraRanges(player);
         }
 
         /// <summary>
         /// When a player dies, remove all of their Aura effects.
+        /// Also removes the player from any aura ranges they are receiving as a recipient.
         /// </summary>
         [NWNEventHandler(ScriptName.OnModuleDeath)]
         public static void ClearAurasOnDeath()
         {
             var player = GetLastPlayerDied();
             RemoveAllAuras(player);
+            RemoveCreatureFromAllAuraRanges(player);
         }
 
         /// <summary>

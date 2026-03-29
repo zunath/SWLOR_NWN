@@ -332,7 +332,7 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var effects = _creaturesWithStatusEffects[player]
-                .Where(x => !_statusEffects[x.Key].IsAura)
+                .Where(x => !(_statusEffects.TryGetValue(x.Key, out var detail) && detail.IsAura))
                 .ToDictionary(x => x.Key, y => y.Value);
 
             if (effects.Count > 0)

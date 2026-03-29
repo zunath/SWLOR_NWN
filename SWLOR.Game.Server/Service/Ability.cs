@@ -528,7 +528,8 @@ namespace SWLOR.Game.Server.Service
             {
                 foreach (var member in aura.PartyMembersInRange)
                 {
-                    StatusEffect.Apply(activator, member, type, 0f, activator);
+                    if (!StatusEffect.HasStatusEffect(member, type))
+                        StatusEffect.Apply(activator, member, type, 0f, activator);
                 }
             }
 
@@ -536,7 +537,8 @@ namespace SWLOR.Game.Server.Service
             {
                 foreach (var npc in aura.CreaturesInRange)
                 {
-                    StatusEffect.Apply(activator, npc, type, 0f, activator);
+                    if (!StatusEffect.HasStatusEffect(npc, type))
+                        StatusEffect.Apply(activator, npc, type, 0f, activator);
                 }
             }
 

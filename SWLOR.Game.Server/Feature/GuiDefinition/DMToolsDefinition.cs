@@ -79,6 +79,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .BindOnClicked(model => model.OnSaveChanges())
                             .BindIsEnabled(model => model.IsPlaceableSelected)
                             .SetHeight(35f);
+
+                        row.AddButton()
+                            .SetText("Delete Placeable")
+                            .BindOnClicked(model => model.OnDeletePlaceable())
+                            .BindIsEnabled(model => model.IsPlaceableSelected)
+                            .SetHeight(35f);
                     });
                 })
 

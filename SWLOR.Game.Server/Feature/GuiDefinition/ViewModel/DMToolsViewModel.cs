@@ -417,7 +417,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnSaveLayout() => () =>
         {
-            if (string.IsNullOrWhiteSpace(LayoutName))
+            var layoutName = LayoutName.Trim();
+            if (string.IsNullOrWhiteSpace(layoutName))
             {
                 Instructions = "Enter a layout name before saving.";
                 InstructionColor = GuiColor.Red;
@@ -437,7 +438,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 .AddFieldSearch(nameof(DMAreaPlaceableLayout.AreaResref), areaResref, false);
             var areaLayouts = DB.Search(areaQuery).ToList();
             var existing = areaLayouts
-                .FirstOrDefault(x => string.Equals(x.Name, LayoutName, StringComparison.OrdinalIgnoreCase));
+                .FirstOrDefault(x => string.Equals(x.Name, layoutName, StringComparison.OrdinalIgnoreCase));
 
             if (existing == null && areaLayouts.Count >= MaxLayoutsPerArea)
             {
@@ -451,10 +452,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 existing = new DMAreaPlaceableLayout
                 {
                     AreaResref = areaResref,
-                    Name = LayoutName
+                    Name = layoutName
                 };
             }
 
+            LayoutName = layoutName;
             existing.Entries = entries;
             DB.Set(existing);
 
@@ -494,8 +496,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var groupedPlaceables = new Dictionary<string, List<uint>>();
             var area = GetArea(Player);
-            var dmId = GetObjectUUID(Player);
-            var dmName = GetName(Player);
+            var dungeonMaster = Player;
+            if (GetIsDMPossessed(dungeonMaster))
+            {
+                var master = GetMaster(dungeonMaster);
+                if (GetIsObjectValid(master))
+                    dungeonMaster = master;
+            }
+
+            var dmId = GetObjectUUID(dungeonMaster);
+            var dmName = GetName(dungeonMaster);
             for (var obj = GetFirstObjectInArea(area); GetIsObjectValid(obj); obj = GetNextObjectInArea(area))
             {
                 if (GetObjectType(obj) != ObjectType.Placeable)
@@ -585,9 +595,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
-            ShowModal($"Delete layout '{LayoutName}' for this area?", () =>
+            var layoutId = _layoutIds[_selectedLayoutIndex];
+            var selectedLayoutName = LayoutNames[_selectedLayoutIndex];
+
+            ShowModal($"Delete layout '{selectedLayoutName}' for this area?", () =>
             {
-                var layoutId = _layoutIds[_selectedLayoutIndex];
                 DB.Delete<DMAreaPlaceableLayout>(layoutId);
 
                 LayoutName = string.Empty;
@@ -730,6 +742,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var targetName = _placeableDisplayNames[SelectedPlaceableIndex];
             Instructions = $"Changes are live for {targetName} ({position.X:0.00}, {position.Y:0.00}, {position.Z:0.00}, {facing:0.0}). Use Save Layout to persist.";
             InstructionColor = GuiColor.Green;
+        };
+
+        public Action OnDeletePlaceable() => () =>
+        {
+            var placeable = GetSelectedPlaceable();
+            if (!GetIsObjectValid(placeable))
+                return;
+
+            var selectedPlaceableName = _placeableDisplayNames[SelectedPlaceableIndex];
+            ShowModal($"Delete placeable '{selectedPlaceableName}'?", () =>
+            {
+                ClearHighlight();
+                DestroyObject(placeable);
+                RebuildPlaceables();
+                Search();
+                Instructions = $"Deleted: {selectedPlaceableName}";
+                InstructionColor = GuiColor.Green;
+            });
         };
     }
 }

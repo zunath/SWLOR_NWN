@@ -709,9 +709,16 @@ namespace SWLOR.Game.Server.Service
             {
                 if (leader == excludeLeader) continue;
 
-                if ((playerAura.PartyMembersInRange.Contains(recipient) || playerAura.CreaturesInRange.Contains(recipient)) &&
-                    playerAura.Auras.Any(a => a.Type == type))
-                    return true;
+                foreach (var aura in playerAura.Auras)
+                {
+                    if (aura.Type != type) continue;
+
+                    if (aura.TargetsParty && playerAura.PartyMembersInRange.Contains(recipient))
+                        return true;
+
+                    if (aura.TargetsEnemies && playerAura.CreaturesInRange.Contains(recipient))
+                        return true;
+                }
             }
 
             return false;

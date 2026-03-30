@@ -572,7 +572,8 @@ namespace SWLOR.Game.Server.Service
                 {
                     foreach (var member in aura.PartyMembersInRange)
                     {
-                        StatusEffect.Remove(member, type, false);
+                        if (!HasAlternativeAuraSource(member, type, activator))
+                            StatusEffect.Remove(member, type, false);
                     }
                 }
 
@@ -580,7 +581,8 @@ namespace SWLOR.Game.Server.Service
                 {
                     foreach (var npc in aura.CreaturesInRange)
                     {
-                        StatusEffect.Remove(npc, type, false);
+                        if (!HasAlternativeAuraSource(npc, type, activator))
+                            StatusEffect.Remove(npc, type, false);
                     }
                 }
 
@@ -613,7 +615,8 @@ namespace SWLOR.Game.Server.Service
                 {
                     foreach (var member in auraDetails.PartyMembersInRange)
                     {
-                        StatusEffect.Remove(member, aura.Type, false);
+                        if (!HasAlternativeAuraSource(member, aura.Type, activator))
+                            StatusEffect.Remove(member, aura.Type, false);
                     }
                 }
 
@@ -621,7 +624,8 @@ namespace SWLOR.Game.Server.Service
                 {
                     foreach (var npc in auraDetails.CreaturesInRange)
                     {
-                        StatusEffect.Remove(npc, aura.Type, false);
+                        if (!HasAlternativeAuraSource(npc, aura.Type, activator))
+                            StatusEffect.Remove(npc, aura.Type, false);
                     }
                 }
             }
@@ -692,6 +696,25 @@ namespace SWLOR.Game.Server.Service
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Returns true if any leader other than the excluded one has the given aura type active
+        /// and the recipient is still tracked in that leader's range list. Used to avoid stripping
+        /// an effect from a recipient when a second leader with the same aura is still in range.
+        /// </summary>
+        private static bool HasAlternativeAuraSource(uint recipient, StatusEffectType type, uint excludeLeader)
+        {
+            foreach (var (leader, playerAura) in _playerAuras)
+            {
+                if (leader == excludeLeader) continue;
+
+                if ((playerAura.PartyMembersInRange.Contains(recipient) || playerAura.CreaturesInRange.Contains(recipient)) &&
+                    playerAura.Auras.Any(a => a.Type == type))
+                    return true;
+            }
+
+            return false;
         }
 
         private static AreaOfEffect GetAuraAOE(int level)
@@ -844,7 +867,7 @@ namespace SWLOR.Game.Server.Service
 
                 foreach (var detail in _playerAuras[self].Auras)
                 {
-                    if (detail.TargetsParty)
+                    if (detail.TargetsParty && !HasAlternativeAuraSource(exiting, detail.Type, self))
                     {
                         StatusEffect.Remove(exiting, detail.Type, false);
                     }
@@ -860,7 +883,7 @@ namespace SWLOR.Game.Server.Service
 
                 foreach (var detail in _playerAuras[self].Auras)
                 {
-                    if (detail.TargetsEnemies)
+                    if (detail.TargetsEnemies && !HasAlternativeAuraSource(exiting, detail.Type, self))
                     {
                         StatusEffect.Remove(exiting, detail.Type, false);
                     }

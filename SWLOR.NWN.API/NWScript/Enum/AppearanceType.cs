@@ -5312,6 +5312,12 @@ namespace SWLOR.NWN.API.NWScript.Enum
         SWLORShipAlienGunship = 10216,
         SWLORShipAlienBattleship = 10217,
         SWLORShipArmoredTransport = 10218,
+        SWLORShipHunterFighter = 10222,
+        SWLORShipOnderonType81aFighter = 10236,
+        SWLORShipOnderonRupingBomber = 10237,
+        SWLORShipKT400LightFreighter = 10240,
+        SWLORShipTwinBomber = 10241,
+        SWLORShipLegionFighter = 10259,
         Ewok = 10219,
     }
 }

@@ -391,7 +391,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var blueprint = Craft.GetBlueprintDetails(_blueprintItem);
             _hasBlueprint = blueprint.Recipe != RecipeType.Invalid;
             
-            var itemName = StarfighterVariantCatalog.GetRecipeDisplayName(_recipe, Cache.GetItemNameByResref(recipe.Resref));
+            var itemName = string.IsNullOrWhiteSpace(recipe.DisplayName)
+                ? Cache.GetItemNameByResref(recipe.Resref)
+                : recipe.DisplayName;
             
             SwitchToSetUpMode();
             StatusColor = GuiColor.Green;

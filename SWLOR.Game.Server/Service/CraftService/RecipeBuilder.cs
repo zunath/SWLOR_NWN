@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 
@@ -76,6 +76,12 @@ namespace SWLOR.Game.Server.Service.CraftService
         public RecipeBuilder Resref(string resref)
         {
             _activeRecipe.Resref = resref;
+            return this;
+        }
+
+        public RecipeBuilder DisplayName(string displayName)
+        {
+            _activeRecipe.DisplayName = displayName;
             return this;
         }
 

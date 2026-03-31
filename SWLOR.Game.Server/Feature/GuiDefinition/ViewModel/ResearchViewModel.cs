@@ -9,7 +9,6 @@ using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -161,7 +160,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return new ResearchJobDetails
             {
                 Quantity = recipe.Quantity,
-                RecipeName = StarfighterVariantCatalog.GetRecipeDisplayName(recipeType, Cache.GetItemNameByResref(recipe.Resref)),
+                RecipeName = string.IsNullOrWhiteSpace(recipe.DisplayName)
+                    ? Cache.GetItemNameByResref(recipe.Resref)
+                    : recipe.DisplayName,
                 CurrentLevel = currentLevel,
                 CreditReduction = blueprint.CreditReduction,
                 EnhancementSlots = blueprint.EnhancementSlots,
@@ -218,7 +219,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var deltaTime = dbJob.DateCompleted - now;
                 var timeString = Time.GetTimeShortIntervals(deltaTime, false);
 
-                RecipeName = $"Recipe: {recipe.Quantity}x {StarfighterVariantCatalog.GetRecipeDisplayName(dbJob.Recipe, Cache.GetItemNameByResref(recipe.Resref))}";
+                RecipeName = $"Recipe: {recipe.Quantity}x {(string.IsNullOrWhiteSpace(recipe.DisplayName) ? Cache.GetItemNameByResref(recipe.Resref) : recipe.DisplayName)}";
                 Level = $"Level: {dbJob.Level}";
                 JobProgress = progressPercentage > 1f ? 1f : progressPercentage;
                 JobProgressTime = $"Remaining: {timeString}";
@@ -230,7 +231,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 var recipe = Craft.GetRecipe(dbJob.Recipe);
 
-                RecipeName = $"Recipe: {recipe.Quantity}x {StarfighterVariantCatalog.GetRecipeDisplayName(dbJob.Recipe, Cache.GetItemNameByResref(recipe.Resref))}";
+                RecipeName = $"Recipe: {recipe.Quantity}x {(string.IsNullOrWhiteSpace(recipe.DisplayName) ? Cache.GetItemNameByResref(recipe.Resref) : recipe.DisplayName)}";
                 Level = $"Level: {dbJob.Level}";
                 JobProgress = 1f;
                 JobProgressTime = "COMPLETE";
@@ -393,7 +394,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (string.IsNullOrWhiteSpace(dbJob.SerializedItem))
             {
                 item = CreateItemOnObject("blueprint", Player);
-                SetName(item, $"Blueprint: {StarfighterVariantCatalog.GetRecipeDisplayName(dbJob.Recipe, Cache.GetItemNameByResref(recipe.Resref))}");
+                SetName(item, $"Blueprint: {(string.IsNullOrWhiteSpace(recipe.DisplayName) ? Cache.GetItemNameByResref(recipe.Resref) : recipe.DisplayName)}");
                 isNewBlueprint = true;
             }
             else

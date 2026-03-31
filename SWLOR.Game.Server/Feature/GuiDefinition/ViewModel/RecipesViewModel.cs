@@ -9,7 +9,6 @@ using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
@@ -361,7 +360,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 recipes = recipes
                     .Where(x =>
-                        StarfighterVariantCatalog.GetRecipeDisplayName(x.Key, Cache.GetItemNameByResref(x.Value.Resref))
+                        (string.IsNullOrWhiteSpace(x.Value.DisplayName)
+                            ? Cache.GetItemNameByResref(x.Value.Resref)
+                            : x.Value.DisplayName)
                             .ToLower()
                             .Contains(SearchText.ToLower()))
                     .ToDictionary(x => x.Key, y => y.Value);
@@ -415,7 +416,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var canCraft = _mode == RecipesUIMode.Research
                     ? Craft.CanPlayerResearchRecipe(Player, type)
                     : Craft.CanPlayerCraftRecipe(Player, type);
-                var recipeName = StarfighterVariantCatalog.GetRecipeDisplayName(type, Cache.GetItemNameByResref(detail.Resref));
+                var recipeName = string.IsNullOrWhiteSpace(detail.DisplayName)
+                    ? Cache.GetItemNameByResref(detail.Resref)
+                    : detail.DisplayName;
                 var name = $"{recipeName} [Lvl. {detail.Level}]";
 
                 recipeNames.Add(name);
@@ -642,7 +645,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void DisplayRecipeDetail(RecipeType recipe, BlueprintDetail blueprint)
         {
             var detail = Craft.GetRecipe(recipe);
-            var itemName = StarfighterVariantCatalog.GetRecipeDisplayName(recipe, Cache.GetItemNameByResref(detail.Resref));
+            var itemName = string.IsNullOrWhiteSpace(detail.DisplayName)
+                ? Cache.GetItemNameByResref(detail.Resref)
+                : detail.DisplayName;
             var enhancementSlotType = "N/A";
 
             if (detail.EnhancementType == RecipeEnhancementType.Weapon)

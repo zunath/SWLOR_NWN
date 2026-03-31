@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Service.CraftService
@@ -7,6 +7,7 @@ namespace SWLOR.Game.Server.Service.CraftService
     {
         public int Quantity { get; set; }
         public string Resref { get; set; }
+        public string DisplayName { get; set; }
         public List<IRecipeRequirement> Requirements { get; set; }
         public Dictionary<string, int> Components { get; set; }
         public SkillType Skill { get; set; }

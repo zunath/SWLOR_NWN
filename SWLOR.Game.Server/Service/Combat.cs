@@ -102,7 +102,7 @@ namespace SWLOR.Game.Server.Service
                 defenderDefense = 1;
 
             var statDelta = attackerStat - defenderStat;
-            if (deltaCap > 0) Math.Clamp(statDelta, -deltaCap, 8 + deltaCap);
+            if (deltaCap > 0) statDelta = Math.Clamp(statDelta, -deltaCap, 8 + deltaCap);
             var baseDamage = attackerDMG + statDelta;
             var ratio = (float)attackerAttack / (float)defenderDefense;
 

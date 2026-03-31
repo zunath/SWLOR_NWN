@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace SWLOR.Game.Server.Service.FishingService
@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Service.FishingService
         ShellBug = 12,
         [FishingBait("robber_rig", "robber_rig99")]
         RobberRig = 13,
-        [FishingBait("peeled_crayfish", "peeled_crayfish99")]
+        [FishingBait("peeled_crayfish", "peeled_crayfish9")]
         PeeledCrayfish = 14,
         [FishingBait("trout_ball", "trout_ball99")]
         TroutBall = 15,

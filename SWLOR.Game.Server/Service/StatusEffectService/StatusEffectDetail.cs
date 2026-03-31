@@ -1,4 +1,4 @@
-﻿using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service.StatusEffectService
 {
@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
         public StatusEffectType[] CannotReplaceEffects { get; set; }
         public StatusEffectType[] ReplacesEffects { get; set; }
         public bool CanStack { get; set; }
+        public bool IsAura { get; set; }
         public StatusEffectAppliedDelegate AppliedAction { get; set; }
         public StatusEffectRemovedDelegate RemoveAction { get; set; }
         public StatusEffectTickDelegate TickAction { get; set; }

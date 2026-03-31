@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service.StatusEffectService
@@ -40,6 +40,18 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
         public StatusEffectBuilder CanStack()
         {
             _activeStatusEffect.CanStack = true;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Marks this status effect as an aura effect. Aura effects are managed by proximity
+        /// and are not persisted across logout/login cycles.
+        /// </summary>
+        /// <returns>A status effect builder with the configured options.</returns>
+        public StatusEffectBuilder IsAura()
+        {
+            _activeStatusEffect.IsAura = true;
 
             return this;
         }

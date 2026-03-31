@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -65,6 +65,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
 
                     ApplyEffectToObject(DurationType.Instant, EffectResurrection(), target);
                     Ability.ReapplyPlayerAuraAOE(target);
+                    DelayCommand(0.1f, () => Ability.ReapplyAuraEffectsForCreature(target));
 
                     if (hp > 0)
                     {

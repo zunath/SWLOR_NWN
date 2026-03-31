@@ -2907,13 +2907,17 @@
       }
     ]
   },
+  "TileBrdrDisabled": {
+    "type": "byte",
+    "value": 0
+  },
   "Tileset": {
     "type": "resref",
     "value": "udp2"
   },
   "Version": {
     "type": "dword",
-    "value": 15
+    "value": 16
   },
   "Width": {
     "type": "int",

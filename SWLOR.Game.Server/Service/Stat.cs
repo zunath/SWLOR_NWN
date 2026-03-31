@@ -891,11 +891,11 @@ namespace SWLOR.Game.Server.Service
             return GetAttack(skillLevel, stat, attackBonus);
         }
 
-        public static int GetAttackNative(CNWSCreature creature, BaseItem itemType)
+        public static int GetAttackNative(CNWSCreature creature, BaseItem itemType, AbilityType statOverride = AbilityType.Invalid)
         {
             var attackBonus = 0;
             var skillLevel = 0;
-            var statType = Item.GetWeaponDamageAbilityType(itemType);
+            var statType = statOverride != AbilityType.Invalid ? statOverride : Item.GetWeaponDamageAbilityType(itemType);
             var stat = GetStatValueNative(creature, statType);
             var skillType = Skill.GetSkillTypeByBaseItem(itemType);
 

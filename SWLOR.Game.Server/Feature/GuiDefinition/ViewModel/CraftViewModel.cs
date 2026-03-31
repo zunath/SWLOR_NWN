@@ -1285,10 +1285,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _activeBlueprint = Craft.GetBlueprintDetails(_blueprintItem);
                 var cost = Craft.CalculateBlueprintCraftCreditCost(_blueprintItem);
                 AssignCommand(Player, () => TakeGoldFromCreature(cost, Player, true));
-                
+
                 _activeBlueprint.LicensedRuns--;
                 Craft.SetBlueprintDetails(_blueprintItem, _activeBlueprint);
-                
+
                 SendMessageToPC(Player, $"Remaining licensed runs: {_activeBlueprint.LicensedRuns}");
 
                 var (recipeDescription, recipeColors) = Craft.BuildRecipeDetail(Player, _recipe, _activeBlueprint);
@@ -1451,8 +1451,70 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var playerId = GetObjectUUID(Player);
             var dbPlayer = DB.Get<Player>(playerId);
             var recipe = Craft.GetRecipe(_recipe);
+            var isVariantRecipe = StarfighterVariantCatalog.TryGetByRecipeType(_recipe, out var starfighter);
             var item = CreateItemOnObject(recipe.Resref, Player, recipe.Quantity);
-            if (StarfighterVariantCatalog.TryGetByRecipeType(_recipe, out var starfighter))
+
+            // Variant deeds are tagged dynamically. If a variant-specific template is missing,
+            // fall back to a known-good ship deed template and apply variant tag/name after spawn.
+            if (!GetIsObjectValid(item) && isVariantRecipe)
+            {
+                item = CreateItemOnObject("sdeed_striker", Player, recipe.Quantity);
+            }
+
+            if (!GetIsObjectValid(item))
+            {
+                SendMessageToPC(Player, "Failed to create crafted item. Please clear inventory space and contact a DM if this persists.");
+                Log.Write(LogGroup.Crafting, $"Craft failed to create item. Player={GetName(Player)} Recipe={_recipe} Resref={recipe.Resref}", true);
+
+                if (!string.IsNullOrWhiteSpace(_enhancement1))
+                    ObjectPlugin.AcquireItem(Player, ObjectPlugin.Deserialize(_enhancement1));
+                if (!string.IsNullOrWhiteSpace(_enhancement2))
+                    ObjectPlugin.AcquireItem(Player, ObjectPlugin.Deserialize(_enhancement2));
+                if (!string.IsNullOrWhiteSpace(_enhancement3))
+                    ObjectPlugin.AcquireItem(Player, ObjectPlugin.Deserialize(_enhancement3));
+                if (!string.IsNullOrWhiteSpace(_enhancement4))
+                    ObjectPlugin.AcquireItem(Player, ObjectPlugin.Deserialize(_enhancement4));
+                if (!string.IsNullOrWhiteSpace(_enhancement5))
+                    ObjectPlugin.AcquireItem(Player, ObjectPlugin.Deserialize(_enhancement5));
+                if (!string.IsNullOrWhiteSpace(_enhancement6))
+                    ObjectPlugin.AcquireItem(Player, ObjectPlugin.Deserialize(_enhancement6));
+                if (!string.IsNullOrWhiteSpace(_enhancement7))
+                    ObjectPlugin.AcquireItem(Player, ObjectPlugin.Deserialize(_enhancement7));
+                if (!string.IsNullOrWhiteSpace(_enhancement8))
+                    ObjectPlugin.AcquireItem(Player, ObjectPlugin.Deserialize(_enhancement8));
+
+                foreach (var serialized in _components)
+                {
+                    ObjectPlugin.AcquireItem(Player, ObjectPlugin.Deserialize(serialized));
+                }
+
+                _enhancement1 = string.Empty;
+                _enhancement2 = string.Empty;
+                _enhancement3 = string.Empty;
+                _enhancement4 = string.Empty;
+                _enhancement5 = string.Empty;
+                _enhancement6 = string.Empty;
+                _enhancement7 = string.Empty;
+                _enhancement8 = string.Empty;
+                _itemPropertiesEnhancement1.Clear();
+                _itemPropertiesEnhancement2.Clear();
+                _itemPropertiesEnhancement3.Clear();
+                _itemPropertiesEnhancement4.Clear();
+                _itemPropertiesEnhancement5.Clear();
+                _itemPropertiesEnhancement6.Clear();
+                _itemPropertiesEnhancement7.Clear();
+                _itemPropertiesEnhancement8.Clear();
+                _components.Clear();
+
+                SwitchToSetUpMode();
+                LoadCraftingState();
+                RefreshRecipeStats();
+                StatusText = "Craft failed: item template was invalid.";
+                StatusColor = GuiColor.Red;
+                return;
+            }
+
+            if (isVariantRecipe)
             {
                 SetTag(item, starfighter.DeedTag);
                 SetName(item, $"Ship Deed: {starfighter.DisplayName}");

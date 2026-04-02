@@ -15,7 +15,7 @@
         public override int[] RightShin { get; } = {208, 210, 211, 212, 214 };
         public override int[] RightFoot { get; } = {208, 210, 211, 212, 214 };
         public override int[] LeftBicep { get; } = {208, 210, 211, 212, 214 };
-        public override int[] LeftForearm { get; } = {208, 210, 211, 212, 214 };
+        public override int[] LeftForearm { get; } = {208, 210, 211, 212, 214  };
         public override int[] LeftHand { get; } = {208, 210, 211, 212, 214 };
         public override int[] LeftThigh { get; } = {208, 210, 211, 212, 214 };
         public override int[] LeftShin { get; } = {208, 210, 211, 212, 214 };

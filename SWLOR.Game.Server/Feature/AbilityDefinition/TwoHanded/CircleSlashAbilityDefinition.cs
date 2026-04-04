@@ -43,13 +43,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
             switch (level)
             {
                 case 1:
-                    dmg = 10;
+                    dmg = 14;
                     break;
                 case 2:
-                    dmg = 18;
+                    dmg = 24;
                     break;
                 case 3:
-                    dmg = 28;
+                    dmg = 32;
                     break;
                 default:
                     break;
@@ -65,7 +65,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
 
             var count = 0;
             var creature = GetFirstObjectInShape(Shape.Sphere, RadiusSize.Large, GetLocation(activator), true);
-            while (GetIsObjectValid(creature) && count < 3)
+            while (GetIsObjectValid(creature) && count < 6)
             {
                 if (GetIsReactionTypeHostile(creature, activator))
                 {

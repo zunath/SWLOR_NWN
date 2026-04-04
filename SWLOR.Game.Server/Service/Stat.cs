@@ -1610,7 +1610,15 @@ namespace SWLOR.Game.Server.Service
         /// <param name="creature">The player to apply attacks to</param>
         /// <param name="rightHandWeapon">The weapon equipped to the right hand.</param>
         /// <param name="offHandItem">The off hand item equipped to the left hand.</param>
-        public static void ApplyAttacksPerRound(uint creature, uint rightHandWeapon, uint offHandItem = OBJECT_INVALID)
+        /// <param name="perkLevelResolver">
+        /// Optional resolver used to determine perk levels for APR calculations.
+        /// If not provided, the default perk service is used.
+        /// </param>
+        public static void ApplyAttacksPerRound(
+            uint creature,
+            uint rightHandWeapon,
+            uint offHandItem = OBJECT_INVALID,
+            Func<PerkType, int> perkLevelResolver = null)
         {
             static int GetBABForAttacks(int attacks)
             {
@@ -1642,30 +1650,14 @@ namespace SWLOR.Game.Server.Service
             if (GetIsDM(creature) || GetIsDMPossessed(creature))
                 return;
 
-            Dictionary<PerkType, int> droidPerks = null;
-            if (Droid.IsDroid(creature))
-            {
-                droidPerks = new Dictionary<PerkType, int>();
-                var controller = Droid.GetControllerItem(creature);
-                if (GetIsObjectValid(controller))
-                {
-                    droidPerks = Droid.LoadDroidItemPropertyDetails(controller).Perks;
-                }
-            }
-
             int GetAPRPerkLevel(PerkType perkType)
             {
                 if (perkType == PerkType.Invalid)
                     return 0;
 
-                if (droidPerks != null)
-                {
-                    return droidPerks.TryGetValue(perkType, out var droidPerkLevel)
-                        ? droidPerkLevel
-                        : 0;
-                }
-
-                return Perk.GetPerkLevel(creature, perkType);
+                return perkLevelResolver != null
+                    ? perkLevelResolver(perkType)
+                    : Perk.GetPerkLevel(creature, perkType);
             }
 
             var itemType = GetBaseItemType(rightHandWeapon);

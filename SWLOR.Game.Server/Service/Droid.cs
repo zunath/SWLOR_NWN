@@ -199,6 +199,38 @@ namespace SWLOR.Game.Server.Service
             return GetLocalObject(droid, DroidControlItemVariable);
         }
 
+        private static Func<PerkType, int> BuildPerkLevelResolver(uint droid)
+        {
+            var perks = new Dictionary<PerkType, int>();
+            var controller = GetControllerItem(droid);
+            if (GetIsObjectValid(controller))
+            {
+                perks = LoadDroidItemPropertyDetails(controller).Perks;
+            }
+
+            return perkType =>
+            {
+                if (perkType == PerkType.Invalid)
+                    return 0;
+
+                return perks.TryGetValue(perkType, out var level)
+                    ? level
+                    : 0;
+            };
+        }
+
+        public static void ApplyDroidAttacksPerRound(uint droid, uint rightHandWeapon, uint offHandItem = OBJECT_INVALID)
+        {
+            if (!IsDroid(droid))
+            {
+                Stat.ApplyAttacksPerRound(droid, rightHandWeapon, offHandItem);
+                return;
+            }
+
+            var resolver = BuildPerkLevelResolver(droid);
+            Stat.ApplyAttacksPerRound(droid, rightHandWeapon, offHandItem, resolver);
+        }
+
         /// <summary>
         /// When a player uses a droid assembly terminal, displays the UI.
         /// Player will receive an error if they don't have any ranks in the Droid Assembly perk.

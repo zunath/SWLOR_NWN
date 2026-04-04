@@ -273,6 +273,19 @@ namespace SWLOR.Game.Server.Feature
                     action(player, item, slot, perkType, playerPerkLevel);
                 }
             }
+
+            if (Droid.IsDroid(player))
+            {
+                var rightHand = GetItemInSlot(InventorySlot.RightHand, player);
+                var leftHand = GetItemInSlot(InventorySlot.LeftHand, player);
+
+                if (slot == InventorySlot.RightHand)
+                    rightHand = item;
+                else if (slot == InventorySlot.LeftHand)
+                    leftHand = item;
+
+                Droid.ApplyDroidAttacksPerRound(player, rightHand, leftHand);
+            }
         }
 
         private static void RunUnequipTriggers(uint player, uint item)
@@ -302,6 +315,20 @@ namespace SWLOR.Game.Server.Feature
 
             var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
             RunUnequipTriggers(player, item);
+
+            if (Droid.IsDroid(player))
+            {
+                var slot = Item.GetItemSlot(player, item);
+                var rightHand = GetItemInSlot(InventorySlot.RightHand, player);
+                var leftHand = GetItemInSlot(InventorySlot.LeftHand, player);
+
+                if (slot == InventorySlot.RightHand)
+                    rightHand = OBJECT_INVALID;
+                else if (slot == InventorySlot.LeftHand)
+                    leftHand = OBJECT_INVALID;
+
+                Droid.ApplyDroidAttacksPerRound(player, rightHand, leftHand);
+            }
         }
     }
 }

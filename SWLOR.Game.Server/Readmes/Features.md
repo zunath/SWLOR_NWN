@@ -230,7 +230,6 @@ public class XWingShipDefinition : IShipListDefinition
 **Types**:
 - **CoxxionTerminalDialog.cs** - Terminal conversations
 - **DestroyItemDialog.cs** - Item destruction confirmations
-- **DiceDialog.cs** - Dice rolling dialogs
 
 **Example**:
 ```csharp

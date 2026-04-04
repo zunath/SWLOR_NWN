@@ -23,6 +23,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private const string NextAreaLayoutLoadTimestampVariable = "DMTOOLS_NEXT_AREA_LAYOUT_LOAD_TS";
         private const int LayoutSaveLockTimeoutSeconds = 10;
         private const string AreaLayoutSaveLockTimestampVariable = "DMTOOLS_AREA_LAYOUT_SAVE_LOCK_TS";
+        private const string EditingDungeonMasterIdVariable = "DMTOOLS_EDITING_DM_ID";
+        private const string EditingDungeonMasterNameVariable = "DMTOOLS_EDITING_DM_NAME";
+        private const string EditingLastTouchTimestampVariable = "DMTOOLS_EDITING_LAST_TS";
+        private const int EditingClaimStaleSeconds = 120;
         private bool _skipPaginationSearch;
         private int SelectedPlaceableIndex { get; set; }
         private readonly List<uint> _allPlaceables = new();
@@ -270,8 +274,90 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (!GetIsObjectValid(_highlightedPlaceable))
                 return;
 
+            ReleaseEditingClaimIfOwned(_highlightedPlaceable);
             PlayerPlugin.ApplyLoopingVisualEffectToObject(Player, _highlightedPlaceable, VisualEffect.None);
             _highlightedPlaceable = OBJECT_INVALID;
+        }
+
+        private (uint dm, string dmId, string dmName) GetActiveDungeonMaster()
+        {
+            var dm = Player;
+            if (GetIsDMPossessed(dm))
+            {
+                var master = GetMaster(dm);
+                if (GetIsObjectValid(master))
+                    dm = master;
+            }
+
+            return (dm, GetObjectUUID(dm), GetName(dm));
+        }
+
+        private static int NowUnix()
+        {
+            return (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        }
+
+        private bool IsEditingClaimStale(uint placeable)
+        {
+            var lastTouch = GetLocalInt(placeable, EditingLastTouchTimestampVariable);
+            return lastTouch > 0 && NowUnix() - lastTouch > EditingClaimStaleSeconds;
+        }
+
+        private void TouchClaim(uint placeable, string dmId, string dmName)
+        {
+            SetLocalString(placeable, EditingDungeonMasterIdVariable, dmId);
+            SetLocalString(placeable, EditingDungeonMasterNameVariable, dmName);
+            SetLocalInt(placeable, EditingLastTouchTimestampVariable, NowUnix());
+        }
+
+        private void ReleaseEditingClaimIfOwned(uint placeable)
+        {
+            if (!GetIsObjectValid(placeable))
+                return;
+
+            var (_, dmId, _) = GetActiveDungeonMaster();
+            var currentId = GetLocalString(placeable, EditingDungeonMasterIdVariable);
+            if (currentId != dmId)
+                return;
+
+            DeleteLocalString(placeable, EditingDungeonMasterIdVariable);
+            DeleteLocalString(placeable, EditingDungeonMasterNameVariable);
+            DeleteLocalInt(placeable, EditingLastTouchTimestampVariable);
+        }
+
+        private bool TryClaimPlaceable(uint placeable, out string ownerName)
+        {
+            ownerName = string.Empty;
+
+            var (_, dmId, dmName) = GetActiveDungeonMaster();
+            var currentId = GetLocalString(placeable, EditingDungeonMasterIdVariable);
+            if (string.IsNullOrWhiteSpace(currentId) || currentId == dmId || IsEditingClaimStale(placeable))
+            {
+                TouchClaim(placeable, dmId, dmName);
+                return true;
+            }
+
+            ownerName = GetLocalString(placeable, EditingDungeonMasterNameVariable);
+            return false;
+        }
+
+        private bool EnsureEditingOwnership(uint placeable)
+        {
+            var (_, dmId, dmName) = GetActiveDungeonMaster();
+            var currentId = GetLocalString(placeable, EditingDungeonMasterIdVariable);
+            if (currentId == dmId || IsEditingClaimStale(placeable))
+            {
+                TouchClaim(placeable, dmId, dmName);
+                return true;
+            }
+
+            var ownerName = GetLocalString(placeable, EditingDungeonMasterNameVariable);
+            if (string.IsNullOrWhiteSpace(ownerName))
+                ownerName = "another DM";
+
+            Instructions = $"That placeable is currently being edited by {ownerName}.";
+            InstructionColor = GuiColor.Red;
+            return false;
         }
 
         private void ApplyHighlight(uint placeable)
@@ -289,7 +375,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var placeable = _placeables[SelectedPlaceableIndex];
             if (!GetIsObjectValid(placeable))
             {
-                Instructions = "Selected placeable no longer exists. List refreshed.";
+                Instructions = "Selected placeable no longer exists (possibly removed by another DM). List refreshed.";
                 InstructionColor = GuiColor.Red;
                 ClearHighlight();
                 RebuildPlaceables();
@@ -337,6 +423,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnSelectPlaceable() => () =>
         {
+            var previousIndex = SelectedPlaceableIndex;
+            if (previousIndex > -1 && previousIndex < _placeables.Count)
+                ReleaseEditingClaimIfOwned(_placeables[previousIndex]);
+
             if (SelectedPlaceableIndex > -1 && SelectedPlaceableIndex < PlaceableToggles.Count)
                 PlaceableToggles[SelectedPlaceableIndex] = false;
 
@@ -350,6 +440,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (!GetIsObjectValid(placeable))
             {
                 IsPlaceableSelected = false;
+                return;
+            }
+
+            if (!TryClaimPlaceable(placeable, out var ownerName))
+            {
+                PlaceableToggles[SelectedPlaceableIndex] = false;
+                SelectedPlaceableIndex = -1;
+                IsPlaceableSelected = false;
+                Instructions = $"That placeable is currently being edited by {ownerName}.";
+                InstructionColor = GuiColor.Red;
+                ClearHighlight();
                 return;
             }
 
@@ -634,7 +735,27 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             ShowModal($"Delete layout '{selectedLayoutName}' for this area?", () =>
             {
-                DB.Delete<DMAreaPlaceableLayout>(layoutId);
+                if (!DB.Exists<DMAreaPlaceableLayout>(layoutId))
+                {
+                    LayoutName = string.Empty;
+                    LoadLayouts();
+                    Instructions = "Layout was already deleted.";
+                    InstructionColor = GuiColor.Red;
+                    return;
+                }
+
+                try
+                {
+                    DB.Delete<DMAreaPlaceableLayout>(layoutId);
+                }
+                catch
+                {
+                    LayoutName = string.Empty;
+                    LoadLayouts();
+                    Instructions = "Unable to delete layout. It may have already been removed.";
+                    InstructionColor = GuiColor.Red;
+                    return;
+                }
 
                 LayoutName = string.Empty;
                 LoadLayouts();
@@ -647,6 +768,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var placeable = GetSelectedPlaceable();
             if (!GetIsObjectValid(placeable))
+                return;
+            if (!EnsureEditingOwnership(placeable))
                 return;
 
             var position = GetPosition(placeable);
@@ -692,6 +815,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var placeable = GetSelectedPlaceable();
             if (!GetIsObjectValid(placeable))
                 return;
+            if (!EnsureEditingOwnership(placeable))
+                return;
 
             var location = GetLocation(placeable);
             var position = GetPosition(placeable);
@@ -719,6 +844,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var placeable = GetSelectedPlaceable();
             if (!GetIsObjectValid(placeable))
+                return;
+            if (!EnsureEditingOwnership(placeable))
                 return;
 
             facing = NormalizeFacing(facing);
@@ -782,6 +909,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var placeable = GetSelectedPlaceable();
             if (!GetIsObjectValid(placeable))
+                return;
+            if (!EnsureEditingOwnership(placeable))
                 return;
 
             var selectedPlaceableName = _placeableDisplayNames[SelectedPlaceableIndex];

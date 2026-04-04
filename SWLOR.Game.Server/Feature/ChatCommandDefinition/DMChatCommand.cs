@@ -923,10 +923,9 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 
         private void DMTools()
         {
-            _builder.Create("dmtools", "plctools")
+            _builder.Create("plctools", "placeabletools")
                 .Description("Toggles the DM Placeable Tools window.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
-                .AvailableToAllOnTestEnvironment()
                 .Action((user, target, location, args) =>
                 {
                     Gui.TogglePlayerWindow(user, GuiWindowType.DMTools);

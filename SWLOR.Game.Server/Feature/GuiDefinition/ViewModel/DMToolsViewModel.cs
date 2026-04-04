@@ -20,7 +20,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private const int MaxLayoutsPerArea = 30;
         private const int MaxSpawnAttemptsPerEntry = 200;
         private const int LayoutLoadCooldownSeconds = 5;
-        private const string NextLayoutLoadTimestampVariable = "DMTOOLS_NEXT_LAYOUT_LOAD_TS";
+        private const string NextAreaLayoutLoadTimestampVariable = "DMTOOLS_NEXT_AREA_LAYOUT_LOAD_TS";
+        private const int LayoutSaveLockTimeoutSeconds = 10;
+        private const string AreaLayoutSaveLockTimestampVariable = "DMTOOLS_AREA_LAYOUT_SAVE_LOCK_TS";
         private bool _skipPaginationSearch;
         private int SelectedPlaceableIndex { get; set; }
         private readonly List<uint> _allPlaceables = new();
@@ -433,35 +435,60 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
-            var areaResref = GetAreaResref();
-            var areaQuery = new DBQuery<DMAreaPlaceableLayout>()
-                .AddFieldSearch(nameof(DMAreaPlaceableLayout.AreaResref), areaResref, false);
-            var areaLayouts = DB.Search(areaQuery).ToList();
-            var existing = areaLayouts
-                .FirstOrDefault(x => string.Equals(x.Name, layoutName, StringComparison.OrdinalIgnoreCase));
-
-            if (existing == null && areaLayouts.Count >= MaxLayoutsPerArea)
+            var area = GetArea(Player);
+            if (!GetIsObjectValid(area))
             {
-                Instructions = $"This area already has {MaxLayoutsPerArea} layouts. Delete one before saving a new layout.";
+                Instructions = "Area is invalid.";
                 InstructionColor = GuiColor.Red;
                 return;
             }
 
-            if (existing == null)
+            var now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+            var lockUntil = GetLocalInt(area, AreaLayoutSaveLockTimestampVariable);
+            if (lockUntil > now)
             {
-                existing = new DMAreaPlaceableLayout
-                {
-                    AreaResref = areaResref,
-                    Name = layoutName
-                };
+                Instructions = "Another DM is currently saving layouts in this area. Please try again in a moment.";
+                InstructionColor = GuiColor.Red;
+                return;
             }
 
-            LayoutName = layoutName;
-            existing.Entries = entries;
-            DB.Set(existing);
+            SetLocalInt(area, AreaLayoutSaveLockTimestampVariable, (int)now + LayoutSaveLockTimeoutSeconds);
+            try
+            {
+                var areaResref = GetResRef(area);
+                var areaQuery = new DBQuery<DMAreaPlaceableLayout>()
+                    .AddFieldSearch(nameof(DMAreaPlaceableLayout.AreaResref), areaResref, false);
+                var areaLayouts = DB.Search(areaQuery).ToList();
+                var existing = areaLayouts
+                    .FirstOrDefault(x => string.Equals(x.Name, layoutName, StringComparison.OrdinalIgnoreCase));
+
+                if (existing == null && areaLayouts.Count >= MaxLayoutsPerArea)
+                {
+                    Instructions = $"This area already has {MaxLayoutsPerArea} layouts. Delete one before saving a new layout.";
+                    InstructionColor = GuiColor.Red;
+                    return;
+                }
+
+                if (existing == null)
+                {
+                    existing = new DMAreaPlaceableLayout
+                    {
+                        AreaResref = areaResref,
+                        Name = layoutName
+                    };
+                }
+
+                LayoutName = layoutName;
+                existing.Entries = entries;
+                DB.Set(existing);
+            }
+            finally
+            {
+                SetLocalInt(area, AreaLayoutSaveLockTimestampVariable, 0);
+            }
 
             LoadLayouts();
-            Instructions = $"Layout '{existing.Name}' saved ({entries.Count} placeables).";
+            Instructions = $"Layout '{layoutName}' saved ({entries.Count} placeables).";
             InstructionColor = GuiColor.Green;
         };
 
@@ -474,8 +501,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
+            var area = GetArea(Player);
+            if (!GetIsObjectValid(area))
+            {
+                Instructions = "Area is invalid.";
+                InstructionColor = GuiColor.Red;
+                return;
+            }
+
             var now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-            var nextAllowedLoad = GetLocalInt(Player, NextLayoutLoadTimestampVariable);
+            var nextAllowedLoad = GetLocalInt(area, NextAreaLayoutLoadTimestampVariable);
             if (nextAllowedLoad > now)
             {
                 var secondsRemaining = nextAllowedLoad - now;
@@ -484,7 +519,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
-            SetLocalInt(Player, NextLayoutLoadTimestampVariable, (int)now + LayoutLoadCooldownSeconds);
+            SetLocalInt(area, NextAreaLayoutLoadTimestampVariable, (int)now + LayoutLoadCooldownSeconds);
 
             var layout = DB.Get<DMAreaPlaceableLayout>(_layoutIds[_selectedLayoutIndex]);
             if (layout?.Entries == null || layout.Entries.Count <= 0)
@@ -495,7 +530,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             var groupedPlaceables = new Dictionary<string, List<uint>>();
-            var area = GetArea(Player);
             var dungeonMaster = Player;
             if (GetIsDMPossessed(dungeonMaster))
             {

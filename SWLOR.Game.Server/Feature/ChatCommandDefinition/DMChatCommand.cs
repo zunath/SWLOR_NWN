@@ -52,6 +52,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             Notes();
             CreatureManager();
             DMTools();
+            MusicWindow();
             Broadcast();
             SetScale();
             GetScale();
@@ -929,6 +930,15 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Action((user, target, location, args) =>
                 {
                     Gui.TogglePlayerWindow(user, GuiWindowType.DMTools);
+        private void MusicWindow()
+        {
+            _builder.Create("music")
+                .Description("Toggles the area music picker window.")
+                .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .AvailableToAllOnTestEnvironment()
+                .Action((user, target, location, args) =>
+                {
+                    Gui.TogglePlayerWindow(user, GuiWindowType.MusicPicker);
                 });
         }
 

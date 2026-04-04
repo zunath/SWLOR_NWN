@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -25,6 +25,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Armor
             if (GetIsPC(target))
             {
                 return "This ability cannot be used on players.";
+            }
+
+            if (BeastMastery.IsPlayerBeast(target) || Droid.IsDroid(target))
+            {
+                return "This ability cannot be used on associates.";
             }
 
             return string.Empty;
@@ -80,7 +85,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Armor
                         if (GetDistanceBetweenLocations(GetLocation(nearest), location) > 8f)
                             break;
 
-                        if (!GetIsPC(nearest))
+                        if (!GetIsPC(nearest) && 
+                            !BeastMastery.IsPlayerBeast(nearest) && 
+                            !Droid.IsDroid(nearest))
                         {
                             var enmityBonus = GetAbilityScore(activator, AbilityType.Vitality) * 50;
                             Impact(activator, nearest, 400 + enmityBonus);

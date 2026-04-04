@@ -519,9 +519,29 @@ namespace SWLOR.Game.Server.Service
 
             aura.Auras.Add(new PlayerAuraDetail(type, targetsSelf, targetsParty, targetsEnemies));
 
-            if (targetsSelf)
+            if (targetsSelf && !StatusEffect.HasStatusEffect(activator, type))
             {
                 StatusEffect.Apply(activator, activator, type, 0f, activator);
+            }
+
+            if (targetsParty)
+            {
+                foreach (var member in aura.PartyMembersInRange)
+                {
+                    if (Party.IsInParty(activator, member) && !StatusEffect.HasStatusEffect(member, type))
+                        StatusEffect.Apply(activator, member, type, 0f, activator);
+                }
+            }
+
+            if (targetsEnemies)
+            {
+                foreach (var npc in aura.CreaturesInRange)
+                {
+                    if (!GetIsDMPossessed(npc) && !GetIsDM(npc) &&
+                        (GetIsEnemy(activator, npc) || GetIsEnemy(npc, activator)) &&
+                        !StatusEffect.HasStatusEffect(npc, type))
+                        StatusEffect.Apply(activator, npc, type, 0f, activator);
+                }
             }
 
             SendMessageToPC(activator, ColorToken.Green($"Aura '{detail.Name}' activated."));
@@ -552,7 +572,8 @@ namespace SWLOR.Game.Server.Service
                 {
                     foreach (var member in aura.PartyMembersInRange)
                     {
-                        StatusEffect.Remove(member, type, false);
+                        if (!HasAlternativeAuraSource(member, type, activator))
+                            StatusEffect.Remove(member, type, false);
                     }
                 }
 
@@ -560,7 +581,8 @@ namespace SWLOR.Game.Server.Service
                 {
                     foreach (var npc in aura.CreaturesInRange)
                     {
-                        StatusEffect.Remove(npc, type, false);
+                        if (!HasAlternativeAuraSource(npc, type, activator))
+                            StatusEffect.Remove(npc, type, false);
                     }
                 }
 
@@ -593,7 +615,8 @@ namespace SWLOR.Game.Server.Service
                 {
                     foreach (var member in auraDetails.PartyMembersInRange)
                     {
-                        StatusEffect.Remove(member, aura.Type, false);
+                        if (!HasAlternativeAuraSource(member, aura.Type, activator))
+                            StatusEffect.Remove(member, aura.Type, false);
                     }
                 }
 
@@ -601,12 +624,104 @@ namespace SWLOR.Game.Server.Service
                 {
                     foreach (var npc in auraDetails.CreaturesInRange)
                     {
-                        StatusEffect.Remove(npc, aura.Type, false);
+                        if (!HasAlternativeAuraSource(npc, aura.Type, activator))
+                            StatusEffect.Remove(npc, aura.Type, false);
                     }
                 }
             }
 
             _playerAuras.Remove(activator);
+        }
+
+        /// <summary>
+        /// Removes a creature from all active aura range lists and strips any aura effects they received
+        /// as a recipient. Used when a creature leaves the game world in a way that bypasses the normal
+        /// AOE exit event (e.g., entering space, being teleported).
+        /// </summary>
+        /// <param name="target">The creature to remove from all aura ranges.</param>
+        public static void RemoveCreatureFromAllAuraRanges(uint target)
+        {
+            foreach (var (_, playerAura) in _playerAuras)
+            {
+                if (playerAura.PartyMembersInRange.Remove(target))
+                {
+                    foreach (var aura in playerAura.Auras)
+                    {
+                        if (aura.TargetsParty)
+                            StatusEffect.Remove(target, aura.Type, false);
+                    }
+                }
+
+                if (playerAura.CreaturesInRange.Remove(target))
+                {
+                    foreach (var aura in playerAura.Auras)
+                    {
+                        if (aura.TargetsEnemies)
+                            StatusEffect.Remove(target, aura.Type, false);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Re-applies any aura effects that a creature should be receiving based on their current position
+        /// in active aura range lists. Used after in-place resurrection (subdual, revive) where the
+        /// AOE enter event may not re-fire for a creature that never physically left the AOE.
+        /// </summary>
+        /// <param name="target">The creature to re-enroll in active auras.</param>
+        public static void ReapplyAuraEffectsForCreature(uint target)
+        {
+            if (!GetIsObjectValid(target) || GetIsDead(target))
+                return;
+
+            foreach (var (leader, playerAura) in _playerAuras)
+            {
+                if (playerAura.PartyMembersInRange.Contains(target) && Party.IsInParty(leader, target))
+                {
+                    foreach (var aura in playerAura.Auras)
+                    {
+                        if (aura.TargetsParty && !StatusEffect.HasStatusEffect(target, aura.Type))
+                            StatusEffect.Apply(leader, target, aura.Type, 0f, leader);
+                    }
+                }
+
+                if (playerAura.CreaturesInRange.Contains(target) &&
+                    !GetIsDMPossessed(target) && !GetIsDM(target) &&
+                    (GetIsEnemy(leader, target) || GetIsEnemy(target, leader)))
+                {
+                    foreach (var aura in playerAura.Auras)
+                    {
+                        if (aura.TargetsEnemies && !StatusEffect.HasStatusEffect(target, aura.Type))
+                            StatusEffect.Apply(leader, target, aura.Type, 0f, leader);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Returns true if any leader other than the excluded one has the given aura type active
+        /// and the recipient is still tracked in that leader's range list. Used to avoid stripping
+        /// an effect from a recipient when a second leader with the same aura is still in range.
+        /// </summary>
+        private static bool HasAlternativeAuraSource(uint recipient, StatusEffectType type, uint excludeLeader)
+        {
+            foreach (var (leader, playerAura) in _playerAuras)
+            {
+                if (leader == excludeLeader) continue;
+
+                foreach (var aura in playerAura.Auras)
+                {
+                    if (aura.Type != type) continue;
+
+                    if (aura.TargetsParty && playerAura.PartyMembersInRange.Contains(recipient))
+                        return true;
+
+                    if (aura.TargetsEnemies && playerAura.CreaturesInRange.Contains(recipient))
+                        return true;
+                }
+            }
+
+            return false;
         }
 
         private static AreaOfEffect GetAuraAOE(int level)
@@ -651,22 +766,26 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// When a player exits the server, remove all of their Aura effects.
+        /// Also removes the player from any aura ranges they are receiving as a recipient.
         /// </summary>
         [NWNEventHandler(ScriptName.OnModuleExit)]
         public static void ClearAurasOnExit()
         {
             var player = GetExitingObject();
             RemoveAllAuras(player);
+            RemoveCreatureFromAllAuraRanges(player);
         }
 
         /// <summary>
         /// When a player dies, remove all of their Aura effects.
+        /// Also removes the player from any aura ranges they are receiving as a recipient.
         /// </summary>
         [NWNEventHandler(ScriptName.OnModuleDeath)]
         public static void ClearAurasOnDeath()
         {
             var player = GetLastPlayerDied();
             RemoveAllAuras(player);
+            RemoveCreatureFromAllAuraRanges(player);
         }
 
         /// <summary>
@@ -681,12 +800,14 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// When a player enters space mode, remove all of their Aura effects.
+        /// Also removes the player from any aura ranges they are receiving as a recipient.
         /// </summary>
         [NWNEventHandler(ScriptName.OnSpaceEnter)]
         public static void ClearAurasOnSpaceEntry()
         {
             var player = OBJECT_SELF;
             RemoveAllAuras(player);
+            RemoveCreatureFromAllAuraRanges(player);
         }
 
         /// <summary>
@@ -704,14 +825,12 @@ namespace SWLOR.Game.Server.Service
             // Party Members
             if (Party.IsInParty(self, entering))
             {
-                if (_playerAuras[self].PartyMembersInRange.Contains(entering))
-                    return;
-
-                _playerAuras[self].PartyMembersInRange.Add(entering);
+                if (!_playerAuras[self].PartyMembersInRange.Contains(entering))
+                    _playerAuras[self].PartyMembersInRange.Add(entering);
 
                 foreach (var detail in _playerAuras[self].Auras)
                 {
-                    if (detail.TargetsParty)
+                    if (detail.TargetsParty && !StatusEffect.HasStatusEffect(entering, detail.Type))
                     {
                         StatusEffect.Apply(self, entering, detail.Type, 0f, self);
                     }
@@ -721,14 +840,12 @@ namespace SWLOR.Game.Server.Service
             // Enemies
             else if (!GetIsDMPossessed(entering) && !GetIsDM(entering) && (GetIsEnemy(self, entering) || GetIsEnemy(entering, self)))
             {
-                if (_playerAuras[self].CreaturesInRange.Contains(entering))
-                    return;
-
-                _playerAuras[self].CreaturesInRange.Add(entering);
+                if (!_playerAuras[self].CreaturesInRange.Contains(entering))
+                    _playerAuras[self].CreaturesInRange.Add(entering);
 
                 foreach (var detail in _playerAuras[self].Auras)
                 {
-                    if (detail.TargetsEnemies)
+                    if (detail.TargetsEnemies && !StatusEffect.HasStatusEffect(entering, detail.Type))
                     {
                         StatusEffect.Apply(self, entering, detail.Type, 0f, self);
                     }
@@ -757,7 +874,7 @@ namespace SWLOR.Game.Server.Service
 
                 foreach (var detail in _playerAuras[self].Auras)
                 {
-                    if (detail.TargetsParty)
+                    if (detail.TargetsParty && !HasAlternativeAuraSource(exiting, detail.Type, self))
                     {
                         StatusEffect.Remove(exiting, detail.Type, false);
                     }
@@ -773,7 +890,7 @@ namespace SWLOR.Game.Server.Service
 
                 foreach (var detail in _playerAuras[self].Auras)
                 {
-                    if (detail.TargetsEnemies)
+                    if (detail.TargetsEnemies && !HasAlternativeAuraSource(exiting, detail.Type, self))
                     {
                         StatusEffect.Remove(exiting, detail.Type, false);
                     }

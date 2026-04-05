@@ -84,7 +84,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Steady Hand (Engineering)")
 
                 .AddPerkLevel()
-                .Description("Increases success rate of next synthesis ability to 100%. Passively grants +18 synthesis progress per successful synthesis while crafting.")
+                .Description("Increases success rate of next synthesis ability to 100%. Passively grants +21 synthesis progress per successful synthesis while crafting.")
                 .Price(1)
                 .RequirementSkill(SkillType.Engineering, 20);
 
@@ -92,7 +92,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Muscle Memory (Engineering)")
 
                 .AddPerkLevel()
-                .Description("Increases success rate of next touch ability to 100%. Passively grants +104 quality per successful touch while crafting.")
+                .Description("Increases success rate of next touch ability to 100%. Passively grants +115 quality per successful touch while crafting.")
                 .Price(1)
                 .RequirementSkill(SkillType.Engineering, 40);
 
@@ -100,7 +100,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Veneration (Engineering)")
 
                 .AddPerkLevel()
-                .Description("Reduces CP cost of synthesis abilities by 50% for the next four actions. Passively grants +28 maximum CP while crafting.")
+                .Description("Reduces CP cost of synthesis abilities by 50% for the next four actions. Passively grants +31 maximum CP while crafting.")
                 .Price(1)
                 .RequirementSkill(SkillType.Engineering, 25);
 

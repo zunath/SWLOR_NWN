@@ -37,31 +37,35 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             int dmg;
+            int dc;
             const float Duration = 6f;
-
-            switch (level)
-            {
-                default:
-                case 1:
-                    dmg = 6;
-                    break;
-                case 2:
-                    dmg = 12;
-                    break;
-                case 3:
-                    dmg = 24;
-                    break;
-            }
-
-            dmg += Combat.GetAbilityDamageBonus(activator, SkillType.OneHanded);
-
-            CombatPoint.AddCombatPoint(activator, target, SkillType.OneHanded, 3);
 
             var stat = AbilityType.Perception;
             if (Ability.IsAbilityToggled(activator, AbilityToggleType.StrongStyleLightsaber))
             {
                 stat = AbilityType.Might;
             }
+
+            switch (level)
+            {
+                default:
+                case 1:
+                    dmg = 6;
+                    dc = 10;
+                    break;
+                case 2:
+                    dmg = 12;
+                    dc = 12;
+                    break;
+                case 3:
+                    dmg = 24;
+                    dc = 15;
+                    break;
+            }
+
+            dmg += Combat.GetAbilityDamageBonus(activator, SkillType.OneHanded);
+
+            CombatPoint.AddCombatPoint(activator, target, SkillType.OneHanded, 3);
 
             var attackerStat = Combat.GetPerkAdjustedAbilityScore(activator);
             var attack = Stat.GetAttack(activator, stat, SkillType.OneHanded);
@@ -71,9 +75,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
 
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
 
-            // DC calculation: 15 + PER/2 for daze
-            var dc = 15 + (GetAbilityModifier(AbilityType.Perception, activator) / 2);
-            dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Will, dc);
+            // Tiered base + full modifier on attack stat (Perception or Might w/ Strong Style); rank III reaches DC 25 at score 30 (+10 mod).
+            dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Will, dc, stat);
             var checkResult = WillSave(target, dc, SavingThrowType.None, activator);
             if (checkResult == SavingThrowResultType.Failed)
             {

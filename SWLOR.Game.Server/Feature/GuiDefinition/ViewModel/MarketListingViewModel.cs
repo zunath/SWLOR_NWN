@@ -199,6 +199,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             var marketDetail = PlayerMarket.GetMarketRegion(_regionType);
+            var sellerCDKey = GetPCPublicCDKey(Player);
             var listing = new MarketItem
             {
                 MarketId = marketDetail.MarketId,
@@ -206,6 +207,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 MarketName = marketDetail.Name,
                 PlayerId = GetObjectUUID(Player),
                 SellerName = GetName(Player),
+                SellerCDKey = sellerCDKey,
                 Price = 0,
                 IsListed = false,
                 Name = GetName(item),

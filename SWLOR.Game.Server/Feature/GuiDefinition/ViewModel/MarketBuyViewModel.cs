@@ -298,6 +298,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     return;
                 }
 
+                var buyerCDKey = GetPCPublicCDKey(Player);
+                if (string.IsNullOrWhiteSpace(dbItem.SellerCDKey))
+                {
+                    Log.Write(LogGroup.PlayerMarket, $"Listing '{dbItem.Id}' has no SellerCDKey; allowing purchase (legacy listing).");
+                }
+                else if (!string.IsNullOrWhiteSpace(buyerCDKey) &&
+                         string.Equals(dbItem.SellerCDKey, buyerCDKey, StringComparison.Ordinal))
+                {
+                    FloatingTextStringOnCreature("You cannot purchase market listings from your own account.", Player, false);
+                    return;
+                }
+
                 // If the player no longer has enough money to purchase the item, prevent them from purchasing it.
                 // This can happen if the player opens the modal, drops their money and clicks yes.
                 // Another potential scenario is the seller adjusts the price on the item while they're mid-purchase.

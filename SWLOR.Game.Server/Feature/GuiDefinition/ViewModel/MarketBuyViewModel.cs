@@ -298,13 +298,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     return;
                 }
 
-                var buyerCDKey = GetPCPublicCDKey(Player);
-                if (string.IsNullOrWhiteSpace(dbItem.SellerCDKey))
+                var buyerCDKey = GetPCPublicCDKey(Player, true)?.Trim() ?? string.Empty;
+                var sellerCDKey = dbItem.SellerCDKey?.Trim();
+                if (string.IsNullOrWhiteSpace(sellerCDKey))
                 {
                     Log.Write(LogGroup.PlayerMarket, $"Listing '{dbItem.Id}' has no SellerCDKey; allowing purchase (legacy listing).");
                 }
-                else if (!string.IsNullOrWhiteSpace(buyerCDKey) &&
-                         string.Equals(dbItem.SellerCDKey, buyerCDKey, StringComparison.Ordinal))
+                else if (string.IsNullOrWhiteSpace(buyerCDKey))
+                {
+                    FloatingTextStringOnCreature("Unable to verify account key. Please relog and try again.", Player, false);
+                    return;
+                }
+                else if (string.Equals(sellerCDKey, buyerCDKey, StringComparison.OrdinalIgnoreCase))
                 {
                     FloatingTextStringOnCreature("You cannot purchase market listings from your own account.", Player, false);
                     return;

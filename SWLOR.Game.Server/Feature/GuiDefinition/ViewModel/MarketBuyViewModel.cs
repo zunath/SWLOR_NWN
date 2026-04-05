@@ -298,21 +298,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     return;
                 }
 
-                var buyerCDKey = GetPCPublicCDKey(Player, true)?.Trim() ?? string.Empty;
-                var sellerCDKey = dbItem.SellerCDKey?.Trim();
-                if (string.IsNullOrWhiteSpace(sellerCDKey))
+                var buyerCDKey = GetPCPublicCDKey(Player);
+                if (!string.IsNullOrWhiteSpace(dbItem.SellerCDKey))
                 {
-                    Log.Write(LogGroup.PlayerMarket, $"Listing '{dbItem.Id}' has no SellerCDKey; allowing purchase (legacy listing).");
-                }
-                else if (string.IsNullOrWhiteSpace(buyerCDKey))
-                {
-                    FloatingTextStringOnCreature("Unable to verify account key. Please relog and try again.", Player, false);
-                    return;
-                }
-                else if (string.Equals(sellerCDKey, buyerCDKey, StringComparison.OrdinalIgnoreCase))
-                {
-                    FloatingTextStringOnCreature("You cannot purchase market listings from your own account.", Player, false);
-                    return;
+                    if (string.IsNullOrWhiteSpace(buyerCDKey))
+                    {
+                        FloatingTextStringOnCreature("Unable to verify CD Key. Please relog and try again.", Player, false);
+                        return;
+                    }
+
+                    if (string.Equals(dbItem.SellerCDKey, buyerCDKey, StringComparison.OrdinalIgnoreCase))
+                    {
+                        FloatingTextStringOnCreature("You cannot purchase market listings from your own account.", Player, false);
+                        return;
+                    }
                 }
 
                 // If the player no longer has enough money to purchase the item, prevent them from purchasing it.
@@ -339,6 +338,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     TakeGoldFromCreature(price, Player, true);
                 });
                 var item = ObjectPlugin.Deserialize(dbItem.Data);
+                if (string.IsNullOrWhiteSpace(dbItem.SellerCDKey))
+                {
+                    Log.Write(LogGroup.PlayerMarket, $"Listing '{dbItem.Id}' has no SellerCDKey; allowing purchase (legacy listing).");
+                }
+
                 Log.Write(LogGroup.PlayerMarket, $"{GetName(Player)} [{GetObjectUUID(Player)}] bought {GetItemStackSize(item)}x {GetName(item)} from {dbItem.SellerName} for {price} credits.");
                 ObjectPlugin.AcquireItem(Player, item);
 

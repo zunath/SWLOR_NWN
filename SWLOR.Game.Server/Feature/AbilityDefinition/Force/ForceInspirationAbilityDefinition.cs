@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
+using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -40,6 +42,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             ApplyEffectToObject(DurationType.Temporary, effect, target, length);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Globe_Use), target);
 
+            // WIL/AGI from this buff change max FP/STM (Stat.GetMaxFP / GetMaxStamina). Refresh UI — otherwise
+            // pool displays stay stale until something else fires (e.g. re-equipping gear).
+            if (GetIsPC(target) && !GetIsDM(target) && !GetIsDMPossessed(target))
+            {
+                Gui.PublishRefreshEvent(target, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.FP));
+                Gui.PublishRefreshEvent(target, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.STM));
+            }
         }
 
         private void ForceInspiration1(AbilityBuilder builder)

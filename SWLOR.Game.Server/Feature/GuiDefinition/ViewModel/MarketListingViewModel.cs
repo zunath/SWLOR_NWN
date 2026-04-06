@@ -199,13 +199,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             var marketDetail = PlayerMarket.GetMarketRegion(_regionType);
-            var sellerCDKey = GetPCPublicCDKey(Player);
-            if (string.IsNullOrWhiteSpace(sellerCDKey))
-            {
-                FloatingTextStringOnCreature("Unable to verify CD Key. Please relog and try again.", Player, false);
-                return;
-            }
-
             var listing = new MarketItem
             {
                 MarketId = marketDetail.MarketId,
@@ -213,7 +206,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 MarketName = marketDetail.Name,
                 PlayerId = GetObjectUUID(Player),
                 SellerName = GetName(Player),
-                SellerCDKey = sellerCDKey,
+                SellerCDKey = GetPCPublicCDKey(Player),
                 Price = 0,
                 IsListed = false,
                 Name = GetName(item),

@@ -299,19 +299,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
 
                 var buyerCDKey = GetPCPublicCDKey(Player);
-                if (!string.IsNullOrWhiteSpace(dbItem.SellerCDKey))
+                if (!string.IsNullOrWhiteSpace(dbItem.SellerCDKey) &&
+                    dbItem.SellerCDKey == buyerCDKey)
                 {
-                    if (string.IsNullOrWhiteSpace(buyerCDKey))
-                    {
-                        FloatingTextStringOnCreature("Unable to verify CD Key. Please relog and try again.", Player, false);
-                        return;
-                    }
-
-                    if (string.Equals(dbItem.SellerCDKey, buyerCDKey, StringComparison.OrdinalIgnoreCase))
-                    {
-                        FloatingTextStringOnCreature("You cannot purchase market listings from your own account.", Player, false);
-                        return;
-                    }
+                    FloatingTextStringOnCreature("You cannot purchase market listings from your own account.", Player, false);
+                    return;
                 }
 
                 // If the player no longer has enough money to purchase the item, prevent them from purchasing it.

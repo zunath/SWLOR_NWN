@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Feature.DialogDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ChatCommandService;
+using SWLOR.Game.Server.Service.GuiService;
 
 namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 {
@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Permissions(AuthorizationLevel.All)
                 .Action((user, target, location, args) =>
                 {
-                    Dialog.StartConversation(user, user, nameof(DiceDialog));
+                    Gui.TogglePlayerWindow(user, GuiWindowType.Dice);
                 });
 
             return builder.Build();

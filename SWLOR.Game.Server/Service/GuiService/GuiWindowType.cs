@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Game.Server.Service.GuiService
+namespace SWLOR.Game.Server.Service.GuiService
 {
     public enum GuiWindowType
     {
@@ -57,6 +57,8 @@
         Incubator = 52,
         Research = 53,
         TargetDescription = 54,
+        MusicPicker = 55,
+        Dice = 56,
 
         DebugEnmity = 900,
         ChangePortrait = 9999

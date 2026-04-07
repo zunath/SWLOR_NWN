@@ -206,6 +206,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 MarketName = marketDetail.Name,
                 PlayerId = GetObjectUUID(Player),
                 SellerName = GetName(Player),
+                SellerCDKey = GetPCPublicCDKey(Player),
                 Price = 0,
                 IsListed = false,
                 Name = GetName(item),

@@ -13,6 +13,8 @@ namespace SWLOR.Game.Server.Entity
         [Indexed]
         public string SellerName { get; set; }
         [Indexed]
+        public string SellerCDKey { get; set; }
+        [Indexed]
         public int Price { get; set; }
         [Indexed]
         public bool IsListed { get; set; }

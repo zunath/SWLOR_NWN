@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.DialogDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
@@ -22,6 +22,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         IGuiRefreshable<SkillXPRefreshEvent>,
         IGuiRefreshable<EquipItemRefreshEvent>,
         IGuiRefreshable<UnequipItemRefreshEvent>,
+        IGuiRefreshable<PlayerStatusRefreshEvent>,
         IGuiRefreshable<StatusEffectReceivedRefreshEvent>,
         IGuiRefreshable<StatusEffectRemovedRefreshEvent>,
         IGuiRefreshable<BeastGainXPRefreshEvent>
@@ -729,6 +730,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             RefreshStats();
             RefreshEquipmentStats();
+        }
+
+        void IGuiRefreshable<PlayerStatusRefreshEvent>.Refresh(PlayerStatusRefreshEvent payload)
+        {
+            if (!GetIsPC(_target))
+                return;
+
+            switch (payload.Type)
+            {
+                case PlayerStatusRefreshEvent.StatType.HP:
+                case PlayerStatusRefreshEvent.StatType.FP:
+                case PlayerStatusRefreshEvent.StatType.STM:
+                    RefreshStats();
+                    break;
+            }
         }
 
         public void Refresh(StatusEffectReceivedRefreshEvent payload)

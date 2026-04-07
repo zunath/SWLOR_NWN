@@ -298,6 +298,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     return;
                 }
 
+                var buyerCDKey = GetPCPublicCDKey(Player);
+                if (!string.IsNullOrWhiteSpace(dbItem.SellerCDKey) &&
+                    dbItem.SellerCDKey == buyerCDKey)
+                {
+                    FloatingTextStringOnCreature("You cannot purchase market listings from your own account.", Player, false);
+                    return;
+                }
+
                 // If the player no longer has enough money to purchase the item, prevent them from purchasing it.
                 // This can happen if the player opens the modal, drops their money and clicks yes.
                 // Another potential scenario is the seller adjusts the price on the item while they're mid-purchase.
@@ -322,6 +330,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     TakeGoldFromCreature(price, Player, true);
                 });
                 var item = ObjectPlugin.Deserialize(dbItem.Data);
+                if (string.IsNullOrWhiteSpace(dbItem.SellerCDKey))
+                {
+                    Log.Write(LogGroup.PlayerMarket, $"Listing '{dbItem.Id}' has no SellerCDKey; allowing purchase (legacy listing).");
+                }
+
                 Log.Write(LogGroup.PlayerMarket, $"{GetName(Player)} [{GetObjectUUID(Player)}] bought {GetItemStackSize(item)}x {GetName(item)} from {dbItem.SellerName} for {price} credits.");
                 ObjectPlugin.AcquireItem(Player, item);
 

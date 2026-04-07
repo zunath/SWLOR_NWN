@@ -517,8 +517,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 : 0;
 
             _maxCP = (int)(cp + skill * 0.75f);
+            // Veneration passive: +31 max CP (empirically tuned to match pre-attribute-removal crafting).
             if (Perk.GetPerkLevel(Player, _venerationPerk) > 0)
-                _maxCP += 24;
+                _maxCP += 31;
             _cp = _maxCP;
             
             _maxDurability = levelDetail.Durability;
@@ -1356,7 +1357,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var craftsmanship = Stat.CalculateCraftsmanship(Player, recipe.Skill);
             var delta = dbPlayer.Skills[recipe.Skill].Rank - recipe.Level;
             var recipeDiff = 1 + 0.05f * delta;
-            var steadyHandBonus = Perk.GetPerkLevel(Player, _steadyHandPerk) > 0 ? 16 : 0;
+            // Steady Hand passive: +21 progress (primary 30 + secondary 26 equivalent).
+            var steadyHandBonus = Perk.GetPerkLevel(Player, _steadyHandPerk) > 0 ? 21 : 0;
             var progress = (int)((baseProgress + steadyHandBonus + craftsmanship * 0.65f) * recipeDiff);
 
             return progress;
@@ -1373,7 +1375,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ? 1 + 0.05f * delta 
                 : 1;
 
-            var muscleMemoryBonus = Perk.GetPerkLevel(Player, _muscleMemoryPerk) > 0 ? 88 : 0;
+            // Muscle Memory passive: +115 quality (primary 30 + secondary 26 equivalent).
+            var muscleMemoryBonus = Perk.GetPerkLevel(Player, _muscleMemoryPerk) > 0 ? 115 : 0;
             var quality = (int)((baseQuality + muscleMemoryBonus + control * 0.75f) * recipeDiff);
             return quality;
         }

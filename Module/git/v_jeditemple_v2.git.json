@@ -14967,11 +14967,11 @@
         },
         "LinkedTo": {
           "type": "cexostring",
-          "value": "WP_VE_TempleEntrance"
+          "value": "Jedi_In_Left"
         },
         "LinkedToFlags": {
           "type": "byte",
-          "value": 2
+          "value": 1
         },
         "LoadScreenID": {
           "type": "word",
@@ -15235,11 +15235,11 @@
         },
         "LinkedTo": {
           "type": "cexostring",
-          "value": "WP_VE_TempleEntrance"
+          "value": "Jedi_In_Right"
         },
         "LinkedToFlags": {
           "type": "byte",
-          "value": 2
+          "value": 1
         },
         "LoadScreenID": {
           "type": "word",

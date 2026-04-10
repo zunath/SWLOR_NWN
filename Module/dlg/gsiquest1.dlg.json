@@ -1329,7 +1329,7 @@
         "__struct_id": 0,
         "Active": {
           "type": "resref",
-          "value": "action"
+          "value": "condition"
         },
         "ConditionParams": {
           "type": "list",

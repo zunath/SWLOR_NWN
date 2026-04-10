@@ -1023,6 +1023,12 @@
 
         FoodSubmissionTokenAgriculture = 2205,
         ForbiddenGumbo = 2206,
+        NalHuttaFizz = 2207,
+        BogaNoga = 2208,
+        Gardula = 2209,
+        KeebadasBinggona = 2210,
+        SandoGDizzards = 2211,
+        CartelCakes = 2212,
 
         #endregion
 

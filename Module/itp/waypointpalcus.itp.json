@@ -417,6 +417,39 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Nar Shaddaa - Arkanian Dragon"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "garkaniandragon"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nar Shaddaa - Pirates"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_pirate"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nar Shaddaa Rogue Droid"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_rogue_droid"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Tatooine - Ancient Worm"
                     },
                     "RESREF": {

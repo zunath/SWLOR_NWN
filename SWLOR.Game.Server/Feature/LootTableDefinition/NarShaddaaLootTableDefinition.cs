@@ -167,7 +167,12 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 				.AddItem("wild_meat", 15)
 				.AddItem("wild_innards", 15)
 				.AddItem("chiro_shard", 2)
+				.AddItem("ark_dragon_troph", 50)
 				.AddGold(300, 40);
+
+			_builder.Create("NARSHADDAA_GREAT_ARKANIAN_DRAGON_GEMS")
+				.AddItem("emerald", 100, 1, true)
+				.AddItem("chiro_shard", 50, 1, true);
 
 			_builder.Create("NARSHADDAA_GREAT_ARKANIAN_DRAGON_RARES")
 				.IsRare()

@@ -7412,6 +7412,25 @@
                     },
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Teren Voss"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "terenvoss"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 0.5
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Tina"
                     },
                     "RESREF": {
@@ -12041,6 +12060,68 @@
               "ID": {
                 "type": "byte",
                 "value": 158
+              },
+              "LIST": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 100.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Great Arkanian dragon"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "garkaniandragon"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 12.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nar Shaddaa Pirate"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_pirate"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 102.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nar Shaddaa Pirate Captain"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_captain"
+                    }
+                  }
+                ]
               },
               "STRREF": {
                 "type": "dword",

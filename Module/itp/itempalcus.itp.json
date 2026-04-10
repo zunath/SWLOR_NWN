@@ -5761,7 +5761,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Revï¿½tement de droï¿½de ï¿½boueur"
+                      "value": "Revêtement de droïde éboueur"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -27538,6 +27538,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "ore_gostian"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Great Arkanian Dragon Head"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ark_dragon_troph"
                     }
                   },
                   {

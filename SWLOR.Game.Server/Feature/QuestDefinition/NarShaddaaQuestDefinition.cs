@@ -98,7 +98,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText("Bring proof of the dragon's death back to the bounty hunter.")
-                .AddCollectItemObjective("ark_dragon_trophy", 1)
+                .AddCollectItemObjective("ark_dragon_troph", 1)
 
                 .AddState()
                 .SetStateJournalText("Return to the bounty hunter and collect payment for slaying the beast.")

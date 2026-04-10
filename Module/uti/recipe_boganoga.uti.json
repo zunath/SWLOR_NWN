@@ -2,7 +2,7 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 0
+    "value": 250
   },
   "BaseItem": {
     "type": "int",
@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 0
+    "value": 250
   },
   "Cursed": {
     "type": "byte",
@@ -46,7 +46,7 @@
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 15
+    "value": 52
   },
   "PaletteID": {
     "type": "byte",
@@ -130,6 +130,6 @@
   },
   "xModelPart1": {
     "type": "word",
-    "value": 15
+    "value": 52
   }
 }

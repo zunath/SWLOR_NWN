@@ -5761,7 +5761,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Revêtement de droïde éboueur"
+                      "value": "Revï¿½tement de droï¿½de ï¿½boueur"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -41100,6 +41100,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Boga Noga"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "boga_noga"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Bonefish Broth"
                     },
                     "RESREF": {
@@ -41204,6 +41215,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "carp_sushi"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cartel Cakes"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cartel_cakes"
                     }
                   },
                   {
@@ -41881,6 +41903,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Gardula"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "gardula_drink"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Gimpassa Sandwich"
                     },
                     "RESREF": {
@@ -42084,6 +42117,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "kath_sandwich"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Keebadas Binggona"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "keeb_binggona"
                     }
                   },
                   {
@@ -42326,6 +42370,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "mystery_cookies"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nal Hutta Fizz"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nalhutta_fizz"
                     }
                   },
                   {
@@ -42645,6 +42700,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "demon_stew"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sando g'dizzards"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sando_gdizz"
                     }
                   },
                   {
@@ -46731,11 +46797,33 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Recipe: Boga Noga"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_boganoga"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Recipe: Bream Sushi"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "recipe_brsushi"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Recipe: Cartel Cakes"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_cartelck"
                     }
                   },
                   {
@@ -46786,11 +46874,33 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Recipe: Gardula"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_gardula"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Recipe: Ikran Sushi"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "recipe_iksushi"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Recipe: Keebadas Binggona"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_keebbing"
                     }
                   },
                   {
@@ -46808,11 +46918,33 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Recipe: Nal Hutta Fizz"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_nalhfizz"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Recipe: Octopus Sushi"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "recipe_ocsushi"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Recipe: Sando g'dizzards"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_sandogdz"
                     }
                   },
                   {

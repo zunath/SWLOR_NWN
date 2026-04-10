@@ -795,6 +795,7 @@
       }
     ]
   },
+  },
   "WalkRate": {
     "type": "int",
     "value": 7

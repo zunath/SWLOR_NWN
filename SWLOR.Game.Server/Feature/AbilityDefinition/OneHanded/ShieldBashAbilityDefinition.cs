@@ -96,7 +96,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 .RequirementStamina(3)
                 .IsCastedAbility()
                 .IsHostileAbility()
-                .UnaffectedByHeavyArmor()
                 .BreaksStealth()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
@@ -110,7 +109,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 .RequirementStamina(5)
                 .IsCastedAbility()
                 .IsHostileAbility()
-                .UnaffectedByHeavyArmor()
                 .BreaksStealth()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
@@ -124,7 +122,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 .RequirementStamina(8)
                 .IsCastedAbility()
                 .IsHostileAbility()
-                .UnaffectedByHeavyArmor()
                 .BreaksStealth()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);

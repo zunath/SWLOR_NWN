@@ -30,7 +30,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .RequirementStamina(3)
                 .UsesAnimation(Animation.LoopingGetMid)
                 .IsCastedAbility()
-                .UnaffectedByHeavyArmor()
                 .HasCustomValidation((activator, target, level, location) =>
                 {
                     if (!IsWithinRange(activator, target))
@@ -74,7 +73,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .RequirementStamina(3)
                 .UsesAnimation(Animation.LoopingGetMid)
                 .IsCastedAbility()
-                .UnaffectedByHeavyArmor()
                 .HasCustomValidation((activator, target, level, location) =>
                 {
                     if (!IsWithinRange(activator, target))

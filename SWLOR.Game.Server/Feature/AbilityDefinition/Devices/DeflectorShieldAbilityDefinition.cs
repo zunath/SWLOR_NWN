@@ -83,7 +83,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .RequirementStamina(5)
                 .UsesAnimation(Animation.Kneel)
                 .IsCastedAbility()
-                .UnaffectedByHeavyArmor()
                 .HasCustomValidation((activator, target, level, location) => Validation(target, 1))
                 .HasImpactAction((activator, target, _, targetLocation) =>
                 {
@@ -101,7 +100,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .RequirementStamina(7)
                 .UsesAnimation(Animation.Kneel)
                 .IsCastedAbility()
-                .UnaffectedByHeavyArmor()
                 .HasCustomValidation((activator, target, level, location) => Validation(target, 2))
                 .HasImpactAction((activator, target, _, targetLocation) =>
                 {
@@ -119,7 +117,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .RequirementStamina(9)
                 .UsesAnimation(Animation.Kneel)
                 .IsCastedAbility()
-                .UnaffectedByHeavyArmor()
                 .HasCustomValidation((activator, target, level, location) => Validation(target, 3))
                 .HasImpactAction((activator, target, _, targetLocation) =>
                 {

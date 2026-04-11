@@ -70,7 +70,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .HasRecastDelay(RecastGroup.Clip, 60f)
                 .RequirementStamina(3)
                 .IsWeaponAbility()
-                .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, target, level, location) =>
                 {
                     ImpactAction(activator, target, 10, 8);
@@ -84,7 +83,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .HasRecastDelay(RecastGroup.Clip, 60f)
                 .RequirementStamina(4)
                 .IsWeaponAbility()
-                .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, target, level, location) =>
                 {
                     ImpactAction(activator, target, 12, 10);
@@ -98,7 +96,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .HasRecastDelay(RecastGroup.Clip, 60f)
                 .RequirementStamina(5)
                 .IsWeaponAbility()
-                .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, target, level, location) =>
                 {
                     ImpactAction(activator, target, 14, 12);
@@ -112,7 +109,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .HasRecastDelay(RecastGroup.Clip, 60f)
                 .RequirementStamina(6)
                 .IsWeaponAbility()
-                .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, target, level, location) =>
                 {
                     ImpactAction(activator, target, 16, 14);
@@ -126,7 +122,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .HasRecastDelay(RecastGroup.Clip, 60f)
                 .RequirementStamina(7)
                 .IsWeaponAbility()
-                .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, target, level, location) =>
                 {
                     ImpactAction(activator, target, 18, 16);

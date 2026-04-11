@@ -44,7 +44,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .HasActivationDelay(2f)
                 .RequirementStamina(3)
                 .IsCastedAbility()
-                .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, target, level, location) =>
                 {
                     Impact(activator, StatusEffectType.EvasiveManeuver1);
@@ -59,7 +58,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .HasActivationDelay(2f)
                 .RequirementStamina(3)
                 .IsCastedAbility()
-                .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, target, level, location) =>
                 {
                     Impact(activator, StatusEffectType.EvasiveManeuver2);
@@ -74,7 +72,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .HasActivationDelay(2f)
                 .RequirementStamina(3)
                 .IsCastedAbility()
-                .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, target, level, location) =>
                 {
                     Impact(activator, StatusEffectType.EvasiveManeuver3);
@@ -89,7 +86,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .HasActivationDelay(2f)
                 .RequirementStamina(4)
                 .IsCastedAbility()
-                .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, target, level, location) =>
                 {
                     Impact(activator, StatusEffectType.EvasiveManeuver4);
@@ -104,7 +100,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .HasActivationDelay(2f)
                 .RequirementStamina(5)
                 .IsCastedAbility()
-                .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, target, level, location) =>
                 {
                     Impact(activator, StatusEffectType.EvasiveManeuver5);

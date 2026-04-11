@@ -37,7 +37,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             _builder.Create(FeatType.StrongStyleLightsaber, PerkType.StrongStyleLightsaber)
                 .Name("Strong Style (Lightsaber)")
                 .IsCastedAbility()
-                .UnaffectedByHeavyArmor()
                 .HideActivationMessage()
                 .HasImpactAction((activator, target, level, location) =>
                 {

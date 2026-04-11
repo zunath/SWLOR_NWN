@@ -34,7 +34,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .HasActivationDelay(18f)
                 .RequirementStamina(10)
                 .IsCastedAbility()
-                .UnaffectedByHeavyArmor()
                 .HasCustomValidation((activator, target, level, location) =>
                 {
                     if (!GetIsPC(activator) || GetIsDM(activator) || GetIsDMPossessed(activator))

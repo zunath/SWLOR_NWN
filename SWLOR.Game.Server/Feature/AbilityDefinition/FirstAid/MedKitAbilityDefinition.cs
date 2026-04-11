@@ -87,7 +87,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .RequirementStamina(4)
                 .UsesAnimation(Animation.LoopingGetMid)
                 .IsCastedAbility()
-                .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
                 .HasImpactAction((activator, target, _, _) =>
                 {
@@ -106,7 +105,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .RequirementStamina(5)
                 .UsesAnimation(Animation.LoopingGetMid)
                 .IsCastedAbility()
-                .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
                 .HasImpactAction((activator, target, _, _) =>
                 {
@@ -125,7 +123,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .RequirementStamina(6)
                 .UsesAnimation(Animation.LoopingGetMid)
                 .IsCastedAbility()
-                .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
                 .HasImpactAction((activator, target, _, _) =>
                 {
@@ -144,7 +141,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .RequirementStamina(7)
                 .UsesAnimation(Animation.LoopingGetMid)
                 .IsCastedAbility()
-                .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
                 .HasImpactAction((activator, target, _, _) =>
                 {
@@ -162,7 +158,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .RequirementStamina(8)
                 .UsesAnimation(Animation.LoopingGetMid)
                 .IsCastedAbility()
-                .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
                 .HasImpactAction((activator, target, _, _) =>
                 {

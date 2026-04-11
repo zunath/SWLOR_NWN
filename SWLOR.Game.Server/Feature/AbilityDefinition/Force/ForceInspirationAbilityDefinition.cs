@@ -60,7 +60,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .RequirementFP(5)
                 .UsesAnimation(Animation.LoopingGetMid)
                 .IsCastedAbility()
-                .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, target, _, _) =>
                 {
                     Impact(activator, target, 1);
@@ -75,7 +74,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .RequirementFP(6)
                 .UsesAnimation(Animation.LoopingGetMid)
                 .IsCastedAbility()
-                .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, target, _, _) =>
                 {
                     Impact(activator, target, 2);
@@ -90,7 +88,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .RequirementFP(7)
                 .UsesAnimation(Animation.LoopingGetMid)
                 .IsCastedAbility()
-                .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, target, _, _) =>
                 {
                     Impact(activator, target, 3);

@@ -29,7 +29,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .UsesAnimation(Animation.LoopingGetMid)
                 .HasActivationDelay(6f)
                 .IsCastedAbility()
-                .UnaffectedByHeavyArmor()
                 .HasCustomValidation((activator, target, level, location) =>
                 {
                     if (GetIsInCombat(activator) || Enmity.HasEnmity(activator))

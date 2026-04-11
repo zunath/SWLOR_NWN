@@ -98,7 +98,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .UsesAnimation(Animation.LoopingGetMid)
                 .RequirementStamina(6)
                 .IsCastedAbility()
-                .UnaffectedByHeavyArmor()
                 .HasCustomValidation((activator, target, level, location) => Validation(activator))
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {
@@ -115,7 +114,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .UsesAnimation(Animation.LoopingGetMid)
                 .RequirementStamina(8)
                 .IsCastedAbility()
-                .UnaffectedByHeavyArmor()
                 .HasCustomValidation((activator, target, level, location) => Validation(activator))
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {
@@ -132,7 +130,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .UsesAnimation(Animation.LoopingGetMid)
                 .RequirementStamina(10)
                 .IsCastedAbility()
-                .UnaffectedByHeavyArmor()
                 .HasCustomValidation((activator, target, level, location) => Validation(activator))
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {

@@ -87,7 +87,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .HasActivationDelay(2f)
                 .RequirementStamina(1)
                 .IsCastedAbility()
-                .UnaffectedByHeavyArmor()
                 .BreaksStealth()
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {
@@ -105,7 +104,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .HasActivationDelay(2f)
                 .RequirementStamina(2)
                 .IsCastedAbility()
-                .UnaffectedByHeavyArmor()
                 .BreaksStealth()
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {
@@ -124,7 +122,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .HasActivationDelay(2f)
                 .RequirementStamina(3)
                 .IsCastedAbility()
-                .UnaffectedByHeavyArmor()
                 .BreaksStealth()
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {

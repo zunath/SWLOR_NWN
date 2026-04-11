@@ -25,7 +25,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                 .Level(1)
                 .HasRecastDelay(RecastGroup.FrenziedShout, 120f)
                 .HasActivationDelay(4f)
-                .UnaffectedByHeavyArmor()
                 .IsCastedAbility()
                 .UsesAnimation(Animation.FireForgetTaunt)
                 .HasActivationAction((activator, target, level, location) =>

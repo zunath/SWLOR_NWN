@@ -67,7 +67,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void ArenaFighters()
         {
             _builder.Create("NAR_ARENA_FIGHTERS")
-                .AddSpawn(ObjectType.Creature, "nar_arena_fighter")
+                .AddSpawn(ObjectType.Creature, "nar_arenafight")
                 .RandomlyWalks()
                 .WithFrequency(100)
                 .ReturnsHome();
@@ -84,7 +84,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void SerpentLeader()
         {
             _builder.Create("NAR_SERPENT_LEADER")
-                .AddSpawn(ObjectType.Creature, "nar_serpent_leader")
+                .AddSpawn(ObjectType.Creature, "nar_serp_leader")
                 .WithFrequency(1)
                 .ReturnsHome();
         }
@@ -99,6 +99,12 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
         private void PirateOutpost()
         {
+            _builder.Create("NAR_PIRATE")
+                .AddSpawn(ObjectType.Creature, "nar_pirate")
+                .RandomlyWalks()
+                .WithFrequency(100)
+                .ReturnsHome();
+
             _builder.Create("NAR_PIRATES")
                 .AddSpawn(ObjectType.Creature, "nar_pirate")
                 .RandomlyWalks()
@@ -135,7 +141,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void SlaverCaptain()
         {
             _builder.Create("NAR_SLAVER_CAPTAIN")
-                .AddSpawn(ObjectType.Creature, "nar_slaver_captain")
+                .AddSpawn(ObjectType.Creature, "nar_slavercaptn")
                 .WithFrequency(1)
                 .ReturnsHome();
         }

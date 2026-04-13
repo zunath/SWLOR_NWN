@@ -12076,11 +12076,87 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Great Arkanian dragon"
+                      "value": "Great Arkanian Dragon"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "garkaniandragon"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 12.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nar Shaddaa Arena Fighter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_arenafight"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 10.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nar Shaddaa Black Serpent"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_serpent"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 18.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nar Shaddaa Command Droid"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_cmd_droid"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 12.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nar Shaddaa Hidden Blade"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_hiddenblade"
                     }
                   },
                   {
@@ -12106,7 +12182,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 102.0
+                      "value": 10.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -12114,11 +12190,144 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Nar Shaddaa Pirate Captain"
+                      "value": "Nar Shaddaa Red Blade"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "nar_captain"
+                      "value": "nar_redblade"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 12.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nar Shaddaa Rogue Droid"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_rogue_droid"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 15.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nar Shaddaa Rooftop Sniper"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_sniper"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 10.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nar Shaddaa Scavenger Droid"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_scavenger"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 18.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nar Shaddaa Serpent Leader"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_serp_leader"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 20.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nar Shaddaa Slaver Captain"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_slavercaptn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 10.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nar Shaddaa Thief"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_thief"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 10.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nar Shaddaa Troublemaker"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_troublemaker"
                     }
                   }
                 ]

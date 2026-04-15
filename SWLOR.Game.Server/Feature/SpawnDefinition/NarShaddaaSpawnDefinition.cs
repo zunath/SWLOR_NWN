@@ -18,12 +18,13 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             SniperSpawn();
             SerpentLeader();
             RogueDroid();
-            PirateOutpost();
+            Pirates();
             PirateCommandDroid();
             ScavengerDroids();
             ThiefSpawns();
             SlaverCaptain();
             GreatArkanianDragon();
+            DragonLoot();
 
             return _builder.Build();
         }
@@ -97,7 +98,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .ReturnsHome();
         }
 
-        private void PirateOutpost()
+        private void Pirates()
         {
             _builder.Create("NAR_PIRATE")
                 .AddSpawn(ObjectType.Creature, "nar_pirate")
@@ -105,11 +106,6 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .WithFrequency(100)
                 .ReturnsHome();
 
-            _builder.Create("NAR_PIRATES")
-                .AddSpawn(ObjectType.Creature, "nar_pirate")
-                .RandomlyWalks()
-                .WithFrequency(100)
-                .ReturnsHome();
         }
 
         private void PirateCommandDroid()
@@ -151,8 +147,16 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             _builder.Create("NAR_GREAT_ARKANIAN_DRAGON")
                 .AddSpawn(ObjectType.Creature, "garkaniandragon")
                 .WithFrequency(1)
+                .RandomlyWalks()
+                .WithFrequency(100)
+                .ReturnsHome();
+        }
+        private void DragonLoot()
+        {
+            _builder.Create("DRAGON_LOOT")
+                .AddSpawn(ObjectType.Placeable, "dragon_loot")
+                .WithFrequency(1)
                 .ReturnsHome();
         }
     }
 }
-

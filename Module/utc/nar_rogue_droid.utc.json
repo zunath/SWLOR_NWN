@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Type": {
     "type": "word",
-    "value": 2187
+    "value": 2178
   },
   "BodyBag": {
     "type": "byte",
@@ -10,11 +10,11 @@
   },
   "Cha": {
     "type": "byte",
-    "value": 3
+    "value": 16
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 1.0
+    "value": 7.0
   },
   "ClassList": {
     "type": "list",
@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 10
+    "value": 27
   },
   "Conversation": {
     "type": "resref",
@@ -50,7 +50,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 20
+    "value": 450
   },
   "DecayTime": {
     "type": "dword",
@@ -62,11 +62,13 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "A malfunctioning combat unit left to roam the moon’s industrial districts. Its targeting protocols are unstable and it attacks anything nearby."
+    }
   },
   "Dex": {
     "type": "byte",
-    "value": 12
+    "value": 31
   },
   "Disarmable": {
     "type": "byte",
@@ -79,14 +81,14 @@
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "cz220_dr_pistol"
+          "value": "sith_pistol"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "cz220_droid_hide"
+          "value": "nar_t3"
         }
       }
     ]
@@ -134,11 +136,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 20
+    "value": 450
   },
   "Int": {
     "type": "byte",
-    "value": 10
+    "value": 27
   },
   "Interruptable": {
     "type": "byte",
@@ -168,7 +170,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 20
+    "value": 482
   },
   "NaturalAC": {
     "type": "byte",
@@ -180,7 +182,7 @@
   },
   "PaletteID": {
     "type": "byte",
-    "value": 150
+    "value": 158
   },
   "PerceptionRange": {
     "type": "byte",
@@ -196,7 +198,7 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 1333
+    "value": 3092
   },
   "Race": {
     "type": "byte",
@@ -461,7 +463,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 54
+    "value": 910
   },
   "SpecAbilityList": {
     "type": "list",
@@ -532,7 +534,7 @@
   },
   "WalkRate": {
     "type": "int",
-    "value": 4
+    "value": 7
   },
   "willbonus": {
     "type": "short",
@@ -544,6 +546,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 10
+    "value": 16
   }
 }

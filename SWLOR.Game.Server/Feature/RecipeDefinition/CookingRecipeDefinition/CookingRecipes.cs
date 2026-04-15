@@ -2032,7 +2032,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .RequirementPerk(PerkType.CookingRecipes, 5)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("mushroom", 8)
-                .Component("munch_fungus", 4)
+                .Component("ns_holo_jelly", 4)
                 .Component("distilled_water", 2);
 
             // Boga Noga
@@ -2045,7 +2045,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .RequirementUnlocked()
                 .RequirementPerk(PerkType.CookingRecipes, 5)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
-                .Component("wild_blood", 4)
+                .Component("ns_sludge_eel", 4)
                 .Component("distilled_water", 4)
                 .Component("sugar", 2);
 
@@ -2060,7 +2060,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .RequirementPerk(PerkType.CookingRecipes, 5)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("distilled_water", 4)
-                .Component("cultured_butter", 2)
+                .Component("ns_holo_jelly", 2)
                 .Component("sugar", 2);
 
             // Keebadas Binggona
@@ -2074,7 +2074,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .RequirementPerk(PerkType.CookingRecipes, 5)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("thune_meat", 8)
-                .Component("tiger_meat", 4)
+                .Component("ns_rack_meat", 4)
                 .Component("cultured_butter", 2);
 
             // Sando g'dizzards
@@ -2087,8 +2087,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .RequirementUnlocked()
                 .RequirementPerk(PerkType.CookingRecipes, 5)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
-                .Component("wild_innards", 8)
-                .Component("frogguts", 2)
+                .Component("ns_rack_meat", 8)
+                .Component("ns_moonspice", 2)
                 .Component("distilled_water", 2);
 
             // Cartel Cakes
@@ -2102,9 +2102,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .RequirementPerk(PerkType.CookingRecipes, 5)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("mushroom", 4)
-                .Component("wild_blood", 4)
+                .Component("ns_holo_jelly", 4)
                 .Component("sugar", 3)
-                .Component("ref_jasioclase", 1);
+                .Component("ns_neon_salt", 1);
 
             // Cooking Enhancement - Duration V
             _builder.Create(RecipeType.CookingEnhancementDuration5, SkillType.Agriculture)

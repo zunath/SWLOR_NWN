@@ -439,11 +439,88 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Nar Shaddaa Arena Fighters"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_arenafight"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nar Shaddaa CMD Droid"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_cmddroid"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nar Shaddaa Hidden Blades"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_hiddenblades"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nar Shaddaa Red Blade Gangs"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_red_blades"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Nar Shaddaa Rogue Droid"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "nar_rogue_droid"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nar Shaddaa Serpent Leader"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_serp_leader"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nar Shaddaa Sniper Boss"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_sniper"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nar Shaddaa Thieves"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_thief"
                     }
                   },
                   {
@@ -757,6 +834,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "dan_junkpile"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dragon Loot"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dragon_loot"
                     }
                   },
                   {

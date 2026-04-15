@@ -30,7 +30,7 @@
   },
   "Flags": {
     "type": "dword",
-    "value": 0
+    "value": 1
   },
   "FogClipDist": {
     "type": "float",
@@ -87,7 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "[Prefab] Smuggler's Moon - GSI Base"
+      "0": "Smuggler's Moon - GSI Base"
     }
   },
   "NoRest": {
@@ -11163,13 +11163,17 @@
       }
     ]
   },
+  "TileBrdrDisabled": {
+    "type": "byte",
+    "value": 0
+  },
   "Tileset": {
     "type": "resref",
     "value": "shp02"
   },
   "Version": {
     "type": "dword",
-    "value": 5
+    "value": 8
   },
   "Width": {
     "type": "int",

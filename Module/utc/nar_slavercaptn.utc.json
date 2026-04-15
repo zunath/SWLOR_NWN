@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Head": {
     "type": "byte",
-    "value": 109
+    "value": 125
   },
   "Appearance_Type": {
     "type": "word",
@@ -86,11 +86,11 @@
   },
   "Cha": {
     "type": "byte",
-    "value": 9
+    "value": 25
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 2.0
+    "value": 30.0
   },
   "ClassList": {
     "type": "list",
@@ -114,7 +114,7 @@
   },
   "Color_Skin": {
     "type": "byte",
-    "value": 123
+    "value": 127
   },
   "Color_Tattoo1": {
     "type": "byte",
@@ -130,7 +130,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 11
+    "value": 17
   },
   "Conversation": {
     "type": "resref",
@@ -142,7 +142,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 36
+    "value": 893
   },
   "DecayTime": {
     "type": "dword",
@@ -155,12 +155,12 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Viscara is a diamond in the rough, there is no doubt about this. However, this diamond is along one of the most infamous slaving routes in the known galaxy. As a result, slavers from nearby systems are more than common. This is one of them; armed to the teeth and ready to shoot down any who get in his way."
+      "0": "Leader of a slaver convoy cell operating out of Nar Shaddaa’s shadow ports. Experienced, well-equipped, and protected by hired muscle."
     }
   },
   "Dex": {
     "type": "byte",
-    "value": 17
+    "value": 30
   },
   "Disarmable": {
     "type": "byte",
@@ -173,21 +173,21 @@
         "__struct_id": 2,
         "EquippedRes": {
           "type": "resref",
-          "value": "npc_looter_m_t"
+          "value": "sc_armor"
         }
       },
       {
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "npc_outlaw_rifle"
+          "value": "sc_pistol"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "ww_outlaw_skin"
+          "value": "nar_boss"
         }
       }
     ]
@@ -298,11 +298,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 36
+    "value": 893
   },
   "Int": {
     "type": "byte",
-    "value": 10
+    "value": 20
   },
   "Interruptable": {
     "type": "byte",
@@ -332,7 +332,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 36
+    "value": 905
   },
   "NaturalAC": {
     "type": "byte",
@@ -344,7 +344,7 @@
   },
   "PaletteID": {
     "type": "byte",
-    "value": 151
+    "value": 158
   },
   "PerceptionRange": {
     "type": "byte",
@@ -637,7 +637,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 10
+    "value": 30
   },
   "Subrace": {
     "type": "cexostring",
@@ -738,11 +738,11 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 10
+    "value": 18
   },
   "xAppearance_Head": {
     "type": "word",
-    "value": 109
+    "value": 125
   },
   "xArmorPart_RFoot": {
     "type": "word",

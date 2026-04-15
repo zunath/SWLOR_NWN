@@ -87,7 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "[Prefab] Smuggler's Moon - The Hub"
+      "0": "Smuggler's Moon - The Hub"
     }
   },
   "NoRest": {
@@ -11163,13 +11163,17 @@
       }
     ]
   },
+  "TileBrdrDisabled": {
+    "type": "byte",
+    "value": 0
+  },
   "Tileset": {
     "type": "resref",
     "value": "dgt04"
   },
   "Version": {
     "type": "dword",
-    "value": 30
+    "value": 31
   },
   "Width": {
     "type": "int",

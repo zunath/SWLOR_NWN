@@ -10,11 +10,11 @@
   },
   "Cha": {
     "type": "byte",
-    "value": 10
+    "value": 30
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 100.0
+    "value": 190.0
   },
   "ClassList": {
     "type": "list",
@@ -23,11 +23,11 @@
         "__struct_id": 2,
         "Class": {
           "type": "int",
-          "value": 20
+          "value": 11
         },
         "ClassLevel": {
           "type": "short",
-          "value": 40
+          "value": 1
         }
       }
     ]
@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 38
+    "value": 37
   },
   "Conversation": {
     "type": "resref",
@@ -50,7 +50,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 2440
+    "value": 4000
   },
   "DecayTime": {
     "type": "dword",
@@ -62,9 +62,7 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {
-      "0": "A great Arkanian dragon fills the room like a living catastrophe, all pale scale and sinewed mass, its long serpentine body coiled through broken durasteel and hanging cables as though the station itself had failed to contain it. Its hide gleams with a cold, glassy sheen beneath the failing lights, marked here and there by old scars and fresh abrasion from metal corridors too small for something of its size. Narrow violet eyes burn with feral intelligence, and each slow breath spills a low, rumbling hiss through teeth built to crack bone and plating alike. Whatever crate or cage once smuggled it here is long gone. Now cornered, starving, and driven half mad by confinement, the beast thrashes through the chamber in a violent panic, turning the room into a wreck of torn panels, blood, and twisted steel."
-    }
+    "value": {}
   },
   "Dex": {
     "type": "byte",
@@ -72,7 +70,7 @@
   },
   "Disarmable": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "Equip_ItemList": {
     "type": "list",
@@ -81,14 +79,14 @@
         "__struct_id": 16384,
         "EquippedRes": {
           "type": "resref",
-          "value": "vdathbitechiro"
+          "value": "narkbite"
         }
       },
       {
         "__struct_id": 32768,
         "EquippedRes": {
           "type": "resref",
-          "value": "vdathbitechiro"
+          "value": "narkbite"
         }
       },
       {
@@ -111,21 +109,21 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1884
+          "value": 1914
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1883
+          "value": 1946
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1882
+          "value": 291
         }
       },
       {
@@ -140,7 +138,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Great Arkanian dragon"
+      "0": "Great Arkanian Dragon"
     }
   },
   "fortbonus": {
@@ -157,15 +155,15 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 2440
+    "value": 4000
   },
   "Int": {
     "type": "byte",
-    "value": 40
+    "value": 26
   },
   "Interruptable": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "IsImmortal": {
     "type": "byte",
@@ -191,7 +189,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 3000
+    "value": 4013
   },
   "NaturalAC": {
     "type": "byte",
@@ -207,7 +205,7 @@
   },
   "PerceptionRange": {
     "type": "byte",
-    "value": 10
+    "value": 11
   },
   "Phenotype": {
     "type": "int",
@@ -231,55 +229,55 @@
   },
   "ScriptAttacked": {
     "type": "resref",
-    "value": "x2_def_attacked"
+    "value": ""
   },
   "ScriptDamaged": {
     "type": "resref",
-    "value": "x2_def_ondamage"
+    "value": ""
   },
   "ScriptDeath": {
     "type": "resref",
-    "value": "x2_def_ondeath"
+    "value": ""
   },
   "ScriptDialogue": {
     "type": "resref",
-    "value": "x2_def_onconv"
+    "value": ""
   },
   "ScriptDisturbed": {
     "type": "resref",
-    "value": "x2_def_ondisturb"
+    "value": ""
   },
   "ScriptEndRound": {
     "type": "resref",
-    "value": "x2_def_endcombat"
+    "value": ""
   },
   "ScriptHeartbeat": {
     "type": "resref",
-    "value": "x2_def_heartbeat"
+    "value": ""
   },
   "ScriptOnBlocked": {
     "type": "resref",
-    "value": "x2_def_onblocked"
+    "value": ""
   },
   "ScriptOnNotice": {
     "type": "resref",
-    "value": "x2_def_percept"
+    "value": ""
   },
   "ScriptRested": {
     "type": "resref",
-    "value": "x2_def_rested"
+    "value": ""
   },
   "ScriptSpawn": {
     "type": "resref",
-    "value": "x2_def_spawn"
+    "value": ""
   },
   "ScriptSpellAt": {
     "type": "resref",
-    "value": "x2_def_spellcast"
+    "value": ""
   },
   "ScriptUserDefine": {
     "type": "resref",
-    "value": "x2_def_userdef"
+    "value": ""
   },
   "SkillList": {
     "type": "list",
@@ -358,7 +356,7 @@
         "__struct_id": 0,
         "Rank": {
           "type": "byte",
-          "value": 4
+          "value": 0
         }
       },
       {
@@ -493,11 +491,11 @@
         "__struct_id": 4,
         "Spell": {
           "type": "word",
-          "value": 25
+          "value": 196
         },
         "SpellCasterLevel": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "SpellFlags": {
           "type": "byte",
@@ -512,7 +510,7 @@
         },
         "SpellCasterLevel": {
           "type": "byte",
-          "value": 1
+          "value": 6
         },
         "SpellFlags": {
           "type": "byte",
@@ -527,7 +525,7 @@
         },
         "SpellCasterLevel": {
           "type": "byte",
-          "value": 1
+          "value": 6
         },
         "SpellFlags": {
           "type": "byte",
@@ -554,36 +552,6 @@
         "Spell": {
           "type": "word",
           "value": 230
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 0
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 230
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 0
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 237
         },
         "SpellCasterLevel": {
           "type": "byte",
@@ -628,11 +596,11 @@
   },
   "StartingPackage": {
     "type": "byte",
-    "value": 82
+    "value": 0
   },
   "Str": {
     "type": "byte",
-    "value": 38
+    "value": 36
   },
   "Subrace": {
     "type": "cexostring",
@@ -640,7 +608,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "Arkaniandragon"
+    "value": "garkaniandragon"
   },
   "Tail_New": {
     "type": "dword",
@@ -657,21 +625,6 @@
   "VarTable": {
     "type": "list",
     "value": [
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "QUEST_NPC_GROUP_ID"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 61
-        }
-      },
       {
         "__struct_id": 0,
         "Name": {
@@ -714,7 +667,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "NARSHADDAA_GREAT_ARKANIAN_DRAGON_RARES,5,1"
+          "value": "NARSHADDAA_GREAT_ARKANIAN_DRAGON_GEMS"
         }
       },
       {
@@ -729,72 +682,25 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "NARSHADDAA_GREAT_ARKANIAN_DRAGON_GEMS,100,1"
+          "value": "NARSHADDAA_GREAT_ARKANIAN_DRAGON_RARES.5.1"
         }
       },
       {
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "LOOT_TABLE_5"
+          "value": "QUEST_NPC_GROUP_ID"
         },
         "Type": {
           "type": "dword",
-          "value": 3
+          "value": 1
         },
         "Value": {
-          "type": "cexostring",
-          "value": "NARSHADDAA_GREAT_ARKANIAN_DRAGON_GEMS,30,1"
+          "type": "int",
+          "value": 61
         }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "LOOT_TABLE_6"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "DATHOMIR_CHIRODACTYL_RECIPES,95,1"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "LOOT_TABLE_7"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "DATHOMIR_CHIRODACTYL_RECIPES,20,1"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "LOOT_TABLE_8"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "ISOMERASE_TYPE_2,95,1"
-        }
-      }
       }
     ]
-  },
   },
   "WalkRate": {
     "type": "int",
@@ -810,6 +716,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 24
+    "value": 18
   }
 }

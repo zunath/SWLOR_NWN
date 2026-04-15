@@ -6334,6 +6334,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Arkanian Dragon Bite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "narkbite"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Bol Bite"
                     },
                     "RESREF": {
@@ -8493,6 +8504,39 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "mora_serp_skin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nar Shaddaa Boss"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_boss"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nar Shaddaa T3"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_t3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nar Shaddaa T5"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_t5"
                     }
                   },
                   {
@@ -20020,6 +20064,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Bioglow Kelp"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ns_bioglow_kelp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Blade CPU I - Variant A"
                     },
                     "RESREF": {
@@ -28116,6 +28171,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Holo Jelly"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ns_holo_jelly"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Homogoni Tree Seeds"
                     },
                     "RESREF": {
@@ -32890,6 +32956,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Moon Spice"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ns_moonspice"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Moorish Idol"
                     },
                     "RESREF": {
@@ -33099,6 +33176,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Neon Salt Crystals"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ns_neon_salt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Neural Boost I"
                     },
                     "RESREF": {
@@ -33148,6 +33236,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "nickyln_stone"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Night Noodle Strands"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ns_night_noodle"
                     }
                   },
                   {
@@ -33951,6 +34050,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "quus"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rackhouse Meat Cuts"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ns_rack_meat"
                     }
                   },
                   {

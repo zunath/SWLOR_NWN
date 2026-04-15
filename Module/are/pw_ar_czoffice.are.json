@@ -30,7 +30,7 @@
   },
   "Flags": {
     "type": "dword",
-    "value": 0
+    "value": 1
   },
   "FogClipDist": {
     "type": "float",
@@ -87,7 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "[Prefab] Smuggler's Moon - Czerka Shipyard Office"
+      "0": "Smuggler's Moon - Czerka Shipyard Office"
     }
   },
   "NoRest": {
@@ -1703,13 +1703,17 @@
       }
     ]
   },
+  "TileBrdrDisabled": {
+    "type": "byte",
+    "value": 0
+  },
   "Tileset": {
     "type": "resref",
     "value": "shp02"
   },
   "Version": {
     "type": "dword",
-    "value": 3
+    "value": 5
   },
   "Width": {
     "type": "int",

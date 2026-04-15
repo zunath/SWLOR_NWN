@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using SWLOR.Game.Server.Service.LootService;
+﻿using SWLOR.Game.Server.Service.LootService;
+using System.Collections.Generic;
 
 namespace SWLOR.Game.Server.Feature.LootTableDefinition
 {
@@ -23,6 +23,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 			Thieves();
 			SlaverCaptain();
 			GreatArkanianDragon();
+			DragonLoot();
 
 			return _builder.Build();
 		}
@@ -142,6 +143,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 		{
 			_builder.Create("NARSHADDAA_THIEVES")
 				.AddItem("fiberp_imperfect", 15)
+				.AddItem("sugar", 8)
 				.AddItem("lth_imperfect", 10)
 				.AddGold(45, 25);
 		}
@@ -167,11 +169,12 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 				.AddItem("wild_meat", 15)
 				.AddItem("wild_innards", 15)
 				.AddItem("chiro_shard", 2)
-				.AddItem("ark_dragon_troph", 50)
+				.AddItem("ark_dragon_troph", 100)
 				.AddGold(300, 40);
 
 			_builder.Create("NARSHADDAA_GREAT_ARKANIAN_DRAGON_GEMS")
 				.AddItem("emerald", 100, 1, true)
+				.AddItem("diamond", 100, 1, true)
 				.AddItem("chiro_shard", 50, 1, true);
 
 			_builder.Create("NARSHADDAA_GREAT_ARKANIAN_DRAGON_RARES")
@@ -180,6 +183,15 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 				.AddItem("emerald", 1, 1, true)
 				.AddItem("ruby", 1, 1, true);
 		}
+		private void DragonLoot()
+		{
+			_builder.Create("DRAGON_LOOT")
+				.AddItem("diamond", 50)
+				.AddItem("elec_high", 50);
+
+
+		}
+
 	}
 }
 

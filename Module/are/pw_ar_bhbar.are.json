@@ -87,7 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "[Prefab] Smuggler's Moon - The Tilted Visor"
+      "0": "Smuggler's Moon - The Tilted Visor"
     }
   },
   "NoRest": {
@@ -1025,7 +1025,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 6
+    "value": 7
   },
   "Width": {
     "type": "int",

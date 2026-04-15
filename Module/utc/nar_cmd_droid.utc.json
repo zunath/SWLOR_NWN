@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Type": {
     "type": "word",
-    "value": 2187
+    "value": 10258
   },
   "BodyBag": {
     "type": "byte",
@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 1.0
+    "value": 7.0
   },
   "ClassList": {
     "type": "list",
@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 10
+    "value": 30
   },
   "Conversation": {
     "type": "resref",
@@ -50,7 +50,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 20
+    "value": 200
   },
   "DecayTime": {
     "type": "dword",
@@ -62,11 +62,13 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "A command-grade pirate support droid coordinating hostile units. Heavily armed and built to direct skirmishes under pressure."
+    }
   },
   "Dex": {
     "type": "byte",
-    "value": 12
+    "value": 19
   },
   "Disarmable": {
     "type": "byte",
@@ -79,14 +81,14 @@
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "cz220_dr_pistol"
+          "value": "h_pistol_3"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "cz220_droid_hide"
+          "value": "nar_t3"
         }
       }
     ]
@@ -134,7 +136,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 20
+    "value": 200
   },
   "Int": {
     "type": "byte",
@@ -168,7 +170,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 20
+    "value": 240
   },
   "NaturalAC": {
     "type": "byte",
@@ -180,7 +182,7 @@
   },
   "PaletteID": {
     "type": "byte",
-    "value": 150
+    "value": 158
   },
   "PerceptionRange": {
     "type": "byte",
@@ -196,7 +198,7 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 1333
+    "value": 4426
   },
   "Race": {
     "type": "byte",
@@ -473,7 +475,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 10
+    "value": 16
   },
   "Subrace": {
     "type": "cexostring",
@@ -562,7 +564,7 @@
   },
   "WalkRate": {
     "type": "int",
-    "value": 4
+    "value": 7
   },
   "willbonus": {
     "type": "short",

@@ -87,7 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "[Prefab] Smuggler's Moon - Medshed"
+      "0": "Smuggler's Moon - Medshed"
     }
   },
   "NoRest": {
@@ -2907,13 +2907,17 @@
       }
     ]
   },
+  "TileBrdrDisabled": {
+    "type": "byte",
+    "value": 0
+  },
   "Tileset": {
     "type": "resref",
     "value": "udp2"
   },
   "Version": {
     "type": "dword",
-    "value": 7
+    "value": 8
   },
   "Width": {
     "type": "int",

@@ -18,9 +18,11 @@ namespace SWLOR.Game.Server.Service
             var nearby = GetNearestCreature(CreatureType.PlayerCharacter, 1, sender, nth);
             while (GetIsObjectValid(nearby) && GetDistanceBetween(sender, nearby) <= range)
             {
-                if (sender == nearby) continue;
+                if (sender != nearby)
+                {
+                    SendMessageToPC(nearby, message);
+                }
 
-                SendMessageToPC(nearby, message);
                 nth++;
                 nearby = GetNearestCreature(CreatureType.PlayerCharacter, 1, sender, nth);
             }

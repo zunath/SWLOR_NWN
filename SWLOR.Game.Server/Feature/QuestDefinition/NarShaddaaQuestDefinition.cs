@@ -21,7 +21,6 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void DataSmuggler()
         {
             _builder.Create("nar_data_smuggler", "Data Smuggler")
-                .IsRepeatable()
                 .AddState()
                 .SetStateJournalText("A slicer in the Core District needs encrypted data chips stolen from a rival gang. Retrieve 5 data chips from the Black Serpents.")
                 .AddCollectItemObjective("data_chip_encryp", 5)

@@ -82,8 +82,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
 			_builder.Create("NARSHADDAA_SNIPER_RARES")
 				.IsRare()
-				.AddItem("map_59", 1, 1, true)
-				.AddItem("map_60", 1, 1, true);
+				.AddItem("ns_moonspice", 1, 1, true)
+				.AddItem("ns_rack_meat", 1, 1, true);
 		}
 
 		private void SerpentLeader()
@@ -97,8 +97,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 			_builder.Create("NARSHADDAA_SERPENT_LEADER_RARES")
 				.IsRare()
 				.AddItem("ruby", 1, 1, true)
-				.AddItem("map_59", 1, 1, true)
-				.AddItem("map_60", 1, 1, true);
+				.AddItem("ns_rack_meat", 1, 1, true)
+				.AddItem("ns_holo_jelly", 1, 1, true);
 		}
 
 		private void RogueDroid()
@@ -127,7 +127,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
 			_builder.Create("NARSHADDAA_COMMAND_DROID_RARES")
 				.IsRare()
-				.AddItem("map_22", 1, 1, true)
+				.AddItem("ns_holo_jelly", 1, 1, true)
 				.AddItem("emerald", 1, 1, true);
 		}
 
@@ -158,7 +158,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 			_builder.Create("NARSHADDAA_SLAVER_CAPTAIN_RARES")
 				.IsRare()
 				.AddItem("ruby", 1, 1, true)
-				.AddItem("map_58", 1, 1, true);
+				.AddItem("ns_moonspice", 1, 1, true);
 		}
 
 		private void GreatArkanianDragon()
@@ -167,7 +167,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 				.AddItem("fiberp_high", 20)
 				.AddItem("lth_high", 20)
 				.AddItem("wild_meat", 15)
-				.AddItem("wild_innards", 15)
+				.AddItem("ns_rack_meat", 15)
 				.AddItem("chiro_shard", 2)
 				.AddItem("ark_dragon_troph", 100)
 				.AddGold(300, 40);

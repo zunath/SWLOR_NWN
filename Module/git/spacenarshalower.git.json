@@ -15798,7 +15798,7 @@
           "id": 5670,
           "type": "cexolocstring",
           "value": {
-            "0": "Teleport Object"
+            "0": "Elevator Up"
           }
         },
         "OnClick": {
@@ -16022,11 +16022,11 @@
         },
         "X": {
           "type": "float",
-          "value": 64.95153045654297
+          "value": 64.97779083251953
         },
         "Y": {
           "type": "float",
-          "value": 102.9548416137695
+          "value": 102.575439453125
         },
         "Z": {
           "type": "float",

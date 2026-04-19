@@ -84,7 +84,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "You there\u2014pilot. I've got a priority target if you've got the nerve."
+            "0": "You there.  I've got a priority target if you've got the nerve."
           }
         }
       },
@@ -516,7 +516,7 @@
   },
   "NumWords": {
     "type": "dword",
-    "value": 185
+    "value": 107
   },
   "PreventZoomIn": {
     "type": "byte",

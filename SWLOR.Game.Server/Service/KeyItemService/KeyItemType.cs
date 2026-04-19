@@ -174,7 +174,9 @@ namespace SWLOR.Game.Server.Service.KeyItemService
         DantooineShovel = 79,
         [KeyItem(KeyItemCategoryType.Keys, "Viscara Lake Basement Key", true, "This key allows you to enter the super secret sith basement! Shhhhhh!")]
         SithBasementKey = 80,
-    }
+		[KeyItem(KeyItemCategoryType.QuestItems, "Smuggler Pass", true, "You've been given a key pass to Nar Shaddaa.")]
+		SmugglerPass = 81,
+	}
 
     public class KeyItemAttribute : Attribute
     {

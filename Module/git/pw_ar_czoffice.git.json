@@ -45333,11 +45333,11 @@
         },
         "X": {
           "type": "float",
-          "value": 39.98674774169922
+          "value": 40.00412750244141
         },
         "Y": {
           "type": "float",
-          "value": 13.13051414489746
+          "value": 13.9479455947876
         },
         "Z": {
           "type": "float",
@@ -45357,6 +45357,26 @@
   "TriggerList": {
     "type": "list",
     "value": []
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "EXPLORE_ACHIEVEMENT_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 125
+        }
+      }
+    ]
   },
   "WaypointList": {
     "type": "list",
@@ -45411,7 +45431,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 39.97926330566406
+          "value": 39.88074111938477
         },
         "YOrientation": {
           "type": "float",
@@ -45419,7 +45439,7 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 14.37114715576172
+          "value": 14.45785236358643
         },
         "ZPosition": {
           "type": "float",

@@ -2215,6 +2215,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Arkanian Dragon Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ark_armor"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Battlemaster Armor"
                     },
                     "RESREF": {
@@ -8526,6 +8537,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "nar_t3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nar Shaddaa T4"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_t4"
                     }
                   },
                   {
@@ -22291,6 +22313,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "dark_bass"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Data Chip"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "data_chip_encryp"
                     }
                   },
                   {
@@ -36575,6 +36608,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Stolen Goods"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "stolen_goods"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Stone Block"
                     },
                     "RESREF": {
@@ -43645,6 +43689,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "recipe_alcspear"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Arkanian Dragon Breastplate"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_arkarmor"
                     }
                   },
                   {

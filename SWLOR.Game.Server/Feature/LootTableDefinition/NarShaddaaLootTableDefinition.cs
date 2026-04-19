@@ -142,7 +142,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 		private void Thieves()
 		{
 			_builder.Create("NARSHADDAA_THIEVES")
-				.AddItem("fiberp_imperfect", 15)
+				.AddItem("data_chip_encryp", 15)
 				.AddItem("sugar", 8)
 				.AddItem("lth_imperfect", 10)
 				.AddGold(45, 25);

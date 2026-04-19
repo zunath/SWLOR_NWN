@@ -2,15 +2,15 @@
   "__data_type": "UTC ",
   "Appearance_Head": {
     "type": "byte",
-    "value": 109
+    "value": 58
   },
   "Appearance_Type": {
     "type": "word",
-    "value": 10007
+    "value": 6
   },
   "ArmorPart_RFoot": {
     "type": "byte",
-    "value": 201
+    "value": 1
   },
   "BodyBag": {
     "type": "byte",
@@ -30,15 +30,15 @@
   },
   "BodyPart_LFoot": {
     "type": "byte",
-    "value": 201
+    "value": 1
   },
   "BodyPart_LHand": {
     "type": "byte",
-    "value": 201
+    "value": 1
   },
   "BodyPart_LShin": {
     "type": "byte",
-    "value": 201
+    "value": 1
   },
   "BodyPart_LShoul": {
     "type": "byte",
@@ -66,11 +66,11 @@
   },
   "BodyPart_RHand": {
     "type": "byte",
-    "value": 201
+    "value": 1
   },
   "BodyPart_RShin": {
     "type": "byte",
-    "value": 201
+    "value": 1
   },
   "BodyPart_RShoul": {
     "type": "byte",
@@ -90,7 +90,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 2.0
+    "value": 3.0
   },
   "ClassList": {
     "type": "list",
@@ -110,19 +110,19 @@
   },
   "Color_Hair": {
     "type": "byte",
-    "value": 63
+    "value": 1
   },
   "Color_Skin": {
     "type": "byte",
-    "value": 123
+    "value": 1
   },
   "Color_Tattoo1": {
     "type": "byte",
-    "value": 63
+    "value": 1
   },
   "Color_Tattoo2": {
     "type": "byte",
-    "value": 109
+    "value": 1
   },
   "Comment": {
     "type": "cexostring",
@@ -160,7 +160,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 17
+    "value": 28
   },
   "Disarmable": {
     "type": "byte",
@@ -173,21 +173,21 @@
         "__struct_id": 2,
         "EquippedRes": {
           "type": "resref",
-          "value": "npc_looter_m_t"
+          "value": "adventurer_l_f"
         }
       },
       {
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "npc_outlaw_rifle"
+          "value": "h_shuriken_4"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "ww_outlaw_skin"
+          "value": "nar_t4"
         }
       }
     ]
@@ -302,7 +302,7 @@
   },
   "Int": {
     "type": "byte",
-    "value": 10
+    "value": 29
   },
   "Interruptable": {
     "type": "byte",
@@ -625,7 +625,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 938
+    "value": 118
   },
   "SpecAbilityList": {
     "type": "list",
@@ -637,7 +637,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 10
+    "value": 26
   },
   "Subrace": {
     "type": "cexostring",
@@ -708,15 +708,15 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 10
+    "value": 16
   },
   "xAppearance_Head": {
     "type": "word",
-    "value": 109
+    "value": 58
   },
   "xArmorPart_RFoot": {
     "type": "word",
-    "value": 201
+    "value": 1
   },
   "xBodyPart_Belt": {
     "type": "word",
@@ -732,15 +732,15 @@
   },
   "xBodyPart_LFoot": {
     "type": "word",
-    "value": 201
+    "value": 1
   },
   "xBodyPart_LHand": {
     "type": "word",
-    "value": 201
+    "value": 1
   },
   "xBodyPart_LShin": {
     "type": "word",
-    "value": 201
+    "value": 1
   },
   "xBodyPart_LShoul": {
     "type": "word",
@@ -768,11 +768,11 @@
   },
   "xBodyPart_RHand": {
     "type": "word",
-    "value": 201
+    "value": 1
   },
   "xBodyPart_RShin": {
     "type": "word",
-    "value": 201
+    "value": 1
   },
   "xBodyPart_RShoul": {
     "type": "word",

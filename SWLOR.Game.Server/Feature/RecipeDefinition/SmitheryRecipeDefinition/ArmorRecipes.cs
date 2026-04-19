@@ -495,6 +495,25 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_scordspar", 5)
                 .Component("ref_plagionite", 5)
                 .Component("ref_keromber", 5);
-        }
+
+			// Arkanian Dragon Breastplate
+			_builder.Create(RecipeType.ArkanianDragonArmor, SkillType.Smithery)
+				.Category(RecipeCategoryType.Breastplate)
+				.Resref("ark_armor")
+				.Level(52)
+				.Quantity(1)
+				.RequirementPerk(PerkType.ArmorBlueprints, 5)
+				.RequirementUnlocked()
+				.EnhancementSlots(RecipeEnhancementType.Armor, 2)
+				.ResearchCostModifier(0.2f)
+				.Component("ref_arkoxit", 2)
+				.Component("lth_high", 20)
+				.Component("fiberp_high", 20)
+				.Component("chiro_shard", 2)
+				.Component("ark_dragon_troph", 5)
+				.Component("ref_scordspar", 5)
+				.Component("ref_plagionite", 5)
+				.Component("ref_keromber", 5);
+		}
     }
 }

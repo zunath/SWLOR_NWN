@@ -11173,7 +11173,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 31
+    "value": 33
   },
   "Width": {
     "type": "int",

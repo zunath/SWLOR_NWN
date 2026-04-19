@@ -153,7 +153,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Coordinates lead to a private void sector: SpaceDungeon_PirateHideout. Pirates are staging attacks from there."
+            "0": "Coordinates lead to a private void sector: Abandon Station. Pirates are staging attacks from there."
           }
         }
       },
@@ -310,7 +310,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Take this operation order and clear SpaceDungeon_PirateHideout completely."
+            "0": "Take this operation order and clear the hideout completely."
           }
         }
       },
@@ -516,7 +516,7 @@
   },
   "NumWords": {
     "type": "dword",
-    "value": 185
+    "value": 107
   },
   "PreventZoomIn": {
     "type": "byte",

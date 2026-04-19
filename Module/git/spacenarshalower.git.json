@@ -17505,7 +17505,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "NARSHADDAA_THIEVES"
+          "value": "NAR_THIEVES"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -17513,23 +17513,86 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.04906796291470528
+          "value": 3.110882590801094e-043
         },
         "XPosition": {
           "type": "float",
-          "value": 109.0400009155273
+          "value": 107.6086196899414
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.9987954497337341
+          "value": 1.0
         },
         "YPosition": {
           "type": "float",
-          "value": 14.47903251647949
+          "value": 15.54557418823242
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.3999998867511749
+          "value": 0.3999995291233063
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Nar Shaddaa Thieves"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "NAR_THIEVES"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "nar_thief"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 5.45502401222782e-019
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 112.0388793945313
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 13.3160343170166
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.4100000262260437
         }
       }
     ]

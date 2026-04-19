@@ -14,7 +14,6 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             RooftopSniper();
             SpaceDungeon_SlaverRaid();
             SpaceDungeon_PirateHideout();
-            MechanicSalvage();
 			GreatArkanianDragonHunt();
 			return _builder.Build();
         }
@@ -25,13 +24,14 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .IsRepeatable()
                 .AddState()
                 .SetStateJournalText("A slicer in the Core District needs encrypted data chips stolen from a rival gang. Retrieve 5 data chips from the Black Serpents.")
-                .AddCollectItemObjective("data_chip_encrypted", 5)
+                .AddCollectItemObjective("data_chip_encryp", 5)
 
                 .AddState()
                 .SetStateJournalText("Return to the slicer in the Core District with the data chips.")
                 .AddGoldReward(4500)
-                .AddXPReward(5000);
-        }
+                .AddXPReward(5000)
+                .AddItemReward("recipe_boganoga", 1);
+		}
 
         private void RooftopSniper()
         {
@@ -43,21 +43,23 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText("Report to the district marshal once the sniper is neutralized.")
                 .AddGoldReward(8000)
-                .AddXPReward(9500);
-        }
+                .AddXPReward(9500)
+                .AddItemReward("recipe_cartelck", 1);
+
+		}
 
         private void SpaceDungeon_SlaverRaid()
         {
             _builder.Create("nar_space_slaver_raid", "Raid the Slaver Convoy")
                 .AddState()
-                .SetStateJournalText("Board the orbiting slaver convoy and free captured citizens. Eliminate the slaver captain.")
+                .SetStateJournalText("Board the Abandon Space station and free captured citizens. Eliminate the slaver captain.")
                 .AddKillObjective(NPCGroupType.NarShaddaa_SlaverCaptain, 1)
 
                 .AddState()
                 .SetStateJournalText("Return to Nar Shaddaa’s port authority with proof of the raid.")
                 .AddGoldReward(12000)
                 .AddXPReward(15000)
-                .AddItemReward("freedom_medal", 1);
+                .AddItemReward("recipe_nalhfizz", 1);
         }
 
         private void SpaceDungeon_PirateHideout()
@@ -70,24 +72,11 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddKillObjective(NPCGroupType.NarShaddaa_CommandDroid, 1)
 
                 .AddState()
-                .SetStateJournalText("Return to the Hutt overseer for your reward.")
+                .SetStateJournalText("Return to the Hutt Agent for your reward.")
                 .AddGoldReward(15000)
-                .AddXPReward(18000);
-        }
-
-        private void MechanicSalvage()
-        {
-            _builder.Create("nar_mechanic_salvage", "Scrapyard Salvage")
-                .IsRepeatable()
-                .AddState()
-                .SetStateJournalText("Gather 10 units of high-grade electronics from the Lower City scrapyard.")
-                .AddCollectItemObjective("scrap_highgrade", 10)
-
-                .AddState()
-                .SetStateJournalText("Bring the salvage to the mechanic for processing.")
-                .AddGoldReward(3000)
-                .AddXPReward(8000);
-        }
+                .AddXPReward(18000)
+				.AddItemReward("recipe_sandogdz", 1);
+		}
 
         private void GreatArkanianDragonHunt()
         {
@@ -103,7 +92,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText("Return to the bounty hunter and collect payment for slaying the beast.")
                 .AddGoldReward(12000)
-                .AddXPReward(15000);
+                .AddXPReward(15000)
+				.AddItemReward("recipe_gardula", 1);
         }
     }
 }

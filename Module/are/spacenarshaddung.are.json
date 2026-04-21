@@ -87,7 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "Space - Nar Shaddaa - Infected Space Station"
+      "0": "Space - Smuggler's Moon Station "
     }
   },
   "NoRest": {
@@ -7991,7 +7991,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 42
+    "value": 59
   },
   "Width": {
     "type": "int",

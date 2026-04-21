@@ -77,20 +77,20 @@ namespace SWLOR.Game.Server.Enumeration
 			1000,
 			true)]
 		Dantooine = 128,
-		[Planet("Nar Shaddaa",
-			"Nar Shaddaa - ",
-			"NarShaddaa_Orbit",
-			"NAR_SHADDAA_LANDING",
-					0,
-				true)]
-		NarShaddaa = 256,
-		[Planet("Space Station",
-			"Space Station - ",
-			"SpaceStation_Orbit",
-			"SPACESTATION_LANDING",
+		[Planet("Smuggler's Moon",
+			"Smuggler's Moon - ",
+			"SmugglersMoon_Orbit",
+			"SMUGGLERS_MOON_LANDING",
 					0,
 			true)]
-		SpaceStation = 512,
+		SmugglersMoon = 256,
+		[Planet("Smuggler's Moon Station",
+			"Smuggler's Moon Station - ",
+			"Smugglers_Station_Orbit",
+			"SMUGGLERS_STATION_LANDING",
+					0,
+			true)]
+		SmugglersMoonStation = 512,
 	}
 
 	public class PlanetAttribute : Attribute

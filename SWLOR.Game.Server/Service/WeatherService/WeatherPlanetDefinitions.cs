@@ -79,7 +79,12 @@ namespace SWLOR.Game.Server.Service.WeatherService
                      HeatModifier = -1,
                      HumidityModifier = +1
                  },
-            };
+				[PlanetType.SmugglersMoon] = new WeatherClimate
+				{
+					HeatModifier = -1,
+					HumidityModifier = +1
+				},
+			};
         }
     }
 }

@@ -87,7 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "Space - Nar Shaddaa Orbit"
+      "0": "Space - Smuggler's Moon Orbit"
     }
   },
   "NoRest": {
@@ -44197,7 +44197,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 37
+    "value": 51
   },
   "Width": {
     "type": "int",

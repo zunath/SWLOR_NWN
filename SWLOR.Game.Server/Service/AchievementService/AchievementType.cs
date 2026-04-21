@@ -380,6 +380,9 @@ namespace SWLOR.Game.Server.Service.AchievementService
 
 		[Achievement("Smuggler's Moon - The Tilted Visor", "Explore The Tilted Visor on Smuggler's Moon.", true)]
 		ExploreSmugglersMoonTiltedVisor = 137,
+
+		[Achievement("Explore Nar Shaddaa Orbit", "Explore Nar Shaddaa's Orbit.", true)]
+		ExploreNarShaddaaOrbit = 138,
 	}
 
     public class AchievementAttribute: Attribute

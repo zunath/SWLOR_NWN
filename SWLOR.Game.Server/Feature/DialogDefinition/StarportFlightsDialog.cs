@@ -63,22 +63,27 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
             foreach (var (type, planet) in planets)
             {
-                if (currentLocation != type)
+                if (currentLocation == type ||
+                     type == PlanetType.SmugglersMoon ||
+                     type == PlanetType.SmugglersMoonStation)
                 {
-                    var tax = (int)(model.Tax * planet.NPCTransportationFee);
-                    var price = planet.NPCTransportationFee + tax;
-                    var optionText = $"{planet.Name} [{price} cr]";
-                    page.AddResponse(optionText, () =>
-                    {
-                        model.PlanetName = planet.Name;
-                        model.Price = planet.NPCTransportationFee;
-                        model.DestinationTag = planet.LandingWaypointTag;
-
-                        ChangePage(ConfirmPageId);
-                    });
+                    continue;
                 }
+
+                var tax = (int)(model.Tax * planet.NPCTransportationFee);
+                var price = planet.NPCTransportationFee + tax;
+                var optionText = $"{planet.Name} [{price} cr]";
+                page.AddResponse(optionText, () =>
+                {
+                    model.PlanetName = planet.Name;
+                    model.Price = planet.NPCTransportationFee;
+                    model.DestinationTag = planet.LandingWaypointTag;
+
+                    ChangePage(ConfirmPageId);
+                });
             }
-        }
+
+        } 
 
         private void ConfirmPageInit(DialogPage page)
         {

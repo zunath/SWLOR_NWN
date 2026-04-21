@@ -149,7 +149,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Docking Point: Nar Shaddaa"
+            "0": "Docking Point:Smuggler's Moon"
           }
         },
         "OnClick": {
@@ -302,7 +302,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "Nar Shaddaa_Orbit"
+                "value": "SmugglersMoon_Orbit"
               }
             },
             {
@@ -6111,11 +6111,11 @@
         },
         "X": {
           "type": "float",
-          "value": 134.8076019287109
+          "value": 134.8507385253906
         },
         "Y": {
           "type": "float",
-          "value": 21.73808670043945
+          "value": 19.17218208312988
         },
         "Z": {
           "type": "float",
@@ -6209,7 +6209,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Docking Point: Space Station"
+            "0": "Docking Point: Smuggler's Moon Station"
           }
         },
         "OnClick": {
@@ -6362,7 +6362,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "SPACESTATION_LANDING"
+                "value": "Smugglers_Station_Orbit"
               }
             },
             {
@@ -9325,21 +9325,6 @@
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "MAP_KEY_ITEM_ID"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 34
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
           "value": "EXPLORE_ACHIEVEMENT_ID"
         },
         "Type": {
@@ -9348,7 +9333,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 56
+          "value": 138
         }
       }
     ]
@@ -9378,7 +9363,7 @@
           "id": 14817,
           "type": "cexolocstring",
           "value": {
-            "0": "Nar Shaddaa Orbit"
+            "0": "Smuggler's Moon Orbit"
           }
         },
         "MapNote": {
@@ -9391,7 +9376,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "NarShaddaa_Orbit"
+          "value": "SmugglersMoon_Orbit"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -9403,7 +9388,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 178.0336303710938
+          "value": 178.1501770019531
         },
         "YOrientation": {
           "type": "float",
@@ -9411,7 +9396,7 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 173.1751403808594
+          "value": 173.3352203369141
         },
         "ZPosition": {
           "type": "float",
@@ -9451,7 +9436,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "SpaceStation_Orbit"
+          "value": "Smugglers_Station_Orbit"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -9463,7 +9448,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 134.7598571777344
+          "value": 134.7651062011719
         },
         "YOrientation": {
           "type": "float",
@@ -9471,7 +9456,7 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 30.03755569458008
+          "value": 29.77912521362305
         },
         "ZPosition": {
           "type": "float",

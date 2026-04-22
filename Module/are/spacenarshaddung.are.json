@@ -87,7 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "Space - Smuggler's Moon Station "
+      "0": "Smuggler's Moon Station - Abandoned"
     }
   },
   "NoRest": {
@@ -7991,7 +7991,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 59
+    "value": 61
   },
   "Width": {
     "type": "int",

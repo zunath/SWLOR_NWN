@@ -87,7 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "Space - Smuggler's Moon Station - Lower Level"
+      "0": "Smuggler's Moon Station - Lower Level"
     }
   },
   "NoRest": {
@@ -7991,7 +7991,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 53
+    "value": 55
   },
   "Width": {
     "type": "int",

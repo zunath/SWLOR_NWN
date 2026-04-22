@@ -17080,82 +17080,19 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.8932243585586548
+          "value": 0.07356492429971695
         },
         "XPosition": {
           "type": "float",
-          "value": 113.706672668457
+          "value": 108.2651824951172
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.4496111571788788
+          "value": -0.9972904324531555
         },
         "YPosition": {
           "type": "float",
-          "value": 33.52858734130859
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 0.4100072979927063
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 3
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Dragon Loot"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "DRAGON_LOOT"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "dragon_loot"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 1.541428310757299e-043
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 107.091438293457
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 9.060198783874512
+          "value": 21.41970062255859
         },
         "ZPosition": {
           "type": "float",
@@ -17517,7 +17454,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 107.6086196899414
+          "value": 107.5760116577148
         },
         "YOrientation": {
           "type": "float",
@@ -17525,11 +17462,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 15.54557418823242
+          "value": 15.54730224609375
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.3999995291233063
+          "value": 0.4000076353549957
         }
       },
       {
@@ -17580,7 +17517,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 112.0388793945313
+          "value": 111.0801010131836
         },
         "YOrientation": {
           "type": "float",
@@ -17588,11 +17525,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 13.3160343170166
+          "value": 14.03694725036621
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.4100000262260437
+          "value": 0.4100072979927063
         }
       }
     ]

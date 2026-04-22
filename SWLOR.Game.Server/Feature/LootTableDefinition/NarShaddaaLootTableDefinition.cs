@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 			_builder.Create("NARSHADDAA_RED_BLADES")
 				.AddItem("elec_imperfect", 15)
 				.AddItem("fiberp_imperfect", 15)
-				.AddItem("lth_imperfect", 10)
+				.AddItem("ns_sludge_eel", 10)
 				.AddGold(35, 20);
 		}
 
@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 			_builder.Create("NARSHADDAA_ARENA_FIGHTERS")
 				.AddItem("fiberp_good", 10)
 				.AddItem("lth_good", 10)
-				.AddItem("wild_meat", 8)
+				.AddItem("ns_neon_salt", 8)
 				.AddGold(50, 20);
 		}
 
@@ -82,22 +82,21 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
 			_builder.Create("NARSHADDAA_SNIPER_RARES")
 				.IsRare()
-				.AddItem("ns_moonspice", 1, 1, true)
-				.AddItem("ns_rack_meat", 1, 1, true);
+				.AddItem("ns_moonspice", 1, 1, true);
+
 		}
 
 		private void SerpentLeader()
 		{
 			_builder.Create("NARSHADDAA_SERPENT_LEADER")
 				.AddItem("elec_good", 15)
-				.AddItem("fiberp_good", 15)
+				.AddItem("fiberp_high", 15)
 				.AddItem("lth_good", 10)
 				.AddGold(120, 30);
 
 			_builder.Create("NARSHADDAA_SERPENT_LEADER_RARES")
 				.IsRare()
 				.AddItem("ruby", 1, 1, true)
-				.AddItem("ns_rack_meat", 1, 1, true)
 				.AddItem("ns_holo_jelly", 1, 1, true);
 		}
 
@@ -113,7 +112,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 		{
 			_builder.Create("NARSHADDAA_PIRATES")
 				.AddItem("elec_imperfect", 10)
-				.AddItem("fiberp_imperfect", 10)
+				.AddItem("ns_neon_salt", 10)
 				.AddItem("r_flour", 5)
 				.AddGold(35, 20);
 		}

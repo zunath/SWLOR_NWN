@@ -966,10 +966,52 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Tag of the guaranteed NPC starport landing waypoint at CZ-220, used as the universal
+        /// last-resort fallback when a ship is being evicted from a deleted starport but has
+        /// never registered a LastNPCDockPosition of its own. This is the same waypoint that
+        /// CharacterFullRebuildViewModel uses as the default spawn-in location for new players,
+        /// and that PlanetType.CZ220 already declares as the planet's landing waypoint.
+        /// </summary>
+        private const string GuaranteedFallbackDockWaypointTag = "CZ220_LANDING";
+
+        /// <summary>
+        /// Builds a fresh <see cref="PropertyLocation"/> pointing at the guaranteed CZ-220 NPC
+        /// starport landing waypoint, or <c>null</c> if the waypoint cannot be resolved (e.g.
+        /// the module shipped without it). A new instance is returned on every call so callers
+        /// can safely store it under multiple Positions keys without aliasing.
+        /// </summary>
+        private static PropertyLocation BuildGuaranteedFallbackDockPosition()
+        {
+            var waypoint = GetWaypointByTag(GuaranteedFallbackDockWaypointTag);
+            if (!GetIsObjectValid(waypoint))
+                return null;
+
+            var position = GetPosition(waypoint);
+            var orientation = GetFacing(waypoint);
+            var areaResref = GetResRef(GetArea(waypoint));
+
+            return new PropertyLocation
+            {
+                AreaResref = areaResref,
+                X = position.X,
+                Y = position.Y,
+                Z = position.Z,
+                Orientation = orientation
+            };
+        }
+
+        /// <summary>
         /// Relocates any starships currently docked at the given property back to their last
         /// NPC dock position and clears their RegisteredStarport reference. This is intended to
         /// be run immediately before deleting a starport interior (or any future property type
         /// that tracks docked ships in ChildPropertyIds[Starship]).
+        ///
+        /// Relocation order of preference per ship:
+        ///   1. The ship's recorded LastNPCDockPosition (the dock the player most recently used).
+        ///   2. The guaranteed CZ-220 NPC starport (universal fallback for ships that have
+        ///      somehow never registered a LastNPCDockPosition - e.g. legacy data).
+        ///   3. Leave DockPosition alone and emit a warning log so an operator can intervene
+        ///      (only happens if even the CZ-220 waypoint cannot be resolved).
         ///
         /// Safe to call on a property that has no docked ships - it short-circuits.
         /// </summary>
@@ -978,6 +1020,11 @@ namespace SWLOR.Game.Server.Service
             if (!property.ChildPropertyIds.TryGetValue(PropertyChildType.Starship, out var dockedShipIds) ||
                 dockedShipIds.Count == 0)
                 return;
+
+            // Lazily resolved + cached across the loop so we only hit GetWaypointByTag once,
+            // and only when at least one stranded ship actually needs it.
+            PropertyLocation cz220Cache = null;
+            var cz220Resolved = false;
 
             // ToList() so saving each ship cannot affect the iteration if anything (e.g. a
             // future event handler) ever mutates the source list.
@@ -993,16 +1040,43 @@ namespace SWLOR.Game.Server.Service
                 if (ship.ChildPropertyIds.ContainsKey(PropertyChildType.RegisteredStarport))
                     ship.ChildPropertyIds[PropertyChildType.RegisteredStarport].Clear();
 
-                // Only fall back to LastNPCDockPosition if it was ever recorded. Without it
-                // there is no safe place to send the ship; leaving DockPosition unchanged is
-                // better than overwriting it with a default-constructed (zero) position.
-                if (ship.Positions.ContainsKey(PropertyLocationType.LastNPCDockPosition))
+                var hasOwnFallback = ship.Positions.ContainsKey(PropertyLocationType.LastNPCDockPosition);
+                if (hasOwnFallback)
                 {
                     ship.Positions[PropertyLocationType.DockPosition] = ship.Positions[PropertyLocationType.LastNPCDockPosition];
+
+                    DB.Set(ship);
+                    Log.Write(LogGroup.Property, $"Starship '{ship.CustomName}' ({ship.Id}) has been relocated to its last NPC dock because starport '{property.CustomName}' ({property.Id}) is being deleted.", true);
+                    continue;
                 }
 
+                // No personal fallback - try the guaranteed CZ-220 NPC starport.
+                if (!cz220Resolved)
+                {
+                    cz220Cache = BuildGuaranteedFallbackDockPosition();
+                    cz220Resolved = true;
+                }
+
+                if (cz220Cache != null)
+                {
+                    // Use independent PropertyLocation instances per Positions key. Storing the
+                    // same reference under both keys would alias them, so a later in-place
+                    // mutation of one (see _11_RefundMobilityAndUpdateVelesStarport for an
+                    // example of in-place mutation of these structs) would silently corrupt
+                    // the other.
+                    ship.Positions[PropertyLocationType.DockPosition] = BuildGuaranteedFallbackDockPosition();
+                    ship.Positions[PropertyLocationType.LastNPCDockPosition] = BuildGuaranteedFallbackDockPosition();
+
+                    DB.Set(ship);
+                    Log.Write(LogGroup.Property, $"Starship '{ship.CustomName}' ({ship.Id}) had no recorded LastNPCDockPosition; relocated to the guaranteed CZ-220 NPC starport because starport '{property.CustomName}' ({property.Id}) is being deleted. LastNPCDockPosition has also been backfilled to CZ-220.", true);
+                    continue;
+                }
+
+                // Last resort - we couldn't even resolve CZ-220. Persist the cleared
+                // RegisteredStarport but leave DockPosition untouched rather than overwriting
+                // it with a default-constructed (zero) position, and surface a warning.
                 DB.Set(ship);
-                Log.Write(LogGroup.Property, $"Starship '{ship.CustomName}' ({ship.Id}) has been relocated to its last NPC dock because starport '{property.CustomName}' ({property.Id}) is being deleted.", true);
+                Log.Write(LogGroup.Property, $"WARNING: Starship '{ship.CustomName}' ({ship.Id}) was docked at starport '{property.CustomName}' ({property.Id}) which is being deleted, but the ship has no LastNPCDockPosition and the guaranteed CZ-220 fallback waypoint '{GuaranteedFallbackDockWaypointTag}' could not be resolved. RegisteredStarport has been cleared, but DockPosition was left untouched. Manual intervention required.", true);
             }
         }
 

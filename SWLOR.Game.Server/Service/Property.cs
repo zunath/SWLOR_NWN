@@ -879,6 +879,16 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
+            // Relocate any starships currently docked at this property before it disappears.
+            // Starport interiors track docked ships in ChildPropertyIds[Starship] (registered
+            // via StarportDockDialog). Without this step, deleting a starport - whether the
+            // owning city was wiped for unpaid upkeep or any other cascade reaches the interior -
+            // leaves those ships with a DockPosition pointing at a non-existent area and a stale
+            // RegisteredStarport reference. The manual "retrieve starport" path in
+            // StructureChangedAction already handles this for player-initiated pickups; mirroring
+            // it here covers every other delete path.
+            RelocateDockedShips(property);
+
             // Clear permissions for the property.
             var permissionsQuery = new DBQuery<WorldPropertyPermission>()
                 .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), property.Id, false);
@@ -953,6 +963,47 @@ namespace SWLOR.Game.Server.Service
 
             EventsPlugin.PushEventData("PROPERTY_ID", property.Id);
             EventsPlugin.SignalEvent("SWLOR_DELETE_PROPERTY", GetModule());
+        }
+
+        /// <summary>
+        /// Relocates any starships currently docked at the given property back to their last
+        /// NPC dock position and clears their RegisteredStarport reference. This is intended to
+        /// be run immediately before deleting a starport interior (or any future property type
+        /// that tracks docked ships in ChildPropertyIds[Starship]).
+        ///
+        /// Safe to call on a property that has no docked ships - it short-circuits.
+        /// </summary>
+        private static void RelocateDockedShips(WorldProperty property)
+        {
+            if (!property.ChildPropertyIds.TryGetValue(PropertyChildType.Starship, out var dockedShipIds) ||
+                dockedShipIds.Count == 0)
+                return;
+
+            // ToList() so saving each ship cannot affect the iteration if anything (e.g. a
+            // future event handler) ever mutates the source list.
+            foreach (var shipId in dockedShipIds.ToList())
+            {
+                if (string.IsNullOrWhiteSpace(shipId))
+                    continue;
+
+                var ship = DB.Get<WorldProperty>(shipId);
+                if (ship == null)
+                    continue;
+
+                if (ship.ChildPropertyIds.ContainsKey(PropertyChildType.RegisteredStarport))
+                    ship.ChildPropertyIds[PropertyChildType.RegisteredStarport].Clear();
+
+                // Only fall back to LastNPCDockPosition if it was ever recorded. Without it
+                // there is no safe place to send the ship; leaving DockPosition unchanged is
+                // better than overwriting it with a default-constructed (zero) position.
+                if (ship.Positions.ContainsKey(PropertyLocationType.LastNPCDockPosition))
+                {
+                    ship.Positions[PropertyLocationType.DockPosition] = ship.Positions[PropertyLocationType.LastNPCDockPosition];
+                }
+
+                DB.Set(ship);
+                Log.Write(LogGroup.Property, $"Starship '{ship.CustomName}' ({ship.Id}) has been relocated to its last NPC dock because starport '{property.CustomName}' ({property.Id}) is being deleted.", true);
+            }
         }
 
         /// <summary>

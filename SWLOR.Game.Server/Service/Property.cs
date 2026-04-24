@@ -845,23 +845,37 @@ namespace SWLOR.Game.Server.Service
         public static void DeleteProperty(WorldProperty property)
         {
             // Recursively clear any children properties tied to this property.
+            //
+            // The original implementation used DB.Search to bulk-fetch children by Id, but
+            // AddFieldSearch-with-a-list builds a RediSearch query whose unparenthesized pipe
+            // operators historically returned only the first Id, silently skipping the rest.
+            // That is how cities ended up with orphaned buildings (and those buildings' interior
+            // records) after a cascade delete - only the first child of each list was actually
+            // visited by the recursion. Even with the DBQuery parenthesis fix in place, walking
+            // the list with DB.Get is simpler, hits the entity cache, and degrades gracefully
+            // when an entry is already missing (DB.Get returns null and we skip it).
             foreach (var (childType, propertyIds) in property.ChildPropertyIds)
             {
                 if (childType == PropertyChildType.RegisteredStarport ||
                     childType == PropertyChildType.Starship)
                     continue;
 
-                if (propertyIds.Count > 0)
+                // ToList() so a recursive DeleteProperty call that happens to mutate the parent's
+                // ChildPropertyIds list (not expected today, but cheap insurance) can't invalidate
+                // our iterator.
+                foreach (var childId in propertyIds.ToList())
                 {
-                    var query = new DBQuery<WorldProperty>()
-                        .AddFieldSearch(nameof(WorldProperty.Id), propertyIds);
-                    var queryCount = (int)DB.SearchCount(query);
-                    var children = DB.Search(query.AddPaging(queryCount, 0));
+                    if (string.IsNullOrWhiteSpace(childId))
+                        continue;
 
-                    foreach (var child in children)
+                    var child = DB.Get<WorldProperty>(childId);
+                    if (child == null)
                     {
-                        DeleteProperty(child);
+                        Log.Write(LogGroup.Property, $"Property '{property.CustomName}' ({property.Id}) referenced missing child '{childId}' of type '{childType}'. Skipping.", true);
+                        continue;
                     }
+
+                    DeleteProperty(child);
                 }
             }
 
@@ -2067,46 +2081,58 @@ namespace SWLOR.Game.Server.Service
         /// <param name="area">The area to spawn the property into. Leave OBJECT_INVALID if spawning an instance.</param>
         private static void SpawnIntoWorld(WorldProperty property, uint area)
         {
-            var propertyDetail = _propertyTypes[property.PropertyType];
-
-            // World spawns represent placeables within the game world such as furniture and buildings
-            if (propertyDetail.SpawnType == PropertySpawnType.World)
+            // Wrap the entire spawn in a try/catch so that a single malformed record - e.g. a
+            // layout OnSpawn handler that dereferences a broken parent chain - cannot abort the
+            // caller. When called from LoadProperties this is essential, because an uncaught
+            // exception there leaves every subsequent property (including all player starships)
+            // unspawned until the next reboot.
+            try
             {
-                var furniture = GetStructureByType(property.StructureType);
+                var propertyDetail = _propertyTypes[property.PropertyType];
 
-                var staticPosition = property.Positions[PropertyLocationType.StaticPosition];
-                var position = Vector3(staticPosition.X, staticPosition.Y, staticPosition.Z);
-                var location = Location(area, position, staticPosition.Orientation);
-
-                var placeable = CreateObject(ObjectType.Placeable, furniture.Resref, location);
-                SetPlotFlag(placeable, true);
-                AssignPropertyId(placeable, property.Id);
-
-                _structurePropertyIdToPlaceable[property.Id] = placeable;
-
-                // Some structures have custom spawn-in actions which also need to be run
-                // when brought into the world. 
-                RunStructureChangedEvent(property.StructureType, StructureChangeType.PositionChanged, property, placeable);
-            }
-            // Instance spawns are instanced areas that are spawned dynamically into the game world.
-            else if(propertyDetail.SpawnType == PropertySpawnType.Instance)
-            {
-                // If no interior layout is defined, the provided area will be used.
-                var layout = GetLayoutByType(property.Layout);
-                var targetArea = CreateArea(layout.AreaInstanceResref);
-                RegisterInstance(property.Id, targetArea, property.Layout);
-                
-                SetName(targetArea, "{PC} " + property.CustomName);
-
-                if (layout.OnSpawnAction != null)
+                // World spawns represent placeables within the game world such as furniture and buildings
+                if (propertyDetail.SpawnType == PropertySpawnType.World)
                 {
-                    layout.OnSpawnAction(targetArea);
+                    var furniture = GetStructureByType(property.StructureType);
+
+                    var staticPosition = property.Positions[PropertyLocationType.StaticPosition];
+                    var position = Vector3(staticPosition.X, staticPosition.Y, staticPosition.Z);
+                    var location = Location(area, position, staticPosition.Orientation);
+
+                    var placeable = CreateObject(ObjectType.Placeable, furniture.Resref, location);
+                    SetPlotFlag(placeable, true);
+                    AssignPropertyId(placeable, property.Id);
+
+                    _structurePropertyIdToPlaceable[property.Id] = placeable;
+
+                    // Some structures have custom spawn-in actions which also need to be run
+                    // when brought into the world. 
+                    RunStructureChangedEvent(property.StructureType, StructureChangeType.PositionChanged, property, placeable);
+                }
+                // Instance spawns are instanced areas that are spawned dynamically into the game world.
+                else if (propertyDetail.SpawnType == PropertySpawnType.Instance)
+                {
+                    // If no interior layout is defined, the provided area will be used.
+                    var layout = GetLayoutByType(property.Layout);
+                    var targetArea = CreateArea(layout.AreaInstanceResref);
+                    RegisterInstance(property.Id, targetArea, property.Layout);
+
+                    SetName(targetArea, "{PC} " + property.CustomName);
+
+                    if (layout.OnSpawnAction != null)
+                    {
+                        layout.OnSpawnAction(targetArea);
+                    }
+                }
+                // Area spawns exist in a pre-built area.
+                else if (propertyDetail.SpawnType == PropertySpawnType.Area)
+                {
+                    AssignPropertyId(area, property.Id);
                 }
             }
-            // Area spawns exist in a pre-built area.
-            else if(propertyDetail.SpawnType == PropertySpawnType.Area)
+            catch (Exception ex)
             {
-                AssignPropertyId(area, property.Id);
+                Log.Write(LogGroup.Error, $"Failed to spawn property '{property.CustomName}' ({property.Id}) of type '{property.PropertyType}'. Skipping. Details: {ex}", true);
             }
         }
 

@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -157,8 +158,31 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                 {
                     var propertyId = Property.GetPropertyId(instance);
                     var dbProperty = DB.Get<WorldProperty>(propertyId);
+
+                    // Defensive guard against a broken parent chain. Orphans shouldn't normally
+                    // exist thanks to the DeleteProperty cascade, but skipping gracefully here
+                    // keeps one bad record from taking down LoadProperties for every property
+                    // that would otherwise load after it.
+                    if (dbProperty == null)
+                    {
+                        Log.Write(LogGroup.Error, $"Starport interior '{propertyId}' could not be loaded from the database. Skipping spawn.", true);
+                        return;
+                    }
+
                     var dbBuilding = DB.Get<WorldProperty>(dbProperty.ParentPropertyId);
+                    if (dbBuilding == null)
+                    {
+                        Log.Write(LogGroup.Error, $"Starport interior '{dbProperty.CustomName}' ({dbProperty.Id}) has a missing parent building '{dbProperty.ParentPropertyId}'. Skipping spawn.", true);
+                        return;
+                    }
+
                     var dbCity = DB.Get<WorldProperty>(dbBuilding.ParentPropertyId);
+                    if (dbCity == null)
+                    {
+                        Log.Write(LogGroup.Error, $"Starport interior '{dbProperty.CustomName}' ({dbProperty.Id}) has a missing parent city '{dbBuilding.ParentPropertyId}'. Skipping spawn.", true);
+                        return;
+                    }
+
                     var cityArea = Area.GetAreaByResref(dbCity.ParentPropertyId);
                     var planet = Planet.GetPlanetType(cityArea);
 

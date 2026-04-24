@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -103,7 +104,24 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                 {
                     var propertyId = Property.GetPropertyId(area);
                     var dbProperty = DB.Get<WorldProperty>(propertyId);
+
+                    // Defensive guard against a broken parent chain. Orphans shouldn't normally
+                    // exist thanks to the DeleteProperty cascade, but skipping gracefully here
+                    // keeps one bad record from taking down LoadProperties for every property
+                    // that would otherwise load after it.
+                    if (dbProperty == null)
+                    {
+                        Log.Write(LogGroup.Error, $"Bank interior '{propertyId}' could not be loaded from the database. Skipping spawn.", true);
+                        return;
+                    }
+
                     var dbBuilding = DB.Get<WorldProperty>(dbProperty.ParentPropertyId);
+                    if (dbBuilding == null)
+                    {
+                        Log.Write(LogGroup.Error, $"Bank interior '{dbProperty.CustomName}' ({dbProperty.Id}) has a missing parent building '{dbProperty.ParentPropertyId}'. Skipping spawn.", true);
+                        return;
+                    }
+
                     var upgradeLevel = Property.GetEffectiveUpgradeLevel(dbBuilding.ParentPropertyId, PropertyUpgradeType.BankLevel);
                     var storageCap = CalculateStorageCap(upgradeLevel);
                     var bankId = dbBuilding.ParentPropertyId;

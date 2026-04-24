@@ -59,8 +59,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 		{
 			_builder.Create("NARSHADDAA_TROUBLEMAKERS")
 				.AddItem("elec_imperfect", 12)
-				.AddItem("fiberp_imperfect", 12)
-				.AddItem("herb_t", 8)
+				.AddItem("ns_moonspice", 50)
 				.AddGold(30, 20);
 		}
 
@@ -82,7 +81,28 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
 			_builder.Create("NARSHADDAA_SNIPER_RARES")
 				.IsRare()
-				.AddItem("ns_moonspice", 1, 1, true);
+				.AddItem("ns_moonspice", 1, 1, true)
+				.AddItem("map_82", 2, 1, true)
+				.AddItem("map_83", 2, 1, true)
+				.AddItem("map_84", 2, 1, true)
+				.AddItem("map_85", 2, 1, true)
+				.AddItem("map_86", 2, 1, true)
+				.AddItem("map_87", 2, 1, true)
+				.AddItem("map_88", 2, 1, true)
+				.AddItem("map_89", 2, 1, true)
+				.AddItem("map_90", 2, 1, true)
+				.AddItem("map_91", 2, 1, true)
+				.AddItem("map_92", 2, 1, true)
+				.AddItem("map_93", 2, 1, true)
+				.AddItem("map_94", 2, 1, true)
+				.AddItem("map_95", 2, 1, true)
+				.AddItem("map_96", 2, 1, true)
+				.AddItem("map_97", 2, 1, true)
+				.AddItem("map_98", 2, 1, true)
+				.AddItem("map_99", 2, 1, true)
+				.AddItem("map_100", 2, 1, true)
+				.AddItem("map_101", 2, 1, true);
+
 
 		}
 
@@ -97,7 +117,28 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 			_builder.Create("NARSHADDAA_SERPENT_LEADER_RARES")
 				.IsRare()
 				.AddItem("ruby", 1, 1, true)
-				.AddItem("ns_holo_jelly", 1, 1, true);
+				.AddItem("ns_holo_jelly", 1, 1, true)
+				.AddItem("map_82", 2, 1, true)
+				.AddItem("map_83", 2, 1, true)
+				.AddItem("map_84", 2, 1, true)
+				.AddItem("map_85", 2, 1, true)
+				.AddItem("map_86", 2, 1, true)
+				.AddItem("map_87", 2, 1, true)
+				.AddItem("map_88", 2, 1, true)
+				.AddItem("map_89", 2, 1, true)
+				.AddItem("map_90", 2, 1, true)
+				.AddItem("map_91", 2, 1, true)
+				.AddItem("map_92", 2, 1, true)
+				.AddItem("map_93", 2, 1, true)
+				.AddItem("map_94", 2, 1, true)
+				.AddItem("map_95", 2, 1, true)
+				.AddItem("map_96", 2, 1, true)
+				.AddItem("map_97", 2, 1, true)
+				.AddItem("map_98", 2, 1, true)
+				.AddItem("map_99", 2, 1, true)
+				.AddItem("map_100", 2, 1, true)
+				.AddItem("map_101", 2, 1, true);
+
 		}
 
 		private void RogueDroid()
@@ -127,7 +168,29 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 			_builder.Create("NARSHADDAA_COMMAND_DROID_RARES")
 				.IsRare()
 				.AddItem("ns_holo_jelly", 1, 1, true)
-				.AddItem("emerald", 1, 1, true);
+				.AddItem("emerald", 1, 1, true)
+				.AddItem("emerald", 1, 1, true)
+				.AddItem("map_82", 2, 1, true)
+				.AddItem("map_83", 2, 1, true)
+				.AddItem("map_84", 2, 1, true)
+				.AddItem("map_85", 2, 1, true)
+				.AddItem("map_86", 2, 1, true)
+				.AddItem("map_87", 2, 1, true)
+				.AddItem("map_88", 2, 1, true)
+				.AddItem("map_89", 2, 1, true)
+				.AddItem("map_90", 2, 1, true)
+				.AddItem("map_91", 2, 1, true)
+				.AddItem("map_92", 2, 1, true)
+				.AddItem("map_93", 2, 1, true)
+				.AddItem("map_94", 2, 1, true)
+				.AddItem("map_95", 2, 1, true)
+				.AddItem("map_96", 2, 1, true)
+				.AddItem("map_97", 2, 1, true)
+				.AddItem("map_98", 2, 1, true)
+				.AddItem("map_99", 2, 1, true)
+				.AddItem("map_100", 2, 1, true)
+				.AddItem("map_101", 2, 1, true);
+
 		}
 
 		private void Scavengers()
@@ -157,14 +220,35 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 			_builder.Create("NARSHADDAA_SLAVER_CAPTAIN_RARES")
 				.IsRare()
 				.AddItem("ruby", 1, 1, true)
-				.AddItem("ns_moonspice", 1, 1, true);
+				.AddItem("ns_moonspice", 1, 1, true)
+				.AddItem("map_82", 2, 1, true)
+				.AddItem("map_83", 2, 1, true)
+				.AddItem("map_84", 2, 1, true)
+				.AddItem("map_85", 2, 1, true)
+				.AddItem("map_86", 2, 1, true)
+				.AddItem("map_87", 2, 1, true)
+				.AddItem("map_88", 2, 1, true)
+				.AddItem("map_89", 2, 1, true)
+				.AddItem("map_90", 2, 1, true)
+				.AddItem("map_91", 2, 1, true)
+				.AddItem("map_92", 2, 1, true)
+				.AddItem("map_93", 2, 1, true)
+				.AddItem("map_94", 2, 1, true)
+				.AddItem("map_95", 2, 1, true)
+				.AddItem("map_96", 2, 1, true)
+				.AddItem("map_97", 2, 1, true)
+				.AddItem("map_98", 2, 1, true)
+				.AddItem("map_99", 2, 1, true)
+				.AddItem("map_100", 2, 1, true)
+				.AddItem("map_101", 2, 1, true);
+
 		}
 
 		private void GreatArkanianDragon()
 		{
 			_builder.Create("NARSHADDAA_GREAT_ARKANIAN_DRAGON")
 				.AddItem("fiberp_high", 20)
-				.AddItem("lth_high", 20)
+				.AddItem("hyphae_wood", 20)
 				.AddItem("wild_meat", 15)
 				.AddItem("ns_rack_meat", 15)
 				.AddItem("chiro_shard", 2)
@@ -180,7 +264,28 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 				.IsRare()
 				.AddItem("chiro_shard", 1, 1, true)
 				.AddItem("emerald", 1, 1, true)
-				.AddItem("ruby", 1, 1, true);
+				.AddItem("ruby", 1, 1, true)
+				.AddItem("map_82", 2, 1, true)
+				.AddItem("map_83", 2, 1, true)
+				.AddItem("map_84", 2, 1, true)
+				.AddItem("map_85", 2, 1, true)
+				.AddItem("map_86", 2, 1, true)
+				.AddItem("map_87", 2, 1, true)
+				.AddItem("map_88", 2, 1, true)
+				.AddItem("map_89", 2, 1, true)
+				.AddItem("map_90", 2, 1, true)
+				.AddItem("map_91", 2, 1, true)
+				.AddItem("map_92", 2, 1, true)
+				.AddItem("map_93", 2, 1, true)
+				.AddItem("map_94", 2, 1, true)
+				.AddItem("map_95", 2, 1, true)
+				.AddItem("map_96", 2, 1, true)
+				.AddItem("map_97", 2, 1, true)
+				.AddItem("map_98", 2, 1, true)
+				.AddItem("map_99", 2, 1, true)
+				.AddItem("map_100", 2, 1, true)
+				.AddItem("map_101", 2, 1, true);
+
 		}
 		private void DragonLoot()
 		{

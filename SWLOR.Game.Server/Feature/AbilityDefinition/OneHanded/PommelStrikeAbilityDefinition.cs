@@ -99,7 +99,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 .HasActivationDelay(0.5f)
                 .IsCastedAbility()
                 .IsHostileAbility()
-                .UnaffectedByHeavyArmor()
                 .BreaksStealth()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
@@ -114,7 +113,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 .HasActivationDelay(0.5f)
                 .IsCastedAbility()
                 .IsHostileAbility()
-                .UnaffectedByHeavyArmor()
                 .BreaksStealth()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
@@ -129,7 +127,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 .HasActivationDelay(0.5f)
                 .IsCastedAbility()
                 .IsHostileAbility()
-                .UnaffectedByHeavyArmor()
                 .BreaksStealth()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);

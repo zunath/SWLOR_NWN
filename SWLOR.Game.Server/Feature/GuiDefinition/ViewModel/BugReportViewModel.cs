@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             if (string.IsNullOrWhiteSpace(url))
             {
-                SendMessageToPC(Player, ColorToken.Red("ERROR: Unable to send bug report because server admin has not specified the 'SWLOR_BUG_WEBHOOK_HOST' and 'SWLOR_BUG_WEBHOOK_PATH' environment variables."));
+                SendMessageToPC(Player, ColorToken.Red("ERROR: Unable to send bug report because the server admin has not set the SWLOR_BUG_WEBHOOK_URL environment variable."));
                 return;
             }
 
@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var areaName = GetName(area);
             var areaTag = GetTag(area);
             var areaResref = GetResRef(area);
-            var positionGroup = $"({position.X}, {position.Y}, {position.X})";
+            var positionGroup = $"({position.X}, {position.Y}, {position.Z})";
             var dateReported = DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss");
             var playerId = GetObjectUUID(Player);
             var nextReportAllowed = DateTime.UtcNow.AddMinutes(1);

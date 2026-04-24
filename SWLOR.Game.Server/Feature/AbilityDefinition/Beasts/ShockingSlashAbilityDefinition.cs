@@ -94,7 +94,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .HasActivationDelay(2f)
                 .RequirementStamina(4)
                 .IsCastedAbility()
-                .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator,_, level, targetLocation) =>
                 {
                     Impact(activator, targetLocation, 8, -1, level);
@@ -109,7 +108,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .HasActivationDelay(2f)
                 .RequirementStamina(5)
                 .IsCastedAbility()
-                .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, _, level, targetLocation) =>
                 {
                     Impact(activator, targetLocation, 12, -1, level);
@@ -124,7 +122,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .HasActivationDelay(2f)
                 .RequirementStamina(6)
                 .IsCastedAbility()
-                .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, _, level, targetLocation) =>
                 {
                     Impact(activator, targetLocation, 16, 8, level);
@@ -139,7 +136,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .HasActivationDelay(2f)
                 .RequirementStamina(7)
                 .IsCastedAbility()
-                .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, _, level, targetLocation) =>
                 {
                     Impact(activator, targetLocation, 20, 12, level);
@@ -154,7 +150,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .HasActivationDelay(2f)
                 .RequirementStamina(8)
                 .IsCastedAbility()
-                .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, _, level, targetLocation) =>
                 {
                     Impact(activator, targetLocation, 24, 14, level);

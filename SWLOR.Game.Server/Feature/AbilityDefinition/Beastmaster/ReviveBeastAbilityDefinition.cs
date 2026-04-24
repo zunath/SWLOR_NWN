@@ -63,7 +63,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .HasActivationDelay(4f)
                 .RequirementStamina(15)
                 .IsCastedAbility()
-                .UnaffectedByHeavyArmor()
                 .HasCustomValidation((activator, target, level, location) => Validation(activator))
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {
@@ -91,7 +90,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .HasActivationDelay(4f)
                 .RequirementStamina(17)
                 .IsCastedAbility()
-                .UnaffectedByHeavyArmor()
                 .HasCustomValidation((activator, target, level, location) => Validation(activator))
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {
@@ -120,7 +118,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .HasActivationDelay(4f)
                 .RequirementStamina(18)
                 .IsCastedAbility()
-                .UnaffectedByHeavyArmor()
                 .HasCustomValidation((activator, target, level, location) => Validation(activator))
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {

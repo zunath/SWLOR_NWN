@@ -29,7 +29,6 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public Animation AnimationType { get; set; }
         public StatusEffectType ConcentrationStatusEffectType { get; set; }
         public bool CanBeUsedInSpace { get; set; }
-        public bool IgnoreHeavyArmorPenalty { get; set; }
         public float MaxRange { get; set; }
         public bool IsHostileAbility { get; set; }
         public bool DisplaysActivationMessage { get; set; }

@@ -29,7 +29,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasMaxRange(5f)
                 .UsesAnimation(Animation.LoopingGetMid)
                 .IsCastedAbility()
-                .UnaffectedByHeavyArmor()
                 .HasCustomValidation((activator, target, level, location) =>
                 {
                     if (!IsWithinRange(activator, target))
@@ -67,7 +66,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasMaxRange(5f)
                 .UsesAnimation(Animation.LoopingGetMid)
                 .IsCastedAbility()
-                .UnaffectedByHeavyArmor()
                 .HasCustomValidation((activator, target, level, location) =>
                 {
                     if (!IsWithinRange(activator, target))
@@ -105,7 +103,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasMaxRange(5f)
                 .UsesAnimation(Animation.LoopingGetMid)
                 .IsCastedAbility()
-                .UnaffectedByHeavyArmor()
                 .HasCustomValidation((activator, target, level, location) =>
                 {
                     if (!IsWithinRange(activator, target))

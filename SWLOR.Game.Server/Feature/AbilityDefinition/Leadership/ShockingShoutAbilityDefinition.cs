@@ -27,7 +27,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                 .Level(1)
                 .HasRecastDelay(RecastGroup.ShockingShout, 120f)
                 .HasActivationDelay(0.5f)
-                .UnaffectedByHeavyArmor()
                 .UsesAnimation(Animation.FireForgetTaunt)
                 .HasImpactAction((activator, target, level, location) =>
                 {

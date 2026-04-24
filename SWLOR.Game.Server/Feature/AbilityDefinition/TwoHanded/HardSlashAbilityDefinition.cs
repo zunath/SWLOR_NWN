@@ -85,7 +85,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 .RequirementStamina(3)
                 .IsCastedAbility()
                 .IsHostileAbility()
-                .UnaffectedByHeavyArmor()
                 .BreaksStealth()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
@@ -100,7 +99,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 .RequirementStamina(5)
                 .IsCastedAbility()
                 .IsHostileAbility()
-                .UnaffectedByHeavyArmor()
                 .BreaksStealth()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
@@ -115,7 +113,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 .RequirementStamina(8)
                 .IsCastedAbility()
                 .IsHostileAbility()
-                .UnaffectedByHeavyArmor()
                 .BreaksStealth()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);

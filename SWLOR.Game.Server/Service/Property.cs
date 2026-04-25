@@ -427,16 +427,38 @@ namespace SWLOR.Game.Server.Service
                     var dbStarport = DB.Get<WorldProperty>(dockPosition.InstancePropertyId);
                     if (dbStarport == null)
                     {
-                        // The PC starport no longer exists (probably destroyed by the previous cleanup)
-                        // Luckily we track the last NPC starport they visited so we can simply replace
-                        // their docked position with it.
-                        //
-                        // Clone rather than assigning the same reference to both keys. PropertyLocation
-                        // is a reference type, and later in-place mutations of DockPosition (e.g. in
-                        // migrations) would otherwise silently corrupt LastNPCDockPosition too.
-                        property.Positions[PropertyLocationType.DockPosition] = property.Positions[PropertyLocationType.LastNPCDockPosition].Clone();
+                        // The PC starport no longer exists (probably destroyed by the previous cleanup).
+                        // Prefer the ship's own LastNPCDockPosition; if it has none, fall back to the
+                        // guaranteed CZ-220 NPC starport; if even that fails, log an error and skip
+                        // relocation rather than throwing KeyNotFoundException and aborting the entire
+                        // CleanUpData pass.
+                        if (property.Positions.ContainsKey(PropertyLocationType.LastNPCDockPosition))
+                        {
+                            // Clone rather than assigning the same reference to both keys. PropertyLocation
+                            // is a reference type, and later in-place mutations of DockPosition (e.g. in
+                            // migrations) would otherwise silently corrupt LastNPCDockPosition too.
+                            property.Positions[PropertyLocationType.DockPosition] = property.Positions[PropertyLocationType.LastNPCDockPosition].Clone();
 
-                        Log.Write(LogGroup.Property, $"Starship '{property.CustomName}' ({property.Id}) was docked at a non-existent player starport. It has been relocated to the last NPC dock position at '{property.Positions[PropertyLocationType.LastNPCDockPosition].AreaResref}'.");
+                            Log.Write(LogGroup.Property, $"Starship '{property.CustomName}' ({property.Id}) was docked at a non-existent player starport. It has been relocated to the last NPC dock position at '{property.Positions[PropertyLocationType.LastNPCDockPosition].AreaResref}'.");
+                        }
+                        else
+                        {
+                            // No personal fallback - try the guaranteed CZ-220 NPC starport. Build two
+                            // independent PropertyLocation instances (one per Positions key) to avoid
+                            // aliasing, same reasoning as RelocateDockedShips.
+                            var cz220Dock = BuildGuaranteedFallbackDockPosition();
+                            if (cz220Dock != null)
+                            {
+                                property.Positions[PropertyLocationType.DockPosition] = cz220Dock;
+                                property.Positions[PropertyLocationType.LastNPCDockPosition] = BuildGuaranteedFallbackDockPosition();
+
+                                Log.Write(LogGroup.Property, $"Starship '{property.CustomName}' ({property.Id}) was docked at a non-existent player starport and had no recorded LastNPCDockPosition; relocated to the guaranteed CZ-220 NPC starport. LastNPCDockPosition has also been backfilled to CZ-220.", true);
+                            }
+                            else
+                            {
+                                Log.Write(LogGroup.Error, $"WARNING: Starship '{property.CustomName}' ({property.Id}) was docked at non-existent player starport '{dockPosition.InstancePropertyId}', has no LastNPCDockPosition, and the guaranteed CZ-220 fallback waypoint '{GuaranteedFallbackDockWaypointTag}' could not be resolved. DockPosition was left untouched. Manual intervention required.", true);
+                            }
+                        }
                     }
                 }
                 
@@ -1066,13 +1088,15 @@ namespace SWLOR.Game.Server.Service
 
                 if (cz220Cache != null)
                 {
-                    // Use independent PropertyLocation instances per Positions key. Storing the
-                    // same reference under both keys would alias them, so a later in-place
-                    // mutation of one (see _11_RefundMobilityAndUpdateVelesStarport for an
-                    // example of in-place mutation of these structs) would silently corrupt
-                    // the other.
-                    ship.Positions[PropertyLocationType.DockPosition] = BuildGuaranteedFallbackDockPosition();
-                    ship.Positions[PropertyLocationType.LastNPCDockPosition] = BuildGuaranteedFallbackDockPosition();
+                    // Clone from the already-resolved cz220Cache twice so each Positions key
+                    // gets an independent PropertyLocation instance. Storing the same reference
+                    // under both keys would alias them, so a later in-place mutation of one
+                    // (see _11_RefundMobilityAndUpdateVelesStarport for an example of such
+                    // mutation) would silently corrupt the other. Cloning from the cache also
+                    // avoids the redundant GetWaypointByTag / GetArea / GetPosition round-trip
+                    // and any transient divergence that re-resolving could introduce.
+                    ship.Positions[PropertyLocationType.DockPosition] = cz220Cache.Clone();
+                    ship.Positions[PropertyLocationType.LastNPCDockPosition] = cz220Cache.Clone();
 
                     DB.Set(ship);
                     Log.Write(LogGroup.Property, $"Starship '{ship.CustomName}' ({ship.Id}) had no recorded LastNPCDockPosition; relocated to the guaranteed CZ-220 NPC starport because starport '{property.CustomName}' ({property.Id}) is being deleted. LastNPCDockPosition has also been backfilled to CZ-220.", true);

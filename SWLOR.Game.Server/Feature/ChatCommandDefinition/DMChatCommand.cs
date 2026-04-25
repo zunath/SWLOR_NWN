@@ -51,6 +51,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             GetTag();
             Notes();
             CreatureManager();
+            DMTools();
             MusicWindow();
             Broadcast();
             SetScale();
@@ -921,6 +922,14 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 });
         }
 
+        private void DMTools()
+        {
+            _builder.Create("plctools", "placeabletools")
+                .Description("Toggles the DM Placeable Tools window.")
+                .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .Action((user, target, location, args) =>
+                {
+                    Gui.TogglePlayerWindow(user, GuiWindowType.DMTools);
         private void MusicWindow()
         {
             _builder.Create("music")

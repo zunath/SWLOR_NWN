@@ -875,7 +875,7 @@ namespace SWLOR.Game.Server.Service
                     var child = DB.Get<WorldProperty>(childId);
                     if (child == null)
                     {
-                        Log.Write(LogGroup.Property, $"Property '{property.CustomName}' ({property.Id}) referenced missing child '{childId}' of type '{childType}'. Skipping.", true);
+                        Log.Write(LogGroup.Error, $"Property '{property.CustomName}' ({property.Id}) referenced missing child '{childId}' of type '{childType}'. Skipping.", true);
                         continue;
                     }
 
@@ -1083,7 +1083,7 @@ namespace SWLOR.Game.Server.Service
                 // RegisteredStarport but leave DockPosition untouched rather than overwriting
                 // it with a default-constructed (zero) position, and surface a warning.
                 DB.Set(ship);
-                Log.Write(LogGroup.Property, $"WARNING: Starship '{ship.CustomName}' ({ship.Id}) was docked at starport '{property.CustomName}' ({property.Id}) which is being deleted, but the ship has no LastNPCDockPosition and the guaranteed CZ-220 fallback waypoint '{GuaranteedFallbackDockWaypointTag}' could not be resolved. RegisteredStarport has been cleared, but DockPosition was left untouched. Manual intervention required.", true);
+                Log.Write(LogGroup.Error, $"WARNING: Starship '{ship.CustomName}' ({ship.Id}) was docked at starport '{property.CustomName}' ({property.Id}) which is being deleted, but the ship has no LastNPCDockPosition and the guaranteed CZ-220 fallback waypoint '{GuaranteedFallbackDockWaypointTag}' could not be resolved. RegisteredStarport has been cleared, but DockPosition was left untouched. Manual intervention required.", true);
             }
         }
 

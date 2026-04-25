@@ -430,7 +430,11 @@ namespace SWLOR.Game.Server.Service
                         // The PC starport no longer exists (probably destroyed by the previous cleanup)
                         // Luckily we track the last NPC starport they visited so we can simply replace
                         // their docked position with it.
-                        property.Positions[PropertyLocationType.DockPosition] = property.Positions[PropertyLocationType.LastNPCDockPosition];
+                        //
+                        // Clone rather than assigning the same reference to both keys. PropertyLocation
+                        // is a reference type, and later in-place mutations of DockPosition (e.g. in
+                        // migrations) would otherwise silently corrupt LastNPCDockPosition too.
+                        property.Positions[PropertyLocationType.DockPosition] = property.Positions[PropertyLocationType.LastNPCDockPosition].Clone();
 
                         Log.Write(LogGroup.Property, $"Starship '{property.CustomName}' ({property.Id}) was docked at a non-existent player starport. It has been relocated to the last NPC dock position at '{property.Positions[PropertyLocationType.LastNPCDockPosition].AreaResref}'.");
                     }
@@ -1043,7 +1047,10 @@ namespace SWLOR.Game.Server.Service
                 var hasOwnFallback = ship.Positions.ContainsKey(PropertyLocationType.LastNPCDockPosition);
                 if (hasOwnFallback)
                 {
-                    ship.Positions[PropertyLocationType.DockPosition] = ship.Positions[PropertyLocationType.LastNPCDockPosition];
+                    // Clone rather than assigning the same reference to both keys. PropertyLocation
+                    // is a reference type, and later in-place mutations of DockPosition (e.g. in
+                    // migrations) would otherwise silently corrupt LastNPCDockPosition too.
+                    ship.Positions[PropertyLocationType.DockPosition] = ship.Positions[PropertyLocationType.LastNPCDockPosition].Clone();
 
                     DB.Set(ship);
                     Log.Write(LogGroup.Property, $"Starship '{ship.CustomName}' ({ship.Id}) has been relocated to its last NPC dock because starport '{property.CustomName}' ({property.Id}) is being deleted.", true);

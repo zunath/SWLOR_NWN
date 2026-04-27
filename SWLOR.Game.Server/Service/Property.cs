@@ -433,6 +433,10 @@ namespace SWLOR.Game.Server.Service
                     var dbStarport = DB.Get<WorldProperty>(dockPosition.InstancePropertyId);
                     if (dbStarport == null)
                     {
+                        var hadRegisteredStarport = property.ChildPropertyIds.ContainsKey(PropertyChildType.RegisteredStarport);
+                        if (hadRegisteredStarport)
+                            property.ChildPropertyIds[PropertyChildType.RegisteredStarport].Clear();
+
                         // The PC starport no longer exists (probably destroyed by the previous cleanup).
                         // Prefer the ship's own LastNPCDockPosition; if it has none, fall back to the
                         // guaranteed CZ-220 NPC starport; if even that fails, log an error and skip
@@ -445,7 +449,7 @@ namespace SWLOR.Game.Server.Service
                             // migrations) would otherwise silently corrupt LastNPCDockPosition too.
                             property.Positions[PropertyLocationType.DockPosition] = property.Positions[PropertyLocationType.LastNPCDockPosition].Clone();
 
-                            Log.Write(LogGroup.Property, $"Starship '{property.CustomName}' ({property.Id}) was docked at a non-existent player starport. It has been relocated to the last NPC dock position at '{property.Positions[PropertyLocationType.LastNPCDockPosition].AreaResref}'.");
+                            Log.Write(LogGroup.Property, $"Starship '{property.CustomName}' ({property.Id}) was docked at a non-existent player starport. It has been relocated to the last NPC dock position at '{property.Positions[PropertyLocationType.LastNPCDockPosition].AreaResref}'." + (hadRegisteredStarport ? " Stale RegisteredStarport child reference cleared." : string.Empty));
                         }
                         else
                         {
@@ -458,11 +462,11 @@ namespace SWLOR.Game.Server.Service
                                 property.Positions[PropertyLocationType.DockPosition] = cz220Dock;
                                 property.Positions[PropertyLocationType.LastNPCDockPosition] = BuildGuaranteedFallbackDockPosition();
 
-                                Log.Write(LogGroup.Property, $"Starship '{property.CustomName}' ({property.Id}) was docked at a non-existent player starport and had no recorded LastNPCDockPosition; relocated to the guaranteed CZ-220 NPC starport. LastNPCDockPosition has also been backfilled to CZ-220.", true);
+                                Log.Write(LogGroup.Property, $"Starship '{property.CustomName}' ({property.Id}) was docked at a non-existent player starport and had no recorded LastNPCDockPosition; relocated to the guaranteed CZ-220 NPC starport. LastNPCDockPosition has also been backfilled to CZ-220." + (hadRegisteredStarport ? " Stale RegisteredStarport child reference cleared." : string.Empty), true);
                             }
                             else
                             {
-                                Log.Write(LogGroup.Error, $"WARNING: Starship '{property.CustomName}' ({property.Id}) was docked at non-existent player starport '{dockPosition.InstancePropertyId}', has no LastNPCDockPosition, and the guaranteed CZ-220 fallback waypoint '{GuaranteedFallbackDockWaypointTag}' could not be resolved. DockPosition was left untouched. Manual intervention required.", true);
+                                Log.Write(LogGroup.Error, $"WARNING: Starship '{property.CustomName}' ({property.Id}) was docked at non-existent player starport '{dockPosition.InstancePropertyId}', has no LastNPCDockPosition, and the guaranteed CZ-220 fallback waypoint '{GuaranteedFallbackDockWaypointTag}' could not be resolved." + (hadRegisteredStarport ? " RegisteredStarport has been cleared, but " : " ") + "DockPosition was left untouched. Manual intervention required.", true);
                             }
                         }
                     }

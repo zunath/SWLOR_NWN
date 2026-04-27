@@ -110,18 +110,17 @@ namespace SWLOR.Game.Server.Service
             _defaultPerksByTier[3][PerkType.ImprovedCriticalRifles] = 1;
             _defaultPerksByTier[3][PerkType.ImprovedCriticalThrowingWeapons] = 1;
 
-            _defaultPerksByTier[3][PerkType.VibrobladeMastery] = 1;
-            _defaultPerksByTier[3][PerkType.FinesseVibrobladeMastery] = 1;
-            _defaultPerksByTier[3][PerkType.HeavyVibrobladeMastery] = 1;
-            _defaultPerksByTier[3][PerkType.PolearmMastery] = 1;
-            _defaultPerksByTier[3][PerkType.TwinBladeMastery] = 1;
-            _defaultPerksByTier[3][PerkType.KatarMastery] = 1;
-            _defaultPerksByTier[3][PerkType.StaffMastery] = 1;
-            _defaultPerksByTier[3][PerkType.PistolMastery] = 1;
-            _defaultPerksByTier[3][PerkType.RifleMastery] = 1;
-            _defaultPerksByTier[3][PerkType.ThrowingWeaponMastery] = 1;
-
             // Tier 4
+            _defaultPerksByTier[4][PerkType.VibrobladeMastery] = 1;
+            _defaultPerksByTier[4][PerkType.FinesseVibrobladeMastery] = 1;
+            _defaultPerksByTier[4][PerkType.HeavyVibrobladeMastery] = 1;
+            _defaultPerksByTier[4][PerkType.PolearmMastery] = 1;
+            _defaultPerksByTier[4][PerkType.TwinBladeMastery] = 1;
+            _defaultPerksByTier[4][PerkType.KatarMastery] = 1;
+            _defaultPerksByTier[4][PerkType.StaffMastery] = 1;
+            _defaultPerksByTier[4][PerkType.PistolMastery] = 1;
+            _defaultPerksByTier[4][PerkType.RifleMastery] = 1;
+            _defaultPerksByTier[4][PerkType.ThrowingWeaponMastery] = 1;
 
             // Tier 5
             _defaultPerksByTier[5][PerkType.VibrobladeMastery] = 2;
@@ -198,6 +197,38 @@ namespace SWLOR.Game.Server.Service
         public static uint GetControllerItem(uint droid)
         {
             return GetLocalObject(droid, DroidControlItemVariable);
+        }
+
+        private static Func<PerkType, int> BuildPerkLevelResolver(uint droid)
+        {
+            var perks = new Dictionary<PerkType, int>();
+            var controller = GetControllerItem(droid);
+            if (GetIsObjectValid(controller))
+            {
+                perks = LoadDroidItemPropertyDetails(controller).Perks;
+            }
+
+            return perkType =>
+            {
+                if (perkType == PerkType.Invalid)
+                    return 0;
+
+                return perks.TryGetValue(perkType, out var level)
+                    ? level
+                    : 0;
+            };
+        }
+
+        public static void ApplyDroidAttacksPerRound(uint droid, uint rightHandWeapon, uint offHandItem = OBJECT_INVALID)
+        {
+            if (!IsDroid(droid))
+            {
+                Stat.ApplyAttacksPerRound(droid, rightHandWeapon, offHandItem);
+                return;
+            }
+
+            var resolver = BuildPerkLevelResolver(droid);
+            Stat.ApplyAttacksPerRound(droid, rightHandWeapon, offHandItem, resolver);
         }
 
         /// <summary>

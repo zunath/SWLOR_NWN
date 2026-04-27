@@ -34,7 +34,19 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
             var area = GetArea(terminal);
             var propertyId = Property.GetPropertyId(area);
             var dbProperty = DB.Get<WorldProperty>(propertyId);
+            if (dbProperty == null)
+            {
+                SendMessageToPC(player, "This terminal is unavailable.");
+                return false;
+            }
+
             var dbBuilding = DB.Get<WorldProperty>(dbProperty.ParentPropertyId);
+            if (dbBuilding == null)
+            {
+                SendMessageToPC(player, "This terminal is unavailable.");
+                return false;
+            }
+
             var cityId = dbBuilding.ParentPropertyId;
 
             if (dbPlayer.CitizenPropertyId != cityId)

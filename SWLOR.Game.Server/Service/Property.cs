@@ -421,7 +421,13 @@ namespace SWLOR.Game.Server.Service
 
                 // In the event this starship was docked at a deleted player starport,
                 // it needs to be relocated to the NPC starport found on the planet
-                var dockPosition = property.Positions[PropertyLocationType.DockPosition];
+                if (!property.Positions.TryGetValue(PropertyLocationType.DockPosition, out var dockPosition))
+                {
+                    Log.Write(LogGroup.Error, $"WARNING: Starship '{property.CustomName}' ({property.Id}) has no DockPosition in Positions during CleanUpData. Skipping starship relocation logic. Manual intervention may be required.", true);
+                    DB.Set(property);
+                    continue;
+                }
+
                 if (!string.IsNullOrWhiteSpace(dockPosition.InstancePropertyId))
                 {
                     var dbStarport = DB.Get<WorldProperty>(dockPosition.InstancePropertyId);

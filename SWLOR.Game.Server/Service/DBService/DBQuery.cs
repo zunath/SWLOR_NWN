@@ -52,13 +52,20 @@ namespace SWLOR.Game.Server.Service.DBService
         /// <returns>A configured DBQuery</returns>
         public DBQuery<T> AddFieldSearch(string fieldName, IEnumerable<int> search)
         {
+            var list = new List<int>();
+            foreach (var value in search)
+                list.Add(value);
+
+            if (list.Count == 0)
+                return this;
+
             // The pipe character is RediSearch's low-precedence OR operator. Without explicit
             // grouping parentheses, a query like "@field:a|b|c" is parsed as "(@field:a) | b | c",
             // meaning only the first value is actually scoped to the field and the rest fall
             // through as (unreliable) free-text searches against the whole index. Wrapping the
             // joined values in parentheses - "@field:(a|b|c)" - keeps every value scoped to the
             // intended field, which is what callers invariably want when passing a list.
-            var searchText = $"({string.Join("|", search)})";
+            var searchText = $"({string.Join("|", list)})";
             var criteria = new SearchCriteria(searchText)
             {
                 SkipEscaping = true
@@ -83,6 +90,9 @@ namespace SWLOR.Game.Server.Service.DBService
             {
                 list.Add(DB.EscapeTokens(s));
             }
+
+            if (list.Count == 0)
+                return this;
 
             // See the int overload above for why the values must be wrapped in parentheses.
             // Without them, RediSearch returns only the first Id in the list (everything past

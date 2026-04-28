@@ -2215,6 +2215,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Arkanian Dragon Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ark_armor"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Battlemaster Armor"
                     },
                     "RESREF": {
@@ -6334,6 +6345,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Arkanian Dragon Bite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "narkbite"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Bol Bite"
                     },
                     "RESREF": {
@@ -8493,6 +8515,50 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "mora_serp_skin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nar Shaddaa Boss"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_boss"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nar Shaddaa T3"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_t3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nar Shaddaa T4"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_t4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nar Shaddaa T5"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_t5"
                     }
                   },
                   {
@@ -20020,6 +20086,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Bioglow Kelp"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ns_bioglow_kelp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Blade CPU I - Variant A"
                     },
                     "RESREF": {
@@ -22236,6 +22313,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "dark_bass"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Data Chip"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "data_chip_encryp"
                     }
                   },
                   {
@@ -27544,6 +27632,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Great Arkanian Dragon Head"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ark_dragon_troph"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Greedie"
                     },
                     "RESREF": {
@@ -28099,6 +28198,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "hollinium"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Holo Jelly"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ns_holo_jelly"
                     }
                   },
                   {
@@ -32879,6 +32989,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Moon Spice"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ns_moonspice"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Moorish Idol"
                     },
                     "RESREF": {
@@ -33088,6 +33209,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Neon Salt Crystals"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ns_neon_salt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Neural Boost I"
                     },
                     "RESREF": {
@@ -33137,6 +33269,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "nickyln_stone"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Night Noodle Strands"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ns_night_noodle"
                     }
                   },
                   {
@@ -33940,6 +34083,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "quus"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rackhouse Meat Cuts"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ns_rack_meat"
                     }
                   },
                   {
@@ -36448,6 +36602,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "stolen_s_artifac"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Stolen Goods"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "stolen_goods"
                     }
                   },
                   {
@@ -41100,6 +41265,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Boga Noga"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "boga_noga"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Bonefish Broth"
                     },
                     "RESREF": {
@@ -41204,6 +41380,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "carp_sushi"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cartel Cakes"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cartel_cakes"
                     }
                   },
                   {
@@ -41881,6 +42068,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Gardula"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "gardula_drink"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Gimpassa Sandwich"
                     },
                     "RESREF": {
@@ -42084,6 +42282,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "kath_sandwich"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Keebadas Binggona"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "keeb_binggona"
                     }
                   },
                   {
@@ -42326,6 +42535,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "mystery_cookies"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nal Hutta Fizz"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nalhutta_fizz"
                     }
                   },
                   {
@@ -42645,6 +42865,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "demon_stew"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sando g'dizzards"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sando_gdizz"
                     }
                   },
                   {
@@ -43458,6 +43689,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "recipe_alcspear"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Arkanian Dragon Breastplate"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_arkarmor"
                     }
                   },
                   {
@@ -46731,11 +46973,33 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Recipe: Boga Noga"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_boganoga"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Recipe: Bream Sushi"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "recipe_brsushi"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Recipe: Cartel Cakes"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_cartelck"
                     }
                   },
                   {
@@ -46786,11 +47050,33 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Recipe: Gardula"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_gardula"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Recipe: Ikran Sushi"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "recipe_iksushi"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Recipe: Keebadas Binggona"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_keebbing"
                     }
                   },
                   {
@@ -46808,11 +47094,33 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Recipe: Nal Hutta Fizz"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_nalhfizz"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Recipe: Octopus Sushi"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "recipe_ocsushi"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Recipe: Sando g'dizzards"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_sandogdz"
                     }
                   },
                   {

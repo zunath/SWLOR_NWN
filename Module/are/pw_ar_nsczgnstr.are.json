@@ -87,7 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "[Prefab] Smuggler's Moon - Czerka Arms, Store"
+      "0": "Smuggler's Moon - Czerka Arms, Store"
     }
   },
   "NoRest": {
@@ -1240,7 +1240,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 6
+    "value": 13
   },
   "Width": {
     "type": "int",

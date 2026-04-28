@@ -87,7 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "[Prefab] Smuggler's Moon - Promenade"
+      "0": "Smuggler's Moon - Promenade"
     }
   },
   "NoRest": {
@@ -6357,7 +6357,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 9
+    "value": 14
   },
   "Width": {
     "type": "int",

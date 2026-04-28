@@ -329,7 +329,61 @@ namespace SWLOR.Game.Server.Service.AchievementService
 
         [Achievement("Explore Dathomir Hidden Cave ", "Explore Dathomir's Hidden Cave.", true)]
         ExploreDathomirHiddenCave = 120,
-    }
+
+		[Achievement("Smuggler's Moon - Casino", "Explore the Casino on Smuggler's Moon.", true)]
+		ExploreSmugglersMoonCasino = 121,
+
+		[Achievement("Smuggler's Moon - Catwalks", "Explore the Catwalks on Smuggler's Moon.", true)]
+		ExploreSmugglersMoonCatwalks = 122,
+
+		[Achievement("Smuggler's Moon - Corporate District", "Explore the Corporate District on Smuggler's Moon.", true)]
+		ExploreSmugglersMoonCorporateDistrict = 123,
+
+		[Achievement("Smuggler's Moon - Czerka Arms", "Explore Czerka Arms on Smuggler's Moon.", true)]
+		ExploreSmugglersMoonCzerkaArms = 124,
+
+		[Achievement("Smuggler's Moon - Czerka Shipyard Office", "Explore the Czerka Shipyard Office on Smuggler's Moon.", true)]
+		ExploreSmugglersMoonCzerkaShipyardOffice = 125,
+
+		[Achievement("Smuggler's Moon - Fabrication Facility", "Explore the Fabrication Facility on Smuggler's Moon.", true)]
+		ExploreSmugglersMoonFabricationFacility = 126,
+
+		[Achievement("Smuggler's Moon - Fight Club", "Explore the Fight Club on Smuggler's Moon.", true)]
+		ExploreSmugglersMoonFightClub = 127,
+
+		[Achievement("Smuggler's Moon - GSI Base", "Explore the GSI Base on Smuggler's Moon.", true)]
+		ExploreSmugglersMoonGSIBase = 128,
+
+		[Achievement("Smuggler's Moon - Hyper Dive Cantina", "Explore the Hyper Dive Cantina on Smuggler's Moon.", true)]
+		ExploreSmugglersMoonHyperDiveCantina = 129,
+
+		[Achievement("Smuggler's Moon - Landing Pads", "Explore the Landing Pads on Smuggler's Moon.", true)]
+		ExploreSmugglersMoonLandingPads = 130,
+
+		[Achievement("Smuggler's Moon - Medshed", "Explore the Medshed on Smuggler's Moon.", true)]
+		ExploreSmugglersMoonMedshed = 131,
+
+		[Achievement("Smuggler's Moon - Promenade", "Explore the Promenade on Smuggler's Moon.", true)]
+		ExploreSmugglersMoonPromenade = 132,
+
+		[Achievement("Smuggler's Moon - Sewers", "Explore the Sewers on Smuggler's Moon.", true)]
+		ExploreSmugglersMoonSewers = 133,
+
+		[Achievement("Smuggler's Moon - Shipping District", "Explore the Shipping District on Smuggler's Moon.", true)]
+		ExploreSmugglersMoonShippingDistrict = 134,
+
+		[Achievement("Smuggler's Moon - The Hub", "Explore The Hub on Smuggler's Moon.", true)]
+		ExploreSmugglersMoonTheHub = 135,
+
+		[Achievement("Smuggler's Moon - The Slums", "Explore The Slums on Smuggler's Moon.", true)]
+		ExploreSmugglersMoonTheSlums = 136,
+
+		[Achievement("Smuggler's Moon - The Tilted Visor", "Explore The Tilted Visor on Smuggler's Moon.", true)]
+		ExploreSmugglersMoonTiltedVisor = 137,
+
+		[Achievement("Explore Nar Shaddaa Orbit", "Explore Nar Shaddaa's Orbit.", true)]
+		ExploreNarShaddaaOrbit = 138,
+	}
 
     public class AchievementAttribute: Attribute
     {

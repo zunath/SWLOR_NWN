@@ -87,7 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "[Prefab] Smuggler's Moon - Fight Club"
+      "0": "Smuggler's Moon - Fight Club"
     }
   },
   "NoRest": {
@@ -853,7 +853,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 8
+    "value": 13
   },
   "Width": {
     "type": "int",

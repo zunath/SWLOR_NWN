@@ -129,7 +129,18 @@ namespace SWLOR.Game.Server.Service.NPCService
         Korriban_AlchemizedFrog = 59,
         [NPCGroup("Dantari Shaman")]
         Dantooine_DantariShaman = 60,
-
+        [NPCGroup("Great Arkanian Dragon")]
+        AbandonedStation_GreatArkanianDragon = 61,
+        [NPCGroup("Rooftop Sniper")]
+        NarShaddaa_Sniper = 62,
+        [NPCGroup("Slaver Captain")]
+        NarShaddaa_SlaverCaptain = 63,
+        [NPCGroup("Pirates")]
+        NarShaddaa_Pirates = 64,
+        [NPCGroup("Command Droid")]
+        NarShaddaa_CommandDroid = 65,
+        [NPCGroup("Ancient Worm")]
+		Tatooine_AncientSandworm = 66,
     }
 
     public class NPCGroupAttribute : Attribute

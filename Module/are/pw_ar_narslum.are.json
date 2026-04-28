@@ -87,7 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "[Prefab] Smuggler's Moon - The Slums"
+      "0": "Smuggler's Moon - The Slums"
     }
   },
   "NoRest": {
@@ -11173,7 +11173,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 18
+    "value": 23
   },
   "Width": {
     "type": "int",

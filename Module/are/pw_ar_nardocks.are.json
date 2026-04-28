@@ -87,7 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "[Prefab] Smuggler's Moon - Shipping District"
+      "0": "Smuggler's Moon - Shipping District"
     }
   },
   "NoRest": {
@@ -21665,7 +21665,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 12
+    "value": 15
   },
   "Width": {
     "type": "int",

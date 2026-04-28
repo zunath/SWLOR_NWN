@@ -7412,6 +7412,25 @@
                     },
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Teren Voss"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "terenvoss"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 0.5
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Tina"
                     },
                     "RESREF": {
@@ -12041,6 +12060,277 @@
               "ID": {
                 "type": "byte",
                 "value": 158
+              },
+              "LIST": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 2.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Arena Fighter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_arenafight"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 2.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Black Serpent"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_serpent"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 7.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Command Droid"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_cmd_droid"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 190.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Great Arkanian Dragon"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "garkaniandragon"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 12.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hidden Blade"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_hiddenblade"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 8.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nar Shaddaa Pirate"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_pirate"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 2.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nar Shaddaa Thief"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_thief"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 2.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Red Blade"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_redblade"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 7.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rogue Droid"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_rogue_droid"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 18.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rooftop Sniper"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_sniper"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Scavenger Droid"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_scavenger"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 11.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Serpent Leader"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_serp_leader"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 30.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Slaver Captain"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_slavercaptn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 3.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Troublemaker"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_troublemaker"
+                    }
+                  }
+                ]
               },
               "STRREF": {
                 "type": "dword",

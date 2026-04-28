@@ -644,7 +644,7 @@ namespace SWLOR.Game.Server.Service
                     {
                         Log.Write(LogGroup.Property, $"No one voted. Incumbent mayor '{incumbentMayorId}' stays in power.");
                     }
-                    // If top two are the same, incumbent mayor wins.
+                    // If top two are tied, incumbent mayor wins.
                     else if (orderedVotes.Count >= 2 && orderedVotes.ElementAt(0).Value == orderedVotes.ElementAt(1).Value)
                     {
                         Log.Write(LogGroup.Property, $"Top 2 candidates were tied. Incumbent mayor '{incumbentMayorId}' wins the election.");

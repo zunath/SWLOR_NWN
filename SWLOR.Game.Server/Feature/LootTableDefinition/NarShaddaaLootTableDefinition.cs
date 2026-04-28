@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 			_builder.Create("NARSHADDAA_RED_BLADES")
 				.AddItem("elec_imperfect", 15)
 				.AddItem("fiberp_imperfect", 15)
-				.AddItem("ns_sludge_eel", 10)
+				.AddItem("ns_sludge_eel", 50)
 				.AddGold(35, 20);
 		}
 
@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 			_builder.Create("NARSHADDAA_ARENA_FIGHTERS")
 				.AddItem("fiberp_good", 10)
 				.AddItem("lth_good", 10)
-				.AddItem("ns_neon_salt", 8)
+				.AddItem("ns_neon_salt", 50)
 				.AddGold(50, 20);
 		}
 
@@ -145,7 +145,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 		{
 			_builder.Create("NARSHADDAA_ROGUE_DROID")
 				.AddItem("elec_good", 20)
-				.AddItem("scrap_metal", 20)
+				.AddItem("ns_holo_jelly", 20)
 				.AddGold(60, 20);
 		}
 

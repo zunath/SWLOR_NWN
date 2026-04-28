@@ -494,6 +494,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Nar Shaddaa Scavenger Droid"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_scavengers"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Nar Shaddaa Serpent Leader"
                     },
                     "RESREF": {

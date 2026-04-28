@@ -21,6 +21,13 @@ namespace SWLOR.Game.Server.Service.DBService
         }
 
         private Dictionary<string, SearchCriteria> FieldSearches { get; }
+
+        /// <summary>
+        /// When true, the query cannot match any document (e.g. an empty IN-list filter).
+        /// Callers must short-circuit before executing against the index.
+        /// </summary>
+        internal bool MatchNone { get; private set; }
+
         private int Offset { get; set; }
         private int Limit { get; set; }
         private string SortByField { get; set; }
@@ -57,7 +64,10 @@ namespace SWLOR.Game.Server.Service.DBService
                 list.Add(value);
 
             if (list.Count == 0)
+            {
+                MatchNone = true;
                 return this;
+            }
 
             // The pipe character is RediSearch's low-precedence OR operator. Without explicit
             // grouping parentheses, a query like "@field:a|b|c" is parsed as "(@field:a) | b | c",
@@ -92,7 +102,10 @@ namespace SWLOR.Game.Server.Service.DBService
             }
 
             if (list.Count == 0)
+            {
+                MatchNone = true;
                 return this;
+            }
 
             // See the int overload above for why the values must be wrapped in parentheses.
             // Without them, RediSearch returns only the first Id in the list (everything past

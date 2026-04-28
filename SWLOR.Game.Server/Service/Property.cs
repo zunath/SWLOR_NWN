@@ -1001,7 +1001,7 @@ namespace SWLOR.Game.Server.Service
                 var grantPermission = dbPermission.GrantPermissions.ElementAt(index).Key;
                 if (!masterList.Contains(grantPermission))
                 {
-                    dbPermission.Permissions.Remove(grantPermission);
+                    dbPermission.GrantPermissions.Remove(grantPermission);
                     Log.Write(LogGroup.Property, $"Removing grant permission {grantPermission} from property {dbPermission.PropertyId} for player Id {dbPermission.PlayerId}.");
                     hasChanges = true;
                 }

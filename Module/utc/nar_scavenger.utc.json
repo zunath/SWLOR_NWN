@@ -62,7 +62,9 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Built from stolen and salvaged scrap, this Scavenger Droid prowls Nar Shaddaa's slums stripping parts from thief crews, busted speeders, and abandoned gear caches. Everything useful gets torn free and repurposed to keep the machine running."
+    }
   },
   "Dex": {
     "type": "byte",

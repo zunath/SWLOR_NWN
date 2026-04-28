@@ -86,11 +86,11 @@
   },
   "Cha": {
     "type": "byte",
-    "value": 9
+    "value": 10
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 2.0
+    "value": 11.0
   },
   "ClassList": {
     "type": "list",
@@ -130,7 +130,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 11
+    "value": 34
   },
   "Conversation": {
     "type": "resref",
@@ -142,11 +142,11 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 36
+    "value": 300
   },
   "DecayTime": {
     "type": "dword",
-    "value": 5000
+    "value": 6000
   },
   "Deity": {
     "type": "cexostring",
@@ -160,7 +160,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 17
+    "value": 27
   },
   "Disarmable": {
     "type": "byte",
@@ -173,21 +173,21 @@
         "__struct_id": 2,
         "EquippedRes": {
           "type": "resref",
-          "value": "npc_looter_m_t"
+          "value": "tit_armor"
         }
       },
       {
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "npc_outlaw_rifle"
+          "value": "h_rifle_4"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "ww_outlaw_skin"
+          "value": "nar_t4"
         }
       }
     ]
@@ -298,7 +298,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 36
+    "value": 300
   },
   "Int": {
     "type": "byte",
@@ -332,7 +332,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 36
+    "value": 348
   },
   "NaturalAC": {
     "type": "byte",
@@ -637,7 +637,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 10
+    "value": 11
   },
   "Subrace": {
     "type": "cexostring",

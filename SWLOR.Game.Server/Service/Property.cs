@@ -421,18 +421,54 @@ namespace SWLOR.Game.Server.Service
 
                 // In the event this starship was docked at a deleted player starport,
                 // it needs to be relocated to the NPC starport found on the planet
-                var dockPosition = property.Positions[PropertyLocationType.DockPosition];
+                if (!property.Positions.TryGetValue(PropertyLocationType.DockPosition, out var dockPosition))
+                {
+                    Log.Write(LogGroup.Error, $"WARNING: Starship '{property.CustomName}' ({property.Id}) has no DockPosition in Positions during CleanUpData. Skipping starship relocation logic. Manual intervention may be required.", true);
+                    DB.Set(property);
+                    continue;
+                }
+
                 if (!string.IsNullOrWhiteSpace(dockPosition.InstancePropertyId))
                 {
                     var dbStarport = DB.Get<WorldProperty>(dockPosition.InstancePropertyId);
                     if (dbStarport == null)
                     {
-                        // The PC starport no longer exists (probably destroyed by the previous cleanup)
-                        // Luckily we track the last NPC starport they visited so we can simply replace
-                        // their docked position with it.
-                        property.Positions[PropertyLocationType.DockPosition] = property.Positions[PropertyLocationType.LastNPCDockPosition];
+                        var hadRegisteredStarport = property.ChildPropertyIds.ContainsKey(PropertyChildType.RegisteredStarport);
+                        if (hadRegisteredStarport)
+                            property.ChildPropertyIds[PropertyChildType.RegisteredStarport].Clear();
 
-                        Log.Write(LogGroup.Property, $"Starship '{property.CustomName}' ({property.Id}) was docked at a non-existent player starport. It has been relocated to the last NPC dock position at '{property.Positions[PropertyLocationType.LastNPCDockPosition].AreaResref}'.");
+                        // The PC starport no longer exists (probably destroyed by the previous cleanup).
+                        // Prefer the ship's own LastNPCDockPosition; if it has none, fall back to the
+                        // guaranteed CZ-220 NPC starport; if even that fails, log an error and skip
+                        // relocation rather than throwing KeyNotFoundException and aborting the entire
+                        // CleanUpData pass.
+                        if (property.Positions.ContainsKey(PropertyLocationType.LastNPCDockPosition))
+                        {
+                            // Clone rather than assigning the same reference to both keys. PropertyLocation
+                            // is a reference type, and later in-place mutations of DockPosition (e.g. in
+                            // migrations) would otherwise silently corrupt LastNPCDockPosition too.
+                            property.Positions[PropertyLocationType.DockPosition] = property.Positions[PropertyLocationType.LastNPCDockPosition].Clone();
+
+                            Log.Write(LogGroup.Property, $"Starship '{property.CustomName}' ({property.Id}) was docked at a non-existent player starport. It has been relocated to the last NPC dock position at '{property.Positions[PropertyLocationType.LastNPCDockPosition].AreaResref}'." + (hadRegisteredStarport ? " Stale RegisteredStarport child reference cleared." : string.Empty));
+                        }
+                        else
+                        {
+                            // No personal fallback - try the guaranteed CZ-220 NPC starport. Build two
+                            // independent PropertyLocation instances (one per Positions key) to avoid
+                            // aliasing, same reasoning as RelocateDockedShips.
+                            var cz220Dock = BuildGuaranteedFallbackDockPosition();
+                            if (cz220Dock != null)
+                            {
+                                property.Positions[PropertyLocationType.DockPosition] = cz220Dock;
+                                property.Positions[PropertyLocationType.LastNPCDockPosition] = BuildGuaranteedFallbackDockPosition();
+
+                                Log.Write(LogGroup.Property, $"Starship '{property.CustomName}' ({property.Id}) was docked at a non-existent player starport and had no recorded LastNPCDockPosition; relocated to the guaranteed CZ-220 NPC starport. LastNPCDockPosition has also been backfilled to CZ-220." + (hadRegisteredStarport ? " Stale RegisteredStarport child reference cleared." : string.Empty), true);
+                            }
+                            else
+                            {
+                                Log.Write(LogGroup.Error, $"WARNING: Starship '{property.CustomName}' ({property.Id}) was docked at non-existent player starport '{dockPosition.InstancePropertyId}', has no LastNPCDockPosition, and the guaranteed CZ-220 fallback waypoint '{GuaranteedFallbackDockWaypointTag}' could not be resolved." + (hadRegisteredStarport ? " RegisteredStarport has been cleared, but " : " ") + "DockPosition was left untouched. Manual intervention required.", true);
+                            }
+                        }
                     }
                 }
                 
@@ -845,25 +881,49 @@ namespace SWLOR.Game.Server.Service
         public static void DeleteProperty(WorldProperty property)
         {
             // Recursively clear any children properties tied to this property.
+            //
+            // The original implementation used DB.Search to bulk-fetch children by Id, but
+            // AddFieldSearch-with-a-list builds a RediSearch query whose unparenthesized pipe
+            // operators historically returned only the first Id, silently skipping the rest.
+            // That is how cities ended up with orphaned buildings (and those buildings' interior
+            // records) after a cascade delete - only the first child of each list was actually
+            // visited by the recursion. Even with the DBQuery parenthesis fix in place, walking
+            // the list with DB.Get is simpler, hits the entity cache, and degrades gracefully
+            // when an entry is already missing (DB.Get returns null and we skip it).
             foreach (var (childType, propertyIds) in property.ChildPropertyIds)
             {
                 if (childType == PropertyChildType.RegisteredStarport ||
                     childType == PropertyChildType.Starship)
                     continue;
 
-                if (propertyIds.Count > 0)
+                // ToList() so a recursive DeleteProperty call that happens to mutate the parent's
+                // ChildPropertyIds list (not expected today, but cheap insurance) can't invalidate
+                // our iterator.
+                foreach (var childId in propertyIds.ToList())
                 {
-                    var query = new DBQuery<WorldProperty>()
-                        .AddFieldSearch(nameof(WorldProperty.Id), propertyIds);
-                    var queryCount = (int)DB.SearchCount(query);
-                    var children = DB.Search(query.AddPaging(queryCount, 0));
+                    if (string.IsNullOrWhiteSpace(childId))
+                        continue;
 
-                    foreach (var child in children)
+                    var child = DB.Get<WorldProperty>(childId);
+                    if (child == null)
                     {
-                        DeleteProperty(child);
+                        Log.Write(LogGroup.Error, $"Property '{property.CustomName}' ({property.Id}) referenced missing child '{childId}' of type '{childType}'. Skipping.", true);
+                        continue;
                     }
+
+                    DeleteProperty(child);
                 }
             }
+
+            // Relocate any starships currently docked at this property before it disappears.
+            // Starport interiors track docked ships in ChildPropertyIds[Starship] (registered
+            // via StarportDockDialog). Without this step, deleting a starport - whether the
+            // owning city was wiped for unpaid upkeep or any other cascade reaches the interior -
+            // leaves those ships with a DockPosition pointing at a non-existent area and a stale
+            // RegisteredStarport reference. The manual "retrieve starport" path in
+            // StructureChangedAction already handles this for player-initiated pickups; mirroring
+            // it here covers every other delete path.
+            RelocateDockedShips(property);
 
             // Clear permissions for the property.
             var permissionsQuery = new DBQuery<WorldPropertyPermission>()
@@ -939,6 +999,126 @@ namespace SWLOR.Game.Server.Service
 
             EventsPlugin.PushEventData("PROPERTY_ID", property.Id);
             EventsPlugin.SignalEvent("SWLOR_DELETE_PROPERTY", GetModule());
+        }
+
+        /// <summary>
+        /// Tag of the guaranteed NPC starport landing waypoint at CZ-220, used as the universal
+        /// last-resort fallback when a ship is being evicted from a deleted starport but has
+        /// never registered a LastNPCDockPosition of its own. This is the same waypoint that
+        /// CharacterFullRebuildViewModel uses as the default spawn-in location for new players,
+        /// and that PlanetType.CZ220 already declares as the planet's landing waypoint.
+        /// </summary>
+        private const string GuaranteedFallbackDockWaypointTag = "CZ220_LANDING";
+
+        /// <summary>
+        /// Builds a fresh <see cref="PropertyLocation"/> pointing at the guaranteed CZ-220 NPC
+        /// starport landing waypoint, or <c>null</c> if the waypoint cannot be resolved (e.g.
+        /// the module shipped without it). A new instance is returned on every call so callers
+        /// can safely store it under multiple Positions keys without aliasing.
+        /// </summary>
+        private static PropertyLocation BuildGuaranteedFallbackDockPosition()
+        {
+            var waypoint = GetWaypointByTag(GuaranteedFallbackDockWaypointTag);
+            if (!GetIsObjectValid(waypoint))
+                return null;
+
+            var position = GetPosition(waypoint);
+            var orientation = GetFacing(waypoint);
+            var areaResref = GetResRef(GetArea(waypoint));
+
+            return new PropertyLocation
+            {
+                AreaResref = areaResref,
+                X = position.X,
+                Y = position.Y,
+                Z = position.Z,
+                Orientation = orientation
+            };
+        }
+
+        /// <summary>
+        /// Relocates any starships currently docked at the given property back to their last
+        /// NPC dock position and clears their RegisteredStarport reference. This is intended to
+        /// be run immediately before deleting a starport interior (or any future property type
+        /// that tracks docked ships in ChildPropertyIds[Starship]).
+        ///
+        /// Relocation order of preference per ship:
+        ///   1. The ship's recorded LastNPCDockPosition (the dock the player most recently used).
+        ///   2. The guaranteed CZ-220 NPC starport (universal fallback for ships that have
+        ///      somehow never registered a LastNPCDockPosition - e.g. legacy data).
+        ///   3. Leave DockPosition alone and emit a warning log so an operator can intervene
+        ///      (only happens if even the CZ-220 waypoint cannot be resolved).
+        ///
+        /// Safe to call on a property that has no docked ships - it short-circuits.
+        /// </summary>
+        private static void RelocateDockedShips(WorldProperty property)
+        {
+            if (!property.ChildPropertyIds.TryGetValue(PropertyChildType.Starship, out var dockedShipIds) ||
+                dockedShipIds.Count == 0)
+                return;
+
+            // Lazily resolved + cached across the loop so we only hit GetWaypointByTag once,
+            // and only when at least one stranded ship actually needs it.
+            PropertyLocation cz220Cache = null;
+            var cz220Resolved = false;
+
+            // ToList() so saving each ship cannot affect the iteration if anything (e.g. a
+            // future event handler) ever mutates the source list.
+            foreach (var shipId in dockedShipIds.ToList())
+            {
+                if (string.IsNullOrWhiteSpace(shipId))
+                    continue;
+
+                var ship = DB.Get<WorldProperty>(shipId);
+                if (ship == null)
+                    continue;
+
+                if (ship.ChildPropertyIds.ContainsKey(PropertyChildType.RegisteredStarport))
+                    ship.ChildPropertyIds[PropertyChildType.RegisteredStarport].Clear();
+
+                var hasOwnFallback = ship.Positions.ContainsKey(PropertyLocationType.LastNPCDockPosition);
+                if (hasOwnFallback)
+                {
+                    // Clone rather than assigning the same reference to both keys. PropertyLocation
+                    // is a reference type, and later in-place mutations of DockPosition (e.g. in
+                    // migrations) would otherwise silently corrupt LastNPCDockPosition too.
+                    ship.Positions[PropertyLocationType.DockPosition] = ship.Positions[PropertyLocationType.LastNPCDockPosition].Clone();
+
+                    DB.Set(ship);
+                    Log.Write(LogGroup.Property, $"Starship '{ship.CustomName}' ({ship.Id}) has been relocated to its last NPC dock because starport '{property.CustomName}' ({property.Id}) is being deleted.", true);
+                    continue;
+                }
+
+                // No personal fallback - try the guaranteed CZ-220 NPC starport.
+                if (!cz220Resolved)
+                {
+                    cz220Cache = BuildGuaranteedFallbackDockPosition();
+                    cz220Resolved = true;
+                }
+
+                if (cz220Cache != null)
+                {
+                    // Clone from the already-resolved cz220Cache twice so each Positions key
+                    // gets an independent PropertyLocation instance. Storing the same reference
+                    // under both keys would alias them, so a later in-place mutation of one
+                    // (see _11_RefundMobilityAndUpdateVelesStarport for an example of such
+                    // mutation) would silently corrupt the other. Cloning from the cache also
+                    // avoids the redundant GetWaypointByTag / GetArea / GetPosition round-trip
+                    // and any transient divergence that re-resolving could introduce.
+                    ship.Positions[PropertyLocationType.DockPosition] = cz220Cache.Clone();
+                    ship.Positions[PropertyLocationType.LastNPCDockPosition] = cz220Cache.Clone();
+
+                    DB.Set(ship);
+                    Log.Write(LogGroup.Property, $"Starship '{ship.CustomName}' ({ship.Id}) had no recorded LastNPCDockPosition; relocated to the guaranteed CZ-220 NPC starport because starport '{property.CustomName}' ({property.Id}) is being deleted. LastNPCDockPosition has also been backfilled to CZ-220.", true);
+                    continue;
+                }
+
+                // Last resort - we couldn't even resolve CZ-220. Persist the cleared
+                // RegisteredStarport but leave DockPosition untouched rather than overwriting
+                // it with a default-constructed (zero) position, and surface a warning.
+                DB.Set(ship);
+                Log.Write(LogGroup.Error, $"WARNING: Starship '{ship.CustomName}' ({ship.Id}) was docked at starport '{property.CustomName}' ({property.Id}) which is being deleted, but the ship has no LastNPCDockPosition and the guaranteed CZ-220 fallback waypoint '{GuaranteedFallbackDockWaypointTag}' could not be resolved. RegisteredStarport has been cleared, but DockPosition was left untouched. Manual intervention required.", true);
+            }
         }
 
         /// <summary>
@@ -2067,46 +2247,58 @@ namespace SWLOR.Game.Server.Service
         /// <param name="area">The area to spawn the property into. Leave OBJECT_INVALID if spawning an instance.</param>
         private static void SpawnIntoWorld(WorldProperty property, uint area)
         {
-            var propertyDetail = _propertyTypes[property.PropertyType];
-
-            // World spawns represent placeables within the game world such as furniture and buildings
-            if (propertyDetail.SpawnType == PropertySpawnType.World)
+            // Wrap the entire spawn in a try/catch so that a single malformed record - e.g. a
+            // layout OnSpawn handler that dereferences a broken parent chain - cannot abort the
+            // caller. When called from LoadProperties this is essential, because an uncaught
+            // exception there leaves every subsequent property (including all player starships)
+            // unspawned until the next reboot.
+            try
             {
-                var furniture = GetStructureByType(property.StructureType);
+                var propertyDetail = _propertyTypes[property.PropertyType];
 
-                var staticPosition = property.Positions[PropertyLocationType.StaticPosition];
-                var position = Vector3(staticPosition.X, staticPosition.Y, staticPosition.Z);
-                var location = Location(area, position, staticPosition.Orientation);
-
-                var placeable = CreateObject(ObjectType.Placeable, furniture.Resref, location);
-                SetPlotFlag(placeable, true);
-                AssignPropertyId(placeable, property.Id);
-
-                _structurePropertyIdToPlaceable[property.Id] = placeable;
-
-                // Some structures have custom spawn-in actions which also need to be run
-                // when brought into the world. 
-                RunStructureChangedEvent(property.StructureType, StructureChangeType.PositionChanged, property, placeable);
-            }
-            // Instance spawns are instanced areas that are spawned dynamically into the game world.
-            else if(propertyDetail.SpawnType == PropertySpawnType.Instance)
-            {
-                // If no interior layout is defined, the provided area will be used.
-                var layout = GetLayoutByType(property.Layout);
-                var targetArea = CreateArea(layout.AreaInstanceResref);
-                RegisterInstance(property.Id, targetArea, property.Layout);
-                
-                SetName(targetArea, "{PC} " + property.CustomName);
-
-                if (layout.OnSpawnAction != null)
+                // World spawns represent placeables within the game world such as furniture and buildings
+                if (propertyDetail.SpawnType == PropertySpawnType.World)
                 {
-                    layout.OnSpawnAction(targetArea);
+                    var furniture = GetStructureByType(property.StructureType);
+
+                    var staticPosition = property.Positions[PropertyLocationType.StaticPosition];
+                    var position = Vector3(staticPosition.X, staticPosition.Y, staticPosition.Z);
+                    var location = Location(area, position, staticPosition.Orientation);
+
+                    var placeable = CreateObject(ObjectType.Placeable, furniture.Resref, location);
+                    SetPlotFlag(placeable, true);
+                    AssignPropertyId(placeable, property.Id);
+
+                    _structurePropertyIdToPlaceable[property.Id] = placeable;
+
+                    // Some structures have custom spawn-in actions which also need to be run
+                    // when brought into the world. 
+                    RunStructureChangedEvent(property.StructureType, StructureChangeType.PositionChanged, property, placeable);
+                }
+                // Instance spawns are instanced areas that are spawned dynamically into the game world.
+                else if (propertyDetail.SpawnType == PropertySpawnType.Instance)
+                {
+                    // If no interior layout is defined, the provided area will be used.
+                    var layout = GetLayoutByType(property.Layout);
+                    var targetArea = CreateArea(layout.AreaInstanceResref);
+                    RegisterInstance(property.Id, targetArea, property.Layout);
+
+                    SetName(targetArea, "{PC} " + property.CustomName);
+
+                    if (layout.OnSpawnAction != null)
+                    {
+                        layout.OnSpawnAction(targetArea);
+                    }
+                }
+                // Area spawns exist in a pre-built area.
+                else if (propertyDetail.SpawnType == PropertySpawnType.Area)
+                {
+                    AssignPropertyId(area, property.Id);
                 }
             }
-            // Area spawns exist in a pre-built area.
-            else if(propertyDetail.SpawnType == PropertySpawnType.Area)
+            catch (Exception ex)
             {
-                AssignPropertyId(area, property.Id);
+                Log.Write(LogGroup.Error, $"Failed to spawn property '{property.CustomName}' ({property.Id}) of type '{property.PropertyType}'. Skipping. Details: {ex}", true);
             }
         }
 

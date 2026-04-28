@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service.LogService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -164,28 +163,15 @@ namespace SWLOR.Game.Server.Service.PropertyService
             {
                 DestroyDoor(building);
 
-                // If a starport is picked up, all of the player ships which are currently docked
-                // there need to be relocated back to the last safe NPC dock they visited.
+                // Note: relocation of ships docked at this starport is handled centrally by
+                // Property.DeleteProperty (via RelocateDockedShips) when the cascade reaches
+                // the starport interior, so it does not need to happen here. That centralization
+                // also covers other delete paths (e.g. the city itself being wiped for unpaid
+                // upkeep) that never run this StructureChanged action.
+
                 var interiorId = property.ChildPropertyIds[PropertyChildType.Interior].SingleOrDefault();
                 if (string.IsNullOrWhiteSpace(interiorId))
                     return;
-
-                var dbInterior = DB.Get<WorldProperty>(interiorId);
-                if (dbInterior.ChildPropertyIds.ContainsKey(PropertyChildType.Starship))
-                {
-                    foreach (var starshipId in dbInterior.ChildPropertyIds[PropertyChildType.Starship])
-                    {
-                        var dbStarship = DB.Get<WorldProperty>(starshipId);
-
-                        if (dbStarship.ChildPropertyIds.ContainsKey(PropertyChildType.RegisteredStarport))
-                            dbStarship.ChildPropertyIds[PropertyChildType.RegisteredStarport].Clear();
-
-                        dbStarship.Positions[PropertyLocationType.DockPosition] = dbStarship.Positions[PropertyLocationType.LastNPCDockPosition];
-
-                        DB.Set(dbStarship);
-                        Log.Write(LogGroup.Property, $"Starship '{dbStarship.CustomName}' ({dbStarship.Id}) has been relocated to the last NPC dock it visited because the starport '{dbInterior.CustomName}' ({dbInterior.Id}) has been retrieved.");
-                    }
-                }
 
                 // The dock point needs to be unregistered from the space service so it no longer displays in the list
                 // of docking points.

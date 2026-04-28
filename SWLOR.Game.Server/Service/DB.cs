@@ -344,6 +344,9 @@ namespace SWLOR.Game.Server.Service
         public static IEnumerable<T> Search<T>(DBQuery<T> query)
             where T: EntityBase
         {
+            if (query.MatchNone)
+                yield break;
+
             var result = _searchClientsByType[typeof(T)].Search(query.BuildQuery());
 
             foreach (var doc in result.Documents)
@@ -363,6 +366,9 @@ namespace SWLOR.Game.Server.Service
         public static IEnumerable<string> SearchRawJson<T>(DBQuery<T> query)
             where T: EntityBase
         {
+            if (query.MatchNone)
+                yield break;
+
             var result = _searchClientsByType[typeof(T)].Search(query.BuildQuery());
 
             foreach (var doc in result.Documents)
@@ -383,6 +389,9 @@ namespace SWLOR.Game.Server.Service
         public static long SearchCount<T>(DBQuery<T> query)
             where T: EntityBase
         {
+            if (query.MatchNone)
+                return 0;
+
             var result = _searchClientsByType[typeof(T)].Search(query.BuildQuery(true));
 
             return result.TotalResults;

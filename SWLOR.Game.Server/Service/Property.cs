@@ -608,8 +608,8 @@ namespace SWLOR.Game.Server.Service
                     {
                         Log.Write(LogGroup.Property, $"No one voted. Incumbent mayor '{incumbentMayorId}' stays in power.");
                     }
-                    // If top two are the same, incumbent mayor wins.
-                    else if (orderedVotes.Count >= 2 && orderedVotes.ElementAt(0).Value != orderedVotes.ElementAt(1).Value)
+                    // If top two are tied, incumbent mayor wins.
+                    else if (orderedVotes.Count >= 2 && orderedVotes.ElementAt(0).Value == orderedVotes.ElementAt(1).Value)
                     {
                         Log.Write(LogGroup.Property, $"Top 2 candidates were tied. Incumbent mayor '{incumbentMayorId}' wins the election.");
                     }
@@ -1001,7 +1001,7 @@ namespace SWLOR.Game.Server.Service
                 var grantPermission = dbPermission.GrantPermissions.ElementAt(index).Key;
                 if (!masterList.Contains(grantPermission))
                 {
-                    dbPermission.Permissions.Remove(grantPermission);
+                    dbPermission.GrantPermissions.Remove(grantPermission);
                     Log.Write(LogGroup.Property, $"Removing grant permission {grantPermission} from property {dbPermission.PropertyId} for player Id {dbPermission.PlayerId}.");
                     hasChanges = true;
                 }

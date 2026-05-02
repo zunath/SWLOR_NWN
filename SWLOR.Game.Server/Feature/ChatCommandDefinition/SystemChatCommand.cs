@@ -113,7 +113,11 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     var waypoint = GetNearestObjectByTag("STUCK_WAYPOINT", user);
                     if (!GetIsObjectValid(waypoint) || GetObjectType(waypoint) != ObjectType.Waypoint)
                     {
-                        waypoint = GetNearestObject(ObjectType.Waypoint, user);
+                        waypoint = GetWaypointByTag("CZ220_LANDING");
+                        if (!GetIsObjectValid(waypoint) || GetObjectType(waypoint) != ObjectType.Waypoint)
+                        {
+                            waypoint = GetNearestObject(ObjectType.Waypoint, user);
+                        }
                     }
 
                     if (GetIsObjectValid(waypoint))

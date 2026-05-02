@@ -86,9 +86,7 @@
         },
         "Description": {
           "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
+          "value": {}
         },
         "HasMapNote": {
           "type": "byte",
@@ -101,7 +99,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Stuck — kashyyykpaths"
+            "0": "Stuck Recovery"
           }
         },
         "MapNote": {
@@ -126,7 +124,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 70.0
+          "value": 70.54393005371094
         },
         "YOrientation": {
           "type": "float",
@@ -134,11 +132,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 70.0
+          "value": 113.8064117431641
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.237649530172348
         }
       }
     ]

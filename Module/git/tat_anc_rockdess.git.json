@@ -726,7 +726,7 @@
         },
         "X": {
           "type": "float",
-          "value": 92.76443481445312
+          "value": 92.76443481445313
         },
         "Y": {
           "type": "float",
@@ -1180,7 +1180,7 @@
         },
         "X": {
           "type": "float",
-          "value": 78.2890396118164
+          "value": 78.28903961181641
         },
         "Y": {
           "type": "float",
@@ -2414,7 +2414,7 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 91.57437133789062
+          "value": 91.57437133789063
         },
         "ZPosition": {
           "type": "float",
@@ -2485,7 +2485,7 @@
               "__struct_id": 3,
               "PointX": {
                 "type": "float",
-                "value": 9.967788696289062
+                "value": 9.967788696289063
               },
               "PointY": {
                 "type": "float",
@@ -2948,7 +2948,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -8.734064977033995e-06
+          "value": -8.734064977033995e-006
         },
         "XPosition": {
           "type": "float",
@@ -2964,7 +2964,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.222045729169622e-06
+          "value": -5.222045729169622e-006
         }
       },
       {
@@ -3017,15 +3017,15 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 2.102055759678478e-06
+          "value": 2.102055759678478e-006
         },
         "YPosition": {
           "type": "float",
-          "value": 83.7883071899414
+          "value": 83.78830718994141
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-06
+          "value": -5.7220458984375e-006
         }
       },
       {
@@ -3088,7 +3088,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.222045729169622e-06
+          "value": -5.222045729169622e-006
         }
       }
     ]

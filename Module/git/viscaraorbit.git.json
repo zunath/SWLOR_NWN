@@ -482,7 +482,7 @@
         },
         "Y": {
           "type": "float",
-          "value": 64.48953247070312
+          "value": 64.48953247070313
         },
         "Z": {
           "type": "float",
@@ -725,7 +725,7 @@
         },
         "X": {
           "type": "float",
-          "value": 98.2008285522461
+          "value": 98.20082855224609
         },
         "Y": {
           "type": "float",
@@ -1229,7 +1229,7 @@
         },
         "X": {
           "type": "float",
-          "value": 82.78799438476562
+          "value": 82.78799438476563
         },
         "Y": {
           "type": "float",
@@ -5149,7 +5149,7 @@
               },
               "PointY": {
                 "type": "float",
-                "value": -94.8694076538086
+                "value": -94.86940765380859
               },
               "PointZ": {
                 "type": "float",
@@ -5846,7 +5846,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 86.3137435913086
+          "value": 86.31374359130859
         },
         "YOrientation": {
           "type": "float",

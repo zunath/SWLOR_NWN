@@ -1879,7 +1879,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -7.450580596923828e-09
+          "value": -7.450580596923828e-009
         }
       },
       {
@@ -2463,7 +2463,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -3.725290298461914e-09
+          "value": -3.725290298461914e-009
         }
       },
       {
@@ -2982,7 +2982,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 2.384185791015625e-07
+          "value": 2.384185791015625e-007
         }
       }
     ]
@@ -3021,70 +3021,6 @@
   },
   "WaypointList": {
     "type": "list",
-    "value": [
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 1
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Stuck — viscara_archive"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "STUCK_WAYPOINT"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "wp_stuck"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 62.79999999999852
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 5.000002881682203
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 0.0
-        }
-      }
-    ]
+    "value": []
   }
 }

@@ -1213,7 +1213,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.536350220427919e-43
+          "value": 2.536350220427919e-043
         },
         "BodyBag": {
           "type": "byte",
@@ -4162,7 +4162,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 8.267660939516421e-44
+          "value": 8.267660939516421e-044
         },
         "XPosition": {
           "type": "float",

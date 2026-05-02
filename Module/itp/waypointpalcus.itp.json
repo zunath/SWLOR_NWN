@@ -1252,6 +1252,17 @@
                       "type": "resref",
                       "value": "starship_dockpoi"
                     }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Stuck Recovery"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_stuck"
+                    }
                   }
                 ]
               },

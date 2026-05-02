@@ -11305,11 +11305,11 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 8.25722781883087e-06
+          "value": 8.25722781883087e-006
         },
         "XPosition": {
           "type": "float",
-          "value": 80.1500015258789
+          "value": 80.15000152587891
         },
         "YOrientation": {
           "type": "float",

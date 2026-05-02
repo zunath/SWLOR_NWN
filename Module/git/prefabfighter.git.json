@@ -303,7 +303,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.404391967307061e-26
+          "value": 1.404391967307061e-026
         },
         "BodyBag": {
           "type": "byte",
@@ -1436,7 +1436,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.405915454930269e-26
+          "value": 1.405915454930269e-026
         },
         "BodyBag": {
           "type": "byte",
@@ -2798,7 +2798,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.407692857157345e-26
+          "value": 1.407692857157345e-026
         },
         "BodyBag": {
           "type": "byte",
@@ -6428,7 +6428,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.006092336484609e-29
+          "value": 1.006092336484609e-029
         },
         "BodyBag": {
           "type": "byte",
@@ -6655,7 +6655,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.629146451073096e-27
+          "value": 1.629146451073096e-027
         },
         "BodyBag": {
           "type": "byte",
@@ -16782,7 +16782,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 4.591773406601096e-39
+          "value": 4.591773406601096e-039
         },
         "BodyBag": {
           "type": "byte",
@@ -16988,7 +16988,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-06
+          "value": -5.7220458984375e-006
         }
       },
       {
@@ -18536,7 +18536,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.809187160151867e-38
+          "value": 1.809187160151867e-038
         },
         "BodyBag": {
           "type": "byte",
@@ -19701,70 +19701,6 @@
   },
   "WaypointList": {
     "type": "list",
-    "value": [
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 1
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Stuck — prefabfighter"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "STUCK_WAYPOINT"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "wp_stuck"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 15.0
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 15.0
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 0.0
-        }
-      }
-    ]
+    "value": []
   }
 }

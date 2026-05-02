@@ -220,7 +220,7 @@
               "__struct_id": 3,
               "PointX": {
                 "type": "float",
-                "value": -7.581710815429688e-05
+                "value": -7.581710815429688e-005
               },
               "PointY": {
                 "type": "float",
@@ -425,7 +425,7 @@
               },
               "PointY": {
                 "type": "float",
-                "value": -7.62939453125e-06
+                "value": -7.62939453125e-006
               },
               "PointZ": {
                 "type": "float",

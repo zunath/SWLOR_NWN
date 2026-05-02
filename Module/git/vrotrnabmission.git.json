@@ -3500,7 +3500,7 @@
         },
         "Y": {
           "type": "float",
-          "value": 93.4000015258789
+          "value": 93.40000152587891
         },
         "Z": {
           "type": "float",
@@ -4395,7 +4395,7 @@
         },
         "Y": {
           "type": "float",
-          "value": 81.2593765258789
+          "value": 81.25937652587891
         },
         "Z": {
           "type": "float",
@@ -6420,7 +6420,7 @@
         },
         "Y": {
           "type": "float",
-          "value": 75.7870101928711
+          "value": 75.78701019287109
         },
         "Z": {
           "type": "float",
@@ -6870,7 +6870,7 @@
         },
         "Y": {
           "type": "float",
-          "value": 75.5287094116211
+          "value": 75.52870941162109
         },
         "Z": {
           "type": "float",
@@ -7095,7 +7095,7 @@
         },
         "Y": {
           "type": "float",
-          "value": 94.75271606445312
+          "value": 94.75271606445313
         },
         "Z": {
           "type": "float",
@@ -9378,70 +9378,6 @@
   },
   "WaypointList": {
     "type": "list",
-    "value": [
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 1
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Stuck — vrotrnabmission"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "STUCK_WAYPOINT"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "wp_stuck"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 275.59000854492126
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 86.99999811967582
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 5.199999809265137
-        }
-      }
-    ]
+    "value": []
   }
 }

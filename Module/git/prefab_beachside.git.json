@@ -951,7 +951,7 @@
         },
         "X": {
           "type": "float",
-          "value": 95.72000122070312
+          "value": 95.72000122070313
         },
         "Y": {
           "type": "float",
@@ -1203,7 +1203,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.434929627468613e-41
+          "value": 1.434929627468613e-041
         },
         "BodyBag": {
           "type": "byte",
@@ -1653,7 +1653,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -5.44318436368485e-06
+          "value": -5.44318436368485e-006
         },
         "BodyBag": {
           "type": "byte",
@@ -2084,7 +2084,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.9999998807907104
+          "value": 0.9999998807907105
         }
       },
       {
@@ -2305,7 +2305,7 @@
         },
         "Y": {
           "type": "float",
-          "value": 86.12979125976562
+          "value": 86.12979125976563
         },
         "Z": {
           "type": "float",
@@ -2532,7 +2532,7 @@
         },
         "Y": {
           "type": "float",
-          "value": 65.97000122070312
+          "value": 65.97000122070313
         },
         "Z": {
           "type": "float",
@@ -9280,7 +9280,7 @@
         },
         "X": {
           "type": "float",
-          "value": 94.4092025756836
+          "value": 94.40920257568359
         },
         "Y": {
           "type": "float",
@@ -13620,7 +13620,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 9.352703500553616e-09
+          "value": 9.352703500553616e-009
         },
         "BodyBag": {
           "type": "byte",
@@ -14268,7 +14268,7 @@
         },
         "X": {
           "type": "float",
-          "value": 87.99185180664062
+          "value": 87.99185180664063
         },
         "Y": {
           "type": "float",
@@ -14295,70 +14295,6 @@
   },
   "WaypointList": {
     "type": "list",
-    "value": [
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 1
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Stuck — prefab_beachside"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "STUCK_WAYPOINT"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "wp_stuck"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 55.0
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 45.0
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 0.0
-        }
-      }
-    ]
+    "value": []
   }
 }

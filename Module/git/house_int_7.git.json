@@ -849,7 +849,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 1.029172267408285e-06
+          "value": 1.029172267408285e-006
         },
         "YPosition": {
           "type": "float",

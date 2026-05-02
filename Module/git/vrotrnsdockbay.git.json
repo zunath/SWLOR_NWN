@@ -1163,7 +1163,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -1390,7 +1390,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -1615,7 +1615,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -2065,7 +2065,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -2515,7 +2515,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -2965,7 +2965,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -3415,7 +3415,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -3640,7 +3640,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -3861,11 +3861,11 @@
         },
         "Y": {
           "type": "float",
-          "value": 90.03513336181641
+          "value": 90.0351333618164
         },
         "Z": {
           "type": "float",
-          "value": 2.980232238769531e-008
+          "value": 2.980232238769531e-08
         }
       },
       {
@@ -4090,7 +4090,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -4315,7 +4315,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -2.384185791015625e-007
+          "value": -2.384185791015625e-07
         }
       },
       {
@@ -4986,7 +4986,7 @@
         },
         "Y": {
           "type": "float",
-          "value": 91.35654449462891
+          "value": 91.3565444946289
         },
         "Z": {
           "type": "float",
@@ -5211,11 +5211,11 @@
         },
         "Y": {
           "type": "float",
-          "value": 92.07204437255859
+          "value": 92.0720443725586
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -5436,11 +5436,11 @@
         },
         "Y": {
           "type": "float",
-          "value": 92.65127563476563
+          "value": 92.65127563476562
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -5665,7 +5665,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -6792,7 +6792,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -7017,7 +7017,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.222045729169622e-006
+          "value": -5.222045729169622e-06
         }
       }
     ]
@@ -7363,70 +7363,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.222045729169622e-006
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 1
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Stuck — vrotrnsdockbay"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "STUCK_WAYPOINT"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "wp_stuck"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 34.99244689941406
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 0.830742359161377
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": -0.2500114440917969
+          "value": -5.222045729169622e-06
         }
       }
     ]

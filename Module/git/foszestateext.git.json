@@ -505,7 +505,7 @@
         },
         "Y": {
           "type": "float",
-          "value": 72.98354339599609
+          "value": 72.9835433959961
         },
         "Z": {
           "type": "float",
@@ -1626,7 +1626,7 @@
         },
         "X": {
           "type": "float",
-          "value": 65.52565765380859
+          "value": 65.5256576538086
         },
         "Y": {
           "type": "float",
@@ -6805,7 +6805,7 @@
         },
         "Y": {
           "type": "float",
-          "value": 8.821024894714356
+          "value": 8.821024894714355
         },
         "Z": {
           "type": "float",
@@ -8457,7 +8457,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 2.773600272121257e-006
+          "value": 2.773600272121257e-06
         },
         "XPosition": {
           "type": "float",
@@ -8533,69 +8533,6 @@
         "ZPosition": {
           "type": "float",
           "value": 0.1999988555908203
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 1
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Stuck — foszestateext"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "STUCK_WAYPOINT"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "wp_stuck"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 40.77000045776367
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 33.63000106811523
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 0.2000000029802322
         }
       }
     ]

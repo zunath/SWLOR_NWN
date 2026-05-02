@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Numerics;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -38,16 +39,22 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
             var effectTag = $"StatusEffectType.Tranquilize";
             var enmity = level * 500;
 
-            var vfx = EffectVisualEffect(VisualEffect.Vfx_Dur_Iounstone_Blue);
-            vfx = TagEffect(vfx, effectTag);
-            var sleep = TagEffect(EffectSleep(), effectTag);
-
-            ApplyEffectToObject(DurationType.Temporary, sleep, target, duration);
-            ApplyEffectToObject(DurationType.Temporary, vfx, target, duration);
-            Ability.ApplyTemporaryImmunity(target, duration, ImmunityType.Sleep);
-
             Enmity.ModifyEnmity(activator, target, enmity);
             CombatPoint.AddCombatPoint(activator, target, SkillType.Ranged, 3);
+
+            DelayCommand(0.1f, () =>
+            {
+                if (!GetIsObjectValid(target) || GetCurrentHitPoints(target) <= 0)
+                    return;
+
+                var vfx = EffectVisualEffect(VisualEffect.Vfx_Dur_Iounstone_Blue);
+                vfx = TagEffect(vfx, effectTag);
+                var sleep = TagEffect(EffectSleep(), effectTag);
+
+                ApplyEffectToObject(DurationType.Temporary, sleep, target, duration);
+                ApplyEffectToObject(DurationType.Temporary, vfx, target, duration);
+                Ability.ApplyTemporaryImmunity(target, duration, ImmunityType.Sleep);
+            });
         }
 
         private void ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -64,19 +71,38 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                     ApplyEffect(activator, target, 2, 24f);
                     break;
                 case 3:
-                    var count = 0;
-                    var creature = GetFirstObjectInShape(Shape.SpellCone, RadiusSize.Colossal, GetLocation(target), true);
-                    while (GetIsObjectValid(creature) && count < 3)
+                {
+                    // Cone must use the shooter's position as origin (vOrigin) and aim from activator → struck target.
+                    // Omitting vOrigin defaults to (0,0,0); using GetLocation(target) alone aims the cone by the target's
+                    // facing, so the primary hit can miss the AOE. Always tranquilize the creature that was shot, then
+                    // up to two others in the cone.
+                    const float coneLength = RadiusSize.Colossal;
+                    var area = GetArea(activator);
+                    var origin = GetPosition(activator);
+                    var towardTarget = GetPosition(target) - origin;
+                    var planar = new Vector3(towardTarget.X, towardTarget.Y, 0f);
+                    if (VectorMagnitude(planar) < 0.01f)
+                        planar = AngleToVector(GetFacing(activator));
+                    var dir = VectorNormalize(planar);
+                    var facing = VectorToAngle(dir);
+                    var coneEnd = origin + dir * coneLength;
+                    var coneLocation = Location(area, coneEnd, facing);
+
+                    ApplyEffect(activator, target, 3, 12f);
+
+                    var hitCount = 1;
+                    var creature = GetFirstObjectInShape(Shape.SpellCone, coneLength, coneLocation, true, ObjectType.Creature, origin);
+                    while (GetIsObjectValid(creature) && hitCount < 3)
                     {
-                        if(creature != activator) 
+                        if (creature != activator && creature != target)
                         {
                             ApplyEffect(activator, creature, 3, 12f);
-
-                            count++;
+                            hitCount++;
                         }
-                        creature = GetNextObjectInShape(Shape.SpellCone, RadiusSize.Colossal, GetLocation(target), true);
+                        creature = GetNextObjectInShape(Shape.SpellCone, coneLength, coneLocation, true, ObjectType.Creature, origin);
                     }
                     break;
+                }
             }
         }
 

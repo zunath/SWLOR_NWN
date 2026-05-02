@@ -65114,7 +65114,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "Starlight Café\n\nLocation: Dantooine Colony\nPurpose: A safe haven for travelers seeking respite.\nAtmosphere: Dimly lit, cozy booths, murals of starships adorn the walls.\nMenu:\n Blue Milk: Freshly squeezed from local banthas.\n Womp Rat Surprise: Hearty stew (no actual womp rats harmed).\n Twi'lek Lekku Delight: Sweet pastry shaped like a Twi'lek head-tail.\n\n Patrons: Farmers, smugglers, Jedi, and wanderers.\n Legacy: Every cup poured holds a piece of the past, a glimmer of hope for the future.\n\nWelcome to the Starlight Café, where stories intertwine like constellations in the night sky."
+            "0": "Starlight CafÃ©\n\nLocation: Dantooine Colony\nPurpose: A safe haven for travelers seeking respite.\nAtmosphere: Dimly lit, cozy booths, murals of starships adorn the walls.\nMenu:\n Blue Milk: Freshly squeezed from local banthas.\n Womp Rat Surprise: Hearty stew (no actual womp rats harmed).\n Twi'lek Lekku Delight: Sweet pastry shaped like a Twi'lek head-tail.\n\n Patrons: Farmers, smugglers, Jedi, and wanderers.\n Legacy: Every cup poured holds a piece of the past, a glimmer of hope for the future.\n\nWelcome to the Starlight CafÃ©, where stories intertwine like constellations in the night sky."
           }
         },
         "DisarmDC": {
@@ -65164,7 +65164,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Starlight Café"
+            "0": "Starlight CafÃ©"
           }
         },
         "OnClick": {
@@ -146203,6 +146203,69 @@
         "ZPosition": {
           "type": "float",
           "value": 10.010009765625
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Stuck â€” dan_centcolony"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "STUCK_WAYPOINT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_stuck"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 155.4371185302734
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 75.67608642578125
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 5.010009288787842
         }
       }
     ]

@@ -4448,7 +4448,7 @@
           "id": 5800,
           "type": "cexolocstring",
           "value": {
-            "0": "<cÿÿÿ><cÿÿ ><cÿ ÿ><c ÿÿ><cÿ  ><c ÿ ><c  ÿ><cÿÿÿ>Color Tag Generator"
+            "0": "<cÃ¿Ã¿Ã¿><cÃ¿Ã¿ ><cÃ¿ Ã¿><c Ã¿Ã¿><cÃ¿  ><c Ã¿ ><c  Ã¿><cÃ¿Ã¿Ã¿>Color Tag Generator"
           }
         },
         "OnClick": {
@@ -5700,6 +5700,69 @@
         "YPosition": {
           "type": "float",
           "value": 14.85193347930908
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 9.5367431640625e-006
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Stuck â€” dmfi_custom_enc"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "STUCK_WAYPOINT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_stuck"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 5.165115833282471
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 4.805001258850098
         },
         "ZPosition": {
           "type": "float",

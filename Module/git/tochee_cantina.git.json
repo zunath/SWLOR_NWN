@@ -1734,7 +1734,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Vêtements voyants"
+                  "2": "VÃªtements voyants"
                 }
               },
               "Metal1Color": {
@@ -7847,7 +7847,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Vêtements de ville"
+                  "2": "VÃªtements de ville"
                 }
               },
               "Metal1Color": {
@@ -13056,7 +13056,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Armure légère Trandoschan"
+                  "2": "Armure lÃ©gÃ¨re Trandoschan"
                 }
               },
               "Metal1Color": {
@@ -13263,7 +13263,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Cellule d'énergie pistolet blaster"
+                  "2": "Cellule d'Ã©nergie pistolet blaster"
                 }
               },
               "ModelPart1": {
@@ -13569,7 +13569,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Cellule d'énergie pistolet blaster"
+                  "2": "Cellule d'Ã©nergie pistolet blaster"
                 }
               },
               "ModelPart1": {
@@ -13833,13 +13833,13 @@
               "DescIdentified": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Le SE-14, parfois connu sous le nom de Pistolet de Combat SR, est un pistolet blaster basique produit par BlasTech.\nUne SE-14 en cours d'utilisation.\n\nLe pistolet blaster SE-14 se compose globalement d'un tube doté d'une poignée, avec une petite cellule d'énergie située sous le canon.\n\nCette arme a été utilisée par les droïdes de combat de l'Armée Séparatiste durant la Guerre des Clones, et a été appelé \"le Pistolet Blaster Séparatiste\". Probablement gêné par la situation délicate de produire des armes pour un ennemi de la République Galactique, BlasTech a longtemps nié que cette arme venait de leurs usines.\n\nAprès la chute de la République et l'avènement de l'Empire Galactique, BlasTech a été contractée par les Impériaux afin de produire cette arme comme une arme de poing semi-automatique de secours, modèle connu sous le nom SE-14R. Une autre version améliorée, le SE-14C, a été dévoilée par la suite.\n\nLes contrebandiers et les criminels sont connus pour utiliser le SE-14 sous ses diverses déclinaisons."
+                  "2": "Le SE-14, parfois connu sous le nom de Pistolet de Combat SR, est un pistolet blaster basique produit par BlasTech.\nUne SE-14 en cours d'utilisation.\n\nLe pistolet blaster SE-14 se compose globalement d'un tube dotÃ© d'une poignÃ©e, avec une petite cellule d'Ã©nergie situÃ©e sous le canon.\n\nCette arme a Ã©tÃ© utilisÃ©e par les droÃ¯des de combat de l'ArmÃ©e SÃ©paratiste durant la Guerre des Clones, et a Ã©tÃ© appelÃ© \"le Pistolet Blaster SÃ©paratiste\". Probablement gÃªnÃ© par la situation dÃ©licate de produire des armes pour un ennemi de la RÃ©publique Galactique, BlasTech a longtemps niÃ© que cette arme venait de leurs usines.\n\nAprÃ¨s la chute de la RÃ©publique et l'avÃ¨nement de l'Empire Galactique, BlasTech a Ã©tÃ© contractÃ©e par les ImpÃ©riaux afin de produire cette arme comme une arme de poing semi-automatique de secours, modÃ¨le connu sous le nom SE-14R. Une autre version amÃ©liorÃ©e, le SE-14C, a Ã©tÃ© dÃ©voilÃ©e par la suite.\n\nLes contrebandiers et les criminels sont connus pour utiliser le SE-14 sous ses diverses dÃ©clinaisons."
                 }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Le SE-14, parfois connu sous le nom de Pistolet de Combat SR, est un pistolet blaster basique produit par BlasTech.\nUne SE-14 en cours d'utilisation.\n\nLe pistolet blaster SE-14 se compose globalement d'un tube doté d'une poignée, avec une petite cellule d'énergie située sous le canon.\n\nCette arme a été utilisée par les droïdes de combat de l'Armée Séparatiste durant la Guerre des Clones, et a été appelé \"le Pistolet Blaster Séparatiste\". Probablement gêné par la situation délicate de produire des armes pour un ennemi de la République Galactique, BlasTech a longtemps nié que cette arme venait de leurs usines.\n\nAprès la chute de la République et l'avènement de l'Empire Galactique, BlasTech a été contractée par les Impériaux afin de produire cette arme comme une arme de poing semi-automatique de secours, modèle connu sous le nom SE-14R. Une autre version améliorée, le SE-14C, a été dévoilée par la suite.\n\nLes contrebandiers et les criminels sont connus pour utiliser le SE-14 sous ses diverses déclinaisons."
+                  "2": "Le SE-14, parfois connu sous le nom de Pistolet de Combat SR, est un pistolet blaster basique produit par BlasTech.\nUne SE-14 en cours d'utilisation.\n\nLe pistolet blaster SE-14 se compose globalement d'un tube dotÃ© d'une poignÃ©e, avec une petite cellule d'Ã©nergie situÃ©e sous le canon.\n\nCette arme a Ã©tÃ© utilisÃ©e par les droÃ¯des de combat de l'ArmÃ©e SÃ©paratiste durant la Guerre des Clones, et a Ã©tÃ© appelÃ© \"le Pistolet Blaster SÃ©paratiste\". Probablement gÃªnÃ© par la situation dÃ©licate de produire des armes pour un ennemi de la RÃ©publique Galactique, BlasTech a longtemps niÃ© que cette arme venait de leurs usines.\n\nAprÃ¨s la chute de la RÃ©publique et l'avÃ¨nement de l'Empire Galactique, BlasTech a Ã©tÃ© contractÃ©e par les ImpÃ©riaux afin de produire cette arme comme une arme de poing semi-automatique de secours, modÃ¨le connu sous le nom SE-14R. Une autre version amÃ©liorÃ©e, le SE-14C, a Ã©tÃ© dÃ©voilÃ©e par la suite.\n\nLes contrebandiers et les criminels sont connus pour utiliser le SE-14 sous ses diverses dÃ©clinaisons."
                 }
               },
               "Identified": {
@@ -23495,7 +23495,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Rideau de toile de jute foncé"
+            "2": "Rideau de toile de jute foncÃ©"
           }
         },
         "OnClick": {
@@ -23712,7 +23712,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Porte métallique coulissante vers le bas"
+            "2": "Porte mÃ©tallique coulissante vers le bas"
           }
         },
         "OnClick": {
@@ -24843,7 +24843,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Red couch",
-            "2": "Canapé, riche rouge"
+            "2": "CanapÃ©, riche rouge"
           }
         },
         "OnClick": {
@@ -25071,7 +25071,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Red couch",
-            "2": "Canapé, riche rouge"
+            "2": "CanapÃ©, riche rouge"
           }
         },
         "OnClick": {
@@ -25298,7 +25298,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Plan de travail éclairé"
+            "2": "Plan de travail Ã©clairÃ©"
           }
         },
         "OnClick": {
@@ -29163,7 +29163,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Pot a café"
+            "2": "Pot a cafÃ©"
           }
         },
         "OnClick": {
@@ -33262,7 +33262,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Red couch",
-            "2": "Canapé, riche rouge"
+            "2": "CanapÃ©, riche rouge"
           }
         },
         "OnClick": {
@@ -33944,7 +33944,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Red couch",
-            "2": "Canapé, riche rouge"
+            "2": "CanapÃ©, riche rouge"
           }
         },
         "OnClick": {
@@ -34172,7 +34172,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Red couch",
-            "2": "Canapé, riche rouge"
+            "2": "CanapÃ©, riche rouge"
           }
         },
         "OnClick": {
@@ -43781,7 +43781,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Véhicule - Pod Racer"
+            "2": "VÃ©hicule - Pod Racer"
           }
         },
         "Looping": {
@@ -43916,7 +43916,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Véhicule - Pod Racer"
+            "2": "VÃ©hicule - Pod Racer"
           }
         },
         "Looping": {
@@ -44051,7 +44051,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Véhicule - Pod Racer"
+            "2": "VÃ©hicule - Pod Racer"
           }
         },
         "Looping": {
@@ -45013,7 +45013,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Barman générique"
+            "2": "Barman gÃ©nÃ©rique"
           }
         },
         "MarkDown": {
@@ -45515,7 +45515,7 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "2": "Crème d'Infâme"
+                        "2": "CrÃ¨me d'InfÃ¢me"
                       }
                     },
                     "ModelPart1": {
@@ -46280,7 +46280,7 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "2": "Vin épicé de Zeltronian"
+                        "2": "Vin Ã©picÃ© de Zeltronian"
                       }
                     },
                     "ModelPart1": {
@@ -46736,7 +46736,7 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "2": "Ragoût de Bantha"
+                        "2": "RagoÃ»t de Bantha"
                       }
                     },
                     "ModelPart1": {
@@ -48048,6 +48048,69 @@
         "ZPosition": {
           "type": "float",
           "value": 0.01000607013702393
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Stuck â€” tochee_cantina"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "STUCK_WAYPOINT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_stuck"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 20.30313110351563
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 26.11003112792969
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.009992599487304688
         }
       }
     ]

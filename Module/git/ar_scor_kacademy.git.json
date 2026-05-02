@@ -13025,7 +13025,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "The Arkanian Sith Inquisitor stands tall, his once-crisp white skin now faded to a paler, almost sickly hue from years of constant exposure to the dark side. His piercing, pupilless eyes, while sharp, show traces of wear—small cracks of doubt and exhaustion creeping through the otherwise cold exterior. His hair, once a brilliant white, is now streaked with silver and tinged with the pallor of age, though his face retains the sharp, angular features characteristic of his species. His robes, once pristine and regal, have grown worn and tattered over the years, showing signs of prolonged use and countless battles. A blackened, jagged scar cuts across his right cheek, a souvenir from a past skirmish that has only added to his intimidating presence. He exudes a quiet but unnerving authority. His voice is low and gravelly, carrying the weight of experience. He has grown disillusioned with the endless cycle of training and failure, yet remains an indomitable force in the pursuit of power. Years of molding young acolytes into Sith have left him bitter, yet patient, always watching for the slightest spark of potential that might one day erupt into destructive power. Though he demands absolute loyalty, his patience has thinned over time, and he’s grown skeptical of the newer generations, seeing many of them as unworthy of the Sith legacy."
+            "0": "The Arkanian Sith Inquisitor stands tall, his once-crisp white skin now faded to a paler, almost sickly hue from years of constant exposure to the dark side. His piercing, pupilless eyes, while sharp, show traces of wearÂ—small cracks of doubt and exhaustion creeping through the otherwise cold exterior. His hair, once a brilliant white, is now streaked with silver and tinged with the pallor of age, though his face retains the sharp, angular features characteristic of his species. His robes, once pristine and regal, have grown worn and tattered over the years, showing signs of prolonged use and countless battles. A blackened, jagged scar cuts across his right cheek, a souvenir from a past skirmish that has only added to his intimidating presence. He exudes a quiet but unnerving authority. His voice is low and gravelly, carrying the weight of experience. He has grown disillusioned with the endless cycle of training and failure, yet remains an indomitable force in the pursuit of power. Years of molding young acolytes into Sith have left him bitter, yet patient, always watching for the slightest spark of potential that might one day erupt into destructive power. Though he demands absolute loyalty, his patience has thinned over time, and heÂ’s grown skeptical of the newer generations, seeing many of them as unworthy of the Sith legacy."
           }
         },
         "Dex": {
@@ -229522,6 +229522,69 @@
         "TemplateResRef": {
           "type": "resref",
           "value": "nw_waypoint001"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 55.01331329345703
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 5.975921630859375
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -5.7220458984375e-006
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Stuck â€” ar_scor_kacademy"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "STUCK_WAYPOINT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_stuck"
         },
         "XOrientation": {
           "type": "float",

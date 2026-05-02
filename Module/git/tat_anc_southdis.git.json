@@ -9368,7 +9368,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchor Aye and Anchor Bee are identical twins that take pleasure in annoying and confusing anyone that meets them. On top of this, they are a few brain cells short of an actual conversation and tend to talk through one another and finish each other’s sentences. This can cause anyone to become irritated quite quickly, but they don't seem to mind. They just laugh it off and carry on with annoying one another."
+            "0": "Anchor Aye and Anchor Bee are identical twins that take pleasure in annoying and confusing anyone that meets them. On top of this, they are a few brain cells short of an actual conversation and tend to talk through one another and finish each otherÂ’s sentences. This can cause anyone to become irritated quite quickly, but they don't seem to mind. They just laugh it off and carry on with annoying one another."
           }
         },
         "Dex": {
@@ -11096,7 +11096,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchor Aye and Anchor Bee are identical twins that take pleasure in annoying and confusing anyone that meets them. On top of this, they are a few brain cells short of an actual conversation and tend to talk through one another and finish each other’s sentences. This can cause anyone to become irritated quite quickly, but they don't seem to mind. They just laugh it off and carry on with annoying one another."
+            "0": "Anchor Aye and Anchor Bee are identical twins that take pleasure in annoying and confusing anyone that meets them. On top of this, they are a few brain cells short of an actual conversation and tend to talk through one another and finish each otherÂ’s sentences. This can cause anyone to become irritated quite quickly, but they don't seem to mind. They just laugh it off and carry on with annoying one another."
           }
         },
         "Dex": {
@@ -21505,7 +21505,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Vêtements légers"
+                  "2": "VÃªtements lÃ©gers"
                 }
               },
               "Metal1Color": {
@@ -22672,7 +22672,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Astromech Droid",
-            "2": "Droïde Astromec douteux"
+            "2": "DroÃ¯de Astromec douteux"
           }
         },
         "fortbonus": {
@@ -23296,7 +23296,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Revêtement de droïde agricole type-1"
+                  "2": "RevÃªtement de droÃ¯de agricole type-1"
                 }
               },
               "Metal1Color": {
@@ -23478,7 +23478,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Mouse Droid",
-            "2": "Droïde souris MSE-6"
+            "2": "DroÃ¯de souris MSE-6"
           }
         },
         "fortbonus": {
@@ -23560,7 +23560,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Pièces détachées de droïd"
+                  "0": "PiÃ¨ces dÃ©tachÃ©es de droÃ¯d"
                 }
               },
               "ModelPart1": {
@@ -24470,7 +24470,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Astromech Droid",
-            "2": "Unité droïde R5D4"
+            "2": "UnitÃ© droÃ¯de R5D4"
           }
         },
         "fortbonus": {
@@ -24552,7 +24552,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Pièces détachées de droïd"
+                  "0": "PiÃ¨ces dÃ©tachÃ©es de droÃ¯d"
                 }
               },
               "ModelPart1": {
@@ -25462,7 +25462,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Astromech Droid",
-            "2": "Unité droïde R5D4"
+            "2": "UnitÃ© droÃ¯de R5D4"
           }
         },
         "fortbonus": {
@@ -25544,7 +25544,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Pièces détachées de droïd"
+                  "0": "PiÃ¨ces dÃ©tachÃ©es de droÃ¯d"
                 }
               },
               "ModelPart1": {
@@ -26325,7 +26325,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Revêtement de droïde agricole type-1"
+                  "2": "RevÃªtement de droÃ¯de agricole type-1"
                 }
               },
               "Metal1Color": {
@@ -26507,7 +26507,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Agricultural Droid",
-            "2": "Droïde agricole"
+            "2": "DroÃ¯de agricole"
           }
         },
         "fortbonus": {
@@ -26589,7 +26589,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Pièces détachées de droïd"
+                  "0": "PiÃ¨ces dÃ©tachÃ©es de droÃ¯d"
                 }
               },
               "ModelPart1": {
@@ -38768,7 +38768,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Porte métallique coulissante rayée"
+            "2": "Porte mÃ©tallique coulissante rayÃ©e"
           }
         },
         "OnClick": {
@@ -38986,7 +38986,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Door",
-            "2": "Porte métallique coulissante vers le bas bleu"
+            "2": "Porte mÃ©tallique coulissante vers le bas bleu"
           }
         },
         "OnClick": {
@@ -39204,7 +39204,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Door",
-            "2": "Porte métallique coulissante vers le bas bleu"
+            "2": "Porte mÃ©tallique coulissante vers le bas bleu"
           }
         },
         "OnClick": {
@@ -39422,7 +39422,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Door",
-            "2": "Rideau de toile foncé"
+            "2": "Rideau de toile foncÃ©"
           }
         },
         "OnClick": {
@@ -39863,8 +39863,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Vaporateur d'humiditéW",
-            "2": "Vaporateur d'humidité"
+            "0": "Vaporateur d'humiditÃ©W",
+            "2": "Vaporateur d'humiditÃ©"
           }
         },
         "OnClick": {
@@ -40091,8 +40091,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Vaporateur d'humiditéW",
-            "2": "Vaporateur d'humidité"
+            "0": "Vaporateur d'humiditÃ©W",
+            "2": "Vaporateur d'humiditÃ©"
           }
         },
         "OnClick": {
@@ -40319,8 +40319,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Vaporateur d'humiditéW",
-            "2": "Vaporateur d'humidité"
+            "0": "Vaporateur d'humiditÃ©W",
+            "2": "Vaporateur d'humiditÃ©"
           }
         },
         "OnClick": {
@@ -40547,7 +40547,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Vaporateur d'humiditÃ©"
           }
         },
         "OnClick": {
@@ -40774,7 +40774,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Vaporateur d'humiditÃ©"
           }
         },
         "OnClick": {
@@ -41001,7 +41001,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Vaporateur d'humiditÃ©"
           }
         },
         "OnClick": {
@@ -41228,7 +41228,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Vaporateur d'humiditÃ©"
           }
         },
         "OnClick": {
@@ -41455,8 +41455,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Vaporateur d'humiditéW",
-            "2": "Vaporateur d'humidité"
+            "0": "Vaporateur d'humiditÃ©W",
+            "2": "Vaporateur d'humiditÃ©"
           }
         },
         "OnClick": {
@@ -53161,7 +53161,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Vaporateur d'humiditÃ©"
           }
         },
         "OnClick": {
@@ -53388,7 +53388,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Vaporateur d'humiditÃ©"
           }
         },
         "OnClick": {
@@ -53615,7 +53615,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Vaporateur d'humiditÃ©"
           }
         },
         "OnClick": {
@@ -53842,7 +53842,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Vaporateur d'humiditÃ©"
           }
         },
         "OnClick": {
@@ -54069,7 +54069,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Vaporateur d'humiditÃ©"
           }
         },
         "OnClick": {
@@ -54296,7 +54296,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Vaporateur d'humiditÃ©"
           }
         },
         "OnClick": {
@@ -54523,7 +54523,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Vaporateur d'humiditÃ©"
           }
         },
         "OnClick": {
@@ -102248,7 +102248,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Trafic aérien et terrestre"
+            "2": "Trafic aÃ©rien et terrestre"
           }
         },
         "Looping": {
@@ -102383,7 +102383,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Trafic aérien et terrestre"
+            "2": "Trafic aÃ©rien et terrestre"
           }
         },
         "Looping": {
@@ -102511,7 +102511,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Véhicule - Fonceur"
+            "2": "VÃ©hicule - Fonceur"
           }
         },
         "Looping": {
@@ -102632,7 +102632,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Véhicule - Pod Racer"
+            "2": "VÃ©hicule - Pod Racer"
           }
         },
         "Looping": {
@@ -102767,7 +102767,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Droïd - Déplacement droïde sonde"
+            "2": "DroÃ¯d - DÃ©placement droÃ¯de sonde"
           }
         },
         "Looping": {
@@ -308503,7 +308503,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Droid Shop",
-            "2": "Aux droïdes de Lara",
+            "2": "Aux droÃ¯des de Lara",
             "256": "<Placez votre texte ici>",
             "258": "<Placez votre texte ici>",
             "260": "<Placez votre texte ici>",
@@ -308575,7 +308575,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Medical Center",
-            "2": "Centre Médical",
+            "2": "Centre MÃ©dical",
             "256": "<Placez votre texte ici>",
             "258": "<Placez votre texte ici>",
             "260": "<Placez votre texte ici>",
@@ -309758,6 +309758,69 @@
         "YOrientation": {
           "type": "float",
           "value": -0.9891764521598816
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 156.8692626953125
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -5.222045729169622e-006
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Stuck â€” tat_anc_southdis"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "STUCK_WAYPOINT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_stuck"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 103.3217010498047
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
         },
         "YPosition": {
           "type": "float",

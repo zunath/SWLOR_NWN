@@ -1,0 +1,12 @@
+reviews:
+  path_instructions:
+    - path: "Module/git/*.git.json"
+      instructions: |
+        Check whether this area instance file contains a Stuck Waypoint.
+        A Stuck Waypoint is identified by a waypoint entry in the WaypointList whose "Tag" field has the value "STUCK_WAYPOINT".
+
+        If the file name starts with "prefab" (e.g. prefab_beachside.git.json, prefabcorvette.git.json) or is named "area_template.git.json", skip this check — prefabs and templates do not require a Stuck Waypoint.
+
+        For all other area files, if no waypoint with Tag "STUCK_WAYPOINT" exists in the WaypointList, emit a **warning** (not an error) asking the contributor to add one. Suggested wording:
+
+        > **Warning:** This area file does not appear to contain a `STUCK_WAYPOINT` waypoint. Players who become stuck in this area will have no recovery point. Please add a waypoint with tag `STUCK_WAYPOINT` and template resref `wp_stuck`. If this area intentionally omits one (e.g. it is a prefab or inaccessible area), you may ignore this warning.

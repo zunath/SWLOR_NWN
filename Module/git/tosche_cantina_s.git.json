@@ -351,7 +351,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Vêtements de ville"
+                  "2": "VÃªtements de ville"
                 }
               },
               "Metal1Color": {
@@ -526,7 +526,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Cellule d'énergie pistolet blaster"
+                  "2": "Cellule d'Ã©nergie pistolet blaster"
                 }
               },
               "ModelPart1": {
@@ -1805,7 +1805,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Astromech Droid",
-            "2": "Droïde Astromec"
+            "2": "DroÃ¯de Astromec"
           }
         },
         "fortbonus": {
@@ -2521,7 +2521,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Vêtements de ville"
+                  "2": "VÃªtements de ville"
                 }
               },
               "Metal1Color": {
@@ -2696,7 +2696,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Cellule d'énergie pistolet blaster"
+                  "2": "Cellule d'Ã©nergie pistolet blaster"
                 }
               },
               "ModelPart1": {
@@ -30059,7 +30059,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Droïd - Astromecano"
+            "2": "DroÃ¯d - Astromecano"
           }
         },
         "Looping": {
@@ -31096,6 +31096,69 @@
         "ZPosition": {
           "type": "float",
           "value": 0.01000630855560303
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Stuck â€” tosche_cantina_s"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "STUCK_WAYPOINT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_stuck"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 26.8366813659668
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 25.35117721557617
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.009990006685256958
         }
       }
     ]

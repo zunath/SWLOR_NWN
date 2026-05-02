@@ -834,13 +834,13 @@
               "DescIdentified": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Tape à l'oeil, ce costumede scène est généralement le préféré des grands musiciens Bith."
+                  "2": "Tape Ã  l'oeil, ce costumede scÃ¨ne est gÃ©nÃ©ralement le prÃ©fÃ©rÃ© des grands musiciens Bith."
                 }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Tape à l'oeil, ce costumede scène est généralement le préféré des grands musiciens Bith."
+                  "2": "Tape Ã  l'oeil, ce costumede scÃ¨ne est gÃ©nÃ©ralement le prÃ©fÃ©rÃ© des grands musiciens Bith."
                 }
               },
               "Identified": {
@@ -858,7 +858,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Tenue de scène Bith colorée"
+                  "2": "Tenue de scÃ¨ne Bith colorÃ©e"
                 }
               },
               "Metal1Color": {
@@ -11284,7 +11284,7 @@
                 "type": "cexolocstring",
                 "value": {
                   "0": "Vet Tatooine",
-                  "2": "Vêtements légers"
+                  "2": "VÃªtements lÃ©gers"
                 }
               },
               "Metal1Color": {
@@ -169521,6 +169521,70 @@
   },
   "WaypointList": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Stuck â€” tat_anc_junix"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "STUCK_WAYPOINT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_stuck"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 66.67071533203125
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 15.21982383728027
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -5.7220458984375e-006
+        }
+      }
+    ]
   }
 }

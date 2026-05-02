@@ -7959,7 +7959,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Porte métallique coulissante"
+            "2": "Porte mÃ©tallique coulissante"
           }
         },
         "OnClick": {
@@ -8176,7 +8176,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Porte métallique coulissante"
+            "2": "Porte mÃ©tallique coulissante"
           }
         },
         "OnClick": {
@@ -8393,7 +8393,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Porte métallique coulissante rayée"
+            "2": "Porte mÃ©tallique coulissante rayÃ©e"
           }
         },
         "OnClick": {
@@ -8610,7 +8610,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Porte métallique coulissante"
+            "2": "Porte mÃ©tallique coulissante"
           }
         },
         "OnClick": {
@@ -9059,7 +9059,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Vaporateur d'humiditÃ©"
           }
         },
         "OnClick": {
@@ -9286,7 +9286,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Vaporateur d'humiditÃ©"
           }
         },
         "OnClick": {
@@ -9963,7 +9963,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vieilles pièces détachées de droïd"
+            "2": "Vieilles piÃ¨ces dÃ©tachÃ©es de droÃ¯d"
           }
         },
         "OnClick": {
@@ -10616,7 +10616,7 @@
           "id": 14565,
           "type": "cexolocstring",
           "value": {
-            "2": "Une borne taillée avec soin indiquant un endroit intéressant."
+            "2": "Une borne taillÃ©e avec soin indiquant un endroit intÃ©ressant."
           }
         },
         "DisarmDC": {
@@ -10668,7 +10668,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Agence de transport",
-            "2": "Go-Corp : Vos trajets en toute sécurité"
+            "2": "Go-Corp : Vos trajets en toute sÃ©curitÃ©"
           }
         },
         "OnClick": {
@@ -23908,7 +23908,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Véhicule - Pod Racer"
+            "2": "VÃ©hicule - Pod Racer"
           }
         },
         "Looping": {
@@ -24043,7 +24043,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Véhicule - Pod Racer"
+            "2": "VÃ©hicule - Pod Racer"
           }
         },
         "Looping": {
@@ -24823,7 +24823,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Droïd - Mécano"
+            "2": "DroÃ¯d - MÃ©cano"
           }
         },
         "Looping": {
@@ -24958,7 +24958,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Droïd - Surchauffe"
+            "2": "DroÃ¯d - Surchauffe"
           }
         },
         "Looping": {
@@ -25079,7 +25079,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Droïd - Commun"
+            "2": "DroÃ¯d - Commun"
           }
         },
         "Looping": {
@@ -27248,6 +27248,69 @@
         "YPosition": {
           "type": "float",
           "value": 9.98261833190918
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -5.222045729169622e-006
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Stuck â€” moseis_dow_can"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "STUCK_WAYPOINT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_stuck"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 158.2764282226563
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 126.8086929321289
         },
         "ZPosition": {
           "type": "float",

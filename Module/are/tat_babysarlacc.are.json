@@ -116,7 +116,7 @@
   },
   "ResRef": {
     "type": "resref",
-    "value": "nw_tatgiantdung1"
+    "value": "tat_babysarlacc"
   },
   "ShadowOpacity": {
     "type": "byte",
@@ -27030,13 +27030,17 @@
       }
     ]
   },
+  "TileBrdrDisabled": {
+    "type": "byte",
+    "value": 0
+  },
   "Tileset": {
     "type": "resref",
     "value": "tdm01"
   },
   "Version": {
     "type": "dword",
-    "value": 5
+    "value": 6
   },
   "Width": {
     "type": "int",

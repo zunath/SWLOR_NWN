@@ -204977,7 +204977,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Etagère Cantina",
+            "0": "EtagÃ¨re Cantina",
             "2": "Bar"
           }
         },
@@ -205203,7 +205203,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Cuve d'expérimentation"
+            "2": "Cuve d'expÃ©rimentation"
           }
         },
         "OnClick": {
@@ -209102,7 +209102,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Etagère Cantina",
+            "0": "EtagÃ¨re Cantina",
             "2": "Bar"
           }
         },
@@ -343569,6 +343569,69 @@
         "TemplateResRef": {
           "type": "resref",
           "value": ""
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 75.00961303710938
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 2.485557317733765
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -5.7220458984375e-006
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Stuck â€” sol_mandaloriani"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "STUCK_WAYPOINT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_stuck"
         },
         "XOrientation": {
           "type": "float",

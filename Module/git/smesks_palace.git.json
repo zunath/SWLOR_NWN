@@ -8718,13 +8718,13 @@
               "DescIdentified": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Tape à l'oeil, ce costumede scène est généralement le préféré des grands musiciens Bith."
+                  "2": "Tape Ã  l'oeil, ce costumede scÃ¨ne est gÃ©nÃ©ralement le prÃ©fÃ©rÃ© des grands musiciens Bith."
                 }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Tape à l'oeil, ce costumede scène est généralement le préféré des grands musiciens Bith."
+                  "2": "Tape Ã  l'oeil, ce costumede scÃ¨ne est gÃ©nÃ©ralement le prÃ©fÃ©rÃ© des grands musiciens Bith."
                 }
               },
               "Identified": {
@@ -8742,7 +8742,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Tenue de scène Bith colorée"
+                  "2": "Tenue de scÃ¨ne Bith colorÃ©e"
                 }
               },
               "Metal1Color": {
@@ -9882,13 +9882,13 @@
               "DescIdentified": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Tape à l'oeil, ce costumede scène est généralement le préféré des grands musiciens Bith."
+                  "2": "Tape Ã  l'oeil, ce costumede scÃ¨ne est gÃ©nÃ©ralement le prÃ©fÃ©rÃ© des grands musiciens Bith."
                 }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Tape à l'oeil, ce costumede scène est généralement le préféré des grands musiciens Bith."
+                  "2": "Tape Ã  l'oeil, ce costumede scÃ¨ne est gÃ©nÃ©ralement le prÃ©fÃ©rÃ© des grands musiciens Bith."
                 }
               },
               "Identified": {
@@ -9906,7 +9906,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Tenue de scène Bith colorée"
+                  "2": "Tenue de scÃ¨ne Bith colorÃ©e"
                 }
               },
               "Metal1Color": {
@@ -51188,8 +51188,8 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Vêtements légers",
-                  "2": "Vêtements légers"
+                  "0": "VÃªtements lÃ©gers",
+                  "2": "VÃªtements lÃ©gers"
                 }
               },
               "Metal1Color": {
@@ -96705,7 +96705,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Gamoréen"
+            "2": "GamorÃ©en"
           }
         },
         "Looping": {
@@ -100219,6 +100219,69 @@
         "YOrientation": {
           "type": "float",
           "value": -0.9996986985206604
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 87.99961853027344
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 1.000005722045898
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Stuck â€” smesks_palace"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "STUCK_WAYPOINT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_stuck"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 85.70949554443359
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
         },
         "YPosition": {
           "type": "float",

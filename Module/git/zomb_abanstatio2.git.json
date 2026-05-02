@@ -17406,7 +17406,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "The terminal appears to be a database for logs pertaining to this cells experiments.\n\n----\n\n<cÿÿ >Effects of the Virus on Wookiee Biology:</c>\n\n<c ÿÿ>After initial exposure to the virus, the effects remain consistent with that of any other species. Apparent loss of sanity over only a few minutes. However, there are a few differences that should be noted. The test subject in question began screaming about wookiee younglings and how mounds of its clan and children were burning, rotting, and melting even. Shortly after, the more physical irregularities could be noticed.\n\nThe wookiee's throat began to inflate, much like a balloon, as it started choking and gagging, suffocating from whatever fluid was likely building up. It eventually grew so much that it even popped like such a balloon, leading the wookiee to expire within only a few seconds from blood loss. If it hadn't happened, though, it's likely it wouldn't have been long before the suffocation would have done so.\n\nPrior to the reanimation process that was evident in all other subjects, closer inspection revealed an acute swelling of the tongue, as well, blocking off any and all air through the throat. Bit harsh if you ask me. Suffocation, either way.\n\nFollowing reanimation, it shows aggression consistent with the other subjects, though perhaps a bit more-so due to the difference in strength with a wookiee.\n\nTests will continue. End of log.</c>"
+            "0": "The terminal appears to be a database for logs pertaining to this cells experiments.\n\n----\n\n<cÃ¿Ã¿ >Effects of the Virus on Wookiee Biology:</c>\n\n<c Ã¿Ã¿>After initial exposure to the virus, the effects remain consistent with that of any other species. Apparent loss of sanity over only a few minutes. However, there are a few differences that should be noted. The test subject in question began screaming about wookiee younglings and how mounds of its clan and children were burning, rotting, and melting even. Shortly after, the more physical irregularities could be noticed.\n\nThe wookiee's throat began to inflate, much like a balloon, as it started choking and gagging, suffocating from whatever fluid was likely building up. It eventually grew so much that it even popped like such a balloon, leading the wookiee to expire within only a few seconds from blood loss. If it hadn't happened, though, it's likely it wouldn't have been long before the suffocation would have done so.\n\nPrior to the reanimation process that was evident in all other subjects, closer inspection revealed an acute swelling of the tongue, as well, blocking off any and all air through the throat. Bit harsh if you ask me. Suffocation, either way.\n\nFollowing reanimation, it shows aggression consistent with the other subjects, though perhaps a bit more-so due to the difference in strength with a wookiee.\n\nTests will continue. End of log.</c>"
           }
         },
         "DisarmDC": {
@@ -27085,7 +27085,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "The terminal appears to contain a database of experiment logs pertaining to this cell.\n\n----\n\n<cÿÿ >Effects of the Virus on Whiphid Biology:</c>\n\n<c ÿÿ>While it was rather difficult to perform a direct injection on such a creature, we did eventually manage. Within minutes, it began to show similar symptoms of insanity, consistent with every other test subjects. But the physical abnormalities separate it from the others.\n\nWhile necrosis isn't unusual in these tests, shortly after initial injection, the site began to suffer from heavy swelling and rapid necrosis. Following this, it seemed to rapidly develop sores all over its body that quickly popped open and began spewing out think discharges of blood and puss. It was also noted that the tusks on the whiphid's lower jaw quickly changed colour to that of a sickly yellow shade.\n\nEven prior to death, the insanity almost seemed to give it a boost in strength, which ultimate led to the deaths of two personnel in the containment unit. Aside from that, however, the death and reanimation seems consistent with other subjects.\n\nTests will continue. End log.</c>"
+            "0": "The terminal appears to contain a database of experiment logs pertaining to this cell.\n\n----\n\n<cÃ¿Ã¿ >Effects of the Virus on Whiphid Biology:</c>\n\n<c Ã¿Ã¿>While it was rather difficult to perform a direct injection on such a creature, we did eventually manage. Within minutes, it began to show similar symptoms of insanity, consistent with every other test subjects. But the physical abnormalities separate it from the others.\n\nWhile necrosis isn't unusual in these tests, shortly after initial injection, the site began to suffer from heavy swelling and rapid necrosis. Following this, it seemed to rapidly develop sores all over its body that quickly popped open and began spewing out think discharges of blood and puss. It was also noted that the tusks on the whiphid's lower jaw quickly changed colour to that of a sickly yellow shade.\n\nEven prior to death, the insanity almost seemed to give it a boost in strength, which ultimate led to the deaths of two personnel in the containment unit. Aside from that, however, the death and reanimation seems consistent with other subjects.\n\nTests will continue. End log.</c>"
           }
         },
         "DisarmDC": {
@@ -55034,7 +55034,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "The screen on the observation terminal is badly damaged, flickering on and off and horribly distorted in places. One thing that can be made out from time to time, however, is:\n\n<cÿ  >CONTAINMENT BREACH</c>"
+            "0": "The screen on the observation terminal is badly damaged, flickering on and off and horribly distorted in places. One thing that can be made out from time to time, however, is:\n\n<cÃ¿  >CONTAINMENT BREACH</c>"
           }
         },
         "DisarmDC": {
@@ -140241,7 +140241,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "The readout shows information regarding the lockdown.\n\n<cÿ  >EJECTED CELL | CONTAINMENT PROCEDURES ACTIVE | LOCKDOWN IN EFFECT</c>\n\nThe message repeats."
+            "0": "The readout shows information regarding the lockdown.\n\n<cÃ¿  >EJECTED CELL | CONTAINMENT PROCEDURES ACTIVE | LOCKDOWN IN EFFECT</c>\n\nThe message repeats."
           }
         },
         "DisarmDC": {
@@ -140922,7 +140922,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "The readout shows information regarding the lockdown.\n\n<cÿ  >EXPLOSIVE DECOMPRESSION DETECTED | LOCKDOWN IN EFFECT</c>\n\nThe message repeats."
+            "0": "The readout shows information regarding the lockdown.\n\n<cÃ¿  >EXPLOSIVE DECOMPRESSION DETECTED | LOCKDOWN IN EFFECT</c>\n\nThe message repeats."
           }
         },
         "DisarmDC": {
@@ -141149,7 +141149,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "The readout shows information regarding the lockdown.\n\n<cÿ  >BIOHAZARD CONTAINMENT FAILURE | LOCKDOWN IN EFFECT</c>\n\nThe message repeats."
+            "0": "The readout shows information regarding the lockdown.\n\n<cÃ¿  >BIOHAZARD CONTAINMENT FAILURE | LOCKDOWN IN EFFECT</c>\n\nThe message repeats."
           }
         },
         "DisarmDC": {
@@ -141376,7 +141376,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "The readout shows information regarding the lockdown.\n\n<cÿ  >MANUAL OVERRIDE | LOCKDOWN IN EFFECT</c>\n\nThe message repeats."
+            "0": "The readout shows information regarding the lockdown.\n\n<cÃ¿  >MANUAL OVERRIDE | LOCKDOWN IN EFFECT</c>\n\nThe message repeats."
           }
         },
         "DisarmDC": {
@@ -141603,7 +141603,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "The readout shows information regarding the lockdown.\n\n<cÿ  >EXPLOSIVE DECOMPRESSION DETECTED | LOCKDOWN IN EFFECT</c>\n\nThe message repeats."
+            "0": "The readout shows information regarding the lockdown.\n\n<cÃ¿  >EXPLOSIVE DECOMPRESSION DETECTED | LOCKDOWN IN EFFECT</c>\n\nThe message repeats."
           }
         },
         "DisarmDC": {
@@ -151744,7 +151744,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "The readout shows information regarding the lockdown.\n\n<cÿ  >MANUAL OVERRIDE | LOCKDOWN IN EFFECT</c>\n\nThe message repeats."
+            "0": "The readout shows information regarding the lockdown.\n\n<cÃ¿  >MANUAL OVERRIDE | LOCKDOWN IN EFFECT</c>\n\nThe message repeats."
           }
         },
         "DisarmDC": {
@@ -154014,7 +154014,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "The readout shows information regarding the lockdown.\n\n<cÿ  >MANUAL OVERRIDE | LOCKDOWN IN EFFECT</c>\n\nThe message repeats."
+            "0": "The readout shows information regarding the lockdown.\n\n<cÃ¿  >MANUAL OVERRIDE | LOCKDOWN IN EFFECT</c>\n\nThe message repeats."
           }
         },
         "DisarmDC": {
@@ -160356,6 +160356,69 @@
         "ZPosition": {
           "type": "float",
           "value": -5.7220458984375e-006
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Stuck â€” zomb_abanstatio2"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "STUCK_WAYPOINT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_stuck"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 88.08110809326172
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 114.7992782592773
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -1.9073486328125e-006
         }
       }
     ]

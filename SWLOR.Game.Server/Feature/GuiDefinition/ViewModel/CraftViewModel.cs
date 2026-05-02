@@ -1433,9 +1433,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var item = CreateItemOnObject(recipe.Resref, Player, recipe.Quantity);
             var firstTime = !dbPlayer.CraftedRecipes.ContainsKey(_recipe);
             var propertyTransferChance = (int)(((float)_quality / (float)_maxQuality) * 100);
-            var qualityPercent = (float)_quality / (float)_maxQuality; 
+            var qualityPercent = (float)_quality / (float)_maxQuality;
 
-            ItemPlugin.SetAddGoldPieceValue(item, (int) (30 * ((recipe.Level / 10f) + 1) + 3.5f * recipe.Level));
+            // Vendor bonus scales with recipe level (stronger at high level) and craft quality.
+            const float LevelScalingPerRecipeLevel = 5.5f;
+            var levelBonus = 30 * ((recipe.Level / 10f) + 1) + LevelScalingPerRecipeLevel * recipe.Level;
+            var addGoldPiece = (int)Math.Round(levelBonus * qualityPercent);
+            ItemPlugin.SetAddGoldPieceValue(item, addGoldPiece);
 
             // Apply item properties provided by enhancements, provided the transfer check passes.
             var allProperties = _itemPropertiesEnhancement1

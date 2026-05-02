@@ -127,7 +127,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText("Looks like P3DR0's going to be able to party. Make sure you talk to them!")
 
-                .AddGoldReward(5000)
+                .AddGoldReward(7500)
                 .AddXPReward(2500)
                 .AddItemReward("recipe_fabdance1", 1);
         }

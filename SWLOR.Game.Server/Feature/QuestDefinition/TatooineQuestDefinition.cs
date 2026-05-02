@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText("Report back to the dockmaster.")
 
-                .AddGoldReward(500)
+                .AddGoldReward(750)
                 .AddXPReward(1750);
         }
 
@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .SetStateJournalText("You've agreed to take care of those pesky, stinky, womprats. Slay them and return 10 hides to Haderach in Anchorhead.")
                 .AddCollectItemObjective("womprathide", 10)
 
-                .AddGoldReward(1000)
+                .AddGoldReward(1500)
                 .AddXPReward(1750);
         }
 
@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText("That's all those Tuskens taken care of. Go talk to that man!")
 
-                .AddGoldReward(7500)
+                .AddGoldReward(11250)
                 .AddXPReward(7500)
                 .AddItemReward("recipe_hazrdwall", 1);
         }

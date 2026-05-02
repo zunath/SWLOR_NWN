@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                .SetStateJournalText("Return to the farmer and deliver the stolen blue milk.")
 
                .AddXPReward(4000)
-               .AddGoldReward(2500);
+               .AddGoldReward(3750);
         }
         private void CullVoritorLizardThreat()
         {
@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText("Return to Jason in the Dantooine Colony and report your progress.")
 
-                .AddGoldReward(4000)
+                .AddGoldReward(6000)
                 .AddXPReward(5000);
         }
 
@@ -64,7 +64,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .SetStateJournalText("You delivered the kolto injections and medi syringes to the clinic. Talk to the clinic staff for your reward.")
 
                 .AddXPReward(4000)
-                .AddGoldReward(5000)
+                .AddGoldReward(7500)
                 .AddItemReward("med_supplies", 20)
                 .AddItemReward("stim_pack", 10)
                 .AddItemReward("wild_sandwich", 1);
@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .SetStateJournalText("You delivered the hay bundles to the farmer. Talk to the farmer for your reward.")
 
                 .AddXPReward(2000)
-                .AddGoldReward(1000);
+                .AddGoldReward(1500);
         }
         private void HarvestingHerbs()
         {
@@ -97,7 +97,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                .SetStateJournalText("Deliver the herbs to the healer in the Colony.")
 
                .AddXPReward(600)
-               .AddGoldReward(200);
+               .AddGoldReward(300);
         }
         private void FetchPetTreat()
         {
@@ -111,7 +111,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                .SetStateJournalText("Return to the battlegym trainer with the Yot Beans.")
 
                .AddXPReward(2000)
-               .AddGoldReward(1500)
+               .AddGoldReward(2250)
                .AddItemReward("pf_dryfruit_5", 1)
                .AddItemReward("pf_sourfruit_1", 1);
         }
@@ -129,7 +129,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                .AddItemReward("emerald", 2)
                .AddXPReward(5000)
-               .AddGoldReward(3000);
+               .AddGoldReward(4500);
         }
         private void HiddenCave()
         {
@@ -142,7 +142,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText("You defeated the Kinrath Queen. Return to Joran for that shovel.")
 
-                .AddGoldReward(7500)
+                .AddGoldReward(11250)
                 .AddXPReward(12000)
 
                 .OnCompleteAction((player, sourceObject) =>

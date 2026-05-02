@@ -691,7 +691,7 @@
         },
         "Y": {
           "type": "float",
-          "value": 97.40000152587891
+          "value": 97.4000015258789
         },
         "Z": {
           "type": "float",
@@ -2010,7 +2010,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.748454678818234e-007
+          "value": 1.748454678818234e-07
         },
         "CloseLockDC": {
           "type": "byte",
@@ -2226,7 +2226,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.748454678818234e-007
+          "value": 1.748454678818234e-07
         },
         "CloseLockDC": {
           "type": "byte",
@@ -2442,7 +2442,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.748454678818234e-007
+          "value": 1.748454678818234e-07
         },
         "CloseLockDC": {
           "type": "byte",
@@ -3096,7 +3096,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.222045729169622e-006
+          "value": -5.222045729169622e-06
         }
       },
       {
@@ -3321,7 +3321,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.222045729169622e-006
+          "value": -5.222045729169622e-06
         }
       },
       {
@@ -3546,7 +3546,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.222045729169622e-006
+          "value": -5.222045729169622e-06
         }
       },
       {
@@ -3773,7 +3773,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -3996,11 +3996,11 @@
         },
         "Y": {
           "type": "float",
-          "value": 97.92019653320313
+          "value": 97.92019653320312
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       }
     ]
@@ -4019,6 +4019,70 @@
   },
   "WaypointList": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Stuck — vrotrcorelclouds"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "STUCK_WAYPOINT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_stuck"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 25.019998032259366
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 128.32999877929586
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.0
+        }
+      }
+    ]
   }
 }

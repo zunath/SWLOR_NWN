@@ -501,7 +501,7 @@
         },
         "X": {
           "type": "float",
-          "value": 88.71499633789063
+          "value": 88.71499633789062
         },
         "Y": {
           "type": "float",
@@ -1176,7 +1176,7 @@
         },
         "X": {
           "type": "float",
-          "value": 84.79922485351563
+          "value": 84.79922485351562
         },
         "Y": {
           "type": "float",
@@ -2303,11 +2303,11 @@
         },
         "X": {
           "type": "float",
-          "value": 8.909999847412109
+          "value": 8.90999984741211
         },
         "Y": {
           "type": "float",
-          "value": 97.23000335693359
+          "value": 97.2300033569336
         },
         "Z": {
           "type": "float",
@@ -4332,7 +4332,7 @@
         },
         "X": {
           "type": "float",
-          "value": 98.19131469726563
+          "value": 98.19131469726562
         },
         "Y": {
           "type": "float",
@@ -6815,7 +6815,7 @@
         },
         "X": {
           "type": "float",
-          "value": 4.76837158203125e-007
+          "value": 4.76837158203125e-07
         },
         "Y": {
           "type": "float",
@@ -9621,7 +9621,7 @@
               "__struct_id": 3,
               "PointX": {
                 "type": "float",
-                "value": 0.5810623168945313
+                "value": 0.5810623168945312
               },
               "PointY": {
                 "type": "float",
@@ -10059,6 +10059,69 @@
         "ZPosition": {
           "type": "float",
           "value": -0.4648595452308655
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Stuck — ossu_wastesruin"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "STUCK_WAYPOINT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_stuck"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 119.8993606567383
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 91.29341125488281
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -0.4999923706054688
         }
       }
     ]

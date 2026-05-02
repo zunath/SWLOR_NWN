@@ -284,7 +284,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -1499,7 +1499,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Détritus"
+            "0": "DÃ©tritus"
           }
         },
         "OnClick": {
@@ -2176,7 +2176,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Détritus"
+            "0": "DÃ©tritus"
           }
         },
         "OnClick": {
@@ -2313,7 +2313,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -7.62939453125e-006
+          "value": -7.62939453125e-06
         }
       },
       {
@@ -2538,7 +2538,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -7.62939453125e-006
+          "value": -7.62939453125e-06
         }
       },
       {
@@ -2988,7 +2988,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -7.62939453125e-006
+          "value": -7.62939453125e-06
         }
       },
       {
@@ -3213,7 +3213,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 7.62939453125e-006
+          "value": 7.62939453125e-06
         }
       },
       {
@@ -3438,7 +3438,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -3751,7 +3751,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vieilles pièces détachées de droïd"
+            "2": "Vieilles piÃ¨ces dÃ©tachÃ©es de droÃ¯d"
           }
         },
         "OnClick": {
@@ -3888,7 +3888,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -7.152557373046875e-006
+          "value": -7.152557373046875e-06
         }
       },
       {
@@ -3978,7 +3978,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Détritus"
+            "0": "DÃ©tritus"
           }
         },
         "OnClick": {
@@ -4115,7 +4115,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -7.152557373046875e-006
+          "value": -7.152557373046875e-06
         }
       },
       {
@@ -4727,7 +4727,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 72.16860961914063
+          "value": 72.16860961914062
         },
         "YPosition": {
           "type": "float",
@@ -4847,7 +4847,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 69.25466918945313
+          "value": 69.25466918945312
         },
         "YPosition": {
           "type": "float",
@@ -5051,7 +5051,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 82.67722320556641
+          "value": 82.6772232055664
         },
         "YOrientation": {
           "type": "float",
@@ -5166,7 +5166,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -8.344650268554688e-006
+          "value": -8.344650268554688e-06
         }
       },
       {
@@ -5292,7 +5292,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -5414,7 +5414,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.222045729169622e-006
+          "value": -5.222045729169622e-06
         }
       },
       {
@@ -5540,7 +5540,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -5603,7 +5603,70 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Stuck â€” tat_brokenjawa"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "STUCK_WAYPOINT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_stuck"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 82.18108367919922
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 80.65853118896484
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -5.222045729169622e-06
         }
       }
     ]

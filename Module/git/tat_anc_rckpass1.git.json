@@ -1409,7 +1409,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 9.994228363037109
+          "value": 9.99422836303711
         }
       },
       {
@@ -2831,7 +2831,7 @@
               },
               "PointY": {
                 "type": "float",
-                "value": -9.171707153320313
+                "value": -9.171707153320312
               },
               "PointZ": {
                 "type": "float",
@@ -3140,7 +3140,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 2.102055759678478e-006
+          "value": 2.102055759678478e-06
         },
         "YPosition": {
           "type": "float",
@@ -3193,7 +3193,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.9807849526405335
+          "value": 0.9807849526405334
         },
         "XPosition": {
           "type": "float",
@@ -3524,7 +3524,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": 9.999997138977051
+          "value": 9.99999713897705
         }
       },
       {
@@ -4016,7 +4016,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 85.09511566162109
+          "value": 85.0951156616211
         },
         "YOrientation": {
           "type": "float",
@@ -4029,6 +4029,69 @@
         "ZPosition": {
           "type": "float",
           "value": 8.717172622680664
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Stuck — tat_anc_rckpass1"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "STUCK_WAYPOINT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_stuck"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 83.10678100585938
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 35.6746826171875
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 5.009992599487305
         }
       }
     ]

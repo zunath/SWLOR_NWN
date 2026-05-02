@@ -100,7 +100,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "",
-            "2": "Des détritus contenant peut-être des objets utiles à récupérer."
+            "2": "Des dÃ©tritus contenant peut-Ãªtre des objets utiles Ã  rÃ©cupÃ©rer."
           }
         },
         "DisarmDC": {
@@ -150,7 +150,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Détritus"
+            "0": "DÃ©tritus"
           }
         },
         "OnClick": {
@@ -328,7 +328,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "",
-            "2": "Des détritus contenant peut-être des objets utiles à récupérer."
+            "2": "Des dÃ©tritus contenant peut-Ãªtre des objets utiles Ã  rÃ©cupÃ©rer."
           }
         },
         "DisarmDC": {
@@ -378,7 +378,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Détritus"
+            "0": "DÃ©tritus"
           }
         },
         "OnClick": {
@@ -556,7 +556,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "",
-            "2": "Des détritus contenant peut-être des objets utiles à récupérer."
+            "2": "Des dÃ©tritus contenant peut-Ãªtre des objets utiles Ã  rÃ©cupÃ©rer."
           }
         },
         "DisarmDC": {
@@ -606,7 +606,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Détritus"
+            "0": "DÃ©tritus"
           }
         },
         "OnClick": {
@@ -784,7 +784,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Véhicule - Pod Racer"
+            "2": "VÃ©hicule - Pod Racer"
           }
         },
         "Looping": {
@@ -1695,7 +1695,7 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 99.99295043945313
+          "value": 99.99295043945312
         },
         "ZOrientation": {
           "type": "float",
@@ -1999,7 +1999,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 2.102055759678478e-006
+          "value": 2.102055759678478e-06
         },
         "YPosition": {
           "type": "float",
@@ -2007,7 +2007,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.222045729169622e-006
+          "value": -5.222045729169622e-06
         }
       },
       {
@@ -2060,7 +2060,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 2.102055759678478e-006
+          "value": 2.102055759678478e-06
         },
         "YPosition": {
           "type": "float",
@@ -2113,7 +2113,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 6.111460152169457e-006
+          "value": 6.111460152169457e-06
         },
         "XPosition": {
           "type": "float",
@@ -2129,7 +2129,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -2318,7 +2318,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -2760,6 +2760,69 @@
         "ZPosition": {
           "type": "float",
           "value": 3.780147552490234
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Stuck â€” tat_anc_northhil"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "STUCK_WAYPOINT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_stuck"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 154.0715179443359
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 105.106071472168
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -5.222045729169622e-06
         }
       }
     ]

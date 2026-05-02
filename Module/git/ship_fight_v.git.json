@@ -303,7 +303,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.404391967307061e-026
+          "value": 1.404391967307061e-26
         },
         "BodyBag": {
           "type": "byte",
@@ -757,7 +757,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 5.006789706385462e-006
+          "value": 5.006789706385462e-06
         },
         "BodyBag": {
           "type": "byte",
@@ -984,7 +984,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 5.006789706385462e-006
+          "value": 5.006789706385462e-06
         },
         "BodyBag": {
           "type": "byte",
@@ -4139,7 +4139,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -4158,7 +4158,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 5.006789706385462e-006
+          "value": 5.006789706385462e-06
         },
         "BodyBag": {
           "type": "byte",
@@ -5970,7 +5970,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.622604142743512e-006
+          "value": 2.622604142743512e-06
         },
         "BodyBag": {
           "type": "byte",
@@ -6195,7 +6195,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.622604142743512e-006
+          "value": 2.622604142743512e-06
         },
         "BodyBag": {
           "type": "byte",
@@ -6420,7 +6420,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.622604142743512e-006
+          "value": 2.622604142743512e-06
         },
         "BodyBag": {
           "type": "byte",
@@ -6645,7 +6645,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.622604142743512e-006
+          "value": 2.622604142743512e-06
         },
         "BodyBag": {
           "type": "byte",
@@ -6870,7 +6870,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.622604142743512e-006
+          "value": 2.622604142743512e-06
         },
         "BodyBag": {
           "type": "byte",
@@ -7095,7 +7095,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.622604142743512e-006
+          "value": 2.622604142743512e-06
         },
         "BodyBag": {
           "type": "byte",
@@ -7320,7 +7320,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.622604142743512e-006
+          "value": 2.622604142743512e-06
         },
         "BodyBag": {
           "type": "byte",
@@ -7545,7 +7545,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.622604142743512e-006
+          "value": 2.622604142743512e-06
         },
         "BodyBag": {
           "type": "byte",
@@ -7770,7 +7770,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.622604142743512e-006
+          "value": 2.622604142743512e-06
         },
         "BodyBag": {
           "type": "byte",
@@ -16102,7 +16102,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -16723,7 +16723,70 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Stuck — ship_fight_v"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "STUCK_WAYPOINT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_stuck"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 13.7842903137207
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 14.19180202484131
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -5.7220458984375e-06
         }
       }
     ]

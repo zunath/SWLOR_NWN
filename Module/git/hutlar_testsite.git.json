@@ -2111,7 +2111,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.129973665773722e-043
+          "value": 2.129973665773722e-43
         },
         "BodyBag": {
           "type": "byte",
@@ -4381,7 +4381,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.401298464324817e-045
+          "value": 1.401298464324817e-45
         },
         "BodyBag": {
           "type": "byte",
@@ -4581,7 +4581,7 @@
         },
         "X": {
           "type": "float",
-          "value": 9.159999847412109
+          "value": 9.15999984741211
         },
         "Y": {
           "type": "float",
@@ -5516,7 +5516,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.94694096490824e-038
+          "value": 1.94694096490824e-38
         },
         "BodyBag": {
           "type": "byte",
@@ -5743,7 +5743,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.322495492300555e-037
+          "value": 1.322495492300555e-37
         },
         "BodyBag": {
           "type": "byte",
@@ -6197,7 +6197,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 5.008048969025426e-036
+          "value": 5.008048969025426e-36
         },
         "BodyBag": {
           "type": "byte",
@@ -9581,7 +9581,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -12056,7 +12056,7 @@
         },
         "Y": {
           "type": "float",
-          "value": 70.76564788818359
+          "value": 70.7656478881836
         },
         "Z": {
           "type": "float",
@@ -12840,7 +12840,7 @@
               },
               "PointZ": {
                 "type": "float",
-                "value": 0.07392414659261704
+                "value": 0.07392414659261703
               }
             },
             {
@@ -13545,6 +13545,69 @@
         "ZPosition": {
           "type": "float",
           "value": 0.1140768527984619
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Stuck — hutlar_testsite"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "STUCK_WAYPOINT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_stuck"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 84.35582733154297
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 6.645844459533691
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.1575526595115662
         }
       }
     ]

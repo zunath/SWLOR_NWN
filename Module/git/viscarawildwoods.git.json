@@ -1697,7 +1697,7 @@
         },
         "X": {
           "type": "float",
-          "value": 77.53176116943359
+          "value": 77.5317611694336
         },
         "Y": {
           "type": "float",
@@ -2605,7 +2605,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.09698066115379334
+          "value": 0.09698066115379333
         }
       },
       {
@@ -5910,7 +5910,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 2.102055759678478e-006
+          "value": 2.102055759678478e-06
         },
         "YPosition": {
           "type": "float",
@@ -6730,7 +6730,7 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 71.61667633056641
+          "value": 71.6166763305664
         },
         "ZPosition": {
           "type": "float",
@@ -6970,7 +6970,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.5956986546516419
+          "value": 0.5956986546516418
         },
         "XPosition": {
           "type": "float",
@@ -7041,7 +7041,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.09801651537418366
+          "value": -0.09801651537418365
         },
         "YPosition": {
           "type": "float",
@@ -7104,7 +7104,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.7071069478988648
+          "value": 0.7071069478988647
         },
         "YPosition": {
           "type": "float",
@@ -7738,7 +7738,7 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 67.11598968505859
+          "value": 67.1159896850586
         },
         "ZPosition": {
           "type": "float",
@@ -7864,7 +7864,7 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 73.31337738037109
+          "value": 73.3133773803711
         },
         "ZPosition": {
           "type": "float",
@@ -9750,7 +9750,7 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 82.47682952880859
+          "value": 82.4768295288086
         },
         "ZPosition": {
           "type": "float",
@@ -10447,7 +10447,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.06288993358612061
+          "value": 0.0628899335861206
         }
       },
       {
@@ -10574,6 +10574,69 @@
         "ZPosition": {
           "type": "float",
           "value": 0.08214759826660156
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Stuck — viscarawildwoods"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "STUCK_WAYPOINT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_stuck"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 10.24058532714844
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 141.0532379150391
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.2908931970596314
         }
       }
     ]

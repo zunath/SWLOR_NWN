@@ -7374,7 +7374,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 67.14321899414063
+          "value": 67.14321899414062
         },
         "YPosition": {
           "type": "float",
@@ -7734,7 +7734,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 69.26748657226563
+          "value": 69.26748657226562
         },
         "YPosition": {
           "type": "float",
@@ -9894,7 +9894,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 68.20535278320313
+          "value": 68.20535278320312
         },
         "YPosition": {
           "type": "float",
@@ -10614,7 +10614,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 67.87380218505859
+          "value": 67.8738021850586
         },
         "YPosition": {
           "type": "float",
@@ -13742,7 +13742,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -0.8196482658386231
+          "value": -0.819648265838623
         }
       },
       {
@@ -20954,7 +20954,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 83.28249359130859
+          "value": 83.2824935913086
         },
         "YPosition": {
           "type": "float",
@@ -21081,7 +21081,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 74.53769683837891
+          "value": 74.5376968383789
         },
         "YPosition": {
           "type": "float",
@@ -21339,7 +21339,7 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 87.47341918945313
+          "value": 87.47341918945312
         },
         "ZPosition": {
           "type": "float",
@@ -21716,7 +21716,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 84.66526031494141
+          "value": 84.6652603149414
         },
         "YPosition": {
           "type": "float",
@@ -26666,7 +26666,7 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 88.71213531494141
+          "value": 88.7121353149414
         },
         "ZPosition": {
           "type": "float",
@@ -26939,6 +26939,70 @@
   },
   "WaypointList": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Stuck — tat_babysarlacc"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "STUCK_WAYPOINT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_stuck"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 45.5
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 138.62000732421882
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.0
+        }
+      }
+    ]
   }
 }

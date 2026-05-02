@@ -1231,11 +1231,11 @@
         },
         "Y": {
           "type": "float",
-          "value": 8.329380035400391
+          "value": 8.32938003540039
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -1275,7 +1275,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "Almost all data has been purged on the terminal, but there is one message oddly left behind for someone to see, or perhaps something that escaped the data purge.\n\n<cÿ~ >Things will be difficult moving forward, but my work here has shown resounding success. Taking Drear's research and utilizing it as a weapon in itself feels like a stroke of genius, but I can't forget the years of pain and effort taken to reach this. Years of gaining trust on Odacer-Faustin. Years of searching the tower. Years of working my way up the chain in Czerka. But now I've succeeded in my pursuits.\n\nLet this facility be proof of my successes here, now. No one survives, though. Can't have any loose ends. That's why I've taken the liberty of administering this \"sickness\" into the food supply. It's possible one or two of them could be immune, but--[DATA CORRUPTED]-- getting back on track, I'll move forth to further this goal and proceed where Drear failed.</c>\n\nOne more thing that can be gleamed from the information remaining on the termal is a word: \"Vecten\""
+            "0": "Almost all data has been purged on the terminal, but there is one message oddly left behind for someone to see, or perhaps something that escaped the data purge.\n\n<cÃ¿~ >Things will be difficult moving forward, but my work here has shown resounding success. Taking Drear's research and utilizing it as a weapon in itself feels like a stroke of genius, but I can't forget the years of pain and effort taken to reach this. Years of gaining trust on Odacer-Faustin. Years of searching the tower. Years of working my way up the chain in Czerka. But now I've succeeded in my pursuits.\n\nLet this facility be proof of my successes here, now. No one survives, though. Can't have any loose ends. That's why I've taken the liberty of administering this \"sickness\" into the food supply. It's possible one or two of them could be immune, but--[DATA CORRUPTED]-- getting back on track, I'll move forth to further this goal and proceed where Drear failed.</c>\n\nOne more thing that can be gleamed from the information remaining on the termal is a word: \"Vecten\""
           }
         },
         "DisarmDC": {
@@ -1458,11 +1458,11 @@
         },
         "Y": {
           "type": "float",
-          "value": 8.642971038818359
+          "value": 8.64297103881836
         },
         "Z": {
           "type": "float",
-          "value": -3.814697265625e-006
+          "value": -3.814697265625e-06
         }
       },
       {
@@ -1916,7 +1916,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -3274,7 +3274,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 7.62939453125e-006
+          "value": 7.62939453125e-06
         }
       },
       {
@@ -3499,7 +3499,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -3726,7 +3726,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -3953,7 +3953,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -4180,7 +4180,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -4407,7 +4407,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -4634,7 +4634,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -5313,7 +5313,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -5538,7 +5538,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.5621523261070252
+          "value": -0.5621523261070251
         }
       },
       {
@@ -5763,7 +5763,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -5988,7 +5988,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 1.192092895507813e-007
+          "value": 1.192092895507813e-07
         }
       },
       {
@@ -6213,7 +6213,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -6438,7 +6438,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -6663,7 +6663,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -6888,7 +6888,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -7115,7 +7115,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -8465,7 +8465,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -8690,7 +8690,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 1.192092895507813e-007
+          "value": 1.192092895507813e-07
         }
       },
       {
@@ -8915,7 +8915,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 2.384185791015625e-007
+          "value": 2.384185791015625e-07
         }
       },
       {
@@ -9140,7 +9140,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -9365,7 +9365,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -9590,7 +9590,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -10044,7 +10044,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -10286,7 +10286,7 @@
         },
         "Y": {
           "type": "float",
-          "value": 8.409999847412109
+          "value": 8.40999984741211
         },
         "Z": {
           "type": "float",
@@ -10515,7 +10515,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -10740,7 +10740,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -2.384185791015625e-007
+          "value": -2.384185791015625e-07
         }
       },
       {
@@ -11439,7 +11439,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -11931,7 +11931,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "The controls are inaccessible, showing a single message on the screen.\n\n<cÿ  >STATION HANGAR BAY ACCESS | LOCKDOWN WHILE TRACTOR BEAM ACTIVE</c>"
+            "0": "The controls are inaccessible, showing a single message on the screen.\n\n<cÃ¿  >STATION HANGAR BAY ACCESS | LOCKDOWN WHILE TRACTOR BEAM ACTIVE</c>"
           }
         },
         "DisarmDC": {
@@ -12118,7 +12118,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -12906,7 +12906,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -2.296763113918132e-006
+          "value": -2.296763113918132e-06
         },
         "XPosition": {
           "type": "float",
@@ -12922,7 +12922,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -4.76837158203125e-007
+          "value": -4.76837158203125e-07
         }
       },
       {
@@ -12974,7 +12974,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 7.907536314633035e-007
+          "value": 7.907536314633035e-07
         },
         "YPosition": {
           "type": "float",
@@ -12982,7 +12982,70 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Stuck â€” zomb_abanstatio3"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "STUCK_WAYPOINT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_stuck"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 15.2797794342041
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 18.07762718200684
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -4.76837158203125e-07
         }
       }
     ]

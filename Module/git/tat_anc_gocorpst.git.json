@@ -248,7 +248,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Revêtement de droïde éboueur"
+                  "0": "RevÃªtement de droÃ¯de Ã©boueur"
                 }
               },
               "Metal1Color": {
@@ -416,7 +416,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Droid",
-            "2": "Droïde éboueur mécanique"
+            "2": "DroÃ¯de Ã©boueur mÃ©canique"
           }
         },
         "fortbonus": {
@@ -824,7 +824,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.483627319335938e-006
+          "value": -5.483627319335938e-06
         }
       },
       {
@@ -921,7 +921,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Host Droid",
-            "2": "Hôtesse droïde"
+            "2": "HÃ´tesse droÃ¯de"
           }
         },
         "fortbonus": {
@@ -1003,7 +1003,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Pièces détachées de droïd"
+                  "0": "PiÃ¨ces dÃ©tachÃ©es de droÃ¯d"
                 }
               },
               "ModelPart1": {
@@ -1478,7 +1478,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -1.517136661277618e-005
+          "value": -1.517136661277618e-05
         },
         "XPosition": {
           "type": "float",
@@ -1596,7 +1596,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Metal Door",
-            "2": "Porte métallique coulissante rouillée"
+            "2": "Porte mÃ©tallique coulissante rouillÃ©e"
           }
         },
         "OnClick": {
@@ -3090,7 +3090,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.483627319335938e-006
+          "value": -5.483627319335938e-06
         }
       },
       {
@@ -23055,7 +23055,7 @@
         },
         "X": {
           "type": "float",
-          "value": 8.539683341979981
+          "value": 8.53968334197998
         },
         "Y": {
           "type": "float",
@@ -24891,7 +24891,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 7.867813110351563e-006
+          "value": 7.867813110351562e-06
         }
       },
       {
@@ -25341,7 +25341,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.483627319335938e-006
+          "value": -5.483627319335938e-06
         }
       },
       {
@@ -25566,7 +25566,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 7.867813110351563e-006
+          "value": 7.867813110351562e-06
         }
       },
       {
@@ -26016,7 +26016,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.483627319335938e-006
+          "value": -5.483627319335938e-06
         }
       }
     ]
@@ -26334,7 +26334,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.483627319335938e-006
+          "value": -5.483627319335938e-06
         }
       },
       {
@@ -26464,7 +26464,70 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.483627319335938e-006
+          "value": -5.483627319335938e-06
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Stuck â€” tat_anc_gocorpst"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "STUCK_WAYPOINT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_stuck"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 5.001882553100586
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 11.02908802032471
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -5.483627319335938e-06
         }
       }
     ]

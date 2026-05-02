@@ -1213,7 +1213,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.536350220427919e-043
+          "value": 2.536350220427919e-43
         },
         "BodyBag": {
           "type": "byte",
@@ -4162,7 +4162,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 8.267660939516421e-044
+          "value": 8.267660939516421e-44
         },
         "XPosition": {
           "type": "float",
@@ -4175,6 +4175,69 @@
         "YPosition": {
           "type": "float",
           "value": 315.1128234863281
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 5.025000095367432
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Stuck — hutlar_valley"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "STUCK_WAYPOINT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_stuck"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 314.82470703125
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 129.9095001220703
         },
         "ZPosition": {
           "type": "float",

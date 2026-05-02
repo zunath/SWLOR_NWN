@@ -1684,7 +1684,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -7.62939453125e-006
+          "value": -7.62939453125e-06
         }
       },
       {
@@ -3766,7 +3766,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -5848,7 +5848,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -8118,7 +8118,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -8343,7 +8343,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -8568,7 +8568,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -8793,7 +8793,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       }
     ]
@@ -8954,7 +8954,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Trafic aérien et terrestre"
+            "2": "Trafic aÃ©rien et terrestre"
           }
         },
         "Looping": {
@@ -9089,7 +9089,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Trafic aérien et terrestre"
+            "2": "Trafic aÃ©rien et terrestre"
           }
         },
         "Looping": {
@@ -9201,7 +9201,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 99.97695159912109
+          "value": 99.9769515991211
         },
         "YPosition": {
           "type": "float",
@@ -9405,7 +9405,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 99.02712249755859
+          "value": 99.0271224975586
         },
         "YOrientation": {
           "type": "float",
@@ -9453,7 +9453,7 @@
               },
               "PointY": {
                 "type": "float",
-                "value": 3.814697265625e-006
+                "value": 3.814697265625e-06
               },
               "PointZ": {
                 "type": "float",
@@ -9920,7 +9920,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 1.863637294263754e-006
+          "value": 1.863637294263754e-06
         },
         "YPosition": {
           "type": "float",
@@ -9928,7 +9928,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.222045729169622e-006
+          "value": -5.222045729169622e-06
         }
       },
       {
@@ -9981,7 +9981,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 1.863637294263754e-006
+          "value": 1.863637294263754e-06
         },
         "YPosition": {
           "type": "float",
@@ -9989,7 +9989,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -10034,7 +10034,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -4.442530098458519e-006
+          "value": -4.442530098458519e-06
         },
         "XPosition": {
           "type": "float",
@@ -10050,7 +10050,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -10333,7 +10333,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 92.06809234619141
+          "value": 92.0680923461914
         },
         "YOrientation": {
           "type": "float",
@@ -10405,6 +10405,69 @@
         "ZPosition": {
           "type": "float",
           "value": 4.99999475479126
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Stuck â€” tat_anc_southent"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "STUCK_WAYPOINT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_stuck"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 153.5948333740234
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 43.75641632080078
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -5.222045729169622e-06
         }
       }
     ]

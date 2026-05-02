@@ -342,7 +342,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Tenue médicale"
+                  "2": "Tenue mÃ©dicale"
                 }
               },
               "Metal1Color": {
@@ -552,7 +552,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Medic",
-            "2": "Infirmière"
+            "2": "InfirmiÃ¨re"
           }
         },
         "fortbonus": {
@@ -1028,7 +1028,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 2.102055759678478e-006
+          "value": 2.102055759678478e-06
         },
         "YPosition": {
           "type": "float",
@@ -1036,7 +1036,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -2034,7 +2034,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": 2.384185791015625e-007
+          "value": 2.384185791015625e-07
         }
       },
       {
@@ -2331,7 +2331,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Vêtements légers"
+                  "2": "VÃªtements lÃ©gers"
                 }
               },
               "Metal1Color": {
@@ -3053,7 +3053,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -3350,7 +3350,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Vêtements de ville"
+                  "2": "VÃªtements de ville"
                 }
               },
               "Metal1Color": {
@@ -4063,7 +4063,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 7.303553047677269e-006
+          "value": 7.303553047677269e-06
         },
         "XPosition": {
           "type": "float",
@@ -4079,7 +4079,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -4378,7 +4378,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Tenue médicale"
+                  "2": "Tenue mÃ©dicale"
                 }
               },
               "Metal1Color": {
@@ -4588,7 +4588,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Nurse",
-            "2": "Infirmière"
+            "2": "InfirmiÃ¨re"
           }
         },
         "fortbonus": {
@@ -5072,7 +5072,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -5372,7 +5372,7 @@
                 "type": "cexolocstring",
                 "value": {
                   "0": "Medical Outfit",
-                  "2": "Tenue médicale"
+                  "2": "Tenue mÃ©dicale"
                 }
               },
               "Metal1Color": {
@@ -5582,7 +5582,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Medic",
-            "2": "Infirmière"
+            "2": "InfirmiÃ¨re"
           }
         },
         "fortbonus": {
@@ -6066,7 +6066,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -6363,7 +6363,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Vêtements légers"
+                  "2": "VÃªtements lÃ©gers"
                 }
               },
               "Metal1Color": {
@@ -7057,7 +7057,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -4.76837158203125e-007
+          "value": -4.76837158203125e-07
         }
       },
       {
@@ -8047,7 +8047,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 2.102055759678478e-006
+          "value": 2.102055759678478e-06
         },
         "YPosition": {
           "type": "float",
@@ -8055,7 +8055,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -8355,7 +8355,7 @@
                 "type": "cexolocstring",
                 "value": {
                   "0": "Medical Outfit",
-                  "2": "Tenue médicale"
+                  "2": "Tenue mÃ©dicale"
                 }
               },
               "Metal1Color": {
@@ -8527,7 +8527,7 @@
                 "id": 90810,
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Peau d'humanoide blessé"
+                  "2": "Peau d'humanoide blessÃ©"
                 }
               },
               "ModelPart1": {
@@ -8693,7 +8693,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Medic",
-            "2": "Médecin"
+            "2": "MÃ©decin"
           }
         },
         "fortbonus": {
@@ -9161,7 +9161,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.9807849526405335
+          "value": 0.9807849526405334
         },
         "XPosition": {
           "type": "float",
@@ -9177,7 +9177,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -9476,7 +9476,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Tenue médicale"
+                  "2": "Tenue mÃ©dicale"
                 }
               },
               "Metal1Color": {
@@ -10177,7 +10177,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -10476,7 +10476,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Tenue médicale"
+                  "2": "Tenue mÃ©dicale"
                 }
               },
               "Metal1Color": {
@@ -10815,7 +10815,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Doctor",
-            "2": "Médecin"
+            "2": "MÃ©decin"
           }
         },
         "fortbonus": {
@@ -11283,7 +11283,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 1.935621412485489e-006
+          "value": 1.935621412485489e-06
         },
         "XPosition": {
           "type": "float",
@@ -11299,7 +11299,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -11598,7 +11598,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Tenue médicale"
+                  "2": "Tenue mÃ©dicale"
                 }
               },
               "Metal1Color": {
@@ -11807,7 +11807,7 @@
         "FirstName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Infirmière"
+            "2": "InfirmiÃ¨re"
           }
         },
         "fortbonus": {
@@ -12275,7 +12275,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 7.303553047677269e-006
+          "value": 7.303553047677269e-06
         },
         "XPosition": {
           "type": "float",
@@ -12291,7 +12291,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -12479,7 +12479,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Medical Droid",
-            "2": "Droïde protocolaire"
+            "2": "DroÃ¯de protocolaire"
           }
         },
         "fortbonus": {
@@ -12887,7 +12887,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -14528,7 +14528,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       }
     ]
@@ -14552,7 +14552,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -2.497514799415512e-007
+          "value": -2.497514799415512e-07
         },
         "CloseLockDC": {
           "type": "byte",
@@ -14630,7 +14630,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Door",
-            "2": "Porte métallique coulissante"
+            "2": "Porte mÃ©tallique coulissante"
           }
         },
         "OnClick": {
@@ -14770,7 +14770,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.93562186723284e-006
+          "value": -1.93562186723284e-06
         },
         "CloseLockDC": {
           "type": "byte",
@@ -14848,7 +14848,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Door",
-            "2": "Porte métallique coulissante vers le bas blanche"
+            "2": "Porte mÃ©tallique coulissante vers le bas blanche"
           }
         },
         "OnClick": {
@@ -15066,7 +15066,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Door",
-            "2": "Porte vitrée"
+            "2": "Porte vitrÃ©e"
           }
         },
         "OnClick": {
@@ -15284,7 +15284,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Door",
-            "2": "Porte métallique coulissante"
+            "2": "Porte mÃ©tallique coulissante"
           }
         },
         "OnClick": {
@@ -15501,7 +15501,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Porte métallique coulissante"
+            "2": "Porte mÃ©tallique coulissante"
           }
         },
         "OnClick": {
@@ -15641,7 +15641,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.93562186723284e-006
+          "value": -1.93562186723284e-06
         },
         "CloseLockDC": {
           "type": "byte",
@@ -15721,7 +15721,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Door",
-            "2": "Porte métallique coulissante"
+            "2": "Porte mÃ©tallique coulissante"
           }
         },
         "OnClick": {
@@ -16162,7 +16162,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Cuve à Bacta"
+            "0": "Cuve Ã  Bacta"
           }
         },
         "OnClick": {
@@ -16299,7 +16299,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -16527,7 +16527,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -16617,7 +16617,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Cuve à Bacta"
+            "0": "Cuve Ã  Bacta"
           }
         },
         "OnClick": {
@@ -16754,7 +16754,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -16982,7 +16982,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -17207,7 +17207,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -17248,7 +17248,7 @@
           "id": 14640,
           "type": "cexolocstring",
           "value": {
-            "2": "Des mouches bourdonnent autour du cadavre fétide. Le corps est recroquevillé dans une position foetale comme si la victime avait eu très froid ou très mal."
+            "2": "Des mouches bourdonnent autour du cadavre fÃ©tide. Le corps est recroquevillÃ© dans une position foetale comme si la victime avait eu trÃ¨s froid ou trÃ¨s mal."
           }
         },
         "DisarmDC": {
@@ -17299,7 +17299,7 @@
           "id": 14641,
           "type": "cexolocstring",
           "value": {
-            "2": "Bléssé grave"
+            "2": "BlÃ©ssÃ© grave"
           }
         },
         "OnClick": {
@@ -17526,7 +17526,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Cuve à Bacta"
+            "0": "Cuve Ã  Bacta"
           }
         },
         "OnClick": {
@@ -17663,7 +17663,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -18113,7 +18113,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -18132,7 +18132,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.93562186723284e-006
+          "value": -1.93562186723284e-06
         },
         "BodyBag": {
           "type": "byte",
@@ -18201,7 +18201,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Cuve à bacta vide"
+            "2": "Cuve Ã  bacta vide"
           }
         },
         "OnClick": {
@@ -18338,7 +18338,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -18788,7 +18788,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 7.62939453125e-006
+          "value": 7.62939453125e-06
         }
       },
       {
@@ -19013,7 +19013,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -19241,7 +19241,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -19331,7 +19331,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Cuve à Bacta"
+            "0": "Cuve Ã  Bacta"
           }
         },
         "OnClick": {
@@ -19468,7 +19468,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -19696,7 +19696,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -19924,7 +19924,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -20152,7 +20152,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -20171,7 +20171,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.93562186723284e-006
+          "value": -1.93562186723284e-06
         },
         "BodyBag": {
           "type": "byte",
@@ -20380,7 +20380,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -20608,7 +20608,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -20836,7 +20836,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -21064,7 +21064,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 1.192092895507813e-007
+          "value": 1.192092895507813e-07
         }
       },
       {
@@ -21292,7 +21292,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -21520,7 +21520,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -21748,7 +21748,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -21767,7 +21767,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.93562186723284e-006
+          "value": -1.93562186723284e-06
         },
         "BodyBag": {
           "type": "byte",
@@ -21976,7 +21976,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 7.62939453125e-006
+          "value": 7.62939453125e-06
         }
       },
       {
@@ -21995,7 +21995,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.93562186723284e-006
+          "value": -1.93562186723284e-06
         },
         "BodyBag": {
           "type": "byte",
@@ -22204,7 +22204,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -22223,7 +22223,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.93562186723284e-006
+          "value": -1.93562186723284e-06
         },
         "BodyBag": {
           "type": "byte",
@@ -22432,7 +22432,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -22522,7 +22522,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Caméra de surveillance"
+            "0": "CamÃ©ra de surveillance"
           }
         },
         "OnClick": {
@@ -22678,7 +22678,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.93562186723284e-006
+          "value": -1.93562186723284e-06
         },
         "BodyBag": {
           "type": "byte",
@@ -22887,7 +22887,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -22906,7 +22906,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.93562186723284e-006
+          "value": -1.93562186723284e-06
         },
         "BodyBag": {
           "type": "byte",
@@ -23112,7 +23112,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -23360,7 +23360,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -23379,7 +23379,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.93562186723284e-006
+          "value": -1.93562186723284e-06
         },
         "BodyBag": {
           "type": "byte",
@@ -23810,7 +23810,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -23829,7 +23829,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.93562186723284e-006
+          "value": -1.93562186723284e-06
         },
         "BodyBag": {
           "type": "byte",
@@ -24035,7 +24035,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -24260,7 +24260,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -24485,7 +24485,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -24710,7 +24710,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -25388,7 +25388,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -25616,7 +25616,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -25844,7 +25844,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -26069,7 +26069,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -26294,7 +26294,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -26519,7 +26519,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -27421,7 +27421,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -27667,7 +27667,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.598448648110207e-006
+          "value": -1.598448648110207e-06
         },
         "BodyBag": {
           "type": "byte",
@@ -27873,7 +27873,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -28100,7 +28100,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -28327,7 +28327,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -28554,7 +28554,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -28779,7 +28779,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -29004,7 +29004,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -29229,7 +29229,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -29454,7 +29454,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -29679,7 +29679,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -29906,7 +29906,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -30133,7 +30133,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -30360,7 +30360,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -30587,7 +30587,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -30677,7 +30677,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Cuve à Bacta"
+            "0": "Cuve Ã  Bacta"
           }
         },
         "OnClick": {
@@ -30814,7 +30814,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -30904,7 +30904,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Cuve à Bacta"
+            "0": "Cuve Ã  Bacta"
           }
         },
         "OnClick": {
@@ -31041,7 +31041,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -31129,7 +31129,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Etagère Cantina",
+            "0": "EtagÃ¨re Cantina",
             "2": "Comptoir noir"
           }
         },
@@ -31267,7 +31267,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -31492,7 +31492,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -31580,7 +31580,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Etagère Cantina",
+            "0": "EtagÃ¨re Cantina",
             "2": "Comptoir noir"
           }
         },
@@ -31718,7 +31718,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -31806,7 +31806,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Etagère Cantina",
+            "0": "EtagÃ¨re Cantina",
             "2": "Comptoir noir"
           }
         },
@@ -31944,7 +31944,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -32032,7 +32032,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Etagère Cantina",
+            "0": "EtagÃ¨re Cantina",
             "2": "Comptoir noir"
           }
         },
@@ -32170,7 +32170,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -32189,7 +32189,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.598448648110207e-006
+          "value": -1.598448648110207e-06
         },
         "BodyBag": {
           "type": "byte",
@@ -32397,7 +32397,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -33843,7 +33843,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Cuve à Bacta"
+            "0": "Cuve Ã  Bacta"
           }
         },
         "OnClick": {
@@ -33980,7 +33980,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -34068,7 +34068,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Etagère Cantina",
+            "0": "EtagÃ¨re Cantina",
             "2": "Comptoir noir"
           }
         },
@@ -34206,7 +34206,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -34294,7 +34294,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Etagère Cantina",
+            "0": "EtagÃ¨re Cantina",
             "2": "Comptoir noir"
           }
         },
@@ -34432,7 +34432,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 7.62939453125e-006
+          "value": 7.62939453125e-06
         }
       },
       {
@@ -34520,7 +34520,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Etagère Cantina",
+            "0": "EtagÃ¨re Cantina",
             "2": "Comptoir noir"
           }
         },
@@ -34650,7 +34650,7 @@
         },
         "X": {
           "type": "float",
-          "value": 0.6463699340820313
+          "value": 0.6463699340820312
         },
         "Y": {
           "type": "float",
@@ -34658,7 +34658,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -34746,7 +34746,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Etagère Cantina",
+            "0": "EtagÃ¨re Cantina",
             "2": "Comptoir noir"
           }
         },
@@ -34884,7 +34884,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 7.62939453125e-006
+          "value": 7.62939453125e-06
         }
       },
       {
@@ -34972,7 +34972,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Etagère Cantina",
+            "0": "EtagÃ¨re Cantina",
             "2": "Comptoir noir"
           }
         },
@@ -35110,7 +35110,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -35198,7 +35198,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Etagère Cantina",
+            "0": "EtagÃ¨re Cantina",
             "2": "Comptoir noir"
           }
         },
@@ -35336,7 +35336,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -35788,7 +35788,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -35807,7 +35807,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.598448648110207e-006
+          "value": -1.598448648110207e-06
         },
         "BodyBag": {
           "type": "byte",
@@ -36015,7 +36015,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -36034,7 +36034,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.598448648110207e-006
+          "value": -1.598448648110207e-06
         },
         "BodyBag": {
           "type": "byte",
@@ -36242,7 +36242,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -36467,7 +36467,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -36692,7 +36692,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -36711,7 +36711,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.598448648110207e-006
+          "value": -1.598448648110207e-06
         },
         "BodyBag": {
           "type": "byte",
@@ -37165,7 +37165,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.598448648110207e-006
+          "value": -1.598448648110207e-06
         },
         "BodyBag": {
           "type": "byte",
@@ -37600,7 +37600,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -37827,7 +37827,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -2.384185791015625e-007
+          "value": -2.384185791015625e-07
         }
       },
       {
@@ -38281,7 +38281,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 1.192092895507813e-007
+          "value": 1.192092895507813e-07
         }
       },
       {
@@ -38508,7 +38508,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -1.192092895507813e-007
+          "value": -1.192092895507813e-07
         }
       },
       {
@@ -38735,7 +38735,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -38962,7 +38962,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -39189,7 +39189,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -39416,7 +39416,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -39643,7 +39643,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -39870,7 +39870,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -39889,7 +39889,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.93562186723284e-006
+          "value": -1.93562186723284e-06
         },
         "BodyBag": {
           "type": "byte",
@@ -40095,7 +40095,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -40114,7 +40114,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.93562186723284e-006
+          "value": -1.93562186723284e-06
         },
         "BodyBag": {
           "type": "byte",
@@ -40320,7 +40320,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -40547,7 +40547,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -1.192092895507813e-007
+          "value": -1.192092895507813e-07
         }
       },
       {
@@ -40772,7 +40772,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -40999,7 +40999,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -41226,7 +41226,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -41473,7 +41473,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -41923,7 +41923,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -42148,7 +42148,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -42395,7 +42395,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -42642,7 +42642,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       }
     ]
@@ -42683,7 +42683,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Régulateur cardiac"
+            "2": "RÃ©gulateur cardiac"
           }
         },
         "Looping": {
@@ -44004,7 +44004,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Régulateur cardiac"
+            "2": "RÃ©gulateur cardiac"
           }
         },
         "Looping": {
@@ -44125,7 +44125,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Régulateur cardiac"
+            "2": "RÃ©gulateur cardiac"
           }
         },
         "Looping": {
@@ -44235,7 +44235,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vente du centre médical d'Anchorhead"
+            "2": "Vente du centre mÃ©dical d'Anchorhead"
           }
         },
         "MarkDown": {
@@ -44489,7 +44489,7 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "2": "Gélule de traitement des maladies"
+                        "2": "GÃ©lule de traitement des maladies"
                       }
                     },
                     "ModelPart1": {
@@ -44766,7 +44766,7 @@
                       "type": "cexolocstring",
                       "value": {
                         "0": "Emulateur de carte ID",
-                        "2": "Kit de réanimation"
+                        "2": "Kit de rÃ©animation"
                       }
                     },
                     "ModelPart1": {
@@ -44911,7 +44911,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 2.102055759678478e-006
+          "value": 2.102055759678478e-06
         },
         "YPosition": {
           "type": "float",
@@ -44919,7 +44919,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       }
     ]
@@ -45429,7 +45429,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -45488,7 +45488,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -45539,7 +45539,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -1.947482633113395e-005
+          "value": -1.947482633113395e-05
         },
         "YPosition": {
           "type": "float",
@@ -45547,7 +45547,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -45606,7 +45606,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -45665,7 +45665,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -45716,7 +45716,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 2.102055759678478e-006
+          "value": 2.102055759678478e-06
         },
         "YPosition": {
           "type": "float",
@@ -45724,7 +45724,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -45783,7 +45783,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -45826,7 +45826,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.9807849526405335
+          "value": 0.9807849526405334
         },
         "XPosition": {
           "type": "float",
@@ -45842,7 +45842,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -45901,7 +45901,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -45944,7 +45944,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.9807849526405335
+          "value": 0.9807849526405334
         },
         "XPosition": {
           "type": "float",
@@ -45960,7 +45960,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -46003,7 +46003,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.9807849526405335
+          "value": 0.9807849526405334
         },
         "XPosition": {
           "type": "float",
@@ -46019,7 +46019,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -46070,7 +46070,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.5350035429000855
+          "value": -0.5350035429000854
         },
         "YPosition": {
           "type": "float",
@@ -46078,7 +46078,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -46137,7 +46137,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -46196,7 +46196,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -46255,7 +46255,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -46306,7 +46306,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 2.102055759678478e-006
+          "value": 2.102055759678478e-06
         },
         "YPosition": {
           "type": "float",
@@ -46314,7 +46314,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -46373,7 +46373,70 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Stuck â€” tat_anc_medical"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "STUCK_WAYPOINT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_stuck"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 36.81706237792969
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 11.93673896789551
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -5.7220458984375e-06
         }
       }
     ]

@@ -1056,7 +1056,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.615272599272503e-022
+                "value": 1.615272599272503e-22
               },
               "XPosition": {
                 "type": "float",
@@ -1657,7 +1657,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -2371,7 +2371,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.723971321124716e-022
+                "value": 1.723971321124716e-22
               },
               "XPosition": {
                 "type": "float",
@@ -3271,7 +3271,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -4510,7 +4510,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 8.949062347412109
+          "value": 8.94906234741211
         },
         "YOrientation": {
           "type": "float",
@@ -4522,7 +4522,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -5203,7 +5203,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.870844347466895e-022
+                "value": 1.870844347466895e-22
               },
               "XPosition": {
                 "type": "float",
@@ -5804,7 +5804,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -6218,7 +6218,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.895576462131895e-022
+                "value": 1.895576462131895e-22
               },
               "XPosition": {
                 "type": "float",
@@ -6819,7 +6819,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -7233,7 +7233,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.895463371032522e-022
+                "value": 1.895463371032522e-22
               },
               "XPosition": {
                 "type": "float",
@@ -7827,7 +7827,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -8252,7 +8252,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 2.357642460360857e-022
+                "value": 2.357642460360857e-22
               },
               "XPosition": {
                 "type": "float",
@@ -8853,7 +8853,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -9451,7 +9451,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 4.776338617703411e-026
+          "value": 4.776338617703411e-26
         },
         "XPosition": {
           "type": "float",
@@ -9467,7 +9467,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -10081,7 +10081,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -10762,7 +10762,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 7.591052637270474e-021
+                "value": 7.591052637270474e-21
               },
               "XPosition": {
                 "type": "float",
@@ -11363,7 +11363,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -12013,7 +12013,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 2.273858742685909e-023
+                "value": 2.273858742685909e-23
               },
               "XPosition": {
                 "type": "float",
@@ -12614,7 +12614,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -12770,7 +12770,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Corporation is a massive, galaxy spanning corporate entity which engages in all manner of business, especially anything to do with war. They are highly controversial, especially as many of their major holdings are in space now controlled by the Sith Empire. While this has received some attention by the Republic Senate, Czerka has not received sanctions for continued business there, assuring the galaxy they are careful to comply with all sanctions on Darth Malak’s empire and do not supply enemy forces.\n\nCzerka has a sizable security force, the Czerka Ranger Corps. Private security, mercenaries and bounty hunters flock to it, eager for the generous pay Czerka employees are known to receive. It works well for them, so long as they remember - don’t cross Czerka, and \"no questions asked\" means \"no questions asked.\"\n\nIn Veles, these Czerka Rangers are largely responsible for maintaining law and order in the colony, and they toe a careful line between enforcing company policy while ensuring that any resentment amongst the colonists does not grow out of control. In some ways, the Czerka Rangers of Veles therefore need to be almost as much diplomats and friendly beat cops as much as soldiers."
+            "0": "Czerka Corporation is a massive, galaxy spanning corporate entity which engages in all manner of business, especially anything to do with war. They are highly controversial, especially as many of their major holdings are in space now controlled by the Sith Empire. While this has received some attention by the Republic Senate, Czerka has not received sanctions for continued business there, assuring the galaxy they are careful to comply with all sanctions on Darth MalakÂ’s empire and do not supply enemy forces.\n\nCzerka has a sizable security force, the Czerka Ranger Corps. Private security, mercenaries and bounty hunters flock to it, eager for the generous pay Czerka employees are known to receive. It works well for them, so long as they remember - donÂ’t cross Czerka, and \"no questions asked\" means \"no questions asked.\"\n\nIn Veles, these Czerka Rangers are largely responsible for maintaining law and order in the colony, and they toe a careful line between enforcing company policy while ensuring that any resentment amongst the colonists does not grow out of control. In some ways, the Czerka Rangers of Veles therefore need to be almost as much diplomats and friendly beat cops as much as soldiers."
           }
         },
         "Dex": {
@@ -13026,7 +13026,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 7.323319216137793e-025
+                "value": 7.323319216137793e-25
               },
               "XPosition": {
                 "type": "float",
@@ -13793,7 +13793,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -14205,7 +14205,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.016295667172052e-025
+                "value": 1.016295667172052e-25
               },
               "XPosition": {
                 "type": "float",
@@ -14377,7 +14377,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 2.60641514364416e-043
+                "value": 2.60641514364416e-43
               },
               "XPosition": {
                 "type": "float",
@@ -14992,7 +14992,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -15148,7 +15148,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Corporation is a massive, galaxy spanning corporate entity which engages in all manner of business, especially anything to do with war. They are highly controversial, especially as many of their major holdings are in space now controlled by the Sith Empire. While this has received some attention by the Republic Senate, Czerka has not received sanctions for continued business there, assuring the galaxy they are careful to comply with all sanctions on Darth Malak’s empire and do not supply enemy forces.\n\nCzerka has a sizable security force, the Czerka Ranger Corps. Private security, mercenaries and bounty hunters flock to it, eager for the generous pay Czerka employees are known to receive. It works well for them, so long as they remember - don’t cross Czerka, and \"no questions asked\" means \"no questions asked.\"\n\nIn Veles, these Czerka Rangers are largely responsible for maintaining law and order in the colony, and they toe a careful line between enforcing company policy while ensuring that any resentment amongst the colonists does not grow out of control. In some ways, the Czerka Rangers of Veles therefore need to be almost as much diplomats and friendly beat cops as much as soldiers."
+            "0": "Czerka Corporation is a massive, galaxy spanning corporate entity which engages in all manner of business, especially anything to do with war. They are highly controversial, especially as many of their major holdings are in space now controlled by the Sith Empire. While this has received some attention by the Republic Senate, Czerka has not received sanctions for continued business there, assuring the galaxy they are careful to comply with all sanctions on Darth MalakÂ’s empire and do not supply enemy forces.\n\nCzerka has a sizable security force, the Czerka Ranger Corps. Private security, mercenaries and bounty hunters flock to it, eager for the generous pay Czerka employees are known to receive. It works well for them, so long as they remember - donÂ’t cross Czerka, and \"no questions asked\" means \"no questions asked.\"\n\nIn Veles, these Czerka Rangers are largely responsible for maintaining law and order in the colony, and they toe a careful line between enforcing company policy while ensuring that any resentment amongst the colonists does not grow out of control. In some ways, the Czerka Rangers of Veles therefore need to be almost as much diplomats and friendly beat cops as much as soldiers."
           }
         },
         "Dex": {
@@ -15404,7 +15404,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.849713972908759e-043
+                "value": 1.849713972908759e-43
               },
               "XPosition": {
                 "type": "float",
@@ -16171,7 +16171,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -16327,7 +16327,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Corporation is a massive, galaxy spanning corporate entity which engages in all manner of business, especially anything to do with war. They are highly controversial, especially as many of their major holdings are in space now controlled by the Sith Empire. While this has received some attention by the Republic Senate, Czerka has not received sanctions for continued business there, assuring the galaxy they are careful to comply with all sanctions on Darth Malak’s empire and do not supply enemy forces.\n\nCzerka has a sizable security force, the Czerka Ranger Corps. Private security, mercenaries and bounty hunters flock to it, eager for the generous pay Czerka employees are known to receive. It works well for them, so long as they remember - don’t cross Czerka, and \"no questions asked\" means \"no questions asked.\"\n\nIn Veles, these Czerka Rangers are largely responsible for maintaining law and order in the colony, and they toe a careful line between enforcing company policy while ensuring that any resentment amongst the colonists does not grow out of control. In some ways, the Czerka Rangers of Veles therefore need to be almost as much diplomats and friendly beat cops as much as soldiers."
+            "0": "Czerka Corporation is a massive, galaxy spanning corporate entity which engages in all manner of business, especially anything to do with war. They are highly controversial, especially as many of their major holdings are in space now controlled by the Sith Empire. While this has received some attention by the Republic Senate, Czerka has not received sanctions for continued business there, assuring the galaxy they are careful to comply with all sanctions on Darth MalakÂ’s empire and do not supply enemy forces.\n\nCzerka has a sizable security force, the Czerka Ranger Corps. Private security, mercenaries and bounty hunters flock to it, eager for the generous pay Czerka employees are known to receive. It works well for them, so long as they remember - donÂ’t cross Czerka, and \"no questions asked\" means \"no questions asked.\"\n\nIn Veles, these Czerka Rangers are largely responsible for maintaining law and order in the colony, and they toe a careful line between enforcing company policy while ensuring that any resentment amongst the colonists does not grow out of control. In some ways, the Czerka Rangers of Veles therefore need to be almost as much diplomats and friendly beat cops as much as soldiers."
           }
         },
         "Dex": {
@@ -16583,7 +16583,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 5.324934164434305e-043
+                "value": 5.324934164434305e-43
               },
               "XPosition": {
                 "type": "float",
@@ -17425,7 +17425,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -17581,7 +17581,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Corporation is a massive, galaxy spanning corporate entity which engages in all manner of business, especially anything to do with war. They are highly controversial, especially as many of their major holdings are in space now controlled by the Sith Empire. While this has received some attention by the Republic Senate, Czerka has not received sanctions for continued business there, assuring the galaxy they are careful to comply with all sanctions on Darth Malak’s empire and do not supply enemy forces.\n\nCzerka has a sizable security force, the Czerka Ranger Corps. Private security, mercenaries and bounty hunters flock to it, eager for the generous pay Czerka employees are known to receive. It works well for them, so long as they remember - don’t cross Czerka, and \"no questions asked\" means \"no questions asked.\"\n\nIn Veles, these Czerka Rangers are largely responsible for maintaining law and order in the colony, and they toe a careful line between enforcing company policy while ensuring that any resentment amongst the colonists does not grow out of control. In some ways, the Czerka Rangers of Veles therefore need to be almost as much diplomats and friendly beat cops as much as soldiers."
+            "0": "Czerka Corporation is a massive, galaxy spanning corporate entity which engages in all manner of business, especially anything to do with war. They are highly controversial, especially as many of their major holdings are in space now controlled by the Sith Empire. While this has received some attention by the Republic Senate, Czerka has not received sanctions for continued business there, assuring the galaxy they are careful to comply with all sanctions on Darth MalakÂ’s empire and do not supply enemy forces.\n\nCzerka has a sizable security force, the Czerka Ranger Corps. Private security, mercenaries and bounty hunters flock to it, eager for the generous pay Czerka employees are known to receive. It works well for them, so long as they remember - donÂ’t cross Czerka, and \"no questions asked\" means \"no questions asked.\"\n\nIn Veles, these Czerka Rangers are largely responsible for maintaining law and order in the colony, and they toe a careful line between enforcing company policy while ensuring that any resentment amongst the colonists does not grow out of control. In some ways, the Czerka Rangers of Veles therefore need to be almost as much diplomats and friendly beat cops as much as soldiers."
           }
         },
         "Dex": {
@@ -18010,7 +18010,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 5.296908195147809e-043
+                "value": 5.296908195147809e-43
               },
               "XPosition": {
                 "type": "float",
@@ -18604,7 +18604,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -19019,7 +19019,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 9.837115219560216e-043
+                "value": 9.837115219560216e-43
               },
               "XPosition": {
                 "type": "float",
@@ -19723,7 +19723,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       }
     ]
@@ -20685,7 +20685,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 4.591774807899561e-039
+          "value": 4.591774807899561e-39
         },
         "CloseLockDC": {
           "type": "byte",
@@ -24145,7 +24145,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -24370,7 +24370,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -24820,7 +24820,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -25045,7 +25045,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -25270,7 +25270,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -25495,7 +25495,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -25722,7 +25722,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -25949,7 +25949,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -26176,7 +26176,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -26630,7 +26630,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -26649,7 +26649,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.272906109134853e-041
+          "value": 2.272906109134853e-41
         },
         "BodyBag": {
           "type": "byte",
@@ -27286,7 +27286,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -27738,7 +27738,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -27963,7 +27963,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -28188,7 +28188,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -28413,7 +28413,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -28638,7 +28638,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -28657,7 +28657,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.719780189408038e-041
+          "value": 2.719780189408038e-41
         },
         "BodyBag": {
           "type": "byte",
@@ -28859,11 +28859,11 @@
         },
         "Y": {
           "type": "float",
-          "value": 69.59329223632813
+          "value": 69.59329223632812
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -28882,7 +28882,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.954777941875309e-041
+          "value": 2.954777941875309e-41
         },
         "BodyBag": {
           "type": "byte",
@@ -29088,7 +29088,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -29313,7 +29313,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -29332,7 +29332,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.357931510061559e-041
+          "value": 3.357931510061559e-41
         },
         "BodyBag": {
           "type": "byte",
@@ -29534,11 +29534,11 @@
         },
         "Y": {
           "type": "float",
-          "value": 69.69570159912109
+          "value": 69.6957015991211
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -29763,7 +29763,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -29988,7 +29988,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -35181,7 +35181,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -37672,7 +37672,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 7.62939453125e-006
+          "value": 7.62939453125e-06
         }
       },
       {
@@ -37899,7 +37899,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 7.62939453125e-006
+          "value": 7.62939453125e-06
         }
       },
       {
@@ -40165,7 +40165,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 7.62939453125e-006
+          "value": 7.62939453125e-06
         }
       },
       {
@@ -40611,7 +40611,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 8.940696716308594e-007
+          "value": 8.940696716308594e-07
         },
         "BodyBag": {
           "type": "byte",
@@ -42800,7 +42800,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.016937631955877e-023
+          "value": 3.016937631955877e-23
         },
         "BodyBag": {
           "type": "byte",
@@ -43208,7 +43208,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -43654,7 +43654,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.654328090656577e-009
+          "value": 2.654328090656577e-09
         },
         "BodyBag": {
           "type": "byte",
@@ -45891,7 +45891,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.4658728514509e-023
+          "value": 1.4658728514509e-23
         },
         "BodyBag": {
           "type": "byte",
@@ -46553,7 +46553,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -47207,7 +47207,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -48313,7 +48313,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0.0009943182813003659
+          "value": 0.000994318281300366
         }
       },
       {
@@ -48994,7 +48994,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -50354,7 +50354,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -50579,7 +50579,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -50804,7 +50804,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -51029,7 +51029,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -51254,7 +51254,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -51479,7 +51479,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -51704,7 +51704,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -51929,7 +51929,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -53304,7 +53304,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 9.27554626128051e-039
+          "value": 9.27554626128051e-39
         },
         "BodyBag": {
           "type": "byte",
@@ -53731,7 +53731,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 9.27554626128051e-039
+          "value": 9.27554626128051e-39
         },
         "BodyBag": {
           "type": "byte",
@@ -53958,7 +53958,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 9.27554626128051e-039
+          "value": 9.27554626128051e-39
         },
         "BodyBag": {
           "type": "byte",
@@ -54166,7 +54166,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -54393,7 +54393,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -54620,7 +54620,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -62654,7 +62654,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -63560,7 +63560,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -68553,7 +68553,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -68778,7 +68778,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -71502,7 +71502,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -72410,7 +72410,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -72429,7 +72429,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 5.605193857299268e-045
+          "value": 5.605193857299268e-45
         },
         "BodyBag": {
           "type": "byte",
@@ -72656,7 +72656,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.74845538936097e-007
+          "value": 1.74845538936097e-07
         },
         "BodyBag": {
           "type": "byte",
@@ -72883,7 +72883,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.057333776227066e-031
+          "value": 1.057333776227066e-31
         },
         "BodyBag": {
           "type": "byte",
@@ -73110,7 +73110,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.74845538936097e-007
+          "value": 1.74845538936097e-07
         },
         "BodyBag": {
           "type": "byte",
@@ -76455,7 +76455,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -76682,7 +76682,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -77681,7 +77681,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       }
     ]
@@ -80884,7 +80884,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 7.115834992998826e-025
+          "value": 7.115834992998826e-25
         },
         "XPosition": {
           "type": "float",
@@ -80900,7 +80900,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": 7.510185241699219e-006
+          "value": 7.510185241699219e-06
         }
       },
       {
@@ -81718,7 +81718,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.910207887483815e-038
+                      "value": 1.910207887483815e-38
                     },
                     "XPosition": {
                       "type": "float",
@@ -81967,7 +81967,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 2.57146984280052e-038
+                      "value": 2.57146984280052e-38
                     },
                     "XPosition": {
                       "type": "float",
@@ -84141,7 +84141,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -85919,7 +85919,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.193878265635458e-039
+                      "value": 1.193878265635458e-39
                     },
                     "XPosition": {
                       "type": "float",
@@ -86413,7 +86413,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 6.039596381239962e-043
+                      "value": 6.039596381239962e-43
                     },
                     "XPosition": {
                       "type": "float",
@@ -87554,7 +87554,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": 7.62939453125e-006
+          "value": 7.62939453125e-06
         }
       },
       {
@@ -90799,7 +90799,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": 1.788139343261719e-006
+          "value": 1.788139343261719e-06
         }
       },
       {
@@ -94309,7 +94309,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": 7.510185241699219e-006
+          "value": 7.510185241699219e-06
         }
       }
     ]
@@ -94403,7 +94403,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -94452,7 +94452,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 4.817039962668428e-023
+          "value": 4.817039962668428e-23
         },
         "XPosition": {
           "type": "float",
@@ -94468,7 +94468,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -94531,7 +94531,70 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": 1.788139343261719e-006
+          "value": 1.788139343261719e-06
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Stuck â€” veles_sheriff"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "STUCK_WAYPOINT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_stuck"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 14.96244621276856
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 12.49336910247803
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -5.7220458984375e-06
         }
       }
     ]

@@ -1019,7 +1019,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 4.336808689942018e-019
+          "value": 4.336808689942018e-19
         },
         "XPosition": {
           "type": "float",
@@ -1035,7 +1035,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": 4.76837158203125e-007
+          "value": 4.76837158203125e-07
         }
       },
       {
@@ -2523,7 +2523,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": 4.999999987376214e-007
+          "value": 4.999999987376214e-07
         }
       },
       {
@@ -3019,7 +3019,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": 2.316284053449635e-008
+          "value": 2.316284053449635e-08
         }
       },
       {
@@ -3515,7 +3515,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": 4.999999987376214e-007
+          "value": 4.999999987376214e-07
         }
       },
       {
@@ -4011,7 +4011,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -4.76837158203125e-007
+          "value": -4.76837158203125e-07
         }
       },
       {
@@ -4499,7 +4499,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 7.549790126404332e-008
+          "value": 7.549790126404332e-08
         },
         "YPosition": {
           "type": "float",
@@ -4507,7 +4507,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": 9.768371000973275e-007
+          "value": 9.768371000973275e-07
         }
       },
       {
@@ -5003,7 +5003,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": 4.999999987376214e-007
+          "value": 4.999999987376214e-07
         }
       },
       {
@@ -5483,7 +5483,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.7071069478988648
+          "value": 0.7071069478988647
         },
         "XPosition": {
           "type": "float",
@@ -5499,7 +5499,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": 4.999999987376214e-007
+          "value": 4.999999987376214e-07
         }
       },
       {
@@ -6491,7 +6491,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": 9.768371000973275e-007
+          "value": 9.768371000973275e-07
         }
       }
     ]
@@ -6592,7 +6592,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Porte métallique coulissante rouillée"
+            "2": "Porte mÃ©tallique coulissante rouillÃ©e"
           }
         },
         "OnClick": {
@@ -6705,7 +6705,7 @@
         },
         "X": {
           "type": "float",
-          "value": 83.01999664306641
+          "value": 83.0199966430664
         },
         "Y": {
           "type": "float",
@@ -6816,7 +6816,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Vaporateur d'humiditÃ©"
           }
         },
         "OnClick": {
@@ -8305,7 +8305,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -2.384185791015625e-007
+          "value": -2.384185791015625e-07
         }
       },
       {
@@ -8530,7 +8530,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -2.384185791015625e-007
+          "value": -2.384185791015625e-07
         }
       },
       {
@@ -8755,7 +8755,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -9295,7 +9295,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Vaporateur d'humiditÃ©"
           }
         },
         "OnClick": {
@@ -9522,7 +9522,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Vaporateur d'humiditÃ©"
           }
         },
         "OnClick": {
@@ -9659,7 +9659,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -9749,7 +9749,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Vaporateur d'humiditÃ©"
           }
         },
         "OnClick": {
@@ -9886,7 +9886,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -10111,7 +10111,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -10336,7 +10336,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -10557,7 +10557,7 @@
         },
         "Y": {
           "type": "float",
-          "value": 72.02870941162109
+          "value": 72.0287094116211
         },
         "Z": {
           "type": "float",
@@ -11011,7 +11011,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 9.999997138977051
+          "value": 9.99999713897705
         }
       },
       {
@@ -11326,7 +11326,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Vaporateur d'humiditÃ©"
           }
         },
         "OnClick": {
@@ -11553,8 +11553,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Vaporateur d'humiditéW",
-            "2": "Vaporateur d'humidité"
+            "0": "Vaporateur d'humiditÃ©W",
+            "2": "Vaporateur d'humiditÃ©"
           }
         },
         "OnClick": {
@@ -11781,7 +11781,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Vaporateur d'humiditÃ©"
           }
         },
         "OnClick": {
@@ -12008,7 +12008,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Vaporateur d'humiditÃ©"
           }
         },
         "OnClick": {
@@ -12137,7 +12137,7 @@
         },
         "X": {
           "type": "float",
-          "value": 77.96620941162109
+          "value": 77.9662094116211
         },
         "Y": {
           "type": "float",
@@ -12460,7 +12460,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Vaporateur d'humiditÃ©"
           }
         },
         "OnClick": {
@@ -12597,7 +12597,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 1.490116119384766e-008
+          "value": 1.490116119384766e-08
         }
       },
       {
@@ -12687,7 +12687,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Vaporateur d'humiditÃ©"
           }
         },
         "OnClick": {
@@ -12820,7 +12820,7 @@
         },
         "Y": {
           "type": "float",
-          "value": 64.29506683349609
+          "value": 64.2950668334961
         },
         "Z": {
           "type": "float",
@@ -12914,7 +12914,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Vaporateur d'humiditÃ©"
           }
         },
         "OnClick": {
@@ -13043,7 +13043,7 @@
         },
         "X": {
           "type": "float",
-          "value": 65.01480102539063
+          "value": 65.01480102539062
         },
         "Y": {
           "type": "float",
@@ -13141,7 +13141,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Vaporateur d'humiditÃ©"
           }
         },
         "OnClick": {
@@ -13949,7 +13949,7 @@
         },
         "Y": {
           "type": "float",
-          "value": 65.98000335693359
+          "value": 65.9800033569336
         },
         "Z": {
           "type": "float",
@@ -14170,7 +14170,7 @@
         },
         "X": {
           "type": "float",
-          "value": 73.90000152587891
+          "value": 73.9000015258789
         },
         "Y": {
           "type": "float",
@@ -14395,7 +14395,7 @@
         },
         "X": {
           "type": "float",
-          "value": 78.64064788818359
+          "value": 78.6406478881836
         },
         "Y": {
           "type": "float",
@@ -15070,7 +15070,7 @@
         },
         "X": {
           "type": "float",
-          "value": 70.73000335693359
+          "value": 70.7300033569336
         },
         "Y": {
           "type": "float",
@@ -17326,7 +17326,7 @@
         },
         "X": {
           "type": "float",
-          "value": 86.51999664306641
+          "value": 86.5199966430664
         },
         "Y": {
           "type": "float",
@@ -18001,7 +18001,7 @@
         },
         "X": {
           "type": "float",
-          "value": 72.43728637695313
+          "value": 72.43728637695312
         },
         "Y": {
           "type": "float",
@@ -18725,7 +18725,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Trafic aérien et terrestre"
+            "2": "Trafic aÃ©rien et terrestre"
           }
         },
         "Looping": {
@@ -19548,7 +19548,70 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 1.148381556959066e-006
+          "value": 1.148381556959066e-06
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 55.89572143554688
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 4.999994277954102
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Stuck â€” tat_elevagiifarm"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "STUCK_WAYPOINT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_stuck"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 83.74020385742188
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
         },
         "YPosition": {
           "type": "float",

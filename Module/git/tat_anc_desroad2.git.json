@@ -103,7 +103,7 @@
               },
               "PointY": {
                 "type": "float",
-                "value": 8.052097320556641
+                "value": 8.05209732055664
               },
               "PointZ": {
                 "type": "float",
@@ -798,7 +798,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -8.58306884765625e-006
+          "value": -8.58306884765625e-06
         }
       },
       {
@@ -924,7 +924,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -987,7 +987,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -1607,7 +1607,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 1.863637294263754e-006
+          "value": 1.863637294263754e-06
         },
         "YPosition": {
           "type": "float",
@@ -1721,7 +1721,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -4.442530098458519e-006
+          "value": -4.442530098458519e-06
         },
         "XPosition": {
           "type": "float",
@@ -2211,7 +2211,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -2527,7 +2527,70 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Stuck — tat_anc_desroad2"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "STUCK_WAYPOINT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_stuck"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 4.931656837463379
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 45.39505767822266
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.01000607013702393
         }
       }
     ]

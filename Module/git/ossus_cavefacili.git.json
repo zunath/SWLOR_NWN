@@ -476,7 +476,7 @@
         },
         "Y": {
           "type": "float",
-          "value": 4.76837158203125e-007
+          "value": 4.76837158203125e-07
         },
         "Z": {
           "type": "float",
@@ -945,7 +945,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.242077542919707e-044
+          "value": 2.242077542919707e-44
         },
         "BodyBag": {
           "type": "byte",
@@ -1151,7 +1151,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -1170,7 +1170,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 9.275547662578974e-039
+          "value": 9.275547662578974e-39
         },
         "BodyBag": {
           "type": "byte",
@@ -1376,7 +1376,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       },
       {
@@ -1620,7 +1620,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 9.493945633437854e-039
+          "value": 9.493945633437854e-39
         },
         "BodyBag": {
           "type": "byte",
@@ -3436,7 +3436,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.946056475538685e-042
+          "value": 3.946056475538685e-42
         },
         "BodyBag": {
           "type": "byte",
@@ -3642,7 +3642,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 7.152557373046875e-007
+          "value": 7.152557373046875e-07
         }
       },
       {
@@ -4092,7 +4092,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
         }
       }
     ]
@@ -5167,7 +5167,70 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Stuck — ossus_cavefacili"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "STUCK_WAYPOINT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_stuck"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 45.19093322753906
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 23.09418106079102
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.02500000037252903
         }
       }
     ]

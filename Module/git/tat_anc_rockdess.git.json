@@ -726,7 +726,7 @@
         },
         "X": {
           "type": "float",
-          "value": 92.76443481445313
+          "value": 92.76443481445312
         },
         "Y": {
           "type": "float",
@@ -1180,7 +1180,7 @@
         },
         "X": {
           "type": "float",
-          "value": 78.28903961181641
+          "value": 78.2890396118164
         },
         "Y": {
           "type": "float",
@@ -2414,7 +2414,7 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 91.57437133789063
+          "value": 91.57437133789062
         },
         "ZPosition": {
           "type": "float",
@@ -2485,7 +2485,7 @@
               "__struct_id": 3,
               "PointX": {
                 "type": "float",
-                "value": 9.967788696289063
+                "value": 9.967788696289062
               },
               "PointY": {
                 "type": "float",
@@ -2948,7 +2948,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -8.734064977033995e-006
+          "value": -8.734064977033995e-06
         },
         "XPosition": {
           "type": "float",
@@ -2964,7 +2964,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.222045729169622e-006
+          "value": -5.222045729169622e-06
         }
       },
       {
@@ -3017,15 +3017,78 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 2.102055759678478e-006
+          "value": 2.102055759678478e-06
         },
         "YPosition": {
           "type": "float",
-          "value": 83.78830718994141
+          "value": 83.7883071899414
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": -5.7220458984375e-06
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Stuck — tat_anc_rockdess"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "STUCK_WAYPOINT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_stuck"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 85.09954071044922
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 154.7723388671875
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -5.222045729169622e-06
         }
       }
     ]

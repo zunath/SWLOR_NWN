@@ -503,7 +503,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -6.198883056640625e-006
+          "value": -6.198883056640625e-06
         }
       },
       {
@@ -728,7 +728,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -6.198883056640625e-006
+          "value": -6.198883056640625e-06
         }
       },
       {
@@ -953,7 +953,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -6.198883056640625e-006
+          "value": -6.198883056640625e-06
         }
       },
       {
@@ -1174,11 +1174,11 @@
         },
         "Y": {
           "type": "float",
-          "value": 66.83792114257813
+          "value": 66.83792114257812
         },
         "Z": {
           "type": "float",
-          "value": 9.059906005859375e-006
+          "value": 9.059906005859375e-06
         }
       },
       {
@@ -1403,7 +1403,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -6.198883056640625e-006
+          "value": -6.198883056640625e-06
         }
       },
       {
@@ -1628,7 +1628,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -6.198883056640625e-006
+          "value": -6.198883056640625e-06
         }
       },
       {
@@ -1853,7 +1853,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -6.198883056640625e-006
+          "value": -6.198883056640625e-06
         }
       },
       {
@@ -2078,7 +2078,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 9.059906005859375e-006
+          "value": 9.059906005859375e-06
         }
       },
       {
@@ -6574,7 +6574,7 @@
         },
         "Y": {
           "type": "float",
-          "value": 67.66147613525391
+          "value": 67.6614761352539
         },
         "Z": {
           "type": "float",
@@ -6799,7 +6799,7 @@
         },
         "Y": {
           "type": "float",
-          "value": 67.67063140869141
+          "value": 67.6706314086914
         },
         "Z": {
           "type": "float",
@@ -9522,7 +9522,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 5.634643159636897e-016
+          "value": 5.634643159636897e-16
         },
         "BodyBag": {
           "type": "byte",
@@ -9972,7 +9972,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 7.006492321624085e-045
+          "value": 7.006492321624085e-45
         },
         "BodyBag": {
           "type": "byte",
@@ -11296,6 +11296,70 @@
   },
   "WaypointList": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Stuck — vrotrkorracadrft"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "STUCK_WAYPOINT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_stuck"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 34.0000024255043
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 21.56000061035261
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -6.0
+        }
+      }
+    ]
   }
 }

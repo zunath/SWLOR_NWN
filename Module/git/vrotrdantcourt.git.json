@@ -1644,7 +1644,7 @@
               "__struct_id": 3,
               "PointX": {
                 "type": "float",
-                "value": -0.5786209106445312
+                "value": -0.5786209106445313
               },
               "PointY": {
                 "type": "float",
@@ -2090,7 +2090,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -2.384185791015625e-07
+          "value": -2.384185791015625e-007
         }
       },
       {

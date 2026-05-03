@@ -882977,11 +882977,11 @@
         },
         "MarkDown": {
           "type": "int",
-          "value": 65
+          "value": 40
         },
         "MarkUp": {
           "type": "int",
-          "value": 150
+          "value": 100
         },
         "MaxBuyPrice": {
           "type": "int",
@@ -882989,11 +882989,11 @@
         },
         "OnOpenStore": {
           "type": "resref",
-          "value": ""
+          "value": "on_open_store"
         },
         "OnStoreClosed": {
           "type": "resref",
-          "value": ""
+          "value": "on_close_store"
         },
         "ResRef": {
           "type": "resref",

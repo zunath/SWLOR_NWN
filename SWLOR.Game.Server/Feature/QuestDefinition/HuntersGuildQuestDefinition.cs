@@ -184,9 +184,9 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         }
 
         private void BuildItemTask(
-            string questId, 
-            string resref, 
-            int amount, 
+            string questId,
+            string resref,
+            int amount,
             int guildRank)
         {
             var itemName = Cache.GetItemNameByResref(resref);
@@ -198,11 +198,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText($"Collect {amount}x {itemName} and return to the Hunter's Guildmaster")
-                .AddCollectItemObjective(resref, amount)
+                .AddCollectItemObjective(resref, amount, CollectItemProducerRequirementType.None)
 
                 .AddGoldReward(rewardDetails.Gold)
                 .AddGPReward(GuildType.HuntersGuild, rewardDetails.GP);
         }
+
         private void BuildKillTask(
             string questId,
             NPCGroupType group,

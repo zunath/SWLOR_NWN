@@ -237,7 +237,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText($"Collect {amount}x {itemName} and return to the Smithery Guildmaster")
-                .AddCollectItemObjective(resref, amount, CollectItemCraftRequirementType.CraftedByTurnInPlayer)
+                .AddCollectItemObjective(resref, amount, CollectItemProducerRequirementType.ProducedByTurnInPlayer)
 
                 .AddGoldReward(rewardDetails.Gold)
                 .AddGPReward(GuildType.SmitheryGuild, rewardDetails.GP);

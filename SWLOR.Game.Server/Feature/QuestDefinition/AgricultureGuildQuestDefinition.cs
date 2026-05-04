@@ -230,12 +230,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             return builder.Build();
         }
 
+        /// <summary>
+        /// Builds a repeatable agriculture guild collect objective.
+        /// </summary>
+        /// <param name="collectItemProducerRequirement">
+        /// Use <see cref="CollectItemProducerRequirementType.None"/> when the item is never player-produced (e.g. pure vendor goods).
+        /// Raw fish and crafted dishes use the default so caught or crafted items count.
+        /// </param>
         private void BuildItemTask(
             QuestBuilder builder,
             string questId,
             string resref,
             int amount,
-            int guildRank)
+            int guildRank,
+            CollectItemProducerRequirementType collectItemProducerRequirement = CollectItemProducerRequirementType.ProducedByTurnInPlayer)
         {
             var itemName = Cache.GetItemNameByResref(resref);
             var rewardDetails = _rewardDetails[guildRank];
@@ -246,7 +254,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText($"Collect {amount}x {itemName} and return to the Agriculture Guildmaster")
-                .AddCollectItemObjective(resref, amount, CollectItemCraftRequirementType.CraftedByTurnInPlayer)
+                .AddCollectItemObjective(resref, amount, collectItemProducerRequirement)
 
                 .AddGoldReward(rewardDetails.Gold)
                 .AddGPReward(GuildType.AgricultureGuild, rewardDetails.GP);

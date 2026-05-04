@@ -20,6 +20,12 @@ namespace SWLOR.Game.Server.Service
 {
     public static class Item
     {
+        /// <summary>
+        /// NWN local string key: object UUID of the player who produced this item (crafting, fishing, etc.).
+        /// Value is the legacy key <c>CRAFTED_BY_PLAYER_ID</c> for save and inventory compatibility.
+        /// </summary>
+        public const string ProducedByPlayerIdVariable = "CRAFTED_BY_PLAYER_ID";
+
         private static readonly Dictionary<string, ItemDetail> _items = new();
         private static readonly Dictionary<int, int[]> _2daCache = new();
         private static readonly Dictionary<BaseItem, AbilityType> _itemToDamageAbilityMapping = new();

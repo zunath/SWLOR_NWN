@@ -25,7 +25,6 @@ namespace SWLOR.Game.Server.Service
     public static class Craft
     {
         public const int MaxResearchLevel = 10;
-        public const string CraftedByPlayerIdVariable = "CRAFTED_BY_PLAYER_ID";
 
         private static readonly Dictionary<RecipeType, RecipeDetail> _recipes = new();
         private static readonly Dictionary<RecipeCategoryType, RecipeCategoryAttribute> _allCategories = new();

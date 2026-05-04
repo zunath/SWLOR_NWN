@@ -295,14 +295,14 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// </summary>
         /// <param name="resref">The resref of the required item.</param>
         /// <param name="amount">The number of items needed to complete the objective.</param>
-        /// <param name="craftRequirement">Whether items must be player-crafted and how crafter identity is validated.</param>
+        /// <param name="producerRequirement">Whether items must be produced by a player and how producer identity is validated.</param>
         /// <returns>A QuestBuilder with the configured options.</returns>
         public QuestBuilder AddCollectItemObjective(
             string resref,
             int amount,
-            CollectItemCraftRequirementType craftRequirement = CollectItemCraftRequirementType.None)
+            CollectItemProducerRequirementType producerRequirement = CollectItemProducerRequirementType.None)
         {
-            var collectItemObjective = new CollectItemObjective(resref, amount, craftRequirement);
+            var collectItemObjective = new CollectItemObjective(resref, amount, producerRequirement);
             _activeState.AddObjective(collectItemObjective);
 
             return this;

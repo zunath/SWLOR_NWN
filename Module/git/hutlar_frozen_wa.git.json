@@ -19350,6 +19350,70 @@
   },
   "WaypointList": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Stuck — hutlar_frozen_wa"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "STUCK_WAYPOINT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_stuck"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": -0.9972904324531555
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 71.7318115234375
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.07356461137533188
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 145.251708984375
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -0.0006088018417358398
+        }
+      }
+    ]
   }
 }

@@ -97,7 +97,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .RequirementStamina(5)
                 .UsesAnimation(Animation.ThrowGrenade)
                 .IsCastedAbility()
-                .UnaffectedByHeavyArmor()
                 .HasMaxRange(15f)
                 .HasCustomValidation(ExplosiveValidation)
                 .HasImpactAction((activator, _, _, targetLocation) =>
@@ -125,7 +124,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .RequirementStamina(7)
                 .UsesAnimation(Animation.ThrowGrenade)
                 .IsCastedAbility()
-                .UnaffectedByHeavyArmor()
                 .HasMaxRange(20f)
                 .HasCustomValidation(ExplosiveValidation)
                 .HasImpactAction((activator, _, _, targetLocation) =>
@@ -153,7 +151,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .RequirementStamina(9)
                 .UsesAnimation(Animation.ThrowGrenade)
                 .IsCastedAbility()
-                .UnaffectedByHeavyArmor()
                 .HasMaxRange(25f)
                 .HasCustomValidation(ExplosiveValidation)
                 .HasImpactAction((activator, _, _, targetLocation) =>

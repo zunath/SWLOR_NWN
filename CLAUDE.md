@@ -4,13 +4,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-SWLOR (Star Wars: Legends of the Old Republic) is a Neverwinter Nights: Enhanced Edition server using C# for server-side logic via NWNX_DotNet. This replaces traditional NWScript with a modern .NET 7.0 architecture.
+SWLOR (Star Wars: Legends of the Old Republic) is a Neverwinter Nights: Enhanced Edition server using C# for server-side logic via NWNX_DotNet. This replaces traditional NWScript with a modern .NET 8.0 architecture.
 
 ## Development Commands
 
 ### Building the Project
 ```bash
-# Build entire solution
+# Build entire solution (repo root)
 dotnet build SWLOR.Game.Server.sln
 
 # Clean and rebuild
@@ -144,7 +144,7 @@ public static void OnPlayerEnter(uint player)
 
 ## Dependencies and Technologies
 
-- **.NET 7.0**: Main framework
+- **.NET 8.0**: Main framework (see `TargetFramework` in `*.csproj` files)
 - **NWN.Native**: Neverwinter Nights engine integration
 - **StackExchange.Redis**: Caching and persistence
 - **Serilog**: Logging framework
@@ -170,7 +170,7 @@ The project uses:
 
 ## Troubleshooting
 
-- **Build errors**: Ensure .NET 7.0 SDK is installed and dependencies are restored
+- **Build errors**: Ensure .NET 8.0 SDK is installed and dependencies are restored
 - **Module errors**: Run `PackModule.cmd` to regenerate the .mod file  
 - **Docker issues**: Check Docker Desktop is running and containers are started
 - **Missing HAKs/TLK**: Copy files from `debugserver/` to NWN directories or update nwn.ini paths

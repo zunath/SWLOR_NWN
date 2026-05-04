@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText("Return to Rorrska Buvvien in the Hutlar Outpost and report your progress.")
 
-                .AddGoldReward(800)
+                .AddGoldReward(1200)
                 .AddXPReward(800);
         }
 
@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText("Return to Kieun Xorxca in the Hutlar Outpost and report your progress.")
 
-                .AddGoldReward(550)
+                .AddGoldReward(825)
                 .AddXPReward(800);
         }
 
@@ -90,7 +90,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText("Return to Guylan Verruchi in the Hutlar Outpost and let him know you've replaced the actuator.")
 
-                .AddGoldReward(1200)
+                .AddGoldReward(1800)
                 .AddXPReward(1300)
 
                 .OnAcceptAction((player, sourceObject) =>
@@ -152,7 +152,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText("Speak to Moricho Deine for your reward.")
 
-                .AddGoldReward(742)
+                .AddGoldReward(1113)
                 .AddItemReward("slug_shake", 1);
         }
 
@@ -167,7 +167,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText("That wasn't too bad! It didn't take as long as you thought it would. Good work! Return to Sharene.")
 
-                .AddGoldReward(15000)
+                .AddGoldReward(22500)
                 .AddXPReward(15000)
                 .AddItemReward("recipe_banners01", 1);
         }

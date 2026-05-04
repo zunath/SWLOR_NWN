@@ -99,7 +99,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Véhicule - fonceur"
+            "2": "VÃ©hicule - fonceur"
           }
         },
         "Looping": {
@@ -220,7 +220,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Véhicule - fonceur"
+            "2": "VÃ©hicule - fonceur"
           }
         },
         "Looping": {
@@ -341,7 +341,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Véhicule - fonceur"
+            "2": "VÃ©hicule - fonceur"
           }
         },
         "Looping": {
@@ -462,7 +462,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Véhicule - fonceur"
+            "2": "VÃ©hicule - fonceur"
           }
         },
         "Looping": {
@@ -583,7 +583,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Véhicule - fonceur"
+            "2": "VÃ©hicule - fonceur"
           }
         },
         "Looping": {
@@ -704,7 +704,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Véhicule - fonceur"
+            "2": "VÃ©hicule - fonceur"
           }
         },
         "Looping": {
@@ -825,7 +825,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Véhicule - fonceur"
+            "2": "VÃ©hicule - fonceur"
           }
         },
         "Looping": {
@@ -3952,6 +3952,69 @@
         "ZPosition": {
           "type": "float",
           "value": -5.222045729169622e-006
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Stuck â€” anc_dsrt_speeder"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "STUCK_WAYPOINT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_stuck"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 6.156396389007568
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 44.48580932617188
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 5.639690399169922
         }
       }
     ]

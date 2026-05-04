@@ -139,7 +139,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .BreaksStealth()
                 .DisplaysVisualEffectWhenActivating()
                 .HasCustomValidation(Validation)
-                .UnaffectedByHeavyArmor()
                 .HasImpactAction(ImpactAction);
         }
         private static void ThrowLightsaber2(AbilityBuilder builder)
@@ -157,7 +156,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .BreaksStealth()
                 .DisplaysVisualEffectWhenActivating()
                 .HasCustomValidation(Validation)
-                .UnaffectedByHeavyArmor()
                 .HasImpactAction(ImpactAction);
         }
         private static void ThrowLightsaber3(AbilityBuilder builder)
@@ -175,7 +173,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .BreaksStealth()
                 .DisplaysVisualEffectWhenActivating()
                 .HasCustomValidation(Validation)
-                .UnaffectedByHeavyArmor()
                 .HasImpactAction(ImpactAction);
         }
     }

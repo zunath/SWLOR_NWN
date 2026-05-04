@@ -4954,8 +4954,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Téléporteur",
-            "2": "Téléporteur"
+            "0": "TÃ©lÃ©porteur",
+            "2": "TÃ©lÃ©porteur"
           }
         },
         "OnClick": {
@@ -5180,8 +5180,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Téléporteur",
-            "2": "Téléporteur"
+            "0": "TÃ©lÃ©porteur",
+            "2": "TÃ©lÃ©porteur"
           }
         },
         "OnClick": {
@@ -5406,8 +5406,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Téléporteur",
-            "2": "Téléporteur"
+            "0": "TÃ©lÃ©porteur",
+            "2": "TÃ©lÃ©porteur"
           }
         },
         "OnClick": {
@@ -6109,7 +6109,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Vaporateur d'humiditÃ©"
           }
         },
         "OnClick": {
@@ -6336,7 +6336,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Vaporateur d'humiditÃ©"
           }
         },
         "OnClick": {
@@ -15563,7 +15563,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Vaporateur d'humiditÃ©"
           }
         },
         "OnClick": {
@@ -17547,7 +17547,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Véhicule - Pod Racer"
+            "2": "VÃ©hicule - Pod Racer"
           }
         },
         "Looping": {
@@ -17831,7 +17831,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Véhicule - Pod Racer"
+            "2": "VÃ©hicule - Pod Racer"
           }
         },
         "Looping": {
@@ -19154,6 +19154,69 @@
         "ZPosition": {
           "type": "float",
           "value": 0.02500052936375141
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Stuck â€” moseis_lucky"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "STUCK_WAYPOINT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_stuck"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 79.99006652832031
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 109.1130676269531
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -5.222045729169622e-006
         }
       }
     ]

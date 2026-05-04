@@ -1443,7 +1443,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var levelBonus = LevelBucketMultiplier * ((recipe.Level / 10f) + 1) + LevelScalingPerRecipeLevel * recipe.Level;
             var scaledByQuality = (int)Math.Round(levelBonus * qualityPercent);
             var minimumVendorBonus = Math.Max(25, (int)Math.Round(recipe.Level * 1.6f));
-            var addGoldPiece = Math.Max(scaledByQuality, minimumVendorBonus);
+            const float CraftedVendorBonusMultiplier = 1.225f;
+            var addGoldPiece = (int)Math.Round(Math.Max(scaledByQuality, minimumVendorBonus) * CraftedVendorBonusMultiplier);
             ItemPlugin.SetAddGoldPieceValue(item, addGoldPiece);
 
             // Apply item properties provided by enhancements, provided the transfer check passes.

@@ -19,6 +19,17 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             }
         }
 
+        /// <summary>
+        /// How the player is expected to acquire the item for quest copy (must match <see cref="CollectItemProducerRequirementType"/> usage).
+        /// </summary>
+        private enum AgricultureCollectActivity
+        {
+            /// <summary>Kitchen output (meals, drinks, prepared seafood, etc.)—quest copy uses "Craft".</summary>
+            Craft,
+            /// <summary>Raw fish from fishing—quest copy uses "Catch".</summary>
+            Catch,
+        }
+
         private readonly Dictionary<int, RewardDetails> _rewardDetails = new()
         {
             { 0, new RewardDetails(1000, 21)},
@@ -49,17 +60,17 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             BuildItemTask(builder, "agr_tsk_014", "k_blood_broth", 1, 0);
             BuildItemTask(builder, "agr_tsk_015", "g_sandwich", 1, 0);
             BuildItemTask(builder, "agr_tsk_016", "g_stew", 1, 0);
-            BuildItemTask(builder, "agr_tsk_017", "moat_carp", 4, 0);
-            BuildItemTask(builder, "agr_tsk_018", "lamp_marimo", 4, 0);
-            BuildItemTask(builder, "agr_tsk_019", "visc_urchin", 4, 0);
-            BuildItemTask(builder, "agr_tsk_020", "phan_newt", 4, 0);
-            BuildItemTask(builder, "agr_tsk_021", "cobalt_jellyfish", 4, 0);
-            BuildItemTask(builder, "agr_tsk_022", "denizanasi", 4, 0);
-            BuildItemTask(builder, "agr_tsk_023", "crayfish", 4, 0);
-            BuildItemTask(builder, "agr_tsk_024", "cala_lobster", 4, 0);
-            BuildItemTask(builder, "agr_tsk_025", "bibikibo", 4, 0);
-            BuildItemTask(builder, "agr_tsk_026", "dath_sardine", 4, 0);
-            BuildItemTask(builder, "agr_tsk_027", "hamsi", 4, 0);
+            BuildItemTask(builder, "agr_tsk_017", "moat_carp", 4, 0, AgricultureCollectActivity.Catch);
+            BuildItemTask(builder, "agr_tsk_018", "lamp_marimo", 4, 0, AgricultureCollectActivity.Catch);
+            BuildItemTask(builder, "agr_tsk_019", "visc_urchin", 4, 0, AgricultureCollectActivity.Catch);
+            BuildItemTask(builder, "agr_tsk_020", "phan_newt", 4, 0, AgricultureCollectActivity.Catch);
+            BuildItemTask(builder, "agr_tsk_021", "cobalt_jellyfish", 4, 0, AgricultureCollectActivity.Catch);
+            BuildItemTask(builder, "agr_tsk_022", "denizanasi", 4, 0, AgricultureCollectActivity.Catch);
+            BuildItemTask(builder, "agr_tsk_023", "crayfish", 4, 0, AgricultureCollectActivity.Catch);
+            BuildItemTask(builder, "agr_tsk_024", "cala_lobster", 4, 0, AgricultureCollectActivity.Catch);
+            BuildItemTask(builder, "agr_tsk_025", "bibikibo", 4, 0, AgricultureCollectActivity.Catch);
+            BuildItemTask(builder, "agr_tsk_026", "dath_sardine", 4, 0, AgricultureCollectActivity.Catch);
+            BuildItemTask(builder, "agr_tsk_027", "hamsi", 4, 0, AgricultureCollectActivity.Catch);
             BuildItemTask(builder, "agr_tsk_028", "roast_carp", 1, 0);
             BuildItemTask(builder, "agr_tsk_029", "marimo_stew", 1, 0);
             BuildItemTask(builder, "agr_tsk_030", "urchin_sushi", 1, 0);
@@ -88,15 +99,15 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             BuildItemTask(builder, "agr_tsk_213", "raiv_bloodbroth", 1, 1);
             BuildItemTask(builder, "agr_tsk_214", "nash_sandwich", 1, 1);
             BuildItemTask(builder, "agr_tsk_215", "nash_stew", 1, 1);
-            BuildItemTask(builder, "agr_tsk_216", "sen_sardine", 4, 1);
-            BuildItemTask(builder, "agr_tsk_217", "rakaz_shellfish", 4, 1);
-            BuildItemTask(builder, "agr_tsk_218", "bast_sweeper", 4, 1);
-            BuildItemTask(builder, "agr_tsk_219", "mackerel", 4, 1);
-            BuildItemTask(builder, "agr_tsk_220", "greedie", 4, 1);
-            BuildItemTask(builder, "agr_tsk_221", "copper_frog", 4, 1);
-            BuildItemTask(builder, "agr_tsk_222", "yellow_globe", 4, 1);
-            BuildItemTask(builder, "agr_tsk_223", "muddy_siredon", 4, 1);
-            BuildItemTask(builder, "agr_tsk_224", "istavrit", 4, 1);
+            BuildItemTask(builder, "agr_tsk_216", "sen_sardine", 4, 1, AgricultureCollectActivity.Catch);
+            BuildItemTask(builder, "agr_tsk_217", "rakaz_shellfish", 4, 1, AgricultureCollectActivity.Catch);
+            BuildItemTask(builder, "agr_tsk_218", "bast_sweeper", 4, 1, AgricultureCollectActivity.Catch);
+            BuildItemTask(builder, "agr_tsk_219", "mackerel", 4, 1, AgricultureCollectActivity.Catch);
+            BuildItemTask(builder, "agr_tsk_220", "greedie", 4, 1, AgricultureCollectActivity.Catch);
+            BuildItemTask(builder, "agr_tsk_221", "copper_frog", 4, 1, AgricultureCollectActivity.Catch);
+            BuildItemTask(builder, "agr_tsk_222", "yellow_globe", 4, 1, AgricultureCollectActivity.Catch);
+            BuildItemTask(builder, "agr_tsk_223", "muddy_siredon", 4, 1, AgricultureCollectActivity.Catch);
+            BuildItemTask(builder, "agr_tsk_224", "istavrit", 4, 1, AgricultureCollectActivity.Catch);
             BuildItemTask(builder, "agr_tsk_225", "fish_broth", 1, 1);
             BuildItemTask(builder, "agr_tsk_226", "cooked_sardine", 1, 1);
             BuildItemTask(builder, "agr_tsk_227", "rakaz_special", 1, 1);
@@ -125,16 +136,16 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             BuildItemTask(builder, "agr_tsk_413", "amphi_bbroth", 1, 2);
             BuildItemTask(builder, "agr_tsk_414", "snake_sandwich", 1, 2);
             BuildItemTask(builder, "agr_tsk_415", "snake_stew", 1, 2);
-            BuildItemTask(builder, "agr_tsk_416", "trans_salpa", 4, 2);
-            BuildItemTask(builder, "agr_tsk_417", "quus", 4, 2);
-            BuildItemTask(builder, "agr_tsk_418", "forest_carp", 4, 2);
-            BuildItemTask(builder, "agr_tsk_419", "tiny_goldfish", 4, 2);
-            BuildItemTask(builder, "agr_tsk_420", "hoptoad", 4, 2);
-            BuildItemTask(builder, "agr_tsk_421", "cheval_salmon", 4, 2);
-            BuildItemTask(builder, "agr_tsk_422", "yorchete", 4, 2);
-            BuildItemTask(builder, "agr_tsk_423", "white_lobster", 4, 2);
-            BuildItemTask(builder, "agr_tsk_424", "fat_greedie", 4, 2);
-            BuildItemTask(builder, "agr_tsk_425", "moorish_idol", 4, 2);
+            BuildItemTask(builder, "agr_tsk_416", "trans_salpa", 4, 2, AgricultureCollectActivity.Catch);
+            BuildItemTask(builder, "agr_tsk_417", "quus", 4, 2, AgricultureCollectActivity.Catch);
+            BuildItemTask(builder, "agr_tsk_418", "forest_carp", 4, 2, AgricultureCollectActivity.Catch);
+            BuildItemTask(builder, "agr_tsk_419", "tiny_goldfish", 4, 2, AgricultureCollectActivity.Catch);
+            BuildItemTask(builder, "agr_tsk_420", "hoptoad", 4, 2, AgricultureCollectActivity.Catch);
+            BuildItemTask(builder, "agr_tsk_421", "cheval_salmon", 4, 2, AgricultureCollectActivity.Catch);
+            BuildItemTask(builder, "agr_tsk_422", "yorchete", 4, 2, AgricultureCollectActivity.Catch);
+            BuildItemTask(builder, "agr_tsk_423", "white_lobster", 4, 2, AgricultureCollectActivity.Catch);
+            BuildItemTask(builder, "agr_tsk_424", "fat_greedie", 4, 2, AgricultureCollectActivity.Catch);
+            BuildItemTask(builder, "agr_tsk_425", "moorish_idol", 4, 2, AgricultureCollectActivity.Catch);
             BuildItemTask(builder, "agr_tsk_426", "cooked_salpa", 1, 2);
             BuildItemTask(builder, "agr_tsk_427", "herb_quus", 1, 2);
             BuildItemTask(builder, "agr_tsk_428", "carp_sushi", 1, 2);
@@ -163,16 +174,16 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             BuildItemTask(builder, "agr_tsk_613", "tusk_b_broth", 1, 3);
             BuildItemTask(builder, "agr_tsk_614", "dem_sandwich", 1, 3);
             BuildItemTask(builder, "agr_tsk_615", "demon_stew", 1, 3);
-            BuildItemTask(builder, "agr_tsk_616", "gurnard", 4, 3);
-            BuildItemTask(builder, "agr_tsk_617", "nebimonite", 4, 3);
-            BuildItemTask(builder, "agr_tsk_618", "tricolored_carp", 4, 3);
-            BuildItemTask(builder, "agr_tsk_619", "blindfish", 4, 3);
-            BuildItemTask(builder, "agr_tsk_620", "pipira", 4, 3);
-            BuildItemTask(builder, "agr_tsk_621", "tiger_cod", 4, 3);
-            BuildItemTask(builder, "agr_tsk_622", "bonefish", 4, 3);
-            BuildItemTask(builder, "agr_tsk_623", "giant_catfish", 4, 3);
-            BuildItemTask(builder, "agr_tsk_624", "yayinbaligi", 4, 3);
-            BuildItemTask(builder, "agr_tsk_625", "deadmoiselle", 4, 3);
+            BuildItemTask(builder, "agr_tsk_616", "gurnard", 4, 3, AgricultureCollectActivity.Catch);
+            BuildItemTask(builder, "agr_tsk_617", "nebimonite", 4, 3, AgricultureCollectActivity.Catch);
+            BuildItemTask(builder, "agr_tsk_618", "tricolored_carp", 4, 3, AgricultureCollectActivity.Catch);
+            BuildItemTask(builder, "agr_tsk_619", "blindfish", 4, 3, AgricultureCollectActivity.Catch);
+            BuildItemTask(builder, "agr_tsk_620", "pipira", 4, 3, AgricultureCollectActivity.Catch);
+            BuildItemTask(builder, "agr_tsk_621", "tiger_cod", 4, 3, AgricultureCollectActivity.Catch);
+            BuildItemTask(builder, "agr_tsk_622", "bonefish", 4, 3, AgricultureCollectActivity.Catch);
+            BuildItemTask(builder, "agr_tsk_623", "giant_catfish", 4, 3, AgricultureCollectActivity.Catch);
+            BuildItemTask(builder, "agr_tsk_624", "yayinbaligi", 4, 3, AgricultureCollectActivity.Catch);
+            BuildItemTask(builder, "agr_tsk_625", "deadmoiselle", 4, 3, AgricultureCollectActivity.Catch);
             BuildItemTask(builder, "agr_tsk_626", "gurnard_stew", 1, 3);
             BuildItemTask(builder, "agr_tsk_627", "baked_nebimon", 1, 3);
             BuildItemTask(builder, "agr_tsk_628", "tricolored_sushi", 1, 3);
@@ -201,17 +212,17 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             BuildItemTask(builder, "agr_tsk_813", "wild_bbroth", 1, 4);
             BuildItemTask(builder, "agr_tsk_814", "grand_sandwich", 1, 4);
             BuildItemTask(builder, "agr_tsk_815", "wild_stew", 1, 4);
-            BuildItemTask(builder, "agr_tsk_816", "lungfish", 4, 4);
-            BuildItemTask(builder, "agr_tsk_817", "dark_bass", 4, 4);
-            BuildItemTask(builder, "agr_tsk_818", "crystal_bass", 4, 4);
-            BuildItemTask(builder, "agr_tsk_819", "ogre_eel", 4, 4);
-            BuildItemTask(builder, "agr_tsk_820", "shining_trout", 4, 4);
-            BuildItemTask(builder, "agr_tsk_821", "blowfish", 4, 4);
-            BuildItemTask(builder, "agr_tsk_822", "nosteau_herring", 4, 4);
-            BuildItemTask(builder, "agr_tsk_823", "lakerda", 4, 4);
-            BuildItemTask(builder, "agr_tsk_824", "zafmlug_bass", 4, 4);
-            BuildItemTask(builder, "agr_tsk_825", "ruddy_seema", 4, 4);
-            BuildItemTask(builder, "agr_tsk_826", "frigorifish", 4, 4);
+            BuildItemTask(builder, "agr_tsk_816", "lungfish", 4, 4, AgricultureCollectActivity.Catch);
+            BuildItemTask(builder, "agr_tsk_817", "dark_bass", 4, 4, AgricultureCollectActivity.Catch);
+            BuildItemTask(builder, "agr_tsk_818", "crystal_bass", 4, 4, AgricultureCollectActivity.Catch);
+            BuildItemTask(builder, "agr_tsk_819", "ogre_eel", 4, 4, AgricultureCollectActivity.Catch);
+            BuildItemTask(builder, "agr_tsk_820", "shining_trout", 4, 4, AgricultureCollectActivity.Catch);
+            BuildItemTask(builder, "agr_tsk_821", "blowfish", 4, 4, AgricultureCollectActivity.Catch);
+            BuildItemTask(builder, "agr_tsk_822", "nosteau_herring", 4, 4, AgricultureCollectActivity.Catch);
+            BuildItemTask(builder, "agr_tsk_823", "lakerda", 4, 4, AgricultureCollectActivity.Catch);
+            BuildItemTask(builder, "agr_tsk_824", "zafmlug_bass", 4, 4, AgricultureCollectActivity.Catch);
+            BuildItemTask(builder, "agr_tsk_825", "ruddy_seema", 4, 4, AgricultureCollectActivity.Catch);
+            BuildItemTask(builder, "agr_tsk_826", "frigorifish", 4, 4, AgricultureCollectActivity.Catch);
             BuildItemTask(builder, "agr_tsk_827", "long_ling_lung", 1, 4);
             BuildItemTask(builder, "agr_tsk_828", "bass_meuniere", 1, 4);
             BuildItemTask(builder, "agr_tsk_829", "crystal_sushi", 1, 4);
@@ -230,23 +241,52 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             return builder.Build();
         }
 
+        /// <summary>
+        /// Builds a repeatable agriculture guild collect objective.
+        /// </summary>
+        /// <param name="activity">Drives quest title and journal wording ("Craft" vs "Catch" for raw fish).</param>
+        /// <param name="collectItemProducerRequirement">
+        /// Use <see cref="CollectItemProducerRequirementType.None"/> when the item is never player-produced (e.g. pure vendor goods).
+        /// Raw fish and crafted dishes use the default so caught or crafted items count.
+        /// </param>
         private void BuildItemTask(
             QuestBuilder builder,
             string questId,
             string resref,
             int amount,
-            int guildRank)
+            int guildRank,
+            AgricultureCollectActivity activity = AgricultureCollectActivity.Craft,
+            CollectItemProducerRequirementType collectItemProducerRequirement = CollectItemProducerRequirementType.ProducedByTurnInPlayer)
         {
             var itemName = Cache.GetItemNameByResref(resref);
             var rewardDetails = _rewardDetails[guildRank];
 
-            builder.Create(questId, $"{amount}x {itemName}")
+            string questTitle;
+            string journalText;
+            if (collectItemProducerRequirement == CollectItemProducerRequirementType.None)
+            {
+                questTitle = $"{amount}x {itemName}";
+                journalText = $"Collect {amount}x {itemName} and return to the Agriculture Guildmaster";
+            }
+            else
+            {
+                var verb = activity switch
+                {
+                    AgricultureCollectActivity.Craft => "Craft",
+                    AgricultureCollectActivity.Catch => "Catch",
+                    _ => "Craft",
+                };
+                questTitle = $"{verb} {amount}x {itemName}";
+                journalText = $"{verb} {amount}x {itemName} and return to the Agriculture Guildmaster";
+            }
+
+            builder.Create(questId, questTitle)
                 .IsRepeatable()
                 .IsGuildTask(GuildType.AgricultureGuild, guildRank)
 
                 .AddState()
-                .SetStateJournalText($"Collect {amount}x {itemName} and return to the Agriculture Guildmaster")
-                .AddCollectItemObjective(resref, amount)
+                .SetStateJournalText(journalText)
+                .AddCollectItemObjective(resref, amount, collectItemProducerRequirement)
 
                 .AddGoldReward(rewardDetails.Gold)
                 .AddGPReward(GuildType.AgricultureGuild, rewardDetails.GP);

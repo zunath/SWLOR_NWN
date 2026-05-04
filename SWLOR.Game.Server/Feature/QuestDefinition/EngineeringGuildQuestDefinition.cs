@@ -136,13 +136,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             var itemName = Cache.GetItemNameByResref(resref);
             var rewardDetails = _rewardDetails[guildRank];
 
-            builder.Create(questId, $"{amount}x {itemName}")
+            builder.Create(questId, $"Craft {amount}x {itemName}")
                 .IsRepeatable()
                 .IsGuildTask(GuildType.EngineeringGuild, guildRank)
 
                 .AddState()
-                .SetStateJournalText($"Collect {amount}x {itemName} and return to the Engineering Guildmaster")
-                .AddCollectItemObjective(resref, amount)
+                .SetStateJournalText($"Craft {amount}x {itemName} and return to the Engineering Guildmaster")
+                .AddCollectItemObjective(resref, amount, CollectItemProducerRequirementType.ProducedByTurnInPlayer)
 
                 .AddGoldReward(rewardDetails.Gold)
                 .AddGPReward(GuildType.EngineeringGuild, rewardDetails.GP);

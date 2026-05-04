@@ -1,4 +1,6 @@
-﻿using SWLOR.Game.Server.Entity;
+﻿using System;
+using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.NPCService;
 using Player = SWLOR.Game.Server.Entity.Player;
 
@@ -14,13 +16,65 @@ namespace SWLOR.Game.Server.Service.QuestService
 
     public class CollectItemObjective : IQuestObjective
     {
+        public string Resref => _resref;
+        public CollectItemProducerRequirementType ProducerRequirement { get; }
         private readonly string _resref;
         private readonly int _quantity;
 
-        public CollectItemObjective(string resref, int quantity)
+        /// <summary>
+        /// Creates a collect-item objective.
+        /// </summary>
+        /// <param name="resref">The resref of the required item.</param>
+        /// <param name="quantity">The number of items needed to complete the objective.</param>
+        /// <param name="producerRequirement">Whether turn-in items must be produced by a player and how producer identity is validated.</param>
+        public CollectItemObjective(
+            string resref,
+            int quantity,
+            CollectItemProducerRequirementType producerRequirement = CollectItemProducerRequirementType.None)
         {
             _resref = resref;
             _quantity = quantity;
+            ProducerRequirement = producerRequirement;
+        }
+
+        /// <summary>
+        /// When producer rules apply, checks whether an item may be turned in for this objective.
+        /// </summary>
+        /// <returns>
+        /// <see cref="string.Empty"/> if the item passes; otherwise a message to show the player.
+        /// </returns>
+        public string GetCollectTurnInRejectionMessage(uint player, uint item)
+        {
+            switch (ProducerRequirement)
+            {
+                case CollectItemProducerRequirementType.None:
+                    return string.Empty;
+
+                case CollectItemProducerRequirementType.ProducedByAnyPlayer:
+                case CollectItemProducerRequirementType.ProducedByTurnInPlayer:
+                    var producedByPlayerId = GetLocalString(item, Item.ProducedByPlayerIdVariable);
+                    if (string.IsNullOrWhiteSpace(producedByPlayerId))
+                    {
+                        return ProducerRequirement switch
+                        {
+                            CollectItemProducerRequirementType.ProducedByTurnInPlayer =>
+                                "This quest only accepts items you obtained yourself (for example by crafting or fishing).",
+                            _ => "This quest only accepts items that were obtained by a player (not from vendors or similar sources)."
+                        };
+                    }
+                    if (ProducerRequirement == CollectItemProducerRequirementType.ProducedByTurnInPlayer &&
+                        producedByPlayerId != GetObjectUUID(player))
+                    {
+                        return "That item was obtained by another player and cannot be turned in for this quest.";
+                    }
+                    return string.Empty;
+
+                default:
+                    throw new ArgumentOutOfRangeException(
+                        nameof(ProducerRequirement),
+                        ProducerRequirement,
+                        "Update GetCollectTurnInRejectionMessage when adding CollectItemProducerRequirementType values.");
+            }
         }
 
         public void Initialize(uint player, string questId)

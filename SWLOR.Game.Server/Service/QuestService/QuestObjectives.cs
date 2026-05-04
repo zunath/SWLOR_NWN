@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.Entity;
+﻿using System;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.NPCService;
 using Player = SWLOR.Game.Server.Entity.Player;
 
@@ -14,13 +15,65 @@ namespace SWLOR.Game.Server.Service.QuestService
 
     public class CollectItemObjective : IQuestObjective
     {
+        public string Resref => _resref;
+        public CollectItemCraftRequirementType CraftRequirement { get; }
         private readonly string _resref;
         private readonly int _quantity;
 
-        public CollectItemObjective(string resref, int quantity)
+        /// <summary>
+        /// Creates a collect-item objective.
+        /// </summary>
+        /// <param name="resref">The resref of the required item.</param>
+        /// <param name="quantity">The number of items needed to complete the objective.</param>
+        /// <param name="craftRequirement">Whether turn-in items must be player-crafted and how crafter identity is validated.</param>
+        public CollectItemObjective(
+            string resref,
+            int quantity,
+            CollectItemCraftRequirementType craftRequirement = CollectItemCraftRequirementType.None)
         {
             _resref = resref;
             _quantity = quantity;
+            CraftRequirement = craftRequirement;
+        }
+
+        /// <summary>
+        /// When craft rules apply, checks whether an item may be turned in for this objective.
+        /// </summary>
+        /// <returns>
+        /// <see cref="string.Empty"/> if the item passes; otherwise a message to show the player.
+        /// </returns>
+        public string GetCollectTurnInRejectionMessage(uint player, uint item)
+        {
+            switch (CraftRequirement)
+            {
+                case CollectItemCraftRequirementType.None:
+                    return string.Empty;
+
+                case CollectItemCraftRequirementType.CraftedByAnyPlayer:
+                case CollectItemCraftRequirementType.CraftedByTurnInPlayer:
+                    var craftedByPlayerId = GetLocalString(item, Craft.CraftedByPlayerIdVariable);
+                    if (string.IsNullOrWhiteSpace(craftedByPlayerId))
+                    {
+                        return CraftRequirement switch
+                        {
+                            CollectItemCraftRequirementType.CraftedByTurnInPlayer =>
+                                "This quest only accepts items you crafted yourself.",
+                            _ => "This quest only accepts player-crafted items."
+                        };
+                    }
+                    if (CraftRequirement == CollectItemCraftRequirementType.CraftedByTurnInPlayer &&
+                        craftedByPlayerId != GetObjectUUID(player))
+                    {
+                        return "That item was crafted by another player and cannot be turned in for this quest.";
+                    }
+                    return string.Empty;
+
+                default:
+                    throw new ArgumentOutOfRangeException(
+                        nameof(CraftRequirement),
+                        CraftRequirement,
+                        "Update GetCollectTurnInRejectionMessage when adding CollectItemCraftRequirementType values.");
+            }
         }
 
         public void Initialize(uint player, string questId)

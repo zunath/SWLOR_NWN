@@ -5955,7 +5955,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Vaporateur d'humiditÃ©"
           }
         },
         "OnClick": {
@@ -32809,7 +32809,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "",
-            "2": "Des détritus contenant peut-être des objets utiles à récupérer."
+            "2": "Des dÃ©tritus contenant peut-Ãªtre des objets utiles Ã  rÃ©cupÃ©rer."
           }
         },
         "DisarmDC": {
@@ -32859,7 +32859,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Détritus"
+            "0": "DÃ©tritus"
           }
         },
         "OnClick": {
@@ -33037,7 +33037,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "",
-            "2": "Des détritus contenant peut-être des objets utiles à récupérer."
+            "2": "Des dÃ©tritus contenant peut-Ãªtre des objets utiles Ã  rÃ©cupÃ©rer."
           }
         },
         "DisarmDC": {
@@ -33087,7 +33087,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Détritus"
+            "0": "DÃ©tritus"
           }
         },
         "OnClick": {
@@ -33265,7 +33265,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "",
-            "2": "Des détritus contenant peut-être des objets utiles à récupérer."
+            "2": "Des dÃ©tritus contenant peut-Ãªtre des objets utiles Ã  rÃ©cupÃ©rer."
           }
         },
         "DisarmDC": {
@@ -33315,7 +33315,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Détritus"
+            "0": "DÃ©tritus"
           }
         },
         "OnClick": {
@@ -33493,7 +33493,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Trafic aérien et terrestre"
+            "2": "Trafic aÃ©rien et terrestre"
           }
         },
         "Looping": {
@@ -33628,7 +33628,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Véhicule - Pod Racer"
+            "2": "VÃ©hicule - Pod Racer"
           }
         },
         "Looping": {
@@ -33763,7 +33763,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Trafic aérien et terrestre"
+            "2": "Trafic aÃ©rien et terrestre"
           }
         },
         "Looping": {
@@ -34580,7 +34580,7 @@
           "id": 14760,
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead : entrée nord vers désert rocailleux"
+            "0": "Anchorhead : entrÃ©e nord vers dÃ©sert rocailleux"
           }
         },
         "OnClick": {
@@ -35193,7 +35193,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Towards the dunes",
-            "2": "Vers le désert de dunes",
+            "2": "Vers le dÃ©sert de dunes",
             "256": "<Placez votre texte ici>",
             "258": "<Placez votre texte ici>",
             "260": "<Placez votre texte ici>",
@@ -35370,6 +35370,69 @@
         "ZPosition": {
           "type": "float",
           "value": 4.999994277954102
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Stuck â€” anchor_entreenor"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "STUCK_WAYPOINT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_stuck"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 81.11363220214844
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 3.759194612503052
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 15.00000095367432
         }
       }
     ]

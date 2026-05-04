@@ -101,7 +101,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 
                         if (DateTime.UtcNow <= dateTime)
                         {
-                            return "You may only use the stuck command every five minutes. Please wait and try again.";
+                            return "You may only use the stuck command every thirty minutes. Please wait and try again.";
                         }                        
                     }
 
@@ -110,11 +110,24 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Action((user, target, location, args) =>
                 {
                     var nextStuckAllowed = DateTime.UtcNow.AddMinutes(30);
-                    var waypoint = GetNearestObject(ObjectType.Waypoint,user);
+                    var waypoint = GetNearestObjectByTag("STUCK_WAYPOINT", user);
+                    if (!GetIsObjectValid(waypoint) || GetObjectType(waypoint) != ObjectType.Waypoint)
+                    {
+                        waypoint = GetWaypointByTag("CZ220_LANDING");
+                        if (!GetIsObjectValid(waypoint) || GetObjectType(waypoint) != ObjectType.Waypoint)
+                        {
+                            waypoint = GetNearestObject(ObjectType.Waypoint, user);
+                        }
+                    }
+
                     if (GetIsObjectValid(waypoint))
                     {
                         AssignCommand(user, () => { JumpToObject(waypoint); });
                         SetLocalString(user, "STUCK_REPORT_LAST_SUBMISSION", nextStuckAllowed.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture));
+                    }
+                    else
+                    {
+                        SendMessageToPC(user, "No recovery waypoint is available in this area. Please contact a DM.");
                     }
                 });
         }

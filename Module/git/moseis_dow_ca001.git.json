@@ -143,7 +143,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Rideau de toile de jute foncé"
+            "2": "Rideau de toile de jute foncÃ©"
           }
         },
         "OnClick": {
@@ -360,7 +360,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Rideau de toile de jute foncé"
+            "2": "Rideau de toile de jute foncÃ©"
           }
         },
         "OnClick": {
@@ -577,7 +577,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Rideau de toile de jute foncé"
+            "2": "Rideau de toile de jute foncÃ©"
           }
         },
         "OnClick": {
@@ -794,7 +794,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Rideau de toile de jute foncé"
+            "2": "Rideau de toile de jute foncÃ©"
           }
         },
         "OnClick": {
@@ -1011,7 +1011,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Rideau de toile de jute foncé"
+            "2": "Rideau de toile de jute foncÃ©"
           }
         },
         "OnClick": {
@@ -1228,7 +1228,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Rideau de toile de jute foncé"
+            "2": "Rideau de toile de jute foncÃ©"
           }
         },
         "OnClick": {
@@ -1445,7 +1445,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Rideau de toile de jute foncé"
+            "2": "Rideau de toile de jute foncÃ©"
           }
         },
         "OnClick": {
@@ -1662,7 +1662,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Rideau de toile de jute foncé"
+            "2": "Rideau de toile de jute foncÃ©"
           }
         },
         "OnClick": {
@@ -1879,7 +1879,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Porte métallique coulissante"
+            "2": "Porte mÃ©tallique coulissante"
           }
         },
         "OnClick": {
@@ -2096,7 +2096,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Porte métallique coulissante"
+            "2": "Porte mÃ©tallique coulissante"
           }
         },
         "OnClick": {
@@ -2313,7 +2313,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Porte métallique coulissante"
+            "2": "Porte mÃ©tallique coulissante"
           }
         },
         "OnClick": {
@@ -2530,7 +2530,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Porte vitrée"
+            "2": "Porte vitrÃ©e"
           }
         },
         "OnClick": {
@@ -3408,7 +3408,7 @@
           "id": 14565,
           "type": "cexolocstring",
           "value": {
-            "2": "Une borne taillée avec soin indiquant un endroit intéressant."
+            "2": "Une borne taillÃ©e avec soin indiquant un endroit intÃ©ressant."
           }
         },
         "DisarmDC": {
@@ -16962,7 +16962,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Vaporateur d'humiditÃ©"
           }
         },
         "OnClick": {
@@ -17189,8 +17189,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Vaporateur d'humiditéW",
-            "2": "Vaporateur d'humidité"
+            "0": "Vaporateur d'humiditÃ©W",
+            "2": "Vaporateur d'humiditÃ©"
           }
         },
         "OnClick": {
@@ -17417,7 +17417,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Vaporateur d'humiditÃ©"
           }
         },
         "OnClick": {
@@ -23445,7 +23445,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Véhicule - Pod Racer"
+            "2": "VÃ©hicule - Pod Racer"
           }
         },
         "Looping": {
@@ -24225,7 +24225,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Véhicule - Pod Racer"
+            "2": "VÃ©hicule - Pod Racer"
           }
         },
         "Looping": {
@@ -24360,7 +24360,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaisseau - Décolage"
+            "2": "Vaisseau - DÃ©colage"
           }
         },
         "Looping": {
@@ -24890,6 +24890,69 @@
         "YOrientation": {
           "type": "float",
           "value": -0.0245408657938242
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 54.52339935302734
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -5.222045729169622e-006
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Stuck â€” moseis_dow_ca001"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "STUCK_WAYPOINT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_stuck"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 1.286396980285645
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
         },
         "YPosition": {
           "type": "float",

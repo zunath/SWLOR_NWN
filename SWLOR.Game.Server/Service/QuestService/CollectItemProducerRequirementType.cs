@@ -1,7 +1,7 @@
 namespace SWLOR.Game.Server.Service.QuestService
 {
     /// <summary>
-    /// Rules for whether a collect-item objective must be produced by a player (crafting, fishing, etc.).
+    /// Whether collect-item turn-ins must be crafted (or carry <see cref="Item.PlayerProducedItemVariable"/>), or any matching resref is accepted.
     /// </summary>
     public enum CollectItemProducerRequirementType
     {
@@ -11,13 +11,8 @@ namespace SWLOR.Game.Server.Service.QuestService
         None = 0,
 
         /// <summary>
-        /// Item must carry a player producer UUID and it must match the PC turning the item in.
+        /// The item must have been crafted (or otherwise stamped with <see cref="Item.PlayerProducedItemVariable"/>).
         /// </summary>
-        ProducedByTurnInPlayer = 1,
-
-        /// <summary>
-        /// Item must carry a player producer UUID (any player); vendor or unassigned items fail.
-        /// </summary>
-        ProducedByAnyPlayer = 2,
+        PlayerProduced = 1,
     }
 }

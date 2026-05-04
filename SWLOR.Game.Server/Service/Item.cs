@@ -21,10 +21,9 @@ namespace SWLOR.Game.Server.Service
     public static class Item
     {
         /// <summary>
-        /// NWN local string key: object UUID of the player who produced this item (crafting, fishing, etc.).
-        /// Value is the legacy key <c>CRAFTED_BY_PLAYER_ID</c> for save and inventory compatibility.
+        /// NWN local bool: set to true on crafted output so collect objectives can require player-made items.
         /// </summary>
-        public const string ProducedByPlayerIdVariable = "CRAFTED_BY_PLAYER_ID";
+        public const string PlayerProducedItemVariable = "PLAYER_PRODUCED_ITEM";
 
         private static readonly Dictionary<string, ItemDetail> _items = new();
         private static readonly Dictionary<int, int[]> _2daCache = new();
@@ -1080,6 +1079,14 @@ namespace SWLOR.Game.Server.Service
                 SetItemStackSize(item, remaining);
                 return true;
             }
+        }
+
+        /// <summary>
+        /// Returns true if <see cref="PlayerProducedItemVariable"/> is set (e.g. crafting stamped the item).
+        /// </summary>
+        public static bool IsPlayerProducedItem(uint item)
+        {
+            return GetLocalBool(item, PlayerProducedItemVariable);
         }
 
         /// <summary>

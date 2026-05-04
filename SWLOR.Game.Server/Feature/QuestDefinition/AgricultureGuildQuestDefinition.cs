@@ -246,8 +246,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         /// </summary>
         /// <param name="activity">Drives quest title and journal wording ("Craft" vs "Catch" for raw fish).</param>
         /// <param name="collectItemProducerRequirement">
-        /// Use <see cref="CollectItemProducerRequirementType.None"/> when the item is never player-produced (e.g. pure vendor goods).
-        /// Raw fish and crafted dishes use the default so caught or crafted items count.
+        /// For <see cref="AgricultureCollectActivity.Catch"/> tasks this is ignored; raw fish are not required to be player-produced.
+        /// For <see cref="AgricultureCollectActivity.Craft"/> tasks, use <see cref="CollectItemProducerRequirementType.None"/> when any matching resref is acceptable (e.g. vendor goods).
         /// </param>
         private void BuildItemTask(
             QuestBuilder builder,
@@ -256,28 +256,31 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             int amount,
             int guildRank,
             AgricultureCollectActivity activity = AgricultureCollectActivity.Craft,
-            CollectItemProducerRequirementType collectItemProducerRequirement = CollectItemProducerRequirementType.ProducedByTurnInPlayer)
+            CollectItemProducerRequirementType collectItemProducerRequirement = CollectItemProducerRequirementType.PlayerProduced)
         {
             var itemName = Cache.GetItemNameByResref(resref);
             var rewardDetails = _rewardDetails[guildRank];
 
+            var producerForObjective = activity == AgricultureCollectActivity.Catch
+                ? CollectItemProducerRequirementType.None
+                : collectItemProducerRequirement;
+
             string questTitle;
             string journalText;
-            if (collectItemProducerRequirement == CollectItemProducerRequirementType.None)
+            if (activity == AgricultureCollectActivity.Catch)
+            {
+                questTitle = $"Catch {amount}x {itemName}";
+                journalText = $"Catch {amount}x {itemName} and return to the Agriculture Guildmaster";
+            }
+            else if (producerForObjective == CollectItemProducerRequirementType.None)
             {
                 questTitle = $"{amount}x {itemName}";
                 journalText = $"Collect {amount}x {itemName} and return to the Agriculture Guildmaster";
             }
             else
             {
-                var verb = activity switch
-                {
-                    AgricultureCollectActivity.Craft => "Craft",
-                    AgricultureCollectActivity.Catch => "Catch",
-                    _ => "Craft",
-                };
-                questTitle = $"{verb} {amount}x {itemName}";
-                journalText = $"{verb} {amount}x {itemName} and return to the Agriculture Guildmaster";
+                questTitle = $"Craft {amount}x {itemName}";
+                journalText = $"Craft {amount}x {itemName} and return to the Agriculture Guildmaster";
             }
 
             builder.Create(questId, questTitle)
@@ -286,7 +289,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(journalText)
-                .AddCollectItemObjective(resref, amount, collectItemProducerRequirement)
+                .AddCollectItemObjective(resref, amount, producerForObjective)
 
                 .AddGoldReward(rewardDetails.Gold)
                 .AddGPReward(GuildType.AgricultureGuild, rewardDetails.GP);

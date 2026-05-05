@@ -142,7 +142,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText($"Craft {amount}x {itemName} and return to the Engineering Guildmaster")
-                .AddCollectItemObjective(resref, amount, CollectItemProducerRequirementType.ProducedByTurnInPlayer)
+                .AddCollectItemObjective(resref, amount, CollectItemProducerRequirementType.PlayerProduced)
 
                 .AddGoldReward(rewardDetails.Gold)
                 .AddGPReward(GuildType.EngineeringGuild, rewardDetails.GP);

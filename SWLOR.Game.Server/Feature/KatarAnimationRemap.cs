@@ -64,8 +64,16 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler(ScriptName.OnModuleEquip)]
         public static void OnEquip()
         {
-            SyncFromEvent(GetPCItemLastEquippedBy());
-        }
+            var item = GetPCItemLastEquipped();
+            if (!GetIsObjectValid(item))
+                return;
+
+            var possessor = GetItemPossessor(item);
+            if (!GetIsObjectValid(possessor))
+                return;
+
+            SyncFromEvent(possessor);
+        }  
 
         [NWNEventHandler(ScriptName.OnModuleUnequip)]
         public static void OnUnequip()

@@ -6,8 +6,11 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
 using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
 using SavingThrow = SWLOR.NWN.API.NWScript.Enum.SavingThrow;
@@ -534,6 +537,118 @@ namespace SWLOR.Game.Server.Service
             var modifier = GetAbilityModifier(ability, attacker);
 
             return baseDC + modifier;
+        }
+
+        /// <summary>
+        /// Calculates the attack delay for a creature based on equipped weapon delay item properties.
+        /// </summary>
+        /// <param name="attacker">The creature to calculate delay for.</param>
+        /// <returns>Attack delay in milliseconds.</returns>
+        public static int CalculateAttackDelay(uint attacker)
+        {
+            var rightHand = GetItemInSlot(InventorySlot.RightHand, attacker);
+            var leftHand = GetItemInSlot(InventorySlot.LeftHand, attacker);
+
+            var delay = GetWeaponDelay(rightHand) + GetWeaponDelay(leftHand);
+
+            // Convert delay units to milliseconds: 60 delay units = 1 second.
+            var finalDelay = (int)(delay / 60f * 1000);
+            var reductionPercentage = CalculateAttackDelayReduction(attacker);
+
+            if (reductionPercentage > 0)
+            {
+                var reductionAmount = (int)(finalDelay * (reductionPercentage / 100f));
+                finalDelay -= reductionAmount;
+            }
+
+            return finalDelay;
+        }
+
+        /// <summary>
+        /// Handles paralyze status effects for a creature before resolving a delayed attack.
+        /// </summary>
+        /// <param name="attacker">The creature to check for paralyze.</param>
+        /// <returns>True if the creature is paralyzed and cannot act.</returns>
+        public static bool HandleParalyze(uint attacker)
+        {
+            if (!GetIsObjectValid(attacker))
+                return false;
+
+            for (var effect = GetFirstEffect(attacker); GetIsEffectValid(effect); effect = GetNextEffect(attacker))
+            {
+                if (GetEffectType(effect) != EffectTypeScript.Paralyze)
+                    continue;
+
+                var creatureName = GetName(attacker);
+                Messaging.SendMessageNearbyToPlayers(attacker, $"{creatureName} is paralyzed and cannot act!");
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Calculates the attack delay reduction percentage based on creature perks and active speed effects.
+        /// Cumulative reductions are capped at 50%.
+        /// </summary>
+        /// <param name="attacker">The creature to calculate delay reduction for.</param>
+        /// <returns>Attack delay reduction percentage.</returns>
+        public static int CalculateAttackDelayReduction(uint attacker)
+        {
+            if (!GetIsObjectValid(attacker))
+                return 0;
+
+            var totalReduction = 0;
+
+            var rapidShotLevel = Perk.GetPerkLevel(attacker, PerkType.RapidShot);
+            if (rapidShotLevel > 0)
+                totalReduction += rapidShotLevel * 10;
+
+            if (GetHasFeat(FeatType.FlurryStyle, attacker))
+                totalReduction += 20;
+
+            var hastenLevel = GetHastenLevel(attacker);
+            if (hastenLevel > 0)
+                totalReduction += hastenLevel * 10;
+
+            var beastSpeedLevel = Perk.GetPerkLevel(attacker, PerkType.BeastSpeed);
+            if (beastSpeedLevel > 0)
+                totalReduction += beastSpeedLevel * 10;
+
+            return Math.Min(totalReduction, 50);
+        }
+
+        private static int GetWeaponDelay(uint item)
+        {
+            if (!GetIsObjectValid(item))
+                return 0;
+
+            var delay = 0;
+
+            for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
+            {
+                if (GetItemPropertyType(ip) == ItemPropertyType.Delay)
+                {
+                    delay += GetItemPropertyCostTableValue(ip) * 10;
+                }
+            }
+
+            return delay;
+        }
+
+        private static int GetHastenLevel(uint creature)
+        {
+            if (!GetIsObjectValid(creature))
+                return 0;
+
+            if (StatusEffect.HasStatusEffect(creature, StatusEffectType.Hasten3))
+                return 3;
+            if (StatusEffect.HasStatusEffect(creature, StatusEffectType.Hasten2))
+                return 2;
+            if (StatusEffect.HasStatusEffect(creature, StatusEffectType.Hasten1))
+                return 1;
+
+            return 0;
         }
     }
 }

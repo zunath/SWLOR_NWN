@@ -82,5 +82,8 @@
         AdrenalStim1 = 77,
         AdrenalStim2 = 78,
         AdrenalStim3 = 79,
+        Hasten1 = 80,
+        Hasten2 = 81,
+        Hasten3 = 82,
     }
 }

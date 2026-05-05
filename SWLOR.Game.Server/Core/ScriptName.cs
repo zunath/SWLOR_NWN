@@ -166,6 +166,11 @@ namespace SWLOR.Game.Server.Core
         public const string OnAuraEnter = "aura_enter";
         public const string OnAuraExit = "aura_exit";
 
+        // Status Effect events
+        public const string OnApplyStatusEffect = "status_apply";
+        public const string OnRemoveStatusEffect = "status_remove";
+        public const string OnStatusEffectInterval = "status_interval";
+
         // Beast events
         public const string OnBeastBlocked = "beast_blocked";
         public const string OnBeastRoundEnd = "beast_roundend";
@@ -296,7 +301,14 @@ namespace SWLOR.Game.Server.Core
         public const string OnSWLORCombatPointDistributed = "cp_xp_distribute";
         public const string OnSWLORSkillLostByDecay = "swlor_lose_skill";
         public const string OnSWLORDeleteProperty = "swlor_del_prop";
+        public const string OnSWLORDamage = "swlor_damage";
         public const string OnSWLORItemEquipValidBefore = "item_eqp_bef";
+
+        // Telegraph events
+        public const string TelegraphEffect = "telegraph_effect";
+        public const string TelegraphApplied = "telegraph_applied";
+        public const string TelegraphTicked = "telegraph_ticked";
+        public const string TelegraphRemoved = "telegraph_removed";
 
         // Communication events
         public const string OnNWNXChat = "on_nwnx_chat";

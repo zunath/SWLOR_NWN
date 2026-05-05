@@ -1431,7 +1431,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var dbPlayer = DB.Get<Player>(playerId);
             var recipe = Craft.GetRecipe(_recipe);
             var item = CreateItemOnObject(recipe.Resref, Player, recipe.Quantity);
-            SetLocalString(item, Item.ProducedByPlayerIdVariable, playerId);
+            SetLocalBool(item, Item.PlayerProducedItemVariable, true);
             var firstTime = !dbPlayer.CraftedRecipes.ContainsKey(_recipe);
             var propertyTransferChance = (int)(((float)_quality / (float)_maxQuality) * 100);
             var qualityPercent = (float)_quality / (float)_maxQuality;
@@ -1443,7 +1443,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var levelBonus = LevelBucketMultiplier * ((recipe.Level / 10f) + 1) + LevelScalingPerRecipeLevel * recipe.Level;
             var scaledByQuality = (int)Math.Round(levelBonus * qualityPercent);
             var minimumVendorBonus = Math.Max(25, (int)Math.Round(recipe.Level * 1.6f));
-            var addGoldPiece = Math.Max(scaledByQuality, minimumVendorBonus);
+            const float CraftedVendorBonusMultiplier = 1.225f;
+            var addGoldPiece = (int)Math.Round(Math.Max(scaledByQuality, minimumVendorBonus) * CraftedVendorBonusMultiplier);
             ItemPlugin.SetAddGoldPieceValue(item, addGoldPiece);
 
             // Apply item properties provided by enhancements, provided the transfer check passes.

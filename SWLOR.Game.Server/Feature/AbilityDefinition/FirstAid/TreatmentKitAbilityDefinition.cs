@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .RequirementStamina(3)
                 .UsesAnimation(Animation.LoopingGetMid)
                 .IsCastedAbility()
+                .UnaffectedByHeavyArmor()
                 .HasCustomValidation((activator, target, level, location) =>
                 {
                     if (!IsWithinRange(activator, target))
@@ -73,6 +74,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .RequirementStamina(3)
                 .UsesAnimation(Animation.LoopingGetMid)
                 .IsCastedAbility()
+                .UnaffectedByHeavyArmor()
                 .HasCustomValidation((activator, target, level, location) =>
                 {
                     if (!IsWithinRange(activator, target))

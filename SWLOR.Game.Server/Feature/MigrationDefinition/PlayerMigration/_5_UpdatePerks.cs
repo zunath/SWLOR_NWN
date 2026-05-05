@@ -15,7 +15,6 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
             var rightHandWeapon = GetItemInSlot(InventorySlot.RightHand, player);
 
             CreaturePlugin.RemoveFeat(player, FeatType.RapidShot);
-            Stat.ApplyAttacksPerRound(player, rightHandWeapon);
 
             var innerStrength = Perk.GetPerkLevel(player, PerkType.InnerStrength);
             if (innerStrength > 0)

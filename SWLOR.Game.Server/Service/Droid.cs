@@ -96,7 +96,6 @@ namespace SWLOR.Game.Server.Service
             _defaultPerksByTier[2][PerkType.WeaponFocusPistols] = 2;
             _defaultPerksByTier[2][PerkType.WeaponFocusRifles] = 2;
             _defaultPerksByTier[2][PerkType.WeaponFocusThrowingWeapons] = 2;
-            _defaultPerksByTier[2][PerkType.RapidReload] = 1;
 
             // Tier 3
             _defaultPerksByTier[3][PerkType.ImprovedCriticalVibroblades] = 1;
@@ -110,30 +109,9 @@ namespace SWLOR.Game.Server.Service
             _defaultPerksByTier[3][PerkType.ImprovedCriticalRifles] = 1;
             _defaultPerksByTier[3][PerkType.ImprovedCriticalThrowingWeapons] = 1;
 
-            _defaultPerksByTier[3][PerkType.VibrobladeMastery] = 1;
-            _defaultPerksByTier[3][PerkType.FinesseVibrobladeMastery] = 1;
-            _defaultPerksByTier[3][PerkType.HeavyVibrobladeMastery] = 1;
-            _defaultPerksByTier[3][PerkType.PolearmMastery] = 1;
-            _defaultPerksByTier[3][PerkType.TwinBladeMastery] = 1;
-            _defaultPerksByTier[3][PerkType.KatarMastery] = 1;
-            _defaultPerksByTier[3][PerkType.StaffMastery] = 1;
-            _defaultPerksByTier[3][PerkType.PistolMastery] = 1;
-            _defaultPerksByTier[3][PerkType.RifleMastery] = 1;
-            _defaultPerksByTier[3][PerkType.ThrowingWeaponMastery] = 1;
-
             // Tier 4
 
             // Tier 5
-            _defaultPerksByTier[5][PerkType.VibrobladeMastery] = 2;
-            _defaultPerksByTier[5][PerkType.FinesseVibrobladeMastery] = 2;
-            _defaultPerksByTier[5][PerkType.HeavyVibrobladeMastery] = 2;
-            _defaultPerksByTier[5][PerkType.PolearmMastery] = 2;
-            _defaultPerksByTier[5][PerkType.TwinBladeMastery] = 2;
-            _defaultPerksByTier[5][PerkType.KatarMastery] = 2;
-            _defaultPerksByTier[5][PerkType.StaffMastery] = 2;
-            _defaultPerksByTier[5][PerkType.PistolMastery] = 2;
-            _defaultPerksByTier[5][PerkType.RifleMastery] = 2;
-            _defaultPerksByTier[5][PerkType.ThrowingWeaponMastery] = 2;
 
             for (var level = 5; level >= 1; level--)
             {

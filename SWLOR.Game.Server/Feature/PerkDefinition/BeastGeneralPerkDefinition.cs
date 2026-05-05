@@ -142,7 +142,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (!BeastMastery.IsPlayerBeast(beast))
                         return;
 
-                    Stat.ApplyAttacksPerRound(beast, GetItemInSlot(InventorySlot.CreatureLeft));
+                    // todo: Adjust active beast's attack delay
                 })
                 .TriggerRefund((player) =>
                 {
@@ -150,21 +150,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (!BeastMastery.IsPlayerBeast(beast))
                         return;
 
-                    Stat.ApplyAttacksPerRound(beast, GetItemInSlot(InventorySlot.CreatureLeft));
+                    // todo: Adjust active beast's attack delay
                 })
 
                 .AddPerkLevel()
-                .Description("The beast gains an additional attack per round.")
+                .Description("The beast's attack delay reduces by 10%.")
                 .Price(3)
                 .RequirementBeastLevel(15)
 
                 .AddPerkLevel()
-                .Description("The beast gains an additional attack per round.")
+                .Description("The beast's attack delay reduces by 20%.")
                 .Price(3)
                 .RequirementBeastLevel(30)
 
                 .AddPerkLevel()
-                .Description("The beast gains an additional attack per round.")
+                .Description("The beast's attack delay reduces by 30%.")
                 .Price(3)
                 .RequirementBeastLevel(45);
         }

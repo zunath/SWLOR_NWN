@@ -18,7 +18,6 @@ namespace SWLOR.Game.Server.Feature
             ApplyCutsceneGhostToPlayer(player);
             ApplyHeight(player);
             RemoveImmobility(player);
-            ReapplyBAB(player);
             ReapplySpeed(player);
         }
 
@@ -45,11 +44,6 @@ namespace SWLOR.Game.Server.Feature
                     RemoveEffect(player, effect);
                 }
             }
-        }
-
-        private static void ReapplyBAB(uint player)
-        {
-            Stat.ApplyAttacksPerRound(player, GetItemInSlot(InventorySlot.RightHand, player));
         }
 
         private static void ReapplySpeed(uint player)

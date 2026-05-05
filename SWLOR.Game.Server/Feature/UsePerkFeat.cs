@@ -164,6 +164,35 @@ namespace SWLOR.Game.Server.Feature
             AbilityDetail ability,
             Location targetLocation)
         {
+            // Activation delay is increased if player is equipped with heavy armor.
+            float CalculateActivationDelay()
+            {
+                const float HeavyArmorPenalty = 2.0f;
+
+                var armorPenalty = 1.0f;
+                var penaltyMessage = string.Empty;
+                for (var slot = 0; slot < NumberOfInventorySlots; slot++)
+                {
+                    var item = GetItemInSlot((InventorySlot)slot, activator);
+                    var armorType = Item.GetArmorType(item);
+                    if (armorType == ArmorType.Heavy && !ability.IgnoreHeavyArmorPenalty)
+                    {
+                        armorPenalty = HeavyArmorPenalty;
+                        penaltyMessage = "Heavy armor slows your activation speed by 100%.";
+                    }
+
+                    if (armorPenalty >= HeavyArmorPenalty) break;
+                }
+
+                if (!string.IsNullOrWhiteSpace(penaltyMessage))
+                {
+                    SendMessageToPC(activator, penaltyMessage);
+                }
+
+                var abilityDelay = ability.ActivationDelay?.Invoke(activator, target, ability.AbilityLevel) ?? 0.0f;
+                return abilityDelay * armorPenalty;
+            }
+
             // Handles displaying animation and visual effects.
             void ProcessAnimationAndVisualEffects(float delay)
             {
@@ -255,7 +284,7 @@ namespace SWLOR.Game.Server.Feature
 
             // Begin the main process
             var activationId = Guid.NewGuid().ToString();
-            var activationDelay = ability.ActivationDelay?.Invoke(activator, target, ability.AbilityLevel) ?? 0.0f;
+            var activationDelay = CalculateActivationDelay();
             var recastDelay = ability.RecastDelay?.Invoke(activator) ?? 0f;
             var position = GetPosition(activator);
             ProcessAnimationAndVisualEffects(activationDelay);

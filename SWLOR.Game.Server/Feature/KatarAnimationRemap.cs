@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Feature
         /// </summary>
         private static void SyncFromEvent(uint player, uint item)
         {
-            if (!GetIsObjectValid(player) || !GetIsObjectValid(item))
+            if (!GetIsObjectValid(player))
                 return;
 
             SyncKatarRemapState(player);

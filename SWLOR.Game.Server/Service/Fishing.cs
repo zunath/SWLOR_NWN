@@ -420,9 +420,7 @@ namespace SWLOR.Game.Server.Service
             }
             else
             {
-                var caughtFish = CreateItemOnObject(fish.Resref, player);
-                if (GetIsObjectValid(caughtFish))
-                    SetLocalString(caughtFish, Item.ProducedByPlayerIdVariable, playerId);
+                CreateItemOnObject(fish.Resref, player);
 
                 SendMessageToPC(player, $"You landed a {fish.Name}!");
             }

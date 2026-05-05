@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// </summary>
         /// <param name="resref">The resref of the required item.</param>
         /// <param name="quantity">The number of items needed to complete the objective.</param>
-        /// <param name="producerRequirement">Whether turn-in items must be produced by a player and how producer identity is validated.</param>
+        /// <param name="producerRequirement">If <see cref="CollectItemProducerRequirementType.PlayerProduced"/>, the item must be crafted (stamped with <see cref="Item.PlayerProducedItemVariable"/>). See <see cref="CollectItemProducerRequirementType"/>.</param>
         public CollectItemObjective(
             string resref,
             int quantity,
@@ -50,22 +50,10 @@ namespace SWLOR.Game.Server.Service.QuestService
                 case CollectItemProducerRequirementType.None:
                     return string.Empty;
 
-                case CollectItemProducerRequirementType.ProducedByAnyPlayer:
-                case CollectItemProducerRequirementType.ProducedByTurnInPlayer:
-                    var producedByPlayerId = GetLocalString(item, Item.ProducedByPlayerIdVariable);
-                    if (string.IsNullOrWhiteSpace(producedByPlayerId))
+                case CollectItemProducerRequirementType.PlayerProduced:
+                    if (!Item.IsPlayerProducedItem(item))
                     {
-                        return ProducerRequirement switch
-                        {
-                            CollectItemProducerRequirementType.ProducedByTurnInPlayer =>
-                                "This quest only accepts items you obtained yourself (for example by crafting or fishing).",
-                            _ => "This quest only accepts items that were obtained by a player (not from vendors or similar sources)."
-                        };
-                    }
-                    if (ProducerRequirement == CollectItemProducerRequirementType.ProducedByTurnInPlayer &&
-                        producedByPlayerId != GetObjectUUID(player))
-                    {
-                        return "That item was obtained by another player and cannot be turned in for this quest.";
+                        return "This quest only accepts crafted items (not plain vendor purchases).";
                     }
                     return string.Empty;
 

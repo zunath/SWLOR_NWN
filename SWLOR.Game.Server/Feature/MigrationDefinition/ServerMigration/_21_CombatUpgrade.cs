@@ -48,6 +48,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
         public void Migrate()
         {
             RefundPerksByMapping(_refundMap);
+            RequireFullRebuildForAllPlayers();
         }
     }
 }

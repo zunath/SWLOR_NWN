@@ -31,6 +31,20 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             }
         }
 
+        protected void RequireFullRebuildForAllPlayers()
+        {
+            var query = new DBQuery<Player>();
+            var count = (int)DB.SearchCount(query);
+            var dbPlayers = DB.Search(query
+                .AddPaging(count, 0));
+
+            foreach (var dbPlayer in dbPlayers)
+            {
+                dbPlayer.RebuildComplete = false;
+                DB.Set(dbPlayer);
+            }
+        }
+
         protected void RefundPerksByMapping(Dictionary<(PerkType, int), int> refundMap)
         {
             var dbQuery = new DBQuery<Player>();

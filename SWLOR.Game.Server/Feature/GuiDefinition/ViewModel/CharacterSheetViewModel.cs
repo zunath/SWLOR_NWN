@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         IGuiRefreshable<StatusEffectRemovedRefreshEvent>,
         IGuiRefreshable<BeastGainXPRefreshEvent>
     {
-        private const int MaxUpgrades = 10;
+        private const int MaxAttributeScore = 26;
         private uint _target;
 
         public bool IsPlayerMode
@@ -366,18 +366,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 dbPlayer = DB.Get<Player>(playerId);
                 isRacial = dbPlayer.RacialStat == AbilityType.Invalid;
 
-                // Racial upgrades do not count toward the 10 cap and they don't reduce AP.
+                if (CreaturePlugin.GetRawAbilityScore(_target, ability) >= MaxAttributeScore)
+                {
+                    FloatingTextStringOnCreature($"You cannot upgrade this attribute beyond {MaxAttributeScore}.", _target, false);
+                    return;
+                }
+
+                // Racial upgrades don't reduce AP.
                 if (!isRacial)
                 {
                     if (dbPlayer.UnallocatedAP <= 0)
                     {
                         FloatingTextStringOnCreature("You do not have enough AP to purchase this upgrade.", _target, false);
-                        return;
-                    }
-
-                    if (dbPlayer.UpgradedStats[ability] >= MaxUpgrades)
-                    {
-                        FloatingTextStringOnCreature("You cannot upgrade this attribute any further.", _target, false);
                         return;
                     }
 
@@ -396,6 +396,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 FloatingTextStringOnCreature($"Your {abilityName} attribute has increased!", _target, false);
                 LoadData();
             });
+        }
+
+        private bool IsAttributeUpgradeAvailable(Player dbPlayer, AbilityType ability, bool isRacialBonusAvailable)
+        {
+            if (CreaturePlugin.GetRawAbilityScore(_target, ability) >= MaxAttributeScore)
+                return false;
+
+            return dbPlayer.UnallocatedAP > 0 || isRacialBonusAvailable;
         }
 
         public Action OnClickUpgradeMight() => () =>
@@ -474,12 +482,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var dbPlayer = DB.Get<Player>(playerId);
 
                 var isRacialBonusAvailable = dbPlayer.RacialStat == AbilityType.Invalid;
-                IsMightUpgradeAvailable = (dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Might] < MaxUpgrades) || isRacialBonusAvailable;
-                IsPerceptionUpgradeAvailable = (dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Perception] < MaxUpgrades) || isRacialBonusAvailable;
-                IsVitalityUpgradeAvailable = (dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Vitality] < MaxUpgrades) || isRacialBonusAvailable;
-                IsWillpowerUpgradeAvailable = (dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Willpower] < MaxUpgrades) || isRacialBonusAvailable;
-                IsAgilityUpgradeAvailable = (dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Agility] < MaxUpgrades) || isRacialBonusAvailable;
-                IsSocialUpgradeAvailable = (dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Social] < MaxUpgrades) || isRacialBonusAvailable;
+                IsMightUpgradeAvailable = IsAttributeUpgradeAvailable(dbPlayer, AbilityType.Might, isRacialBonusAvailable);
+                IsPerceptionUpgradeAvailable = IsAttributeUpgradeAvailable(dbPlayer, AbilityType.Perception, isRacialBonusAvailable);
+                IsVitalityUpgradeAvailable = IsAttributeUpgradeAvailable(dbPlayer, AbilityType.Vitality, isRacialBonusAvailable);
+                IsWillpowerUpgradeAvailable = IsAttributeUpgradeAvailable(dbPlayer, AbilityType.Willpower, isRacialBonusAvailable);
+                IsAgilityUpgradeAvailable = IsAttributeUpgradeAvailable(dbPlayer, AbilityType.Agility, isRacialBonusAvailable);
+                IsSocialUpgradeAvailable = IsAttributeUpgradeAvailable(dbPlayer, AbilityType.Social, isRacialBonusAvailable);
             }
         }
 

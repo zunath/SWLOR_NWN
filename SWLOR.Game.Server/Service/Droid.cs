@@ -74,20 +74,6 @@ namespace SWLOR.Game.Server.Service
 
             for (var level = 5; level >= 1; level--)
             {
-                _defaultPerksByTier[level][PerkType.CloakProficiency] = level;
-                _defaultPerksByTier[level][PerkType.BeltProficiency] = level;
-                _defaultPerksByTier[level][PerkType.RingProficiency] = level;
-                _defaultPerksByTier[level][PerkType.NecklaceProficiency] = level;
-                _defaultPerksByTier[level][PerkType.ShieldProficiency] = level;
-                _defaultPerksByTier[level][PerkType.BreastplateProficiency] = level;
-                _defaultPerksByTier[level][PerkType.HelmetProficiency] = level;
-                _defaultPerksByTier[level][PerkType.BracerProficiency] = level;
-                _defaultPerksByTier[level][PerkType.LeggingProficiency] = level;
-                _defaultPerksByTier[level][PerkType.TunicProficiency] = level;
-                _defaultPerksByTier[level][PerkType.CapProficiency] = level;
-                _defaultPerksByTier[level][PerkType.GloveProficiency] = level;
-                _defaultPerksByTier[level][PerkType.BootProficiency] = level;
-
                 // Previous levels' perks
                 var levelCopy = level;
                 var previousPerks = _defaultPerksByTier.Where(x => x.Key < levelCopy)

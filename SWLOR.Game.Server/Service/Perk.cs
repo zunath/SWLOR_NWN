@@ -44,16 +44,6 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<SkillType, List<PerkType>> _perksWithSkillRequirement = new();
 
         /// <summary>
-        /// Gets the list of heavy armor perks
-        /// </summary>
-        public static List<PerkType> HeavyArmorPerks { get; } = new();
-
-        /// <summary>
-        /// Gets the list of light armor perks
-        /// </summary>
-        public static List<PerkType> LightArmorPerks { get; } = new();
-
-        /// <summary>
         /// When the module loads, cache all perk and character type information.
         /// </summary>
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
@@ -113,15 +103,6 @@ namespace SWLOR.Game.Server.Service
                             _activePerksByCategory[perkDetail.Category][perkDetail.GroupType] = new Dictionary<PerkType, PerkDetail>();
 
                         _activePerksByCategory[perkDetail.Category][perkDetail.GroupType][perkType] = perkDetail;
-
-                        if (perkDetail.Category == PerkCategoryType.ArmorHeavy)
-                        {
-                            HeavyArmorPerks.Add(perkType);
-                        }
-                        else if (perkDetail.Category == PerkCategoryType.ArmorLight)
-                        {
-                            LightArmorPerks.Add(perkType);
-                        }
 
                         // Add appropriate trigger entries if this perk is active and has them.
                         CacheTriggers(perkDetail);

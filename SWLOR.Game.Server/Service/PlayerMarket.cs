@@ -186,36 +186,17 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Armor classes
-            var armorType = Item.GetArmorType(item);
-            if (armorType == ArmorType.Heavy)
+            switch (baseItemType)
             {
-                switch (baseItemType)
-                {
-                    case BaseItem.Helmet:
-                        return MarketCategoryType.Helmet;
-                    case BaseItem.Gloves:
-                    case BaseItem.Bracer:
-                        return MarketCategoryType.Bracer;
-                    case BaseItem.Boots:
-                        return MarketCategoryType.Legging;
-                    case BaseItem.Armor:
-                        return MarketCategoryType.Breastplate;
-                }
-            }
-            else if (armorType == ArmorType.Light)
-            {
-                switch (baseItemType)
-                {
-                    case BaseItem.Helmet:
-                        return MarketCategoryType.Cap;
-                    case BaseItem.Gloves:
-                    case BaseItem.Bracer:
-                        return MarketCategoryType.Glove;
-                    case BaseItem.Boots:
-                        return MarketCategoryType.Boot;
-                    case BaseItem.Armor:
-                        return MarketCategoryType.Tunic;
-                }
+                case BaseItem.Helmet:
+                    return MarketCategoryType.Helmet;
+                case BaseItem.Gloves:
+                case BaseItem.Bracer:
+                    return MarketCategoryType.Glove;
+                case BaseItem.Boots:
+                    return MarketCategoryType.Boot;
+                case BaseItem.Armor:
+                    return MarketCategoryType.Armor;
             }
 
             // Recipes

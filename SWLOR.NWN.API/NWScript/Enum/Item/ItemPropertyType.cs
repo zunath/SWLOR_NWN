@@ -130,5 +130,6 @@ namespace SWLOR.NWN.API.NWScript.Enum.Item
         EnzymeColor = 129,
         Blueprint = 130,
         RequiresSkill = 131,
+        RequiresStat = 132,
     }
 }

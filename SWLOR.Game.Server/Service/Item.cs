@@ -476,6 +476,21 @@ namespace SWLOR.Game.Server.Service
                         return $"This item requires {skillName} rank {rankRequired} to use.";
                     }
                 }
+                else if (type == ItemPropertyType.RequiresStat)
+                {
+                    var abilityType = (AbilityType)GetItemPropertySubType(ip);
+                    var statRequired = GetItemPropertyCostTableValue(ip);
+
+                    if (CreaturePlugin.GetRawAbilityScore(creature, abilityType) < statRequired)
+                    {
+                        var abilityNameStrRef = StringToInt(Get2DAString("iprp_reqstat", "Name", (int)abilityType));
+                        var abilityName = abilityNameStrRef == 0
+                            ? abilityType.ToString()
+                            : GetStringByStrRef(abilityNameStrRef);
+
+                        return $"This item requires {abilityName} {statRequired} to use.";
+                    }
+                }
             }
 
             return string.Empty;
@@ -564,33 +579,6 @@ namespace SWLOR.Game.Server.Service
             }
 
             return count;
-        }
-
-        /// <summary>
-        /// Retrieves the armor type of an item.
-        /// This is based on the Use Limitation: Perk property.
-        /// If it's not specified, ArmorType.Invalid will be returned.
-        /// </summary>
-        /// <param name="item">The item to be checked.</param>
-        /// <returns>The ArmorType value of the item. Returns ArmorType.Invalid if neither Light or Heavy are found.</returns>
-        public static ArmorType GetArmorType(uint item)
-        {
-            for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
-            {
-                if (GetItemPropertyType(ip) != ItemPropertyType.UseLimitationPerk) continue;
-
-                var perkType = (PerkType) GetItemPropertySubType(ip);
-                if (Perk.HeavyArmorPerks.Contains(perkType))
-                {
-                    return ArmorType.Heavy;
-                }
-                else if (Perk.LightArmorPerks.Contains(perkType))
-                {
-                    return ArmorType.Light;
-                }
-            }
-
-            return ArmorType.Invalid;
         }
 
         /// <summary>

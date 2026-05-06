@@ -1,13 +1,14 @@
-﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
+using System.Collections.Generic;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
-    public class GatheringPerkDefinition : IPerkListDefinition
+    public class GatheringPerkDefinition: IPerkListDefinition
     {
         private readonly PerkBuilder _builder = new();
+
         public Dictionary<PerkType, PerkDetail> BuildPerks()
         {
             TreasureHunter();
@@ -20,6 +21,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
             return _builder.Build();
         }
+
 
         private void TreasureHunter()
         {
@@ -42,6 +44,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Gathering, 45);
         }
 
+
         private void Creditfinder()
         {
             _builder.Create(PerkCategoryType.Gathering, PerkType.CreditFinder)
@@ -62,6 +65,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(4)
                 .RequirementSkill(SkillType.Gathering, 50);
         }
+
 
         private void Harvesting()
         {
@@ -98,6 +102,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Harvesting5);
         }
 
+
         private void Refining()
         {
             _builder.Create(PerkCategoryType.Gathering, PerkType.Refining)
@@ -132,6 +137,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Gathering, 40)
                 .GrantsFeat(FeatType.Refining5);
         }
+
 
         private void RefineryManagement()
         {
@@ -174,6 +180,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.RefineryManagement6);
         }
 
+
         private void Scavenging()
         {
             _builder.Create(PerkCategoryType.Gathering, PerkType.Scavenging)
@@ -209,6 +216,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Scavenging5);
         }
 
+
         private void HardLook()
         {
             _builder.Create(PerkCategoryType.Gathering, PerkType.HardLook)
@@ -243,6 +251,5 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Gathering, 40)
                 .GrantsFeat(FeatType.HardLook5);
         }
-
     }
 }

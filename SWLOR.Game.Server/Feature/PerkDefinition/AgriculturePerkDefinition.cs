@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
+using System.Collections.Generic;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
@@ -20,6 +20,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
             return _builder.Build();
         }
+
 
         private void Synthesis()
         {
@@ -40,6 +41,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(1)
                 .RequirementSkill(SkillType.Agriculture, 30);
         }
+
 
         private void Touch()
         {
@@ -67,6 +69,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(1)
                 .RequirementSkill(SkillType.Agriculture, 35);
         }
+
 
         private void Abilities()
         {
@@ -111,6 +114,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Agriculture, 8);
         }
 
+
         private void CookingRecipes()
         {
             _builder.Create(PerkCategoryType.Agriculture, PerkType.CookingRecipes)
@@ -145,6 +149,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Agriculture, 40)
                 .GrantsFeat(FeatType.CookingRecipes5);
         }
+
 
         private void AgricultureEquipment()
         {
@@ -181,6 +186,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Agriculture, 45)
                 .GrantsFeat(FeatType.AgricultureEquipment5);
         }
+
 
         private void FishingRods()
         {

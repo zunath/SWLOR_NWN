@@ -1,6 +1,5 @@
-﻿using System;
+using System;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.NPCService;
 using Player = SWLOR.Game.Server.Entity.Player;
 

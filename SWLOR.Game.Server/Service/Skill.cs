@@ -324,5 +324,31 @@ namespace SWLOR.Game.Server.Service
 
             return totalDistributableXP;
         }
+
+        public static int GetCreatureSkillRank(uint creature, SkillType skillType)
+        {
+            if (GetIsDM(creature) || skillType == SkillType.Invalid)
+                return 0;
+
+            if (Droid.IsDroid(creature))
+            {
+                var controller = Droid.GetControllerItem(creature);
+                var droidDetails = Droid.LoadDroidItemPropertyDetails(controller);
+
+                return droidDetails.Skills.TryGetValue(skillType, out var droidSkillRank)
+                    ? droidSkillRank
+                    : 0;
+            }
+
+            if (!GetIsPC(creature))
+                return 0;
+
+            var playerId = GetObjectUUID(creature);
+            var dbPlayer = DB.Get<Player>(playerId);
+
+            return dbPlayer.Skills.TryGetValue(skillType, out var skill)
+                ? skill.Rank
+                : 0;
+        }
     }
 }

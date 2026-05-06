@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -33,6 +33,5 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                     StatusEffect.Apply(activator, target, StatusEffectType.Poison, 120f);
                 });
         }
-
     }
 }

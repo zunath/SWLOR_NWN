@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.ItemService;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
@@ -41,7 +42,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     {
                         SetPhenoType(PhenoType.Normal, user);
                         SetCreatureTailType(TailType.None, user);
-                        CreaturePlugin.SetMovementRate(user, MovementRate.PC);
+                        Stat.ApplyPlayerMovementRate(user);
                         SendMessageToPC(user, "You dismount your speeder.");
                     }
                     else
@@ -80,7 +81,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 FloatingTextStringOnCreature("You have been dismounted.", player, false);
                 SetPhenoType(PhenoType.Normal, player);
                 SetCreatureTailType(TailType.None, player);
-                CreaturePlugin.SetMovementRate(player, MovementRate.PC);
+                Stat.ApplyPlayerMovementRate(player);
             }
         }
         /// <summary>
@@ -98,7 +99,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 FloatingTextStringOnCreature("You have been dismounted.", player, false);
                 SetPhenoType(PhenoType.Normal, player);
                 SetCreatureTailType(TailType.None, player);
-                CreaturePlugin.SetMovementRate(player, MovementRate.PC);
+                Stat.ApplyPlayerMovementRate(player);
             }
         }
         /// <summary>
@@ -118,7 +119,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 FloatingTextStringOnCreature("You have been dismounted for entering an area with a speeder.", player, false);
                 SetPhenoType(PhenoType.Normal, player);
                 SetCreatureTailType(TailType.None, player);
-                CreaturePlugin.SetMovementRate(player, MovementRate.PC);
+                Stat.ApplyPlayerMovementRate(player);
             }
         }
 

@@ -1,12 +1,12 @@
-﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
+using System.Collections.Generic;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
-    public class FirstAidPerkDefinition : IPerkListDefinition
+    public class FirstAidPerkDefinition: IPerkListDefinition
     {
         private readonly PerkBuilder _builder = new();
 
@@ -26,6 +26,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
             return _builder.Build();
         }
+
 
         private void RangedHealing()
         {
@@ -59,6 +60,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.RangedHealing4);
         }
 
+
         private void FrugalMedic()
         {
             _builder.Create(PerkCategoryType.FirstAid, PerkType.FrugalMedic)
@@ -84,6 +86,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.FrugalMedic3);
         }
+
 
         private void MedKit()
         {
@@ -125,6 +128,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.MedKit5);
         }
 
+
         private void KoltoRecovery()
         {
             _builder.Create(PerkCategoryType.FirstAid, PerkType.KoltoRecovery)
@@ -155,6 +159,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.KoltoRecovery3);
         }
 
+
         private void Resuscitation()
         {
             _builder.Create(PerkCategoryType.FirstAid, PerkType.Resuscitation)
@@ -184,6 +189,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Resuscitation3);
         }
 
+
         private void TreatmentKit()
         {
             _builder.Create(PerkCategoryType.FirstAid, PerkType.TreatmentKit)
@@ -204,6 +210,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.TreatmentKit2);
         }
+
 
         private void StasisField()
         {
@@ -235,6 +242,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.StasisField3);
         }
 
+
         private void CombatEnhancement()
         {
             _builder.Create(PerkCategoryType.FirstAid, PerkType.CombatEnhancement)
@@ -264,6 +272,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.CombatEnhancement3);
         }
+
 
         private void Shielding()
         {
@@ -303,6 +312,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Shielding4);
         }
 
+
         private void Infusion()
         {
             _builder.Create(PerkCategoryType.FirstAid, PerkType.Infusion)
@@ -325,8 +335,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Infusion2);
         }
 
+
         private void AdrenalStim()
-        { 
+        {
             _builder.Create(PerkCategoryType.FirstAid, PerkType.AdrenalStim)
                 .Name("Adrenal Stim")
 

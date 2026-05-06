@@ -4,6 +4,7 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatusEffectService;
@@ -17,7 +18,6 @@ namespace SWLOR.Game.Server.Service
     {
         private static readonly Dictionary<FeatType, AbilityDetail> _abilities = new();
         private static readonly Dictionary<uint, ActiveConcentrationAbility> _activeConcentrationAbilities = new();
-        private static readonly Dictionary<AbilityToggleType, Action<uint, bool>> _toggleActions = new();
         private static readonly Dictionary<uint, PlayerAura> _playerAuras = new();
 
         private const int MaxNumberOfAuras = 4;
@@ -29,7 +29,6 @@ namespace SWLOR.Game.Server.Service
         public static void CacheData()
         {
             CacheAbilities();
-            CacheToggleActions();
         }
 
         private static void CacheAbilities()
@@ -52,22 +51,6 @@ namespace SWLOR.Game.Server.Service
             Console.WriteLine($"Loaded {_abilities.Count} abilities.");
         }
 
-        private static void CacheToggleActions()
-        {
-            // If more toggle actions are added, it will make sense to promote this to a full fledged builder.
-            // Until then, it can live here.
-            _toggleActions[AbilityToggleType.Dash] = (player, isEnabled) =>
-            {
-                string message;
-                message = isEnabled 
-                    ? ColorToken.Green("Dash enabled") 
-                    : ColorToken.Red("Dash disabled");
-
-                Stat.ApplyPlayerMovementRate(player);
-                SendMessageToPC(player, message);
-            };
-        }
-        
         /// <summary>
         /// Returns true if a feat is registered to an ability.
         /// Returns false otherwise.
@@ -156,6 +139,13 @@ namespace SWLOR.Game.Server.Service
                 return false;
             }
 
+            // Target check.
+            if (ability.RequiresTarget && !GetIsObjectValid(target))
+            {
+                SendMessageToPC(activator, "A target is required.");
+                return false;
+            }
+
             // Range check.
             if (GetDistanceBetween(activator, target) > ability.MaxRange)
             {
@@ -199,7 +189,6 @@ namespace SWLOR.Game.Server.Service
 
             return true;
         }
-
 
         /// <summary>
         /// Checks whether a creature can activate the perk feat.
@@ -343,101 +332,6 @@ namespace SWLOR.Game.Server.Service
                 SendMessageToPC(creature, "You stop concentrating.");
                 DeleteLocalBool(creature, "CONCENTRATION_FIRST_USE");
             }
-        }
-
-        /// <summary>
-        /// Toggles an ability on or off for a given player.
-        /// If additional logic is defined in an AbilityToggleDefinition, that will be run after this is performed.
-        /// </summary>
-        /// <param name="player">The player to toggle on or off.</param>
-        /// <param name="toggleType">The type of toggle to turn on or off.</param>
-        /// <param name="isToggled">true if the ability should be enabled, false otherwise</param>
-        public static void ToggleAbility(uint player, AbilityToggleType toggleType, bool isToggled)
-        {
-            if (!GetIsPC(player) || GetIsDM(player))
-                return;
-
-            var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
-
-            if (dbPlayer.AbilityToggles == null)
-                dbPlayer.AbilityToggles = new Dictionary<AbilityToggleType, bool>();
-
-            if (!dbPlayer.AbilityToggles.ContainsKey(toggleType))
-                dbPlayer.AbilityToggles[toggleType] = false;
-
-            var runLogic = dbPlayer.AbilityToggles[toggleType] != isToggled;
-            dbPlayer.AbilityToggles[toggleType] = isToggled;
-
-            DB.Set(dbPlayer);
-
-            if (runLogic &&
-                _toggleActions.ContainsKey(toggleType))
-            {
-                _toggleActions[toggleType](player, isToggled);
-            }
-        }
-
-        /// <summary>
-        /// Retrieves whether a player has a specific toggle type enabled.
-        /// </summary>
-        /// <param name="player">The player to check</param>
-        /// <param name="toggleType">The type of toggle to check</param>
-        /// <returns>true if the ability is toggled on, false otherwise</returns>
-        public static bool IsAbilityToggled(uint player, AbilityToggleType toggleType)
-        {
-            if (!GetIsPC(player) || GetIsDM(player))
-                return false;
-
-            var playerId = GetObjectUUID(player);
-            return IsAbilityToggled(playerId, toggleType);
-        }
-
-        /// <summary>
-        /// Retrieves whether  a player has a specific toggle type enabled.
-        /// </summary>
-        /// <param name="playerId">The player Id to check</param>
-        /// <param name="toggleType">The type of toggle to check</param>
-        /// <returns>true if the ability is toggled on, false otherwise</returns>
-        public static bool IsAbilityToggled(string playerId, AbilityToggleType toggleType)
-        {
-            var dbPlayer = DB.Get<Player>(playerId);
-
-            if (dbPlayer == null)
-                return false;
-
-            if (dbPlayer.AbilityToggles == null)
-                dbPlayer.AbilityToggles = new Dictionary<AbilityToggleType, bool>();
-
-            if (!dbPlayer.AbilityToggles.ContainsKey(toggleType))
-                dbPlayer.AbilityToggles[toggleType] = false;
-
-            return dbPlayer.AbilityToggles[toggleType];
-        }
-
-        /// <summary>
-        /// Determines if any ability is toggled by a player.
-        /// </summary>
-        /// <param name="player">The player to check</param>
-        /// <returns>true if any ability is toggled, false otherwise</returns>
-        public static bool IsAnyAbilityToggled(uint player)
-        {
-            var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
-
-            if (dbPlayer == null)
-                return false;
-
-            if (dbPlayer.AbilityToggles == null)
-                return false;
-
-            foreach (var toggle in dbPlayer.AbilityToggles.Values)
-            {
-                if (toggle)
-                    return true;
-            }
-
-            return false;
         }
 
         /// <summary>
@@ -895,6 +789,166 @@ namespace SWLOR.Game.Server.Service
                         StatusEffect.Remove(exiting, detail.Type, false);
                     }
                 }
+            }
+        }
+
+        /// <summary>
+        /// Applies the standard hostile combat impact used by weapon and martial abilities.
+        /// </summary>
+        public static void ApplyCombatImpact(
+            uint activator,
+            uint target,
+            Location targetLocation,
+            SkillType skillType,
+            int baseDamage,
+            int duration,
+            int savingThrowDc,
+            SavingThrow savingThrow,
+            StatusEffectType statusEffect,
+            AbilityControlEffect controlEffect,
+            bool isArea)
+        {
+            if (isArea)
+            {
+                var center = GetIsObjectValid(target) ? GetLocation(target) : targetLocation;
+                var creature = GetFirstObjectInShape(Shape.Sphere, 5.0f, center, true);
+                while (GetIsObjectValid(creature))
+                {
+                    if (GetIsReactionTypeHostile(creature, activator))
+                    {
+                        ApplyHostileCombatImpact(
+                            activator,
+                            creature,
+                            skillType,
+                            baseDamage,
+                            savingThrowDc,
+                            savingThrow,
+                            statusEffect,
+                            controlEffect,
+                            duration);
+                    }
+
+                    creature = GetNextObjectInShape(Shape.Sphere, 5.0f, center, true);
+                }
+            }
+            else if (GetIsObjectValid(target))
+            {
+                ApplyHostileCombatImpact(
+                    activator,
+                    target,
+                    skillType,
+                    baseDamage,
+                    savingThrowDc,
+                    savingThrow,
+                    statusEffect,
+                    controlEffect,
+                    duration);
+            }
+
+            AssignCommand(activator, () => ActionPlayAnimation(Animation.DoubleStrike));
+        }
+
+        private static void ApplyHostileCombatImpact(
+            uint activator,
+            uint target,
+            SkillType skillType,
+            int baseDamage,
+            int savingThrowDc,
+            SavingThrow savingThrow,
+            StatusEffectType statusEffect,
+            AbilityControlEffect controlEffect,
+            int duration)
+        {
+            var damage = CalculateCombatImpactDamage(activator, target, skillType, baseDamage);
+            if (damage > 0)
+            {
+                ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
+                Enmity.ModifyEnmity(activator, target, damage + 100);
+            }
+
+            ApplyCombatImpactStatusEffect(activator, target, savingThrowDc, savingThrow, statusEffect, controlEffect, duration);
+            CombatPoint.AddCombatPoint(activator, target, skillType, 3);
+        }
+
+        private static int CalculateCombatImpactDamage(uint activator, uint target, SkillType skillType, int baseDamage)
+        {
+            if (baseDamage <= 0)
+                return 0;
+
+            var ability = GetCombatImpactDamageAbility(skillType);
+            var damage = baseDamage + Combat.GetAbilityDamageBonus(activator, skillType);
+            var attack = Stat.GetAttack(activator, ability, skillType);
+            var attackStat = GetAbilityScore(activator, ability);
+            var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+            var defenderStat = GetAbilityModifier(AbilityType.Vitality, target);
+            return Combat.CalculateDamage(attack, damage, attackStat, defense, defenderStat, 0);
+        }
+
+        private static void ApplyCombatImpactStatusEffect(
+            uint activator,
+            uint target,
+            int savingThrowDc,
+            SavingThrow savingThrow,
+            StatusEffectType statusEffect,
+            AbilityControlEffect controlEffect,
+            int duration)
+        {
+            if (duration <= 0 || (statusEffect == StatusEffectType.Invalid && controlEffect == AbilityControlEffect.None))
+                return;
+
+            if (savingThrowDc > 0 && !SavingThrowFailed(activator, target, savingThrow, savingThrowDc))
+                return;
+
+            if (statusEffect != StatusEffectType.Invalid)
+                StatusEffect.Apply(activator, target, statusEffect, duration);
+
+            switch (controlEffect)
+            {
+                case AbilityControlEffect.Dazed:
+                    ApplyEffectToObject(DurationType.Temporary, EffectDazed(), target, duration);
+                    ApplyTemporaryImmunity(target, duration, ImmunityType.Dazed);
+                    break;
+                case AbilityControlEffect.Stunned:
+                    ApplyEffectToObject(DurationType.Temporary, EffectStunned(), target, duration);
+                    break;
+                case AbilityControlEffect.Knockdown:
+                    ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), target, duration);
+                    break;
+                case AbilityControlEffect.Entangle:
+                    ApplyEffectToObject(DurationType.Temporary, EffectEntangle(), target, duration);
+                    break;
+                case AbilityControlEffect.Blind:
+                    ApplyEffectToObject(DurationType.Temporary, EffectBlindness(), target, duration);
+                    break;
+            }
+        }
+
+        private static bool SavingThrowFailed(uint activator, uint target, SavingThrow savingThrow, int dc)
+        {
+            dc = Combat.CalculateSavingThrowDC(activator, savingThrow, dc);
+            switch (savingThrow)
+            {
+                case SavingThrow.Fortitude:
+                    return FortitudeSave(target, dc, SavingThrowType.None, activator) == SavingThrowResultType.Failed;
+                case SavingThrow.Reflex:
+                    return ReflexSave(target, dc, SavingThrowType.None, activator) == SavingThrowResultType.Failed;
+                default:
+                    return WillSave(target, dc, SavingThrowType.None, activator) == SavingThrowResultType.Failed;
+            }
+        }
+
+        private static AbilityType GetCombatImpactDamageAbility(SkillType skillType)
+        {
+            switch (skillType)
+            {
+                case SkillType.Ranged:
+                case SkillType.Devices:
+                case SkillType.FirstAid:
+                    return AbilityType.Perception;
+                case SkillType.Force:
+                    return AbilityType.Willpower;
+                default:
+                    return AbilityType.Might;
             }
         }
 

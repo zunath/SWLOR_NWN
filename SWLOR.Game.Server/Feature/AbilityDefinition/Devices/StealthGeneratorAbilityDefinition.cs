@@ -84,7 +84,5 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
                 });
         }
-
-
     }
 }

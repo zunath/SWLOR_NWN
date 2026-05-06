@@ -11,6 +11,7 @@ using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.ItemService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -437,29 +438,91 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Checks all of the "Use Limitation: Perk" item properties on an item against a creature's effective level in the required perk.
-        /// If player meets or exceeds the level required for all item properties, returns true. Otherwise returns false.
+        /// Checks all item use limitation properties against a creature's effective requirements.
         /// </summary>
-        /// <param name="creature">The creature to check.</param>
-        /// <param name="item">The item to pull requirements from.</param>
-        /// <returns>true if all requirements met, false otherwise</returns>
         public static bool CanCreatureUseItem(uint creature, uint item)
+        {
+            return string.IsNullOrWhiteSpace(GetCreatureItemUseError(creature, item));
+        }
+
+        public static string GetCreatureItemUseError(uint creature, uint item)
         {
             for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
             {
-                if (GetItemPropertyType(ip) == ItemPropertyType.UseLimitationPerk)
+                var type = GetItemPropertyType(ip);
+
+                if (type == ItemPropertyType.UseLimitationPerk)
                 {
                     var perkType = (PerkType)GetItemPropertySubType(ip);
                     var levelRequired = GetItemPropertyCostTableValue(ip);
 
+                    if (perkType == PerkType.Invalid)
+                        continue;
+
                     if (Perk.GetPerkLevel(creature, perkType) < levelRequired)
-                        return false;
+                    {
+                        var perkName = Perk.GetPerkDetails(perkType).Name;
+                        return $"This item requires '{perkName}' level {levelRequired} to use.";
+                    }
+                }
+                else if (type == ItemPropertyType.RequiresSkill)
+                {
+                    var skillType = (SkillType)GetItemPropertySubType(ip);
+                    var rankRequired = GetItemPropertyCostTableValue(ip);
+
+                    if (Skill.GetCreatureSkillRank(creature, skillType) < rankRequired)
+                    {
+                        var skillName = Skill.GetSkillDetails(skillType).Name;
+                        return $"This item requires {skillName} rank {rankRequired} to use.";
+                    }
                 }
             }
 
-            return true;
+            return string.Empty;
         }
-        
+
+        public static string CanEquip(uint creature, uint item)
+        {
+            var isPlayer = GetIsPC(creature);
+            var isDroid = Droid.IsDroid(creature);
+
+            if ((!isPlayer && !isDroid) || GetIsDM(creature) || GetIsDMPossessed(creature))
+                return string.Empty;
+
+            if (Gui.IsWindowOpen(creature, GuiWindowType.Craft))
+                return "Items cannot be equipped while crafting.";
+
+            var itemUseError = GetCreatureItemUseError(creature, item);
+            if (!string.IsNullOrWhiteSpace(itemUseError))
+                return itemUseError;
+
+            var race = GetRacialType(creature);
+            var itemType = GetBaseItemType(item);
+            var needsDroidLimitation = race == RacialType.Droid && DroidBaseItemTypes.Contains(itemType);
+            var itemHasDroidIP = false;
+
+            for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
+            {
+                if (GetItemPropertyType(ip) != ItemPropertyType.UseLimitationRacialType)
+                    continue;
+
+                var limitationRace = (RacialType)GetItemPropertySubType(ip);
+                if (limitationRace != RacialType.Droid)
+                    continue;
+
+                if (race != RacialType.Droid)
+                    return "This item may only be equipped by Droids.";
+
+                if (needsDroidLimitation)
+                    itemHasDroidIP = true;
+            }
+
+            if (needsDroidLimitation && !itemHasDroidIP)
+                return "Droids may not equip that item.";
+
+            return string.Empty;
+        }
+
         /// <summary>
         /// Returns an item to a target.
         /// </summary>

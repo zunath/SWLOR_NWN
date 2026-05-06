@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -170,6 +170,17 @@ namespace SWLOR.Game.Server.Service.AbilityService
         }
 
         /// <summary>
+        /// Indicates this ability requires a concrete target object.
+        /// </summary>
+        /// <returns>An ability builder with the configured options.</returns>
+        public AbilityBuilder RequiresTarget()
+        {
+            _activeAbility.RequiresTarget = true;
+
+            return this;
+        }
+
+        /// <summary>
         /// Assigns an activation delay on the active ability we're building.
         /// This is typically used for casting times.
         /// Calling this more than once will replace the previous activation delay.
@@ -262,17 +273,6 @@ namespace SWLOR.Game.Server.Service.AbilityService
         {
             var requirement = new AbilityRequirementStamina(requiredSTM);
             _activeAbility.Requirements.Add(requirement);
-
-            return this;
-        }
-
-        /// <summary>
-        /// Indicates this ability is unaffected by heavy armor penalties.
-        /// </summary>
-        /// <returns>An ability builder with the configured options</returns>
-        public AbilityBuilder UnaffectedByHeavyArmor()
-        {
-            _activeAbility.IgnoreHeavyArmorPenalty = true;
 
             return this;
         }

@@ -646,7 +646,7 @@ namespace SWLOR.Game.Server.Service
 
             // Update player appearance to match that of the ship.
             SetCreatureAppearanceType(player, shipDetail.Appearance);
-            CreaturePlugin.SetMovementRate(player, MovementRate.PC);
+            Stat.ApplyPlayerMovementRate(player);
 
             // Set active ship Id and serialize the player's hot bar.
             dbPlayer.SerializedHotBar = CreaturePlugin.SerializeQuickbar(player);
@@ -839,7 +839,7 @@ namespace SWLOR.Game.Server.Service
 
             ClearCurrentTarget(player);
             SetCreatureAppearanceType(player, dbPlayer.OriginalAppearanceType);
-            CreaturePlugin.SetMovementRate(player, MovementRate.PC);
+            Stat.ApplyPlayerMovementRate(player);
             Enmity.RemoveCreatureEnmity(player);
 
             // Save the ship's hot bar and unassign the active ship Id.
@@ -1801,7 +1801,7 @@ namespace SWLOR.Game.Server.Service
                 // Exit space mode
                 ClearCurrentTarget(creature);
                 SetCreatureAppearanceType(creature, dbPlayer.OriginalAppearanceType);
-                CreaturePlugin.SetMovementRate(creature, MovementRate.PC);
+                Stat.ApplyPlayerMovementRate(creature);
                 Enmity.RemoveCreatureEnmity(creature);
                 
                 // Remove all module feats from the player.

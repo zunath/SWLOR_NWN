@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
@@ -29,11 +29,11 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public Animation AnimationType { get; set; }
         public StatusEffectType ConcentrationStatusEffectType { get; set; }
         public bool CanBeUsedInSpace { get; set; }
-        public bool IgnoreHeavyArmorPenalty { get; set; }
         public float MaxRange { get; set; }
         public bool IsHostileAbility { get; set; }
         public bool DisplaysActivationMessage { get; set; }
         public bool BreaksStealth { get; set; }
+        public bool RequiresTarget { get; set; }
         public int AbilityLevel { get; set; }
 
         public AbilityDetail()
@@ -46,6 +46,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
             IsHostileAbility = false;
             DisplaysActivationMessage = true;
             BreaksStealth = false;
+            RequiresTarget = false;
             AbilityLevel = 1;
         }
     }

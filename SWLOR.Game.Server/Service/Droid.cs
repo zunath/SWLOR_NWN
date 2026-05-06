@@ -72,60 +72,8 @@ namespace SWLOR.Game.Server.Service
             _defaultPerksByTier[4] = new Dictionary<PerkType, int>();
             _defaultPerksByTier[5] = new Dictionary<PerkType, int>();
 
-            // Tier 1
-            _defaultPerksByTier[1][PerkType.WeaponFocusVibroblades] = 1;
-            _defaultPerksByTier[1][PerkType.WeaponFocusFinesseVibroblades] = 1;
-            _defaultPerksByTier[1][PerkType.WeaponFocusHeavyVibroblades] = 1;
-            _defaultPerksByTier[1][PerkType.WeaponFocusPolearms] = 1;
-            _defaultPerksByTier[1][PerkType.WeaponFocusTwinBlades] = 1;
-            _defaultPerksByTier[1][PerkType.WeaponFocusKatars] = 1;
-            _defaultPerksByTier[1][PerkType.WeaponFocusStaves] = 1;
-            _defaultPerksByTier[1][PerkType.WeaponFocusPistols] = 1;
-            _defaultPerksByTier[1][PerkType.WeaponFocusRifles] = 1;
-            _defaultPerksByTier[1][PerkType.WeaponFocusThrowingWeapons] = 1;
-            _defaultPerksByTier[1][PerkType.PointBlankShot] = 1;
-
-            // Tier 2
-            _defaultPerksByTier[2][PerkType.WeaponFocusVibroblades] = 2;
-            _defaultPerksByTier[2][PerkType.WeaponFocusFinesseVibroblades] = 2;
-            _defaultPerksByTier[2][PerkType.WeaponFocusHeavyVibroblades] = 2;
-            _defaultPerksByTier[2][PerkType.WeaponFocusPolearms] = 2;
-            _defaultPerksByTier[2][PerkType.WeaponFocusTwinBlades] = 2;
-            _defaultPerksByTier[2][PerkType.WeaponFocusKatars] = 2;
-            _defaultPerksByTier[2][PerkType.WeaponFocusStaves] = 2;
-            _defaultPerksByTier[2][PerkType.WeaponFocusPistols] = 2;
-            _defaultPerksByTier[2][PerkType.WeaponFocusRifles] = 2;
-            _defaultPerksByTier[2][PerkType.WeaponFocusThrowingWeapons] = 2;
-
-            // Tier 3
-            _defaultPerksByTier[3][PerkType.ImprovedCriticalVibroblades] = 1;
-            _defaultPerksByTier[3][PerkType.ImprovedCriticalFinesseVibroblades] = 1;
-            _defaultPerksByTier[3][PerkType.ImprovedCriticalHeavyVibroblades] = 1;
-            _defaultPerksByTier[3][PerkType.ImprovedCriticalPolearms] = 1;
-            _defaultPerksByTier[3][PerkType.ImprovedCriticalTwinBlades] = 1;
-            _defaultPerksByTier[3][PerkType.ImprovedCriticalKatars] = 1;
-            _defaultPerksByTier[3][PerkType.ImprovedCriticalStaves] = 1;
-            _defaultPerksByTier[3][PerkType.ImprovedCriticalPistols] = 1;
-            _defaultPerksByTier[3][PerkType.ImprovedCriticalRifles] = 1;
-            _defaultPerksByTier[3][PerkType.ImprovedCriticalThrowingWeapons] = 1;
-
-            // Tier 4
-
-            // Tier 5
-
             for (var level = 5; level >= 1; level--)
             {
-                // Standard perks to give droids per level.
-                _defaultPerksByTier[level][PerkType.VibrobladeProficiency] = level;
-                _defaultPerksByTier[level][PerkType.FinesseVibrobladeProficiency] = level;
-                _defaultPerksByTier[level][PerkType.HeavyVibrobladeProficiency] = level;
-                _defaultPerksByTier[level][PerkType.PolearmProficiency] = level;
-                _defaultPerksByTier[level][PerkType.TwinBladeProficiency] = level;
-                _defaultPerksByTier[level][PerkType.KatarProficiency] = level;
-                _defaultPerksByTier[level][PerkType.StaffProficiency] = level;
-                _defaultPerksByTier[level][PerkType.PistolProficiency] = level;
-                _defaultPerksByTier[level][PerkType.RifleProficiency] = level;
-                _defaultPerksByTier[level][PerkType.ThrowingWeaponProficiency] = level;
                 _defaultPerksByTier[level][PerkType.CloakProficiency] = level;
                 _defaultPerksByTier[level][PerkType.BeltProficiency] = level;
                 _defaultPerksByTier[level][PerkType.RingProficiency] = level;

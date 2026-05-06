@@ -1,0 +1,345 @@
+using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.NWN.API.NWScript.Enum;
+using System.Collections.Generic;
+
+namespace SWLOR.Game.Server.Feature.PerkDefinition
+{
+    public class SaberstaffPerkDefinition: IPerkListDefinition
+    {
+        private readonly PerkBuilder _builder = new();
+
+        public Dictionary<PerkType, PerkDetail> BuildPerks()
+        {
+            BalancedAttunement();
+            ConduitFlare();
+            ConduitStance();
+            ConduitTraining();
+            EnergizedForms();
+            FlowOfTheMaelstrom();
+            FocusedArc();
+            ForceCapacitor();
+            ForceGyre();
+            ForceLens();
+            ForceMomentum();
+            GuardedChannel();
+            InfiniteConduit();
+            MaelstromArc();
+            SaberCyclone();
+            SeverFocus();
+            SpinningDeflection();
+            TempestFocus();
+            TempestRelease();
+            TempestStance();
+
+            return _builder.Build();
+        }
+
+        private void BalancedAttunement()
+        {
+            _builder.Create(PerkCategoryType.TwoHandedSaberstaff, PerkType.BalancedAttunement)
+                .Name("Balanced Attunement")
+
+                .AddPerkLevel()
+                .Description("While both FP and STM are above 50%, gain +10% Attack and +10% Force Attack.")
+                .Price(4)
+                .RequirementSkill(SkillType.TwoHanded, 48)
+                .RequirementCharacterType(CharacterType.ForceSensitive);
+        }
+
+        private void ConduitFlare()
+        {
+            _builder.Create(PerkCategoryType.TwoHandedSaberstaff, PerkType.ConduitFlare)
+                .Name("Conduit Flare")
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.ConduitFlare1)
+                .Description("Deals weapon DMG + 20 to all nearby enemies and has a Will DC16 check to inflict Force Disruption for 8 seconds.")
+                .Price(3)
+                .RequirementSkill(SkillType.TwoHanded, 38)
+                .RequirementCharacterType(CharacterType.ForceSensitive);
+        }
+
+        private void ConduitStance()
+        {
+            _builder.Create(PerkCategoryType.TwoHandedSaberstaff, PerkType.ConduitStance)
+                .Name("Conduit Stance")
+
+                .AddPerkLevel()
+                .Description("While active, grants +15% Force Attack and +15% Force Defense, but reduces Attack by 15%.")
+                .Price(2)
+                .RequirementSkill(SkillType.TwoHanded, 15)
+                .RequirementCharacterType(CharacterType.ForceSensitive);
+        }
+
+        private void ConduitTraining()
+        {
+            _builder.Create(PerkCategoryType.TwoHandedSaberstaff, PerkType.ConduitTraining)
+                .Name("Conduit Training")
+
+                .AddPerkLevel()
+                .Description("Gain +5% Force Defense and saberstaff attacks restore 1 FP. FP restoration can only trigger once every 4 seconds.")
+                .Price(2)
+                .RequirementSkill(SkillType.TwoHanded, 5)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+
+                .AddPerkLevel()
+                .Description("Saberstaff attacks restore 2 FP and your Force Defense bonus increases to +10% total.")
+                .Price(3)
+                .RequirementSkill(SkillType.TwoHanded, 20)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+
+                .AddPerkLevel()
+                .Description("Saberstaff attacks restore 3 FP and your Force Defense bonus increases to +15% total.")
+                .Price(3)
+                .RequirementSkill(SkillType.TwoHanded, 40)
+                .RequirementCharacterType(CharacterType.ForceSensitive);
+        }
+
+        private void EnergizedForms()
+        {
+            _builder.Create(PerkCategoryType.TwoHandedSaberstaff, PerkType.EnergizedForms)
+                .Name("Energized Forms")
+
+                .AddPerkLevel()
+                .Description("Using a Force ability causes your next saberstaff attack within 8 seconds to deal +15 DMG. Using a saberstaff ability reduces the FP cost of your next Force ability by 2.")
+                .Price(2)
+                .RequirementSkill(SkillType.TwoHanded, 32)
+                .RequirementCharacterType(CharacterType.ForceSensitive);
+        }
+
+        private void FlowOfTheMaelstrom()
+        {
+            _builder.Create(PerkCategoryType.TwoHandedSaberstaff, PerkType.FlowOfTheMaelstrom)
+                .Name("Flow of the Maelstrom")
+
+                .AddPerkLevel()
+                .Description("After hitting 3 or more enemies with one saberstaff ability, gain +15% Haste and +10 Attack Deflection for 12 seconds.")
+                .Price(4)
+                .RequirementSkill(SkillType.TwoHanded, 48)
+                .RequirementCharacterType(CharacterType.ForceSensitive);
+        }
+
+        private void FocusedArc()
+        {
+            _builder.Create(PerkCategoryType.TwoHandedSaberstaff, PerkType.FocusedArc)
+                .Name("Focused Arc")
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.FocusedArc1)
+                .Description("Deals weapon DMG + 10 and has a Will DC12 check to inflict Force Erosion for 12 seconds.")
+                .Price(2)
+                .RequirementSkill(SkillType.TwoHanded, 8)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.FocusedArc2)
+                .Description("Deals weapon DMG + 22 and has a Will DC15 check to inflict Force Erosion for 15 seconds.")
+                .Price(4)
+                .RequirementSkill(SkillType.TwoHanded, 18)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.FocusedArc3)
+                .Description("Deals weapon DMG + 34 and has a Will DC18 check to inflict Force Erosion for 18 seconds.")
+                .Price(3)
+                .RequirementSkill(SkillType.TwoHanded, 30)
+                .RequirementCharacterType(CharacterType.ForceSensitive);
+        }
+
+        private void ForceCapacitor()
+        {
+            _builder.Create(PerkCategoryType.TwoHandedSaberstaff, PerkType.ForceCapacitor)
+                .Name("Force Capacitor")
+
+                .AddPerkLevel()
+                .Description("For 20 seconds, 25% of STM spent on saberstaff abilities is restored as FP and 25% of FP spent on Force abilities is restored as STM.")
+                .Price(3)
+                .RequirementSkill(SkillType.TwoHanded, 45)
+                .RequirementCharacterType(CharacterType.ForceSensitive);
+        }
+
+        private void ForceGyre()
+        {
+            _builder.Create(PerkCategoryType.TwoHandedSaberstaff, PerkType.ForceGyre)
+                .Name("Force Gyre")
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.ForceGyre1)
+                .Description("Deals weapon DMG + 24 to all nearby enemies and has a Will DC16 check to inflict Force Erosion for 12 seconds.")
+                .Price(3)
+                .RequirementSkill(SkillType.TwoHanded, 38)
+                .RequirementCharacterType(CharacterType.ForceSensitive);
+        }
+
+        private void ForceLens()
+        {
+            _builder.Create(PerkCategoryType.TwoHandedSaberstaff, PerkType.ForceLens)
+                .Name("Force Lens")
+
+                .AddPerkLevel()
+                .Description("Allies in an area of effect (sphere) gain +15% Force Defense for 45 seconds. You gain +10 Attack Deflection.")
+                .Price(3)
+                .RequirementSkill(SkillType.TwoHanded, 25)
+                .RequirementCharacterType(CharacterType.ForceSensitive);
+        }
+
+        private void ForceMomentum()
+        {
+            _builder.Create(PerkCategoryType.TwoHandedSaberstaff, PerkType.ForceMomentum)
+                .Name("Force Momentum")
+
+                .AddPerkLevel()
+                .Description("Hitting 2 or more enemies with a saberstaff ability restores 2 FP and 2 STM. This can only trigger once every 4 seconds.")
+                .Price(3)
+                .RequirementSkill(SkillType.TwoHanded, 12)
+                .RequirementCharacterType(CharacterType.ForceSensitive);
+        }
+
+        private void GuardedChannel()
+        {
+            _builder.Create(PerkCategoryType.TwoHandedSaberstaff, PerkType.GuardedChannel)
+                .Name("Guarded Channel")
+
+                .AddPerkLevel()
+                .Description("Gain +20 Attack Deflection and +20% Force Defense for 10 seconds.")
+                .Price(3)
+                .RequirementSkill(SkillType.TwoHanded, 12)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+
+                .AddPerkLevel()
+                .Description("Gain +30 Attack Deflection and +30% Force Defense for 12 seconds.")
+                .Price(4)
+                .RequirementSkill(SkillType.TwoHanded, 28)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+
+                .AddPerkLevel()
+                .Description("Gain +40 Attack Deflection and +35% Force Defense for 15 seconds.")
+                .Price(4)
+                .RequirementSkill(SkillType.TwoHanded, 42)
+                .RequirementCharacterType(CharacterType.ForceSensitive);
+        }
+
+        private void InfiniteConduit()
+        {
+            _builder.Create(PerkCategoryType.TwoHandedSaberstaff, PerkType.InfiniteConduit)
+                .Name("Infinite Conduit")
+
+                .AddPerkLevel()
+                .Description("For 20 seconds, saberstaff attacks restore 5 FP and saberstaff combat abilities cost 3 less STM. The effect ends early if FP reaches zero.")
+                .Price(4)
+                .RequirementSkill(SkillType.TwoHanded, 50)
+                .RequirementCharacterType(CharacterType.ForceSensitive);
+        }
+
+        private void MaelstromArc()
+        {
+            _builder.Create(PerkCategoryType.TwoHandedSaberstaff, PerkType.MaelstromArc)
+                .Name("Maelstrom Arc")
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.MaelstromArc1)
+                .Description("Deals weapon DMG + 22 to enemies in a cone and has a Will DC14 check to inflict Disoriented for 12 seconds.")
+                .Price(3)
+                .RequirementSkill(SkillType.TwoHanded, 25)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.MaelstromArc2)
+                .Description("Deals weapon DMG + 32 to enemies in a cone and has a Will DC16 check to inflict Disoriented for 15 seconds.")
+                .Price(4)
+                .RequirementSkill(SkillType.TwoHanded, 35)
+                .RequirementCharacterType(CharacterType.ForceSensitive);
+        }
+
+        private void SaberCyclone()
+        {
+            _builder.Create(PerkCategoryType.TwoHandedSaberstaff, PerkType.SaberCyclone)
+                .Name("Saber Cyclone")
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.SaberCyclone1)
+                .Description("Channel for up to 6 seconds, hitting all nearby enemies every 2 seconds for weapon DMG + 25 and restoring 3 FP per enemy hit.")
+                .Price(4)
+                .RequirementSkill(SkillType.TwoHanded, 50)
+                .RequirementCharacterType(CharacterType.ForceSensitive);
+        }
+
+        private void SeverFocus()
+        {
+            _builder.Create(PerkCategoryType.TwoHandedSaberstaff, PerkType.SeverFocus)
+                .Name("Sever Focus")
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.SeverFocus1)
+                .Description("Deals weapon DMG + 18 and has a Will DC14 check to inflict Fractured Focus for 20 seconds.")
+                .Price(2)
+                .RequirementSkill(SkillType.TwoHanded, 22)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.SeverFocus2)
+                .Description("Deals weapon DMG + 28 and has a Will DC18 check to inflict Fractured Focus for 30 seconds.")
+                .Price(4)
+                .RequirementSkill(SkillType.TwoHanded, 35)
+                .RequirementCharacterType(CharacterType.ForceSensitive);
+        }
+
+        private void SpinningDeflection()
+        {
+            _builder.Create(PerkCategoryType.TwoHandedSaberstaff, PerkType.SpinningDeflection)
+                .Name("Spinning Deflection")
+
+                .AddPerkLevel()
+                .Description("Gain +10 Attack Deflection. After deflecting an attack, your next Circle Slash deals +8 DMG.")
+                .Price(2)
+                .RequirementSkill(SkillType.TwoHanded, 22)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+
+                .AddPerkLevel()
+                .Description("Gain +20 Attack Deflection total. Deflecting an attack restores 4 FP.")
+                .Price(2)
+                .RequirementSkill(SkillType.TwoHanded, 40)
+                .RequirementCharacterType(CharacterType.ForceSensitive);
+        }
+
+        private void TempestFocus()
+        {
+            _builder.Create(PerkCategoryType.TwoHandedSaberstaff, PerkType.TempestFocus)
+                .Name("Tempest Focus")
+
+                .AddPerkLevel()
+                .Description("Saberstaff combat abilities cost 2 less STM while your FP is above 50%.")
+                .Price(2)
+                .RequirementSkill(SkillType.TwoHanded, 32)
+                .RequirementCharacterType(CharacterType.ForceSensitive);
+        }
+
+        private void TempestRelease()
+        {
+            _builder.Create(PerkCategoryType.TwoHandedSaberstaff, PerkType.TempestRelease)
+                .Name("Tempest Release")
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.TempestRelease1)
+                .Description("Deals weapon DMG + 20 to all nearby enemies. Damage increases by +2 per 10 FP you currently have, up to +20 DMG.")
+                .Price(3)
+                .RequirementSkill(SkillType.TwoHanded, 45)
+                .RequirementCharacterType(CharacterType.ForceSensitive);
+        }
+
+        private void TempestStance()
+        {
+            _builder.Create(PerkCategoryType.TwoHandedSaberstaff, PerkType.TempestStance)
+                .Name("Tempest Stance")
+
+                .AddPerkLevel()
+                .Description("While active, grants +15% Haste and +10% Force Attack, but reduces Defense by 20%.")
+                .Price(2)
+                .RequirementSkill(SkillType.TwoHanded, 15)
+                .RequirementCharacterType(CharacterType.ForceSensitive);
+        }
+
+    }
+}

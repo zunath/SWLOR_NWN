@@ -93,15 +93,16 @@ private static void ForceLightning1(AbilityBuilder builder)
 
 Weapon abilities trigger on the next weapon hit and are used for combat skills.
 
-**Example: Power Attack**
+**Example: Bite**
 
 ```csharp
-private static void PowerAttack1(AbilityBuilder builder)
+private void Bite1()
 {
-    builder.Create(FeatType.PowerAttack1, PerkType.PowerAttack)
-        .Name("Power Attack I")
+    _builder.Create(FeatType.Bite1, PerkType.Bite)
+        .Name("Bite I")
         .Level(1)
-        .HasRecastDelay(RecastGroup.PowerAttack, 12f)
+        .HasRecastDelay(RecastGroup.Bite, 30f)
+        .RequirementStamina(3)
         .IsWeaponAbility()
         .HasImpactAction(ImpactAction);
 }
@@ -435,4 +436,4 @@ Abilities integrate with the combat system for damage calculation and combat poi
 
 Abilities can use skills for damage bonuses and other calculations.
 
-This documentation provides a comprehensive guide to creating and configuring abilities in SWLOR.Game.Server using the builder pattern. 
+This documentation provides a comprehensive guide to creating and configuring abilities in SWLOR.Game.Server using the builder pattern.

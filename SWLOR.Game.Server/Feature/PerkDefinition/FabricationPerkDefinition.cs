@@ -1,16 +1,17 @@
-﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
+using System.Collections.Generic;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
-    public class FabricationPerkDefinition : IPerkListDefinition
+    public class FabricationPerkDefinition: IPerkListDefinition
     {
         private readonly PerkBuilder _builder = new();
 
         public Dictionary<PerkType, PerkDetail> BuildPerks()
         {
+            BasicSynthesis();
             Synthesis();
             Touch();
             Abilities();
@@ -23,6 +24,30 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
             return _builder.Build();
         }
+
+
+        private void BasicSynthesis()
+        {
+            _builder.Create(PerkCategoryType.Fabrication, PerkType.BasicSynthesis)
+                .Name("Basic Synthesis")
+
+                .AddPerkLevel()
+                .Description("Increases progress by 10. (90% success rate)")
+                .Price(0)
+
+                .AddPerkLevel()
+                .Description("Increases progress by 10. (90% success rate)")
+                .Price(0)
+
+                .AddPerkLevel()
+                .Description("Increases progress by 10. (90% success rate)")
+                .Price(0)
+
+                .AddPerkLevel()
+                .Description("Increases progress by 10. (90% success rate)")
+                .Price(0);
+        }
+
 
         private void Synthesis()
         {
@@ -43,6 +68,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(1)
                 .RequirementSkill(SkillType.Fabrication, 30);
         }
+
 
         private void Touch()
         {
@@ -70,6 +96,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(1)
                 .RequirementSkill(SkillType.Fabrication, 35);
         }
+
 
         private void Abilities()
         {
@@ -114,6 +141,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Fabrication, 8);
         }
 
+
         private void FurnitureBlueprints()
         {
             _builder.Create(PerkCategoryType.Fabrication, PerkType.FurnitureBlueprints)
@@ -149,6 +177,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.FurnitureBlueprints5);
         }
 
+
         private void StructureBlueprints()
         {
             _builder.Create(PerkCategoryType.Fabrication, PerkType.StructureBlueprints)
@@ -166,6 +195,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Fabrication, 40)
                 .GrantsFeat(FeatType.StructureBlueprints2);
         }
+
 
         private void FabricationEquipment()
         {
@@ -203,6 +233,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.FabricationEquipment5);
         }
 
+
         private void Research()
         {
             _builder.Create(PerkCategoryType.Fabrication, PerkType.Research)
@@ -234,6 +265,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Fabrication, 50);
         }
 
+
         private void ScientificNetworking()
         {
             _builder.Create(PerkCategoryType.Fabrication, PerkType.ScientificNetworking)
@@ -249,6 +281,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(3)
                 .RequirementSkill(SkillType.Fabrication, 50);
         }
+
 
         private void ResearchProjects()
         {

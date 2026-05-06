@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -126,6 +126,5 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     ImpactAction(activator, target, 20, 16, level);
                 });
         }
-
     }
 }

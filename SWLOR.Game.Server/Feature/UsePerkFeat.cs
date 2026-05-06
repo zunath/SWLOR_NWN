@@ -2,7 +2,6 @@ using System;
 using System.Numerics;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.ActivityService;
@@ -13,7 +12,6 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
-using Item = SWLOR.Game.Server.Service.Item;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -164,33 +162,10 @@ namespace SWLOR.Game.Server.Feature
             AbilityDetail ability,
             Location targetLocation)
         {
-            // Activation delay is increased if player is equipped with heavy armor.
             float CalculateActivationDelay()
             {
-                const float HeavyArmorPenalty = 2.0f;
-
-                var armorPenalty = 1.0f;
-                var penaltyMessage = string.Empty;
-                for (var slot = 0; slot < NumberOfInventorySlots; slot++)
-                {
-                    var item = GetItemInSlot((InventorySlot)slot, activator);
-                    var armorType = Item.GetArmorType(item);
-                    if (armorType == ArmorType.Heavy && !ability.IgnoreHeavyArmorPenalty)
-                    {
-                        armorPenalty = HeavyArmorPenalty;
-                        penaltyMessage = "Heavy armor slows your activation speed by 100%.";
-                    }
-
-                    if (armorPenalty >= HeavyArmorPenalty) break;
-                }
-
-                if (!string.IsNullOrWhiteSpace(penaltyMessage))
-                {
-                    SendMessageToPC(activator, penaltyMessage);
-                }
-
                 var abilityDelay = ability.ActivationDelay?.Invoke(activator, target, ability.AbilityLevel) ?? 0.0f;
-                return abilityDelay * armorPenalty;
+                return abilityDelay;
             }
 
             // Handles displaying animation and visual effects.

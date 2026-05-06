@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
@@ -122,7 +122,5 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     ImpactAction(activator, target, 28);
                 });
         }
-
-
     }
 }

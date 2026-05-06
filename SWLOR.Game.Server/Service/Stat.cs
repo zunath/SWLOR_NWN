@@ -2,7 +2,6 @@ using System;
 using NWN.Native.API;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition.StatusEffectData;
-using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -26,6 +25,7 @@ namespace SWLOR.Game.Server.Service
         public const int BaseHP = 70;
         public const int BaseFP = 10;
         public const int BaseSTM = 10;
+        private const float DefaultPlayerMovementSpeedIncrease = 0.25f;
 
         /// <summary>
         /// When a player enters the server, reapply HP and temporary stats.
@@ -481,26 +481,13 @@ namespace SWLOR.Game.Server.Service
         
         public static void ApplyPlayerMovementRate(uint player)
         {
-            if (GetIsPC(player) && !GetIsDM(player) && !GetIsDMPossessed(player))
+            var isPlayer = GetIsPC(player) && !GetIsDM(player) && !GetIsDMPossessed(player);
+            if (isPlayer)
             {
                 CreaturePlugin.SetMovementRate(player, MovementRate.PC);
             }
 
-            var movementRate = 1.0f;
-            if (Ability.IsAbilityToggled(player, AbilityToggleType.Dash))
-            {
-                var level = Perk.GetPerkLevel(player, PerkType.Dash);
-                switch (level)
-                {
-                    case 1:
-                        movementRate += 0.1f; // 10%
-                        break;
-                    case 2:
-                        movementRate += 0.25f; // 25%
-                        break;
-                }
-            }
-
+            var movementRate = isPlayer ? 1.0f + DefaultPlayerMovementSpeedIncrease : 1.0f;
             for (var effect = GetFirstEffect(player); GetIsEffectValid(effect); effect = GetNextEffect(player))
             {
                 var type = GetEffectType(effect);
@@ -887,7 +874,8 @@ namespace SWLOR.Game.Server.Service
 
             attackBonus = CalculateEffectAttack(creature, attackBonus);
 
-            return GetAttack(skillLevel, stat, attackBonus);
+            var attack = GetAttack(skillLevel, stat, attackBonus);
+            return attack;
         }
 
         public static int GetAttackNative(CNWSCreature creature, BaseItem itemType, AbilityType statOverride = AbilityType.Invalid)
@@ -932,7 +920,8 @@ namespace SWLOR.Game.Server.Service
 
             attackBonus = CalculateEffectAttack(creature.m_idSelf, attackBonus);
             
-            return GetAttack(skillLevel, stat, attackBonus);
+            var attack = GetAttack(skillLevel, stat, attackBonus);
+            return attack;
         }
 
         /// <summary>
@@ -1010,7 +999,8 @@ namespace SWLOR.Game.Server.Service
 
             defenseBonus = CalculateEffectDefense(creature, defenseBonus, type);
             defenseBonus = (int)(defenseBonus * rate) + equipmentDefense;
-            return CalculateDefense(defenderStat, skillLevel, defenseBonus);
+            var defense = CalculateDefense(defenderStat, skillLevel, defenseBonus);
+            return defense;
         }
 
         public static int CalculateDefense(int defenderStat, int skillLevel, int defenseBonus)
@@ -1113,7 +1103,8 @@ namespace SWLOR.Game.Server.Service
             
             defenseBonus = CalculateEffectDefense(creature.m_idSelf, defenseBonus, type);
             defenseBonus = (int)(defenseBonus * rate) + equipmentDefense;
-            return (int)(8 + (defenderStat * 1.5f) + skillLevel + defenseBonus);
+            var defense = (int)(8 + (defenderStat * 1.5f) + skillLevel + defenseBonus);
+            return defense;
         }
 
         /// <summary>
@@ -1179,7 +1170,8 @@ namespace SWLOR.Game.Server.Service
             else if (GetActionMode(creature, ActionMode.ImprovedPowerAttack))
                 accuracyBonus -= 10;
 
-            return GetAccuracy(skillLevel, stat, accuracyBonus);
+            var accuracy = GetAccuracy(skillLevel, stat, accuracyBonus);
+            return accuracy;
         }
 
         /// <summary>
@@ -1187,11 +1179,11 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="creature">The creature to retrieve from.</param>
         /// <param name="weapon">The weapon being used.</param>
-        /// <param name="statOverride">The stat override used to calculate accuracy. This stat will be used instead of whatever stat is defined for the weapon type.</param>
         /// <returns>The accuracy rating for a creature using a specific weapon.</returns>
-        public static int GetAccuracyNative(CNWSCreature creature, CNWSItem weapon, AbilityType statOverride)
+        public static int GetAccuracyNative(CNWSCreature creature, CNWSItem weapon)
         {
             var accuracyBonus = 0;
+            var statOverride = AbilityType.Invalid;
 
             if (weapon != null)
             {
@@ -1239,7 +1231,8 @@ namespace SWLOR.Game.Server.Service
 
             accuracyBonus = CalculateEffectAccuracyNative(creature, accuracyBonus);
             
-            return GetAccuracy(skillLevel, stat, accuracyBonus);
+            var accuracy = GetAccuracy(skillLevel, stat, accuracyBonus);
+            return accuracy;
         }
 
         /// <summary>
@@ -1429,7 +1422,8 @@ namespace SWLOR.Game.Server.Service
 
             Log.Write(LogGroup.Attack, $"Effect Evasion: {evasionBonus}");
 
-            return GetEvasion(skillLevel, stat, ac * 5 + evasionBonus);
+            var evasion = GetEvasion(skillLevel, stat, ac * 5 + evasionBonus);
+            return evasion;
         }
 
         /// <summary>
@@ -1479,7 +1473,8 @@ namespace SWLOR.Game.Server.Service
 
             evasionBonus += CalculateEffectEvasion(creature.m_idSelf);
             
-            return GetEvasion(skillLevel, stat, ac * 5 + evasionBonus);
+            var evasion = GetEvasion(skillLevel, stat, ac * 5 + evasionBonus);
+            return evasion;
         }
 
         /// <summary>
@@ -1602,32 +1597,6 @@ namespace SWLOR.Game.Server.Service
             return npcStats;
         }
 
-        public static void ApplyCritModifier(uint player, uint rightHandWeapon)
-        {
-            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
-                return;
-
-            var critMod = 0;
-            var itemType = GetBaseItemType(rightHandWeapon);
-            var offhandType = GetBaseItemType(GetItemInSlot(InventorySlot.LeftHand, player));
-            if (Item.OneHandedMeleeItemTypes.Contains(itemType) || Item.ThrowingWeaponBaseItemTypes.Contains(itemType))
-            {
-                if (Item.OneHandedMeleeItemTypes.Contains(offhandType))
-                    critMod += Perk.GetPerkLevel(player, PerkType.WailingBlows) * 3; // 15% for WB
-                else if(offhandType == BaseItem.Invalid || Item.ShieldBaseItemTypes.Contains(offhandType))
-                    critMod += Perk.GetPerkLevel(player, PerkType.Duelist);
-            }
-
-            if(Item.ThrowingWeaponBaseItemTypes.Contains(itemType) || Item.PistolBaseItemTypes.Contains(itemType))
-            {
-                critMod += Perk.GetPerkLevel(player, PerkType.DirtyBlow) * 2; // 10% for DB
-            }
-
-            critMod += Perk.GetPerkLevel(player, PerkType.InnerStrength);
-
-            CreaturePlugin.SetCriticalRangeModifier(player, -critMod, 0, true);
-        }
-
         /// <summary>
         /// Returns the three-character shortened version of ability names.
         /// </summary>
@@ -1717,30 +1686,6 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Calculates the base value for a particular type of saving throw.
-        /// This does not factor in stat modifiers.
-        /// </summary>
-        /// <param name="player">The player to check</param>
-        /// <param name="type">The type of saving throw.</param>
-        /// <param name="offHandItem">The off hand item equipped to the left hand.</param>
-        /// <returns>The base saving throw value</returns>
-        public static int CalculateBaseSavingThrow(uint player, SavingThrow type, uint offHandItem = OBJECT_INVALID)
-        {
-            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
-                return 0;
-
-            var offHandType = GetBaseItemType(offHandItem);
-            var amount = 0;
-
-            if (Item.ShieldBaseItemTypes.Contains(offHandType))
-            {
-                amount += Perk.GetPerkLevel(player, PerkType.ShieldResistance);
-            }
-
-            return amount;
-        }
-
-        /// <summary>
         /// Stores an NPC's STM and FP as local variables.
         /// Also load their HP per their skin, if specified.
         /// </summary>
@@ -1805,4 +1750,3 @@ namespace SWLOR.Game.Server.Service
 
     }
 }
-

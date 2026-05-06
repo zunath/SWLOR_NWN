@@ -5,7 +5,6 @@ using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition.StatusEffectData;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.GuiService;
@@ -562,28 +561,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 damageStat = Item.GetWeaponDamageAbilityType(mainHandType);
                 accuracyStatOverride = AbilityType.Invalid;
 
-                // Strong Style (Lightsaber)
-                if (Item.LightsaberBaseItemTypes.Contains(mainHandType) &&
-                    Ability.IsAbilityToggled(_target, AbilityToggleType.StrongStyleLightsaber))
-                {
-                    damageStat = AbilityType.Might;
-                    accuracyStatOverride = AbilityType.Perception;
-                }
-                // Strong Style (Saberstaff)
-                if (Item.SaberstaffBaseItemTypes.Contains(mainHandType) &&
-                    Ability.IsAbilityToggled(_target, AbilityToggleType.StrongStyleSaberstaff))
-                {
-                    damageStat = AbilityType.Might;
-                    accuracyStatOverride = AbilityType.Perception;
-                }
-
-                // Flurry Style (Staff)
-                if (Item.StaffBaseItemTypes.Contains(mainHandType) &&
-                    GetHasFeat(FeatType.FlurryStyle, _target))
-                {
-                    damageStat = AbilityType.Perception;
-                    accuracyStatOverride = AbilityType.Agility;
-                }
             }
             
             var mainHandSkill = Skill.GetSkillTypeByBaseItem(mainHandType);

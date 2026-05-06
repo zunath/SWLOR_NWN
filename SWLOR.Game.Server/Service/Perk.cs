@@ -399,6 +399,9 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The perk level of a creature.</returns>
         public static int GetPerkLevel(uint creature, PerkType perkType)
         {
+            if (perkType == PerkType.Invalid)
+                return 0;
+
             if (GetIsDM(creature) && !GetIsDMPossessed(creature)) 
                 return 0;
 
@@ -406,6 +409,16 @@ namespace SWLOR.Game.Server.Service
             if (GetIsPC(creature) && !GetIsDMPossessed(creature))
             {
                 return GetPlayerPerkLevel(creature, perkType);
+            }
+            // Droids
+            else if (Droid.IsDroid(creature))
+            {
+                var controller = Droid.GetControllerItem(creature);
+                var droidDetails = Droid.LoadDroidItemPropertyDetails(controller);
+
+                return droidDetails.Perks.TryGetValue(perkType, out var droidPerkLevel)
+                    ? droidPerkLevel
+                    : 0;
             }
             // Beasts
             else if (BeastMastery.IsPlayerBeast(creature))
@@ -416,9 +429,7 @@ namespace SWLOR.Game.Server.Service
             else
             {
                 var perkLevel = GetLocalInt(creature, $"PERK_LEVEL_{(int) perkType}");
-                var perkMaxLevel = perkType == PerkType.Invalid
-                    ? 1
-                    : _perkMaxLevels[perkType];
+                var perkMaxLevel = _perkMaxLevels[perkType];
                 return perkLevel > 0 ? perkLevel : perkMaxLevel;
             }
         }

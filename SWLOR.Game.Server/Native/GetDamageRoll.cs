@@ -3,7 +3,6 @@ using NWNX.NET;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.NWN.API.NWNX;
@@ -12,7 +11,6 @@ using SWLOR.NWN.API.NWScript.Enum.Item;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using Ability = SWLOR.Game.Server.Service.Ability;
 using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
 using DamageType = NWN.Native.API.DamageType;
 using EquipmentSlot = NWN.Native.API.EquipmentSlot;
@@ -27,10 +25,6 @@ namespace SWLOR.Game.Server.Native
         private const int ImprovedPowerAttackDamageBonus = 6;
         private const int DefaultPhysicalDamage = 1;
         private const int ElectricalDroidMultiplier = 2;
-        private const int CrushingMasteryMultiplier = 2;
-        private const int WeaponSpecializationUnarmedDamage = 2;
-        private const int WeaponSpecializationCreatureDamage = 2;
-        private const int WeaponSpecializationOtherDamage = 1;
         private const int PowerAttackMode = 2;
         private const int ImprovedPowerAttackMode = 3;
         private const int AttributeNegativeThreshold = 128;
@@ -38,41 +32,6 @@ namespace SWLOR.Game.Server.Native
         private const int MaxValidDamageType = 6;
         private const int MinValidDamageType = 1;
 
-        private static readonly Dictionary<BaseItem, (FeatType Feat, int Damage)> _weaponSpecializationLookup = CreateWeaponSpecializationLookup();
-
-        private static Dictionary<BaseItem, (FeatType Feat, int Damage)> CreateWeaponSpecializationLookup()
-        {
-            var lookup = new Dictionary<BaseItem, (FeatType, int)>();
-
-            // Helper to add all items from a collection
-            void AddItems(IEnumerable<BaseItem> items, FeatType feat, int damage)
-            {
-                foreach (var item in items)
-                {
-                    lookup[item] = (feat, damage);
-                }
-            }
-
-            // Gloves (unarmed)
-            lookup[BaseItem.Gloves] = (FeatType.WeaponSpecialization_UnarmedStrike, WeaponSpecializationUnarmedDamage);
-
-            // All other weapon types
-            AddItems(Item.CreatureBaseItemTypes, FeatType.WeaponSpecialization_Creature, WeaponSpecializationCreatureDamage);
-            AddItems(Item.VibrobladeBaseItemTypes, FeatType.WeaponSpecializationVibroblades, WeaponSpecializationOtherDamage);
-            AddItems(Item.FinesseVibrobladeBaseItemTypes, FeatType.WeaponSpecializationFinesseVibroblades, WeaponSpecializationOtherDamage);
-            AddItems(Item.LightsaberBaseItemTypes, FeatType.WeaponSpecializationLightsabers, WeaponSpecializationOtherDamage);
-            AddItems(Item.HeavyVibrobladeBaseItemTypes, FeatType.WeaponSpecializationHeavyVibroblades, WeaponSpecializationOtherDamage);
-            AddItems(Item.PolearmBaseItemTypes, FeatType.WeaponSpecializationPolearms, WeaponSpecializationOtherDamage);
-            AddItems(Item.TwinBladeBaseItemTypes, FeatType.WeaponSpecializationTwinBlades, WeaponSpecializationOtherDamage);
-            AddItems(Item.SaberstaffBaseItemTypes, FeatType.WeaponSpecializationSaberstaffs, WeaponSpecializationOtherDamage);
-            AddItems(Item.KatarBaseItemTypes, FeatType.WeaponSpecializationKatars, WeaponSpecializationOtherDamage);
-            AddItems(Item.StaffBaseItemTypes, FeatType.WeaponSpecialization_Staff, WeaponSpecializationOtherDamage);
-            AddItems(Item.PistolBaseItemTypes, FeatType.WeaponSpecializationPistol, WeaponSpecializationOtherDamage);
-            AddItems(Item.ThrowingWeaponBaseItemTypes, FeatType.WeaponSpecializationThrowingWeapons, WeaponSpecializationOtherDamage);
-            AddItems(Item.RifleBaseItemTypes, FeatType.WeaponSpecializationRifles, WeaponSpecializationOtherDamage);
-
-            return lookup;
-        }
         internal delegate int GetDamageRollHook(void* thisPtr, void* pTarget, int bOffHand, int bCritical, int bSneakAttack, int bDeathAttack, int bForceMax);
         // ReSharper disable once NotAccessedField.Local
         private static GetDamageRollHook _callOriginal;
@@ -143,25 +102,14 @@ namespace SWLOR.Game.Server.Native
 
                 var attackerStat = Stat.GetStatValueNative(attacker, attackerStatType);
 
-                // Apply weapon style stat override
-                var damageStat = GetWeaponStyleStat(weapon, attacker);
-                if (damageStat > -1)
-                {
-                    attackerStat = damageStat;
-                }
-
                 // Handle negative attributes
                 if (attackerStat > AttributeNegativeThreshold)
                     attackerStat -= AttributeNegativeOffset;
 
                 LogDamageCalculation(attackerStat, dmgValues);
 
-                // Apply specialization bonus
-                dmgValues[CombatDamageType.Physical] += CalculateSpecializationDMG(attacker, weapon);
-
-                // Apply combat mode and style bonuses
+                // Apply combat mode bonuses
                 ApplyCombatModeBonus(attacker, dmgValues);
-                ApplySpecialStyleBonuses(attacker, weapon, dmgValues);
 
                 // Calculate critical multiplier
                 var critical = CalculateCriticalMultiplier(attacker, weapon, bCritical);
@@ -202,8 +150,6 @@ namespace SWLOR.Game.Server.Native
             if (bCritical != 1) return 0;
 
             var critMultiplier = weapon != null ? Item.GetCriticalModifier((BaseItem)weapon.m_nBaseItem) : 1;
-            if (HasImprovedMultiplier(attacker, weapon)) critMultiplier += 1;
-            if (HasRapidReload(attacker, weapon)) critMultiplier += 1;
 
             return critMultiplier;
         }
@@ -239,51 +185,6 @@ namespace SWLOR.Game.Server.Native
             }
 
             return physicalDamage;
-        }
-
-        private static int CalculateSpecializationDMG(CNWSCreature attacker, CNWSItem weapon)
-        {
-            if (weapon == null)
-            {
-                return attacker.m_pStats.HasFeat((ushort)FeatType.WeaponSpecialization_UnarmedStrike);
-            }
-
-            var baseItemType = (BaseItem)weapon.m_nBaseItem;
-
-            if (_weaponSpecializationLookup.TryGetValue(baseItemType, out var weaponSpec) &&
-                attacker.m_pStats.HasFeat((ushort)weaponSpec.Feat) == 1)
-            {
-                return weaponSpec.Damage;
-            }
-
-            return 0;
-        }
-
-        private static bool HasImprovedMultiplier(CNWSCreature attacker, CNWSItem weapon)
-        {
-            if (weapon == null) return false;
-            if (attacker.m_pStats.HasFeat((ushort)FeatType.IncreaseMultiplier) == 0) return false;
-
-            var baseItemType = (BaseItem)weapon.m_nBaseItem;
-
-            if (Item.SaberstaffBaseItemTypes.Contains(baseItemType)) return true;
-            if (Item.TwinBladeBaseItemTypes.Contains(baseItemType)) return true;
-            if (Item.PolearmBaseItemTypes.Contains(baseItemType)) return true;
-            if (Item.HeavyVibrobladeBaseItemTypes.Contains(baseItemType)) return true;
-
-            return false;
-        }
-
-        private static bool HasRapidReload(CNWSCreature attacker, CNWSItem weapon)
-        {
-            if (weapon == null) return false;
-            if (attacker.m_pStats.HasFeat((ushort)FeatType.RapidReload) == 0) return false;
-
-            var baseItemType = (BaseItem)weapon.m_nBaseItem;
-
-            if (Item.RifleBaseItemTypes.Contains(baseItemType)) return true;
-
-            return false;
         }
 
         private static void AddDamageToAttackData(void* pAttackData, CombatDamageType damageType, int damage)
@@ -388,47 +289,6 @@ namespace SWLOR.Game.Server.Native
             }
         }
 
-        private static void ApplySpecialStyleBonuses(CNWSCreature attacker, CNWSItem weapon, Dictionary<CombatDamageType, int> dmgValues)
-        {
-            if (weapon == null) return;
-
-            var playerId = attacker.m_pUUID.GetOrAssignRandom().ToString();
-            var mightMod = attacker.m_pStats.m_nStrengthModifier;
-            var baseItemType = (BaseItem)weapon.m_nBaseItem;
-
-            // Doublehand bonus
-            if (attacker.m_pInventory.GetItemInSlot((uint)EquipmentSlot.LeftHand) == null)
-            {
-                if (Item.OneHandedMeleeItemTypes.Contains(baseItemType) ||
-                    Item.ThrowingWeaponBaseItemTypes.Contains(baseItemType))
-                {
-                    var doublehandDMGBonus = Combat.GetDoublehandDMGBonusNative(attacker);
-                    Log.Write(LogGroup.Attack, $"DAMAGE: Applying doublehand damage bonus. (+{doublehandDMGBonus})");
-                    dmgValues[CombatDamageType.Physical] += doublehandDMGBonus;
-                }
-            }
-
-            // Staff bonuses
-            if (Item.StaffBaseItemTypes.Contains(baseItemType))
-            {
-                if (attacker.m_pStats.HasFeat((ushort)FeatType.CrushingMastery) == 1)
-                    dmgValues[CombatDamageType.Physical] += mightMod * CrushingMasteryMultiplier;
-                else if (attacker.m_pStats.HasFeat((ushort)FeatType.CrushingStyle) == 1)
-                    dmgValues[CombatDamageType.Physical] += mightMod;
-            }
-            // Strong Style bonuses
-            else if (Item.SaberstaffBaseItemTypes.Contains(baseItemType) &&
-                Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleSaberstaff))
-            {
-                dmgValues[CombatDamageType.Physical] += (int)Math.Ceiling(mightMod / 2.0f);
-            }
-            else if (Item.LightsaberBaseItemTypes.Contains(baseItemType) &&
-                Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleLightsaber))
-            {
-                dmgValues[CombatDamageType.Physical] += (int)Math.Ceiling(mightMod / 2.0f);
-            }
-        }
-
         private static int CalculateTargetSpecificDamage(void* pTarget, CNWSCreature attacker, CNWSItem weapon,
             Dictionary<CombatDamageType, int> dmgValues, CombatDamageType damageType, int attackerAttack,
             int attackerStat, int critical, int weaponPerkLevel, uint attackType, uint damageFlags, int bOffHand)
@@ -486,44 +346,6 @@ namespace SWLOR.Game.Server.Native
             }
 
             return damage;
-        }
-
-        private static int GetWeaponStyleStat(CNWSItem weapon, CNWSCreature attacker)
-        {
-            if (weapon == null)
-                return -1;
-
-            var playerId = attacker.m_pUUID.GetOrAssignRandom().ToString();
-
-            var baseItemType = (BaseItem)weapon.m_nBaseItem;
-            var wil = Stat.GetStatValueNative(attacker, AbilityType.Willpower);
-            var weaponDamageAbilityType = Item.GetWeaponDamageAbilityType(baseItemType);
-            var weaponDamageAbilityStat = Stat.GetStatValueNative(attacker, weaponDamageAbilityType);
-
-            if (Item.LightsaberBaseItemTypes.Contains(baseItemType))
-            {
-                if (Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleLightsaber))
-                    return attacker.m_pStats.GetSTRStat();
-            }
-            else if (Item.SaberstaffBaseItemTypes.Contains(baseItemType))
-            {
-                if (Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleSaberstaff))
-                    return attacker.m_pStats.GetSTRStat();
-            }
-            else if (Item.PistolBaseItemTypes.Contains(baseItemType) ||
-                     Item.RifleBaseItemTypes.Contains(baseItemType) ||
-                     Item.ThrowingWeaponBaseItemTypes.Contains(baseItemType))
-            {
-                if (wil > weaponDamageAbilityStat && attacker.m_pStats.HasFeat((ushort)FeatType.ZenMarksmanship) == 1)
-                    return attacker.m_pStats.GetWISStat();
-            }
-            else if (Item.StaffBaseItemTypes.Contains(baseItemType))
-            {
-                if (attacker.m_pStats.HasFeat((ushort)FeatType.FlurryStyle) == 1)
-                    return attacker.m_pStats.GetDEXStat();
-            }
-
-            return -1;
         }
 
         private static void PublishDamageDealtEvent(uint attacker, uint defender, int damage)

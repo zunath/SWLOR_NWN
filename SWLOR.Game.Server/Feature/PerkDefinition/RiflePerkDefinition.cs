@@ -1,0 +1,359 @@
+using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.NWN.API.NWScript.Enum;
+using System.Collections.Generic;
+
+namespace SWLOR.Game.Server.Feature.PerkDefinition
+{
+    public class RiflePerkDefinition: IPerkListDefinition
+    {
+        private readonly PerkBuilder _builder = new();
+
+        public Dictionary<PerkType, PerkDetail> BuildPerks()
+        {
+            AimedShot();
+            BallisticMastery();
+            BreachRound();
+            ContainmentNet();
+            DeadCenter();
+            ExposeWeakPoint();
+            FieldSedatives();
+            Headshot();
+            KillZone();
+            NeutralizingShot();
+            OneShot();
+            Overwatch();
+            PacificationField();
+            PiercingRound();
+            PinningFire();
+            ScopeCalibration();
+            SniperStance();
+            SoftTarget();
+            SpotterStance();
+            StasisVolley();
+            SteadyAim();
+            SuppressiveLine();
+            TranqCone();
+            VeteranTracker();
+
+            return _builder.Build();
+        }
+
+        private void AimedShot()
+        {
+            _builder.Create(PerkCategoryType.RangedRifle, PerkType.AimedShot)
+                .Name("Aimed Shot")
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.AimedShot1)
+                .Description("Deals weapon DMG + 18. If the target is farther than 8 meters away, deal an additional +10 DMG.")
+                .Price(3)
+                .RequirementSkill(SkillType.Ranged, 8)
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.AimedShot2)
+                .Description("Deals weapon DMG + 32. If the target is farther than 8 meters away, deal an additional +16 DMG.")
+                .Price(4)
+                .RequirementSkill(SkillType.Ranged, 18)
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.AimedShot3)
+                .Description("Deals weapon DMG + 46. If the target is farther than 8 meters away, deal an additional +24 DMG.")
+                .Price(3)
+                .RequirementSkill(SkillType.Ranged, 28);
+        }
+
+        private void BallisticMastery()
+        {
+            _builder.Create(PerkCategoryType.RangedRifle, PerkType.BallisticMastery)
+                .Name("Ballistic Mastery")
+
+                .AddPerkLevel()
+                .Description("Rifle abilities against Exposed or Sundered targets ignore an additional 15% Defense.")
+                .Price(4)
+                .RequirementSkill(SkillType.Ranged, 48);
+        }
+
+        private void BreachRound()
+        {
+            _builder.Create(PerkCategoryType.RangedRifle, PerkType.BreachRound)
+                .Name("Breach Round")
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.BreachRound1)
+                .Description("Deals weapon DMG + 35 and ignores 25% of the target's Defense.")
+                .Price(4)
+                .RequirementSkill(SkillType.Ranged, 35);
+        }
+
+        private void ContainmentNet()
+        {
+            _builder.Create(PerkCategoryType.RangedRifle, PerkType.ContainmentNet)
+                .Name("Containment Net")
+
+                .AddPerkLevel()
+                .Description("Enemies affected by your Disoriented effects suffer an additional -10% Evasion and -10% Attack.")
+                .Price(3)
+                .RequirementSkill(SkillType.Ranged, 40);
+        }
+
+        private void DeadCenter()
+        {
+            _builder.Create(PerkCategoryType.RangedRifle, PerkType.DeadCenter)
+                .Name("Dead Center")
+
+                .AddPerkLevel()
+                .Description("Rifle critical hits restore 4 STM and cause your next Aimed Shot within 8 seconds to deal +10 DMG. This can only trigger once every 6 seconds.")
+                .Price(3)
+                .RequirementSkill(SkillType.Ranged, 38);
+        }
+
+        private void ExposeWeakPoint()
+        {
+            _builder.Create(PerkCategoryType.RangedRifle, PerkType.ExposeWeakPoint)
+                .Name("Expose Weak Point")
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.ExposeWeakPoint1)
+                .Description("Deals weapon DMG + 20 and marks the target for 12 seconds. Physical attacks against the marked target deal +10% damage.")
+                .Price(3)
+                .RequirementSkill(SkillType.Ranged, 30);
+        }
+
+        private void FieldSedatives()
+        {
+            _builder.Create(PerkCategoryType.RangedRifle, PerkType.FieldSedatives)
+                .Name("Field Sedatives")
+
+                .AddPerkLevel()
+                .Description("After a tranquilizer effect ends, the target's Attack is reduced by 10% for 10 seconds.")
+                .Price(2)
+                .RequirementSkill(SkillType.Ranged, 32);
+        }
+
+        private void Headshot()
+        {
+            _builder.Create(PerkCategoryType.RangedRifle, PerkType.Headshot)
+                .Name("Headshot")
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.Headshot1)
+                .Description("Deals weapon DMG + 60. Targets below 50% HP make a Fortitude DC18 check or become Dazed for 3 seconds.")
+                .Price(4)
+                .RequirementSkill(SkillType.Ranged, 42);
+        }
+
+        private void KillZone()
+        {
+            _builder.Create(PerkCategoryType.RangedRifle, PerkType.KillZone)
+                .Name("Kill Zone")
+
+                .AddPerkLevel()
+                .Description("For 20 seconds, repeated attacks against the same target stack +4% rifle damage, up to +20%. Switching targets clears this bonus.")
+                .Price(3)
+                .RequirementSkill(SkillType.Ranged, 45);
+        }
+
+        private void NeutralizingShot()
+        {
+            _builder.Create(PerkCategoryType.RangedRifle, PerkType.NeutralizingShot)
+                .Name("Neutralizing Shot")
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.NeutralizingShot1)
+                .Description("Deals weapon DMG + 30 and has a Will DC18 check to remove one beneficial combat effect and inflict Disoriented for 12 seconds.")
+                .Price(4)
+                .RequirementSkill(SkillType.Ranged, 42);
+        }
+
+        private void OneShot()
+        {
+            _builder.Create(PerkCategoryType.RangedRifle, PerkType.OneShot)
+                .Name("One Shot")
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.OneShot1)
+                .Description("Deals weapon DMG + 100 to one target. If this defeats the target, restore 25 STM and gain +15% Attack for 15 seconds.")
+                .Price(4)
+                .RequirementSkill(SkillType.Ranged, 50);
+        }
+
+        private void Overwatch()
+        {
+            _builder.Create(PerkCategoryType.RangedRifle, PerkType.Overwatch)
+                .Name("Overwatch")
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.Overwatch1)
+                .Description("Deal weapon DMG + 20 and interrupt your target's current ability activation. Will DC16 check to inflict Foggy Mind for 12 seconds.")
+                .Price(3)
+                .RequirementSkill(SkillType.Ranged, 30);
+        }
+
+        private void PacificationField()
+        {
+            _builder.Create(PerkCategoryType.RangedRifle, PerkType.PacificationField)
+                .Name("Pacification Field")
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.PacificationField1)
+                .Description("Creates a field for 15 seconds. Enemies inside suffer -10% Attack and make a Will DC15 check every 5 seconds or become Dazed for 2 seconds.")
+                .Price(3)
+                .RequirementSkill(SkillType.Ranged, 45);
+        }
+
+        private void PiercingRound()
+        {
+            _builder.Create(PerkCategoryType.RangedRifle, PerkType.PiercingRound)
+                .Name("Piercing Round")
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.PiercingRound1)
+                .Description("Deals weapon DMG + 14 and has a Fortitude DC12 check to inflict Sunder, reducing Defense by 10% for 12 seconds.")
+                .Price(3)
+                .RequirementSkill(SkillType.Ranged, 12)
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.PiercingRound2)
+                .Description("Deals weapon DMG + 26 and has a Fortitude DC15 check to inflict Sunder, reducing Defense by 15% for 12 seconds.")
+                .Price(2)
+                .RequirementSkill(SkillType.Ranged, 22)
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.PiercingRound3)
+                .Description("Deals weapon DMG + 38 and has a Fortitude DC18 check to inflict Sunder, reducing Defense by 20% for 15 seconds.")
+                .Price(2)
+                .RequirementSkill(SkillType.Ranged, 40);
+        }
+
+        private void PinningFire()
+        {
+            _builder.Create(PerkCategoryType.RangedRifle, PerkType.PinningFire)
+                .Name("Pinning Fire")
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.PinningFire1)
+                .Description("Deals weapon DMG + 10 and has a Reflex DC12 check to inflict Dazed for 2 seconds.")
+                .Price(3)
+                .RequirementSkill(SkillType.Ranged, 12)
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.PinningFire2)
+                .Description("Deals weapon DMG + 18 to enemies in a line. Reflex DC14 check to inflict Knockdown for 3 seconds.")
+                .Price(4)
+                .RequirementSkill(SkillType.Ranged, 28);
+        }
+
+        private void ScopeCalibration()
+        {
+            _builder.Create(PerkCategoryType.RangedRifle, PerkType.ScopeCalibration)
+                .Name("Scope Calibration")
+
+                .AddPerkLevel()
+                .Description("Rifle critical hits deal +15% damage.")
+                .Price(3)
+                .RequirementSkill(SkillType.Ranged, 20);
+        }
+
+        private void SniperStance()
+        {
+            _builder.Create(PerkCategoryType.RangedRifle, PerkType.SniperStance)
+                .Name("Sniper Stance")
+
+                .AddPerkLevel()
+                .Description("While active, grants +20% Attack and +15% critical damage, but reduces Evasion and Defense by 20%.")
+                .Price(2)
+                .RequirementSkill(SkillType.Ranged, 15);
+        }
+
+        private void SoftTarget()
+        {
+            _builder.Create(PerkCategoryType.RangedRifle, PerkType.SoftTarget)
+                .Name("Soft Target")
+
+                .AddPerkLevel()
+                .Description("Deal +10% rifle damage to enemies affected by Disoriented, Dazed, or tranquilizer effects.")
+                .Price(2)
+                .RequirementSkill(SkillType.Ranged, 22);
+        }
+
+        private void SpotterStance()
+        {
+            _builder.Create(PerkCategoryType.RangedRifle, PerkType.SpotterStance)
+                .Name("Spotter Stance")
+
+                .AddPerkLevel()
+                .Description("While active, grants +15% Accuracy and +15% Evasion against ranged attacks, but reduces Haste by 10%.")
+                .Price(2)
+                .RequirementSkill(SkillType.Ranged, 15);
+        }
+
+        private void StasisVolley()
+        {
+            _builder.Create(PerkCategoryType.RangedRifle, PerkType.StasisVolley)
+                .Name("Stasis Volley")
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.StasisVolley1)
+                .Description("All enemies in a cone take weapon DMG + 25 and are tranquilized for up to 12 seconds. Damage breaks the effect prematurely.")
+                .Price(4)
+                .RequirementSkill(SkillType.Ranged, 50);
+        }
+
+        private void SteadyAim()
+        {
+            _builder.Create(PerkCategoryType.RangedRifle, PerkType.SteadyAim)
+                .Name("Steady Aim")
+
+                .AddPerkLevel()
+                .Description("Rifle combat abilities gain +5% accuracy and +5% critical chance.")
+                .Price(3)
+                .RequirementSkill(SkillType.Ranged, 5)
+
+                .AddPerkLevel()
+                .Description("Aimed Shot cooldowns are reduced by 5 seconds and gain an additional +10% accuracy.")
+                .Price(2)
+                .RequirementSkill(SkillType.Ranged, 32);
+        }
+
+        private void SuppressiveLine()
+        {
+            _builder.Create(PerkCategoryType.RangedRifle, PerkType.SuppressiveLine)
+                .Name("Suppressive Line")
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.SuppressiveLine1)
+                .Description("Deals weapon DMG + 22 to enemies in a line. Reflex DC14 check to inflict Disoriented for 12 seconds.")
+                .Price(3)
+                .RequirementSkill(SkillType.Ranged, 25);
+        }
+
+        private void TranqCone()
+        {
+            _builder.Create(PerkCategoryType.RangedRifle, PerkType.TranqCone)
+                .Name("Tranq Cone")
+
+                .AddPerkLevel()
+                .Description("Tranquilizes up to 3 enemies in a cone for up to 8 seconds. Damage breaks the effect prematurely.")
+                .Price(3)
+                .RequirementSkill(SkillType.Ranged, 25)
+
+                .AddPerkLevel()
+                .Description("Tranquilizes up to 5 enemies in a cone for up to 10 seconds. Damage breaks the effect prematurely.")
+                .Price(3)
+                .RequirementSkill(SkillType.Ranged, 38);
+        }
+
+        private void VeteranTracker()
+        {
+            _builder.Create(PerkCategoryType.RangedRifle, PerkType.VeteranTracker)
+                .Name("Veteran Tracker")
+
+                .AddPerkLevel()
+                .Description("Rifle damage increases by 15% against enemies affected by any control effect.")
+                .Price(4)
+                .RequirementSkill(SkillType.Ranged, 48);
+        }
+    }
+}

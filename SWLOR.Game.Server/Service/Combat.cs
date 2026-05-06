@@ -336,129 +336,24 @@ namespace SWLOR.Game.Server.Service
             return ColorToken.Combat($"{attackerName} attacks {defenderName}{type} : ({chanceToHit}% chance to hit)");
         }
 
-        /// <summary>
-        /// Check for weapon type and perk. Returns either the default ability score or the perk replaced ability score if the user has the relevant perk or active stance.
-        /// This is currently used for zen marksmanship, strong style, crushing style, and flurry style.
-        /// </summary>
-        /// <param name="attacker">The attacker to check</param>
-        /// <returns>The correct damage ability score, or 0 if a weapon is not equipped.</returns>
-
         public static int GetPerkAdjustedAbilityScore(uint attacker)
         {
             var weapon = GetItemInSlot(InventorySlot.RightHand, attacker);
             if (!GetIsObjectValid(weapon)) return 0;
             var weaponType = GetBaseItemType(weapon);
 
-            // Pistol and Rifle - Zen Marksmanship
-            if (Item.PistolBaseItemTypes.Contains(weaponType) || Item.RifleBaseItemTypes.Contains(weaponType))
-            {
-                var willpower = GetAbilityScore(attacker, AbilityType.Willpower);
-                var perception = GetAbilityScore(attacker, AbilityType.Perception);
-                return (GetHasFeat(FeatType.ZenMarksmanship, attacker) && (willpower > perception)) ? willpower : perception;
-            }
-
-            // Throwing - Zen Marksmanship
-            if (Item.ThrowingWeaponBaseItemTypes.Contains(weaponType))
-            {
-                var willpower = GetAbilityScore(attacker, AbilityType.Willpower);
-                var might = GetAbilityScore(attacker, AbilityType.Might);
-                return (GetHasFeat(FeatType.ZenMarksmanship, attacker) && (willpower > might)) ? willpower : might;
-            }
-
-            // Lightsaber - Strong Style
             if (Item.LightsaberBaseItemTypes.Contains(weaponType))
-                return Ability.IsAbilityToggled(attacker, AbilityService.AbilityToggleType.StrongStyleLightsaber) ? GetAbilityScore(attacker, AbilityType.Might) : GetAbilityScore(attacker, AbilityType.Perception);
+                return GetAbilityScore(attacker, AbilityType.Perception);
 
-            // Saberstaff - Strong Style
             if (Item.SaberstaffBaseItemTypes.Contains(weaponType))
-                return Ability.IsAbilityToggled(attacker, AbilityService.AbilityToggleType.StrongStyleSaberstaff) ? GetAbilityScore(attacker, AbilityType.Might) : GetAbilityScore(attacker, AbilityType.Perception);
+                return GetAbilityScore(attacker, AbilityType.Perception);
 
-            // Staff: there are 3 style perks for staff so it has to be handled slightly differently.
-            if (Item.StaffBaseItemTypes.Contains(weaponType))
-            {
-                if (GetHasFeat(FeatType.FlurryStyle, attacker)) return GetAbilityScore(attacker, AbilityType.Perception);
-                if (GetHasFeat(FeatType.CrushingMastery, attacker)) return 3 * GetAbilityScore(attacker, AbilityType.Might);
-                if (GetHasFeat(FeatType.CrushingStyle, attacker)) return 2 * GetAbilityScore(attacker, AbilityType.Might);
-                return GetAbilityScore(attacker, AbilityType.Might);
-            }
-
-            //Handle weapon types without ability adjustment perks as well for consistency.
             return GetAbilityScore(attacker, Item.GetWeaponDamageAbilityType(weaponType));
         }
 
-        /// <summary>
-        /// Retrieves the DMG bonus granted by doublehand, Power Attack, and Might scaling.
-        /// </summary>
-        /// <param name="attacker">The attacker to check</param>
-        /// <param name="weaponType">The BaseItem of the weapon held</param>
-        /// <returns>The DMG value or 0 if requirements are not met.</returns>
-
         public static int GetMiscDMGBonus(uint attacker, BaseItem weaponType)
         {
-            var bonusDMG = 0;
-
-            bonusDMG += GetDoublehandDMGBonus(attacker) +
-                GetPowerAttackDMGBonus(attacker) +
-                GetMightDMGBonus(attacker, weaponType);
-
-            return bonusDMG;
-        }
-
-        /// <summary>
-        /// Retrieves the DMG bonus granted by Might scaling on Crushing Style Staves and Strong Style Sabers.
-        /// Returns 0 if an invalid weapon is held.
-        /// </summary>
-        /// <param name="attacker">The attacker to check</param>
-        /// <param name="weaponType">The BaseItem of the weapon held</param>
-        /// <returns>The DMG value or 0 if requirements are not met.</returns>
-
-        public static int GetMightDMGBonus(uint attacker, BaseItem weaponType)
-        {
-            var mgtMod = GetAbilityModifier(AbilityType.Might, attacker);
-
-            if (Item.StaffBaseItemTypes.Contains(weaponType))
-                return mgtMod * Perk.GetPerkLevel(attacker, PerkService.PerkType.CrushingStyle);
-            else if (Item.LightsaberBaseItemTypes.Contains(weaponType) && Ability.IsAbilityToggled(attacker, AbilityService.AbilityToggleType.StrongStyleLightsaber))
-                return mgtMod / 2;
-            else if (Item.SaberstaffBaseItemTypes.Contains(weaponType) && Ability.IsAbilityToggled(attacker, AbilityService.AbilityToggleType.StrongStyleSaberstaff))
-                return mgtMod / 2;
-
-            return 0;
-
-        }
-
-        /// <summary>
-        /// Retrieves the DMG bonus granted by doublehand.
-        /// If attacker does not meet the requirements of Doublehand, 0 will be returned.
-        /// </summary>
-        /// <param name="attacker">The attacker to check</param>
-        /// <returns>The DMG value or 0 if requirements are not met.</returns>
-        public static int GetDoublehandDMGBonus(uint attacker)
-        {
-            var dmg = 0;
-            var rightHand = GetItemInSlot(InventorySlot.RightHand, attacker);
-            var leftHand = GetItemInSlot(InventorySlot.LeftHand, attacker);
-
-            if (!GetIsObjectValid(rightHand) || GetIsObjectValid(leftHand))
-                return 0;
-
-            var rightHandType = GetBaseItemType(rightHand);
-            if (!Item.OneHandedMeleeItemTypes.Contains(rightHandType) && 
-                !Item.ThrowingWeaponBaseItemTypes.Contains(rightHandType))
-                return 0;
-
-            if (GetHasFeat(FeatType.Doublehand5, attacker))
-                dmg = 19;
-            else if (GetHasFeat(FeatType.Doublehand4, attacker))
-                dmg = 14;
-            else if (GetHasFeat(FeatType.Doublehand3, attacker))
-                dmg = 10;
-            else if (GetHasFeat(FeatType.Doublehand2, attacker))
-                dmg = 6;
-            else if (GetHasFeat(FeatType.Doublehand1, attacker))
-                dmg = 2;
-
-            return dmg;
+            return GetPowerAttackDMGBonus(attacker);
         }
 
         /// <summary>
@@ -473,31 +368,6 @@ namespace SWLOR.Game.Server.Service
             else if (GetActionMode(attacker, ActionMode.ImprovedPowerAttack))
                 return 6;
             return 0;
-        }
-
-        /// <summary>
-        /// Retrieves the DMG bonus granted by doublehand.
-        /// If attacker does not meet the requirements of Doublehand, 0 will be returned.
-        /// Must be called from within a native context.
-        /// </summary>
-        /// <param name="attacker">The attacker to check</param>
-        /// <returns>The DMG value or 0 if requirements are not met.</returns>
-        public static int GetDoublehandDMGBonusNative(CNWSCreature attacker)
-        {
-            var dmg = 0;
-
-            if (attacker.m_pStats.HasFeat((ushort)FeatType.Doublehand5) == 1)
-                dmg = 19;
-            else if (attacker.m_pStats.HasFeat((ushort)FeatType.Doublehand4) == 1)
-                dmg = 14;
-            else if (attacker.m_pStats.HasFeat((ushort)FeatType.Doublehand3) == 1)
-                dmg = 10;
-            else if (attacker.m_pStats.HasFeat((ushort)FeatType.Doublehand2) == 1)
-                dmg = 6;
-            else if (attacker.m_pStats.HasFeat((ushort)FeatType.Doublehand1) == 1)
-                dmg = 2;
-
-            return dmg;
         }
 
         /// <summary>
@@ -599,13 +469,6 @@ namespace SWLOR.Game.Server.Service
                 return 0;
 
             var totalReduction = 0;
-
-            var rapidShotLevel = Perk.GetPerkLevel(attacker, PerkType.RapidShot);
-            if (rapidShotLevel > 0)
-                totalReduction += rapidShotLevel * 10;
-
-            if (GetHasFeat(FeatType.FlurryStyle, attacker))
-                totalReduction += 20;
 
             var hastenLevel = GetHastenLevel(attacker);
             if (hastenLevel > 0)

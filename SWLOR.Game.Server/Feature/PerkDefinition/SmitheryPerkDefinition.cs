@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
+using System.Collections.Generic;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
-    public class SmitheryPerkDefinition : IPerkListDefinition
+    public class SmitheryPerkDefinition: IPerkListDefinition
     {
         private readonly PerkBuilder _builder = new();
 
@@ -14,19 +14,17 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             Synthesis();
             Touch();
             Abilities();
-
             OneHandedBlueprints();
             TwoHandedBlueprints();
             MartialBlueprints();
             RangedBlueprints();
-
             ArmorBlueprints();
             AccessoryBlueprints();
-
             SmitheryEquipment();
 
             return _builder.Build();
         }
+
 
         private void Synthesis()
         {
@@ -47,6 +45,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(1)
                 .RequirementSkill(SkillType.Smithery, 30);
         }
+
 
         private void Touch()
         {
@@ -74,6 +73,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(1)
                 .RequirementSkill(SkillType.Smithery, 35);
         }
+
 
         private void Abilities()
         {
@@ -117,6 +117,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(1)
                 .RequirementSkill(SkillType.Smithery, 8);
         }
+
         private void OneHandedBlueprints()
         {
             _builder.Create(PerkCategoryType.Smithery, PerkType.OneHandedBlueprints)
@@ -151,6 +152,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Smithery, 40)
                 .GrantsFeat(FeatType.OneHandedBlueprints5);
         }
+
 
         private void TwoHandedBlueprints()
         {
@@ -187,6 +189,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.TwoHandedBlueprints5);
         }
 
+
         private void MartialBlueprints()
         {
             _builder.Create(PerkCategoryType.Smithery, PerkType.MartialBlueprints)
@@ -221,6 +224,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Smithery, 40)
                 .GrantsFeat(FeatType.MartialBlueprints5);
         }
+
 
         private void RangedBlueprints()
         {
@@ -257,6 +261,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.RangedBlueprints5);
         }
 
+
         private void ArmorBlueprints()
         {
             _builder.Create(PerkCategoryType.Smithery, PerkType.ArmorBlueprints)
@@ -291,6 +296,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Smithery, 40)
                 .GrantsFeat(FeatType.ArmorBlueprints5);
         }
+
 
         private void AccessoryBlueprints()
         {
@@ -327,6 +333,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.AccessoryBlueprints5);
         }
 
+
         private void SmitheryEquipment()
         {
             _builder.Create(PerkCategoryType.Smithery, PerkType.SmitheryEquipment)
@@ -362,6 +369,5 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Smithery, 45)
                 .GrantsFeat(FeatType.SmitheryEquipment5);
         }
-
     }
 }

@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
+using System.Collections.Generic;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
-    public class EngineeringPerkDefinition : IPerkListDefinition
+    public class EngineeringPerkDefinition: IPerkListDefinition
     {
         private readonly PerkBuilder _builder = new();
 
@@ -19,9 +19,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             EnhancementBlueprints();
             DroidEquipmentBlueprints();
             DroidAssembly();
-            
+
             return _builder.Build();
         }
+
 
         private void Synthesis()
         {
@@ -42,6 +43,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(1)
                 .RequirementSkill(SkillType.Engineering, 30);
         }
+
 
         private void Touch()
         {
@@ -69,6 +71,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(1)
                 .RequirementSkill(SkillType.Engineering, 35);
         }
+
 
         private void Abilities()
         {
@@ -113,6 +116,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Engineering, 8);
         }
 
+
         private void StarshipBlueprints()
         {
             _builder.Create(PerkCategoryType.Engineering, PerkType.StarshipBlueprints)
@@ -147,6 +151,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Engineering, 40)
                 .GrantsFeat(FeatType.StarshipBlueprints5);
         }
+
 
 
         private void EngineeringEquipment()
@@ -186,6 +191,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         }
 
 
+
         private void EnhancementBlueprints()
         {
             _builder.Create(PerkCategoryType.Engineering, PerkType.EnhancementBlueprints)
@@ -221,6 +227,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.EnhancementBlueprints5);
         }
 
+
         private void DroidEquipmentBlueprints()
         {
             _builder.Create(PerkCategoryType.Engineering, PerkType.DroidEquipmentBlueprints)
@@ -255,6 +262,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Engineering, 40)
                 .GrantsFeat(FeatType.DroidEquipmentBlueprints5);
         }
+
 
         private void DroidAssembly()
         {

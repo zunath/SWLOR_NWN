@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition.AdrenalStim;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.StatusEffectService;
@@ -30,7 +29,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasMaxRange(5f)
                 .UsesAnimation(Animation.LoopingGetMid)
                 .IsCastedAbility()
-                .UnaffectedByHeavyArmor()
                 .HasCustomValidation((activator, target, level, location) =>
                 {
                     if (!IsWithinRange(activator, target))
@@ -68,7 +66,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasMaxRange(5f)
                 .UsesAnimation(Animation.LoopingGetMid)
                 .IsCastedAbility()
-                .UnaffectedByHeavyArmor()
                 .HasCustomValidation((activator, target, level, location) =>
                 {
                     if (!IsWithinRange(activator, target))
@@ -106,7 +103,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasMaxRange(5f)
                 .UsesAnimation(Animation.LoopingGetMid)
                 .IsCastedAbility()
-                .UnaffectedByHeavyArmor()
                 .HasCustomValidation((activator, target, level, location) =>
                 {
                     if (!IsWithinRange(activator, target))

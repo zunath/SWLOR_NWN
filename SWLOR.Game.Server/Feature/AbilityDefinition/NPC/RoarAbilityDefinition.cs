@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -45,6 +45,5 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Howl_Mind), activator);
                 });
         }
-
     }
 }

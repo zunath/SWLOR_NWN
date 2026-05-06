@@ -1,7 +1,5 @@
-﻿using SWLOR.Game.Server.Core.Bioware;
-using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.PerkService;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -14,10 +12,6 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
         public override int Version => 8;
         public override void Migrate(uint player)
         {
-            var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
-
-            RefundPerks(dbPlayer, player);
             UpdateWeapons(player);
         }
 
@@ -68,40 +62,6 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
                 { "h_twinblade_5", (25, 28) },
                 { "h_twinelec_5", (25, 28) }
             };
-
-        private static void RefundPerks(Player dbPlayer, uint player)
-        {
-            List<PerkType> refundList = new()
-            {
-                PerkType.DualWield,
-                PerkType.ImprovedTwoWeaponFightingOneHanded,
-                PerkType.ImprovedTwoWeaponFightingTwoHanded
-            };
-
-            foreach (var toRefund in refundList)
-            {
-                if (!dbPlayer.Perks.ContainsKey(toRefund))
-                    continue;
-
-                dbPlayer.UnallocatedSP += 2;
-            }
-
-            if(dbPlayer.Perks.ContainsKey(PerkType.RapidShot))
-            {
-                var rapidShotLevel = dbPlayer.Perks[PerkType.RapidShot];
-                var refundAmount = 3;
-                if (rapidShotLevel == 2) refundAmount += 5; 
-                dbPlayer.UnallocatedSP += refundAmount;
-                dbPlayer.Perks.Remove(PerkType.RapidShot);
-
-                var perkDetail = Perk.GetPerkDetails(PerkType.RapidShot);
-
-                foreach (var action in perkDetail.RefundedTriggers)
-                {
-                    action(player);
-                }
-            }
-        }
 
         private void UpdateWeapons(uint player)
         {

@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
+using System.Collections.Generic;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
@@ -31,6 +31,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             return _builder.Build();
         }
 
+
         private void DemolitionExpert()
         {
             _builder.Create(PerkCategoryType.Devices, PerkType.DemolitionExpert)
@@ -57,6 +58,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.DemolitionExpert3);
         }
+
 
         private void FragGrenade()
         {
@@ -86,6 +88,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.FragGrenade3);
         }
+
 
         private void ConcussionGrenade()
         {
@@ -117,6 +120,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ConcussionGrenade3);
         }
 
+
         private void FlashbangGrenade()
         {
             _builder.Create(PerkCategoryType.Devices, PerkType.FlashbangGrenade)
@@ -146,6 +150,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.FlashbangGrenade3);
         }
+
 
         private void IonGrenade()
         {
@@ -177,6 +182,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.IonGrenade3);
         }
 
+
         private void KoltoGrenade()
         {
             _builder.Create(PerkCategoryType.Devices, PerkType.KoltoGrenade)
@@ -206,6 +212,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.KoltoGrenade3);
         }
+
 
         private void AdhesiveGrenade()
         {
@@ -237,6 +244,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.AdhesiveGrenade3);
         }
 
+
         private void SmokeBomb()
         {
             _builder.Create(PerkCategoryType.Devices, PerkType.SmokeBomb)
@@ -263,6 +271,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.SmokeBomb3);
         }
+
 
         private void KoltoBomb()
         {
@@ -291,6 +300,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.KoltoBomb3);
         }
 
+
         private void IncendiaryBomb()
         {
             _builder.Create(PerkCategoryType.Devices, PerkType.IncendiaryBomb)
@@ -317,6 +327,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.IncendiaryBomb3);
         }
+
 
         private void GasBomb()
         {
@@ -345,6 +356,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.GasBomb3);
         }
 
+
         private void StealthGenerator()
         {
             _builder.Create(PerkCategoryType.Devices, PerkType.StealthGenerator)
@@ -371,6 +383,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.StealthGenerator3);
         }
+
 
         private void Flamethrower()
         {
@@ -402,6 +415,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Flamethrower3);
         }
 
+
         private void WristRocket()
         {
             _builder.Create(PerkCategoryType.Devices, PerkType.WristRocket)
@@ -431,6 +445,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.WristRocket3);
         }
+
 
         private void DeflectorShield()
         {

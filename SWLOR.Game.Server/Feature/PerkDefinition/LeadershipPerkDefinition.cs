@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript.Enum;
+using System.Collections.Generic;
+using System.Linq;
+using System;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
@@ -33,6 +33,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
             return _builder.Build();
         }
+
 
         private void CityManagement()
         {
@@ -98,6 +99,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.CityManagement4);
         }
 
+
         private void Upkeep()
         {
             _builder.Create(PerkCategoryType.Leadership, PerkType.Upkeep)
@@ -115,6 +117,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Leadership, 20)
                 .GrantsFeat(FeatType.Upkeep2);
         }
+
 
         private void GuildRelations()
         {
@@ -142,6 +145,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Leadership, 20);
         }
 
+
         private void ShoutRange()
         {
             _builder.Create(PerkCategoryType.Leadership, PerkType.ShoutRange)
@@ -156,10 +160,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Increases the range of your shouts to 15 meters.")
                 .Price(2)
                 .RequirementSkill(SkillType.Leadership, 50)
-                
+
                 .TriggerPurchase(Ability.ReapplyPlayerAuraAOE)
                 .TriggerRefund(Ability.ReapplyPlayerAuraAOE);
         }
+
 
         private void RousingShout()
         {
@@ -183,6 +188,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Leadership, 45);
         }
 
+
         private void Dedication()
         {
             _builder.Create(PerkCategoryType.Leadership, PerkType.Dedication)
@@ -203,6 +209,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(2)
                 .RequirementSkill(SkillType.Leadership, 30);
         }
+
 
         private void SoldiersSpeed()
         {
@@ -226,6 +233,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Leadership, 40);
         }
 
+
         private void SoldiersStrike()
         {
             _builder.Create(PerkCategoryType.Leadership, PerkType.SoldiersStrike)
@@ -248,6 +256,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Leadership, 40);
         }
 
+
         private void Charge()
         {
             _builder.Create(PerkCategoryType.Leadership, PerkType.Charge)
@@ -264,6 +273,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(2)
                 .RequirementSkill(SkillType.Leadership, 35);
         }
+
 
         private void SoldiersPrecision()
         {
@@ -287,6 +297,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Leadership, 45);
         }
 
+
         private void ShockingShout()
         {
             _builder.Create(PerkCategoryType.Leadership, PerkType.ShockingShout)
@@ -299,6 +310,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.ShockingShout);
         }
+
 
         private void Rejuvenation()
         {
@@ -321,6 +333,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(2)
                 .RequirementSkill(SkillType.Leadership, 45);
         }
+
 
         private void FrenziedShout()
         {

@@ -183,3 +183,4 @@ The project uses:
 - Test thoroughly before deployment
 - The module system uses JSON for area/dialog/etc. definitions
 - HAK files contain game assets and must be rebuilt when changed
+- When a 2DA references a SWLOR custom TLK entry, use the NWN custom TLK StrRef value: `16777216 + tlk entry id`. For example, TLK entry `50003` must be referenced in 2DAs as `16827219`. Raw TLK entry IDs are only valid for base-game `dialog.tlk` references, not custom hak TLK rows.

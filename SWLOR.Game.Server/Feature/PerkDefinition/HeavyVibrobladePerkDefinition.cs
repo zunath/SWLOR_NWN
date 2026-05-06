@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void AbsoluteDefense()
         {
-            _builder.Create(PerkCategoryType.TwoHandedHeavyVibroblade, PerkType.AbsoluteDefense)
+            _builder.Create(PerkCategoryType.HeavyVibrobladeDefense, PerkType.AbsoluteDefense)
                 .Name("Absolute Defense")
 
                 .AddPerkLevel()
@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void AngerStrike()
         {
-            _builder.Create(PerkCategoryType.TwoHandedHeavyVibroblade, PerkType.AngerStrike)
+            _builder.Create(PerkCategoryType.HeavyVibrobladeDefense, PerkType.AngerStrike)
                 .Name("Anger Strike")
 
                 .AddPerkLevel()
@@ -74,7 +74,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void BastionStance()
         {
-            _builder.Create(PerkCategoryType.TwoHandedHeavyVibroblade, PerkType.BastionStance)
+            _builder.Create(PerkCategoryType.HeavyVibrobladeDefense, PerkType.BastionStance)
                 .Name("Bastion Stance")
 
                 .AddPerkLevel()
@@ -86,7 +86,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void BlazingSpikes()
         {
-            _builder.Create(PerkCategoryType.TwoHandedHeavyVibroblade, PerkType.BlazingSpikes)
+            _builder.Create(PerkCategoryType.HeavyVibrobladeOffense, PerkType.BlazingSpikes)
                 .Name("Blazing Spikes")
 
                 .AddPerkLevel()
@@ -98,7 +98,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void BloodWeapon()
         {
-            _builder.Create(PerkCategoryType.TwoHandedHeavyVibroblade, PerkType.BloodWeapon)
+            _builder.Create(PerkCategoryType.HeavyVibrobladeDefense, PerkType.BloodWeapon)
                 .Name("Blood Weapon")
 
                 .AddPerkLevel()
@@ -110,7 +110,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void Bloodlust()
         {
-            _builder.Create(PerkCategoryType.TwoHandedHeavyVibroblade, PerkType.Bloodlust)
+            _builder.Create(PerkCategoryType.HeavyVibrobladeOffense, PerkType.Bloodlust)
                 .Name("Bloodlust")
 
                 .AddPerkLevel()
@@ -127,7 +127,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void CriticalWard()
         {
-            _builder.Create(PerkCategoryType.TwoHandedHeavyVibroblade, PerkType.CriticalWard)
+            _builder.Create(PerkCategoryType.HeavyVibrobladeDefense, PerkType.CriticalWard)
                 .Name("Critical Ward")
 
                 .AddPerkLevel()
@@ -139,7 +139,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void CrushingBlow()
         {
-            _builder.Create(PerkCategoryType.TwoHandedHeavyVibroblade, PerkType.CrushingBlow)
+            _builder.Create(PerkCategoryType.HeavyVibrobladeDefense, PerkType.CrushingBlow)
                 .Name("Crushing Blow")
 
                 .AddPerkLevel()
@@ -152,7 +152,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void DefensiveHarmony()
         {
-            _builder.Create(PerkCategoryType.TwoHandedHeavyVibroblade, PerkType.DefensiveHarmony)
+            _builder.Create(PerkCategoryType.HeavyVibrobladeDefense, PerkType.DefensiveHarmony)
                 .Name("Defensive Harmony")
 
                 .AddPerkLevel()
@@ -164,7 +164,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void Earthshatter()
         {
-            _builder.Create(PerkCategoryType.TwoHandedHeavyVibroblade, PerkType.Earthshatter)
+            _builder.Create(PerkCategoryType.HeavyVibrobladeDefense, PerkType.Earthshatter)
                 .Name("Earthshatter")
 
                 .AddPerkLevel()
@@ -177,7 +177,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void EdgeOfDarkness()
         {
-            _builder.Create(PerkCategoryType.TwoHandedHeavyVibroblade, PerkType.EdgeOfDarkness)
+            _builder.Create(PerkCategoryType.HeavyVibrobladeDefense, PerkType.EdgeOfDarkness)
                 .Name("Edge of Darkness")
 
                 .AddPerkLevel()
@@ -190,7 +190,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void EssenceHunter()
         {
-            _builder.Create(PerkCategoryType.TwoHandedHeavyVibroblade, PerkType.EssenceHunter)
+            _builder.Create(PerkCategoryType.HeavyVibrobladeOffense, PerkType.EssenceHunter)
                 .Name("Essence Hunter")
 
                 .AddPerkLevel()
@@ -202,7 +202,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void EssenceTap()
         {
-            _builder.Create(PerkCategoryType.TwoHandedHeavyVibroblade, PerkType.EssenceTap)
+            _builder.Create(PerkCategoryType.HeavyVibrobladeOffense, PerkType.EssenceTap)
                 .Name("Essence Tap")
 
                 .AddPerkLevel()
@@ -214,7 +214,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void Flash()
         {
-            _builder.Create(PerkCategoryType.TwoHandedHeavyVibroblade, PerkType.Flash)
+            _builder.Create(PerkCategoryType.HeavyVibrobladeDefense, PerkType.Flash)
                 .Name("Flash")
 
                 .AddPerkLevel()
@@ -226,7 +226,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void FortressStrike()
         {
-            _builder.Create(PerkCategoryType.TwoHandedHeavyVibroblade, PerkType.FortressStrike)
+            _builder.Create(PerkCategoryType.HeavyVibrobladeDefense, PerkType.FortressStrike)
                 .Name("Fortress Strike")
 
                 .AddPerkLevel()
@@ -250,7 +250,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void GuardiansReaping()
         {
-            _builder.Create(PerkCategoryType.TwoHandedHeavyVibroblade, PerkType.GuardiansReaping)
+            _builder.Create(PerkCategoryType.HeavyVibrobladeDefense, PerkType.GuardiansReaping)
                 .Name("Guardian's Reaping")
 
                 .AddPerkLevel()
@@ -262,7 +262,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void GuardiansResolve()
         {
-            _builder.Create(PerkCategoryType.TwoHandedHeavyVibroblade, PerkType.GuardiansResolve)
+            _builder.Create(PerkCategoryType.HeavyVibrobladeDefense, PerkType.GuardiansResolve)
                 .Name("Guardian's Resolve")
 
                 .AddPerkLevel()
@@ -274,7 +274,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void LastStand()
         {
-            _builder.Create(PerkCategoryType.TwoHandedHeavyVibroblade, PerkType.LastStand)
+            _builder.Create(PerkCategoryType.HeavyVibrobladeDefense, PerkType.LastStand)
                 .Name("Last Stand")
 
                 .AddPerkLevel()
@@ -286,7 +286,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void LifeSiphon()
         {
-            _builder.Create(PerkCategoryType.TwoHandedHeavyVibroblade, PerkType.LifeSiphon)
+            _builder.Create(PerkCategoryType.HeavyVibrobladeOffense, PerkType.LifeSiphon)
                 .Name("Life Siphon")
 
                 .AddPerkLevel()
@@ -298,7 +298,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void Rampart()
         {
-            _builder.Create(PerkCategoryType.TwoHandedHeavyVibroblade, PerkType.Rampart)
+            _builder.Create(PerkCategoryType.HeavyVibrobladeDefense, PerkType.Rampart)
                 .Name("Rampart")
 
                 .AddPerkLevel()
@@ -310,7 +310,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void SacrificialBlade()
         {
-            _builder.Create(PerkCategoryType.TwoHandedHeavyVibroblade, PerkType.SacrificialBlade)
+            _builder.Create(PerkCategoryType.HeavyVibrobladeOffense, PerkType.SacrificialBlade)
                 .Name("Sacrificial Blade")
 
                 .AddPerkLevel()
@@ -323,7 +323,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void SoulAmplification()
         {
-            _builder.Create(PerkCategoryType.TwoHandedHeavyVibroblade, PerkType.SoulAmplification)
+            _builder.Create(PerkCategoryType.HeavyVibrobladeOffense, PerkType.SoulAmplification)
                 .Name("Soul Amplification")
 
                 .AddPerkLevel()
@@ -335,7 +335,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void SoulAscension()
         {
-            _builder.Create(PerkCategoryType.TwoHandedHeavyVibroblade, PerkType.SoulAscension)
+            _builder.Create(PerkCategoryType.HeavyVibrobladeOffense, PerkType.SoulAscension)
                 .Name("Soul Ascension")
 
                 .AddPerkLevel()
@@ -347,7 +347,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void SoulBarrier()
         {
-            _builder.Create(PerkCategoryType.TwoHandedHeavyVibroblade, PerkType.SoulBarrier)
+            _builder.Create(PerkCategoryType.HeavyVibrobladeOffense, PerkType.SoulBarrier)
                 .Name("Soul Barrier")
 
                 .AddPerkLevel()
@@ -359,7 +359,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void SoulBurst()
         {
-            _builder.Create(PerkCategoryType.TwoHandedHeavyVibroblade, PerkType.SoulBurst)
+            _builder.Create(PerkCategoryType.HeavyVibrobladeOffense, PerkType.SoulBurst)
                 .Name("Soul Burst")
 
                 .AddPerkLevel()
@@ -372,7 +372,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void SoulDevourer()
         {
-            _builder.Create(PerkCategoryType.TwoHandedHeavyVibroblade, PerkType.SoulDevourer)
+            _builder.Create(PerkCategoryType.HeavyVibrobladeOffense, PerkType.SoulDevourer)
                 .Name("Soul Devourer")
 
                 .AddPerkLevel()
@@ -384,7 +384,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void SoulReaping()
         {
-            _builder.Create(PerkCategoryType.TwoHandedHeavyVibroblade, PerkType.SoulReaping)
+            _builder.Create(PerkCategoryType.HeavyVibrobladeOffense, PerkType.SoulReaping)
                 .Name("Soul Reaping")
 
                 .AddPerkLevel()
@@ -396,7 +396,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void SoulSacrifice()
         {
-            _builder.Create(PerkCategoryType.TwoHandedHeavyVibroblade, PerkType.SoulSacrifice)
+            _builder.Create(PerkCategoryType.HeavyVibrobladeOffense, PerkType.SoulSacrifice)
                 .Name("Soul Sacrifice")
 
                 .AddPerkLevel()
@@ -408,7 +408,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void SoulStorm()
         {
-            _builder.Create(PerkCategoryType.TwoHandedHeavyVibroblade, PerkType.SoulStorm)
+            _builder.Create(PerkCategoryType.HeavyVibrobladeOffense, PerkType.SoulStorm)
                 .Name("Soul Storm")
 
                 .AddPerkLevel()
@@ -420,7 +420,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void SoulStrike()
         {
-            _builder.Create(PerkCategoryType.TwoHandedHeavyVibroblade, PerkType.SoulStrike)
+            _builder.Create(PerkCategoryType.HeavyVibrobladeOffense, PerkType.SoulStrike)
                 .Name("Soul Strike")
 
                 .AddPerkLevel()
@@ -442,7 +442,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void UnbreakableWill()
         {
-            _builder.Create(PerkCategoryType.TwoHandedHeavyVibroblade, PerkType.UnbreakableWill)
+            _builder.Create(PerkCategoryType.HeavyVibrobladeDefense, PerkType.UnbreakableWill)
                 .Name("Unbreakable Will")
 
                 .AddPerkLevel()
@@ -454,7 +454,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void VampiricFury()
         {
-            _builder.Create(PerkCategoryType.TwoHandedHeavyVibroblade, PerkType.VampiricFury)
+            _builder.Create(PerkCategoryType.HeavyVibrobladeOffense, PerkType.VampiricFury)
                 .Name("Vampiric Fury")
 
                 .AddPerkLevel()

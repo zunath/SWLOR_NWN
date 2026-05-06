@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void ArcStrike()
         {
-            _builder.Create(PerkCategoryType.OneHandedLightsaber, PerkType.ArcStrike)
+            _builder.Create(PerkCategoryType.LightsaberOffense, PerkType.ArcStrike)
                 .Name("Arc Strike")
 
                 .AddPerkLevel()
@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void BladeBlitz()
         {
-            _builder.Create(PerkCategoryType.OneHandedLightsaber, PerkType.BladeBlitz)
+            _builder.Create(PerkCategoryType.LightsaberOffense, PerkType.BladeBlitz)
                 .Name("Blade Blitz")
 
                 .AddPerkLevel()
@@ -76,7 +76,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void BrutalAssault()
         {
-            _builder.Create(PerkCategoryType.OneHandedLightsaber, PerkType.BrutalAssault)
+            _builder.Create(PerkCategoryType.LightsaberOffense, PerkType.BrutalAssault)
                 .Name("Brutal Assault")
 
                 .AddPerkLevel()
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void BrutalEfficiency()
         {
-            _builder.Create(PerkCategoryType.OneHandedLightsaber, PerkType.BrutalEfficiency)
+            _builder.Create(PerkCategoryType.LightsaberOffense, PerkType.BrutalEfficiency)
                 .Name("Brutal Efficiency")
 
                 .AddPerkLevel()
@@ -102,7 +102,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void Centering()
         {
-            _builder.Create(PerkCategoryType.OneHandedLightsaber, PerkType.Centering)
+            _builder.Create(PerkCategoryType.LightsaberOffense, PerkType.Centering)
                 .Name("Centering")
 
                 .AddPerkLevel()
@@ -121,7 +121,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void DeflectionCounter()
         {
-            _builder.Create(PerkCategoryType.OneHandedLightsaber, PerkType.DeflectionCounter)
+            _builder.Create(PerkCategoryType.LightsaberDefense, PerkType.DeflectionCounter)
                 .Name("Deflection Counter")
 
                 .AddPerkLevel()
@@ -134,7 +134,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void DeflectionMastery()
         {
-            _builder.Create(PerkCategoryType.OneHandedLightsaber, PerkType.DeflectionMastery)
+            _builder.Create(PerkCategoryType.LightsaberDefense, PerkType.DeflectionMastery)
                 .Name("Deflection Mastery")
 
                 .AddPerkLevel()
@@ -147,7 +147,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void DeflectionRiposte()
         {
-            _builder.Create(PerkCategoryType.OneHandedLightsaber, PerkType.DeflectionRiposte)
+            _builder.Create(PerkCategoryType.LightsaberDefense, PerkType.DeflectionRiposte)
                 .Name("Deflection Riposte")
 
                 .AddPerkLevel()
@@ -160,7 +160,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void DeflectionTraining()
         {
-            _builder.Create(PerkCategoryType.OneHandedLightsaber, PerkType.DeflectionTraining)
+            _builder.Create(PerkCategoryType.LightsaberDefense, PerkType.DeflectionTraining)
                 .Name("Deflection Training")
 
                 .AddPerkLevel()
@@ -185,7 +185,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void DeflectivePresence()
         {
-            _builder.Create(PerkCategoryType.OneHandedLightsaber, PerkType.DeflectivePresence)
+            _builder.Create(PerkCategoryType.LightsaberDefense, PerkType.DeflectivePresence)
                 .Name("Deflective Presence")
 
                 .AddPerkLevel()
@@ -198,7 +198,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void FerocityStance()
         {
-            _builder.Create(PerkCategoryType.OneHandedLightsaber, PerkType.FerocityStance)
+            _builder.Create(PerkCategoryType.LightsaberOffense, PerkType.FerocityStance)
                 .Name("Ferocity Stance")
 
                 .AddPerkLevel()
@@ -211,7 +211,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void FocusedStance()
         {
-            _builder.Create(PerkCategoryType.OneHandedLightsaber, PerkType.FocusedStance)
+            _builder.Create(PerkCategoryType.LightsaberOffense, PerkType.FocusedStance)
                 .Name("Focused Stance")
 
                 .AddPerkLevel()
@@ -224,7 +224,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void GuardianMaster()
         {
-            _builder.Create(PerkCategoryType.OneHandedLightsaber, PerkType.GuardianMaster)
+            _builder.Create(PerkCategoryType.LightsaberDefense, PerkType.GuardianMaster)
                 .Name("Guardian Master")
 
                 .AddPerkLevel()
@@ -237,7 +237,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void GuardiansChallenge()
         {
-            _builder.Create(PerkCategoryType.OneHandedLightsaber, PerkType.GuardiansChallenge)
+            _builder.Create(PerkCategoryType.LightsaberDefense, PerkType.GuardiansChallenge)
                 .Name("Guardian's Challenge")
 
                 .AddPerkLevel()
@@ -251,7 +251,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void GuardiansInfluence()
         {
-            _builder.Create(PerkCategoryType.OneHandedLightsaber, PerkType.GuardiansInfluence)
+            _builder.Create(PerkCategoryType.LightsaberDefense, PerkType.GuardiansInfluence)
                 .Name("Guardian's Influence")
 
                 .AddPerkLevel()
@@ -264,7 +264,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void ImpenetrableGuard()
         {
-            _builder.Create(PerkCategoryType.OneHandedLightsaber, PerkType.ImpenetrableGuard)
+            _builder.Create(PerkCategoryType.LightsaberDefense, PerkType.ImpenetrableGuard)
                 .Name("Impenetrable Guard")
 
                 .AddPerkLevel()
@@ -277,7 +277,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void LegSlash()
         {
-            _builder.Create(PerkCategoryType.OneHandedLightsaber, PerkType.LegSlash)
+            _builder.Create(PerkCategoryType.LightsaberOffense, PerkType.LegSlash)
                 .Name("Leg Slash")
 
                 .AddPerkLevel()
@@ -291,7 +291,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void Overcharge()
         {
-            _builder.Create(PerkCategoryType.OneHandedLightsaber, PerkType.Overcharge)
+            _builder.Create(PerkCategoryType.LightsaberOffense, PerkType.Overcharge)
                 .Name("Overcharge")
 
                 .AddPerkLevel()
@@ -304,7 +304,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void OverwhelmingDefense()
         {
-            _builder.Create(PerkCategoryType.OneHandedLightsaber, PerkType.OverwhelmingDefense)
+            _builder.Create(PerkCategoryType.LightsaberDefense, PerkType.OverwhelmingDefense)
                 .Name("Overwhelming Defense")
 
                 .AddPerkLevel()
@@ -317,7 +317,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void OverwhelmingStrike()
         {
-            _builder.Create(PerkCategoryType.OneHandedLightsaber, PerkType.OverwhelmingStrike)
+            _builder.Create(PerkCategoryType.LightsaberOffense, PerkType.OverwhelmingStrike)
                 .Name("Overwhelming Strike")
 
                 .AddPerkLevel()
@@ -331,7 +331,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void PunishingStrike()
         {
-            _builder.Create(PerkCategoryType.OneHandedLightsaber, PerkType.PunishingStrike)
+            _builder.Create(PerkCategoryType.LightsaberDefense, PerkType.PunishingStrike)
                 .Name("Punishing Strike")
 
                 .AddPerkLevel()
@@ -345,7 +345,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void Purify()
         {
-            _builder.Create(PerkCategoryType.OneHandedLightsaber, PerkType.Purify)
+            _builder.Create(PerkCategoryType.LightsaberOffense, PerkType.Purify)
                 .Name("Purify")
 
                 .AddPerkLevel()
@@ -358,7 +358,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void ReactiveDeflection()
         {
-            _builder.Create(PerkCategoryType.OneHandedLightsaber, PerkType.ReactiveDeflection)
+            _builder.Create(PerkCategoryType.LightsaberDefense, PerkType.ReactiveDeflection)
                 .Name("Reactive Deflection")
 
                 .AddPerkLevel()
@@ -377,7 +377,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void RippleSlash()
         {
-            _builder.Create(PerkCategoryType.OneHandedLightsaber, PerkType.RippleSlash)
+            _builder.Create(PerkCategoryType.LightsaberOffense, PerkType.RippleSlash)
                 .Name("Ripple Slash")
 
                 .AddPerkLevel()
@@ -391,7 +391,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void SaberStorm()
         {
-            _builder.Create(PerkCategoryType.OneHandedLightsaber, PerkType.SaberStorm)
+            _builder.Create(PerkCategoryType.LightsaberOffense, PerkType.SaberStorm)
                 .Name("Saber Storm")
 
                 .AddPerkLevel()
@@ -404,7 +404,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void SecondWind()
         {
-            _builder.Create(PerkCategoryType.OneHandedLightsaber, PerkType.SecondWind)
+            _builder.Create(PerkCategoryType.LightsaberOffense, PerkType.SecondWind)
                 .Name("Second Wind")
 
                 .AddPerkLevel()
@@ -417,7 +417,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void SurgeStrike()
         {
-            _builder.Create(PerkCategoryType.OneHandedLightsaber, PerkType.SurgeStrike)
+            _builder.Create(PerkCategoryType.LightsaberOffense, PerkType.SurgeStrike)
                 .Name("Surge Strike")
 
                 .AddPerkLevel()
@@ -431,7 +431,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void TauntingDeflection()
         {
-            _builder.Create(PerkCategoryType.OneHandedLightsaber, PerkType.TauntingDeflection)
+            _builder.Create(PerkCategoryType.LightsaberDefense, PerkType.TauntingDeflection)
                 .Name("Taunting Deflection")
 
                 .AddPerkLevel()
@@ -444,7 +444,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void ThunderousChallenge()
         {
-            _builder.Create(PerkCategoryType.OneHandedLightsaber, PerkType.ThunderousChallenge)
+            _builder.Create(PerkCategoryType.LightsaberDefense, PerkType.ThunderousChallenge)
                 .Name("Thunderous Challenge")
 
                 .AddPerkLevel()
@@ -457,7 +457,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void VersatileStrike()
         {
-            _builder.Create(PerkCategoryType.OneHandedLightsaber, PerkType.VersatileStrike)
+            _builder.Create(PerkCategoryType.LightsaberOffense, PerkType.VersatileStrike)
                 .Name("Versatile Strike")
 
                 .AddPerkLevel()

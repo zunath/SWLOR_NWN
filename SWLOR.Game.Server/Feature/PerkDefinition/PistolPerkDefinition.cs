@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void DeadMansHand()
         {
-            _builder.Create(PerkCategoryType.RangedPistol, PerkType.DeadMansHand)
+            _builder.Create(PerkCategoryType.PistolGunslinger, PerkType.DeadMansHand)
                 .Name("Dead Man's Hand")
 
                 .AddPerkLevel()
@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void DeadeyeReload()
         {
-            _builder.Create(PerkCategoryType.RangedPistol, PerkType.DeadeyeReload)
+            _builder.Create(PerkCategoryType.PistolGunslinger, PerkType.DeadeyeReload)
                 .Name("Deadeye Reload")
 
                 .AddPerkLevel()
@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void DisarmingShot()
         {
-            _builder.Create(PerkCategoryType.RangedPistol, PerkType.DisarmingShot)
+            _builder.Create(PerkCategoryType.PistolSkirmisher, PerkType.DisarmingShot)
                 .Name("Disarming Shot")
 
                 .AddPerkLevel()
@@ -86,7 +86,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void DuelistsDistance()
         {
-            _builder.Create(PerkCategoryType.RangedPistol, PerkType.DuelistsDistance)
+            _builder.Create(PerkCategoryType.PistolSkirmisher, PerkType.DuelistsDistance)
                 .Name("Duelist's Distance")
 
                 .AddPerkLevel()
@@ -97,7 +97,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void EvasiveReload()
         {
-            _builder.Create(PerkCategoryType.RangedPistol, PerkType.EvasiveReload)
+            _builder.Create(PerkCategoryType.PistolSkirmisher, PerkType.EvasiveReload)
                 .Name("Evasive Reload")
 
                 .AddPerkLevel()
@@ -108,7 +108,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void FanTheHammer()
         {
-            _builder.Create(PerkCategoryType.RangedPistol, PerkType.FanTheHammer)
+            _builder.Create(PerkCategoryType.PistolGunslinger, PerkType.FanTheHammer)
                 .Name("Fan the Hammer")
 
                 .AddPerkLevel()
@@ -126,7 +126,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void GunfighterStance()
         {
-            _builder.Create(PerkCategoryType.RangedPistol, PerkType.GunfighterStance)
+            _builder.Create(PerkCategoryType.PistolGunslinger, PerkType.GunfighterStance)
                 .Name("Gunfighter Stance")
 
                 .AddPerkLevel()
@@ -137,7 +137,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void GunslingerFocus()
         {
-            _builder.Create(PerkCategoryType.RangedPistol, PerkType.GunslingerFocus)
+            _builder.Create(PerkCategoryType.PistolGunslinger, PerkType.GunslingerFocus)
                 .Name("Gunslinger Focus")
 
                 .AddPerkLevel()
@@ -148,7 +148,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void HighNoon()
         {
-            _builder.Create(PerkCategoryType.RangedPistol, PerkType.HighNoon)
+            _builder.Create(PerkCategoryType.PistolGunslinger, PerkType.HighNoon)
                 .Name("High Noon")
 
                 .AddPerkLevel()
@@ -159,7 +159,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void InterruptingShot()
         {
-            _builder.Create(PerkCategoryType.RangedPistol, PerkType.InterruptingShot)
+            _builder.Create(PerkCategoryType.PistolSkirmisher, PerkType.InterruptingShot)
                 .Name("Interrupting Shot")
 
                 .AddPerkLevel()
@@ -175,7 +175,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void KitingInstinct()
         {
-            _builder.Create(PerkCategoryType.RangedPistol, PerkType.KitingInstinct)
+            _builder.Create(PerkCategoryType.PistolSkirmisher, PerkType.KitingInstinct)
                 .Name("Kiting Instinct")
 
                 .AddPerkLevel()
@@ -186,7 +186,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void LastWord()
         {
-            _builder.Create(PerkCategoryType.RangedPistol, PerkType.LastWord)
+            _builder.Create(PerkCategoryType.PistolSkirmisher, PerkType.LastWord)
                 .Name("Last Word")
 
                 .AddPerkLevel()
@@ -198,7 +198,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void LowShot()
         {
-            _builder.Create(PerkCategoryType.RangedPistol, PerkType.LowShot)
+            _builder.Create(PerkCategoryType.PistolSkirmisher, PerkType.LowShot)
                 .Name("Low Shot")
 
                 .AddPerkLevel()
@@ -210,7 +210,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void MobileFootwork()
         {
-            _builder.Create(PerkCategoryType.RangedPistol, PerkType.MobileFootwork)
+            _builder.Create(PerkCategoryType.PistolSkirmisher, PerkType.MobileFootwork)
                 .Name("Mobile Footwork")
 
                 .AddPerkLevel()
@@ -221,7 +221,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void PointBlankBurst()
         {
-            _builder.Create(PerkCategoryType.RangedPistol, PerkType.PointBlankBurst)
+            _builder.Create(PerkCategoryType.PistolSkirmisher, PerkType.PointBlankBurst)
                 .Name("Point Blank Burst")
 
                 .AddPerkLevel()
@@ -233,7 +233,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void ReloadTempo()
         {
-            _builder.Create(PerkCategoryType.RangedPistol, PerkType.ReloadTempo)
+            _builder.Create(PerkCategoryType.PistolGunslinger, PerkType.ReloadTempo)
                 .Name("Reload Tempo")
 
                 .AddPerkLevel()
@@ -244,7 +244,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void RicochetShot()
         {
-            _builder.Create(PerkCategoryType.RangedPistol, PerkType.RicochetShot)
+            _builder.Create(PerkCategoryType.PistolSkirmisher, PerkType.RicochetShot)
                 .Name("Ricochet Shot")
 
                 .AddPerkLevel()
@@ -256,7 +256,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void SkirmishersNerve()
         {
-            _builder.Create(PerkCategoryType.RangedPistol, PerkType.SkirmishersNerve)
+            _builder.Create(PerkCategoryType.PistolSkirmisher, PerkType.SkirmishersNerve)
                 .Name("Skirmisher's Nerve")
 
                 .AddPerkLevel()
@@ -267,7 +267,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void SkirmisherStance()
         {
-            _builder.Create(PerkCategoryType.RangedPistol, PerkType.SkirmisherStance)
+            _builder.Create(PerkCategoryType.PistolSkirmisher, PerkType.SkirmisherStance)
                 .Name("Skirmisher Stance")
 
                 .AddPerkLevel()
@@ -278,7 +278,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void SmokeRound()
         {
-            _builder.Create(PerkCategoryType.RangedPistol, PerkType.SmokeRound)
+            _builder.Create(PerkCategoryType.PistolSkirmisher, PerkType.SmokeRound)
                 .Name("Smoke Round")
 
                 .AddPerkLevel()
@@ -290,7 +290,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void SnapRoll()
         {
-            _builder.Create(PerkCategoryType.RangedPistol, PerkType.SnapRoll)
+            _builder.Create(PerkCategoryType.PistolSkirmisher, PerkType.SnapRoll)
                 .Name("Snap Roll")
 
                 .AddPerkLevel()

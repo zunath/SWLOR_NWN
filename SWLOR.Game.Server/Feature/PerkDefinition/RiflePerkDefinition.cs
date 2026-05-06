@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void AimedShot()
         {
-            _builder.Create(PerkCategoryType.RangedRifle, PerkType.AimedShot)
+            _builder.Create(PerkCategoryType.RifleMarksman, PerkType.AimedShot)
                 .Name("Aimed Shot")
 
                 .AddPerkLevel()
@@ -66,7 +66,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void BallisticMastery()
         {
-            _builder.Create(PerkCategoryType.RangedRifle, PerkType.BallisticMastery)
+            _builder.Create(PerkCategoryType.RifleMarksman, PerkType.BallisticMastery)
                 .Name("Ballistic Mastery")
 
                 .AddPerkLevel()
@@ -77,7 +77,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void BreachRound()
         {
-            _builder.Create(PerkCategoryType.RangedRifle, PerkType.BreachRound)
+            _builder.Create(PerkCategoryType.RifleMarksman, PerkType.BreachRound)
                 .Name("Breach Round")
 
                 .AddPerkLevel()
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void ContainmentNet()
         {
-            _builder.Create(PerkCategoryType.RangedRifle, PerkType.ContainmentNet)
+            _builder.Create(PerkCategoryType.RiflePacification, PerkType.ContainmentNet)
                 .Name("Containment Net")
 
                 .AddPerkLevel()
@@ -100,7 +100,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void DeadCenter()
         {
-            _builder.Create(PerkCategoryType.RangedRifle, PerkType.DeadCenter)
+            _builder.Create(PerkCategoryType.RifleMarksman, PerkType.DeadCenter)
                 .Name("Dead Center")
 
                 .AddPerkLevel()
@@ -111,7 +111,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void ExposeWeakPoint()
         {
-            _builder.Create(PerkCategoryType.RangedRifle, PerkType.ExposeWeakPoint)
+            _builder.Create(PerkCategoryType.RifleMarksman, PerkType.ExposeWeakPoint)
                 .Name("Expose Weak Point")
 
                 .AddPerkLevel()
@@ -123,7 +123,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void FieldSedatives()
         {
-            _builder.Create(PerkCategoryType.RangedRifle, PerkType.FieldSedatives)
+            _builder.Create(PerkCategoryType.RiflePacification, PerkType.FieldSedatives)
                 .Name("Field Sedatives")
 
                 .AddPerkLevel()
@@ -134,7 +134,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void Headshot()
         {
-            _builder.Create(PerkCategoryType.RangedRifle, PerkType.Headshot)
+            _builder.Create(PerkCategoryType.RifleMarksman, PerkType.Headshot)
                 .Name("Headshot")
 
                 .AddPerkLevel()
@@ -146,7 +146,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void KillZone()
         {
-            _builder.Create(PerkCategoryType.RangedRifle, PerkType.KillZone)
+            _builder.Create(PerkCategoryType.RifleMarksman, PerkType.KillZone)
                 .Name("Kill Zone")
 
                 .AddPerkLevel()
@@ -157,7 +157,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void NeutralizingShot()
         {
-            _builder.Create(PerkCategoryType.RangedRifle, PerkType.NeutralizingShot)
+            _builder.Create(PerkCategoryType.RiflePacification, PerkType.NeutralizingShot)
                 .Name("Neutralizing Shot")
 
                 .AddPerkLevel()
@@ -169,7 +169,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void OneShot()
         {
-            _builder.Create(PerkCategoryType.RangedRifle, PerkType.OneShot)
+            _builder.Create(PerkCategoryType.RifleMarksman, PerkType.OneShot)
                 .Name("One Shot")
 
                 .AddPerkLevel()
@@ -181,7 +181,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void Overwatch()
         {
-            _builder.Create(PerkCategoryType.RangedRifle, PerkType.Overwatch)
+            _builder.Create(PerkCategoryType.RiflePacification, PerkType.Overwatch)
                 .Name("Overwatch")
 
                 .AddPerkLevel()
@@ -193,7 +193,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void PacificationField()
         {
-            _builder.Create(PerkCategoryType.RangedRifle, PerkType.PacificationField)
+            _builder.Create(PerkCategoryType.RiflePacification, PerkType.PacificationField)
                 .Name("Pacification Field")
 
                 .AddPerkLevel()
@@ -205,7 +205,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void PiercingRound()
         {
-            _builder.Create(PerkCategoryType.RangedRifle, PerkType.PiercingRound)
+            _builder.Create(PerkCategoryType.RifleMarksman, PerkType.PiercingRound)
                 .Name("Piercing Round")
 
                 .AddPerkLevel()
@@ -229,7 +229,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void PinningFire()
         {
-            _builder.Create(PerkCategoryType.RangedRifle, PerkType.PinningFire)
+            _builder.Create(PerkCategoryType.RiflePacification, PerkType.PinningFire)
                 .Name("Pinning Fire")
 
                 .AddPerkLevel()
@@ -247,7 +247,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void ScopeCalibration()
         {
-            _builder.Create(PerkCategoryType.RangedRifle, PerkType.ScopeCalibration)
+            _builder.Create(PerkCategoryType.RifleMarksman, PerkType.ScopeCalibration)
                 .Name("Scope Calibration")
 
                 .AddPerkLevel()
@@ -258,7 +258,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void SniperStance()
         {
-            _builder.Create(PerkCategoryType.RangedRifle, PerkType.SniperStance)
+            _builder.Create(PerkCategoryType.RifleMarksman, PerkType.SniperStance)
                 .Name("Sniper Stance")
 
                 .AddPerkLevel()
@@ -269,7 +269,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void SoftTarget()
         {
-            _builder.Create(PerkCategoryType.RangedRifle, PerkType.SoftTarget)
+            _builder.Create(PerkCategoryType.RiflePacification, PerkType.SoftTarget)
                 .Name("Soft Target")
 
                 .AddPerkLevel()
@@ -280,7 +280,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void SpotterStance()
         {
-            _builder.Create(PerkCategoryType.RangedRifle, PerkType.SpotterStance)
+            _builder.Create(PerkCategoryType.RiflePacification, PerkType.SpotterStance)
                 .Name("Spotter Stance")
 
                 .AddPerkLevel()
@@ -291,7 +291,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void StasisVolley()
         {
-            _builder.Create(PerkCategoryType.RangedRifle, PerkType.StasisVolley)
+            _builder.Create(PerkCategoryType.RiflePacification, PerkType.StasisVolley)
                 .Name("Stasis Volley")
 
                 .AddPerkLevel()
@@ -303,7 +303,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void SteadyAim()
         {
-            _builder.Create(PerkCategoryType.RangedRifle, PerkType.SteadyAim)
+            _builder.Create(PerkCategoryType.RifleMarksman, PerkType.SteadyAim)
                 .Name("Steady Aim")
 
                 .AddPerkLevel()
@@ -319,7 +319,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void SuppressiveLine()
         {
-            _builder.Create(PerkCategoryType.RangedRifle, PerkType.SuppressiveLine)
+            _builder.Create(PerkCategoryType.RifleMarksman, PerkType.SuppressiveLine)
                 .Name("Suppressive Line")
 
                 .AddPerkLevel()
@@ -331,7 +331,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void TranqCone()
         {
-            _builder.Create(PerkCategoryType.RangedRifle, PerkType.TranqCone)
+            _builder.Create(PerkCategoryType.RiflePacification, PerkType.TranqCone)
                 .Name("Tranq Cone")
 
                 .AddPerkLevel()
@@ -347,7 +347,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void VeteranTracker()
         {
-            _builder.Create(PerkCategoryType.RangedRifle, PerkType.VeteranTracker)
+            _builder.Create(PerkCategoryType.RiflePacification, PerkType.VeteranTracker)
                 .Name("Veteran Tracker")
 
                 .AddPerkLevel()

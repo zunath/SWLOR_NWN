@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void BalancedAttunement()
         {
-            _builder.Create(PerkCategoryType.TwoHandedSaberstaff, PerkType.BalancedAttunement)
+            _builder.Create(PerkCategoryType.SaberstaffConduit, PerkType.BalancedAttunement)
                 .Name("Balanced Attunement")
 
                 .AddPerkLevel()
@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void ConduitFlare()
         {
-            _builder.Create(PerkCategoryType.TwoHandedSaberstaff, PerkType.ConduitFlare)
+            _builder.Create(PerkCategoryType.SaberstaffConduit, PerkType.ConduitFlare)
                 .Name("Conduit Flare")
 
                 .AddPerkLevel()
@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void ConduitStance()
         {
-            _builder.Create(PerkCategoryType.TwoHandedSaberstaff, PerkType.ConduitStance)
+            _builder.Create(PerkCategoryType.SaberstaffConduit, PerkType.ConduitStance)
                 .Name("Conduit Stance")
 
                 .AddPerkLevel()
@@ -75,7 +75,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void ConduitTraining()
         {
-            _builder.Create(PerkCategoryType.TwoHandedSaberstaff, PerkType.ConduitTraining)
+            _builder.Create(PerkCategoryType.SaberstaffConduit, PerkType.ConduitTraining)
                 .Name("Conduit Training")
 
                 .AddPerkLevel()
@@ -99,7 +99,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void EnergizedForms()
         {
-            _builder.Create(PerkCategoryType.TwoHandedSaberstaff, PerkType.EnergizedForms)
+            _builder.Create(PerkCategoryType.SaberstaffConduit, PerkType.EnergizedForms)
                 .Name("Energized Forms")
 
                 .AddPerkLevel()
@@ -111,7 +111,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void FlowOfTheMaelstrom()
         {
-            _builder.Create(PerkCategoryType.TwoHandedSaberstaff, PerkType.FlowOfTheMaelstrom)
+            _builder.Create(PerkCategoryType.SaberstaffTempest, PerkType.FlowOfTheMaelstrom)
                 .Name("Flow of the Maelstrom")
 
                 .AddPerkLevel()
@@ -123,7 +123,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void FocusedArc()
         {
-            _builder.Create(PerkCategoryType.TwoHandedSaberstaff, PerkType.FocusedArc)
+            _builder.Create(PerkCategoryType.SaberstaffConduit, PerkType.FocusedArc)
                 .Name("Focused Arc")
 
                 .AddPerkLevel()
@@ -150,7 +150,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void ForceCapacitor()
         {
-            _builder.Create(PerkCategoryType.TwoHandedSaberstaff, PerkType.ForceCapacitor)
+            _builder.Create(PerkCategoryType.SaberstaffConduit, PerkType.ForceCapacitor)
                 .Name("Force Capacitor")
 
                 .AddPerkLevel()
@@ -162,7 +162,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void ForceGyre()
         {
-            _builder.Create(PerkCategoryType.TwoHandedSaberstaff, PerkType.ForceGyre)
+            _builder.Create(PerkCategoryType.SaberstaffTempest, PerkType.ForceGyre)
                 .Name("Force Gyre")
 
                 .AddPerkLevel()
@@ -175,7 +175,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void ForceLens()
         {
-            _builder.Create(PerkCategoryType.TwoHandedSaberstaff, PerkType.ForceLens)
+            _builder.Create(PerkCategoryType.SaberstaffConduit, PerkType.ForceLens)
                 .Name("Force Lens")
 
                 .AddPerkLevel()
@@ -187,7 +187,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void ForceMomentum()
         {
-            _builder.Create(PerkCategoryType.TwoHandedSaberstaff, PerkType.ForceMomentum)
+            _builder.Create(PerkCategoryType.SaberstaffTempest, PerkType.ForceMomentum)
                 .Name("Force Momentum")
 
                 .AddPerkLevel()
@@ -199,7 +199,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void GuardedChannel()
         {
-            _builder.Create(PerkCategoryType.TwoHandedSaberstaff, PerkType.GuardedChannel)
+            _builder.Create(PerkCategoryType.SaberstaffConduit, PerkType.GuardedChannel)
                 .Name("Guarded Channel")
 
                 .AddPerkLevel()
@@ -223,7 +223,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void InfiniteConduit()
         {
-            _builder.Create(PerkCategoryType.TwoHandedSaberstaff, PerkType.InfiniteConduit)
+            _builder.Create(PerkCategoryType.SaberstaffConduit, PerkType.InfiniteConduit)
                 .Name("Infinite Conduit")
 
                 .AddPerkLevel()
@@ -235,7 +235,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void MaelstromArc()
         {
-            _builder.Create(PerkCategoryType.TwoHandedSaberstaff, PerkType.MaelstromArc)
+            _builder.Create(PerkCategoryType.SaberstaffTempest, PerkType.MaelstromArc)
                 .Name("Maelstrom Arc")
 
                 .AddPerkLevel()
@@ -255,7 +255,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void SaberCyclone()
         {
-            _builder.Create(PerkCategoryType.TwoHandedSaberstaff, PerkType.SaberCyclone)
+            _builder.Create(PerkCategoryType.SaberstaffTempest, PerkType.SaberCyclone)
                 .Name("Saber Cyclone")
 
                 .AddPerkLevel()
@@ -268,7 +268,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void SeverFocus()
         {
-            _builder.Create(PerkCategoryType.TwoHandedSaberstaff, PerkType.SeverFocus)
+            _builder.Create(PerkCategoryType.SaberstaffConduit, PerkType.SeverFocus)
                 .Name("Sever Focus")
 
                 .AddPerkLevel()
@@ -288,7 +288,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void SpinningDeflection()
         {
-            _builder.Create(PerkCategoryType.TwoHandedSaberstaff, PerkType.SpinningDeflection)
+            _builder.Create(PerkCategoryType.SaberstaffTempest, PerkType.SpinningDeflection)
                 .Name("Spinning Deflection")
 
                 .AddPerkLevel()
@@ -306,7 +306,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void TempestFocus()
         {
-            _builder.Create(PerkCategoryType.TwoHandedSaberstaff, PerkType.TempestFocus)
+            _builder.Create(PerkCategoryType.SaberstaffTempest, PerkType.TempestFocus)
                 .Name("Tempest Focus")
 
                 .AddPerkLevel()
@@ -318,7 +318,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void TempestRelease()
         {
-            _builder.Create(PerkCategoryType.TwoHandedSaberstaff, PerkType.TempestRelease)
+            _builder.Create(PerkCategoryType.SaberstaffTempest, PerkType.TempestRelease)
                 .Name("Tempest Release")
 
                 .AddPerkLevel()
@@ -331,7 +331,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void TempestStance()
         {
-            _builder.Create(PerkCategoryType.TwoHandedSaberstaff, PerkType.TempestStance)
+            _builder.Create(PerkCategoryType.SaberstaffTempest, PerkType.TempestStance)
                 .Name("Tempest Stance")
 
                 .AddPerkLevel()

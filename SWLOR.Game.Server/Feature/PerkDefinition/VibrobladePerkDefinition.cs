@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void BerserkerStance()
         {
-            _builder.Create(PerkCategoryType.OneHandedVibroblade, PerkType.BerserkerStance)
+            _builder.Create(PerkCategoryType.VibrobladeOffense, PerkType.BerserkerStance)
                 .Name("Berserker Stance")
 
                 .AddPerkLevel()
@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void BloodFrenzy()
         {
-            _builder.Create(PerkCategoryType.OneHandedVibroblade, PerkType.BloodFrenzy)
+            _builder.Create(PerkCategoryType.VibrobladeOffense, PerkType.BloodFrenzy)
                 .Name("Blood Frenzy")
 
                 .AddPerkLevel()
@@ -65,7 +65,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void Carve()
         {
-            _builder.Create(PerkCategoryType.OneHandedVibroblade, PerkType.Carve)
+            _builder.Create(PerkCategoryType.VibrobladeOffense, PerkType.Carve)
                 .Name("Carve")
 
                 .AddPerkLevel()
@@ -77,7 +77,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void CoveringStrike()
         {
-            _builder.Create(PerkCategoryType.OneHandedVibroblade, PerkType.CoveringStrike)
+            _builder.Create(PerkCategoryType.VibrobladeDefense, PerkType.CoveringStrike)
                 .Name("Covering Strike")
 
                 .AddPerkLevel()
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void CrimsonFury()
         {
-            _builder.Create(PerkCategoryType.OneHandedVibroblade, PerkType.CrimsonFury)
+            _builder.Create(PerkCategoryType.VibrobladeOffense, PerkType.CrimsonFury)
                 .Name("Crimson Fury")
 
                 .AddPerkLevel()
@@ -100,7 +100,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void DefensiveStance()
         {
-            _builder.Create(PerkCategoryType.OneHandedVibroblade, PerkType.DefensiveStance)
+            _builder.Create(PerkCategoryType.VibrobladeDefense, PerkType.DefensiveStance)
                 .Name("Defensive Stance")
 
                 .AddPerkLevel()
@@ -116,7 +116,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void Executioner()
         {
-            _builder.Create(PerkCategoryType.OneHandedVibroblade, PerkType.Executioner)
+            _builder.Create(PerkCategoryType.VibrobladeOffense, PerkType.Executioner)
                 .Name("Executioner")
 
                 .AddPerkLevel()
@@ -127,7 +127,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void FortifiedPosition()
         {
-            _builder.Create(PerkCategoryType.OneHandedVibroblade, PerkType.FortifiedPosition)
+            _builder.Create(PerkCategoryType.VibrobladeDefense, PerkType.FortifiedPosition)
                 .Name("Fortified Position")
 
                 .AddPerkLevel()
@@ -143,7 +143,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void GuardiansRiposte()
         {
-            _builder.Create(PerkCategoryType.OneHandedVibroblade, PerkType.GuardiansRiposte)
+            _builder.Create(PerkCategoryType.VibrobladeDefense, PerkType.GuardiansRiposte)
                 .Name("Guardian's Riposte")
 
                 .AddPerkLevel()
@@ -154,7 +154,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void Invincible()
         {
-            _builder.Create(PerkCategoryType.OneHandedVibroblade, PerkType.Invincible)
+            _builder.Create(PerkCategoryType.VibrobladeDefense, PerkType.Invincible)
                 .Name("Invincible")
 
                 .AddPerkLevel()
@@ -165,7 +165,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void RendingStrike()
         {
-            _builder.Create(PerkCategoryType.OneHandedVibroblade, PerkType.RendingStrike)
+            _builder.Create(PerkCategoryType.VibrobladeOffense, PerkType.RendingStrike)
                 .Name("Rending Strike")
 
                 .AddPerkLevel()
@@ -183,7 +183,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void SavageCleave()
         {
-            _builder.Create(PerkCategoryType.OneHandedVibroblade, PerkType.SavageCleave)
+            _builder.Create(PerkCategoryType.VibrobladeOffense, PerkType.SavageCleave)
                 .Name("Savage Cleave")
 
                 .AddPerkLevel()
@@ -195,7 +195,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void SavageReflexes()
         {
-            _builder.Create(PerkCategoryType.OneHandedVibroblade, PerkType.SavageReflexes)
+            _builder.Create(PerkCategoryType.VibrobladeOffense, PerkType.SavageReflexes)
                 .Name("Savage Reflexes")
 
                 .AddPerkLevel()
@@ -206,7 +206,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void ShieldTraining()
         {
-            _builder.Create(PerkCategoryType.OneHandedVibroblade, PerkType.ShieldTraining)
+            _builder.Create(PerkCategoryType.VibrobladeDefense, PerkType.ShieldTraining)
                 .Name("Shield Training")
 
                 .AddPerkLevel()
@@ -217,7 +217,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void ShieldWall()
         {
-            _builder.Create(PerkCategoryType.OneHandedVibroblade, PerkType.ShieldWall)
+            _builder.Create(PerkCategoryType.VibrobladeDefense, PerkType.ShieldWall)
                 .Name("Shield Wall")
 
                 .AddPerkLevel()
@@ -228,7 +228,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void Unbreakable()
         {
-            _builder.Create(PerkCategoryType.OneHandedVibroblade, PerkType.Unbreakable)
+            _builder.Create(PerkCategoryType.VibrobladeDefense, PerkType.Unbreakable)
                 .Name("Unbreakable")
 
                 .AddPerkLevel()
@@ -239,7 +239,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void WhirlwindAssault()
         {
-            _builder.Create(PerkCategoryType.OneHandedVibroblade, PerkType.WhirlwindAssault)
+            _builder.Create(PerkCategoryType.VibrobladeOffense, PerkType.WhirlwindAssault)
                 .Name("Whirlwind Assault")
 
                 .AddPerkLevel()

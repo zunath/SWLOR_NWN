@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void Bonecrusher()
         {
-            _builder.Create(PerkCategoryType.MartialArtsStaff, PerkType.Bonecrusher)
+            _builder.Create(PerkCategoryType.StaffCrusher, PerkType.Bonecrusher)
                 .Name("Bonecrusher")
 
                 .AddPerkLevel()
@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void BreakPosture()
         {
-            _builder.Create(PerkCategoryType.MartialArtsStaff, PerkType.BreakPosture)
+            _builder.Create(PerkCategoryType.StaffCrusher, PerkType.BreakPosture)
                 .Name("Break Posture")
 
                 .AddPerkLevel()
@@ -61,7 +61,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void CrusherStance()
         {
-            _builder.Create(PerkCategoryType.MartialArtsStaff, PerkType.CrusherStance)
+            _builder.Create(PerkCategoryType.StaffCrusher, PerkType.CrusherStance)
                 .Name("Crusher Stance")
 
                 .AddPerkLevel()
@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void CrushingMastery()
         {
-            _builder.Create(PerkCategoryType.MartialArtsStaff, PerkType.CrushingMastery)
+            _builder.Create(PerkCategoryType.StaffCrusher, PerkType.CrushingMastery)
                 .Name("Crushing Mastery")
 
                 .AddPerkLevel()
@@ -93,7 +93,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void FlowingDefense()
         {
-            _builder.Create(PerkCategoryType.MartialArtsStaff, PerkType.FlowingDefense)
+            _builder.Create(PerkCategoryType.StaffSentinel, PerkType.FlowingDefense)
                 .Name("Flowing Defense")
 
                 .AddPerkLevel()
@@ -104,7 +104,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void GroundQuake()
         {
-            _builder.Create(PerkCategoryType.MartialArtsStaff, PerkType.GroundQuake)
+            _builder.Create(PerkCategoryType.StaffCrusher, PerkType.GroundQuake)
                 .Name("Ground Quake")
 
                 .AddPerkLevel()
@@ -122,7 +122,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void GuardingStep()
         {
-            _builder.Create(PerkCategoryType.MartialArtsStaff, PerkType.GuardingStep)
+            _builder.Create(PerkCategoryType.StaffSentinel, PerkType.GuardingStep)
                 .Name("Guarding Step")
 
                 .AddPerkLevel()
@@ -133,7 +133,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void HeavyHands()
         {
-            _builder.Create(PerkCategoryType.MartialArtsStaff, PerkType.HeavyHands)
+            _builder.Create(PerkCategoryType.StaffCrusher, PerkType.HeavyHands)
                 .Name("Heavy Hands")
 
                 .AddPerkLevel()
@@ -144,7 +144,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void LineBreaker()
         {
-            _builder.Create(PerkCategoryType.MartialArtsStaff, PerkType.LineBreaker)
+            _builder.Create(PerkCategoryType.StaffSentinel, PerkType.LineBreaker)
                 .Name("Line Breaker")
 
                 .AddPerkLevel()
@@ -156,7 +156,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void PatientSentinel()
         {
-            _builder.Create(PerkCategoryType.MartialArtsStaff, PerkType.PatientSentinel)
+            _builder.Create(PerkCategoryType.StaffSentinel, PerkType.PatientSentinel)
                 .Name("Patient Sentinel")
 
                 .AddPerkLevel()
@@ -167,7 +167,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void PerfectFootwork()
         {
-            _builder.Create(PerkCategoryType.MartialArtsStaff, PerkType.PerfectFootwork)
+            _builder.Create(PerkCategoryType.StaffSentinel, PerkType.PerfectFootwork)
                 .Name("Perfect Footwork")
 
                 .AddPerkLevel()
@@ -178,7 +178,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void RibBreaker()
         {
-            _builder.Create(PerkCategoryType.MartialArtsStaff, PerkType.RibBreaker)
+            _builder.Create(PerkCategoryType.StaffCrusher, PerkType.RibBreaker)
                 .Name("Rib Breaker")
 
                 .AddPerkLevel()
@@ -202,7 +202,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void SentinelGuard()
         {
-            _builder.Create(PerkCategoryType.MartialArtsStaff, PerkType.SentinelGuard)
+            _builder.Create(PerkCategoryType.StaffSentinel, PerkType.SentinelGuard)
                 .Name("Sentinel Guard")
 
                 .AddPerkLevel()
@@ -213,7 +213,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void SentinelStance()
         {
-            _builder.Create(PerkCategoryType.MartialArtsStaff, PerkType.SentinelStance)
+            _builder.Create(PerkCategoryType.StaffSentinel, PerkType.SentinelStance)
                 .Name("Sentinel Stance")
 
                 .AddPerkLevel()
@@ -224,7 +224,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void ShelterCircle()
         {
-            _builder.Create(PerkCategoryType.MartialArtsStaff, PerkType.ShelterCircle)
+            _builder.Create(PerkCategoryType.StaffSentinel, PerkType.ShelterCircle)
                 .Name("Shelter Circle")
 
                 .AddPerkLevel()
@@ -235,7 +235,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void SkullRattle()
         {
-            _builder.Create(PerkCategoryType.MartialArtsStaff, PerkType.SkullRattle)
+            _builder.Create(PerkCategoryType.StaffCrusher, PerkType.SkullRattle)
                 .Name("Skull Rattle")
 
                 .AddPerkLevel()
@@ -247,7 +247,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void StaffParry()
         {
-            _builder.Create(PerkCategoryType.MartialArtsStaff, PerkType.StaffParry)
+            _builder.Create(PerkCategoryType.StaffSentinel, PerkType.StaffParry)
                 .Name("Staff Parry")
 
                 .AddPerkLevel()
@@ -273,7 +273,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void SweepingGuard()
         {
-            _builder.Create(PerkCategoryType.MartialArtsStaff, PerkType.SweepingGuard)
+            _builder.Create(PerkCategoryType.StaffSentinel, PerkType.SweepingGuard)
                 .Name("Sweeping Guard")
 
                 .AddPerkLevel()
@@ -285,7 +285,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void UnmovingCenter()
         {
-            _builder.Create(PerkCategoryType.MartialArtsStaff, PerkType.UnmovingCenter)
+            _builder.Create(PerkCategoryType.StaffSentinel, PerkType.UnmovingCenter)
                 .Name("Unmoving Center")
 
                 .AddPerkLevel()
@@ -296,7 +296,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void Worldbreaker()
         {
-            _builder.Create(PerkCategoryType.MartialArtsStaff, PerkType.Worldbreaker)
+            _builder.Create(PerkCategoryType.StaffCrusher, PerkType.Worldbreaker)
                 .Name("Worldbreaker")
 
                 .AddPerkLevel()

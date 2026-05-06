@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void AfflictionMastery()
         {
-            _builder.Create(PerkCategoryType.OneHandedFinesseVibroblade, PerkType.AfflictionMastery)
+            _builder.Create(PerkCategoryType.VibroknifeSaboteur, PerkType.AfflictionMastery)
                 .Name("Affliction Mastery")
 
                 .AddPerkLevel()
@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void AmbushTactics()
         {
-            _builder.Create(PerkCategoryType.OneHandedFinesseVibroblade, PerkType.AmbushTactics)
+            _builder.Create(PerkCategoryType.VibroknifeShadow, PerkType.AmbushTactics)
                 .Name("Ambush Tactics")
 
                 .AddPerkLevel()
@@ -67,7 +67,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void AssassinsFocus()
         {
-            _builder.Create(PerkCategoryType.OneHandedFinesseVibroblade, PerkType.AssassinsFocus)
+            _builder.Create(PerkCategoryType.VibroknifeShadow, PerkType.AssassinsFocus)
                 .Name("Assassin's Focus")
 
                 .AddPerkLevel()
@@ -78,7 +78,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void CalculatedStrikes()
         {
-            _builder.Create(PerkCategoryType.OneHandedFinesseVibroblade, PerkType.CalculatedStrikes)
+            _builder.Create(PerkCategoryType.VibroknifeSaboteur, PerkType.CalculatedStrikes)
                 .Name("Calculated Strikes")
 
                 .AddPerkLevel()
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void CascadeFailure()
         {
-            _builder.Create(PerkCategoryType.OneHandedFinesseVibroblade, PerkType.CascadeFailure)
+            _builder.Create(PerkCategoryType.VibroknifeSaboteur, PerkType.CascadeFailure)
                 .Name("Cascade Failure")
 
                 .AddPerkLevel()
@@ -101,7 +101,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void CheapShot()
         {
-            _builder.Create(PerkCategoryType.OneHandedFinesseVibroblade, PerkType.CheapShot)
+            _builder.Create(PerkCategoryType.VibroknifeShadow, PerkType.CheapShot)
                 .Name("Cheap Shot")
 
                 .AddPerkLevel()
@@ -119,7 +119,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void CripplingPrecision()
         {
-            _builder.Create(PerkCategoryType.OneHandedFinesseVibroblade, PerkType.CripplingPrecision)
+            _builder.Create(PerkCategoryType.VibroknifeSaboteur, PerkType.CripplingPrecision)
                 .Name("Crippling Precision")
 
                 .AddPerkLevel()
@@ -130,7 +130,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void DeadlyPrecision()
         {
-            _builder.Create(PerkCategoryType.OneHandedFinesseVibroblade, PerkType.DeadlyPrecision)
+            _builder.Create(PerkCategoryType.VibroknifeShadow, PerkType.DeadlyPrecision)
                 .Name("Deadly Precision")
 
                 .AddPerkLevel()
@@ -141,7 +141,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void DebilitatingStance()
         {
-            _builder.Create(PerkCategoryType.OneHandedFinesseVibroblade, PerkType.DebilitatingStance)
+            _builder.Create(PerkCategoryType.VibroknifeSaboteur, PerkType.DebilitatingStance)
                 .Name("Debilitating Stance")
 
                 .AddPerkLevel()
@@ -152,7 +152,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void Decoy()
         {
-            _builder.Create(PerkCategoryType.OneHandedFinesseVibroblade, PerkType.Decoy)
+            _builder.Create(PerkCategoryType.VibroknifeShadow, PerkType.Decoy)
                 .Name("Decoy")
 
                 .AddPerkLevel()
@@ -163,7 +163,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void EnfeeblingStrike()
         {
-            _builder.Create(PerkCategoryType.OneHandedFinesseVibroblade, PerkType.EnfeeblingStrike)
+            _builder.Create(PerkCategoryType.VibroknifeSaboteur, PerkType.EnfeeblingStrike)
                 .Name("Enfeebling Strike")
 
                 .AddPerkLevel()
@@ -187,7 +187,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void EvasiveCombat()
         {
-            _builder.Create(PerkCategoryType.OneHandedFinesseVibroblade, PerkType.EvasiveCombat)
+            _builder.Create(PerkCategoryType.VibroknifeShadow, PerkType.EvasiveCombat)
                 .Name("Evasive Combat")
 
                 .AddPerkLevel()
@@ -203,7 +203,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void ExploitWeakness()
         {
-            _builder.Create(PerkCategoryType.OneHandedFinesseVibroblade, PerkType.ExploitWeakness)
+            _builder.Create(PerkCategoryType.VibroknifeSaboteur, PerkType.ExploitWeakness)
                 .Name("Exploit Weakness")
 
                 .AddPerkLevel()
@@ -214,7 +214,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void Hamstring()
         {
-            _builder.Create(PerkCategoryType.OneHandedFinesseVibroblade, PerkType.Hamstring)
+            _builder.Create(PerkCategoryType.VibroknifeSaboteur, PerkType.Hamstring)
                 .Name("Hamstring")
 
                 .AddPerkLevel()
@@ -235,7 +235,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void Incapacitate()
         {
-            _builder.Create(PerkCategoryType.OneHandedFinesseVibroblade, PerkType.Incapacitate)
+            _builder.Create(PerkCategoryType.VibroknifeSaboteur, PerkType.Incapacitate)
                 .Name("Incapacitate")
 
                 .AddPerkLevel()
@@ -246,7 +246,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void MarkedForDeath()
         {
-            _builder.Create(PerkCategoryType.OneHandedFinesseVibroblade, PerkType.MarkedForDeath)
+            _builder.Create(PerkCategoryType.VibroknifeShadow, PerkType.MarkedForDeath)
                 .Name("Marked for Death")
 
                 .AddPerkLevel()
@@ -257,7 +257,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void NerveStrike()
         {
-            _builder.Create(PerkCategoryType.OneHandedFinesseVibroblade, PerkType.NerveStrike)
+            _builder.Create(PerkCategoryType.VibroknifeSaboteur, PerkType.NerveStrike)
                 .Name("Nerve Strike")
 
                 .AddPerkLevel()
@@ -269,7 +269,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void Opportunist()
         {
-            _builder.Create(PerkCategoryType.OneHandedFinesseVibroblade, PerkType.Opportunist)
+            _builder.Create(PerkCategoryType.VibroknifeShadow, PerkType.Opportunist)
                 .Name("Opportunist")
 
                 .AddPerkLevel()
@@ -280,7 +280,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void PrecisionStrikes()
         {
-            _builder.Create(PerkCategoryType.OneHandedFinesseVibroblade, PerkType.PrecisionStrikes)
+            _builder.Create(PerkCategoryType.VibroknifeShadow, PerkType.PrecisionStrikes)
                 .Name("Precision Strikes")
 
                 .AddPerkLevel()
@@ -291,7 +291,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void SapVitality()
         {
-            _builder.Create(PerkCategoryType.OneHandedFinesseVibroblade, PerkType.SapVitality)
+            _builder.Create(PerkCategoryType.VibroknifeSaboteur, PerkType.SapVitality)
                 .Name("Sap Vitality")
 
                 .AddPerkLevel()
@@ -309,7 +309,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void ShadowStrike()
         {
-            _builder.Create(PerkCategoryType.OneHandedFinesseVibroblade, PerkType.ShadowStrike)
+            _builder.Create(PerkCategoryType.VibroknifeShadow, PerkType.ShadowStrike)
                 .Name("Shadow Strike")
 
                 .AddPerkLevel()
@@ -327,7 +327,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void SystemicShutdown()
         {
-            _builder.Create(PerkCategoryType.OneHandedFinesseVibroblade, PerkType.SystemicShutdown)
+            _builder.Create(PerkCategoryType.VibroknifeSaboteur, PerkType.SystemicShutdown)
                 .Name("Systemic Shutdown")
 
                 .AddPerkLevel()
@@ -339,7 +339,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void ToxicCoating()
         {
-            _builder.Create(PerkCategoryType.OneHandedFinesseVibroblade, PerkType.ToxicCoating)
+            _builder.Create(PerkCategoryType.VibroknifeSaboteur, PerkType.ToxicCoating)
                 .Name("Toxic Coating")
 
                 .AddPerkLevel()
@@ -355,7 +355,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void VitalStrike()
         {
-            _builder.Create(PerkCategoryType.OneHandedFinesseVibroblade, PerkType.VitalStrike)
+            _builder.Create(PerkCategoryType.VibroknifeShadow, PerkType.VitalStrike)
                 .Name("Vital Strike")
 
                 .AddPerkLevel()

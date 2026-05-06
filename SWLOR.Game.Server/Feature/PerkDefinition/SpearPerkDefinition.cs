@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void AdaptivePrecisionStrike()
         {
-            _builder.Create(PerkCategoryType.TwoHandedPolearm, PerkType.AdaptivePrecisionStrike)
+            _builder.Create(PerkCategoryType.SpearDamage, PerkType.AdaptivePrecisionStrike)
                 .Name("Adaptive Precision Strike")
 
                 .AddPerkLevel()
@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void BreachStrike()
         {
-            _builder.Create(PerkCategoryType.TwoHandedPolearm, PerkType.BreachStrike)
+            _builder.Create(PerkCategoryType.SpearDamage, PerkType.BreachStrike)
                 .Name("Breach Strike")
 
                 .AddPerkLevel()
@@ -70,7 +70,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void CalmingStance()
         {
-            _builder.Create(PerkCategoryType.TwoHandedPolearm, PerkType.CalmingStance)
+            _builder.Create(PerkCategoryType.SpearDamage, PerkType.CalmingStance)
                 .Name("Calming Stance")
 
                 .AddPerkLevel()
@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void CripplingDefense()
         {
-            _builder.Create(PerkCategoryType.TwoHandedPolearm, PerkType.CripplingDefense)
+            _builder.Create(PerkCategoryType.SpearDamage, PerkType.CripplingDefense)
                 .Name("Crippling Defense")
 
                 .AddPerkLevel()
@@ -94,7 +94,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void DisablingStrike()
         {
-            _builder.Create(PerkCategoryType.TwoHandedPolearm, PerkType.DisablingStrike)
+            _builder.Create(PerkCategoryType.SpearDisabler, PerkType.DisablingStrike)
                 .Name("Disabling Strike")
 
                 .AddPerkLevel()
@@ -116,7 +116,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void DisruptionExpert()
         {
-            _builder.Create(PerkCategoryType.TwoHandedPolearm, PerkType.DisruptionExpert)
+            _builder.Create(PerkCategoryType.SpearDisabler, PerkType.DisruptionExpert)
                 .Name("Disruption Expert")
 
                 .AddPerkLevel()
@@ -128,7 +128,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void DisruptionField()
         {
-            _builder.Create(PerkCategoryType.TwoHandedPolearm, PerkType.DisruptionField)
+            _builder.Create(PerkCategoryType.SpearDisabler, PerkType.DisruptionField)
                 .Name("Disruption Field")
 
                 .AddPerkLevel()
@@ -140,7 +140,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void ErosionStrike()
         {
-            _builder.Create(PerkCategoryType.TwoHandedPolearm, PerkType.ErosionStrike)
+            _builder.Create(PerkCategoryType.SpearDisabler, PerkType.ErosionStrike)
                 .Name("Erosion Strike")
 
                 .AddPerkLevel()
@@ -157,7 +157,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void FlankingBarrage()
         {
-            _builder.Create(PerkCategoryType.TwoHandedPolearm, PerkType.FlankingBarrage)
+            _builder.Create(PerkCategoryType.SpearDamage, PerkType.FlankingBarrage)
                 .Name("Flanking Barrage")
 
                 .AddPerkLevel()
@@ -170,7 +170,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void Flanking()
         {
-            _builder.Create(PerkCategoryType.TwoHandedPolearm, PerkType.Flanking)
+            _builder.Create(PerkCategoryType.SpearDamage, PerkType.Flanking)
                 .Name("Flanking")
 
                 .AddPerkLevel()
@@ -187,7 +187,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void FlankingStance()
         {
-            _builder.Create(PerkCategoryType.TwoHandedPolearm, PerkType.FlankingStance)
+            _builder.Create(PerkCategoryType.SpearDamage, PerkType.FlankingStance)
                 .Name("Flanking Stance")
 
                 .AddPerkLevel()
@@ -199,7 +199,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void ForceNullification()
         {
-            _builder.Create(PerkCategoryType.TwoHandedPolearm, PerkType.ForceNullification)
+            _builder.Create(PerkCategoryType.SpearDisabler, PerkType.ForceNullification)
                 .Name("Force Nullification")
 
                 .AddPerkLevel()
@@ -212,7 +212,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void ForcePiercing()
         {
-            _builder.Create(PerkCategoryType.TwoHandedPolearm, PerkType.ForcePiercing)
+            _builder.Create(PerkCategoryType.SpearDisabler, PerkType.ForcePiercing)
                 .Name("Force Piercing")
 
                 .AddPerkLevel()
@@ -224,7 +224,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void ForceSuppression()
         {
-            _builder.Create(PerkCategoryType.TwoHandedPolearm, PerkType.ForceSuppression)
+            _builder.Create(PerkCategoryType.SpearDisabler, PerkType.ForceSuppression)
                 .Name("Force Suppression")
 
                 .AddPerkLevel()
@@ -237,7 +237,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void ForceWarding()
         {
-            _builder.Create(PerkCategoryType.TwoHandedPolearm, PerkType.ForceWarding)
+            _builder.Create(PerkCategoryType.SpearDisabler, PerkType.ForceWarding)
                 .Name("Force Warding")
 
                 .AddPerkLevel()
@@ -254,7 +254,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void Forcebane()
         {
-            _builder.Create(PerkCategoryType.TwoHandedPolearm, PerkType.Forcebane)
+            _builder.Create(PerkCategoryType.SpearDisabler, PerkType.Forcebane)
                 .Name("Forcebane")
 
                 .AddPerkLevel()
@@ -266,7 +266,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void FractureStrike()
         {
-            _builder.Create(PerkCategoryType.TwoHandedPolearm, PerkType.FractureStrike)
+            _builder.Create(PerkCategoryType.SpearDisabler, PerkType.FractureStrike)
                 .Name("Fracture Strike")
 
                 .AddPerkLevel()
@@ -279,7 +279,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void HamperingBarrage()
         {
-            _builder.Create(PerkCategoryType.TwoHandedPolearm, PerkType.HamperingBarrage)
+            _builder.Create(PerkCategoryType.SpearDamage, PerkType.HamperingBarrage)
                 .Name("Hampering Barrage")
 
                 .AddPerkLevel()
@@ -292,7 +292,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void ImprovedAttentiveness()
         {
-            _builder.Create(PerkCategoryType.TwoHandedPolearm, PerkType.ImprovedAttentiveness)
+            _builder.Create(PerkCategoryType.SpearDamage, PerkType.ImprovedAttentiveness)
                 .Name("Improved Attentiveness")
 
                 .AddPerkLevel()
@@ -304,7 +304,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void InterruptionStrike()
         {
-            _builder.Create(PerkCategoryType.TwoHandedPolearm, PerkType.InterruptionStrike)
+            _builder.Create(PerkCategoryType.SpearDisabler, PerkType.InterruptionStrike)
                 .Name("Interruption Strike")
 
                 .AddPerkLevel()
@@ -321,7 +321,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void LateralStrike()
         {
-            _builder.Create(PerkCategoryType.TwoHandedPolearm, PerkType.LateralStrike)
+            _builder.Create(PerkCategoryType.SpearDamage, PerkType.LateralStrike)
                 .Name("Lateral Strike")
 
                 .AddPerkLevel()
@@ -338,7 +338,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void OpportunistFlow()
         {
-            _builder.Create(PerkCategoryType.TwoHandedPolearm, PerkType.OpportunistsFlow)
+            _builder.Create(PerkCategoryType.SpearDamage, PerkType.OpportunistsFlow)
                 .Name("Opportunist's Flow")
 
                 .AddPerkLevel()
@@ -350,7 +350,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void PerceptiveStance()
         {
-            _builder.Create(PerkCategoryType.TwoHandedPolearm, PerkType.PerceptiveStance)
+            _builder.Create(PerkCategoryType.SpearDisabler, PerkType.PerceptiveStance)
                 .Name("Perceptive Stance")
 
                 .AddPerkLevel()
@@ -362,7 +362,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void RestorationStrike()
         {
-            _builder.Create(PerkCategoryType.TwoHandedPolearm, PerkType.RestorationStrike)
+            _builder.Create(PerkCategoryType.SpearDamage, PerkType.RestorationStrike)
                 .Name("Restoration Strike")
 
                 .AddPerkLevel()
@@ -374,7 +374,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void SideAssault()
         {
-            _builder.Create(PerkCategoryType.TwoHandedPolearm, PerkType.SideAssault)
+            _builder.Create(PerkCategoryType.SpearDamage, PerkType.SideAssault)
                 .Name("Side Assault")
 
                 .AddPerkLevel()
@@ -396,7 +396,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void SweepingFlank()
         {
-            _builder.Create(PerkCategoryType.TwoHandedPolearm, PerkType.SweepingFlank)
+            _builder.Create(PerkCategoryType.SpearDamage, PerkType.SweepingFlank)
                 .Name("Sweeping Flank")
 
                 .AddPerkLevel()
@@ -409,7 +409,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void TotalForceDenial()
         {
-            _builder.Create(PerkCategoryType.TwoHandedPolearm, PerkType.TotalForceDenial)
+            _builder.Create(PerkCategoryType.SpearDisabler, PerkType.TotalForceDenial)
                 .Name("Total Force Denial")
 
                 .AddPerkLevel()

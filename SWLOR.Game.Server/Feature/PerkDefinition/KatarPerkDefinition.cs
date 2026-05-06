@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void AdamantineGuard()
         {
-            _builder.Create(PerkCategoryType.MartialArtsKatars, PerkType.AdamantineGuard)
+            _builder.Create(PerkCategoryType.KatarIronGuard, PerkType.AdamantineGuard)
                 .Name("Adamantine Guard")
 
                 .AddPerkLevel()
@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void BreakerReversal()
         {
-            _builder.Create(PerkCategoryType.MartialArtsKatars, PerkType.BreakerReversal)
+            _builder.Create(PerkCategoryType.KatarIronGuard, PerkType.BreakerReversal)
                 .Name("Breaker Reversal")
 
                 .AddPerkLevel()
@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void CobraReflexes()
         {
-            _builder.Create(PerkCategoryType.MartialArtsKatars, PerkType.CobraReflexes)
+            _builder.Create(PerkCategoryType.KatarVenomCurrent, PerkType.CobraReflexes)
                 .Name("Cobra Reflexes")
 
                 .AddPerkLevel()
@@ -79,7 +79,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void CobraStance()
         {
-            _builder.Create(PerkCategoryType.MartialArtsKatars, PerkType.CobraStance)
+            _builder.Create(PerkCategoryType.KatarVenomCurrent, PerkType.CobraStance)
                 .Name("Cobra Stance")
 
                 .AddPerkLevel()
@@ -90,7 +90,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void CoveringClaws()
         {
-            _builder.Create(PerkCategoryType.MartialArtsKatars, PerkType.CoveringClaws)
+            _builder.Create(PerkCategoryType.KatarIronGuard, PerkType.CoveringClaws)
                 .Name("Covering Claws")
 
                 .AddPerkLevel()
@@ -102,7 +102,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void CurrentOverload()
         {
-            _builder.Create(PerkCategoryType.MartialArtsKatars, PerkType.CurrentOverload)
+            _builder.Create(PerkCategoryType.KatarVenomCurrent, PerkType.CurrentOverload)
                 .Name("Current Overload")
 
                 .AddPerkLevel()
@@ -114,7 +114,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void GuardCounter()
         {
-            _builder.Create(PerkCategoryType.MartialArtsKatars, PerkType.GuardCounter)
+            _builder.Create(PerkCategoryType.KatarIronGuard, PerkType.GuardCounter)
                 .Name("Guard Counter")
 
                 .AddPerkLevel()
@@ -138,7 +138,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void GuardTraining()
         {
-            _builder.Create(PerkCategoryType.MartialArtsKatars, PerkType.GuardTraining)
+            _builder.Create(PerkCategoryType.KatarIronGuard, PerkType.GuardTraining)
                 .Name("Guard Training")
 
                 .AddPerkLevel()
@@ -159,7 +159,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void GuardianReflexes()
         {
-            _builder.Create(PerkCategoryType.MartialArtsKatars, PerkType.GuardianReflexes)
+            _builder.Create(PerkCategoryType.KatarIronGuard, PerkType.GuardianReflexes)
                 .Name("Guardian Reflexes")
 
                 .AddPerkLevel()
@@ -170,7 +170,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void ImpenetrableGrip()
         {
-            _builder.Create(PerkCategoryType.MartialArtsKatars, PerkType.ImpenetrableGrip)
+            _builder.Create(PerkCategoryType.KatarIronGuard, PerkType.ImpenetrableGrip)
                 .Name("Impenetrable Grip")
 
                 .AddPerkLevel()
@@ -181,7 +181,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void IronElbows()
         {
-            _builder.Create(PerkCategoryType.MartialArtsKatars, PerkType.IronElbows)
+            _builder.Create(PerkCategoryType.KatarIronGuard, PerkType.IronElbows)
                 .Name("Iron Elbows")
 
                 .AddPerkLevel()
@@ -193,7 +193,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void IronWallStance()
         {
-            _builder.Create(PerkCategoryType.MartialArtsKatars, PerkType.IronWallStance)
+            _builder.Create(PerkCategoryType.KatarIronGuard, PerkType.IronWallStance)
                 .Name("Iron Wall Stance")
 
                 .AddPerkLevel()
@@ -204,7 +204,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void NeuralShock()
         {
-            _builder.Create(PerkCategoryType.MartialArtsKatars, PerkType.NeuralShock)
+            _builder.Create(PerkCategoryType.KatarVenomCurrent, PerkType.NeuralShock)
                 .Name("Neural Shock")
 
                 .AddPerkLevel()
@@ -216,7 +216,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void NeurotoxinMastery()
         {
-            _builder.Create(PerkCategoryType.MartialArtsKatars, PerkType.NeurotoxinMastery)
+            _builder.Create(PerkCategoryType.KatarVenomCurrent, PerkType.NeurotoxinMastery)
                 .Name("Neurotoxin Mastery")
 
                 .AddPerkLevel()
@@ -227,7 +227,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void RedirectingGuard()
         {
-            _builder.Create(PerkCategoryType.MartialArtsKatars, PerkType.RedirectingGuard)
+            _builder.Create(PerkCategoryType.KatarIronGuard, PerkType.RedirectingGuard)
                 .Name("Redirecting Guard")
 
                 .AddPerkLevel()
@@ -238,7 +238,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void RetaliatoryFlow()
         {
-            _builder.Create(PerkCategoryType.MartialArtsKatars, PerkType.RetaliatoryFlow)
+            _builder.Create(PerkCategoryType.KatarIronGuard, PerkType.RetaliatoryFlow)
                 .Name("Retaliatory Flow")
 
                 .AddPerkLevel()
@@ -249,7 +249,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void SerpentsEclipse()
         {
-            _builder.Create(PerkCategoryType.MartialArtsKatars, PerkType.SerpentsEclipse)
+            _builder.Create(PerkCategoryType.KatarVenomCurrent, PerkType.SerpentsEclipse)
                 .Name("Serpent's Eclipse")
 
                 .AddPerkLevel()
@@ -261,7 +261,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void SpreadingVenom()
         {
-            _builder.Create(PerkCategoryType.MartialArtsKatars, PerkType.SpreadingVenom)
+            _builder.Create(PerkCategoryType.KatarVenomCurrent, PerkType.SpreadingVenom)
                 .Name("Spreading Venom")
 
                 .AddPerkLevel()
@@ -272,7 +272,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void StaticPalm()
         {
-            _builder.Create(PerkCategoryType.MartialArtsKatars, PerkType.StaticPalm)
+            _builder.Create(PerkCategoryType.KatarVenomCurrent, PerkType.StaticPalm)
                 .Name("Static Palm")
 
                 .AddPerkLevel()
@@ -296,7 +296,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void ToxicRush()
         {
-            _builder.Create(PerkCategoryType.MartialArtsKatars, PerkType.ToxicRush)
+            _builder.Create(PerkCategoryType.KatarVenomCurrent, PerkType.ToxicRush)
                 .Name("Toxic Rush")
 
                 .AddPerkLevel()
@@ -307,7 +307,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void ToxicTempo()
         {
-            _builder.Create(PerkCategoryType.MartialArtsKatars, PerkType.ToxicTempo)
+            _builder.Create(PerkCategoryType.KatarVenomCurrent, PerkType.ToxicTempo)
                 .Name("Toxic Tempo")
 
                 .AddPerkLevel()
@@ -318,7 +318,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void TwinFangFlurry()
         {
-            _builder.Create(PerkCategoryType.MartialArtsKatars, PerkType.TwinFangFlurry)
+            _builder.Create(PerkCategoryType.KatarVenomCurrent, PerkType.TwinFangFlurry)
                 .Name("Twin Fang Flurry")
 
                 .AddPerkLevel()
@@ -330,7 +330,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void TwinGuardStance()
         {
-            _builder.Create(PerkCategoryType.MartialArtsKatars, PerkType.TwinGuardStance)
+            _builder.Create(PerkCategoryType.KatarIronGuard, PerkType.TwinGuardStance)
                 .Name("Twin Guard Stance")
 
                 .AddPerkLevel()
@@ -341,7 +341,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void TwinIntercept()
         {
-            _builder.Create(PerkCategoryType.MartialArtsKatars, PerkType.TwinIntercept)
+            _builder.Create(PerkCategoryType.KatarIronGuard, PerkType.TwinIntercept)
                 .Name("Twin Intercept")
 
                 .AddPerkLevel()
@@ -352,7 +352,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void VenomRhythm()
         {
-            _builder.Create(PerkCategoryType.MartialArtsKatars, PerkType.VenomRhythm)
+            _builder.Create(PerkCategoryType.KatarVenomCurrent, PerkType.VenomRhythm)
                 .Name("Venom Rhythm")
 
                 .AddPerkLevel()
@@ -363,7 +363,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void VenomSplash()
         {
-            _builder.Create(PerkCategoryType.MartialArtsKatars, PerkType.VenomSplash)
+            _builder.Create(PerkCategoryType.KatarVenomCurrent, PerkType.VenomSplash)
                 .Name("Venom Splash")
 
                 .AddPerkLevel()
@@ -375,7 +375,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void WhirlingGuard()
         {
-            _builder.Create(PerkCategoryType.MartialArtsKatars, PerkType.WhirlingGuard)
+            _builder.Create(PerkCategoryType.KatarIronGuard, PerkType.WhirlingGuard)
                 .Name("Whirling Guard")
 
                 .AddPerkLevel()

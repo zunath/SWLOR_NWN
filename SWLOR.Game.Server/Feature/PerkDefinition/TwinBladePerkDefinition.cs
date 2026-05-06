@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void BindingCross()
         {
-            _builder.Create(PerkCategoryType.TwoHandedTwinBlade, PerkType.BindingCross)
+            _builder.Create(PerkCategoryType.TwinBladeDuelist, PerkType.BindingCross)
                 .Name("Binding Cross")
 
                 .AddPerkLevel()
@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void BladeVortex()
         {
-            _builder.Create(PerkCategoryType.TwoHandedTwinBlade, PerkType.BladeVortex)
+            _builder.Create(PerkCategoryType.TwinBladeCyclone, PerkType.BladeVortex)
                 .Name("Blade Vortex")
 
                 .AddPerkLevel()
@@ -76,7 +76,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void CenterlineGuard()
         {
-            _builder.Create(PerkCategoryType.TwoHandedTwinBlade, PerkType.CenterlineGuard)
+            _builder.Create(PerkCategoryType.TwinBladeDuelist, PerkType.CenterlineGuard)
                 .Name("Centerline Guard")
 
                 .AddPerkLevel()
@@ -87,7 +87,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void CycloneMastery()
         {
-            _builder.Create(PerkCategoryType.TwoHandedTwinBlade, PerkType.CycloneMastery)
+            _builder.Create(PerkCategoryType.TwinBladeCyclone, PerkType.CycloneMastery)
                 .Name("Cyclone Mastery")
 
                 .AddPerkLevel()
@@ -98,7 +98,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void CycloneStance()
         {
-            _builder.Create(PerkCategoryType.TwoHandedTwinBlade, PerkType.CycloneStance)
+            _builder.Create(PerkCategoryType.TwinBladeCyclone, PerkType.CycloneStance)
                 .Name("Cyclone Stance")
 
                 .AddPerkLevel()
@@ -109,7 +109,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void DuelistsChallenge()
         {
-            _builder.Create(PerkCategoryType.TwoHandedTwinBlade, PerkType.DuelistsChallenge)
+            _builder.Create(PerkCategoryType.TwinBladeDuelist, PerkType.DuelistsChallenge)
                 .Name("Duelist's Challenge")
 
                 .AddPerkLevel()
@@ -120,7 +120,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void DuelistStance()
         {
-            _builder.Create(PerkCategoryType.TwoHandedTwinBlade, PerkType.DuelistStance)
+            _builder.Create(PerkCategoryType.TwinBladeDuelist, PerkType.DuelistStance)
                 .Name("Duelist Stance")
 
                 .AddPerkLevel()
@@ -131,7 +131,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void EdgeRhythm()
         {
-            _builder.Create(PerkCategoryType.TwoHandedTwinBlade, PerkType.EdgeRhythm)
+            _builder.Create(PerkCategoryType.TwinBladeCyclone, PerkType.EdgeRhythm)
                 .Name("Edge Rhythm")
 
                 .AddPerkLevel()
@@ -142,7 +142,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void FeintingCut()
         {
-            _builder.Create(PerkCategoryType.TwoHandedTwinBlade, PerkType.FeintingCut)
+            _builder.Create(PerkCategoryType.TwinBladeDuelist, PerkType.FeintingCut)
                 .Name("Feinting Cut")
 
                 .AddPerkLevel()
@@ -166,7 +166,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void FinalForm()
         {
-            _builder.Create(PerkCategoryType.TwoHandedTwinBlade, PerkType.FinalForm)
+            _builder.Create(PerkCategoryType.TwinBladeDuelist, PerkType.FinalForm)
                 .Name("Final Form")
 
                 .AddPerkLevel()
@@ -177,7 +177,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void FlowingFootwork()
         {
-            _builder.Create(PerkCategoryType.TwoHandedTwinBlade, PerkType.FlowingFootwork)
+            _builder.Create(PerkCategoryType.TwinBladeCyclone, PerkType.FlowingFootwork)
                 .Name("Flowing Footwork")
 
                 .AddPerkLevel()
@@ -188,7 +188,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void GuardedFlow()
         {
-            _builder.Create(PerkCategoryType.TwoHandedTwinBlade, PerkType.GuardedFlow)
+            _builder.Create(PerkCategoryType.TwinBladeDuelist, PerkType.GuardedFlow)
                 .Name("Guarded Flow")
 
                 .AddPerkLevel()
@@ -199,7 +199,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void MirrorStep()
         {
-            _builder.Create(PerkCategoryType.TwoHandedTwinBlade, PerkType.MirrorStep)
+            _builder.Create(PerkCategoryType.TwinBladeDuelist, PerkType.MirrorStep)
                 .Name("Mirror Step")
 
                 .AddPerkLevel()
@@ -210,7 +210,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void Momentum()
         {
-            _builder.Create(PerkCategoryType.TwoHandedTwinBlade, PerkType.Momentum)
+            _builder.Create(PerkCategoryType.TwinBladeCyclone, PerkType.Momentum)
                 .Name("Momentum")
 
                 .AddPerkLevel()
@@ -226,7 +226,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void PerfectBalance()
         {
-            _builder.Create(PerkCategoryType.TwoHandedTwinBlade, PerkType.PerfectBalance)
+            _builder.Create(PerkCategoryType.TwinBladeDuelist, PerkType.PerfectBalance)
                 .Name("Perfect Balance")
 
                 .AddPerkLevel()
@@ -237,7 +237,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void PrecisionArc()
         {
-            _builder.Create(PerkCategoryType.TwoHandedTwinBlade, PerkType.PrecisionArc)
+            _builder.Create(PerkCategoryType.TwinBladeDuelist, PerkType.PrecisionArc)
                 .Name("Precision Arc")
 
                 .AddPerkLevel()
@@ -248,7 +248,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void PunishingAngle()
         {
-            _builder.Create(PerkCategoryType.TwoHandedTwinBlade, PerkType.PunishingAngle)
+            _builder.Create(PerkCategoryType.TwinBladeDuelist, PerkType.PunishingAngle)
                 .Name("Punishing Angle")
 
                 .AddPerkLevel()
@@ -259,7 +259,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void ReversalCut()
         {
-            _builder.Create(PerkCategoryType.TwoHandedTwinBlade, PerkType.ReversalCut)
+            _builder.Create(PerkCategoryType.TwinBladeDuelist, PerkType.ReversalCut)
                 .Name("Reversal Cut")
 
                 .AddPerkLevel()
@@ -271,7 +271,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void SplitGuardStrike()
         {
-            _builder.Create(PerkCategoryType.TwoHandedTwinBlade, PerkType.SplitGuardStrike)
+            _builder.Create(PerkCategoryType.TwinBladeDuelist, PerkType.SplitGuardStrike)
                 .Name("Split Guard Strike")
 
                 .AddPerkLevel()
@@ -295,7 +295,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void StormRelease()
         {
-            _builder.Create(PerkCategoryType.TwoHandedTwinBlade, PerkType.StormRelease)
+            _builder.Create(PerkCategoryType.TwinBladeCyclone, PerkType.StormRelease)
                 .Name("Storm Release")
 
                 .AddPerkLevel()
@@ -307,7 +307,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void SweepingAdvance()
         {
-            _builder.Create(PerkCategoryType.TwoHandedTwinBlade, PerkType.SweepingAdvance)
+            _builder.Create(PerkCategoryType.TwinBladeCyclone, PerkType.SweepingAdvance)
                 .Name("Sweeping Advance")
 
                 .AddPerkLevel()
@@ -319,7 +319,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void TempestBloom()
         {
-            _builder.Create(PerkCategoryType.TwoHandedTwinBlade, PerkType.TempestBloom)
+            _builder.Create(PerkCategoryType.TwinBladeCyclone, PerkType.TempestBloom)
                 .Name("Tempest Bloom")
 
                 .AddPerkLevel()

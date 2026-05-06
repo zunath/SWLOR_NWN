@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void BleedersEye()
         {
-            _builder.Create(PerkCategoryType.RangedThrowing, PerkType.BleedersEye)
+            _builder.Create(PerkCategoryType.ThrowingDeadeye, PerkType.BleedersEye)
                 .Name("Bleeder's Eye")
 
                 .AddPerkLevel()
@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void BombardiersRhythm()
         {
-            _builder.Create(PerkCategoryType.RangedThrowing, PerkType.BombardiersRhythm)
+            _builder.Create(PerkCategoryType.ThrowingBombardier, PerkType.BombardiersRhythm)
                 .Name("Bombardier's Rhythm")
 
                 .AddPerkLevel()
@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void BombardierStance()
         {
-            _builder.Create(PerkCategoryType.RangedThrowing, PerkType.BombardierStance)
+            _builder.Create(PerkCategoryType.ThrowingBombardier, PerkType.BombardierStance)
                 .Name("Bombardier Stance")
 
                 .AddPerkLevel()
@@ -74,7 +74,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void ClusterPouch()
         {
-            _builder.Create(PerkCategoryType.RangedThrowing, PerkType.ClusterPouch)
+            _builder.Create(PerkCategoryType.ThrowingBombardier, PerkType.ClusterPouch)
                 .Name("Cluster Pouch")
 
                 .AddPerkLevel()
@@ -85,7 +85,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void ClusterStorm()
         {
-            _builder.Create(PerkCategoryType.RangedThrowing, PerkType.ClusterStorm)
+            _builder.Create(PerkCategoryType.ThrowingBombardier, PerkType.ClusterStorm)
                 .Name("Cluster Storm")
 
                 .AddPerkLevel()
@@ -97,7 +97,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void ConcussiveToss()
         {
-            _builder.Create(PerkCategoryType.RangedThrowing, PerkType.ConcussiveToss)
+            _builder.Create(PerkCategoryType.ThrowingBombardier, PerkType.ConcussiveToss)
                 .Name("Concussive Toss")
 
                 .AddPerkLevel()
@@ -115,7 +115,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void DeadeyeMastery()
         {
-            _builder.Create(PerkCategoryType.RangedThrowing, PerkType.DeadeyeMastery)
+            _builder.Create(PerkCategoryType.ThrowingDeadeye, PerkType.DeadeyeMastery)
                 .Name("Deadeye Mastery")
 
                 .AddPerkLevel()
@@ -126,7 +126,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void DeadeyeStance()
         {
-            _builder.Create(PerkCategoryType.RangedThrowing, PerkType.DeadeyeStance)
+            _builder.Create(PerkCategoryType.ThrowingDeadeye, PerkType.DeadeyeStance)
                 .Name("Deadeye Stance")
 
                 .AddPerkLevel()
@@ -137,7 +137,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void DeepWound()
         {
-            _builder.Create(PerkCategoryType.RangedThrowing, PerkType.DeepWound)
+            _builder.Create(PerkCategoryType.ThrowingDeadeye, PerkType.DeepWound)
                 .Name("Deep Wound")
 
                 .AddPerkLevel()
@@ -148,7 +148,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void FinishingToss()
         {
-            _builder.Create(PerkCategoryType.RangedThrowing, PerkType.FinishingToss)
+            _builder.Create(PerkCategoryType.ThrowingDeadeye, PerkType.FinishingToss)
                 .Name("Finishing Toss")
 
                 .AddPerkLevel()
@@ -160,7 +160,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void FireburstToss()
         {
-            _builder.Create(PerkCategoryType.RangedThrowing, PerkType.FireburstToss)
+            _builder.Create(PerkCategoryType.ThrowingBombardier, PerkType.FireburstToss)
                 .Name("Fireburst Toss")
 
                 .AddPerkLevel()
@@ -172,7 +172,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void FlashToss()
         {
-            _builder.Create(PerkCategoryType.RangedThrowing, PerkType.FlashToss)
+            _builder.Create(PerkCategoryType.ThrowingBombardier, PerkType.FlashToss)
                 .Name("Flash Toss")
 
                 .AddPerkLevel()
@@ -190,7 +190,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void MarkedTempo()
         {
-            _builder.Create(PerkCategoryType.RangedThrowing, PerkType.MarkedTempo)
+            _builder.Create(PerkCategoryType.ThrowingDeadeye, PerkType.MarkedTempo)
                 .Name("Marked Tempo")
 
                 .AddPerkLevel()
@@ -201,7 +201,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void MarkingToss()
         {
-            _builder.Create(PerkCategoryType.RangedThrowing, PerkType.MarkingToss)
+            _builder.Create(PerkCategoryType.ThrowingDeadeye, PerkType.MarkingToss)
                 .Name("Marking Toss")
 
                 .AddPerkLevel()
@@ -213,7 +213,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void PerfectThrow()
         {
-            _builder.Create(PerkCategoryType.RangedThrowing, PerkType.PerfectThrow)
+            _builder.Create(PerkCategoryType.ThrowingDeadeye, PerkType.PerfectThrow)
                 .Name("Perfect Throw")
 
                 .AddPerkLevel()
@@ -225,7 +225,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void PinningToss()
         {
-            _builder.Create(PerkCategoryType.RangedThrowing, PerkType.PinningToss)
+            _builder.Create(PerkCategoryType.ThrowingDeadeye, PerkType.PinningToss)
                 .Name("Pinning Toss")
 
                 .AddPerkLevel()
@@ -249,7 +249,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void RainOfSteel()
         {
-            _builder.Create(PerkCategoryType.RangedThrowing, PerkType.RainOfSteel)
+            _builder.Create(PerkCategoryType.ThrowingBombardier, PerkType.RainOfSteel)
                 .Name("Rain of Steel")
 
                 .AddPerkLevel()
@@ -261,7 +261,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void ReturningGrip()
         {
-            _builder.Create(PerkCategoryType.RangedThrowing, PerkType.ReturningGrip)
+            _builder.Create(PerkCategoryType.ThrowingDeadeye, PerkType.ReturningGrip)
                 .Name("Returning Grip")
 
                 .AddPerkLevel()
@@ -272,7 +272,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void RicochetToss()
         {
-            _builder.Create(PerkCategoryType.RangedThrowing, PerkType.RicochetToss)
+            _builder.Create(PerkCategoryType.ThrowingDeadeye, PerkType.RicochetToss)
                 .Name("Ricochet Toss")
 
                 .AddPerkLevel()
@@ -290,7 +290,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void SaturationToss()
         {
-            _builder.Create(PerkCategoryType.RangedThrowing, PerkType.SaturationToss)
+            _builder.Create(PerkCategoryType.ThrowingBombardier, PerkType.SaturationToss)
                 .Name("Saturation Toss")
 
                 .AddPerkLevel()
@@ -302,7 +302,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void SeveringToss()
         {
-            _builder.Create(PerkCategoryType.RangedThrowing, PerkType.SeveringToss)
+            _builder.Create(PerkCategoryType.ThrowingDeadeye, PerkType.SeveringToss)
                 .Name("Severing Toss")
 
                 .AddPerkLevel()
@@ -314,7 +314,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void ShrapnelCasing()
         {
-            _builder.Create(PerkCategoryType.RangedThrowing, PerkType.ShrapnelCasing)
+            _builder.Create(PerkCategoryType.ThrowingBombardier, PerkType.ShrapnelCasing)
                 .Name("Shrapnel Casing")
 
                 .AddPerkLevel()
@@ -330,7 +330,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void VolatilePayload()
         {
-            _builder.Create(PerkCategoryType.RangedThrowing, PerkType.VolatilePayload)
+            _builder.Create(PerkCategoryType.ThrowingBombardier, PerkType.VolatilePayload)
                 .Name("Volatile Payload")
 
                 .AddPerkLevel()

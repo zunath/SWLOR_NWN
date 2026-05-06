@@ -75,6 +75,16 @@ namespace SWLOR.Game.Server.Feature
             SyncFromEvent(possessor);
         }  
 
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
+        public static void OnClientEnter()
+        {
+            var player = GetEnteringObject();
+            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
+                return;
+
+            SyncKatarRemapState(player);
+        }
+
         [NWNEventHandler(ScriptName.OnModuleUnequip)]
         public static void OnUnequip()
         {

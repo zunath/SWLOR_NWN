@@ -98,7 +98,7 @@ namespace SWLOR.Game.Server.Native
                 // Extract weapon damage properties and get ability stats
                 var dmgValues = ExtractWeaponDamageProperties(weapon);
                 var attackerStatType = GetWeaponDamageAbilityType(weapon);
-                var weaponPerkLevel = GetWeaponPerkLevel(weapon);
+                var weaponDeltaCap = GetWeaponDeltaCap(weapon);
 
                 var attackerStat = Stat.GetStatValueNative(attacker, attackerStatType);
 
@@ -116,7 +116,7 @@ namespace SWLOR.Game.Server.Native
                 var attackerAttack = weapon == null ? 0 : Stat.GetAttackNative(attacker, (BaseItem)weapon.m_nBaseItem, attackerStatType);
 
                 var damage = ProcessDamageTypes(pTarget, attacker, weapon, dmgValues, pAttackData,
-                    attackerAttack, attackerStat, critical, weaponPerkLevel, attackType, damageFlags, bOffHand, defender);
+                    attackerAttack, attackerStat, critical, weaponDeltaCap, attackType, damageFlags, bOffHand, defender);
 
                 if (damage > 0 && defender.m_bPlotObject == 0)
                 {
@@ -156,7 +156,7 @@ namespace SWLOR.Game.Server.Native
 
         private static int ProcessDamageTypes(void* pTarget, CNWSCreature attacker, CNWSItem weapon,
             Dictionary<CombatDamageType, int> dmgValues, void* pAttackData, int attackerAttack,
-            int attackerStat, int critical, int weaponPerkLevel, uint attackType, uint damageFlags,
+            int attackerStat, int critical, int weaponDeltaCap, uint attackType, uint damageFlags,
             int bOffHand, CNWSObject targetObject)
         {
             var physicalDamage = 0;
@@ -164,7 +164,7 @@ namespace SWLOR.Game.Server.Native
             foreach (var damageType in dmgValues.Keys)
             {
                 var damage = CalculateTargetSpecificDamage(pTarget, attacker, weapon, dmgValues, damageType,
-                    attackerAttack, attackerStat, critical, weaponPerkLevel, attackType, damageFlags, bOffHand);
+                    attackerAttack, attackerStat, critical, weaponDeltaCap, attackType, damageFlags, bOffHand);
 
                 // Plot target takes no damage
                 if (targetObject.m_bPlotObject == 1)
@@ -260,20 +260,36 @@ namespace SWLOR.Game.Server.Native
             return Item.GetWeaponDamageAbilityType((BaseItem)weapon.m_nBaseItem);
         }
 
-        private static int GetWeaponPerkLevel(CNWSItem weapon)
+        private static int GetWeaponDeltaCap(CNWSItem weapon)
         {
-            if (weapon == null) return 0;
+            var requiredSkillRank = GetWeaponRequiredSkillRank(weapon);
+            return requiredSkillRank < 0
+                ? 0
+                : GetWeaponDeltaCapFromRequiredSkillRank(requiredSkillRank);
+        }
 
+        private static int GetWeaponRequiredSkillRank(CNWSItem weapon)
+        {
+            if (weapon == null) return -1;
+
+            var requiredSkillRank = -1;
             for (var index = 0; index < weapon.m_lstPassiveProperties.Count; index++)
             {
                 var ip = weapon.GetPassiveProperty(index);
-                if (ip?.m_nPropertyName == (ushort)ItemPropertyType.UseLimitationPerk)
+                if (ip?.m_nPropertyName == (ushort)ItemPropertyType.RequiresSkill)
                 {
-                    return ip.m_nCostTableValue;
+                    requiredSkillRank = Math.Max(requiredSkillRank, ip.m_nCostTableValue);
                 }
             }
 
-            return 0;
+            return requiredSkillRank;
+        }
+
+        private static int GetWeaponDeltaCapFromRequiredSkillRank(int requiredSkillRank)
+        {
+            return requiredSkillRank <= 0
+                ? 1
+                : Math.Clamp((requiredSkillRank / 10) + 1, 1, 6);
         }
 
         private static void ApplyCombatModeBonus(CNWSCreature attacker, Dictionary<CombatDamageType, int> dmgValues)
@@ -291,7 +307,7 @@ namespace SWLOR.Game.Server.Native
 
         private static int CalculateTargetSpecificDamage(void* pTarget, CNWSCreature attacker, CNWSItem weapon,
             Dictionary<CombatDamageType, int> dmgValues, CombatDamageType damageType, int attackerAttack,
-            int attackerStat, int critical, int weaponPerkLevel, uint attackType, uint damageFlags, int bOffHand)
+            int attackerStat, int critical, int weaponDeltaCap, uint attackType, uint damageFlags, int bOffHand)
         {
             var targetObject = CNWSObject.FromPointer(pTarget);
 
@@ -299,7 +315,7 @@ namespace SWLOR.Game.Server.Native
             {
                 case (int)ObjectType.Creature:
                     return CalculateCreatureDamage(pTarget, attacker, dmgValues, damageType, attackerAttack,
-                        attackerStat, critical, weaponPerkLevel, attackType, damageFlags, bOffHand);
+                        attackerStat, critical, weaponDeltaCap, attackType, damageFlags, bOffHand);
 
                 case (int)ObjectType.Placeable:
                     var plc = CNWSPlaceable.FromPointer(pTarget);
@@ -317,7 +333,7 @@ namespace SWLOR.Game.Server.Native
         }
 
         private static int CalculateCreatureDamage(void* pTarget, CNWSCreature attacker, Dictionary<CombatDamageType, int> dmgValues,
-            CombatDamageType damageType, int attackerAttack, int attackerStat, int critical, int weaponPerkLevel,
+            CombatDamageType damageType, int attackerAttack, int attackerStat, int critical, int weaponDeltaCap,
             uint attackType, uint damageFlags, int bOffHand)
         {
             var target = CNWSCreature.FromPointer(pTarget);
@@ -328,7 +344,7 @@ namespace SWLOR.Game.Server.Native
             Log.Write(LogGroup.Attack, $"DAMAGE: attacker damage attribute: {dmgValues[damageType]} defender defense attribute: {defense}, defender racial type {target.m_pStats.m_nRace}");
 
             var damage = Combat.CalculateDamage(attackerAttack, dmgValues[damageType], attackerStat,
-                defense, defenderStat, critical, weaponPerkLevel);
+                defense, defenderStat, critical, weaponDeltaCap);
 
             // Apply droid electrical damage bonus
             if (target.m_pStats.m_nRace == (ushort)RacialType.Robot && damageType == CombatDamageType.Electrical)

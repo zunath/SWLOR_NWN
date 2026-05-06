@@ -11,7 +11,13 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
 {
     internal static class EquipmentRequirementMigration
     {
-        private static readonly Dictionary<int, SkillType> _weaponRequirementMap = new()
+        private const int MaxStandardLegacyRequirementLevel = 5;
+        private const int MaxDisabledLegacyRequirementLevel = 10;
+        private const int MaxSkillRequirementRank = 50;
+        private const int DisabledSkillRequirementRank = 100;
+        private const int SpaceEquipmentLegacyRequirement = 116;
+
+        private static readonly Dictionary<int, SkillType> _legacyRequirementMap = new()
         {
             { 6, SkillType.OneHanded },
             { 12, SkillType.OneHanded },
@@ -20,11 +26,89 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             { 34, SkillType.TwoHanded },
             { 40, SkillType.TwoHanded },
             { 46, SkillType.TwoHanded },
+            { 47, SkillType.TwoHanded },
             { 56, SkillType.MartialArts },
             { 62, SkillType.MartialArts },
             { 73, SkillType.Ranged },
+            { 79, SkillType.Ranged },
             { 91, SkillType.Ranged },
-            { 79, SkillType.Ranged }
+            { 102, SkillType.Armor },
+            { 103, SkillType.Armor },
+            { 104, SkillType.Armor },
+            { 105, SkillType.Armor },
+            { 106, SkillType.Armor },
+            { 107, SkillType.Armor },
+            { 108, SkillType.Armor },
+            { 109, SkillType.Armor },
+            { 110, SkillType.Armor },
+            { 111, SkillType.Armor },
+            { 112, SkillType.Armor },
+            { 113, SkillType.Armor },
+            { 114, SkillType.Armor },
+            { 220, SkillType.Smithery },
+            { 221, SkillType.Engineering },
+            { 222, SkillType.Fabrication },
+            { 223, SkillType.Agriculture },
+            { 257, SkillType.Agriculture }
+        };
+
+        private static readonly HashSet<string> _tierFivePointFiveResRefs = new(StringComparer.OrdinalIgnoreCase)
+        {
+            "alc_spear",
+            "bol_rifle",
+            "ch_armor",
+            "ch_belt",
+            "ch_bracer",
+            "ch_cloak",
+            "ch_helmet",
+            "ch_leggings",
+            "ch_necklace",
+            "ch_ring",
+            "ch_shield",
+            "chi_electroblade",
+            "chi_greatsword",
+            "chi_katar",
+            "chi_knife",
+            "chi_longsword",
+            "chi_pistol",
+            "chi_rifle",
+            "chi_shuriken",
+            "chi_spear",
+            "chi_staff",
+            "chi_twinblade",
+            "chi_twinelec",
+            "dhar005c",
+            "dhbe005c",
+            "dhbr005c",
+            "dhcl005c",
+            "dhhl005c",
+            "dhlg005c",
+            "dhnk005c",
+            "dhrg005c",
+            "dlar005c",
+            "dlbe005c",
+            "dlbr005c",
+            "dlcl005c",
+            "dlhl005c",
+            "dllg005c",
+            "dlnk005c",
+            "dlrg005c",
+            "imm_belt",
+            "imm_boots",
+            "imm_cap",
+            "imm_cloak",
+            "imm_gloves",
+            "imm_necklace",
+            "imm_ring",
+            "imm_tunic",
+            "mag_belt",
+            "mag_boots",
+            "mag_cap",
+            "mag_cloak",
+            "mag_gloves",
+            "mag_necklace",
+            "mag_ring",
+            "mag_tunic"
         };
 
         public static bool MigrateSerializedObject(string serializedObject, out string migratedSerializedObject)
@@ -84,6 +168,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
 
         private static bool MigrateItem(uint item)
         {
+            var itemResRef = GetResRef(item);
             var legacyProperties = new List<ItemProperty>();
             var legacyRequirements = new Dictionary<SkillType, int>();
             var existingSkillRequirements = new Dictionary<SkillType, int>();
@@ -101,12 +186,15 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                 }
                 else if (itemPropertyType == ItemPropertyType.UseLimitationPerk)
                 {
-                    var perkType = GetItemPropertySubType(ip);
-                    if (!_weaponRequirementMap.TryGetValue(perkType, out var skillType))
-                        continue;
-
+                    var legacyRequirement = GetItemPropertySubType(ip);
                     var requiredLevel = GetItemPropertyCostTableValue(ip);
-                    var requiredRank = Math.Max(0, (requiredLevel - 1) * 10);
+                    if (!TryGetSkillRequirement(
+                            legacyRequirement,
+                            requiredLevel,
+                            itemResRef,
+                            out var skillType,
+                            out var requiredRank))
+                        continue;
 
                     legacyProperties.Add(ip);
                     legacyRequirements[skillType] = Math.Max(
@@ -141,6 +229,47 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                     AddItemPropertyPolicy.ReplaceExisting,
                     false,
                     false);
+            }
+
+            return true;
+        }
+
+        private static bool TryGetSkillRequirement(
+            int legacyRequirement,
+            int requiredLevel,
+            string itemResRef,
+            out SkillType skillType,
+            out int requiredRank)
+        {
+            requiredRank = 0;
+
+            if (!_legacyRequirementMap.TryGetValue(legacyRequirement, out skillType))
+            {
+                if (legacyRequirement == SpaceEquipmentLegacyRequirement)
+                    return false;
+
+                skillType = SkillType.Invalid;
+                requiredRank = DisabledSkillRequirementRank;
+                return true;
+            }
+
+            if (requiredLevel > MaxDisabledLegacyRequirementLevel)
+                return false;
+
+            if (requiredLevel > MaxStandardLegacyRequirementLevel)
+            {
+                requiredRank = DisabledSkillRequirementRank;
+                return true;
+            }
+
+            requiredRank = requiredLevel <= 1
+                ? 0
+                : (requiredLevel - 1) * 10;
+
+            if (requiredLevel == MaxStandardLegacyRequirementLevel &&
+                _tierFivePointFiveResRefs.Contains(itemResRef))
+            {
+                requiredRank = MaxSkillRequirementRank;
             }
 
             return true;

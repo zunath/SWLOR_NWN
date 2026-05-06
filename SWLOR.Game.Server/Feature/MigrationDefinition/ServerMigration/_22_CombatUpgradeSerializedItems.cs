@@ -4,7 +4,6 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.MigrationService;
-using SWLOR.Game.Server.Service.SpaceService;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 {
@@ -21,7 +20,6 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             MigrateWorldProperties();
             MigrateResearchJobs();
             MigratePlayerOutfits();
-            MigratePlayerShips();
             MigrateDMCreatures();
         }
 
@@ -113,48 +111,6 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                 outfit.Data = migratedData;
                 DB.Set(outfit);
             }
-        }
-
-        private static void MigratePlayerShips()
-        {
-            foreach (var ship in SearchAll<PlayerShip>())
-            {
-                var wasMigrated = false;
-
-                if (EquipmentRequirementMigration.MigrateSerializedObject(ship.SerializedItem, out var migratedShipItem))
-                {
-                    ship.SerializedItem = migratedShipItem;
-                    wasMigrated = true;
-                }
-
-                if (ship.Status != null)
-                {
-                    wasMigrated |= MigrateShipModules(ship.Status.HighPowerModules);
-                    wasMigrated |= MigrateShipModules(ship.Status.LowPowerModules);
-                    wasMigrated |= MigrateShipModules(ship.Status.ConfigurationModules);
-                }
-
-                if (wasMigrated)
-                    DB.Set(ship);
-            }
-        }
-
-        private static bool MigrateShipModules(Dictionary<int, ShipStatus.ShipStatusModule> modules)
-        {
-            if (modules == null)
-                return false;
-
-            var wasMigrated = false;
-            foreach (var module in modules.Values)
-            {
-                if (!EquipmentRequirementMigration.MigrateSerializedObject(module.SerializedItem, out var migratedData))
-                    continue;
-
-                module.SerializedItem = migratedData;
-                wasMigrated = true;
-            }
-
-            return wasMigrated;
         }
 
         private static void MigrateDMCreatures()

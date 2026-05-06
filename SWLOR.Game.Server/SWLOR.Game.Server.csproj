@@ -43,7 +43,7 @@
     </ItemGroup>
   </Target>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(OS)' == 'Windows_NT'">
     <Exec Command="SWLOR.CLI.exe -o" WorkingDirectory="$(MSBuildProjectDirectory)\..\Build" />
   </Target>
 </Project>

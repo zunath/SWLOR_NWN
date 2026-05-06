@@ -390,17 +390,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 dbPlayer.UpgradedStats[AbilityType.Social] = 0;
 
                 dbPlayer.UnallocatedAP = dbPlayer.TotalAPAcquired;
+                dbPlayer.RacialStat = AbilityType.Invalid;
                 dbPlayer.RebuildComplete = false;
                 DB.Set(dbPlayer);
-
-                // Reapply racial stat bonus
-                if (dbPlayer.RacialStat != AbilityType.Invalid)
-                {
-                    CreaturePlugin.ModifyRawAbilityScore(Player, dbPlayer.RacialStat, 1);
-                }
             }
 
-            ShowModal($"WARNING: Your perks and skill points will be refunded. Your stats will be reinitialized to 10 (before racial bonuses are applied). You will be required to distribute all of these points before leaving this area. Partial XP towards the next skill rank will be LOST. Are you sure you'd like to proceed?", () =>
+            ShowModal($"WARNING: Your perks and skill points will be refunded. Your stats will be reinitialized to 10 and your racial bonus stat will be refunded. You will be required to distribute all of these points before leaving this area. Partial XP towards the next skill rank will be LOST. Are you sure you'd like to proceed?", () =>
             {
                 if (Ability.IsAnyAbilityToggled(Player))
                 {

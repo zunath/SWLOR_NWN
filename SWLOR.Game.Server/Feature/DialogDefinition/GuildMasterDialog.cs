@@ -3,6 +3,8 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DialogService;
+using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
+using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.QuestService;
 using SWLOR.NWN.API.NWScript;
 
@@ -79,7 +81,9 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
             page.AddResponse("Show me the task list.", () =>
             {
-                ChangePage(TaskListPageId);
+                var payload = new GuildTasksPayload(model.Guild, GetDialogTarget());
+                Gui.TogglePlayerWindow(player, GuiWindowType.GuildTasks, payload, GetDialogTarget());
+                EndConversation();
             });
 
             page.AddResponse("Show me the guild shop.", () =>

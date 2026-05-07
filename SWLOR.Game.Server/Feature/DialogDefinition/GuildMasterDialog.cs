@@ -1,9 +1,9 @@
-﻿using System.Linq;
-using SWLOR.Game.Server.Entity;
+﻿using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DialogService;
-using SWLOR.Game.Server.Service.QuestService;
+using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.NWN.API.NWScript;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
@@ -13,14 +13,11 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         private class Model
         {
             public GuildType Guild { get; set; }
-            public string QuestId { get; set; }
         }
 
         private const string MainPageId = "MAIN_PAGE";
         private const string TellMePageId = "TELL_ME_PAGE";
         private const string RankTooLowPageId = "RANK_TOO_LOW_PAGE";
-        private const string TaskListPageId = "TASK_LIST_PAGE";
-        private const string TaskDetailsPageId = "TASK_DETAILS_PAGE";
         private const string GuildStorePageId = "GUILD_STORE_PAGE";
 
         public override PlayerDialog SetUp(uint player)
@@ -31,8 +28,6 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 .AddPage(MainPageId, MainPageInit)
                 .AddPage(TellMePageId, TellMePageInit)
                 .AddPage(RankTooLowPageId, RankTooLowPageInit)
-                .AddPage(TaskListPageId, TaskListPageInit)
-                .AddPage(TaskDetailsPageId, TaskDetailsPageInit)
                 .AddPage(GuildStorePageId, GuildStorePageInit);
 
             return builder.Build();
@@ -79,7 +74,9 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
             page.AddResponse("Show me the task list.", () =>
             {
-                ChangePage(TaskListPageId);
+                var payload = new GuildTasksPayload(model.Guild, GetDialogTarget());
+                Gui.TogglePlayerWindow(player, GuiWindowType.GuildTasks, payload, GetDialogTarget());
+                EndConversation();
             });
 
             page.AddResponse("Show me the guild shop.", () =>
@@ -106,144 +103,6 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         private void RankTooLowPageInit(DialogPage page)
         {
             page.Header = "I'm sorry but your rank is too low to grant you access to that. Perform tasks for us and come back when you've increased your rank with our guild.";
-        }
-
-        private void TaskListPageInit(DialogPage page)
-        {
-            var model = GetDataModel<Model>();
-            var player = GetPC();
-            var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
-            page.Header = "The following tasks are available for you.";
-
-            var currentTasks = Guild.GetAllActiveGuildTasks(model.Guild);
-            // Expired quests - Quests the player accepted but are no longer offered by the guild master.
-            foreach (var (questId, pcQuest) in dbPlayer.Quests)
-            {
-                var task = Quest.GetQuestById(questId);
-                if (task.GuildType != model.Guild) continue; // This quest isn't associated with this guild type.
-                if (pcQuest.DateLastCompleted != null) continue; // Has already been completed.
-                if (currentTasks.ContainsKey(questId)) continue; // This task is currently offered
-
-                var status = ColorToken.Green("{ACCEPTED}");
-                var text = $"{task.Name} [Rank {task.GuildRank + 1}] {status}";
-                page.AddResponse(text, () =>
-                {
-                    model.QuestId = questId;
-                    ChangePage(TaskDetailsPageId);
-                });
-            }
-
-            foreach (var (_, task)in currentTasks)
-            {
-                // If the player has completed the task during this task cycle, it will be excluded from this list.
-                // The reason for this is to prevent players from repeating the same tasks over and over without impunity.
-                if (dbPlayer.Quests.ContainsKey(task.QuestId) &&
-                    dbPlayer.Quests[task.QuestId].DateLastCompleted >= Guild.DateTasksLoaded)
-                    continue;
-
-                // Player doesn't have the requisite guild rank to accept this task. Skip over it.
-                var playerRank = 0;
-                if (dbPlayer.Guilds.ContainsKey(task.GuildType))
-                    playerRank = dbPlayer.Guilds[task.GuildType].Rank;
-
-                if (playerRank < task.GuildRank)
-                    continue;
-
-                var status = ColorToken.Green("{ACCEPTED}");
-                // Player has never accepted the quest, or they've already completed it at least once and can accept it again.
-                if (!dbPlayer.Quests.ContainsKey(task.QuestId) ||
-                    (dbPlayer.Quests[task.QuestId].DateLastCompleted != null && dbPlayer.Quests[task.QuestId].TimesCompleted > 0))
-                {
-                    status = ColorToken.Yellow("{Available}");
-                }
-
-                var text = $"{task.Name} [Rank {task.GuildRank + 1}] {status}";
-                page.AddResponse(text, () =>
-                {
-                    model.QuestId = task.QuestId;
-                    ChangePage(TaskDetailsPageId);
-                });
-            }
-        }
-
-        private void TaskDetailsPageInit(DialogPage page)
-        {
-            var model = GetDataModel<Model>();
-            var player = GetPC();
-            var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
-            var pcQuest = dbPlayer.Quests.ContainsKey(model.QuestId)
-                ? dbPlayer.Quests[model.QuestId]
-                : null;
-
-            var task = Quest.GetQuestById(model.QuestId);
-
-            var gpRewards = task.Rewards.Where(x => x.GetType() == typeof(GPReward)).Cast<GPReward>();
-            var goldRewards = task.Rewards.Where(x => x.GetType() == typeof(GoldReward)).Cast<GoldReward>();
-            var gpAmount = 0;
-            var goldAmount = 0;
-
-            foreach (var gpReward in gpRewards)
-            {
-                gpAmount += Guild.CalculateGPReward(player, model.Guild, gpReward.Amount);
-            }
-
-            foreach (var goldReward in goldRewards)
-            {
-                goldAmount += Quest.CalculateQuestGoldReward(player, true, goldReward.Amount);
-            }
-
-            page.Header = ColorToken.Green("Task: ") + task.Name + "\n\n" +
-                          "Rewards:\n\n" +
-                          ColorToken.Green("Credits: ") + goldAmount + "\n" +
-                          ColorToken.Green("Guild Points: ") + gpAmount;
-
-            // Never accepted, or has already been completed once.
-            if (pcQuest == null || pcQuest.DateLastCompleted != null)
-            {
-                page.AddResponse("Accept Task", () =>
-                {
-                    Quest.AcceptQuest(player, model.QuestId);
-                });
-            }
-
-            // Accepted, but not completed.
-            if (pcQuest != null && pcQuest.DateLastCompleted == null)
-            {
-                page.AddResponse("Give Report", GiveReport);
-            }
-        }
-
-        private void GiveReport()
-        {
-            var model = GetDataModel<Model>();
-            var player = GetPC();
-            var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
-            if (!dbPlayer.Quests.ContainsKey(model.QuestId)) return;
-
-            var pcStatus = dbPlayer.Quests[model.QuestId];
-            var quest = Quest.GetQuestById(model.QuestId);
-            var state = quest.States[pcStatus.CurrentState];
-            var hasItemObjective =
-                state.GetObjectives().FirstOrDefault(x => x.GetType() == typeof(CollectItemObjective)) != null;
-
-            // Quest has at least one "collect item" objective.
-            if (hasItemObjective)
-            {
-                Quest.RequestItemsFromPlayer(player, model.QuestId);
-            }
-            // All other quest types
-            else if (quest.CanComplete(player))
-            {
-                quest.Complete(player, GetDialogTarget(), null);
-                EndConversation();
-            }
-            else
-            {
-                SendMessageToPC(player, ColorToken.Red("One or more task is incomplete. Refer to your journal for more information."));
-            }
         }
 
         private void GuildStorePageInit(DialogPage page)

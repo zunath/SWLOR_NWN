@@ -16,6 +16,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     {
         public const int MaxBugReportLength = 1000;
         private static readonly ApplicationSettings _appSettings = ApplicationSettings.Get();
+        private static readonly HttpClient _httpClient = CreateHttpClient();
+
+        private static HttpClient CreateHttpClient()
+        {
+            var handler = new SocketsHttpHandler
+            {
+                PooledConnectionLifetime = TimeSpan.FromMinutes(2)
+            };
+
+            var client = new HttpClient(handler)
+            {
+                Timeout = TimeSpan.FromSeconds(15)
+            };
+
+            client.DefaultRequestHeaders.UserAgent.ParseAdd("SWLOR-BugReporter");
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.github+json"));
+            return client;
+        }
 
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
@@ -62,7 +80,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var areaTag = GetTag(area);
             var areaResref = GetResRef(area);
             var positionGroup = $"({position.X}, {position.Y}, {position.Z})";
-            var dateReported = DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss");
+            var dateReported = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
             var playerId = GetObjectUUID(Player);
             var nextReportAllowed = DateTime.UtcNow.AddMinutes(1);
             _ = Task.Run(() => SubmitBugReportToGitHub(
@@ -117,13 +135,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     body
                 };
 
-                using var client = new HttpClient();
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", githubToken);
-                client.DefaultRequestHeaders.UserAgent.ParseAdd("SWLOR-BugReporter");
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.github+json"));
-
                 var endpoint = $"https://api.github.com/repos/{githubRepository}/issues";
-                var response = await client.PostAsync(endpoint, new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json"));
+                using var request = new HttpRequestMessage(HttpMethod.Post, endpoint)
+                {
+                    Content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json")
+                };
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", githubToken);
+
+                var response = await _httpClient.SendAsync(request);
 
                 if (!response.IsSuccessStatusCode)
                 {

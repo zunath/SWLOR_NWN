@@ -83,7 +83,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         left.AddRow(r =>
                         {
                             r.AddSpacer();
-                            r.AddButton().SetText("Accept All")
+                            r.AddButton()
+                                .SetText("Accept All")
                                 .BindOnClicked(model => model.OnClickAcceptAllTasks())
                                 .BindIsEnabled(model => model.IsAcceptAllEnabled)
                                 .SetHeight(32f)
@@ -99,12 +100,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         right.AddRow(r =>
                         {
                             r.AddSpacer();
-                            r.AddButton().SetText("Accept Task")
+                            r.AddButton()
+                                .SetText("Accept Task")
                                 .BindOnClicked(model => model.OnClickAcceptTask())
                                 .BindIsEnabled(model => model.IsAcceptEnabled)
                                 .SetHeight(32f)
                                 .SetWidth(120f);
-                            r.AddButton().SetText("Give Report")
+                            r.AddButton()
+                                .SetText("Give Report")
                                 .BindOnClicked(model => model.OnClickGiveReport())
                                 .BindIsEnabled(model => model.IsGiveReportEnabled)
                                 .SetHeight(32f)

@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     {
                         left.AddRow(r =>
                         {
-                            r.AddText().BindText(model => model.HeaderText);
+                            r.AddText()
+                                .BindText(model => model.HeaderText);
                         });
 
                         left.AddRow(r =>
@@ -41,7 +42,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                     root.AddColumn(right =>
                     {
-                        right.AddRow(r => r.AddText().BindText(model => model.TaskDetails));
+                        right.AddRow(r =>
+                        {
+                            r.AddText()
+                                .BindText(model => model.TaskDetails);
+                        });
                         right.AddRow(r =>
                         {
                             r.AddSpacer();

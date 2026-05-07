@@ -59,6 +59,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _guildMaster = initialPayload.GuildMaster;
             _selectedQuestIndex = -1;
 
+            _selectedQuestIndex = -1;
             RefreshTasks();
             LoadSelectedTask();
         }
@@ -162,6 +163,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             if (_selectedQuestIndex < 0) return;
             Quest.AcceptQuest(Player, _questIds[_selectedQuestIndex]);
+            _selectedQuestIndex = -1;
             RefreshTasks();
             LoadSelectedTask();
         };
@@ -193,6 +195,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 SendMessageToPC(Player, ColorToken.Red("One or more task is incomplete. Refer to your journal for more information."));
             }
 
+            _selectedQuestIndex = -1;
             RefreshTasks();
             LoadSelectedTask();
         };

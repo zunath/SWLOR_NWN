@@ -1,11 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
 using System.Threading.Tasks;
-using Discord;
-using Discord.Webhook;
+using Newtonsoft.Json;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.GuiService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
@@ -46,11 +48,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var area = GetArea(Player);
             var position = GetPosition(Player);
 
-            var url = Environment.GetEnvironmentVariable("SWLOR_BUG_WEBHOOK_URL");
+            var githubRepository = Environment.GetEnvironmentVariable("SWLOR_BUG_GITHUB_REPOSITORY");
+            var githubToken = Environment.GetEnvironmentVariable("SWLOR_BUG_GITHUB_TOKEN");
 
-            if (string.IsNullOrWhiteSpace(url))
+            if (string.IsNullOrWhiteSpace(githubRepository) || string.IsNullOrWhiteSpace(githubToken))
             {
-                SendMessageToPC(Player, ColorToken.Red("ERROR: Unable to send bug report because the server admin has not set the SWLOR_BUG_WEBHOOK_URL environment variable."));
+                SendMessageToPC(Player, ColorToken.Red("ERROR: Unable to send bug report because the server admin has not set SWLOR_BUG_GITHUB_REPOSITORY and SWLOR_BUG_GITHUB_TOKEN environment variables."));
                 return;
             }
 
@@ -62,77 +65,77 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var dateReported = DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss");
             var playerId = GetObjectUUID(Player);
             var nextReportAllowed = DateTime.UtcNow.AddMinutes(1);
-            var title = _appSettings.ServerEnvironment == ServerEnvironmentType.Test
-                ? "Bug Report [TEST SERVER]"
-                : "Bug Report";
-
-            Task.Run(async () =>
-            {
-                using (var client = new DiscordWebhookClient(url))
-                {
-                    var embed = new EmbedBuilder
-                    {
-                        Title = title,
-                        Description = message,
-                        Author = new EmbedAuthorBuilder
-                        {
-                            Name = authorName
-                        },
-                        Color = Color.Red,
-                        Fields = new List<EmbedFieldBuilder>
-                        {
-                            new()
-                            {
-                                IsInline = true,
-                                Name = "Area Name",
-                                Value = areaName
-                            },
-                            new()
-                            {
-                                IsInline = true,
-                                Name = "Area Tag",
-                                Value = areaTag
-                            },
-                            new()
-                            {
-                                IsInline = true,
-                                Name = "Area Resref",
-                                Value = areaResref
-                            },
-                            new()
-                            {
-                                IsInline = true,
-                                Name = "Position",
-                                Value = positionGroup
-                            },
-                            new()
-                            {
-                                IsInline = true,
-                                Name = "Date Reported",
-                                Value = dateReported,
-                            },
-                            new()
-                            {
-                                IsInline = true,
-                                Name = "Player ID",
-                                Value = playerId
-                            },
-                        }
-                    };
-
-
-                    await client.SendMessageAsync(
-                        string.Empty, 
-                        embeds: new[] { embed.Build() },
-                        threadName: title);
-                }
-            });
+            _ = Task.Run(() => SubmitBugReportToGitHub(
+                githubRepository,
+                githubToken,
+                message,
+                authorName,
+                areaName,
+                areaTag,
+                areaResref,
+                positionGroup,
+                dateReported,
+                playerId));
 
             SetLocalString(Player, "BUG_REPORT_LAST_SUBMISSION", nextReportAllowed.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture));
             SendMessageToPC(Player, "Bug report submitted! Thank you for your report.");
             SendMessageToPC(Player, "Submitted Bug Report: " + BugReportText);
             Gui.TogglePlayerWindow(Player, GuiWindowType.BugReport);
         };
+
+
+        private async Task SubmitBugReportToGitHub(
+            string githubRepository,
+            string githubToken,
+            string message,
+            string authorName,
+            string areaName,
+            string areaTag,
+            string areaResref,
+            string positionGroup,
+            string dateReported,
+            string playerId)
+        {
+            try
+            {
+                var title = _appSettings.ServerEnvironment == ServerEnvironmentType.Test
+                    ? $"[TEST SERVER] Bug Report: {areaName}"
+                    : $"Bug Report: {areaName}";
+
+                var body = $"{message}\n\n---\n@codex please review this issue.\n\n" +
+                           $"**Reporter**: {authorName}\n" +
+                           $"**Area Name**: {areaName}\n" +
+                           $"**Area Tag**: {areaTag}\n" +
+                           $"**Area Resref**: {areaResref}\n" +
+                           $"**Position**: {positionGroup}\n" +
+                           $"**Date Reported (UTC)**: {dateReported}\n" +
+                           $"**Player ID**: {playerId}";
+
+                var payload = new
+                {
+                    title,
+                    body
+                };
+
+                using var client = new HttpClient();
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", githubToken);
+                client.DefaultRequestHeaders.UserAgent.ParseAdd("SWLOR-BugReporter");
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.github+json"));
+
+                var endpoint = $"https://api.github.com/repos/{githubRepository}/issues";
+                var response = await client.PostAsync(endpoint, new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json"));
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    var responseContent = await response.Content.ReadAsStringAsync();
+                    Log.Write(LogGroup.Error, $"Bug report GitHub issue creation failed: {(int)response.StatusCode} {response.StatusCode}. Response: {responseContent}");
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Write(LogGroup.Error, $"Unhandled exception when submitting bug report to GitHub. {ex}");
+            }
+        }
 
         public Action OnClickCancel() => () =>
         {

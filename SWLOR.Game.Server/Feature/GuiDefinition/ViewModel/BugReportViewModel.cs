@@ -5,8 +5,10 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Webhook;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.LogService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -59,7 +61,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var areaTag = GetTag(area);
             var areaResref = GetResRef(area);
             var positionGroup = $"({position.X}, {position.Y}, {position.Z})";
-            var dateReported = DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss");
+            var dateReported = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
             var playerId = GetObjectUUID(Player);
             var nextReportAllowed = DateTime.UtcNow.AddMinutes(1);
             var title = _appSettings.ServerEnvironment == ServerEnvironmentType.Test
@@ -121,10 +123,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     };
 
 
-                    await client.SendMessageAsync(
-                        string.Empty, 
-                        embeds: new[] { embed.Build() },
-                        threadName: title);
+                    try
+                    {
+                        await client.SendMessageAsync(
+                            string.Empty,
+                            embeds: new[] { embed.Build() });
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Write(LogGroup.Error, $"Failed to submit bug report to Discord webhook. Player={authorName}, Error={ex.ToMessageAndCompleteStacktrace()}");
+                    }
                 }
             });
 

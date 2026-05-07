@@ -162,6 +162,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnClickAcceptTask() => () =>
         {
             if (_selectedQuestIndex < 0) return;
+            if (!GetIsObjectValid(_guildMaster)) return;
             Quest.AcceptQuest(Player, _questIds[_selectedQuestIndex]);
             _selectedQuestIndex = -1;
             RefreshTasks();
@@ -171,6 +172,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnClickGiveReport() => () =>
         {
             if (_selectedQuestIndex < 0) return;
+            if (!GetIsObjectValid(_guildMaster)) return;
 
             var questId = _questIds[_selectedQuestIndex];
             var playerId = GetObjectUUID(Player);

@@ -109,7 +109,7 @@ namespace SWLOR.Admin.Services
         }
 
         /// <summary>
-        /// Gets the highest combat skill level from OneHanded, TwoHanded, Ranged, and Force
+        /// Gets the highest combat skill level from explicit weapon skills and Force
         /// </summary>
         /// <param name="player">The player entity</param>
         /// <returns>The highest combat skill level</returns>
@@ -117,7 +117,22 @@ namespace SWLOR.Admin.Services
         {
             if (player?.Skills == null) return 0;
 
-            var combatSkills = new[] { SkillType.OneHanded, SkillType.TwoHanded, SkillType.Ranged, SkillType.Force };
+            var combatSkills = new[]
+            {
+                SkillType.Vibroblade,
+                SkillType.Vibroknife,
+                SkillType.Lightsaber,
+                SkillType.HeavyVibroblade,
+                SkillType.Spear,
+                SkillType.TwinBlade,
+                SkillType.Saberstaff,
+                SkillType.Katar,
+                SkillType.Staff,
+                SkillType.Pistol,
+                SkillType.Rifle,
+                SkillType.Throwing,
+                SkillType.Force
+            };
             return combatSkills.Max(skill => GetSkillLevel(player, skill));
         }
 
@@ -320,4 +335,4 @@ namespace SWLOR.Admin.Services
             return breakdown;
         }
     }
-} 
+}

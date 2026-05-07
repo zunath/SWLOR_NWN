@@ -43,20 +43,20 @@ namespace SWLOR.Game.Server.Feature
 
             SetTlkOverride(459, 
                 "Might improves damage dealt by melee weapons and increases carrying capacity.\n\n" + 
-                "Primary Skills: One-Handed, Two-Handed, Martial Arts, Smithery, Gathering\n\n" +
+                "Primary Skills: Vibroblade, Heavy Vibroblade, Spear, Twin Blade, Katar, Staff, Smithery, Gathering\n\n" +
                 "Other Notes:\n\n" +
                 "Improves damage dealt by regular melee weapons.\n" +
-                "Improves damage dealt by heavy melee weapons.\n" + 
+                "Improves damage dealt by heavy melee weapons.\n" +
                 "Improves damage dealt by throwing weapons.\n" +
                 "Improves harvesting item acquisition.\n" +
                 "Increases Fortitude saving throws.");
-            SetTlkOverride(460, 
+            SetTlkOverride(460,
                 "Perception improves damage dealt by ranged and finesse weapons and increases physical accuracy.\n\n" +
-                "Primary Skills: One-Handed, Two-Handed, Martial Arts, Ranged, Fabrication, Devices\n\n" + 
-                "Other Notes:\n\n" + 
-                "Improves accuracy of regular melee weapons.\n" + 
-                "Improves accuracy of heavy melee weapons.\n" + 
-                "Improves damage of finesse melee weapons.\n" + 
+                "Primary Skills: Vibroknife, Lightsaber, Saberstaff, Katar, Pistol, Rifle, Fabrication, Devices\n\n" +
+                "Other Notes:\n\n" +
+                "Improves accuracy of regular melee weapons.\n" +
+                "Improves accuracy of heavy melee weapons.\n" +
+                "Improves damage of finesse melee weapons.\n" +
                 "Improves damage of ranged weapons.\n" +
                 "Increases Reflex saving throws.");
             SetTlkOverride(461, 
@@ -79,7 +79,7 @@ namespace SWLOR.Game.Server.Feature
                 "Increases Will saving throws.");
             SetTlkOverride(463,
                 "Agility improves accuracy of ranged and finesse weapons, evasion, and max stamina.\n\n" +
-                "Primary Skills: One-Handed, Martial Arts, Ranged, Engineering\n\n" +
+                "Primary Skills: Vibroknife, Lightsaber, Saberstaff, Katar, Pistol, Rifle, Throwing, Engineering\n\n" +
                 "Other Notes:\n\n" + 
                 "Increases maximum stamina.\n" +
                 "Improves evasion.\n" +

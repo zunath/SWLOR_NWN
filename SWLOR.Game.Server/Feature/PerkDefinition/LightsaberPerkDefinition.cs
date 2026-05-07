@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ArcStrike1)
                 .Description("You deal weapon DMG + 20 to all enemies in the area of effect (cone) in front of you.")
                 .Price(3)
-                .RequirementSkill(SkillType.OneHanded, 38)
+                .RequirementSkill(SkillType.Lightsaber, 38)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
         }
 
@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("After dealing a critical hit, your next attack has no delay.")
                 .Price(3)
-                .RequirementSkill(SkillType.OneHanded, 35)
+                .RequirementSkill(SkillType.Lightsaber, 35)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
         }
 
@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Allies within the area of effect (sphere) receive Brutal Assault which increases their critical hit rate by 10% for 1 minute. You do not receive this benefit.")
                 .Price(3)
-                .RequirementSkill(SkillType.OneHanded, 20)
+                .RequirementSkill(SkillType.Lightsaber, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
         }
 
@@ -95,7 +95,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Your attacks deal +15% damage to enemies afflicted by Sunder.")
                 .Price(3)
-                .RequirementSkill(SkillType.OneHanded, 27)
+                .RequirementSkill(SkillType.Lightsaber, 27)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
         }
 
@@ -108,13 +108,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Reduces enmity by 25% and increases accuracy by 10% for 30 seconds.")
                 .Price(2)
-                .RequirementSkill(SkillType.OneHanded, 12)
+                .RequirementSkill(SkillType.Lightsaber, 12)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
                 .Description("Reduces enmity by 50% and increases accuracy by 20% for 30 seconds.")
                 .Price(3)
-                .RequirementSkill(SkillType.OneHanded, 42)
+                .RequirementSkill(SkillType.Lightsaber, 42)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
         }
 
@@ -127,7 +127,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("After deflecting an attack, your next attack has no delay.")
                 .Price(3)
-                .RequirementSkill(SkillType.OneHanded, 28)
+                .RequirementSkill(SkillType.Lightsaber, 28)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
         }
 
@@ -140,7 +140,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("When you deflect an attack, your defense and force defense increase by 15% for 12 seconds.")
                 .Price(3)
-                .RequirementSkill(SkillType.OneHanded, 25)
+                .RequirementSkill(SkillType.Lightsaber, 25)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
         }
 
@@ -153,7 +153,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("When you deflect an attack, your next attack receives +20% critical chance. Effect wears off after 15 seconds.")
                 .Price(3)
-                .RequirementSkill(SkillType.OneHanded, 12)
+                .RequirementSkill(SkillType.Lightsaber, 12)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
         }
 
@@ -166,19 +166,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Grants +15 Attack Deflection.")
                 .Price(2)
-                .RequirementSkill(SkillType.OneHanded, 5)
+                .RequirementSkill(SkillType.Lightsaber, 5)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
                 .Description("Grants +25 Attack Deflection.")
                 .Price(3)
-                .RequirementSkill(SkillType.OneHanded, 15)
+                .RequirementSkill(SkillType.Lightsaber, 15)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
                 .Description("Grants +35 Attack Deflection.")
                 .Price(4)
-                .RequirementSkill(SkillType.OneHanded, 32)
+                .RequirementSkill(SkillType.Lightsaber, 32)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
         }
 
@@ -191,7 +191,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("When you deflect an attack, receive the Deflective Presence buff which improves your Enmity acquisition by 20% for 12 seconds.")
                 .Price(3)
-                .RequirementSkill(SkillType.OneHanded, 18)
+                .RequirementSkill(SkillType.Lightsaber, 18)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
         }
 
@@ -204,7 +204,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("While active, grants -20% to offhand weapon delay, +10% attack, and -20% to evasion.")
                 .Price(2)
-                .RequirementSkill(SkillType.OneHanded, 8)
+                .RequirementSkill(SkillType.Lightsaber, 8)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
         }
 
@@ -217,7 +217,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("While active, your DMG is increased by your Might attribute when equipped with a one-handed weapon and no off-hand weapon.")
                 .Price(2)
-                .RequirementSkill(SkillType.OneHanded, 18)
+                .RequirementSkill(SkillType.Lightsaber, 18)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
         }
 
@@ -230,7 +230,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Grants the ability Guardian's Wrath which guarantees all attacks toward you will be deflected for 30 seconds. Additionally, increases your natural attack deflection cap to 75% when equipped with a lightsaber.")
                 .Price(4)
-                .RequirementSkill(SkillType.OneHanded, 50)
+                .RequirementSkill(SkillType.Lightsaber, 50)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
         }
 
@@ -244,7 +244,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.GuardiansChallenge1)
                 .Description("All enemies within the area of effect (cone) take weapon DMG + 35 and gain increased enmity toward you.")
                 .Price(4)
-                .RequirementSkill(SkillType.OneHanded, 38)
+                .RequirementSkill(SkillType.Lightsaber, 38)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
         }
 
@@ -257,7 +257,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Allies within the area of effect (sphere) receive Deflecting Aura which increases their attack deflection by 15 for 1 minute. You do not receive this benefit.")
                 .Price(3)
-                .RequirementSkill(SkillType.OneHanded, 20)
+                .RequirementSkill(SkillType.Lightsaber, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
         }
 
@@ -270,7 +270,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("While active, grants +15% attack deflection, +10% enmity generation, -20% attack, -20% force attack.")
                 .Price(4)
-                .RequirementSkill(SkillType.OneHanded, 42)
+                .RequirementSkill(SkillType.Lightsaber, 42)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
         }
 
@@ -284,7 +284,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.LegSlash1)
                 .Description("You deal weapon DMG + 10 and inflict Disoriented, reducing Accuracy and Evasion by 15% for 20 seconds.")
                 .Price(2)
-                .RequirementSkill(SkillType.OneHanded, 15)
+                .RequirementSkill(SkillType.Lightsaber, 15)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
         }
 
@@ -297,7 +297,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Your Versatile Strike and Overwhelming Strike abilities now deal +10 DMG and increase their Sunder duration by 50%.")
                 .Price(4)
-                .RequirementSkill(SkillType.OneHanded, 47)
+                .RequirementSkill(SkillType.Lightsaber, 47)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
         }
 
@@ -310,7 +310,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("After deflecting an attack, your next attack deals +20 DMG.")
                 .Price(3)
-                .RequirementSkill(SkillType.OneHanded, 35)
+                .RequirementSkill(SkillType.Lightsaber, 35)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
         }
 
@@ -324,7 +324,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.OverwhelmingStrike1)
                 .Description("You deal weapon DMG + 15 to all enemies in the area of effect (cone) in front of you. Fortitude DC15 check to inflict Sunder which reduces defense and force defense by 15% for 30 seconds.")
                 .Price(3)
-                .RequirementSkill(SkillType.OneHanded, 25)
+                .RequirementSkill(SkillType.Lightsaber, 25)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
         }
 
@@ -338,7 +338,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.PunishingStrike1)
                 .Description("Deals weapon DMG + 20 to enemies within the area of effect (sphere) near you and gain increased enmity toward you.")
                 .Price(3)
-                .RequirementSkill(SkillType.OneHanded, 30)
+                .RequirementSkill(SkillType.Lightsaber, 30)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
         }
 
@@ -351,7 +351,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("One debuff is removed from you. Willpower DC15 check on a nearby enemy to apply the debuff to them.")
                 .Price(2)
-                .RequirementSkill(SkillType.OneHanded, 30)
+                .RequirementSkill(SkillType.Lightsaber, 30)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
         }
 
@@ -364,13 +364,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("When you deflect an attack, restore 2 FP.")
                 .Price(2)
-                .RequirementSkill(SkillType.OneHanded, 8)
+                .RequirementSkill(SkillType.Lightsaber, 8)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
                 .Description("When you deflect an attack, restore 4 FP.")
                 .Price(3)
-                .RequirementSkill(SkillType.OneHanded, 22)
+                .RequirementSkill(SkillType.Lightsaber, 22)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
         }
 
@@ -384,7 +384,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.RippleSlash1)
                 .Description("Your next attack deals weapon DMG + 30 to your target. Reflex DC15 check to inflict Disoriented on nearby enemies, reducing Accuracy and Evasion by 15% for 20 seconds.")
                 .Price(4)
-                .RequirementSkill(SkillType.OneHanded, 45)
+                .RequirementSkill(SkillType.Lightsaber, 45)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
         }
 
@@ -397,7 +397,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Enemies within the area of effect (sphere) around you are dealt weapon DMG + 60.  Inflicts Sunder which reduces defense and force defense by 25% for 30 seconds.")
                 .Price(4)
-                .RequirementSkill(SkillType.OneHanded, 50)
+                .RequirementSkill(SkillType.Lightsaber, 50)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
         }
 
@@ -410,7 +410,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Restores STM equal to 50% of your max. Amount additionally increases at 1% per MGT, to a maximum of 75%.")
                 .Price(3)
-                .RequirementSkill(SkillType.OneHanded, 22)
+                .RequirementSkill(SkillType.Lightsaber, 22)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
         }
 
@@ -424,7 +424,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.SurgeStrike1)
                 .Description("Your next attack deals weapon DMG + 15. Willpower DC18 check to inflict Force Disruption, preventing the target from using Force abilities for 8 seconds.")
                 .Price(4)
-                .RequirementSkill(SkillType.OneHanded, 40)
+                .RequirementSkill(SkillType.Lightsaber, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
         }
 
@@ -437,7 +437,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Goads all nearby enemies into attacking you and grants the buff Taunting Deflection, which increases your attack deflection by 10 for 30 seconds.")
                 .Price(4)
-                .RequirementSkill(SkillType.OneHanded, 10)
+                .RequirementSkill(SkillType.Lightsaber, 10)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
         }
 
@@ -450,7 +450,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Deals weapon DMG + 35 to enemies within the area of effect (line) from your position and gain increased enmity toward you.")
                 .Price(4)
-                .RequirementSkill(SkillType.OneHanded, 45)
+                .RequirementSkill(SkillType.Lightsaber, 45)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
         }
 
@@ -464,21 +464,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.VersatileStrike1)
                 .Description("Your next attack deals weapon DMG + 10 to your target. Fortitude DC10 check to inflict Sunder which reduces defense and force defense by 10% for 30 seconds.")
                 .Price(2)
-                .RequirementSkill(SkillType.OneHanded, 5)
+                .RequirementSkill(SkillType.Lightsaber, 5)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.VersatileStrike2)
                 .Description("Your next attack deals weapon DMG + 25 to your target. Fortitude DC15 check to inflict Sunder which reduces defense and force defense by 15% for 30 seconds.")
                 .Price(3)
-                .RequirementSkill(SkillType.OneHanded, 10)
+                .RequirementSkill(SkillType.Lightsaber, 10)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.VersatileStrike3)
                 .Description("Your next attack deals weapon DMG + 40 to your target. Fortitude DC18 check to inflict Sunder which reduces defense and force defense by 20% for 30 seconds.")
                 .Price(3)
-                .RequirementSkill(SkillType.OneHanded, 32)
+                .RequirementSkill(SkillType.Lightsaber, 32)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
         }
     }

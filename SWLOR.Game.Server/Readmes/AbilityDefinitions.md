@@ -4,7 +4,7 @@ This document provides detailed information about how ability definitions work i
 
 ## Overview
 
-Ability definitions are located in the `Feature/AbilityDefinition/` directory and are organized by category (Force, OneHanded, TwoHanded, etc.). Each ability definition implements the `IAbilityListDefinition` interface and uses the `AbilityBuilder` to create complex ability configurations.
+Ability definitions are located in the `Feature/AbilityDefinition/` directory and are organized by category (Force, Blade, HeavyWeapon, etc.). Each ability definition implements the `IAbilityListDefinition` interface and uses the `AbilityBuilder` to create complex ability configurations.
 
 ## Directory Structure
 
@@ -18,11 +18,11 @@ Feature/AbilityDefinition/
 ├── Force/
 ├── General/
 ├── Leadership/
-├── MartialArts/
+├── KatarStaff/
 ├── NPC/
-├── OneHanded/
+├── Blade/
 ├── Ranged/
-└── TwoHanded/
+└── HeavyWeapon/
 ```
 
 ## How Ability Definitions Work
@@ -244,7 +244,7 @@ Located in `Feature/AbilityDefinition/Force/`
 
 ### Combat Abilities
 
-Located in `Feature/AbilityDefinition/OneHanded/`, `TwoHanded/`, `Ranged/`
+Located in `Feature/AbilityDefinition/Blade/`, `HeavyWeapon/`, `Ranged/`
 
 **Examples:**
 - Power Attack

@@ -51,31 +51,71 @@
                     <div class="mb-3">
                         <label class="form-label"><strong>Skill Levels</strong></label>
                         <div class="row">
-                            <div class="col-md-6">
-                                <label class="form-label">One-Handed</label>
-                                <input type="number" class="form-control" @bind="OneHandedSkill" min="0" max="20" />
+                            <div class="col-md-4">
+                                <label class="form-label">Vibroblade</label>
+                                <input type="number" class="form-control" @bind="VibrobladeSkill" min="0" max="20" />
                             </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Two-Handed</label>
-                                <input type="number" class="form-control" @bind="TwoHandedSkill" min="0" max="20" />
+                            <div class="col-md-4">
+                                <label class="form-label">Vibroknife</label>
+                                <input type="number" class="form-control" @bind="VibroknifeSkill" min="0" max="20" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Lightsaber</label>
+                                <input type="number" class="form-control" @bind="LightsaberSkill" min="0" max="20" />
                             </div>
                         </div>
                         <div class="row mt-2">
-                            <div class="col-md-6">
-                                <label class="form-label">Ranged</label>
-                                <input type="number" class="form-control" @bind="RangedSkill" min="0" max="20" />
+                            <div class="col-md-4">
+                                <label class="form-label">Heavy Vibroblade</label>
+                                <input type="number" class="form-control" @bind="HeavyVibrobladeSkill" min="0" max="20" />
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
+                                <label class="form-label">Spear</label>
+                                <input type="number" class="form-control" @bind="SpearSkill" min="0" max="20" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Twin Blade</label>
+                                <input type="number" class="form-control" @bind="TwinBladeSkill" min="0" max="20" />
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-4">
+                                <label class="form-label">Saberstaff</label>
+                                <input type="number" class="form-control" @bind="SaberstaffSkill" min="0" max="20" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Katar</label>
+                                <input type="number" class="form-control" @bind="KatarSkill" min="0" max="20" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Staff</label>
+                                <input type="number" class="form-control" @bind="StaffSkill" min="0" max="20" />
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-4">
+                                <label class="form-label">Pistol</label>
+                                <input type="number" class="form-control" @bind="PistolSkill" min="0" max="20" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Rifle</label>
+                                <input type="number" class="form-control" @bind="RifleSkill" min="0" max="20" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Throwing</label>
+                                <input type="number" class="form-control" @bind="ThrowingSkill" min="0" max="20" />
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-4">
                                 <label class="form-label">Force</label>
                                 <input type="number" class="form-control" @bind="ForceSkill" min="0" max="20" />
                             </div>
-                        </div>
-                        <div class="row mt-2">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <label class="form-label">Armor</label>
                                 <input type="number" class="form-control" @bind="ArmorSkill" min="0" max="20" />
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <label class="form-label">Crafting</label>
                                 <input type="number" class="form-control" @bind="CraftingSkill" min="0" max="20" />
                             </div>
@@ -241,9 +281,18 @@
     private int SocialStat = 10;
 
     // Skill inputs
-    private int OneHandedSkill = 5;
-    private int TwoHandedSkill = 3;
-    private int RangedSkill = 2;
+    private int VibrobladeSkill = 5;
+    private int VibroknifeSkill = 3;
+    private int LightsaberSkill = 2;
+    private int HeavyVibrobladeSkill = 3;
+    private int SpearSkill = 2;
+    private int TwinBladeSkill = 2;
+    private int SaberstaffSkill = 2;
+    private int KatarSkill = 2;
+    private int StaffSkill = 2;
+    private int PistolSkill = 2;
+    private int RifleSkill = 2;
+    private int ThrowingSkill = 2;
     private int ForceSkill = 4;
     private int ArmorSkill = 3;
     private int CraftingSkill = 2;
@@ -262,6 +311,31 @@
     // Calculated values
     private int WillpowerModifier => (WillpowerStat - 10) / 2;
     private int AgilityModifier => (AgilityStat - 10) / 2;
-    private int HighestCombatSkill => Math.Max(Math.Max(OneHandedSkill, TwoHandedSkill), Math.Max(RangedSkill, ForceSkill));
+    private int HighestCombatSkill => MaxSkill(
+        VibrobladeSkill,
+        VibroknifeSkill,
+        LightsaberSkill,
+        HeavyVibrobladeSkill,
+        SpearSkill,
+        TwinBladeSkill,
+        SaberstaffSkill,
+        KatarSkill,
+        StaffSkill,
+        PistolSkill,
+        RifleSkill,
+        ThrowingSkill,
+        ForceSkill);
     private int HighestCombatStat => Math.Max(Math.Max(MightStat, PerceptionStat), WillpowerStat);
-} 
+
+    private static int MaxSkill(params int[] skills)
+    {
+        var highest = 0;
+
+        foreach (var skill in skills)
+        {
+            highest = Math.Max(highest, skill);
+        }
+
+        return highest;
+    }
+}

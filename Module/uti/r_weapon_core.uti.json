@@ -41,7 +41,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Ranged Weapon Core"
+      "0": "Projectile Weapon Core"
     }
   },
   "ModelPart1": {

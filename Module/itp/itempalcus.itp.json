@@ -5761,7 +5761,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Revêtement de droïde éboueur"
+                      "value": "Rev\ufffdtement de dro\ufffdde \ufffdboueur"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -32483,22 +32483,44 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Martial Arts Boost I"
+                      "value": "Katar Boost I"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "de_martialarts1"
+                      "value": "de_katar_b1"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Martial Arts Boost II"
+                      "value": "Staff Boost I"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "de_martialarts2"
+                      "value": "de_staff_b1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Katar Boost II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_katar_b2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Staff Boost II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_staff_b2"
                     }
                   },
                   {
@@ -33253,22 +33275,66 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "One-Handed Boost I"
+                      "value": "Vibroblade Boost I"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "de_1handboost1"
+                      "value": "de_vblade_b1"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "One-Handed Boost II"
+                      "value": "Vibroknife Boost I"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "de_1handboost2"
+                      "value": "de_vknife_b1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Lightsaber Boost I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_lsab_b1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Vibroblade Boost II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_vblade_b2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Vibroknife Boost II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_vknife_b2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Lightsaber Boost II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_lsab_b2"
                     }
                   },
                   {
@@ -34067,29 +34133,73 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Ranged Boost I"
+                      "value": "Pistol Boost I"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "de_rangedboost1"
+                      "value": "de_pistol_b1"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Ranged Boost II"
+                      "value": "Rifle Boost I"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "de_rangedboost2"
+                      "value": "de_rifle_b1"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Ranged Weapon Core"
+                      "value": "Throwing Boost I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_throw_b1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Pistol Boost II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_pistol_b2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rifle Boost II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_rifle_b2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Throwing Boost II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_throw_b2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Projectile Weapon Core"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -37070,22 +37180,88 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Two-Handed Boost I"
+                      "value": "Heavy Vibroblade Boost I"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "de_2handboost1"
+                      "value": "de_hvblade_b1"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Two-Handed Boost II"
+                      "value": "Spear Boost I"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "de_2handboost2"
+                      "value": "de_spear_b1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Twin Blade Boost I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_tblade_b1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Saberstaff Boost I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_sabst_b1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Heavy Vibroblade Boost II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_hvblade_b2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Spear Boost II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_spear_b2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Twin Blade Boost II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_tblade_b2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Saberstaff Boost II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_sabst_b2"
                     }
                   },
                   {
@@ -44311,22 +44487,44 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Blueprint: Martial Arts Boost I"
+                      "value": "Blueprint: Katar Boost I"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "recipe_martial1"
+                      "value": "recipe_dkatar1"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Blueprint: Martial Arts Boost II"
+                      "value": "Blueprint: Staff Boost I"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "recipe_martial2"
+                      "value": "recipe_dstaff1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Katar Boost II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dkatar2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Staff Boost II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dstaff2"
                     }
                   },
                   {
@@ -44454,22 +44652,66 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Blueprint: One-Handed Boost I"
+                      "value": "Blueprint: Vibroblade Boost I"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "recipe_1hand1"
+                      "value": "recipe_dvblade1"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Blueprint: One-Handed Boost II"
+                      "value": "Blueprint: Vibroknife Boost I"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "recipe_1hand2"
+                      "value": "recipe_dvknife1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Lightsaber Boost I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dlsab1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Vibroblade Boost II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dvblade2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Vibroknife Boost II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dvknife2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Lightsaber Boost II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dlsab2"
                     }
                   },
                   {
@@ -44487,22 +44729,66 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Blueprint: Ranged Boost I"
+                      "value": "Blueprint: Pistol Boost I"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "recipe_ranged1"
+                      "value": "recipe_dpistol1"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Blueprint: Ranged Boost II"
+                      "value": "Blueprint: Rifle Boost I"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "recipe_ranged2"
+                      "value": "recipe_drifle1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Throwing Boost I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dthrow1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Pistol Boost II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dpistol2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Rifle Boost II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_drifle2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Throwing Boost II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dthrow2"
                     }
                   },
                   {
@@ -44806,22 +45092,88 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Blueprint: Two-Handed Boost I"
+                      "value": "Blueprint: Heavy Vibroblade Boost I"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "recipe_2hand1"
+                      "value": "recipe_dhvblade1"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Blueprint: Two-Handed Boost II"
+                      "value": "Blueprint: Spear Boost I"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "recipe_2hand2"
+                      "value": "recipe_dspear1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Twin Blade Boost I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dtblade1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Saberstaff Boost I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dsabst1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Heavy Vibroblade Boost II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dhvblade2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Spear Boost II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dspear2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Twin Blade Boost II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dtblade2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Saberstaff Boost II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dsabst2"
                     }
                   },
                   {

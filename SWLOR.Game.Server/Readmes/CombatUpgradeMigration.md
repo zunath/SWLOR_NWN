@@ -33,8 +33,8 @@ Important nuance: setting the flag to `false` does not itself reset the characte
 
 ## Perks Currently Refunded By `_21_CombatUpgrade`
 
-- `ImprovedTwoWeaponFightingOneHanded` level 1: 4 SP
-- `ImprovedTwoWeaponFightingTwoHanded` level 1: 4 SP
+- `ImprovedTwoWeaponFightingBlade` level 1: 4 SP
+- `ImprovedTwoWeaponFightingHeavyWeapon` level 1: 4 SP
 - `Furor` level 1: 4 SP
 - `ShieldMaster` level 1: 4 SP
 - Weapon mastery perks level 1 and 2: 8 SP per level

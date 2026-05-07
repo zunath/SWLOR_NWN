@@ -68,10 +68,14 @@ All visible tabs were exported/reviewed, not only the linked tab:
 - XP Chart
 - Merits
 
-Out of scope for this combat upgrade:
+## Scope Exclusions
+
+The following Bible areas are intentionally out of scope for this combat upgrade and must not be counted as missing combat-upgrade work:
 
 - Espionage
-- Farming, including Agriculture/Farming rows such as Crop Management
+- Farming, including Agriculture/Farming-only rows such as Crop Management
+
+If future audits compare every visible Bible tab against code, filter these areas out of the required-work totals. Agriculture rows that support Cooking or combat-upgrade-adjacent crafting can still be in scope when they are explicitly tied to the combat upgrade, but Farming-only mechanics are not.
 
 ## Hard Rules
 
@@ -331,6 +335,8 @@ Status: removed from the feature branch implementation on 2026-05-05.
   - Code perk definitions missing from Bible: 64
 
 The audit is intentionally a work queue, not final truth. Some rows need human review where the Bible consolidated names, changed categories, or converted old proficiency concepts into skill prerequisites.
+
+Audit totals should exclude Espionage and Farming-only rows. If an all-tab export includes those rows, keep them in the raw manifest for traceability but omit them from combat-upgrade missing-work counts.
 
 Implemented cleanup so far:
 

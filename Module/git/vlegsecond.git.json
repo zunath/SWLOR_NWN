@@ -160649,7 +160649,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Martial Arts Room"
+            "0": "Training Room"
           }
         },
         "OnClick": {
@@ -206224,7 +206224,7 @@
           "id": 14815,
           "type": "cexolocstring",
           "value": {
-            "0": "Martial Arts Room"
+            "0": "Training Room"
           }
         },
         "MapNoteEnabled": {

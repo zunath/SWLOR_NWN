@@ -14,10 +14,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             Synthesis();
             Touch();
             Abilities();
-            OneHandedBlueprints();
-            TwoHandedBlueprints();
-            MartialBlueprints();
-            RangedBlueprints();
+            WeaponBlueprints();
             ArmorBlueprints();
             AccessoryBlueprints();
             SmitheryEquipment();
@@ -118,147 +115,39 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Smithery, 8);
         }
 
-        private void OneHandedBlueprints()
+        private void WeaponBlueprints()
         {
-            _builder.Create(PerkCategoryType.Smithery, PerkType.OneHandedBlueprints)
-                .Name("One-Handed Blueprints")
+            _builder.Create(PerkCategoryType.Smithery, PerkType.WeaponBlueprints)
+                .Name("Weapon Blueprints")
 
                 .AddPerkLevel()
-                .Description("Grants access to tier 1 One-Handed blueprints.")
-                .Price(1)
-                .GrantsFeat(FeatType.OneHandedBlueprints1)
-
-                .AddPerkLevel()
-                .Description("Grants access to tier 2 One-Handed blueprints.")
-                .Price(1)
-                .RequirementSkill(SkillType.Smithery, 10)
-                .GrantsFeat(FeatType.OneHandedBlueprints2)
-
-                .AddPerkLevel()
-                .Description("Grants access to tier 3 One-Handed blueprints.")
+                .Description("Grants access to tier 1 weapon blueprints.")
                 .Price(2)
-                .RequirementSkill(SkillType.Smithery, 20)
-                .GrantsFeat(FeatType.OneHandedBlueprints3)
+                .GrantsFeat(FeatType.WeaponBlueprints1)
 
                 .AddPerkLevel()
-                .Description("Grants access to tier 4 One-Handed blueprints.")
+                .Description("Grants access to tier 2 weapon blueprints.")
                 .Price(3)
-                .RequirementSkill(SkillType.Smithery, 30)
-                .GrantsFeat(FeatType.OneHandedBlueprints4)
-
-                .AddPerkLevel()
-                .Description("Grants access to tier 5 One-Handed blueprints.")
-                .Price(3)
-                .RequirementSkill(SkillType.Smithery, 40)
-                .GrantsFeat(FeatType.OneHandedBlueprints5);
-        }
-
-
-        private void TwoHandedBlueprints()
-        {
-            _builder.Create(PerkCategoryType.Smithery, PerkType.TwoHandedBlueprints)
-                .Name("Two-Handed Blueprints")
-
-                .AddPerkLevel()
-                .Description("Grants access to tier 1 Two-Handed blueprints.")
-                .Price(1)
-                .GrantsFeat(FeatType.TwoHandedBlueprints1)
-
-                .AddPerkLevel()
-                .Description("Grants access to tier 2 Two-Handed blueprints.")
-                .Price(1)
                 .RequirementSkill(SkillType.Smithery, 10)
-                .GrantsFeat(FeatType.TwoHandedBlueprints2)
+                .GrantsFeat(FeatType.WeaponBlueprints2)
 
                 .AddPerkLevel()
-                .Description("Grants access to tier 3 Two-Handed blueprints.")
-                .Price(2)
+                .Description("Grants access to tier 3 weapon blueprints.")
+                .Price(4)
                 .RequirementSkill(SkillType.Smithery, 20)
-                .GrantsFeat(FeatType.TwoHandedBlueprints3)
+                .GrantsFeat(FeatType.WeaponBlueprints3)
 
                 .AddPerkLevel()
-                .Description("Grants access to tier 4 Two-Handed blueprints.")
-                .Price(3)
+                .Description("Grants access to tier 4 weapon blueprints.")
+                .Price(5)
                 .RequirementSkill(SkillType.Smithery, 30)
-                .GrantsFeat(FeatType.TwoHandedBlueprints4)
+                .GrantsFeat(FeatType.WeaponBlueprints4)
 
                 .AddPerkLevel()
-                .Description("Grants access to tier 5 Two-Handed blueprints.")
-                .Price(3)
+                .Description("Grants access to tier 5 weapon blueprints.")
+                .Price(6)
                 .RequirementSkill(SkillType.Smithery, 40)
-                .GrantsFeat(FeatType.TwoHandedBlueprints5);
-        }
-
-
-        private void MartialBlueprints()
-        {
-            _builder.Create(PerkCategoryType.Smithery, PerkType.MartialBlueprints)
-                .Name("Martial Blueprints")
-
-                .AddPerkLevel()
-                .Description("Grants access to tier 1 Martial blueprints.")
-                .Price(1)
-                .GrantsFeat(FeatType.MartialBlueprints1)
-
-                .AddPerkLevel()
-                .Description("Grants access to tier 2 Martial blueprints.")
-                .Price(1)
-                .RequirementSkill(SkillType.Smithery, 10)
-                .GrantsFeat(FeatType.MartialBlueprints2)
-
-                .AddPerkLevel()
-                .Description("Grants access to tier 3 Martial blueprints.")
-                .Price(2)
-                .RequirementSkill(SkillType.Smithery, 20)
-                .GrantsFeat(FeatType.MartialBlueprints3)
-
-                .AddPerkLevel()
-                .Description("Grants access to tier 4 Martial blueprints.")
-                .Price(3)
-                .RequirementSkill(SkillType.Smithery, 30)
-                .GrantsFeat(FeatType.MartialBlueprints4)
-
-                .AddPerkLevel()
-                .Description("Grants access to tier 5 Martial blueprints.")
-                .Price(3)
-                .RequirementSkill(SkillType.Smithery, 40)
-                .GrantsFeat(FeatType.MartialBlueprints5);
-        }
-
-
-        private void RangedBlueprints()
-        {
-            _builder.Create(PerkCategoryType.Smithery, PerkType.RangedBlueprints)
-                .Name("Ranged Blueprints")
-
-                .AddPerkLevel()
-                .Description("Grants access to tier 1 Ranged blueprints.")
-                .Price(1)
-                .GrantsFeat(FeatType.RangedBlueprints1)
-
-                .AddPerkLevel()
-                .Description("Grants access to tier 2 Ranged blueprints.")
-                .Price(1)
-                .RequirementSkill(SkillType.Smithery, 10)
-                .GrantsFeat(FeatType.RangedBlueprints2)
-
-                .AddPerkLevel()
-                .Description("Grants access to tier 3 Ranged blueprints.")
-                .Price(2)
-                .RequirementSkill(SkillType.Smithery, 20)
-                .GrantsFeat(FeatType.RangedBlueprints3)
-
-                .AddPerkLevel()
-                .Description("Grants access to tier 4 Ranged blueprints.")
-                .Price(3)
-                .RequirementSkill(SkillType.Smithery, 30)
-                .GrantsFeat(FeatType.RangedBlueprints4)
-
-                .AddPerkLevel()
-                .Description("Grants access to tier 5 Ranged blueprints.")
-                .Price(3)
-                .RequirementSkill(SkillType.Smithery, 40)
-                .GrantsFeat(FeatType.RangedBlueprints5);
+                .GrantsFeat(FeatType.WeaponBlueprints5);
         }
 
 

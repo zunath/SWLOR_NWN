@@ -10,6 +10,12 @@ The combat upgrade uses the Bible spreadsheet as the planning source of truth. R
 - one class per Bible perk under `Feature/PerkDefinition/`
 - per-perk ability definitions under `Feature/AbilityDefinition/<Skill>/`
 
+## Scope Exclusions
+
+Espionage and Farming are intentionally out of scope for this combat upgrade. Do not count Espionage rows or Farming-only Agriculture rows, such as Crop Management, as missing combat-upgrade implementation work.
+
+Agriculture rows that support Cooking or other combat-upgrade-adjacent crafting may still be reviewed when they are explicitly tied to this upgrade, but Farming-specific systems should be left out of combat-upgrade diffs and release blockers.
+
 The generated implementation currently contains:
 
 - 205 `Combat` perk levels

@@ -206,9 +206,11 @@
         return skillType switch
         {
             // Combat Skills
-            SkillType.OneHanded or SkillType.TwoHanded or SkillType.MartialArts or 
-            SkillType.Ranged or SkillType.Force or SkillType.Armor or SkillType.BeastMastery or 
-            SkillType.Devices => SkillCategoryType.Combat,
+            SkillType.Vibroblade or SkillType.Vibroknife or SkillType.Lightsaber or
+            SkillType.HeavyVibroblade or SkillType.Spear or SkillType.TwinBlade or
+            SkillType.Saberstaff or SkillType.Katar or SkillType.Staff or
+            SkillType.Pistol or SkillType.Rifle or SkillType.Throwing or
+            SkillType.Force or SkillType.Armor or SkillType.BeastMastery or SkillType.Devices => SkillCategoryType.Combat,
             
             // Crafting Skills
             SkillType.Smithery or SkillType.Fabrication or SkillType.Gathering or 
@@ -242,4 +244,4 @@
             return skillType.ToString();
         }
     }
-} 
+}

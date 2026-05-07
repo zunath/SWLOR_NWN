@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.DeadMansHand1)
                 .Description("Fire six shots at your target and nearby enemies, each for weapon DMG + 10. Your target is prioritized and secondary targets cannot be hit more than twice.")
                 .Price(4)
-                .RequirementSkill(SkillType.Ranged, 50);
+                .RequirementSkill(SkillType.Pistol, 50);
         }
 
         private void DeadeyeReload()
@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("After using a pistol combat ability, your next auto-attack within 6 seconds deals +10 DMG.")
                 .Price(2)
-                .RequirementSkill(SkillType.Ranged, 22);
+                .RequirementSkill(SkillType.Pistol, 22);
         }
 
         private void DisarmingShot()
@@ -69,19 +69,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.DisarmingShot1)
                 .Description("Deals weapon DMG + 8 and has a Reflex DC12 check to inflict Weakened, reducing Attack by 10% for 12 seconds.")
                 .Price(2)
-                .RequirementSkill(SkillType.Ranged, 8)
+                .RequirementSkill(SkillType.Pistol, 8)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DisarmingShot2)
                 .Description("Deals weapon DMG + 18 and has a Reflex DC15 check to inflict Weakened, reducing Attack by 15% for 15 seconds.")
                 .Price(2)
-                .RequirementSkill(SkillType.Ranged, 22)
+                .RequirementSkill(SkillType.Pistol, 22)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DisarmingShot3)
                 .Description("Deals weapon DMG + 32 and has a Reflex DC18 check to inflict Weakened, reducing Attack by 20% for 15 seconds.")
                 .Price(4)
-                .RequirementSkill(SkillType.Ranged, 42);
+                .RequirementSkill(SkillType.Pistol, 42);
         }
 
         private void DuelistsDistance()
@@ -92,7 +92,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Deal +12% pistol damage to enemies within 8 meters that are not targeting you.")
                 .Price(3)
-                .RequirementSkill(SkillType.Ranged, 40);
+                .RequirementSkill(SkillType.Pistol, 40);
         }
 
         private void EvasiveReload()
@@ -103,7 +103,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Using Snap Roll or Ricochet Shot reduces Disarming Shot cooldowns by 10 seconds.")
                 .Price(2)
-                .RequirementSkill(SkillType.Ranged, 32);
+                .RequirementSkill(SkillType.Pistol, 32);
         }
 
         private void FanTheHammer()
@@ -115,13 +115,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.FanTheHammer1)
                 .Description("Fires at up to 3 enemies in a cone for weapon DMG + 12 each.")
                 .Price(3)
-                .RequirementSkill(SkillType.Ranged, 25)
+                .RequirementSkill(SkillType.Pistol, 25)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FanTheHammer2)
                 .Description("Fires at up to 5 enemies in a cone for weapon DMG + 20 each.")
                 .Price(4)
-                .RequirementSkill(SkillType.Ranged, 35);
+                .RequirementSkill(SkillType.Pistol, 35);
         }
 
         private void GunfighterStance()
@@ -132,7 +132,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("While active, grants +15% Attack and +10% Haste, but reduces Defense by 15%.")
                 .Price(2)
-                .RequirementSkill(SkillType.Ranged, 15);
+                .RequirementSkill(SkillType.Pistol, 15);
         }
 
         private void GunslingerFocus()
@@ -143,7 +143,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("For 20 seconds, Quick Draw and Double Shot abilities cost 2 less STM and deal +10 DMG.")
                 .Price(3)
-                .RequirementSkill(SkillType.Ranged, 45);
+                .RequirementSkill(SkillType.Pistol, 45);
         }
 
         private void HighNoon()
@@ -154,7 +154,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Your first pistol attack after entering combat gains +30% critical chance and deals +20 DMG.")
                 .Price(3)
-                .RequirementSkill(SkillType.Ranged, 38);
+                .RequirementSkill(SkillType.Pistol, 38);
         }
 
         private void InterruptingShot()
@@ -165,12 +165,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Interrupts your target's ability activation and has a Will DC12 check to inflict Foggy Mind for 12 seconds.")
                 .Price(4)
-                .RequirementSkill(SkillType.Ranged, 18)
+                .RequirementSkill(SkillType.Pistol, 18)
 
                 .AddPerkLevel()
                 .Description("Deals weapon DMG + 20, interrupts your target's ability activation, and has a Will DC16 check to inflict Foggy Mind for 20 seconds.")
                 .Price(4)
-                .RequirementSkill(SkillType.Ranged, 35);
+                .RequirementSkill(SkillType.Pistol, 35);
         }
 
         private void KitingInstinct()
@@ -181,7 +181,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("When attacked in melee, you have a 20% chance to restore 3 STM and gain +10% Evasion for 6 seconds.")
                 .Price(3)
-                .RequirementSkill(SkillType.Ranged, 20);
+                .RequirementSkill(SkillType.Pistol, 20);
         }
 
         private void LastWord()
@@ -193,7 +193,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.LastWord1)
                 .Description("Interrupts all enemies in a cone, deals weapon DMG + 35, and has a Reflex DC18 check to inflict Dazed for 3 seconds.")
                 .Price(4)
-                .RequirementSkill(SkillType.Ranged, 50);
+                .RequirementSkill(SkillType.Pistol, 50);
         }
 
         private void LowShot()
@@ -205,7 +205,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.LowShot1)
                 .Description("Deals weapon DMG + 20 and has a Reflex DC16 check to inflict Disoriented for 12 seconds.")
                 .Price(3)
-                .RequirementSkill(SkillType.Ranged, 30);
+                .RequirementSkill(SkillType.Pistol, 30);
         }
 
         private void MobileFootwork()
@@ -216,7 +216,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("After using a pistol ability, gain +10% Evasion for 6 seconds.")
                 .Price(2)
-                .RequirementSkill(SkillType.Ranged, 5);
+                .RequirementSkill(SkillType.Pistol, 5);
         }
 
         private void PointBlankBurst()
@@ -228,7 +228,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.PointBlankBurst1)
                 .Description("Deals weapon DMG + 18 to enemies in a cone. Reflex DC16 check to inflict Knockdown for 3 seconds.")
                 .Price(3)
-                .RequirementSkill(SkillType.Ranged, 38);
+                .RequirementSkill(SkillType.Pistol, 38);
         }
 
         private void ReloadTempo()
@@ -239,7 +239,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Defeating an enemy restores 10 STM and reduces Quick Draw cooldowns by 15 seconds.")
                 .Price(2)
-                .RequirementSkill(SkillType.Ranged, 40);
+                .RequirementSkill(SkillType.Pistol, 40);
         }
 
         private void RicochetShot()
@@ -251,7 +251,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.RicochetShot1)
                 .Description("A shot bounces to up to 3 enemies for weapon DMG + 12 each. Each target has a Reflex DC14 check to avoid Blind for 6 seconds.")
                 .Price(3)
-                .RequirementSkill(SkillType.Ranged, 25);
+                .RequirementSkill(SkillType.Pistol, 25);
         }
 
         private void SkirmishersNerve()
@@ -262,7 +262,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("When reduced below 40% HP, your next pistol ability costs 0 STM and grants +20% Evasion for 8 seconds. This can only trigger once every 2 minutes.")
                 .Price(4)
-                .RequirementSkill(SkillType.Ranged, 48);
+                .RequirementSkill(SkillType.Pistol, 48);
         }
 
         private void SkirmisherStance()
@@ -273,7 +273,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("While active, grants +15% Evasion and reduces Enmity generation by 20%, but reduces Attack by 10%.")
                 .Price(2)
-                .RequirementSkill(SkillType.Ranged, 15);
+                .RequirementSkill(SkillType.Pistol, 15);
         }
 
         private void SmokeRound()
@@ -285,7 +285,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.SmokeRound1)
                 .Description("Enemies in the target area have a Fortitude DC16 check to avoid Blind for 12 seconds. You reduce enmity against affected enemies.")
                 .Price(3)
-                .RequirementSkill(SkillType.Ranged, 45);
+                .RequirementSkill(SkillType.Pistol, 45);
         }
 
         private void SnapRoll()
@@ -296,12 +296,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Gain +25% Evasion for 6 seconds and reduce your current enmity by 10%.")
                 .Price(3)
-                .RequirementSkill(SkillType.Ranged, 12)
+                .RequirementSkill(SkillType.Pistol, 12)
 
                 .AddPerkLevel()
                 .Description("Gain +35% Evasion for 8 seconds and your next pistol attack within 8 seconds deals +10 DMG.")
                 .Price(4)
-                .RequirementSkill(SkillType.Ranged, 28);
+                .RequirementSkill(SkillType.Pistol, 28);
         }
     }
 }

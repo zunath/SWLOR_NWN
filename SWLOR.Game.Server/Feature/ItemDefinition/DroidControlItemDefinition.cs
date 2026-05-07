@@ -24,10 +24,18 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 
         private static readonly SkillType[] _skillsUsedForAverages =
         {
-            SkillType.OneHanded,
-            SkillType.TwoHanded,
-            SkillType.MartialArts,
-            SkillType.Ranged,
+            SkillType.Vibroblade,
+            SkillType.Vibroknife,
+            SkillType.Lightsaber,
+            SkillType.HeavyVibroblade,
+            SkillType.Spear,
+            SkillType.TwinBlade,
+            SkillType.Saberstaff,
+            SkillType.Katar,
+            SkillType.Staff,
+            SkillType.Pistol,
+            SkillType.Rifle,
+            SkillType.Throwing,
             SkillType.Force,
             SkillType.Devices,
             SkillType.FirstAid

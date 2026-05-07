@@ -19,11 +19,11 @@ Feature/
 │   ├── Force/
 │   ├── General/
 │   ├── Leadership/
-│   ├── MartialArts/
+│   ├── KatarStaff/
 │   ├── NPC/
-│   ├── OneHanded/
+│   ├── Blade/
 │   ├── Ranged/
-│   └── TwoHanded/
+│   └── HeavyWeapon/
 ├── AchievementProgression.cs
 ├── AIDefinition/
 ├── AppearanceDefinition/
@@ -60,9 +60,9 @@ Feature/
 
 **Categories**:
 - **Force** - Force powers and abilities
-- **Combat** - OneHanded, TwoHanded, Ranged combat abilities
+- **Combat** - explicit weapon combat abilities
 - **Support** - FirstAid, Leadership abilities
-- **Special** - Beastmaster, Devices, MartialArts abilities
+- **Special** - Beastmaster and Devices abilities
 
 **Example Structure**:
 ```csharp
@@ -369,8 +369,8 @@ Within categories, features are further organized:
 ```
 AbilityDefinition/
 ├── Force/                 # Force abilities
-├── OneHanded/            # One-handed combat
-├── TwoHanded/            # Two-handed combat
+├── Blade/            # blade combat
+├── HeavyWeapon/            # heavy weapon combat
 ├── Ranged/               # Ranged combat
 ├── FirstAid/             # Healing abilities
 └── Leadership/           # Support abilities
@@ -485,7 +485,7 @@ public class Quest : IQuestListDefinition
 // Organize by category
 Feature/AbilityDefinition/Force/ForceLightningAbilityDefinition.cs
 Feature/AbilityDefinition/Force/ForcePushAbilityDefinition.cs
-Feature/AbilityDefinition/OneHanded/PowerAttackAbilityDefinition.cs
+Feature/AbilityDefinition/Blade/PowerAttackAbilityDefinition.cs
 ```
 
 ### 3. Reusable Components

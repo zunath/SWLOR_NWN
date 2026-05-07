@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Bonecrusher1)
                 .Description("Deals weapon DMG + 50. If the target is Knocked down, they make a Fortitude DC18 check or become Stunned for 3 seconds.")
                 .Price(3)
-                .RequirementSkill(SkillType.MartialArts, 45);
+                .RequirementSkill(SkillType.Staff, 45);
         }
 
         private void BreakPosture()
@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Critical staff hits inflict Exposed, reducing Defense by 10% for 10 seconds.")
                 .Price(2)
-                .RequirementSkill(SkillType.MartialArts, 40);
+                .RequirementSkill(SkillType.Staff, 40);
         }
 
         private void CrusherStance()
@@ -67,7 +67,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("While active, grants +20% Attack and +15% critical chance, but reduces Defense by 20%.")
                 .Price(2)
-                .RequirementSkill(SkillType.MartialArts, 15);
+                .RequirementSkill(SkillType.Staff, 15);
         }
 
         private void CrushingMastery()
@@ -78,17 +78,17 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Critical staff hits deal +10% damage and restore 2 STM. This can only trigger once every 6 seconds.")
                 .Price(3)
-                .RequirementSkill(SkillType.MartialArts, 12)
+                .RequirementSkill(SkillType.Staff, 12)
 
                 .AddPerkLevel()
                 .Description("Bonus damage with staves increases to 2x your MGT modifier and critical chance increases by an additional 10%.")
                 .Price(2)
-                .RequirementSkill(SkillType.MartialArts, 32)
+                .RequirementSkill(SkillType.Staff, 32)
 
                 .AddPerkLevel()
                 .Description("Staff critical hits deal +20% damage and restore 4 STM. This can only trigger once every 6 seconds.")
                 .Price(4)
-                .RequirementSkill(SkillType.MartialArts, 48);
+                .RequirementSkill(SkillType.Staff, 48);
         }
 
         private void FlowingDefense()
@@ -99,7 +99,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("After dodging or deflecting an attack, your next Staff ability costs 2 less STM.")
                 .Price(2)
-                .RequirementSkill(SkillType.MartialArts, 32);
+                .RequirementSkill(SkillType.Staff, 32);
         }
 
         private void GroundQuake()
@@ -111,13 +111,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.GroundQuake1)
                 .Description("Deals weapon DMG + 18 to nearby enemies. Reflex DC14 check to inflict Knockdown for 2 seconds.")
                 .Price(3)
-                .RequirementSkill(SkillType.MartialArts, 25)
+                .RequirementSkill(SkillType.Staff, 25)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GroundQuake2)
                 .Description("Deals weapon DMG + 28 to nearby enemies. Reflex DC16 check to inflict Knockdown for 3 seconds.")
                 .Price(4)
-                .RequirementSkill(SkillType.MartialArts, 35);
+                .RequirementSkill(SkillType.Staff, 35);
         }
 
         private void GuardingStep()
@@ -128,7 +128,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Gain +25% Evasion and +20% Defense for 8 seconds.")
                 .Price(3)
-                .RequirementSkill(SkillType.MartialArts, 20);
+                .RequirementSkill(SkillType.Staff, 20);
         }
 
         private void HeavyHands()
@@ -139,7 +139,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Staff combat abilities deal +10% damage to targets affected by Knockdown or Blind.")
                 .Price(2)
-                .RequirementSkill(SkillType.MartialArts, 22);
+                .RequirementSkill(SkillType.Staff, 22);
         }
 
         private void LineBreaker()
@@ -151,7 +151,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.LineBreaker1)
                 .Description("Deals weapon DMG + 18 to enemies in a line. Reflex DC14 check to inflict Disoriented for 12 seconds.")
                 .Price(3)
-                .RequirementSkill(SkillType.MartialArts, 25);
+                .RequirementSkill(SkillType.Staff, 25);
         }
 
         private void PatientSentinel()
@@ -162,7 +162,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("If you have not used a combat ability for 6 seconds, your next Staff ability gains +15% accuracy and deals +15 DMG.")
                 .Price(3)
-                .RequirementSkill(SkillType.MartialArts, 40);
+                .RequirementSkill(SkillType.Staff, 40);
         }
 
         private void PerfectFootwork()
@@ -173,7 +173,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("When reduced below 40% HP, gain +30% Evasion for 10 seconds. This can only trigger once every 3 minutes.")
                 .Price(4)
-                .RequirementSkill(SkillType.MartialArts, 48);
+                .RequirementSkill(SkillType.Staff, 48);
         }
 
         private void RibBreaker()
@@ -185,19 +185,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.RibBreaker1)
                 .Description("Deals weapon DMG + 18 and has a Fortitude DC14 check to inflict Weakened, reducing Attack by 10% for 15 seconds.")
                 .Price(3)
-                .RequirementSkill(SkillType.MartialArts, 20)
+                .RequirementSkill(SkillType.Staff, 20)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RibBreaker2)
                 .Description("Deals weapon DMG + 30 and has a Fortitude DC16 check to inflict Weakened, reducing Attack by 15% for 15 seconds.")
                 .Price(3)
-                .RequirementSkill(SkillType.MartialArts, 30)
+                .RequirementSkill(SkillType.Staff, 30)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RibBreaker3)
                 .Description("Deals weapon DMG + 42 and has a Fortitude DC18 check to inflict Weakened, reducing Attack by 20% for 15 seconds.")
                 .Price(4)
-                .RequirementSkill(SkillType.MartialArts, 42);
+                .RequirementSkill(SkillType.Staff, 42);
         }
 
         private void SentinelGuard()
@@ -208,7 +208,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("For 12 seconds, allies within 5 meters gain +10 Attack Deflection and you generate extra enmity.")
                 .Price(3)
-                .RequirementSkill(SkillType.MartialArts, 30);
+                .RequirementSkill(SkillType.Staff, 30);
         }
 
         private void SentinelStance()
@@ -219,7 +219,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("While active, grants +15% Evasion and +15 Attack Deflection, but reduces Attack by 15%.")
                 .Price(2)
-                .RequirementSkill(SkillType.MartialArts, 15);
+                .RequirementSkill(SkillType.Staff, 15);
         }
 
         private void ShelterCircle()
@@ -230,7 +230,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Allies in an area of effect (sphere) gain +20% Defense and +20% Evasion for 15 seconds.")
                 .Price(3)
-                .RequirementSkill(SkillType.MartialArts, 45);
+                .RequirementSkill(SkillType.Staff, 45);
         }
 
         private void SkullRattle()
@@ -242,7 +242,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.SkullRattle1)
                 .Description("Deals weapon DMG + 34 and has a Fortitude DC16 check to inflict Dazed for 3 seconds.")
                 .Price(3)
-                .RequirementSkill(SkillType.MartialArts, 38);
+                .RequirementSkill(SkillType.Staff, 38);
         }
 
         private void StaffParry()
@@ -253,22 +253,22 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Gain +10 Attack Deflection while wielding a staff.")
                 .Price(2)
-                .RequirementSkill(SkillType.MartialArts, 8)
+                .RequirementSkill(SkillType.Staff, 8)
 
                 .AddPerkLevel()
                 .Description("Gain +20 Attack Deflection total while wielding a staff.")
                 .Price(4)
-                .RequirementSkill(SkillType.MartialArts, 18)
+                .RequirementSkill(SkillType.Staff, 18)
 
                 .AddPerkLevel()
                 .Description("Gain +30 Attack Deflection total while wielding a staff. Deflecting attacks restores 2 STM.")
                 .Price(4)
-                .RequirementSkill(SkillType.MartialArts, 28)
+                .RequirementSkill(SkillType.Staff, 28)
 
                 .AddPerkLevel()
                 .Description("Gain +40 Attack Deflection total while wielding a staff. Deflecting attacks restores 4 STM.")
                 .Price(4)
-                .RequirementSkill(SkillType.MartialArts, 42);
+                .RequirementSkill(SkillType.Staff, 42);
         }
 
         private void SweepingGuard()
@@ -280,7 +280,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.SweepingGuard1)
                 .Description("Deals weapon DMG + 18 to all nearby enemies. Reflex DC16 check to inflict Knockdown for 2 seconds. You gain +20% Defense for 10 seconds.")
                 .Price(3)
-                .RequirementSkill(SkillType.MartialArts, 38);
+                .RequirementSkill(SkillType.Staff, 38);
         }
 
         private void UnmovingCenter()
@@ -291,7 +291,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("For 20 seconds, you cannot be Knocked down or Dazed, gain +50 Attack Deflection, and staff attacks generate extra enmity.")
                 .Price(4)
-                .RequirementSkill(SkillType.MartialArts, 50);
+                .RequirementSkill(SkillType.Staff, 50);
         }
 
         private void Worldbreaker()
@@ -303,7 +303,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Worldbreaker1)
                 .Description("Strike the ground. Enemies in an area of effect (sphere) take weapon DMG + 45 and make a Reflex DC18 check or suffer Knockdown for 4 seconds.")
                 .Price(4)
-                .RequirementSkill(SkillType.MartialArts, 50);
+                .RequirementSkill(SkillType.Staff, 50);
         }
     }
 }

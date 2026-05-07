@@ -1,4 +1,4 @@
-﻿using SWLOR.NWN.API.NWScript.Enum.Item.Property;
+using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 
 namespace SWLOR.Game.Server.Service.DroidService
 {
@@ -16,10 +16,18 @@ namespace SWLOR.Game.Server.Service.DroidService
         public int SOC { get; set; }
         public int VIT { get; set; }
         public int WIL { get; set; }
-        public int OneHanded { get; set; }
-        public int TwoHanded { get; set; }
-        public int MartialArts { get; set; }
-        public int Ranged { get; set; }
+        public int Vibroblade { get; set; }
+        public int Vibroknife { get; set; }
+        public int Lightsaber { get; set; }
+        public int HeavyVibroblade { get; set; }
+        public int Spear { get; set; }
+        public int TwinBlade { get; set; }
+        public int Saberstaff { get; set; }
+        public int Katar { get; set; }
+        public int Staff { get; set; }
+        public int Pistol { get; set; }
+        public int Rifle { get; set; }
+        public int Throwing { get; set; }
 
         public DroidPartItemPropertyDetails()
         {

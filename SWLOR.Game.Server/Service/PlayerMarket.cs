@@ -144,12 +144,12 @@ namespace SWLOR.Game.Server.Service
             // Weapon Classes
             if (Item.VibrobladeBaseItemTypes.Contains(baseItemType))
                 return MarketCategoryType.Vibroblade;
-            if (Item.FinesseVibrobladeBaseItemTypes.Contains(baseItemType))
-                return MarketCategoryType.FinesseVibroblade;
+            if (Item.VibroknifeBaseItemTypes.Contains(baseItemType))
+                return MarketCategoryType.Vibroknife;
             if (Item.HeavyVibrobladeBaseItemTypes.Contains(baseItemType))
                 return MarketCategoryType.HeavyVibroblade;
-            if (Item.PolearmBaseItemTypes.Contains(baseItemType))
-                return MarketCategoryType.Polearm;
+            if (Item.SpearBaseItemTypes.Contains(baseItemType))
+                return MarketCategoryType.Spear;
             if (Item.StaffBaseItemTypes.Contains(baseItemType))
                 return MarketCategoryType.Staff;
             if (Item.PistolBaseItemTypes.Contains(baseItemType))

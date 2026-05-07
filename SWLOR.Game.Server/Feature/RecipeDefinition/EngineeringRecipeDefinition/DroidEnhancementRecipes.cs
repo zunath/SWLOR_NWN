@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -226,10 +226,10 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
         private void SkillEnhancements()
         {
-            // One-Handed Boost I
-            _builder.Create(RecipeType.OneHandedBoost1, SkillType.Engineering)
+            // Droid Vibroblade Boost I
+            _builder.Create(RecipeType.DroidVibrobladeBoost1, SkillType.Engineering)
                 .Category(RecipeCategoryType.DroidEnhancement)
-                .Resref("de_1handboost1")
+                .Resref("de_vblade_b1")
                 .Level(27)
                 .Quantity(1)
                 .RequirementPerk(PerkType.EnhancementBlueprints, 3)
@@ -237,10 +237,32 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("dmotive_sys3", 3)
                 .Component("d_sensor3", 2);
 
-            // Two-Handed Boost I
-            _builder.Create(RecipeType.TwoHandedBoost1, SkillType.Engineering)
+            // Droid Vibroknife Boost I
+            _builder.Create(RecipeType.DroidVibroknifeBoost1, SkillType.Engineering)
                 .Category(RecipeCategoryType.DroidEnhancement)
-                .Resref("de_2handboost1")
+                .Resref("de_vknife_b1")
+                .Level(27)
+                .Quantity(1)
+                .RequirementPerk(PerkType.EnhancementBlueprints, 3)
+                .RequirementUnlocked()
+                .Component("dmotive_sys3", 3)
+                .Component("d_sensor3", 2);
+
+            // Droid Lightsaber Boost I
+            _builder.Create(RecipeType.DroidLightsaberBoost1, SkillType.Engineering)
+                .Category(RecipeCategoryType.DroidEnhancement)
+                .Resref("de_lsab_b1")
+                .Level(27)
+                .Quantity(1)
+                .RequirementPerk(PerkType.EnhancementBlueprints, 3)
+                .RequirementUnlocked()
+                .Component("dmotive_sys3", 3)
+                .Component("d_sensor3", 2);
+
+            // Droid Heavy Vibroblade Boost I
+            _builder.Create(RecipeType.DroidHeavyVibrobladeBoost1, SkillType.Engineering)
+                .Category(RecipeCategoryType.DroidEnhancement)
+                .Resref("de_hvblade_b1")
                 .Level(28)
                 .Quantity(1)
                 .RequirementPerk(PerkType.EnhancementBlueprints, 3)
@@ -248,10 +270,43 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("dmotive_sys3", 3)
                 .Component("d_sensor3", 2);
 
-            // Martial Arts Boost I
-            _builder.Create(RecipeType.MartialArtsBoost1, SkillType.Engineering)
+            // Droid Spear Boost I
+            _builder.Create(RecipeType.DroidSpearBoost1, SkillType.Engineering)
                 .Category(RecipeCategoryType.DroidEnhancement)
-                .Resref("de_martialarts1")
+                .Resref("de_spear_b1")
+                .Level(28)
+                .Quantity(1)
+                .RequirementPerk(PerkType.EnhancementBlueprints, 3)
+                .RequirementUnlocked()
+                .Component("dmotive_sys3", 3)
+                .Component("d_sensor3", 2);
+
+            // Droid Twin Blade Boost I
+            _builder.Create(RecipeType.DroidTwinBladeBoost1, SkillType.Engineering)
+                .Category(RecipeCategoryType.DroidEnhancement)
+                .Resref("de_tblade_b1")
+                .Level(28)
+                .Quantity(1)
+                .RequirementPerk(PerkType.EnhancementBlueprints, 3)
+                .RequirementUnlocked()
+                .Component("dmotive_sys3", 3)
+                .Component("d_sensor3", 2);
+
+            // Droid Saberstaff Boost I
+            _builder.Create(RecipeType.DroidSaberstaffBoost1, SkillType.Engineering)
+                .Category(RecipeCategoryType.DroidEnhancement)
+                .Resref("de_sabst_b1")
+                .Level(28)
+                .Quantity(1)
+                .RequirementPerk(PerkType.EnhancementBlueprints, 3)
+                .RequirementUnlocked()
+                .Component("dmotive_sys3", 3)
+                .Component("d_sensor3", 2);
+
+            // Droid Katar Boost I
+            _builder.Create(RecipeType.DroidKatarBoost1, SkillType.Engineering)
+                .Category(RecipeCategoryType.DroidEnhancement)
+                .Resref("de_katar_b1")
                 .Level(29)
                 .Quantity(1)
                 .RequirementPerk(PerkType.EnhancementBlueprints, 3)
@@ -259,10 +314,21 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("dmotive_sys3", 3)
                 .Component("d_sensor3", 2);
 
-            // Ranged Boost I
-            _builder.Create(RecipeType.RangedBoost1, SkillType.Engineering)
+            // Droid Staff Boost I
+            _builder.Create(RecipeType.DroidStaffBoost1, SkillType.Engineering)
                 .Category(RecipeCategoryType.DroidEnhancement)
-                .Resref("de_rangedboost1")
+                .Resref("de_staff_b1")
+                .Level(29)
+                .Quantity(1)
+                .RequirementPerk(PerkType.EnhancementBlueprints, 3)
+                .RequirementUnlocked()
+                .Component("dmotive_sys3", 3)
+                .Component("d_sensor3", 2);
+
+            // Droid Pistol Boost I
+            _builder.Create(RecipeType.DroidPistolBoost1, SkillType.Engineering)
+                .Category(RecipeCategoryType.DroidEnhancement)
+                .Resref("de_pistol_b1")
                 .Level(30)
                 .Quantity(1)
                 .RequirementPerk(PerkType.EnhancementBlueprints, 3)
@@ -270,10 +336,32 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("dmotive_sys3", 3)
                 .Component("d_sensor3", 2);
 
-            // One-Handed Boost II
-            _builder.Create(RecipeType.OneHandedBoost2, SkillType.Engineering)
+            // Droid Rifle Boost I
+            _builder.Create(RecipeType.DroidRifleBoost1, SkillType.Engineering)
                 .Category(RecipeCategoryType.DroidEnhancement)
-                .Resref("de_1handboost2")
+                .Resref("de_rifle_b1")
+                .Level(30)
+                .Quantity(1)
+                .RequirementPerk(PerkType.EnhancementBlueprints, 3)
+                .RequirementUnlocked()
+                .Component("dmotive_sys3", 3)
+                .Component("d_sensor3", 2);
+
+            // Droid Throwing Boost I
+            _builder.Create(RecipeType.DroidThrowingBoost1, SkillType.Engineering)
+                .Category(RecipeCategoryType.DroidEnhancement)
+                .Resref("de_throw_b1")
+                .Level(30)
+                .Quantity(1)
+                .RequirementPerk(PerkType.EnhancementBlueprints, 3)
+                .RequirementUnlocked()
+                .Component("dmotive_sys3", 3)
+                .Component("d_sensor3", 2);
+
+            // Droid Vibroblade Boost II
+            _builder.Create(RecipeType.DroidVibrobladeBoost2, SkillType.Engineering)
+                .Category(RecipeCategoryType.DroidEnhancement)
+                .Resref("de_vblade_b2")
                 .Level(47)
                 .Quantity(1)
                 .RequirementPerk(PerkType.EnhancementBlueprints, 5)
@@ -281,10 +369,32 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("dmotive_sys5", 3)
                 .Component("d_sensor5", 2);
 
-            // Two-Handed Boost II
-            _builder.Create(RecipeType.TwoHandedBoost2, SkillType.Engineering)
+            // Droid Vibroknife Boost II
+            _builder.Create(RecipeType.DroidVibroknifeBoost2, SkillType.Engineering)
                 .Category(RecipeCategoryType.DroidEnhancement)
-                .Resref("de_2handboost2")
+                .Resref("de_vknife_b2")
+                .Level(47)
+                .Quantity(1)
+                .RequirementPerk(PerkType.EnhancementBlueprints, 5)
+                .RequirementUnlocked()
+                .Component("dmotive_sys5", 3)
+                .Component("d_sensor5", 2);
+
+            // Droid Lightsaber Boost II
+            _builder.Create(RecipeType.DroidLightsaberBoost2, SkillType.Engineering)
+                .Category(RecipeCategoryType.DroidEnhancement)
+                .Resref("de_lsab_b2")
+                .Level(47)
+                .Quantity(1)
+                .RequirementPerk(PerkType.EnhancementBlueprints, 5)
+                .RequirementUnlocked()
+                .Component("dmotive_sys5", 3)
+                .Component("d_sensor5", 2);
+
+            // Droid Heavy Vibroblade Boost II
+            _builder.Create(RecipeType.DroidHeavyVibrobladeBoost2, SkillType.Engineering)
+                .Category(RecipeCategoryType.DroidEnhancement)
+                .Resref("de_hvblade_b2")
                 .Level(48)
                 .Quantity(1)
                 .RequirementPerk(PerkType.EnhancementBlueprints, 5)
@@ -292,10 +402,43 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("dmotive_sys5", 3)
                 .Component("d_sensor5", 2);
 
-            // Martial Arts Boost II
-            _builder.Create(RecipeType.MartialArtsBoost2, SkillType.Engineering)
+            // Droid Spear Boost II
+            _builder.Create(RecipeType.DroidSpearBoost2, SkillType.Engineering)
                 .Category(RecipeCategoryType.DroidEnhancement)
-                .Resref("de_martialarts2")
+                .Resref("de_spear_b2")
+                .Level(48)
+                .Quantity(1)
+                .RequirementPerk(PerkType.EnhancementBlueprints, 5)
+                .RequirementUnlocked()
+                .Component("dmotive_sys5", 3)
+                .Component("d_sensor5", 2);
+
+            // Droid Twin Blade Boost II
+            _builder.Create(RecipeType.DroidTwinBladeBoost2, SkillType.Engineering)
+                .Category(RecipeCategoryType.DroidEnhancement)
+                .Resref("de_tblade_b2")
+                .Level(48)
+                .Quantity(1)
+                .RequirementPerk(PerkType.EnhancementBlueprints, 5)
+                .RequirementUnlocked()
+                .Component("dmotive_sys5", 3)
+                .Component("d_sensor5", 2);
+
+            // Droid Saberstaff Boost II
+            _builder.Create(RecipeType.DroidSaberstaffBoost2, SkillType.Engineering)
+                .Category(RecipeCategoryType.DroidEnhancement)
+                .Resref("de_sabst_b2")
+                .Level(48)
+                .Quantity(1)
+                .RequirementPerk(PerkType.EnhancementBlueprints, 5)
+                .RequirementUnlocked()
+                .Component("dmotive_sys5", 3)
+                .Component("d_sensor5", 2);
+
+            // Droid Katar Boost II
+            _builder.Create(RecipeType.DroidKatarBoost2, SkillType.Engineering)
+                .Category(RecipeCategoryType.DroidEnhancement)
+                .Resref("de_katar_b2")
                 .Level(49)
                 .Quantity(1)
                 .RequirementPerk(PerkType.EnhancementBlueprints, 5)
@@ -303,10 +446,43 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("dmotive_sys5", 3)
                 .Component("d_sensor5", 2);
 
-            // Ranged Boost II
-            _builder.Create(RecipeType.RangedBoost2, SkillType.Engineering)
+            // Droid Staff Boost II
+            _builder.Create(RecipeType.DroidStaffBoost2, SkillType.Engineering)
                 .Category(RecipeCategoryType.DroidEnhancement)
-                .Resref("de_rangedboost2")
+                .Resref("de_staff_b2")
+                .Level(49)
+                .Quantity(1)
+                .RequirementPerk(PerkType.EnhancementBlueprints, 5)
+                .RequirementUnlocked()
+                .Component("dmotive_sys5", 3)
+                .Component("d_sensor5", 2);
+
+            // Droid Pistol Boost II
+            _builder.Create(RecipeType.DroidPistolBoost2, SkillType.Engineering)
+                .Category(RecipeCategoryType.DroidEnhancement)
+                .Resref("de_pistol_b2")
+                .Level(50)
+                .Quantity(1)
+                .RequirementPerk(PerkType.EnhancementBlueprints, 5)
+                .RequirementUnlocked()
+                .Component("dmotive_sys5", 3)
+                .Component("d_sensor5", 2);
+
+            // Droid Rifle Boost II
+            _builder.Create(RecipeType.DroidRifleBoost2, SkillType.Engineering)
+                .Category(RecipeCategoryType.DroidEnhancement)
+                .Resref("de_rifle_b2")
+                .Level(50)
+                .Quantity(1)
+                .RequirementPerk(PerkType.EnhancementBlueprints, 5)
+                .RequirementUnlocked()
+                .Component("dmotive_sys5", 3)
+                .Component("d_sensor5", 2);
+
+            // Droid Throwing Boost II
+            _builder.Create(RecipeType.DroidThrowingBoost2, SkillType.Engineering)
+                .Category(RecipeCategoryType.DroidEnhancement)
+                .Resref("de_throw_b2")
                 .Level(50)
                 .Quantity(1)
                 .RequirementPerk(PerkType.EnhancementBlueprints, 5)

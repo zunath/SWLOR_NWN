@@ -15,13 +15,13 @@ namespace SWLOR.Game.Server.Service
             {Item.VibrobladeBaseItemTypes, 23},
             {Item.KatarBaseItemTypes, 21},
             {Item.TwinBladeBaseItemTypes, 42},
-            {Item.FinesseVibrobladeBaseItemTypes, 20},
+            {Item.VibroknifeBaseItemTypes, 20},
             {Item.StaffBaseItemTypes, 37},
             {Item.RifleBaseItemTypes, 45},
             {Item.HeavyVibrobladeBaseItemTypes, 45},
             {Item.PistolBaseItemTypes, 29},
             {Item.LightsaberBaseItemTypes, 24},
-            {Item.PolearmBaseItemTypes, 40},
+            {Item.SpearBaseItemTypes, 40},
             {Item.ThrowingWeaponBaseItemTypes, 18},
             {Item.SaberstaffBaseItemTypes, 43}
         };

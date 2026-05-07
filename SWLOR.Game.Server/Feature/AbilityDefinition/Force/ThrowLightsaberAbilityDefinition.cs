@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             var validWeapon = GetIsObjectValid(weapon) &&
                                  (Item.LightsaberBaseItemTypes.Contains(GetBaseItemType(weapon)) ||
                                   Item.VibrobladeBaseItemTypes.Contains(GetBaseItemType(weapon)) ||
-                                  Item.FinesseVibrobladeBaseItemTypes.Contains(GetBaseItemType(weapon)) ||
+                                  Item.VibroknifeBaseItemTypes.Contains(GetBaseItemType(weapon)) ||
                                   Item.SaberstaffBaseItemTypes.Contains(GetBaseItemType(weapon)) ||
                                   Item.ThrowingWeaponBaseItemTypes.Contains(GetBaseItemType(weapon)));
 

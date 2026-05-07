@@ -126,7 +126,7 @@
         },
         "Subtype": {
           "type": "word",
-          "value": 2
+          "value": 42
         }
       }
     ]

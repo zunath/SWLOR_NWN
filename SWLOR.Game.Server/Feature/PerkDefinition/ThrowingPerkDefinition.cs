@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Deal +12% Throwing damage to bleeding targets.")
                 .Price(4)
-                .RequirementSkill(SkillType.Ranged, 28);
+                .RequirementSkill(SkillType.Throwing, 28);
         }
 
         private void BombardiersRhythm()
@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Each enemy hit by a Throwing area ability grants +2% Attack for 10 seconds, up to +20%.")
                 .Price(2)
-                .RequirementSkill(SkillType.Ranged, 40);
+                .RequirementSkill(SkillType.Throwing, 40);
         }
 
         private void BombardierStance()
@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("While active, Throwing area abilities deal +15% damage, but Defense is reduced by 15%.")
                 .Price(2)
-                .RequirementSkill(SkillType.Ranged, 15);
+                .RequirementSkill(SkillType.Throwing, 15);
         }
 
         private void ClusterPouch()
@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Throwing combat abilities that hit 3 or more targets restore 4 STM.")
                 .Price(2)
-                .RequirementSkill(SkillType.Ranged, 22);
+                .RequirementSkill(SkillType.Throwing, 22);
         }
 
         private void ClusterStorm()
@@ -92,7 +92,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ClusterStorm1)
                 .Description("Throw three explosives at the target area. Each explosive deals weapon DMG + 12 to nearby enemies.")
                 .Price(4)
-                .RequirementSkill(SkillType.Ranged, 35);
+                .RequirementSkill(SkillType.Throwing, 35);
         }
 
         private void ConcussiveToss()
@@ -104,13 +104,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ConcussiveToss1)
                 .Description("Deals weapon DMG + 14 to enemies in the target area. Reflex DC14 check to inflict Dazed for 2 seconds.")
                 .Price(3)
-                .RequirementSkill(SkillType.Ranged, 20)
+                .RequirementSkill(SkillType.Throwing, 20)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ConcussiveToss2)
                 .Description("Deals weapon DMG + 26 to enemies in the target area. Reflex DC16 check to inflict Dazed for 3 seconds.")
                 .Price(3)
-                .RequirementSkill(SkillType.Ranged, 30);
+                .RequirementSkill(SkillType.Throwing, 30);
         }
 
         private void DeadeyeMastery()
@@ -121,7 +121,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Throwing abilities against bleeding or disoriented targets have +15% critical chance.")
                 .Price(4)
-                .RequirementSkill(SkillType.Ranged, 48);
+                .RequirementSkill(SkillType.Throwing, 48);
         }
 
         private void DeadeyeStance()
@@ -132,7 +132,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("While active, grants +15% accuracy and +15% critical chance, but reduces Evasion by 20%.")
                 .Price(2)
-                .RequirementSkill(SkillType.Ranged, 15);
+                .RequirementSkill(SkillType.Throwing, 15);
         }
 
         private void DeepWound()
@@ -143,7 +143,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Bleed effects you apply deal +25% damage and last 10 seconds longer.")
                 .Price(4)
-                .RequirementSkill(SkillType.Ranged, 42);
+                .RequirementSkill(SkillType.Throwing, 42);
         }
 
         private void FinishingToss()
@@ -155,7 +155,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.FinishingToss1)
                 .Description("Deals weapon DMG + 40. Targets below 30% HP take an additional +30 DMG.")
                 .Price(3)
-                .RequirementSkill(SkillType.Ranged, 45);
+                .RequirementSkill(SkillType.Throwing, 45);
         }
 
         private void FireburstToss()
@@ -167,7 +167,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.FireburstToss1)
                 .Description("Deals weapon DMG + 20 to enemies in the target area and has a Fortitude DC15 check to inflict Exposed for 12 seconds.")
                 .Price(3)
-                .RequirementSkill(SkillType.Ranged, 25);
+                .RequirementSkill(SkillType.Throwing, 25);
         }
 
         private void FlashToss()
@@ -179,13 +179,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.FlashToss1)
                 .Description("Deals weapon DMG + 6 to enemies in the target area. Fortitude DC12 check to inflict Blind for 6 seconds.")
                 .Price(3)
-                .RequirementSkill(SkillType.Ranged, 8)
+                .RequirementSkill(SkillType.Throwing, 8)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FlashToss2)
                 .Description("Deals weapon DMG + 22 to enemies in the target area. Fortitude DC16 check to inflict Blind for 10 seconds.")
                 .Price(3)
-                .RequirementSkill(SkillType.Ranged, 38);
+                .RequirementSkill(SkillType.Throwing, 38);
         }
 
         private void MarkedTempo()
@@ -196,7 +196,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Critical hits against your marked target restore 6 STM.")
                 .Price(2)
-                .RequirementSkill(SkillType.Ranged, 32);
+                .RequirementSkill(SkillType.Throwing, 32);
         }
 
         private void MarkingToss()
@@ -208,7 +208,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.MarkingToss1)
                 .Description("Deals weapon DMG + 18 and marks the target for 12 seconds. Throwing damage against the marked target is increased by 10%.")
                 .Price(3)
-                .RequirementSkill(SkillType.Ranged, 20);
+                .RequirementSkill(SkillType.Throwing, 20);
         }
 
         private void PerfectThrow()
@@ -220,7 +220,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.PerfectThrow1)
                 .Description("Deals weapon DMG + 80 to one target. If the target is bleeding, also inflict Hemorrhage, increasing damage taken by 10% for 15 seconds.")
                 .Price(4)
-                .RequirementSkill(SkillType.Ranged, 50);
+                .RequirementSkill(SkillType.Throwing, 50);
         }
 
         private void PinningToss()
@@ -232,19 +232,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.PinningToss1)
                 .Description("Your next attack deals weapon DMG + 8 and has a Reflex DC12 check to inflict Disoriented for 12 seconds.")
                 .Price(2)
-                .RequirementSkill(SkillType.Ranged, 8)
+                .RequirementSkill(SkillType.Throwing, 8)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PinningToss2)
                 .Description("Your next attack deals weapon DMG + 18 and has a Reflex DC15 check to inflict Disoriented for 15 seconds.")
                 .Price(2)
-                .RequirementSkill(SkillType.Ranged, 22)
+                .RequirementSkill(SkillType.Throwing, 22)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PinningToss3)
                 .Description("Your next attack deals weapon DMG + 30 and has a Reflex DC18 check to inflict Disoriented for 20 seconds and reduce Evasion by an additional 15%.")
                 .Price(4)
-                .RequirementSkill(SkillType.Ranged, 35);
+                .RequirementSkill(SkillType.Throwing, 35);
         }
 
         private void RainOfSteel()
@@ -256,7 +256,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.RainOfSteel1)
                 .Description("All enemies in a large area of effect (sphere) take weapon DMG + 35 and suffer Bleed for 60 seconds. Reflex DC18 check halves the bonus damage.")
                 .Price(4)
-                .RequirementSkill(SkillType.Ranged, 50);
+                .RequirementSkill(SkillType.Throwing, 50);
         }
 
         private void ReturningGrip()
@@ -267,7 +267,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("After using a Throwing combat ability, your next auto-attack within 8 seconds deals +8 DMG.")
                 .Price(3)
-                .RequirementSkill(SkillType.Ranged, 12);
+                .RequirementSkill(SkillType.Throwing, 12);
         }
 
         private void RicochetToss()
@@ -279,13 +279,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.RicochetToss1)
                 .Description("Your thrown weapon hits the target and up to 2 additional enemies for weapon DMG + 15 each.")
                 .Price(3)
-                .RequirementSkill(SkillType.Ranged, 25)
+                .RequirementSkill(SkillType.Throwing, 25)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RicochetToss2)
                 .Description("Your thrown weapon hits the target and up to 4 additional enemies for weapon DMG + 24 each.")
                 .Price(3)
-                .RequirementSkill(SkillType.Ranged, 40);
+                .RequirementSkill(SkillType.Throwing, 40);
         }
 
         private void SaturationToss()
@@ -297,7 +297,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.SaturationToss1)
                 .Description("Creates a target area for 12 seconds. Enemies inside take weapon DMG + 10 every 4 seconds.")
                 .Price(3)
-                .RequirementSkill(SkillType.Ranged, 45);
+                .RequirementSkill(SkillType.Throwing, 45);
         }
 
         private void SeveringToss()
@@ -309,7 +309,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.SeveringToss1)
                 .Description("Deals weapon DMG + 32 and has a Fortitude DC16 check to inflict Hamstring for 15 seconds.")
                 .Price(3)
-                .RequirementSkill(SkillType.Ranged, 38);
+                .RequirementSkill(SkillType.Throwing, 38);
         }
 
         private void ShrapnelCasing()
@@ -320,12 +320,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Explosive Toss abilities have a Reflex DC12 check to inflict Bleed for 15 seconds.")
                 .Price(3)
-                .RequirementSkill(SkillType.Ranged, 12)
+                .RequirementSkill(SkillType.Throwing, 12)
 
                 .AddPerkLevel()
                 .Description("Bleed from Explosive Toss abilities lasts 30 seconds and Explosive Toss ignores 10% Defense.")
                 .Price(2)
-                .RequirementSkill(SkillType.Ranged, 32);
+                .RequirementSkill(SkillType.Throwing, 32);
         }
 
         private void VolatilePayload()
@@ -336,7 +336,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Critical hits with Explosive Toss abilities have a Reflex DC16 check to inflict Knockdown for 2 seconds.")
                 .Price(4)
-                .RequirementSkill(SkillType.Ranged, 48);
+                .RequirementSkill(SkillType.Throwing, 48);
         }
     }
 }

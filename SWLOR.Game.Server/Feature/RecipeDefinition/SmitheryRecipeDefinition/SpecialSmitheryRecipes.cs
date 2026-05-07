@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("wpn_sub_token")
                 .Level(52)
                 .Quantity(1)
-                .RequirementPerk(PerkType.OneHandedBlueprints, 5)
+                .RequirementPerk(PerkType.WeaponBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .ResearchCostModifier(0.2f)
                 .Component("chiro_shard", 5);

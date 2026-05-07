@@ -941,7 +941,12 @@ namespace SWLOR.Game.Server.Service
         {
             switch (skillType)
             {
-                case SkillType.Ranged:
+                case SkillType.Vibroknife:
+                case SkillType.Lightsaber:
+                case SkillType.Saberstaff:
+                case SkillType.Katar:
+                case SkillType.Pistol:
+                case SkillType.Rifle:
                 case SkillType.Devices:
                 case SkillType.FirstAid:
                     return AbilityType.Perception;

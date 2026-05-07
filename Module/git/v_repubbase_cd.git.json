@@ -111134,7 +111134,7 @@
           "id": 16813556,
           "type": "cexolocstring",
           "value": {
-            "0": "Martial Arts Dummy"
+            "0": "Combat Dummy"
           }
         },
         "OnClick": {
@@ -113631,7 +113631,7 @@
           "id": 16813556,
           "type": "cexolocstring",
           "value": {
-            "0": "Martial Arts Dummy"
+            "0": "Combat Dummy"
           }
         },
         "OnClick": {
@@ -113858,7 +113858,7 @@
           "id": 16813556,
           "type": "cexolocstring",
           "value": {
-            "0": "Martial Arts Dummy"
+            "0": "Combat Dummy"
           }
         },
         "OnClick": {
@@ -114085,7 +114085,7 @@
           "id": 16813556,
           "type": "cexolocstring",
           "value": {
-            "0": "Martial Arts Dummy"
+            "0": "Combat Dummy"
           }
         },
         "OnClick": {
@@ -114312,7 +114312,7 @@
           "id": 16813556,
           "type": "cexolocstring",
           "value": {
-            "0": "Martial Arts Dummy"
+            "0": "Combat Dummy"
           }
         },
         "OnClick": {
@@ -114539,7 +114539,7 @@
           "id": 16813556,
           "type": "cexolocstring",
           "value": {
-            "0": "Martial Arts Dummy"
+            "0": "Combat Dummy"
           }
         },
         "OnClick": {
@@ -158303,7 +158303,7 @@
           "id": 14815,
           "type": "cexolocstring",
           "value": {
-            "0": "Martial Arts Training Area"
+            "0": "Combat Training Area"
           }
         },
         "MapNoteEnabled": {

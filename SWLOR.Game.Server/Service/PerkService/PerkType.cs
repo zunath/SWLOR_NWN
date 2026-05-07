@@ -28,10 +28,8 @@ namespace SWLOR.Game.Server.Service.PerkService
         MedKit = 124,
         TreatmentKit = 125,
         Shielding = 126,
-        OneHandedBlueprints = 127,
-        TwoHandedBlueprints = 128,
-        MartialBlueprints = 129,
-        RangedBlueprints = 130,
+        WeaponBlueprints = 127,
+        // IDs 128-130 are free.
         CityManagement = 131,
         ArmorBlueprints = 132,
         AccessoryBlueprints = 133,

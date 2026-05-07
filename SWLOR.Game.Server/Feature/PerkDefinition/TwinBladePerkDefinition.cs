@@ -47,13 +47,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.BindingCross1)
                 .Description("Strikes twice for weapon DMG + 10 each. Reflex DC14 check to inflict Hamstring for 12 seconds.")
                 .Price(3)
-                .RequirementSkill(SkillType.TwoHanded, 25)
+                .RequirementSkill(SkillType.TwinBlade, 25)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.BindingCross2)
                 .Description("Strikes twice for weapon DMG + 18 each. Reflex DC18 check to inflict Hamstring for 20 seconds and Exposed for 10 seconds.")
                 .Price(4)
-                .RequirementSkill(SkillType.TwoHanded, 42);
+                .RequirementSkill(SkillType.TwinBlade, 42);
         }
 
         private void BladeVortex()
@@ -65,13 +65,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.BladeVortex1)
                 .Description("Deals weapon DMG + 18 to all nearby enemies.")
                 .Price(3)
-                .RequirementSkill(SkillType.TwoHanded, 25)
+                .RequirementSkill(SkillType.TwinBlade, 25)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.BladeVortex2)
                 .Description("Deals weapon DMG + 26 to all nearby enemies and has a Fortitude DC15 check to inflict Exposed for 12 seconds.")
                 .Price(4)
-                .RequirementSkill(SkillType.TwoHanded, 35);
+                .RequirementSkill(SkillType.TwinBlade, 35);
         }
 
         private void CenterlineGuard()
@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Gain +10 Attack Deflection while wielding a twin blade. After deflecting an attack, your next attack within 8 seconds deals +8 DMG.")
                 .Price(2)
-                .RequirementSkill(SkillType.TwoHanded, 5);
+                .RequirementSkill(SkillType.TwinBlade, 5);
         }
 
         private void CycloneMastery()
@@ -93,7 +93,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Area Twin Blade abilities gain +10% critical chance and restore 1 STM per target hit, up to 5 STM.")
                 .Price(4)
-                .RequirementSkill(SkillType.TwoHanded, 48);
+                .RequirementSkill(SkillType.TwinBlade, 48);
         }
 
         private void CycloneStance()
@@ -104,7 +104,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("While active, grants +15% Haste and +10% Attack, but reduces Defense by 20%.")
                 .Price(2)
-                .RequirementSkill(SkillType.TwoHanded, 15);
+                .RequirementSkill(SkillType.TwinBlade, 15);
         }
 
         private void DuelistsChallenge()
@@ -115,7 +115,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Mark a target for 20 seconds. You and the target deal +20% damage to each other, but you gain +20% Defense against that target.")
                 .Price(3)
-                .RequirementSkill(SkillType.TwoHanded, 45);
+                .RequirementSkill(SkillType.TwinBlade, 45);
         }
 
         private void DuelistStance()
@@ -126,7 +126,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("While active, single-target Twin Blade combat abilities deal +15% damage and grant +10 Attack Deflection for 6 seconds, but area Twin Blade abilities deal -15% damage.")
                 .Price(2)
-                .RequirementSkill(SkillType.TwoHanded, 15);
+                .RequirementSkill(SkillType.TwinBlade, 15);
         }
 
         private void EdgeRhythm()
@@ -137,7 +137,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Every third auto-attack with a twin blade deals +15 DMG to a nearby enemy.")
                 .Price(2)
-                .RequirementSkill(SkillType.TwoHanded, 40);
+                .RequirementSkill(SkillType.TwinBlade, 40);
         }
 
         private void FeintingCut()
@@ -149,19 +149,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.FeintingCut1)
                 .Description("Deals weapon DMG + 12 and has a Reflex DC12 check to inflict Weakened, reducing Attack by 10% for 12 seconds.")
                 .Price(3)
-                .RequirementSkill(SkillType.TwoHanded, 12)
+                .RequirementSkill(SkillType.TwinBlade, 12)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FeintingCut2)
                 .Description("Deals weapon DMG + 22 and has a Reflex DC15 check to inflict Weakened, reducing Attack by 15% for 12 seconds.")
                 .Price(2)
-                .RequirementSkill(SkillType.TwoHanded, 22)
+                .RequirementSkill(SkillType.TwinBlade, 22)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FeintingCut3)
                 .Description("Deals weapon DMG + 32 and has a Reflex DC18 check to inflict Weakened, reducing Attack by 20% for 15 seconds.")
                 .Price(4)
-                .RequirementSkill(SkillType.TwoHanded, 35);
+                .RequirementSkill(SkillType.TwinBlade, 35);
         }
 
         private void FinalForm()
@@ -172,7 +172,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("For 20 seconds, single-target Twin Blade combat abilities deal +25% damage and you gain +25 Attack Deflection.")
                 .Price(4)
-                .RequirementSkill(SkillType.TwoHanded, 50);
+                .RequirementSkill(SkillType.TwinBlade, 50);
         }
 
         private void FlowingFootwork()
@@ -183,7 +183,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("After using a Twin Blade combat ability, gain +10% Evasion for 8 seconds.")
                 .Price(2)
-                .RequirementSkill(SkillType.TwoHanded, 22);
+                .RequirementSkill(SkillType.TwinBlade, 22);
         }
 
         private void GuardedFlow()
@@ -194,7 +194,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Using a single-target Twin Blade ability grants +8 Attack Deflection for 8 seconds.")
                 .Price(4)
-                .RequirementSkill(SkillType.TwoHanded, 28);
+                .RequirementSkill(SkillType.TwinBlade, 28);
         }
 
         private void MirrorStep()
@@ -205,7 +205,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("When hit by a target you damaged within the last 6 seconds, you have a 15% chance for your next Twin Blade ability to have no attack delay.")
                 .Price(3)
-                .RequirementSkill(SkillType.TwoHanded, 20);
+                .RequirementSkill(SkillType.TwinBlade, 20);
         }
 
         private void Momentum()
@@ -216,12 +216,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Twin Blade abilities that hit 2 or more enemies grant +5% Haste for 8 seconds, up to +15%.")
                 .Price(3)
-                .RequirementSkill(SkillType.TwoHanded, 12)
+                .RequirementSkill(SkillType.TwinBlade, 12)
 
                 .AddPerkLevel()
                 .Description("Momentum can stack up to +25% Haste and restores 2 STM whenever a stack is gained.")
                 .Price(2)
-                .RequirementSkill(SkillType.TwoHanded, 32);
+                .RequirementSkill(SkillType.TwinBlade, 32);
         }
 
         private void PerfectBalance()
@@ -232,7 +232,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Single-target Twin Blade abilities restore 3 STM. Area Twin Blade abilities restore 1 STM per target hit, up to 5 STM. This can only trigger once every 8 seconds.")
                 .Price(4)
-                .RequirementSkill(SkillType.TwoHanded, 48);
+                .RequirementSkill(SkillType.TwinBlade, 48);
         }
 
         private void PrecisionArc()
@@ -243,7 +243,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Single-target critical hits reduce the target's Defense by 10% for 10 seconds.")
                 .Price(3)
-                .RequirementSkill(SkillType.TwoHanded, 40);
+                .RequirementSkill(SkillType.TwinBlade, 40);
         }
 
         private void PunishingAngle()
@@ -254,7 +254,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Deal +12% damage to targets affected by Weakened or Hamstring.")
                 .Price(2)
-                .RequirementSkill(SkillType.TwoHanded, 32);
+                .RequirementSkill(SkillType.TwinBlade, 32);
         }
 
         private void ReversalCut()
@@ -266,7 +266,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ReversalCut1)
                 .Description("Can be used after you are hit. Deals weapon DMG + 40 and has a Reflex DC16 check to inflict Dazed for 3 seconds.")
                 .Price(3)
-                .RequirementSkill(SkillType.TwoHanded, 38);
+                .RequirementSkill(SkillType.TwinBlade, 38);
         }
 
         private void SplitGuardStrike()
@@ -278,19 +278,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.SplitGuardStrike1)
                 .Description("Deals weapon DMG + 10 and grants +15% Defense for 10 seconds.")
                 .Price(2)
-                .RequirementSkill(SkillType.TwoHanded, 8)
+                .RequirementSkill(SkillType.TwinBlade, 8)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SplitGuardStrike2)
                 .Description("Deals weapon DMG + 22 and grants +20% Defense for 10 seconds.")
                 .Price(4)
-                .RequirementSkill(SkillType.TwoHanded, 18)
+                .RequirementSkill(SkillType.TwinBlade, 18)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SplitGuardStrike3)
                 .Description("Deals weapon DMG + 34 and grants +25% Defense for 10 seconds.")
                 .Price(3)
-                .RequirementSkill(SkillType.TwoHanded, 30);
+                .RequirementSkill(SkillType.TwinBlade, 30);
         }
 
         private void StormRelease()
@@ -302,7 +302,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.StormRelease1)
                 .Description("Consume all Momentum stacks to deal weapon DMG + 15 per stack to all nearby enemies.")
                 .Price(3)
-                .RequirementSkill(SkillType.TwoHanded, 45);
+                .RequirementSkill(SkillType.TwinBlade, 45);
         }
 
         private void SweepingAdvance()
@@ -314,7 +314,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.SweepingAdvance1)
                 .Description("Deals weapon DMG + 24 to enemies in a line. If this hits 3 or more enemies, restore 6 STM and gain +10% Haste for 8 seconds.")
                 .Price(3)
-                .RequirementSkill(SkillType.TwoHanded, 38);
+                .RequirementSkill(SkillType.TwinBlade, 38);
         }
 
         private void TempestBloom()
@@ -326,7 +326,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.TempestBloom1)
                 .Description("Channel for up to 6 seconds, striking all nearby enemies every 2 seconds for weapon DMG + 20. The final hit has a Reflex DC18 check to inflict Knockdown for 3 seconds.")
                 .Price(4)
-                .RequirementSkill(SkillType.TwoHanded, 50);
+                .RequirementSkill(SkillType.TwinBlade, 50);
         }
 
     }

@@ -8,6 +8,8 @@ using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.MigrationService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.CraftService;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 {
@@ -246,12 +248,19 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             {
                 var jObject = JObject.Parse(dbPlayerJson);
                 var refundAmount = CalculateRefundAmount(jObject["Perks"] as JObject);
+                WeaponBlueprintPerkMigration.CollapsePlayerPerks(jObject, out var weaponBlueprintRefundAmount);
+                refundAmount += weaponBlueprintRefundAmount;
+                DroidBoostRecipeMigration.ExpandPlayerRecipeDictionaries(jObject);
 
                 RemoveInvalidEnumDictionaryKeys<PerkType>(jObject["Perks"] as JObject);
                 RemoveInvalidEnumDictionaryKeys<PerkType>(jObject["UnlockedPerks"] as JObject);
                 RemoveInvalidEnumDictionaryKeys<RecastGroup>(jObject["RecastTimes"] as JObject);
+                RemoveInvalidEnumDictionaryKeys<RecipeType>(jObject["UnlockedRecipes"] as JObject);
+                RemoveInvalidEnumDictionaryKeys<RecipeType>(jObject["CraftedRecipes"] as JObject);
+                RemoveInvalidSkillDictionaryKeys(jObject);
 
                 var dbPlayer = jObject.ToObject<Player>();
+                EnsureDefinedPlayerSkills(dbPlayer);
                 dbPlayer.RebuildComplete = false;
 
                 if (refundAmount > 0)
@@ -330,6 +339,35 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             foreach (var property in keysToRemove)
             {
                 property.Remove();
+            }
+        }
+
+        private static void RemoveInvalidSkillDictionaryKeys(JObject player)
+        {
+            RemoveInvalidEnumDictionaryKeys<SkillType>(player["Skills"] as JObject);
+            RemoveInvalidEnumDictionaryKeys<SkillType>(player["Control"] as JObject);
+            RemoveInvalidEnumDictionaryKeys<SkillType>(player["Craftsmanship"] as JObject);
+            RemoveInvalidEnumDictionaryKeys<SkillType>(player["CPBonus"] as JObject);
+
+            if (player["Settings"] is JObject settings)
+                RemoveInvalidEnumDictionaryKeys<SkillType>(settings["LanguageChatColors"] as JObject);
+        }
+
+        private static void EnsureDefinedPlayerSkills(Player dbPlayer)
+        {
+            dbPlayer.Skills ??= new Dictionary<SkillType, PlayerSkill>();
+            dbPlayer.Control ??= new Dictionary<SkillType, int>();
+            dbPlayer.Craftsmanship ??= new Dictionary<SkillType, int>();
+            dbPlayer.CPBonus ??= new Dictionary<SkillType, int>();
+            dbPlayer.Settings ??= new PlayerSettings();
+            dbPlayer.Settings.LanguageChatColors ??= new Dictionary<SkillType, PlayerColor>();
+
+            foreach (SkillType skillType in Enum.GetValues(typeof(SkillType)))
+            {
+                if (skillType == SkillType.Invalid)
+                    continue;
+
+                dbPlayer.Skills.TryAdd(skillType, new PlayerSkill());
             }
         }
     }

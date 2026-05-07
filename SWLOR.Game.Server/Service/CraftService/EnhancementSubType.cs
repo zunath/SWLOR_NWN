@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace SWLOR.Game.Server.Service.CraftService
 {
@@ -191,14 +191,31 @@ namespace SWLOR.Game.Server.Service.CraftService
         DroidAGI = 109,
         [EnhancementSubType("Droid - SOC")]
         DroidSOC = 110,
-        [EnhancementSubType("Droid - 1-Handed")]
-        Droid1Handed = 111,
-        [EnhancementSubType("Droid - 2-Handed")]
-        Droid2Handed = 112,
-        [EnhancementSubType("Droid - Martial Arts")]
-        DroidMartialArts = 113,
-        [EnhancementSubType("Droid - Ranged")]
-        DroidRanged = 114,
+        // 111-114 are free.
+        [EnhancementSubType("Droid - Vibroblade")]
+        DroidVibroblade = 115,
+        [EnhancementSubType("Droid - Vibroknife")]
+        DroidVibroknife = 116,
+        [EnhancementSubType("Droid - Lightsaber")]
+        DroidLightsaber = 117,
+        [EnhancementSubType("Droid - Heavy Vibroblade")]
+        DroidHeavyVibroblade = 118,
+        [EnhancementSubType("Droid - Spear")]
+        DroidSpear = 119,
+        [EnhancementSubType("Droid - Twin Blade")]
+        DroidTwinBlade = 120,
+        [EnhancementSubType("Droid - Saberstaff")]
+        DroidSaberstaff = 121,
+        [EnhancementSubType("Droid - Katar")]
+        DroidKatar = 122,
+        [EnhancementSubType("Droid - Staff")]
+        DroidStaff = 123,
+        [EnhancementSubType("Droid - Pistol")]
+        DroidPistol = 124,
+        [EnhancementSubType("Droid - Rifle")]
+        DroidRifle = 125,
+        [EnhancementSubType("Droid - Throwing")]
+        DroidThrowing = 126,
 
 
     }

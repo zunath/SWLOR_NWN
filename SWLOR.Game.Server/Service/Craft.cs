@@ -702,14 +702,30 @@ namespace SWLOR.Game.Server.Service
                     return ItemPropertyCustom(ItemPropertyType.DroidStat, 10, amount);
                 case EnhancementSubType.DroidSOC: // Droid: SOC
                     return ItemPropertyCustom(ItemPropertyType.DroidStat, 11, amount);
-                case EnhancementSubType.Droid1Handed: // Droid: 1-Handed
-                    return ItemPropertyCustom(ItemPropertyType.DroidStat, 12, amount);
-                case EnhancementSubType.Droid2Handed: // Droid: 2-Handed
-                    return ItemPropertyCustom(ItemPropertyType.DroidStat, 13, amount);
-                case EnhancementSubType.DroidMartialArts: // Droid: Martial Arts
-                    return ItemPropertyCustom(ItemPropertyType.DroidStat, 14, amount);
-                case EnhancementSubType.DroidRanged: // Droid: Ranged
-                    return ItemPropertyCustom(ItemPropertyType.DroidStat, 15, amount);
+                case EnhancementSubType.DroidVibroblade: // Droid: Vibroblade
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Vibroblade, amount);
+                case EnhancementSubType.DroidVibroknife: // Droid: Vibroknife
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Vibroknife, amount);
+                case EnhancementSubType.DroidLightsaber: // Droid: Lightsaber
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Lightsaber, amount);
+                case EnhancementSubType.DroidHeavyVibroblade: // Droid: Heavy Vibroblade
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.HeavyVibroblade, amount);
+                case EnhancementSubType.DroidSpear: // Droid: Spear
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Spear, amount);
+                case EnhancementSubType.DroidTwinBlade: // Droid: Twin Blade
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.TwinBlade, amount);
+                case EnhancementSubType.DroidSaberstaff: // Droid: Saberstaff
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Saberstaff, amount);
+                case EnhancementSubType.DroidKatar: // Droid: Katar
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Katar, amount);
+                case EnhancementSubType.DroidStaff: // Droid: Staff
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Staff, amount);
+                case EnhancementSubType.DroidPistol: // Droid: Pistol
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Pistol, amount);
+                case EnhancementSubType.DroidRifle: // Droid: Rifle
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Rifle, amount);
+                case EnhancementSubType.DroidThrowing: // Droid: Throwing
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Throwing, amount);
             }
 
             throw new Exception("Unsupported enhancement type.");

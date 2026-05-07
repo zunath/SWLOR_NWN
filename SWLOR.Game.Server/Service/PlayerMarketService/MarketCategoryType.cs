@@ -9,12 +9,12 @@ namespace SWLOR.Game.Server.Service.PlayerMarketService
 
         [MarketCategory("Vibroblade",  true)]
         Vibroblade = 1,
-        [MarketCategory("Fin. Vibroblade",  true)]
-        FinesseVibroblade = 2,
-        [MarketCategory("Hvy. Vibroblade", true)]
+        [MarketCategory("Vibroknife",  true)]
+        Vibroknife = 2,
+        [MarketCategory("Heavy Vibroblade", true)]
         HeavyVibroblade = 3,
-        [MarketCategory("Polearm",  true)]
-        Polearm = 4,
+        [MarketCategory("Spear",  true)]
+        Spear = 4,
         [MarketCategory("Katar",  true)]
         Katar = 5,
         [MarketCategory("Staff",  true)]

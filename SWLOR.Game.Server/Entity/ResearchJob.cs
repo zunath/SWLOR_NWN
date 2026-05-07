@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using SWLOR.Game.Server.Service.CraftService;
 
 namespace SWLOR.Game.Server.Entity

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DroidService;
@@ -32,10 +32,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private int _agility;
         private int _willpower;
         private int _social;
-        private int _oneHanded;
-        private int _twoHanded;
-        private int _martialArts;
-        private int _ranged;
+        private int _vibroblade;
+        private int _vibroknife;
+        private int _lightsaber;
+        private int _heavyVibroblade;
+        private int _spear;
+        private int _twinBlade;
+        private int _saberstaff;
+        private int _katar;
+        private int _staff;
+        private int _pistol;
+        private int _rifle;
+        private int _throwing;
 
         public string Error
         {
@@ -139,25 +147,73 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public string OneHanded
+        public string Vibroblade
         {
             get => Get<string>();
             set => Set(value);
         }
 
-        public string TwoHanded
+        public string Vibroknife
         {
             get => Get<string>();
             set => Set(value);
         }
 
-        public string MartialArts
+        public string Lightsaber
         {
             get => Get<string>();
             set => Set(value);
         }
 
-        public string Ranged
+        public string HeavyVibroblade
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string Spear
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string TwinBlade
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string Saberstaff
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string Katar
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string Staff
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string Pistol
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string Rifle
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string Throwing
         {
             get => Get<string>();
             set => Set(value);
@@ -218,10 +274,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _agility = 0;
             _willpower = 0;
             _social = 0;
-            _oneHanded = 0;
-            _twoHanded = 0;
-            _martialArts = 0;
-            _ranged = 0;
+            _vibroblade = 0;
+            _vibroknife = 0;
+            _lightsaber = 0;
+            _heavyVibroblade = 0;
+            _spear = 0;
+            _twinBlade = 0;
+            _saberstaff = 0;
+            _katar = 0;
+            _staff = 0;
+            _pistol = 0;
+            _rifle = 0;
+            _throwing = 0;
 
             RefreshStats();
 
@@ -293,10 +357,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Willpower = $"WIL: {_willpower}";
             Agility = $"AGI: {_agility}";
             Social = $"SOC: {_social}";
-            OneHanded = $"1-Handed: {_oneHanded}";
-            TwoHanded = $"2-Handed: {_twoHanded}";
-            MartialArts = $"Martial Arts: {_martialArts}";
-            Ranged = $"Ranged: {_ranged}";
+            Vibroblade = $"Vibroblade: {_vibroblade}";
+            Vibroknife = $"Vibroknife: {_vibroknife}";
+            Lightsaber = $"Lightsaber: {_lightsaber}";
+            HeavyVibroblade = $"Heavy Vibroblade: {_heavyVibroblade}";
+            Spear = $"Spear: {_spear}";
+            TwinBlade = $"Twin Blade: {_twinBlade}";
+            Saberstaff = $"Saberstaff: {_saberstaff}";
+            Katar = $"Katar: {_katar}";
+            Staff = $"Staff: {_staff}";
+            Pistol = $"Pistol: {_pistol}";
+            Rifle = $"Rifle: {_rifle}";
+            Throwing = $"Throwing: {_throwing}";
         }
 
         private void AddPart(DroidPartItemPropertyDetails part, uint item)
@@ -369,10 +441,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _willpower += part.WIL;
             _agility += part.AGI;
             _social += part.SOC;
-            _oneHanded += part.OneHanded;
-            _twoHanded += part.TwoHanded;
-            _martialArts += part.MartialArts;
-            _ranged += part.Ranged;
+            _vibroblade += part.Vibroblade;
+            _vibroknife += part.Vibroknife;
+            _lightsaber += part.Lightsaber;
+            _heavyVibroblade += part.HeavyVibroblade;
+            _spear += part.Spear;
+            _twinBlade += part.TwinBlade;
+            _saberstaff += part.Saberstaff;
+            _katar += part.Katar;
+            _staff += part.Staff;
+            _pistol += part.Pistol;
+            _rifle += part.Rifle;
+            _throwing += part.Throwing;
 
             RefreshStats();
         }
@@ -415,10 +495,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _willpower -= part.WIL;
             _agility -= part.AGI;
             _social -= part.SOC;
-            _oneHanded -= part.OneHanded;
-            _twoHanded -= part.TwoHanded;
-            _martialArts -= part.MartialArts;
-            _ranged -= part.Ranged;
+            _vibroblade -= part.Vibroblade;
+            _vibroknife -= part.Vibroknife;
+            _lightsaber -= part.Lightsaber;
+            _heavyVibroblade -= part.HeavyVibroblade;
+            _spear -= part.Spear;
+            _twinBlade -= part.TwinBlade;
+            _saberstaff -= part.Saberstaff;
+            _katar -= part.Katar;
+            _staff -= part.Staff;
+            _pistol -= part.Pistol;
+            _rifle -= part.Rifle;
+            _throwing -= part.Throwing;
 
             RefreshStats();
         }
@@ -704,10 +792,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var ipWillpower = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.WIL, _willpower);
                 var ipSocial = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.SOC, _social);
 
-                var ipOneHanded = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.OneHanded, _oneHanded);
-                var ipTwoHanded = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.TwoHanded, _twoHanded);
-                var ipMartialArts = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.MartialArts, _martialArts);
-                var ipRanged = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Ranged, _ranged);
+                var ipVibroblade = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Vibroblade, _vibroblade);
+                var ipVibroknife = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Vibroknife, _vibroknife);
+                var ipLightsaber = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Lightsaber, _lightsaber);
+                var ipHeavyVibroblade = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.HeavyVibroblade, _heavyVibroblade);
+                var ipSpear = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Spear, _spear);
+                var ipTwinBlade = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.TwinBlade, _twinBlade);
+                var ipSaberstaff = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Saberstaff, _saberstaff);
+                var ipKatar = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Katar, _katar);
+                var ipStaff = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Staff, _staff);
+                var ipPistol = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Pistol, _pistol);
+                var ipRifle = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Rifle, _rifle);
+                var ipThrowing = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Throwing, _throwing);
 
                 BiowareXP2.IPSafeAddItemProperty(controller, ipPersonality, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
                 BiowareXP2.IPSafeAddItemProperty(controller, ipTier, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
@@ -720,10 +816,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 BiowareXP2.IPSafeAddItemProperty(controller, ipVitality, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
                 BiowareXP2.IPSafeAddItemProperty(controller, ipWillpower, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
                 BiowareXP2.IPSafeAddItemProperty(controller, ipSocial, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-                BiowareXP2.IPSafeAddItemProperty(controller, ipOneHanded, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-                BiowareXP2.IPSafeAddItemProperty(controller, ipTwoHanded, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-                BiowareXP2.IPSafeAddItemProperty(controller, ipMartialArts, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-                BiowareXP2.IPSafeAddItemProperty(controller, ipRanged, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+                BiowareXP2.IPSafeAddItemProperty(controller, ipVibroblade, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+                BiowareXP2.IPSafeAddItemProperty(controller, ipVibroknife, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+                BiowareXP2.IPSafeAddItemProperty(controller, ipLightsaber, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+                BiowareXP2.IPSafeAddItemProperty(controller, ipHeavyVibroblade, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+                BiowareXP2.IPSafeAddItemProperty(controller, ipSpear, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+                BiowareXP2.IPSafeAddItemProperty(controller, ipTwinBlade, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+                BiowareXP2.IPSafeAddItemProperty(controller, ipSaberstaff, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+                BiowareXP2.IPSafeAddItemProperty(controller, ipKatar, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+                BiowareXP2.IPSafeAddItemProperty(controller, ipStaff, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+                BiowareXP2.IPSafeAddItemProperty(controller, ipPistol, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+                BiowareXP2.IPSafeAddItemProperty(controller, ipRifle, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+                BiowareXP2.IPSafeAddItemProperty(controller, ipThrowing, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
 
                 constructedDroid.SerializedCPU = _cpuItem;
                 constructedDroid.SerializedHead = _headItem;

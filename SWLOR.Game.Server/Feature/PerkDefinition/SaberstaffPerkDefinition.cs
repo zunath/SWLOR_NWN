@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("While both FP and STM are above 50%, gain +10% Attack and +10% Force Attack.")
                 .Price(4)
-                .RequirementSkill(SkillType.TwoHanded, 48)
+                .RequirementSkill(SkillType.Saberstaff, 48)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
         }
 
@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ConduitFlare1)
                 .Description("Deals weapon DMG + 20 to all nearby enemies and has a Will DC16 check to inflict Force Disruption for 8 seconds.")
                 .Price(3)
-                .RequirementSkill(SkillType.TwoHanded, 38)
+                .RequirementSkill(SkillType.Saberstaff, 38)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
         }
 
@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("While active, grants +15% Force Attack and +15% Force Defense, but reduces Attack by 15%.")
                 .Price(2)
-                .RequirementSkill(SkillType.TwoHanded, 15)
+                .RequirementSkill(SkillType.Saberstaff, 15)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
         }
 
@@ -81,19 +81,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Gain +5% Force Defense and saberstaff attacks restore 1 FP. FP restoration can only trigger once every 4 seconds.")
                 .Price(2)
-                .RequirementSkill(SkillType.TwoHanded, 5)
+                .RequirementSkill(SkillType.Saberstaff, 5)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
                 .Description("Saberstaff attacks restore 2 FP and your Force Defense bonus increases to +10% total.")
                 .Price(3)
-                .RequirementSkill(SkillType.TwoHanded, 20)
+                .RequirementSkill(SkillType.Saberstaff, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
                 .Description("Saberstaff attacks restore 3 FP and your Force Defense bonus increases to +15% total.")
                 .Price(3)
-                .RequirementSkill(SkillType.TwoHanded, 40)
+                .RequirementSkill(SkillType.Saberstaff, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
         }
 
@@ -105,7 +105,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Using a Force ability causes your next saberstaff attack within 8 seconds to deal +15 DMG. Using a saberstaff ability reduces the FP cost of your next Force ability by 2.")
                 .Price(2)
-                .RequirementSkill(SkillType.TwoHanded, 32)
+                .RequirementSkill(SkillType.Saberstaff, 32)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
         }
 
@@ -117,7 +117,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("After hitting 3 or more enemies with one saberstaff ability, gain +15% Haste and +10 Attack Deflection for 12 seconds.")
                 .Price(4)
-                .RequirementSkill(SkillType.TwoHanded, 48)
+                .RequirementSkill(SkillType.Saberstaff, 48)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
         }
 
@@ -130,21 +130,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.FocusedArc1)
                 .Description("Deals weapon DMG + 10 and has a Will DC12 check to inflict Force Erosion for 12 seconds.")
                 .Price(2)
-                .RequirementSkill(SkillType.TwoHanded, 8)
+                .RequirementSkill(SkillType.Saberstaff, 8)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FocusedArc2)
                 .Description("Deals weapon DMG + 22 and has a Will DC15 check to inflict Force Erosion for 15 seconds.")
                 .Price(4)
-                .RequirementSkill(SkillType.TwoHanded, 18)
+                .RequirementSkill(SkillType.Saberstaff, 18)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FocusedArc3)
                 .Description("Deals weapon DMG + 34 and has a Will DC18 check to inflict Force Erosion for 18 seconds.")
                 .Price(3)
-                .RequirementSkill(SkillType.TwoHanded, 30)
+                .RequirementSkill(SkillType.Saberstaff, 30)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
         }
 
@@ -156,7 +156,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("For 20 seconds, 25% of STM spent on saberstaff abilities is restored as FP and 25% of FP spent on Force abilities is restored as STM.")
                 .Price(3)
-                .RequirementSkill(SkillType.TwoHanded, 45)
+                .RequirementSkill(SkillType.Saberstaff, 45)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
         }
 
@@ -169,7 +169,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceGyre1)
                 .Description("Deals weapon DMG + 24 to all nearby enemies and has a Will DC16 check to inflict Force Erosion for 12 seconds.")
                 .Price(3)
-                .RequirementSkill(SkillType.TwoHanded, 38)
+                .RequirementSkill(SkillType.Saberstaff, 38)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
         }
 
@@ -181,7 +181,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Allies in an area of effect (sphere) gain +15% Force Defense for 45 seconds. You gain +10 Attack Deflection.")
                 .Price(3)
-                .RequirementSkill(SkillType.TwoHanded, 25)
+                .RequirementSkill(SkillType.Saberstaff, 25)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
         }
 
@@ -193,7 +193,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Hitting 2 or more enemies with a saberstaff ability restores 2 FP and 2 STM. This can only trigger once every 4 seconds.")
                 .Price(3)
-                .RequirementSkill(SkillType.TwoHanded, 12)
+                .RequirementSkill(SkillType.Saberstaff, 12)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
         }
 
@@ -205,19 +205,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Gain +20 Attack Deflection and +20% Force Defense for 10 seconds.")
                 .Price(3)
-                .RequirementSkill(SkillType.TwoHanded, 12)
+                .RequirementSkill(SkillType.Saberstaff, 12)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
                 .Description("Gain +30 Attack Deflection and +30% Force Defense for 12 seconds.")
                 .Price(4)
-                .RequirementSkill(SkillType.TwoHanded, 28)
+                .RequirementSkill(SkillType.Saberstaff, 28)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
                 .Description("Gain +40 Attack Deflection and +35% Force Defense for 15 seconds.")
                 .Price(4)
-                .RequirementSkill(SkillType.TwoHanded, 42)
+                .RequirementSkill(SkillType.Saberstaff, 42)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
         }
 
@@ -229,7 +229,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("For 20 seconds, saberstaff attacks restore 5 FP and saberstaff combat abilities cost 3 less STM. The effect ends early if FP reaches zero.")
                 .Price(4)
-                .RequirementSkill(SkillType.TwoHanded, 50)
+                .RequirementSkill(SkillType.Saberstaff, 50)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
         }
 
@@ -242,14 +242,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.MaelstromArc1)
                 .Description("Deals weapon DMG + 22 to enemies in a cone and has a Will DC14 check to inflict Disoriented for 12 seconds.")
                 .Price(3)
-                .RequirementSkill(SkillType.TwoHanded, 25)
+                .RequirementSkill(SkillType.Saberstaff, 25)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.MaelstromArc2)
                 .Description("Deals weapon DMG + 32 to enemies in a cone and has a Will DC16 check to inflict Disoriented for 15 seconds.")
                 .Price(4)
-                .RequirementSkill(SkillType.TwoHanded, 35)
+                .RequirementSkill(SkillType.Saberstaff, 35)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
         }
 
@@ -262,7 +262,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.SaberCyclone1)
                 .Description("Channel for up to 6 seconds, hitting all nearby enemies every 2 seconds for weapon DMG + 25 and restoring 3 FP per enemy hit.")
                 .Price(4)
-                .RequirementSkill(SkillType.TwoHanded, 50)
+                .RequirementSkill(SkillType.Saberstaff, 50)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
         }
 
@@ -275,14 +275,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.SeverFocus1)
                 .Description("Deals weapon DMG + 18 and has a Will DC14 check to inflict Fractured Focus for 20 seconds.")
                 .Price(2)
-                .RequirementSkill(SkillType.TwoHanded, 22)
+                .RequirementSkill(SkillType.Saberstaff, 22)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SeverFocus2)
                 .Description("Deals weapon DMG + 28 and has a Will DC18 check to inflict Fractured Focus for 30 seconds.")
                 .Price(4)
-                .RequirementSkill(SkillType.TwoHanded, 35)
+                .RequirementSkill(SkillType.Saberstaff, 35)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
         }
 
@@ -294,13 +294,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Gain +10 Attack Deflection. After deflecting an attack, your next Circle Slash deals +8 DMG.")
                 .Price(2)
-                .RequirementSkill(SkillType.TwoHanded, 22)
+                .RequirementSkill(SkillType.Saberstaff, 22)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
                 .Description("Gain +20 Attack Deflection total. Deflecting an attack restores 4 FP.")
                 .Price(2)
-                .RequirementSkill(SkillType.TwoHanded, 40)
+                .RequirementSkill(SkillType.Saberstaff, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
         }
 
@@ -312,7 +312,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Saberstaff combat abilities cost 2 less STM while your FP is above 50%.")
                 .Price(2)
-                .RequirementSkill(SkillType.TwoHanded, 32)
+                .RequirementSkill(SkillType.Saberstaff, 32)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
         }
 
@@ -325,7 +325,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.TempestRelease1)
                 .Description("Deals weapon DMG + 20 to all nearby enemies. Damage increases by +2 per 10 FP you currently have, up to +20 DMG.")
                 .Price(3)
-                .RequirementSkill(SkillType.TwoHanded, 45)
+                .RequirementSkill(SkillType.Saberstaff, 45)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
         }
 
@@ -337,7 +337,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("While active, grants +15% Haste and +10% Force Attack, but reduces Defense by 20%.")
                 .Price(2)
-                .RequirementSkill(SkillType.TwoHanded, 15)
+                .RequirementSkill(SkillType.Saberstaff, 15)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
         }
 

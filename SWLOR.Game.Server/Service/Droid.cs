@@ -337,29 +337,41 @@ namespace SWLOR.Game.Server.Service
                         case DroidStatSubType.SOC:
                             details.SOC += value;
                             break;
-                        case DroidStatSubType.OneHanded:
-                            if (!details.Skills.ContainsKey(SkillType.OneHanded))
-                                details.Skills[SkillType.OneHanded] = value;
-                            else
-                                details.Skills[SkillType.OneHanded] += value;
+                        case DroidStatSubType.Vibroblade:
+                            AddSkillBonus(details.Skills, SkillType.Vibroblade, value);
                             break;
-                        case DroidStatSubType.TwoHanded:
-                            if (!details.Skills.ContainsKey(SkillType.TwoHanded))
-                                details.Skills[SkillType.TwoHanded] = value;
-                            else
-                                details.Skills[SkillType.TwoHanded] += value;
+                        case DroidStatSubType.Vibroknife:
+                            AddSkillBonus(details.Skills, SkillType.Vibroknife, value);
                             break;
-                        case DroidStatSubType.MartialArts:
-                            if (!details.Skills.ContainsKey(SkillType.MartialArts))
-                                details.Skills[SkillType.MartialArts] = value;
-                            else
-                                details.Skills[SkillType.MartialArts] += value;
+                        case DroidStatSubType.Lightsaber:
+                            AddSkillBonus(details.Skills, SkillType.Lightsaber, value);
                             break;
-                        case DroidStatSubType.Ranged:
-                            if (!details.Skills.ContainsKey(SkillType.Ranged))
-                                details.Skills[SkillType.Ranged] = value;
-                            else
-                                details.Skills[SkillType.Ranged] += value;
+                        case DroidStatSubType.HeavyVibroblade:
+                            AddSkillBonus(details.Skills, SkillType.HeavyVibroblade, value);
+                            break;
+                        case DroidStatSubType.Spear:
+                            AddSkillBonus(details.Skills, SkillType.Spear, value);
+                            break;
+                        case DroidStatSubType.TwinBlade:
+                            AddSkillBonus(details.Skills, SkillType.TwinBlade, value);
+                            break;
+                        case DroidStatSubType.Saberstaff:
+                            AddSkillBonus(details.Skills, SkillType.Saberstaff, value);
+                            break;
+                        case DroidStatSubType.Katar:
+                            AddSkillBonus(details.Skills, SkillType.Katar, value);
+                            break;
+                        case DroidStatSubType.Staff:
+                            AddSkillBonus(details.Skills, SkillType.Staff, value);
+                            break;
+                        case DroidStatSubType.Pistol:
+                            AddSkillBonus(details.Skills, SkillType.Pistol, value);
+                            break;
+                        case DroidStatSubType.Rifle:
+                            AddSkillBonus(details.Skills, SkillType.Rifle, value);
+                            break;
+                        case DroidStatSubType.Throwing:
+                            AddSkillBonus(details.Skills, SkillType.Throwing, value);
                             break;
                         default:
                             throw new ArgumentOutOfRangeException();
@@ -388,6 +400,14 @@ namespace SWLOR.Game.Server.Service
             details.CustomName = constructedDroid.Name;
 
             return details;
+        }
+
+        private static void AddSkillBonus(IDictionary<SkillType, int> skills, SkillType skill, int value)
+        {
+            if (!skills.ContainsKey(skill))
+                skills[skill] = value;
+            else
+                skills[skill] += value;
         }
 
         /// <summary>
@@ -439,17 +459,41 @@ namespace SWLOR.Game.Server.Service
                         case DroidStatSubType.SOC:
                             details.SOC += value;
                             break;
-                        case DroidStatSubType.OneHanded:
-                            details.OneHanded += value;
+                        case DroidStatSubType.Vibroblade:
+                            details.Vibroblade += value;
                             break;
-                        case DroidStatSubType.TwoHanded:
-                            details.TwoHanded += value;
+                        case DroidStatSubType.Vibroknife:
+                            details.Vibroknife += value;
                             break;
-                        case DroidStatSubType.MartialArts:
-                            details.MartialArts += value;
+                        case DroidStatSubType.Lightsaber:
+                            details.Lightsaber += value;
                             break;
-                        case DroidStatSubType.Ranged:
-                            details.Ranged += value;
+                        case DroidStatSubType.HeavyVibroblade:
+                            details.HeavyVibroblade += value;
+                            break;
+                        case DroidStatSubType.Spear:
+                            details.Spear += value;
+                            break;
+                        case DroidStatSubType.TwinBlade:
+                            details.TwinBlade += value;
+                            break;
+                        case DroidStatSubType.Saberstaff:
+                            details.Saberstaff += value;
+                            break;
+                        case DroidStatSubType.Katar:
+                            details.Katar += value;
+                            break;
+                        case DroidStatSubType.Staff:
+                            details.Staff += value;
+                            break;
+                        case DroidStatSubType.Pistol:
+                            details.Pistol += value;
+                            break;
+                        case DroidStatSubType.Rifle:
+                            details.Rifle += value;
+                            break;
+                        case DroidStatSubType.Throwing:
+                            details.Throwing += value;
                             break;
                         default:
                             throw new ArgumentOutOfRangeException();

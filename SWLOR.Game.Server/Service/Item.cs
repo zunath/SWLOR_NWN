@@ -85,7 +85,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void LoadItemToDamageStatMapping()
         {
-            // One-Handed Skills
+            // Light Weapon Skills
             _itemToDamageAbilityMapping[BaseItem.BastardSword] = AbilityType.Might;
             _itemToDamageAbilityMapping[BaseItem.BattleAxe] = AbilityType.Might;
             _itemToDamageAbilityMapping[BaseItem.Dagger] = AbilityType.Perception;
@@ -106,7 +106,7 @@ namespace SWLOR.Game.Server.Service
             _itemToDamageAbilityMapping[BaseItem.Lightsaber] = AbilityType.Perception;
             _itemToDamageAbilityMapping[BaseItem.Electroblade] = AbilityType.Perception;
 
-            // Two-Handed Skills
+            // Heavy Weapon Skills
             _itemToDamageAbilityMapping[BaseItem.DireMace] = AbilityType.Might;
             _itemToDamageAbilityMapping[BaseItem.DwarvenWarAxe] = AbilityType.Might;
             _itemToDamageAbilityMapping[BaseItem.GreatAxe] = AbilityType.Might;
@@ -122,7 +122,7 @@ namespace SWLOR.Game.Server.Service
             _itemToDamageAbilityMapping[BaseItem.Saberstaff] = AbilityType.Perception;
             _itemToDamageAbilityMapping[BaseItem.TwinElectroBlade] = AbilityType.Perception;
 
-            // Martial Arts Skills
+            // Katar/Staff Skills
             _itemToDamageAbilityMapping[BaseItem.Club] = AbilityType.Might;
             _itemToDamageAbilityMapping[BaseItem.Bracer] = AbilityType.Might;
             _itemToDamageAbilityMapping[BaseItem.Gloves] = AbilityType.Might;
@@ -154,7 +154,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void LoadItemToAccuracyStatMapping()
         {
-            // One-Handed Skills
+            // Light Weapon Skills
             _itemToAccuracyAbilityMapping[BaseItem.BastardSword] = AbilityType.Perception;
             _itemToAccuracyAbilityMapping[BaseItem.BattleAxe] = AbilityType.Perception;
             _itemToAccuracyAbilityMapping[BaseItem.Dagger] = AbilityType.Agility;
@@ -175,7 +175,7 @@ namespace SWLOR.Game.Server.Service
             _itemToAccuracyAbilityMapping[BaseItem.Lightsaber] = AbilityType.Agility;
             _itemToAccuracyAbilityMapping[BaseItem.Electroblade] = AbilityType.Agility;
 
-            // Two-Handed Skills
+            // Heavy Weapon Skills
             _itemToAccuracyAbilityMapping[BaseItem.DireMace] = AbilityType.Perception;
             _itemToAccuracyAbilityMapping[BaseItem.DwarvenWarAxe] = AbilityType.Perception;
             _itemToAccuracyAbilityMapping[BaseItem.GreatAxe] = AbilityType.Perception;
@@ -191,7 +191,7 @@ namespace SWLOR.Game.Server.Service
             _itemToAccuracyAbilityMapping[BaseItem.Saberstaff] = AbilityType.Agility;
             _itemToAccuracyAbilityMapping[BaseItem.TwinElectroBlade] = AbilityType.Agility;
 
-            // Martial Arts Skills
+            // Katar/Staff Skills
             _itemToAccuracyAbilityMapping[BaseItem.Club] = AbilityType.Perception;
             _itemToAccuracyAbilityMapping[BaseItem.Bracer] = AbilityType.Perception;
             _itemToAccuracyAbilityMapping[BaseItem.Gloves] = AbilityType.Perception;
@@ -665,9 +665,9 @@ namespace SWLOR.Game.Server.Service
         };
 
         /// <summary>
-        /// Retrieves the list of Finesse Vibroblade base item types.
+        /// Retrieves the list of Vibroknife base item types.
         /// </summary>
-        public static List<BaseItem> FinesseVibrobladeBaseItemTypes { get; } = new List<BaseItem>
+        public static List<BaseItem> VibroknifeBaseItemTypes { get; } = new List<BaseItem>
         {
             BaseItem.Dagger,
             BaseItem.Rapier,
@@ -698,9 +698,9 @@ namespace SWLOR.Game.Server.Service
         };
 
         /// <summary>
-        /// Retrieves the list of Polearm base item types.
+        /// Retrieves the list of Spear base item types.
         /// </summary>
-        public static List<BaseItem> PolearmBaseItemTypes { get; } = new List<BaseItem>
+        public static List<BaseItem> SpearBaseItemTypes { get; } = new List<BaseItem>
         {
             BaseItem.Halberd,
             BaseItem.Scythe,
@@ -774,8 +774,8 @@ namespace SWLOR.Game.Server.Service
         };
 
         /// <summary>
-        /// Retrieves the list of One-Handed weapon types.
-        /// These are the weapons which are held in one hand and not necessarily associated with the One-Handed skill.
+        /// Retrieves the list of one-hand melee weapon base item types.
+        /// These are physical equip categories, not skill categories.
         /// </summary>
         public static List<BaseItem> OneHandedMeleeItemTypes { get; } = new List<BaseItem>
         {
@@ -798,8 +798,8 @@ namespace SWLOR.Game.Server.Service
         };
 
         /// <summary>
-        /// Retrieves the list of Two-Handed melee weapon types.
-        /// These are the weapons which are held in two hand and not necessarily associated with the Two-Handed skill.
+        /// Retrieves the list of two-handed melee weapon base item types.
+        /// These are physical equip categories, not skill categories.
         /// </summary>
         public static List<BaseItem> TwoHandedMeleeItemTypes { get; } = new List<BaseItem>
         {

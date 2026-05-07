@@ -58,7 +58,7 @@ The HP calculation is handled by the NWN engine and stored in the `MaxHP` proper
 
 **Components:**
 - Base Attack: 8
-- Skill Level: Highest combat skill (OneHanded, TwoHanded, Ranged, Force)
+- Skill Level: Highest combat skill (explicit weapon skills, Force)
 - Stat: Highest combat stat (Might, Perception, Willpower)
 - Equipment Bonus: Stored in `Attack` or `ForceAttack` property
 
@@ -127,7 +127,7 @@ The HP calculation is handled by the NWN engine and stored in the `MaxHP` proper
 This is a rough estimation based on total skill points, as the actual level calculation is more complex.
 
 ### 11. Highest Combat Skill Level
-**Formula:** `Max(OneHanded, TwoHanded, Ranged, Force)`
+**Formula:** `Max(explicit weapon skills, Force)`
 
 Returns the highest level among all combat skills.
 

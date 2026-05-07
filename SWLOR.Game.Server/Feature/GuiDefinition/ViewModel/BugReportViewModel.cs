@@ -56,6 +56,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
+            if (!Uri.TryCreate(url, UriKind.Absolute, out var webhookUri) ||
+                (webhookUri.Scheme != Uri.UriSchemeHttps && webhookUri.Scheme != Uri.UriSchemeHttp))
+            {
+                SendMessageToPC(Player, ColorToken.Red("ERROR: Unable to send bug report because the configured Discord webhook URL is invalid."));
+                Log.Write(LogGroup.Error, $"Invalid SWLOR_BUG_WEBHOOK_URL configured: {url}");
+                return;
+            }
+
             var authorName = $"{GetName(Player)} ({GetPCPlayerName(Player)}) [{GetPCPublicCDKey(Player)}]";
             var areaName = GetName(area);
             var areaTag = GetTag(area);
@@ -70,8 +78,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             Task.Run(async () =>
             {
-                using (var client = new DiscordWebhookClient(url))
+                try
                 {
+                    using var client = new DiscordWebhookClient(url);
                     var embed = new EmbedBuilder
                     {
                         Title = title,
@@ -123,16 +132,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     };
 
 
-                    try
-                    {
-                        await client.SendMessageAsync(
-                            string.Empty,
-                            embeds: new[] { embed.Build() });
-                    }
-                    catch (Exception ex)
-                    {
-                        Log.Write(LogGroup.Error, $"Failed to submit bug report to Discord webhook. Player={authorName}, Error={ex.ToMessageAndCompleteStacktrace()}");
-                    }
+                    await client.SendMessageAsync(
+                        string.Empty,
+                        embeds: new[] { embed.Build() });
+                }
+                catch (Exception ex)
+                {
+                    Log.Write(LogGroup.Error, $"Failed to submit bug report to Discord webhook. URL={url}, Player={authorName}, Error={ex.ToMessageAndCompleteStacktrace()}");
                 }
             });
 

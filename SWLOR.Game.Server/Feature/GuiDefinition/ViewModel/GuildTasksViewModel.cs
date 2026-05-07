@@ -1,0 +1,253 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
+using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Service.QuestService;
+
+namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
+{
+    public class GuildTasksViewModel: GuiViewModelBase<GuildTasksViewModel, GuildTasksPayload>
+    {
+        private readonly List<string> _questIds = new();
+        private GuildType _guildType;
+        private uint _guildMaster;
+        private int _selectedQuestIndex;
+        private int _selectedRankFilter;
+
+        public GuiBindingList<string> TaskNames
+        {
+            get => Get<GuiBindingList<string>>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<bool> TaskToggles
+        {
+            get => Get<GuiBindingList<bool>>();
+            set => Set(value);
+        }
+        
+        public GuiBindingList<GuiColor> TaskColors
+        {
+            get => Get<GuiBindingList<GuiColor>>();
+            set => Set(value);
+        }
+
+        public string Rank1Text { get => Get<string>(); set => Set(value); }
+        public string Rank2Text { get => Get<string>(); set => Set(value); }
+        public string Rank3Text { get => Get<string>(); set => Set(value); }
+        public string Rank4Text { get => Get<string>(); set => Set(value); }
+        public string Rank5Text { get => Get<string>(); set => Set(value); }
+        public GuiColor Rank1Color { get => Get<GuiColor>(); set => Set(value); }
+        public GuiColor Rank2Color { get => Get<GuiColor>(); set => Set(value); }
+        public GuiColor Rank3Color { get => Get<GuiColor>(); set => Set(value); }
+        public GuiColor Rank4Color { get => Get<GuiColor>(); set => Set(value); }
+        public GuiColor Rank5Color { get => Get<GuiColor>(); set => Set(value); }
+        public bool IsRank1Enabled { get => Get<bool>(); set => Set(value); }
+        public bool IsRank2Enabled { get => Get<bool>(); set => Set(value); }
+        public bool IsRank3Enabled { get => Get<bool>(); set => Set(value); }
+        public bool IsRank4Enabled { get => Get<bool>(); set => Set(value); }
+        public bool IsRank5Enabled { get => Get<bool>(); set => Set(value); }
+
+        public string TaskDetails
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public bool IsAcceptEnabled
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool IsGiveReportEnabled
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        protected override void Initialize(GuildTasksPayload initialPayload)
+        {
+            _guildType = initialPayload.Guild;
+            _guildMaster = initialPayload.GuildMaster;
+            _selectedQuestIndex = -1;
+            _selectedRankFilter = 1;
+
+            Rank1Text = "Rank 1";
+            Rank2Text = "Rank 2";
+            Rank3Text = "Rank 3";
+            Rank4Text = "Rank 4";
+            Rank5Text = "Rank 5";
+
+            RefreshTasks();
+            LoadSelectedTask();
+        }
+
+        private void RefreshTasks()
+        {
+            var playerId = GetObjectUUID(Player);
+            var dbPlayer = DB.Get<Player>(playerId);
+            var playerGuild = dbPlayer.Guilds.ContainsKey(_guildType)
+                ? dbPlayer.Guilds[_guildType]
+                : new PlayerGuild();
+
+            _questIds.Clear();
+            var taskNames = new GuiBindingList<string>();
+            var taskToggles = new GuiBindingList<bool>();
+            var taskColors = new GuiBindingList<GuiColor>();
+            var currentTasks = Guild.GetAllActiveGuildTasks(_guildType);
+            var rankHasTasks = new Dictionary<int, bool> {{1,false}, {2,false}, {3,false}, {4,false}, {5,false}};
+
+            foreach (var (questId, pcQuest) in dbPlayer.Quests)
+            {
+                var task = Quest.GetQuestById(questId);
+                if (task.GuildType != _guildType || pcQuest.DateLastCompleted != null || currentTasks.ContainsKey(questId))
+                    continue;
+                if (task.GuildRank + 1 != _selectedRankFilter)
+                    continue;
+
+                _questIds.Add(questId);
+                taskNames.Add($"{task.Name} [Rank {task.GuildRank + 1}]");
+                taskToggles.Add(false);
+                taskColors.Add(GuiColor.Red);
+                rankHasTasks[task.GuildRank + 1] = true;
+            }
+
+            foreach (var (_, task) in currentTasks)
+            {
+                if (dbPlayer.Quests.ContainsKey(task.QuestId) &&
+                    dbPlayer.Quests[task.QuestId].DateLastCompleted >= Guild.DateTasksLoaded)
+                    continue;
+
+                var playerRank = dbPlayer.Guilds.ContainsKey(task.GuildType)
+                    ? dbPlayer.Guilds[task.GuildType].Rank
+                    : 0;
+
+                if (playerRank < task.GuildRank)
+                    continue;
+                rankHasTasks[task.GuildRank + 1] = true;
+                if (task.GuildRank + 1 != _selectedRankFilter)
+                    continue;
+
+                var statusColor = GuiColor.Green;
+                if (!dbPlayer.Quests.ContainsKey(task.QuestId) ||
+                    (dbPlayer.Quests[task.QuestId].DateLastCompleted != null && dbPlayer.Quests[task.QuestId].TimesCompleted > 0))
+                {
+                    statusColor = new GuiColor(255, 255, 0);
+                }
+
+                _questIds.Add(task.QuestId);
+                taskNames.Add($"{task.Name} [Rank {task.GuildRank + 1}]");
+                taskToggles.Add(false);
+                taskColors.Add(statusColor);
+            }
+
+            TaskNames = taskNames;
+            TaskToggles = taskToggles;
+            TaskColors = taskColors;
+            IsRank1Enabled = rankHasTasks[1] && playerGuild.Rank >= 0;
+            IsRank2Enabled = rankHasTasks[2] && playerGuild.Rank >= 1;
+            IsRank3Enabled = rankHasTasks[3] && playerGuild.Rank >= 2;
+            IsRank4Enabled = rankHasTasks[4] && playerGuild.Rank >= 3;
+            IsRank5Enabled = rankHasTasks[5] && playerGuild.Rank >= 4;
+            Rank1Color = _selectedRankFilter == 1 ? GuiColor.Cyan : GuiColor.White;
+            Rank2Color = _selectedRankFilter == 2 ? GuiColor.Cyan : GuiColor.White;
+            Rank3Color = _selectedRankFilter == 3 ? GuiColor.Cyan : GuiColor.White;
+            Rank4Color = _selectedRankFilter == 4 ? GuiColor.Cyan : GuiColor.White;
+            Rank5Color = _selectedRankFilter == 5 ? GuiColor.Cyan : GuiColor.White;
+        }
+
+        private void LoadSelectedTask()
+        {
+            IsAcceptEnabled = false;
+            IsGiveReportEnabled = false;
+
+            if (_selectedQuestIndex < 0 || _selectedQuestIndex >= _questIds.Count)
+            {
+                TaskDetails = "Select a task to view details.";
+                return;
+            }
+
+            var questId = _questIds[_selectedQuestIndex];
+            var playerId = GetObjectUUID(Player);
+            var dbPlayer = DB.Get<Player>(playerId);
+            var pcQuest = dbPlayer.Quests.ContainsKey(questId) ? dbPlayer.Quests[questId] : null;
+            var task = Quest.GetQuestById(questId);
+
+            var gpAmount = task.Rewards.OfType<GPReward>().Sum(x => Guild.CalculateGPReward(Player, _guildType, x.Amount));
+            var creditAmount = task.Rewards.OfType<GoldReward>().Sum(x => Quest.CalculateQuestGoldReward(Player, true, x.Amount));
+
+            TaskDetails = $"Task: {task.Name}\n\nRewards:\nCredits: {creditAmount}\nGuild Points: {gpAmount}";
+
+            if (pcQuest == null || pcQuest.DateLastCompleted != null)
+                IsAcceptEnabled = true;
+
+            if (pcQuest != null && pcQuest.DateLastCompleted == null)
+                IsGiveReportEnabled = true;
+        }
+
+        public Action OnClickTask() => () =>
+        {
+            if (_selectedQuestIndex > -1 && _selectedQuestIndex < TaskToggles.Count)
+                TaskToggles[_selectedQuestIndex] = false;
+
+            _selectedQuestIndex = NuiGetEventArrayIndex();
+            TaskToggles[_selectedQuestIndex] = true;
+            LoadSelectedTask();
+        };
+
+        public Action OnClickAcceptTask() => () =>
+        {
+            if (_selectedQuestIndex < 0) return;
+            Quest.AcceptQuest(Player, _questIds[_selectedQuestIndex]);
+            _selectedQuestIndex = -1;
+            RefreshTasks();
+            LoadSelectedTask();
+        };
+
+        public Action OnClickGiveReport() => () =>
+        {
+            if (_selectedQuestIndex < 0) return;
+
+            var questId = _questIds[_selectedQuestIndex];
+            var playerId = GetObjectUUID(Player);
+            var dbPlayer = DB.Get<Player>(playerId);
+            if (!dbPlayer.Quests.ContainsKey(questId)) return;
+
+            var pcStatus = dbPlayer.Quests[questId];
+            var quest = Quest.GetQuestById(questId);
+            var state = quest.States[pcStatus.CurrentState];
+            var hasItemObjective = state.GetObjectives().Any(x => x.GetType() == typeof(CollectItemObjective));
+
+            if (hasItemObjective)
+            {
+                Quest.RequestItemsFromPlayer(Player, questId);
+            }
+            else if (quest.CanComplete(Player))
+            {
+                quest.Complete(Player, _guildMaster, null);
+            }
+            else
+            {
+                SendMessageToPC(Player, ColorToken.Red("One or more task is incomplete. Refer to your journal for more information."));
+            }
+
+            _selectedQuestIndex = -1;
+            RefreshTasks();
+            LoadSelectedTask();
+        };
+
+        public Action OnClickRankFilter(int rank) => () =>
+        {
+            _selectedRankFilter = rank;
+            _selectedQuestIndex = -1;
+            RefreshTasks();
+            LoadSelectedTask();
+        };
+    }
+}

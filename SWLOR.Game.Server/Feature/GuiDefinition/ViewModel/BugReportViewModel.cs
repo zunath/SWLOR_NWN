@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Threading.Tasks;
 using Discord;
 using Discord.Webhook;
 using SWLOR.Game.Server.Enumeration;
@@ -60,7 +59,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 (webhookUri.Scheme != Uri.UriSchemeHttps && webhookUri.Scheme != Uri.UriSchemeHttp))
             {
                 SendMessageToPC(Player, ColorToken.Red("ERROR: Unable to send bug report because the configured Discord webhook URL is invalid."));
-                Log.Write(LogGroup.Error, $"Invalid SWLOR_BUG_WEBHOOK_URL configured: {url}");
+                Log.Write(LogGroup.Error, "Invalid SWLOR_BUG_WEBHOOK_URL configured.");
                 return;
             }
 
@@ -76,71 +75,69 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ? "Bug Report [TEST SERVER]"
                 : "Bug Report";
 
-            Task.Run(async () =>
+            try
             {
-                try
+                using var client = new DiscordWebhookClient(url);
+                var embed = new EmbedBuilder
                 {
-                    using var client = new DiscordWebhookClient(url);
-                    var embed = new EmbedBuilder
+                    Title = title,
+                    Description = message,
+                    Author = new EmbedAuthorBuilder
                     {
-                        Title = title,
-                        Description = message,
-                        Author = new EmbedAuthorBuilder
+                        Name = authorName
+                    },
+                    Color = Color.Red,
+                    Fields = new List<EmbedFieldBuilder>
+                    {
+                        new()
                         {
-                            Name = authorName
+                            IsInline = true,
+                            Name = "Area Name",
+                            Value = areaName
                         },
-                        Color = Color.Red,
-                        Fields = new List<EmbedFieldBuilder>
+                        new()
                         {
-                            new()
-                            {
-                                IsInline = true,
-                                Name = "Area Name",
-                                Value = areaName
-                            },
-                            new()
-                            {
-                                IsInline = true,
-                                Name = "Area Tag",
-                                Value = areaTag
-                            },
-                            new()
-                            {
-                                IsInline = true,
-                                Name = "Area Resref",
-                                Value = areaResref
-                            },
-                            new()
-                            {
-                                IsInline = true,
-                                Name = "Position",
-                                Value = positionGroup
-                            },
-                            new()
-                            {
-                                IsInline = true,
-                                Name = "Date Reported",
-                                Value = dateReported,
-                            },
-                            new()
-                            {
-                                IsInline = true,
-                                Name = "Player ID",
-                                Value = playerId
-                            },
-                        }
-                    };
+                            IsInline = true,
+                            Name = "Area Tag",
+                            Value = areaTag
+                        },
+                        new()
+                        {
+                            IsInline = true,
+                            Name = "Area Resref",
+                            Value = areaResref
+                        },
+                        new()
+                        {
+                            IsInline = true,
+                            Name = "Position",
+                            Value = positionGroup
+                        },
+                        new()
+                        {
+                            IsInline = true,
+                            Name = "Date Reported",
+                            Value = dateReported,
+                        },
+                        new()
+                        {
+                            IsInline = true,
+                            Name = "Player ID",
+                            Value = playerId
+                        },
+                    }
+                };
 
-
-                    await client.SendMessageAsync(
-                        string.Empty,
-                        embeds: new[] { embed.Build() });
-                }
-                catch (Exception ex)
-                {
-                    Log.Write(LogGroup.Error, $"Failed to submit bug report to Discord webhook. URL={url}, Player={authorName}, Error={ex.ToMessageAndCompleteStacktrace()}");
-                }
-            });
+                client.SendMessageAsync(
+                    string.Empty,
+                    embeds: new[] { embed.Build() }).GetAwaiter().GetResult();
+            }
+            catch (Exception ex)
+            {
+                Log.Write(LogGroup.Error, $"Failed to submit bug report to Discord webhook. Player={authorName}, Error={ex.ToMessageAndCompleteStacktrace()}");
+                SendMessageToPC(Player, ColorToken.Red("Unable to submit bug report right now. Please try again in a moment or contact a DM."));
+                return;
+            }
 
             SetLocalString(Player, "BUG_REPORT_LAST_SUBMISSION", nextReportAllowed.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture));
             SendMessageToPC(Player, "Bug report submitted! Thank you for your report.");

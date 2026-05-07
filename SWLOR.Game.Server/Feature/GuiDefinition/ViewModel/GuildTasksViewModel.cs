@@ -81,6 +81,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public bool IsAcceptAllEnabled
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         protected override void Initialize(GuildTasksPayload initialPayload)
         {
             _guildType = initialPayload.Guild;
@@ -122,7 +128,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     continue;
 
                 _questIds.Add(questId);
-                taskNames.Add($"{task.Name} [Rank {task.GuildRank + 1}]");
+                taskNames.Add($"{task.Name} [Rank {task.GuildRank + 1}] [Expired]");
                 taskToggles.Add(false);
                 taskColors.Add(GuiColor.Red);
                 rankHasTasks[task.GuildRank + 1] = true;
@@ -175,6 +181,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsRank3Toggled = _selectedRankFilter == 3;
             IsRank4Toggled = _selectedRankFilter == 4;
             IsRank5Toggled = _selectedRankFilter == 5;
+            IsAcceptAllEnabled = _questIds.Any(questId => IsQuestAcceptable(dbPlayer, questId));
         }
 
         private void LoadSelectedTask()
@@ -193,11 +200,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var dbPlayer = DB.Get<Player>(playerId);
             var pcQuest = dbPlayer.Quests.ContainsKey(questId) ? dbPlayer.Quests[questId] : null;
             var task = Quest.GetQuestById(questId);
+            var currentTasks = Guild.GetAllActiveGuildTasks(_guildType);
+            var isExpired = pcQuest != null &&
+                            pcQuest.DateLastCompleted == null &&
+                            task.GuildType == _guildType &&
+                            !currentTasks.ContainsKey(questId);
 
             var gpAmount = task.Rewards.OfType<GPReward>().Sum(x => Guild.CalculateGPReward(Player, _guildType, x.Amount));
             var creditAmount = task.Rewards.OfType<GoldReward>().Sum(x => Quest.CalculateQuestGoldReward(Player, true, x.Amount));
 
             TaskDetails = $"Task: {task.Name}\n\nRewards:\nCredits: {creditAmount}\nGuild Points: {gpAmount}";
+            if (isExpired)
+            {
+                TaskDetails += "\n\nStatus: Expired task. This task is no longer in the current guild task rotation.";
+            }
 
             if (pcQuest == null || pcQuest.DateLastCompleted != null)
                 IsAcceptEnabled = true;
@@ -209,6 +225,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private bool HasSelectedQuest()
         {
             return _selectedQuestIndex >= 0 && _selectedQuestIndex < _questIds.Count;
+        }
+
+        private static bool IsQuestAcceptable(Player dbPlayer, string questId)
+        {
+            return !dbPlayer.Quests.ContainsKey(questId) || dbPlayer.Quests[questId].DateLastCompleted != null;
         }
 
         public Action OnClickTask() => () =>
@@ -236,6 +257,34 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _selectedQuestIndex = -1;
             RefreshTasks();
             LoadSelectedTask();
+        };
+
+        public Action OnClickAcceptAllTasks() => () =>
+        {
+            var playerId = GetObjectUUID(Player);
+            var dbPlayer = DB.Get<Player>(playerId);
+            var questIds = _questIds
+                .Where(questId => IsQuestAcceptable(dbPlayer, questId))
+                .ToList();
+
+            if (questIds.Count <= 0)
+                return;
+
+            ShowModal($"Accept all {questIds.Count} available Rank {_selectedRankFilter} tasks?", () =>
+            {
+                var acceptedCount = 0;
+                foreach (var questId in questIds)
+                {
+                    Quest.AcceptQuest(Player, questId);
+                    acceptedCount++;
+                }
+
+                SendMessageToPC(Player, $"Accepted {acceptedCount} Rank {_selectedRankFilter} guild tasks.");
+
+                _selectedQuestIndex = -1;
+                RefreshTasks();
+                LoadSelectedTask();
+            });
         };
 
         public Action OnClickGiveReport() => () =>

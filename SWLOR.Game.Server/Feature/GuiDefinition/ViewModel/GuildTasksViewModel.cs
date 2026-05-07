@@ -4,6 +4,7 @@ using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
+using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
@@ -11,7 +12,11 @@ using SWLOR.Game.Server.Service.QuestService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
-    public class GuildTasksViewModel: GuiViewModelBase<GuildTasksViewModel, GuildTasksPayload>
+    public class GuildTasksViewModel: GuiViewModelBase<GuildTasksViewModel, GuildTasksPayload>,
+        IGuiRefreshable<QuestAcquiredRefreshEvent>,
+        IGuiRefreshable<QuestProgressedRefreshEvent>,
+        IGuiRefreshable<QuestCompletedRefreshEvent>,
+        IGuiRefreshable<QuestAbandonedRefreshEvent>
     {
         private readonly List<string> _questIds = new();
         private GuildType _guildType;
@@ -52,6 +57,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public bool IsRank3Enabled { get => Get<bool>(); set => Set(value); }
         public bool IsRank4Enabled { get => Get<bool>(); set => Set(value); }
         public bool IsRank5Enabled { get => Get<bool>(); set => Set(value); }
+        public bool IsRank1Toggled { get => Get<bool>(); set => Set(value); }
+        public bool IsRank2Toggled { get => Get<bool>(); set => Set(value); }
+        public bool IsRank3Toggled { get => Get<bool>(); set => Set(value); }
+        public bool IsRank4Toggled { get => Get<bool>(); set => Set(value); }
+        public bool IsRank5Toggled { get => Get<bool>(); set => Set(value); }
 
         public string TaskDetails
         {
@@ -160,6 +170,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Rank3Color = _selectedRankFilter == 3 ? GuiColor.Cyan : GuiColor.White;
             Rank4Color = _selectedRankFilter == 4 ? GuiColor.Cyan : GuiColor.White;
             Rank5Color = _selectedRankFilter == 5 ? GuiColor.Cyan : GuiColor.White;
+            IsRank1Toggled = _selectedRankFilter == 1;
+            IsRank2Toggled = _selectedRankFilter == 2;
+            IsRank3Toggled = _selectedRankFilter == 3;
+            IsRank4Toggled = _selectedRankFilter == 4;
+            IsRank5Toggled = _selectedRankFilter == 5;
         }
 
         private void LoadSelectedTask()
@@ -167,7 +182,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsAcceptEnabled = false;
             IsGiveReportEnabled = false;
 
-            if (_selectedQuestIndex < 0 || _selectedQuestIndex >= _questIds.Count)
+            if (!HasSelectedQuest())
             {
                 TaskDetails = "Select a task to view details.";
                 return;
@@ -191,19 +206,32 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 IsGiveReportEnabled = true;
         }
 
+        private bool HasSelectedQuest()
+        {
+            return _selectedQuestIndex >= 0 && _selectedQuestIndex < _questIds.Count;
+        }
+
         public Action OnClickTask() => () =>
         {
             if (_selectedQuestIndex > -1 && _selectedQuestIndex < TaskToggles.Count)
                 TaskToggles[_selectedQuestIndex] = false;
 
-            _selectedQuestIndex = NuiGetEventArrayIndex();
+            var index = NuiGetEventArrayIndex();
+            if (index < 0 || index >= TaskToggles.Count || index >= _questIds.Count)
+            {
+                _selectedQuestIndex = -1;
+                LoadSelectedTask();
+                return;
+            }
+
+            _selectedQuestIndex = index;
             TaskToggles[_selectedQuestIndex] = true;
             LoadSelectedTask();
         };
 
         public Action OnClickAcceptTask() => () =>
         {
-            if (_selectedQuestIndex < 0) return;
+            if (!HasSelectedQuest()) return;
             Quest.AcceptQuest(Player, _questIds[_selectedQuestIndex]);
             _selectedQuestIndex = -1;
             RefreshTasks();
@@ -212,7 +240,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickGiveReport() => () =>
         {
-            if (_selectedQuestIndex < 0) return;
+            if (!HasSelectedQuest()) return;
 
             var questId = _questIds[_selectedQuestIndex];
             var playerId = GetObjectUUID(Player);
@@ -234,7 +262,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
             else
             {
-                SendMessageToPC(Player, ColorToken.Red("One or more task is incomplete. Refer to your journal for more information."));
+                SendMessageToPC(Player, ColorToken.Red("One or more tasks are incomplete. Refer to your journal for more information."));
             }
 
             _selectedQuestIndex = -1;
@@ -249,5 +277,34 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             RefreshTasks();
             LoadSelectedTask();
         };
+
+        private void ReloadFromQuestEvent(string questId)
+        {
+            if (_selectedQuestIndex >= 0 && _selectedQuestIndex < _questIds.Count && _questIds[_selectedQuestIndex] == questId)
+                _selectedQuestIndex = -1;
+
+            RefreshTasks();
+            LoadSelectedTask();
+        }
+
+        public void Refresh(QuestAcquiredRefreshEvent payload)
+        {
+            ReloadFromQuestEvent(payload.QuestId);
+        }
+
+        public void Refresh(QuestProgressedRefreshEvent payload)
+        {
+            ReloadFromQuestEvent(payload.QuestId);
+        }
+
+        public void Refresh(QuestCompletedRefreshEvent payload)
+        {
+            ReloadFromQuestEvent(payload.QuestId);
+        }
+
+        public void Refresh(QuestAbandonedRefreshEvent payload)
+        {
+            ReloadFromQuestEvent(payload.QuestId);
+        }
     }
 }

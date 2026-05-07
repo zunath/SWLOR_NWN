@@ -21,26 +21,43 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     {
                         left.AddRow(r =>
                         {
-                            r.AddButton().BindText(model => model.Rank1Text)
+                            r.AddSpacer();
+                            r.AddToggleButton()
+                                .BindText(model => model.Rank1Text)
+                                .BindIsToggled(model => model.IsRank1Toggled)
                                 .BindColor(model => model.Rank1Color)
                                 .BindIsEnabled(model => model.IsRank1Enabled)
-                                .BindOnClicked(model => model.OnClickRankFilter(1));
-                            r.AddButton().BindText(model => model.Rank2Text)
+                                .BindOnClicked(model => model.OnClickRankFilter(1))
+                                .SetHeight(32f);
+                            r.AddToggleButton()
+                                .BindText(model => model.Rank2Text)
+                                .BindIsToggled(model => model.IsRank2Toggled)
                                 .BindColor(model => model.Rank2Color)
                                 .BindIsEnabled(model => model.IsRank2Enabled)
-                                .BindOnClicked(model => model.OnClickRankFilter(2));
-                            r.AddButton().BindText(model => model.Rank3Text)
+                                .BindOnClicked(model => model.OnClickRankFilter(2))
+                                .SetHeight(32f);
+                            r.AddToggleButton()
+                                .BindText(model => model.Rank3Text)
+                                .BindIsToggled(model => model.IsRank3Toggled)
                                 .BindColor(model => model.Rank3Color)
                                 .BindIsEnabled(model => model.IsRank3Enabled)
-                                .BindOnClicked(model => model.OnClickRankFilter(3));
-                            r.AddButton().BindText(model => model.Rank4Text)
+                                .BindOnClicked(model => model.OnClickRankFilter(3))
+                                .SetHeight(32f);
+                            r.AddToggleButton()
+                                .BindText(model => model.Rank4Text)
+                                .BindIsToggled(model => model.IsRank4Toggled)
                                 .BindColor(model => model.Rank4Color)
                                 .BindIsEnabled(model => model.IsRank4Enabled)
-                                .BindOnClicked(model => model.OnClickRankFilter(4));
-                            r.AddButton().BindText(model => model.Rank5Text)
+                                .BindOnClicked(model => model.OnClickRankFilter(4))
+                                .SetHeight(32f);
+                            r.AddToggleButton()
+                                .BindText(model => model.Rank5Text)
+                                .BindIsToggled(model => model.IsRank5Toggled)
                                 .BindColor(model => model.Rank5Color)
                                 .BindIsEnabled(model => model.IsRank5Enabled)
-                                .BindOnClicked(model => model.OnClickRankFilter(5));
+                                .BindOnClicked(model => model.OnClickRankFilter(5))
+                                .SetHeight(32f);
+                            r.AddSpacer();
                         });
 
                         left.AddRow(r =>

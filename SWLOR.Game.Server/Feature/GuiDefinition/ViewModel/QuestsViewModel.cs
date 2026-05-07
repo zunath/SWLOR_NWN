@@ -13,7 +13,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     public class QuestsViewModel: GuiViewModelBase<QuestsViewModel, GuiPayloadBase>,
         IGuiRefreshable<QuestAcquiredRefreshEvent>,
         IGuiRefreshable<QuestProgressedRefreshEvent>,
-        IGuiRefreshable<QuestCompletedRefreshEvent>
+        IGuiRefreshable<QuestCompletedRefreshEvent>,
+        IGuiRefreshable<QuestAbandonedRefreshEvent>
     {
         public string SearchText
         {
@@ -177,15 +178,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
 
                 Quest.AbandonQuest(Player, questId);
-
-                _questIds.RemoveAt(SelectedQuestIndex);
-                QuestNames.RemoveAt(SelectedQuestIndex);
-                QuestToggles.RemoveAt(SelectedQuestIndex);
-                ActiveQuestName = "[Select a Quest]";
-                ActiveQuestDescription = "[Select a Quest]";
-                IsAbandonQuestEnabled = false;
-
-                SelectedQuestIndex = -1;
             });
         };
 
@@ -200,6 +192,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         public void Refresh(QuestCompletedRefreshEvent payload)
+        {
+            Search();
+        }
+
+        public void Refresh(QuestAbandonedRefreshEvent payload)
         {
             Search();
         }

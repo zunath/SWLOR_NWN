@@ -23,9 +23,12 @@ namespace SWLOR.BackgroundServices.BackgroundJobs
         public async Task RunAsync(CancellationToken cancellationToken)
         {
             _logger.Info($"Connecting to Redis at {_settings.RedisConnection}...");
-            using var redis = await ConnectionMultiplexer.ConnectAsync(_settings.RedisConnection);
+            var redisOptions = ConfigurationOptions.Parse(_settings.RedisConnection);
+            redisOptions.AbortOnConnectFail = false;
+
+            using var redis = await ConnectToRedis(redisOptions, cancellationToken);
             var database = redis.GetDatabase();
-            await EnsureConsumerGroup(database);
+            await EnsureConsumerGroup(database, cancellationToken);
 
             _logger.Info($"Background service '{_settings.ConsumerName}' listening on Redis Stream '{BackgroundJobQueueNames.StreamName}'.");
 
@@ -58,20 +61,59 @@ namespace SWLOR.BackgroundServices.BackgroundJobs
             }
         }
 
-        private static async Task EnsureConsumerGroup(IDatabase database)
+        private async Task<ConnectionMultiplexer> ConnectToRedis(
+            ConfigurationOptions redisOptions,
+            CancellationToken cancellationToken)
         {
-            try
+            while (!cancellationToken.IsCancellationRequested)
             {
-                await database.StreamCreateConsumerGroupAsync(
-                    BackgroundJobQueueNames.StreamName,
-                    BackgroundJobQueueNames.ConsumerGroup,
-                    "0-0",
-                    true);
+                try
+                {
+                    var redis = await ConnectionMultiplexer.ConnectAsync(redisOptions);
+                    _logger.Info("Redis connection established.");
+                    return redis;
+                }
+                catch (RedisConnectionException)
+                {
+                    _logger.Info($"Redis is not available yet. Retrying in {_settings.FailureDelay.TotalSeconds:0.#} seconds.");
+                    await Task.Delay(_settings.FailureDelay, cancellationToken);
+                }
             }
-            catch (RedisServerException ex) when (ex.Message.Contains("BUSYGROUP", StringComparison.OrdinalIgnoreCase))
+
+            throw new OperationCanceledException(cancellationToken);
+        }
+
+        private async Task EnsureConsumerGroup(IDatabase database, CancellationToken cancellationToken)
+        {
+            while (!cancellationToken.IsCancellationRequested)
             {
-                // Group already exists.
+                try
+                {
+                    await database.StreamCreateConsumerGroupAsync(
+                        BackgroundJobQueueNames.StreamName,
+                        BackgroundJobQueueNames.ConsumerGroup,
+                        "0-0",
+                        true);
+                    return;
+                }
+                catch (RedisServerException ex) when (ex.Message.Contains("BUSYGROUP", StringComparison.OrdinalIgnoreCase))
+                {
+                    // Group already exists.
+                    return;
+                }
+                catch (RedisConnectionException)
+                {
+                    _logger.Info($"Redis is still loading. Retrying background job initialization in {_settings.FailureDelay.TotalSeconds:0.#} seconds.");
+                    await Task.Delay(_settings.FailureDelay, cancellationToken);
+                }
+                catch (RedisTimeoutException)
+                {
+                    _logger.Info($"Redis is still loading. Retrying background job initialization in {_settings.FailureDelay.TotalSeconds:0.#} seconds.");
+                    await Task.Delay(_settings.FailureDelay, cancellationToken);
+                }
             }
+
+            throw new OperationCanceledException(cancellationToken);
         }
 
         private async Task<StreamEntry[]> ReadPendingOrNew(IDatabase database)

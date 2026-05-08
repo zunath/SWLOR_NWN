@@ -140,6 +140,9 @@ namespace SWLOR.Game.Server.Service
 
         public static void BroadcastCityUpkeepPaid(WorldProperty city)
         {
+            if (city.Upkeep > 0)
+                return;
+
             BroadcastPropertyEvent(
                 city,
                 "City Upkeep Paid",

@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var area = GetArea(Player);
             var position = GetPosition(Player);
 
-            var discordWebhookUrl = Environment.GetEnvironmentVariable("SWLOR_BUG_DISCORD_WEBHOOK_URL");
+            var discordWebhookUrl = _appSettings.BugDiscordWebhookUrl;
 
             if (string.IsNullOrWhiteSpace(discordWebhookUrl))
             {

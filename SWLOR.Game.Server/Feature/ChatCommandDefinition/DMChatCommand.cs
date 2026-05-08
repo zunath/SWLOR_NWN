@@ -22,6 +22,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
     public class DMChatCommand: IChatCommandListDefinition
     {
         private readonly ChatCommandBuilder _builder = new ChatCommandBuilder();
+        private static readonly ApplicationSettings _appSettings = ApplicationSettings.Get();
 
         public Dictionary<string, ChatCommandDetail> BuildChatCommands()
         {
@@ -947,7 +948,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Action(async (user, target, location, args) =>
                 {
                     var message = string.Join(" ", args);
-                    var url = Environment.GetEnvironmentVariable("SWLOR_DM_SHOUT_WEBHOOK_URL");
+                    var url = _appSettings.DMShoutWebhookUrl;
 
                     for (var onlinePlayer = GetFirstPC(); GetIsObjectValid(onlinePlayer); onlinePlayer = GetNextPC())
                         ChatPlugin.SendMessage(ChatChannel.DMShout, message, user, onlinePlayer);

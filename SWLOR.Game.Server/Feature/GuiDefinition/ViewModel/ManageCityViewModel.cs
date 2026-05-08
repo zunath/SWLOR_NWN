@@ -512,11 +512,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action PayUpkeep() => () =>
         {
             var dbCity = DB.Get<WorldProperty>(_cityId);
+            if (dbCity.Upkeep == 0)
+            {
+                Instructions = "No upkeep is currently due.";
+                InstructionsColor = GuiColor.Green;
+                return;
+            }
 
             ShowModal($"Your upkeep bill is {dbCity.Upkeep} cr. Note that credits must be deposited into your city's treasury. Will you pay this fee now?",
                 () =>
                 {
                     dbCity = DB.Get<WorldProperty>(_cityId);
+                    if (dbCity.Upkeep == 0)
+                    {
+                        return;
+                    }
 
                     if (dbCity.Upkeep > dbCity.Treasury)
                     {
@@ -531,6 +541,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     dbCity.Upkeep = 0;
 
                     DB.Set(dbCity);
+                    Property.BroadcastCityUpkeepPaid(dbCity);
 
                     Instructions = "Upkeep paid successfully.";
                     InstructionsColor = GuiColor.Green;

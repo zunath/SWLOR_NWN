@@ -7,6 +7,10 @@ namespace SWLOR.Game.Server
     {
         public string LogDirectory { get; }
         public string RedisIPAddress { get; }
+        public string BugDiscordWebhookUrl { get; }
+        public string HoloNetWebhookUrl { get; }
+        public string DMShoutWebhookUrl { get; }
+        public string PropertyBroadcastWebhookUrl { get; }
         public ServerEnvironmentType ServerEnvironment { get; }
 
         private static ApplicationSettings _settings;
@@ -22,6 +26,10 @@ namespace SWLOR.Game.Server
         {
             LogDirectory = Environment.GetEnvironmentVariable("SWLOR_APP_LOG_DIRECTORY");
             RedisIPAddress = Environment.GetEnvironmentVariable("NWNX_REDIS_HOST");
+            BugDiscordWebhookUrl = Environment.GetEnvironmentVariable("SWLOR_BUG_DISCORD_WEBHOOK_URL");
+            HoloNetWebhookUrl = Environment.GetEnvironmentVariable("SWLOR_HOLONET_WEBHOOK_URL");
+            DMShoutWebhookUrl = Environment.GetEnvironmentVariable("SWLOR_DM_SHOUT_WEBHOOK_URL");
+            PropertyBroadcastWebhookUrl = Environment.GetEnvironmentVariable("SWLOR_PROPERTY_BROADCAST_WEBHOOK_URL");
 
             var environment = Environment.GetEnvironmentVariable("SWLOR_ENVIRONMENT");
             if (!string.IsNullOrWhiteSpace(environment) && 

@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
-using Discord;
-using Discord.Webhook;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
@@ -13,6 +10,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     public class BugReportViewModel: GuiViewModelBase<BugReportViewModel, GuiPayloadBase>
     {
         public const int MaxBugReportLength = 1000;
+        private const int MaxDiscordThreadNameLength = 100;
         private static readonly ApplicationSettings _appSettings = ApplicationSettings.Get();
 
         protected override void Initialize(GuiPayloadBase initialPayload)
@@ -29,7 +27,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
         }
 
-        public Action OnClickSubmit() => () =>
+        public Action OnClickSubmit() => async () =>
         {
             if (string.IsNullOrWhiteSpace(BugReportText))
             {
@@ -46,11 +44,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var area = GetArea(Player);
             var position = GetPosition(Player);
 
-            var url = Environment.GetEnvironmentVariable("SWLOR_BUG_WEBHOOK_URL");
+            var discordWebhookUrl = _appSettings.BugDiscordWebhookUrl;
 
-            if (string.IsNullOrWhiteSpace(url))
+            if (string.IsNullOrWhiteSpace(discordWebhookUrl))
             {
-                SendMessageToPC(Player, ColorToken.Red("ERROR: Unable to send bug report because the server admin has not set the SWLOR_BUG_WEBHOOK_URL environment variable."));
+                SendMessageToPC(Player, ColorToken.Red("ERROR: Unable to send bug report because the server admin has not set SWLOR_BUG_DISCORD_WEBHOOK_URL."));
                 return;
             }
 
@@ -59,80 +57,79 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var areaTag = GetTag(area);
             var areaResref = GetResRef(area);
             var positionGroup = $"({position.X}, {position.Y}, {position.Z})";
-            var dateReported = DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss");
+            var dateReported = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
             var playerId = GetObjectUUID(Player);
             var nextReportAllowed = DateTime.UtcNow.AddMinutes(1);
-            var title = _appSettings.ServerEnvironment == ServerEnvironmentType.Test
-                ? "Bug Report [TEST SERVER]"
-                : "Bug Report";
-
-            Task.Run(async () =>
+            if (!await SubmitBugReportToDiscord(
+                discordWebhookUrl,
+                message,
+                authorName,
+                areaName,
+                areaTag,
+                areaResref,
+                positionGroup,
+                dateReported,
+                playerId))
             {
-                using (var client = new DiscordWebhookClient(url))
-                {
-                    var embed = new EmbedBuilder
-                    {
-                        Title = title,
-                        Description = message,
-                        Author = new EmbedAuthorBuilder
-                        {
-                            Name = authorName
-                        },
-                        Color = Color.Red,
-                        Fields = new List<EmbedFieldBuilder>
-                        {
-                            new()
-                            {
-                                IsInline = true,
-                                Name = "Area Name",
-                                Value = areaName
-                            },
-                            new()
-                            {
-                                IsInline = true,
-                                Name = "Area Tag",
-                                Value = areaTag
-                            },
-                            new()
-                            {
-                                IsInline = true,
-                                Name = "Area Resref",
-                                Value = areaResref
-                            },
-                            new()
-                            {
-                                IsInline = true,
-                                Name = "Position",
-                                Value = positionGroup
-                            },
-                            new()
-                            {
-                                IsInline = true,
-                                Name = "Date Reported",
-                                Value = dateReported,
-                            },
-                            new()
-                            {
-                                IsInline = true,
-                                Name = "Player ID",
-                                Value = playerId
-                            },
-                        }
-                    };
-
-
-                    await client.SendMessageAsync(
-                        string.Empty, 
-                        embeds: new[] { embed.Build() },
-                        threadName: title);
-                }
-            });
+                SendMessageToPC(Player, ColorToken.Red("ERROR: Unable to queue bug report. Please notify a DM."));
+                return;
+            }
 
             SetLocalString(Player, "BUG_REPORT_LAST_SUBMISSION", nextReportAllowed.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture));
             SendMessageToPC(Player, "Bug report submitted! Thank you for your report.");
             SendMessageToPC(Player, "Submitted Bug Report: " + BugReportText);
             Gui.TogglePlayerWindow(Player, GuiWindowType.BugReport);
         };
+
+
+        private Task<bool> SubmitBugReportToDiscord(
+            string discordWebhookUrl,
+            string message,
+            string authorName,
+            string areaName,
+            string areaTag,
+            string areaResref,
+            string positionGroup,
+            string dateReported,
+            string playerId)
+        {
+            var titlePrefix = _appSettings.ServerEnvironment switch
+            {
+                ServerEnvironmentType.Test => "[TEST] ",
+                ServerEnvironmentType.Development => "[DEV] ",
+                _ => string.Empty
+            };
+            var title = $"{titlePrefix}Bug Report";
+            var environmentName = _appSettings.ServerEnvironment.ToString();
+            var body = $"{message}\n\n---\n" +
+                       $"**Server Environment**: {environmentName}\n" +
+                       $"**Reporter**: {authorName}\n" +
+                       $"**Area Name**: {areaName}\n" +
+                       $"**Area Tag**: {areaTag}\n" +
+                       $"**Area Resref**: {areaResref}\n" +
+                       $"**Position**: {positionGroup}\n" +
+                       $"**Date Reported (UTC)**: {dateReported}\n" +
+                       $"**Player ID**: {playerId}";
+
+            return BackgroundJob.EnqueueDiscordWebhook(
+                discordWebhookUrl,
+                authorName,
+                body,
+                15158332,
+                title,
+                createThread: true,
+                threadName: CreateDiscordThreadName(title));
+        }
+
+        private static string CreateDiscordThreadName(string title)
+        {
+            if (title.Length <= MaxDiscordThreadNameLength)
+            {
+                return title;
+            }
+
+            return title.Substring(0, MaxDiscordThreadNameLength);
+        }
 
         public Action OnClickCancel() => () =>
         {

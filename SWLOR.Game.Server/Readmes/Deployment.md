@@ -40,7 +40,7 @@ Environment variables are configured in `Docker/swlor.env`. Key variables includ
 - `SWLOR_ENVIRONMENT`: Controls server environment (development, test, production)
 - `SWLOR_APP_LOG_DIRECTORY`: Log file location
 - `NWNX_REDIS_HOST`: Redis connection string
-- Database and Discord integration settings
+- Database and external integration settings (including GitHub bug reporting)
 
 ### 3. Application Settings
 

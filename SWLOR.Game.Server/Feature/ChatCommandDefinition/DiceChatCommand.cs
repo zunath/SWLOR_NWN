@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ChatCommandService;
 using SWLOR.Game.Server.Service.GuiService;
+using static SWLOR.NWN.API.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 {
@@ -17,7 +18,15 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Permissions(AuthorizationLevel.All)
                 .Action((user, target, location, args) =>
                 {
-                    Gui.TogglePlayerWindow(user, GuiWindowType.Dice);
+                    var player = user;
+                    var uiTarget = OBJECT_INVALID;
+                    if (GetIsDMPossessed(player))
+                    {
+                        uiTarget = player;
+                        player = GetMaster(player);
+                    }
+
+                    Gui.TogglePlayerWindow(player, GuiWindowType.Dice, null, OBJECT_INVALID, uiTarget);
                 });
 
             return builder.Build();

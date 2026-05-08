@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using NRediSearch;
 using NReJSON;
@@ -75,6 +76,32 @@ namespace SWLOR.Game.Server.Service
             var context = Environment.GetEnvironmentVariable("GAME_SERVER_CONTEXT");
             if (!string.IsNullOrWhiteSpace(context) && context.ToLower() == "true")
                 ExecuteScript("db_loaded", OBJECT_SELF);
+        }
+
+        public static RedisValue StreamAdd(
+            RedisKey key,
+            NameValueEntry[] streamPairs,
+            int? maxLength = null,
+            bool useApproximateMaxLength = false)
+        {
+            return _multiplexer.GetDatabase().StreamAdd(
+                key,
+                streamPairs,
+                maxLength: maxLength,
+                useApproximateMaxLength: useApproximateMaxLength);
+        }
+
+        public static Task<RedisValue> StreamAddAsync(
+            RedisKey key,
+            NameValueEntry[] streamPairs,
+            int? maxLength = null,
+            bool useApproximateMaxLength = false)
+        {
+            return _multiplexer.GetDatabase().StreamAddAsync(
+                key,
+                streamPairs,
+                maxLength: maxLength,
+                useApproximateMaxLength: useApproximateMaxLength);
         }
 
         /// <summary>

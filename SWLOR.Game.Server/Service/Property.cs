@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Numerics;
 using SWLOR.Game.Server.Core;
@@ -35,6 +36,7 @@ namespace SWLOR.Game.Server.Service
 
         private static readonly Dictionary<string, uint> _structurePropertyIdToPlaceable = new();
         private static readonly Dictionary<StructureType, Dictionary<StructureChangeType, Action<WorldProperty, uint>>> _structureChangedActions = StructureChangedAction.BuildSpawnActions();
+        private static readonly ApplicationSettings _appSettings = ApplicationSettings.Get();
 
         private static readonly Dictionary<int, int> _citizensRequired = new()
         {
@@ -46,6 +48,7 @@ namespace SWLOR.Game.Server.Service
         };
 
         private static readonly Dictionary<PropertyType, List<StructureType>> _structureTypesByPropertyType = new();
+        private const int PropertyBroadcastColor = 5763719;
 
         /// <summary>
         /// Determines the number of hours before the city will be destroyed due to
@@ -67,6 +70,85 @@ namespace SWLOR.Game.Server.Service
         /// Determines the number of days all citizens have to vote for an election.
         /// </summary>
         public const int ElectionVotingDays = 7;
+
+        private static void BroadcastPropertyEvent(WorldProperty city, string title, string details, int color = PropertyBroadcastColor)
+        {
+            var url = _appSettings.PropertyBroadcastWebhookUrl;
+            if (string.IsNullOrWhiteSpace(url))
+                return;
+
+            var mayorName = GetPlayerName(city.OwnerPlayerId);
+            var level = city.Upgrades.ContainsKey(PropertyUpgradeType.CityLevel)
+                ? city.Upgrades[PropertyUpgradeType.CityLevel]
+                : 1;
+            var description =
+                $"**City**: {SanitizeDiscordText(city.CustomName)}\n" +
+                $"**Mayor**: {SanitizeDiscordText(mayorName)}\n" +
+                $"**City Level**: {GetCityLevelName(level)} (Lvl. {level})\n\n" +
+                SanitizeDiscordText(details);
+
+            try
+            {
+                var enqueued = BackgroundJob.EnqueueDiscordWebhook(
+                        url,
+                        "SWLOR Property Broadcast",
+                        description,
+                        color,
+                        SanitizeDiscordText(title))
+                    .ConfigureAwait(false)
+                    .GetAwaiter()
+                    .GetResult();
+
+                if (!enqueued)
+                {
+                    Log.Write(LogGroup.Error, $"Failed to queue property broadcast '{title}' for city '{city.CustomName}' ({city.Id}).");
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Write(LogGroup.Error, $"Failed to queue property broadcast '{title}' for city '{city.CustomName}' ({city.Id}): {ex}");
+            }
+        }
+
+        private static string GetPlayerName(string playerId)
+        {
+            if (string.IsNullOrWhiteSpace(playerId))
+                return "Unknown";
+
+            var dbPlayer = DB.Get<Player>(playerId);
+            return string.IsNullOrWhiteSpace(dbPlayer?.Name)
+                ? "Unknown"
+                : dbPlayer.Name;
+        }
+
+        private static string FormatUtcDate(DateTime date)
+        {
+            return date.ToString("yyyy-MM-dd HH:mm 'UTC'", CultureInfo.InvariantCulture);
+        }
+
+        private static string SanitizeDiscordText(string text)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+                return string.Empty;
+
+            return text
+                .Replace("@everyone", "(at)everyone")
+                .Replace("@here", "(at)here")
+                .Replace("@", "(at)")
+                .Replace("`", "'");
+        }
+
+        public static void BroadcastCityUpkeepPaid(WorldProperty city)
+        {
+            if (city.Upkeep > 0)
+                return;
+
+            BroadcastPropertyEvent(
+                city,
+                "City Upkeep Paid",
+                $"The outstanding city upkeep has been paid.\n" +
+                $"**Next Upkeep Check**: {FormatUtcDate(city.Dates[PropertyDateType.Upkeep])}");
+        }
 
         /// <summary>
         /// When the module loads, cache all relevant data into memory.
@@ -460,6 +542,11 @@ namespace SWLOR.Game.Server.Service
             foreach (var city in cities)
             {
                 ProcessCityCitizenRequirement(now, city);
+                if (city.IsQueuedForDeletion)
+                {
+                    continue;
+                }
+
                 ProcessCityElections(now, city);
 
                 if (now < city.Dates[PropertyDateType.Upkeep])
@@ -501,10 +588,25 @@ namespace SWLOR.Game.Server.Service
                         city.IsQueuedForDeletion = true;
 
                         Log.Write(LogGroup.Property, $"City '{city.CustomName}' in area '{city.ParentPropertyId}' has been queued for deletion because it fell under the required {_citizensRequired[1]} citizens needed to maintain it.");
+                        BroadcastPropertyEvent(
+                            city,
+                            "City Expiration",
+                            $"This city has been marked for removal because it remained below the required citizen count.\n" +
+                            $"**Citizens Registered**: {citizenCount:N0}\n" +
+                            $"**Citizens Required**: {_citizensRequired[1]:N0}",
+                            15158332);
                     }
                     else
                     {
                         Log.Write(LogGroup.Property, $"City '{city.CustomName}' in area '{city.ParentPropertyId}' is below the required citizen count but time has not expired. Next check will occur on the next server reboot.");
+                        BroadcastPropertyEvent(
+                            city,
+                            "City Citizen Warning",
+                            $"This city is below the required citizen count and may expire on a future restart if the count is not restored.\n" +
+                            $"**Citizens Registered**: {citizenCount:N0}\n" +
+                            $"**Citizens Required**: {_citizensRequired[1]:N0}\n" +
+                            $"**Grace Period Ends**: {FormatUtcDate(city.Dates[PropertyDateType.BelowRequiredCitizens])}",
+                            15105570);
                     }
                 }
                 // This is the first restart where the city is below the required amount.
@@ -513,6 +615,14 @@ namespace SWLOR.Game.Server.Service
                     city.Dates[PropertyDateType.BelowRequiredCitizens] = now.AddHours(MinimumCitizensGracePeriodHours);
 
                     Log.Write(LogGroup.Property, $"City '{city.CustomName}' has fallen below the required {_citizensRequired[1]} citizens required to maintain a city. An expiration has been applied");
+                    BroadcastPropertyEvent(
+                        city,
+                        "City Citizen Warning",
+                        $"This city has fallen below the required citizen count.\n" +
+                        $"**Citizens Registered**: {citizenCount:N0}\n" +
+                        $"**Citizens Required**: {_citizensRequired[1]:N0}\n" +
+                        $"**Grace Period Ends**: {FormatUtcDate(city.Dates[PropertyDateType.BelowRequiredCitizens])}",
+                        15105570);
                 }
             }
             // Otherwise they're at or above the required amount. Ensure the date is removed from the property.
@@ -579,6 +689,12 @@ namespace SWLOR.Game.Server.Service
                     };
 
                     DB.Set(election);
+                    BroadcastPropertyEvent(
+                        city,
+                        "City Election Open",
+                        $"A new mayoral election has opened for candidate registration.\n" +
+                        $"**Registration Closes**: {FormatUtcDate(city.Dates[PropertyDateType.ElectionStart].AddDays(ElectionRegistrationDays))}\n" +
+                        $"**Voting Closes**: {FormatUtcDate(city.Dates[PropertyDateType.ElectionStart].AddDays(ElectionRegistrationDays + ElectionVotingDays))}");
                 }
             }
             // Election has started. See if it's time to progress to the next stage.
@@ -607,11 +723,23 @@ namespace SWLOR.Game.Server.Service
                     if (orderedVotes.Count <= 0)
                     {
                         Log.Write(LogGroup.Property, $"No one voted. Incumbent mayor '{incumbentMayorId}' stays in power.");
+                        BroadcastPropertyEvent(
+                            city,
+                            "City Election Concluded",
+                            $"The mayoral election has concluded. No votes were cast, so the incumbent mayor remains in office.\n" +
+                            $"**Candidates**: {election.CandidatePlayerIds.Count:N0}\n" +
+                            $"**Total Votes Cast**: 0");
                     }
                     // If top two are tied, incumbent mayor wins.
                     else if (orderedVotes.Count >= 2 && orderedVotes.ElementAt(0).Value == orderedVotes.ElementAt(1).Value)
                     {
                         Log.Write(LogGroup.Property, $"Top 2 candidates were tied. Incumbent mayor '{incumbentMayorId}' wins the election.");
+                        BroadcastPropertyEvent(
+                            city,
+                            "City Election Concluded",
+                            $"The mayoral election has concluded in a tie. The incumbent mayor remains in office.\n" +
+                            $"**Candidates**: {election.CandidatePlayerIds.Count:N0}\n" +
+                            $"**Total Votes Cast**: {orderedVotes.Sum(x => x.Value):N0}");
                     }
                     // Otherwise, take the person with the highest votes.
                     else 
@@ -620,6 +748,13 @@ namespace SWLOR.Game.Server.Service
                         TransferPermissions(winnerPlayerId);
                         city.OwnerPlayerId = winnerPlayerId;
                         Log.Write(LogGroup.Property, $"New mayor of {city.CustomName} is '{winnerPlayerId}'");
+                        BroadcastPropertyEvent(
+                            city,
+                            "New Mayor Elected",
+                            $"The mayoral election has concluded and a new mayor has been elected.\n" +
+                            $"**New Mayor**: {SanitizeDiscordText(GetPlayerName(winnerPlayerId))}\n" +
+                            $"**Candidates**: {election.CandidatePlayerIds.Count:N0}\n" +
+                            $"**Total Votes Cast**: {orderedVotes.Sum(x => x.Value):N0}");
                     }
 
                     Log.Write(LogGroup.Property, $"Vote Counts:");
@@ -657,6 +792,11 @@ namespace SWLOR.Game.Server.Service
 
                         DB.Delete<Election>(election.Id);
                         Log.Write(LogGroup.Property, $"No one ran for this election. Existing mayor '{incumbentMayorId}' wins by default.");
+                        BroadcastPropertyEvent(
+                            city,
+                            "City Election Concluded",
+                            $"The mayoral election has concluded. No candidates registered, so the incumbent mayor remains in office.\n" +
+                            $"**Next Election Opens**: {FormatUtcDate(city.Dates[PropertyDateType.ElectionStart])}");
                     }
                     // In the event only one person ran for election, they automatically win
                     // and the power shift occurs immediately. Another election is scheduled
@@ -669,6 +809,11 @@ namespace SWLOR.Game.Server.Service
                         if (winnerPlayerId == incumbentMayorId)
                         {
                             Log.Write(LogGroup.Property, $"Incumbent mayor '{incumbentMayorId}' ran unopposed. They retain mayor status.");
+                            BroadcastPropertyEvent(
+                                city,
+                                "City Election Concluded",
+                                $"The mayoral election has concluded. The incumbent mayor ran unopposed and remains in office.\n" +
+                                $"**Next Election Opens**: {FormatUtcDate(city.Dates[PropertyDateType.ElectionStart].AddDays(ElectionRegistrationDays).AddDays(21))}");
                         }
                         // Someone new won. Transfer mayor permissions over to the new player.
                         else
@@ -676,6 +821,12 @@ namespace SWLOR.Game.Server.Service
                             city.OwnerPlayerId = winnerPlayerId;
                             TransferPermissions(winnerPlayerId);
                             Log.Write(LogGroup.Property, $"Only one person '{winnerPlayerId}' ran for mayor. They win by default.");
+                            BroadcastPropertyEvent(
+                                city,
+                                "New Mayor Elected",
+                                $"The mayoral election has concluded. A single candidate ran unopposed and has become mayor.\n" +
+                                $"**New Mayor**: {SanitizeDiscordText(GetPlayerName(winnerPlayerId))}\n" +
+                                $"**Next Election Opens**: {FormatUtcDate(city.Dates[PropertyDateType.ElectionStart].AddDays(ElectionRegistrationDays).AddDays(21))}");
                         }
 
                         city.Dates[PropertyDateType.ElectionStart] = city.Dates[PropertyDateType.ElectionStart]
@@ -692,6 +843,12 @@ namespace SWLOR.Game.Server.Service
 
                         DB.Set(election);
                         Log.Write(LogGroup.Property, $"City '{city.CustomName}' ({city.Id}) has progressed into the Voting stage of the election.");
+                        BroadcastPropertyEvent(
+                            city,
+                            "City Election Voting Open",
+                            $"Mayoral candidate registration has closed and voting is now open to citizens.\n" +
+                            $"**Candidates**: {election.CandidatePlayerIds.Count:N0}\n" +
+                            $"**Voting Closes**: {FormatUtcDate(votingCutOff)}");
                     }
 
                 }
@@ -778,12 +935,38 @@ namespace SWLOR.Game.Server.Service
                     {
                         Log.Write(LogGroup.Property, $"City upkeep was not paid for 30 days. City is marked for destruction.");
                         city.IsQueuedForDeletion = true;
+                        BroadcastPropertyEvent(
+                            city,
+                            "City Upkeep Expiration",
+                            $"This city has been marked for removal because upkeep remained unpaid past the disrepair deadline.\n" +
+                            $"**Upkeep Status**: Unpaid past deadline\n" +
+                            $"**Disrepair Deadline**: {FormatUtcDate(city.Dates[PropertyDateType.DisrepairDestruction])}",
+                            15158332);
+                        DB.Set(city);
+                        return;
+                    }
+                    else
+                    {
+                        BroadcastPropertyEvent(
+                            city,
+                            "City Upkeep Warning",
+                            $"This city still has unpaid upkeep and may expire if it is not paid before the disrepair deadline.\n" +
+                            $"**Upkeep Status**: Unpaid\n" +
+                            $"**Disrepair Deadline**: {FormatUtcDate(city.Dates[PropertyDateType.DisrepairDestruction])}",
+                            15105570);
                     }
                 }
                 else
                 {
                     city.Dates[PropertyDateType.DisrepairDestruction] = now.AddDays(30);
                     Log.Write(LogGroup.Property, $"This is the first week upkeep wasn't paid. Destruction will occur on {city.Dates[PropertyDateType.DisrepairDestruction]:yyyy-MM-dd hh:mm:ss}");
+                    BroadcastPropertyEvent(
+                        city,
+                        "City Upkeep Warning",
+                        $"This city has unpaid upkeep and has entered disrepair.\n" +
+                        $"**Upkeep Status**: Unpaid\n" +
+                        $"**Disrepair Deadline**: {FormatUtcDate(city.Dates[PropertyDateType.DisrepairDestruction])}",
+                        15105570);
                 }
 
             }
@@ -817,6 +1000,12 @@ namespace SWLOR.Game.Server.Service
             city.Upkeep += basePrice + upgradePrice;
             DB.Set(city);
             Log.Write(LogGroup.Property, $"Total upkeep owed: {city.Upkeep} credits.");
+            BroadcastPropertyEvent(
+                city,
+                "City Upkeep Due",
+                $"Weekly upkeep has been assessed for this city.\n" +
+                $"**Upkeep Status**: Payment due\n" +
+                $"**Next Upkeep Check**: {FormatUtcDate(city.Dates[PropertyDateType.Upkeep].AddDays(7))}");
 
             Log.Write(LogGroup.Property, $"Finished processing city upkeep for '{city.CustomName}' ({city.Id})");
         }
@@ -1376,6 +1565,14 @@ namespace SWLOR.Game.Server.Service
             DB.Set(dbPlayer);
 
             Log.Write(LogGroup.Property, $"{GetName(player)} ({GetPCPlayerName(player)} / {GetPCPublicCDKey(player)}) founded a new city in {GetName(area)}.");
+            BroadcastPropertyEvent(
+                city,
+                "New Player City Founded",
+                $"A new player city has been founded.\n" +
+                $"**Founding Mayor**: {SanitizeDiscordText(dbPlayer.Name)}\n" +
+                $"**First Upkeep Check**: {FormatUtcDate(city.Dates[PropertyDateType.Upkeep])}\n" +
+                $"**First Election Opens**: {FormatUtcDate(city.Dates[PropertyDateType.ElectionStart])}\n" +
+                $"**Citizen Requirement Grace Ends**: {FormatUtcDate(city.Dates[PropertyDateType.BelowRequiredCitizens])}");
         }
 
         /// <summary>

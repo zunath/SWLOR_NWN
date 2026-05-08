@@ -87,12 +87,17 @@ namespace SWLOR.Game.Server.Service
                 $"**City Level**: {GetCityLevelName(level)} (Lvl. {level})\n\n" +
                 SanitizeDiscordText(details);
 
-            if (!BackgroundJob.EnqueueDiscordWebhook(
+            var enqueued = BackgroundJob.EnqueueDiscordWebhook(
                     url,
                     "SWLOR Property Broadcast",
                     description,
                     color,
-                    SanitizeDiscordText(title)))
+                    SanitizeDiscordText(title))
+                .ConfigureAwait(false)
+                .GetAwaiter()
+                .GetResult();
+
+            if (!enqueued)
             {
                 Log.Write(LogGroup.Error, $"Failed to queue property broadcast '{title}' for city '{city.CustomName}' ({city.Id}).");
             }

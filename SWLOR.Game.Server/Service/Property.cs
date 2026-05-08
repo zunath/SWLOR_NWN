@@ -934,6 +934,8 @@ namespace SWLOR.Game.Server.Service
                             $"**Upkeep Status**: Unpaid past deadline\n" +
                             $"**Disrepair Deadline**: {FormatUtcDate(city.Dates[PropertyDateType.DisrepairDestruction])}",
                             15158332);
+                        DB.Set(city);
+                        return;
                     }
                     else
                     {

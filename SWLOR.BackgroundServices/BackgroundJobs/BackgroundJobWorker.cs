@@ -22,7 +22,7 @@ namespace SWLOR.BackgroundServices.BackgroundJobs
 
         public async Task RunAsync(CancellationToken cancellationToken)
         {
-            _logger.Info($"Connecting to Redis at {_settings.RedisConnection}...");
+            _logger.Info($"Connecting to Redis at {RedactRedisConnection(_settings.RedisConnection)}...");
             var redisOptions = ConfigurationOptions.Parse(_settings.RedisConnection);
             redisOptions.AbortOnConnectFail = false;
 
@@ -136,6 +136,52 @@ namespace SWLOR.BackgroundServices.BackgroundJobs
                 _settings.ConsumerName,
                 ">",
                 _settings.BatchSize);
+        }
+
+        private static string RedactRedisConnection(string connection)
+        {
+            if (string.IsNullOrWhiteSpace(connection))
+            {
+                return string.Empty;
+            }
+
+            if (Uri.TryCreate(connection, UriKind.Absolute, out var uri) &&
+                !string.IsNullOrWhiteSpace(uri.UserInfo))
+            {
+                var schemeSeparator = connection.IndexOf("://", StringComparison.Ordinal);
+                var userInfoSeparator = connection.IndexOf('@', schemeSeparator + 3);
+                if (schemeSeparator >= 0 && userInfoSeparator > schemeSeparator)
+                {
+                    return connection.Substring(0, schemeSeparator + 3) +
+                           "[REDACTED]" +
+                           connection.Substring(userInfoSeparator);
+                }
+            }
+
+            var parts = connection.Split(',');
+            for (var index = 0; index < parts.Length; index++)
+            {
+                var part = parts[index].Trim();
+                var separator = part.IndexOf('=');
+                if (separator <= 0)
+                {
+                    parts[index] = part;
+                    continue;
+                }
+
+                var name = part.Substring(0, separator).Trim();
+                if (name.Equals("password", StringComparison.OrdinalIgnoreCase) ||
+                    name.Equals("pwd", StringComparison.OrdinalIgnoreCase))
+                {
+                    parts[index] = $"{name}=[REDACTED]";
+                }
+                else
+                {
+                    parts[index] = part;
+                }
+            }
+
+            return string.Join(",", parts);
         }
     }
 }

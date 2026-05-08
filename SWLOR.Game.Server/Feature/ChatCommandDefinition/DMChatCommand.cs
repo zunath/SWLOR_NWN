@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.ChatCommandService;
 using SWLOR.Game.Server.Service.FactionService;
+using SWLOR.Game.Server.Service.LogService;
 using Faction = SWLOR.Game.Server.Service.Faction;
 using ChatChannel = SWLOR.Game.Server.Core.NWNX.Enum.ChatChannel;
 using SWLOR.NWN.API.NWNX;
@@ -953,7 +954,20 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     var authorName = $"{GetName(user)} ({GetPCPlayerName(user)}) [{GetPCPublicCDKey(user)}]";
                     if (!string.IsNullOrWhiteSpace(url))
                     {
-                        BackgroundJob.EnqueueDiscordWebhook(url, authorName, message, 15105570);
+                        try
+                        {
+                            var enqueued = BackgroundJob.EnqueueDiscordWebhook(url, authorName, message, 15105570);
+                            if (!enqueued)
+                            {
+                                Log.Write(LogGroup.Error, $"Failed to queue DM shout Discord webhook. url='{url}', authorName='{authorName}', message='{message}'");
+                                SendMessageToPC(user, ColorToken.Red("ERROR: Unable to queue DM shout Discord webhook. Please notify an admin."));
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Write(LogGroup.Error, $"Failed to queue DM shout Discord webhook. url='{url}', authorName='{authorName}', message='{message}'. {ex}");
+                            SendMessageToPC(user, ColorToken.Red("ERROR: Unable to queue DM shout Discord webhook. Please notify an admin."));
+                        }
                     }
                 });
         }

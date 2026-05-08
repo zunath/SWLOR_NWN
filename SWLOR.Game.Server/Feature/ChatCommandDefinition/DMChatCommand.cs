@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
@@ -943,7 +944,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 
                     return string.Empty;
                 })
-                .Action((user, target, location, args) =>
+                .Action(async (user, target, location, args) =>
                 {
                     var message = string.Join(" ", args);
                     var url = Environment.GetEnvironmentVariable("SWLOR_DM_SHOUT_WEBHOOK_URL");
@@ -956,16 +957,16 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     {
                         try
                         {
-                            var enqueued = BackgroundJob.EnqueueDiscordWebhook(url, authorName, message, 15105570);
+                            var enqueued = await BackgroundJob.EnqueueDiscordWebhook(url, authorName, message, 15105570);
                             if (!enqueued)
                             {
-                                Log.Write(LogGroup.Error, $"Failed to queue DM shout Discord webhook. url='{url}', authorName='{authorName}', message='{message}'");
+                                Log.Write(LogGroup.Error, "Failed to queue DM shout Discord webhook.");
                                 SendMessageToPC(user, ColorToken.Red("ERROR: Unable to queue DM shout Discord webhook. Please notify an admin."));
                             }
                         }
                         catch (Exception ex)
                         {
-                            Log.Write(LogGroup.Error, $"Failed to queue DM shout Discord webhook. url='{url}', authorName='{authorName}', message='{message}'. {ex}");
+                            Log.Write(LogGroup.Error, $"Failed to queue DM shout Discord webhook. {ex}");
                             SendMessageToPC(user, ColorToken.Red("ERROR: Unable to queue DM shout Discord webhook. Please notify an admin."));
                         }
                     }

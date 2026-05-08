@@ -1,7 +1,12 @@
+using Serilog;
 using SWLOR.BackgroundServices.Configuration;
 using SWLOR.BackgroundServices.BackgroundJobs;
 using SWLOR.BackgroundServices.BackgroundJobs.Handlers;
 using SWLOR.BackgroundServices.Infrastructure;
+
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .CreateLogger();
 
 var settings = BackgroundServiceSettings.FromEnvironment();
 var logger = new ConsoleAppLogger();
@@ -29,4 +34,11 @@ Console.CancelKeyPress += (_, eventArgs) =>
 
 AppDomain.CurrentDomain.ProcessExit += (_, _) => shutdown.Cancel();
 
-await worker.RunAsync(shutdown.Token);
+try
+{
+    await worker.RunAsync(shutdown.Token);
+}
+finally
+{
+    Log.CloseAndFlush();
+}

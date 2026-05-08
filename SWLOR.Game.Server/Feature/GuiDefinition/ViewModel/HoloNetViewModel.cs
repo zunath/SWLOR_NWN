@@ -6,6 +6,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class HoloNetViewModel : GuiViewModelBase<HoloNetViewModel, GuiPayloadBase>
     {
+        private static readonly ApplicationSettings _appSettings = ApplicationSettings.Get();
+
         public string HoloNetText
         {
             get => Get<string>();
@@ -38,7 +40,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             ShowModal("Are you sure you want to submit this broadcast?", () =>
             {
-                var url = Environment.GetEnvironmentVariable("SWLOR_HOLONET_WEBHOOK_URL");
+                var url = _appSettings.HoloNetWebhookUrl;
 
                 if (string.IsNullOrWhiteSpace(url))
                 {

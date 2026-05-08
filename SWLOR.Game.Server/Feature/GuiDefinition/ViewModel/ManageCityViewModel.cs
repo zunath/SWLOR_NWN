@@ -531,6 +531,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     dbCity.Upkeep = 0;
 
                     DB.Set(dbCity);
+                    Property.BroadcastCityUpkeepPaid(dbCity);
 
                     Instructions = "Upkeep paid successfully.";
                     InstructionsColor = GuiColor.Green;

@@ -539,6 +539,11 @@ namespace SWLOR.Game.Server.Service
             foreach (var city in cities)
             {
                 ProcessCityCitizenRequirement(now, city);
+                if (city.IsQueuedForDeletion)
+                {
+                    continue;
+                }
+
                 ProcessCityElections(now, city);
 
                 if (now < city.Dates[PropertyDateType.Upkeep])

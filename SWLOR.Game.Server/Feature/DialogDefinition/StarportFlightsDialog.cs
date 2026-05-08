@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.Entity;
+﻿using System;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DialogService;
@@ -46,7 +47,10 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             var dbBuilding = DB.Get<WorldProperty>(dbProperty.ParentPropertyId);
             var dbCity = DB.Get<WorldProperty>(dbBuilding.ParentPropertyId);
 
-            model.Tax = 0.01f * dbCity.Taxes[PropertyTaxType.Transportation];
+            var transportationTaxRate = dbCity.Taxes[PropertyTaxType.Transportation];
+            transportationTaxRate = Math.Clamp(transportationTaxRate, 0, 25);
+
+            model.Tax = 0.01f * transportationTaxRate;
             model.CityPropertyId = dbCity.Id;
         }
 

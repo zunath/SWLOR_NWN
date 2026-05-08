@@ -165,14 +165,14 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// When the module loads, clean up any deleted data, refreshes permissions and then load properties.
+        /// When the module loads, process city lifecycle, clean up deleted data, refresh permissions and then load properties.
         /// </summary>
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void OnModuleLoad()
         {
-            RefreshPermissions();
             ProcessCities();
             CleanUpData();
+            RefreshPermissions();
             LoadProperties();
         }
 
@@ -461,7 +461,8 @@ namespace SWLOR.Game.Server.Service
             var query = new DBQuery<WorldProperty>()
                 .AddFieldSearch(nameof(WorldProperty.PropertyType), propertyTypesWithLeases);
             var queryCount = (int)DB.SearchCount(query);
-            var properties = DB.Search(query.AddPaging(queryCount, 0));
+            var properties = DB.Search(query.AddPaging(queryCount, 0))
+                .ToList();
 
             foreach (var property in properties)
             {
@@ -479,7 +480,8 @@ namespace SWLOR.Game.Server.Service
             query = new DBQuery<WorldProperty>()
                 .AddFieldSearch(nameof(WorldProperty.IsQueuedForDeletion), true);
             queryCount = (int)DB.SearchCount(query);
-            properties = DB.Search(query.AddPaging(queryCount, 0));
+            properties = DB.Search(query.AddPaging(queryCount, 0))
+                .ToList();
 
             foreach (var property in properties)
             {
@@ -492,7 +494,8 @@ namespace SWLOR.Game.Server.Service
             var starshipQuery = new DBQuery<WorldProperty>()
                 .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.Starship);
             var starshipCount = (int)DB.SearchCount(starshipQuery);
-            var starshipProperties = DB.Search(starshipQuery.AddPaging(starshipCount, 0));
+            var starshipProperties = DB.Search(starshipQuery.AddPaging(starshipCount, 0))
+                .ToList();
 
             foreach (var property in starshipProperties)
             {
@@ -503,18 +506,19 @@ namespace SWLOR.Game.Server.Service
 
                 // In the event this starship was docked at a deleted player starport,
                 // it needs to be relocated to the NPC starport found on the planet
+                if (!property.Positions.ContainsKey(PropertyLocationType.DockPosition))
+                {
+                    DB.Set(property);
+                    continue;
+                }
+
                 var dockPosition = property.Positions[PropertyLocationType.DockPosition];
                 if (!string.IsNullOrWhiteSpace(dockPosition.InstancePropertyId))
                 {
                     var dbStarport = DB.Get<WorldProperty>(dockPosition.InstancePropertyId);
                     if (dbStarport == null)
                     {
-                        // The PC starport no longer exists (probably destroyed by the previous cleanup)
-                        // Luckily we track the last NPC starport they visited so we can simply replace
-                        // their docked position with it.
-                        property.Positions[PropertyLocationType.DockPosition] = property.Positions[PropertyLocationType.LastNPCDockPosition];
-
-                        Log.Write(LogGroup.Property, $"Starship '{property.CustomName}' ({property.Id}) was docked at a non-existent player starport. It has been relocated to the last NPC dock position at '{property.Positions[PropertyLocationType.LastNPCDockPosition].AreaResref}'.");
+                        RelocateStarshipFromDeletedStarport(property, dockPosition.InstancePropertyId, "non-existent player starport");
                     }
                 }
                 
@@ -536,7 +540,8 @@ namespace SWLOR.Game.Server.Service
                 .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.City)
                 .AddFieldSearch(nameof(WorldProperty.IsQueuedForDeletion), false);
             var queryCount = (int)DB.SearchCount(cityQuery);
-            var cities = DB.Search(cityQuery.AddPaging(queryCount, 0));
+            var cities = DB.Search(cityQuery.AddPaging(queryCount, 0))
+                .ToList();
             var now = DateTime.UtcNow;
 
             foreach (var city in cities)
@@ -1031,34 +1036,127 @@ namespace SWLOR.Game.Server.Service
             Log.Write(LogGroup.Property, $"Finished processing citizenship fees for '{city.CustomName}' ({city.Id})");
         }
 
+        private static bool RelocateStarshipFromDeletedStarport(WorldProperty starship, string starportId, string starportName)
+        {
+            var hasChanges = false;
+
+            if (starship.ChildPropertyIds.TryGetValue(PropertyChildType.RegisteredStarport, out var registeredStarports))
+            {
+                var removedCount = registeredStarports.RemoveAll(id => id == starportId);
+                hasChanges = removedCount > 0;
+            }
+
+            if (starship.Positions.TryGetValue(PropertyLocationType.DockPosition, out var dockPosition) &&
+                dockPosition.InstancePropertyId == starportId &&
+                starship.Positions.ContainsKey(PropertyLocationType.LastNPCDockPosition))
+            {
+                starship.Positions[PropertyLocationType.DockPosition] = starship.Positions[PropertyLocationType.LastNPCDockPosition];
+                hasChanges = true;
+
+                Log.Write(LogGroup.Property, $"Starship '{starship.CustomName}' ({starship.Id}) was docked at deleted starport '{starportName}' ({starportId}). It has been relocated to the last NPC dock position at '{starship.Positions[PropertyLocationType.LastNPCDockPosition].AreaResref}'.");
+            }
+
+            return hasChanges;
+        }
+
+        private static void UnregisterStarshipsFromDeletedStarport(WorldProperty property)
+        {
+            if (property.PropertyType != PropertyType.Starport ||
+                !property.ChildPropertyIds.TryGetValue(PropertyChildType.Starship, out var starshipIds))
+                return;
+
+            foreach (var starshipId in starshipIds.ToList())
+            {
+                var starship = DB.Get<WorldProperty>(starshipId);
+                if (starship == null)
+                    continue;
+
+                if (RelocateStarshipFromDeletedStarport(starship, property.Id, property.CustomName))
+                    DB.Set(starship);
+            }
+
+            starshipIds.Clear();
+        }
+
+        private static void UnregisterDeletedStarship(WorldProperty property)
+        {
+            if (property.PropertyType != PropertyType.Starship ||
+                !property.ChildPropertyIds.TryGetValue(PropertyChildType.RegisteredStarport, out var registeredStarports))
+                return;
+
+            foreach (var starportId in registeredStarports.ToList())
+            {
+                var starport = DB.Get<WorldProperty>(starportId);
+                if (starport == null ||
+                    !starport.ChildPropertyIds.TryGetValue(PropertyChildType.Starship, out var starshipIds))
+                    continue;
+
+                if (!starshipIds.Remove(property.Id))
+                    continue;
+
+                DB.Set(starport);
+                Log.Write(LogGroup.Property, $"Unregistered deleted player ship '{property.CustomName}' ({property.Id}) from starport '{starport.CustomName}' ({starport.Id}).");
+            }
+
+            registeredStarports.Clear();
+        }
+
         public static void DeleteProperty(WorldProperty property)
         {
-            // Recursively clear any children properties tied to this property.
+            DeleteProperty(property, new HashSet<string>());
+        }
+
+        private static void DeleteProperty(WorldProperty property, HashSet<string> deletingPropertyIds)
+        {
+            if (property == null || !deletingPropertyIds.Add(property.Id))
+                return;
+
+            UnregisterDeletedStarship(property);
+            UnregisterStarshipsFromDeletedStarport(property);
+
+            // Recursively clear any children properties tied to this property. The ChildPropertyIds
+            // cache can get out of sync, so also query by ParentPropertyId before deleting.
+            var childPropertyIds = new HashSet<string>();
             foreach (var (childType, propertyIds) in property.ChildPropertyIds)
             {
                 if (childType == PropertyChildType.RegisteredStarport ||
                     childType == PropertyChildType.Starship)
                     continue;
 
-                if (propertyIds.Count > 0)
-                {
-                    var query = new DBQuery<WorldProperty>()
-                        .AddFieldSearch(nameof(WorldProperty.Id), propertyIds);
-                    var queryCount = (int)DB.SearchCount(query);
-                    var children = DB.Search(query.AddPaging(queryCount, 0));
+                foreach (var propertyId in propertyIds)
+                    childPropertyIds.Add(propertyId);
+            }
 
-                    foreach (var child in children)
-                    {
-                        DeleteProperty(child);
-                    }
+            var parentQuery = new DBQuery<WorldProperty>()
+                .AddFieldSearch(nameof(WorldProperty.ParentPropertyId), property.Id, false);
+            var parentCount = (int)DB.SearchCount(parentQuery);
+            var childrenByParentId = DB.Search(parentQuery.AddPaging(parentCount, 0))
+                .ToList();
+
+            foreach (var child in childrenByParentId)
+            {
+                if (child.Id != property.Id)
+                    childPropertyIds.Add(child.Id);
+            }
+
+            foreach (var childPropertyId in childPropertyIds)
+            {
+                var child = DB.Get<WorldProperty>(childPropertyId);
+                if (child == null)
+                {
+                    Log.Write(LogGroup.Property, $"Child property '{childPropertyId}' was already missing while deleting property '{property.CustomName}' ({property.Id}).");
+                    continue;
                 }
+
+                DeleteProperty(child, deletingPropertyIds);
             }
 
             // Clear permissions for the property.
             var permissionsQuery = new DBQuery<WorldPropertyPermission>()
                 .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), property.Id, false);
             var permissionsCount = (int)DB.SearchCount(permissionsQuery);
-            var permissions = DB.Search(permissionsQuery.AddPaging(permissionsCount, 0));
+            var permissions = DB.Search(permissionsQuery.AddPaging(permissionsCount, 0))
+                .ToList();
 
             foreach (var permission in permissions)
             {
@@ -1101,7 +1199,8 @@ namespace SWLOR.Game.Server.Service
             var citizenQuery = new DBQuery<Player>()
                 .AddFieldSearch(nameof(Player.CitizenPropertyId), property.Id, false);
             var citizenCount = (int)DB.SearchCount(citizenQuery);
-            var citizens = DB.Search(citizenQuery.AddPaging(citizenCount, 0));
+            var citizens = DB.Search(citizenQuery.AddPaging(citizenCount, 0))
+                .ToList();
 
             foreach (var citizen in citizens)
             {
@@ -1114,7 +1213,8 @@ namespace SWLOR.Game.Server.Service
             var bankQuery = new DBQuery<InventoryItem>()
                 .AddFieldSearch(nameof(InventoryItem.StorageId), property.Id, false);
             var bankCount = (int)DB.SearchCount(bankQuery);
-            var dbBankItems = DB.Search(bankQuery.AddPaging(bankCount, 0));
+            var dbBankItems = DB.Search(bankQuery.AddPaging(bankCount, 0))
+                .ToList();
 
             foreach (var item in dbBankItems)
             {

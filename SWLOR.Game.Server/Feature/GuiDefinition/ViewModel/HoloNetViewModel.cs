@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
-using Discord;
-using Discord.Webhook;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 
@@ -55,27 +52,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     return;
                 }
 
-                AssignCommand(Player, () => TakeGoldFromCreature(BroadcastPrice, Player, true));
-
                 var authorName = $"{GetName(Player)} ({GetPCPlayerName(Player)}) [{GetPCPublicCDKey(Player)}]";
-
-                Task.Run(async () =>
+                if (!BackgroundJob.EnqueueDiscordWebhook(url, authorName, message, 3447003))
                 {
-                    using (var client = new DiscordWebhookClient(url))
-                    {
-                        var embed = new EmbedBuilder
-                        {
-                            Description = message,
-                            Author = new EmbedAuthorBuilder
-                            {
-                                Name = authorName
-                            },
-                            Color = Color.Blue
-                        };
+                    SendMessageToPC(Player, ColorToken.Red("ERROR: Unable to queue HoloNet broadcast. Please notify a DM."));
+                    return;
+                }
 
-                        await client.SendMessageAsync(string.Empty, embeds: new[] { embed.Build() });
-                    }
-                });
+                AssignCommand(Player, () => TakeGoldFromCreature(BroadcastPrice, Player, true));
 
                 SendMessageToPC(Player, "HoloNet message broadcasted!");
                 Gui.TogglePlayerWindow(Player, GuiWindowType.HoloNet);

@@ -10,9 +10,6 @@ using SWLOR.Game.Server.Service.ChatCommandService;
 using SWLOR.Game.Server.Service.FactionService;
 using Faction = SWLOR.Game.Server.Service.Faction;
 using ChatChannel = SWLOR.Game.Server.Core.NWNX.Enum.ChatChannel;
-using System.Threading.Tasks;
-using Discord;
-using Discord.Webhook;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -954,23 +951,10 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         ChatPlugin.SendMessage(ChatChannel.DMShout, message, user, onlinePlayer);
                     
                     var authorName = $"{GetName(user)} ({GetPCPlayerName(user)}) [{GetPCPublicCDKey(user)}]";
-                    Task.Run(async () =>
+                    if (!string.IsNullOrWhiteSpace(url))
                     {
-                        using (var client = new DiscordWebhookClient(url))
-                        {
-                            var embed = new EmbedBuilder
-                            {
-                                Author = new EmbedAuthorBuilder
-                                {
-                                    Name = authorName
-                                },
-                                Description = message,
-                                Color = Color.Orange
-                            };
-
-                            await client.SendMessageAsync(string.Empty, embeds: new[] { embed.Build() });
-                        }
-                    });
+                        BackgroundJob.EnqueueDiscordWebhook(url, authorName, message, 15105570);
+                    }
                 });
         }
 

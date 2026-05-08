@@ -77,6 +77,19 @@ namespace SWLOR.Game.Server.Service
                 ExecuteScript("db_loaded", OBJECT_SELF);
         }
 
+        public static RedisValue StreamAdd(
+            RedisKey key,
+            NameValueEntry[] streamPairs,
+            int? maxLength = null,
+            bool useApproximateMaxLength = false)
+        {
+            return _multiplexer.GetDatabase().StreamAdd(
+                key,
+                streamPairs,
+                maxLength: maxLength,
+                useApproximateMaxLength: useApproximateMaxLength);
+        }
+
         /// <summary>
         /// Processes the Redis Search index with the latest changes.
         /// </summary>

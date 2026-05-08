@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Threading.Tasks;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
@@ -26,7 +27,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
         }
 
-        public Action OnClickSubmit() => () =>
+        public Action OnClickSubmit() => async () =>
         {
             if (string.IsNullOrWhiteSpace(BugReportText))
             {
@@ -59,7 +60,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var dateReported = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
             var playerId = GetObjectUUID(Player);
             var nextReportAllowed = DateTime.UtcNow.AddMinutes(1);
-            if (!SubmitBugReportToDiscord(
+            if (!await SubmitBugReportToDiscord(
                 discordWebhookUrl,
                 message,
                 authorName,
@@ -81,7 +82,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         };
 
 
-        private bool SubmitBugReportToDiscord(
+        private Task<bool> SubmitBugReportToDiscord(
             string discordWebhookUrl,
             string message,
             string authorName,

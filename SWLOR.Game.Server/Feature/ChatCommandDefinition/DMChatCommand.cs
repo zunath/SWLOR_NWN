@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
@@ -8,6 +9,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.ChatCommandService;
 using SWLOR.Game.Server.Service.FactionService;
+using SWLOR.Game.Server.Service.LogService;
 using Faction = SWLOR.Game.Server.Service.Faction;
 using ChatChannel = SWLOR.Game.Server.Core.NWNX.Enum.ChatChannel;
 using SWLOR.NWN.API.NWNX;
@@ -943,7 +945,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 
                     return string.Empty;
                 })
-                .Action((user, target, location, args) =>
+                .Action(async (user, target, location, args) =>
                 {
                     var message = string.Join(" ", args);
                     var url = _appSettings.DMShoutWebhookUrl;
@@ -954,7 +956,20 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     var authorName = $"{GetName(user)} ({GetPCPlayerName(user)}) [{GetPCPublicCDKey(user)}]";
                     if (!string.IsNullOrWhiteSpace(url))
                     {
-                        BackgroundJob.EnqueueDiscordWebhook(url, authorName, message, 15105570);
+                        try
+                        {
+                            var enqueued = await BackgroundJob.EnqueueDiscordWebhook(url, authorName, message, 15105570);
+                            if (!enqueued)
+                            {
+                                Log.Write(LogGroup.Error, "Failed to queue DM shout Discord webhook.");
+                                SendMessageToPC(user, ColorToken.Red("ERROR: Unable to queue DM shout Discord webhook. Please notify an admin."));
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Write(LogGroup.Error, $"Failed to queue DM shout Discord webhook. {ex}");
+                            SendMessageToPC(user, ColorToken.Red("ERROR: Unable to queue DM shout Discord webhook. Please notify an admin."));
+                        }
                     }
                 });
         }

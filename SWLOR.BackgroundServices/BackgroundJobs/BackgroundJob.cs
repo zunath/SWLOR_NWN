@@ -40,7 +40,7 @@ namespace SWLOR.BackgroundServices.BackgroundJobs
         private static int ParseAttempt(string? value)
         {
             return int.TryParse(value, out var attempt)
-                ? attempt
+                ? Math.Max(0, attempt)
                 : 0;
         }
     }

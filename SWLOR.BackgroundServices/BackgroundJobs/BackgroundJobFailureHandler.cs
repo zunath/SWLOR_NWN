@@ -6,6 +6,25 @@ namespace SWLOR.BackgroundServices.BackgroundJobs
 {
     public sealed class BackgroundJobFailureHandler
     {
+        private const string RequeueAndAcknowledgeScript = @"
+redis.call('XADD', KEYS[1], 'MAXLEN', '~', ARGV[1], '*',
+    'type', ARGV[4],
+    'payload', ARGV[5],
+    'attempt', ARGV[6],
+    'createdUtc', ARGV[7],
+    'lastError', ARGV[8])
+return redis.call('XACK', KEYS[1], ARGV[2], ARGV[3])
+";
+
+        private const string MoveToDeadLetterAndAcknowledgeScript = @"
+redis.call('XADD', KEYS[1], '*',
+    'originalId', ARGV[2],
+    'error', ARGV[3],
+    'failedUtc', ARGV[4],
+    unpack(ARGV, 5))
+return redis.call('XACK', KEYS[2], ARGV[1], ARGV[2])
+";
+
         private readonly BackgroundServiceSettings _settings;
         private readonly IAppLogger _logger;
 
@@ -25,41 +44,59 @@ namespace SWLOR.BackgroundServices.BackgroundJobs
                 return;
             }
 
-            await database.StreamAddAsync(
-                BackgroundJobQueueNames.StreamName,
-                new[]
-                {
-                    new NameValueEntry("type", job.Type),
-                    new NameValueEntry("payload", job.Payload),
-                    new NameValueEntry("attempt", nextAttempt.ToString()),
-                    new NameValueEntry("createdUtc", DateTime.UtcNow.ToString("O")),
-                    new NameValueEntry("lastError", Truncate(exception.ToString()))
-                });
-
-            await AcknowledgeAsync(database, job.Id);
+            await RequeueAndAcknowledgeAsync(database, job, nextAttempt, exception.ToString());
             _logger.Error($"Background job {job.Id} failed attempt {nextAttempt}; requeued. {exception.Message}");
         }
 
         public async Task MoveToDeadLetterAsync(IDatabase database, StreamEntry entry, string error)
         {
-            await database.StreamAddAsync(
-                BackgroundJobQueueNames.DeadLetterStreamName,
-                new[]
-                {
-                    new NameValueEntry("originalId", entry.Id),
-                    new NameValueEntry("error", Truncate(error)),
-                    new NameValueEntry("failedUtc", DateTime.UtcNow.ToString("O"))
-                }.Concat(entry.Values).ToArray());
+            var arguments = new List<RedisValue>
+            {
+                BackgroundJobQueueNames.ConsumerGroup,
+                entry.Id,
+                Truncate(error),
+                DateTime.UtcNow.ToString("O")
+            };
 
-            await AcknowledgeAsync(database, entry.Id);
+            foreach (var value in entry.Values)
+            {
+                arguments.Add(value.Name);
+                arguments.Add(value.Value);
+            }
+
+            await database.ScriptEvaluateAsync(
+                MoveToDeadLetterAndAcknowledgeScript,
+                new RedisKey[]
+                {
+                    BackgroundJobQueueNames.DeadLetterStreamName,
+                    BackgroundJobQueueNames.StreamName
+                },
+                arguments.ToArray());
         }
 
-        private async Task AcknowledgeAsync(IDatabase database, RedisValue id)
+        private async Task RequeueAndAcknowledgeAsync(
+            IDatabase database,
+            BackgroundJob job,
+            int nextAttempt,
+            string error)
         {
-            await database.StreamAcknowledgeAsync(
-                BackgroundJobQueueNames.StreamName,
-                BackgroundJobQueueNames.ConsumerGroup,
-                id);
+            await database.ScriptEvaluateAsync(
+                RequeueAndAcknowledgeScript,
+                new RedisKey[]
+                {
+                    BackgroundJobQueueNames.StreamName
+                },
+                new RedisValue[]
+                {
+                    BackgroundJobQueueNames.MaxStreamLength,
+                    BackgroundJobQueueNames.ConsumerGroup,
+                    job.Id,
+                    job.Type,
+                    job.Payload,
+                    nextAttempt.ToString(),
+                    DateTime.UtcNow.ToString("O"),
+                    Truncate(error)
+                });
         }
 
         private string Truncate(string value)

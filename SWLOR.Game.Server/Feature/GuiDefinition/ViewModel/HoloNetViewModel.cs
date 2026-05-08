@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 
@@ -38,7 +39,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
-            ShowModal("Are you sure you want to submit this broadcast?", () =>
+            ShowModal("Are you sure you want to submit this broadcast?", async () =>
             {
                 var url = _appSettings.HoloNetWebhookUrl;
 
@@ -55,7 +56,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
 
                 var authorName = $"{GetName(Player)} ({GetPCPlayerName(Player)}) [{GetPCPublicCDKey(Player)}]";
-                if (!BackgroundJob.EnqueueDiscordWebhook(url, authorName, message, 3447003))
+                if (!await BackgroundJob.EnqueueDiscordWebhook(url, authorName, message, 3447003))
                 {
                     SendMessageToPC(Player, ColorToken.Red("ERROR: Unable to queue HoloNet broadcast. Please notify a DM."));
                     return;

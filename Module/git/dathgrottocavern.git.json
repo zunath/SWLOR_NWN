@@ -31084,6 +31084,69 @@
           "type": "float",
           "value": 6.0426025390625
         }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Stuck — dathgrottocavern"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "STUCK_WAYPOINT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_stuck"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 33.43532180786133
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 58.99143981933594
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 6.025148391723633
+        }
       }
     ]
   }

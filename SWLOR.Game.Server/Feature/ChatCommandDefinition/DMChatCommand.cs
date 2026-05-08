@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
@@ -8,11 +9,9 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.ChatCommandService;
 using SWLOR.Game.Server.Service.FactionService;
+using SWLOR.Game.Server.Service.LogService;
 using Faction = SWLOR.Game.Server.Service.Faction;
 using ChatChannel = SWLOR.Game.Server.Core.NWNX.Enum.ChatChannel;
-using System.Threading.Tasks;
-using Discord;
-using Discord.Webhook;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -23,6 +22,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
     public class DMChatCommand: IChatCommandListDefinition
     {
         private readonly ChatCommandBuilder _builder = new ChatCommandBuilder();
+        private static readonly ApplicationSettings _appSettings = ApplicationSettings.Get();
 
         public Dictionary<string, ChatCommandDetail> BuildChatCommands()
         {
@@ -945,32 +945,32 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 
                     return string.Empty;
                 })
-                .Action((user, target, location, args) =>
+                .Action(async (user, target, location, args) =>
                 {
                     var message = string.Join(" ", args);
-                    var url = Environment.GetEnvironmentVariable("SWLOR_DM_SHOUT_WEBHOOK_URL");
+                    var url = _appSettings.DMShoutWebhookUrl;
 
                     for (var onlinePlayer = GetFirstPC(); GetIsObjectValid(onlinePlayer); onlinePlayer = GetNextPC())
                         ChatPlugin.SendMessage(ChatChannel.DMShout, message, user, onlinePlayer);
                     
                     var authorName = $"{GetName(user)} ({GetPCPlayerName(user)}) [{GetPCPublicCDKey(user)}]";
-                    Task.Run(async () =>
+                    if (!string.IsNullOrWhiteSpace(url))
                     {
-                        using (var client = new DiscordWebhookClient(url))
+                        try
                         {
-                            var embed = new EmbedBuilder
+                            var enqueued = await BackgroundJob.EnqueueDiscordWebhook(url, authorName, message, 15105570);
+                            if (!enqueued)
                             {
-                                Author = new EmbedAuthorBuilder
-                                {
-                                    Name = authorName
-                                },
-                                Description = message,
-                                Color = Color.Orange
-                            };
-
-                            await client.SendMessageAsync(string.Empty, embeds: new[] { embed.Build() });
+                                Log.Write(LogGroup.Error, "Failed to queue DM shout Discord webhook.");
+                                SendMessageToPC(user, ColorToken.Red("ERROR: Unable to queue DM shout Discord webhook. Please notify an admin."));
+                            }
                         }
-                    });
+                        catch (Exception ex)
+                        {
+                            Log.Write(LogGroup.Error, $"Failed to queue DM shout Discord webhook. {ex}");
+                            SendMessageToPC(user, ColorToken.Red("ERROR: Unable to queue DM shout Discord webhook. Please notify an admin."));
+                        }
+                    }
                 });
         }
 

@@ -21,12 +21,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
         private readonly Dictionary<int, RewardDetails> _rewardDetails = new()
         {
-            { 0, new RewardDetails(138, 21)},
-            { 1, new RewardDetails(343, 81)},
-            { 2, new RewardDetails(532, 117)},
-            { 3, new RewardDetails(733, 156)},
-            { 4, new RewardDetails(874, 195)},
-            { 5, new RewardDetails(960, 246)},
+            { 0, new RewardDetails(1000, 21)},
+            { 1, new RewardDetails(2500, 81)},
+            { 2, new RewardDetails(4000, 117)},
+            { 3, new RewardDetails(5500, 156)},
+            { 4, new RewardDetails(7200, 195)},
+            { 5, new RewardDetails(8200, 246)},
         };
 
         public Dictionary<string, QuestDetail> BuildQuests()
@@ -136,13 +136,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             var itemName = Cache.GetItemNameByResref(resref);
             var rewardDetails = _rewardDetails[guildRank];
 
-            builder.Create(questId, $"{amount}x {itemName}")
+            builder.Create(questId, $"Craft {amount}x {itemName}")
                 .IsRepeatable()
                 .IsGuildTask(GuildType.EngineeringGuild, guildRank)
 
                 .AddState()
-                .SetStateJournalText($"Collect {amount}x {itemName} and return to the Engineering Guildmaster")
-                .AddCollectItemObjective(resref, amount)
+                .SetStateJournalText($"Craft {amount}x {itemName} and return to the Engineering Guildmaster")
+                .AddCollectItemObjective(resref, amount, CollectItemProducerRequirementType.PlayerProduced)
 
                 .AddGoldReward(rewardDetails.Gold)
                 .AddGPReward(GuildType.EngineeringGuild, rewardDetails.GP);

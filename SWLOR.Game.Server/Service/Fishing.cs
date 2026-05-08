@@ -421,6 +421,7 @@ namespace SWLOR.Game.Server.Service
             else
             {
                 CreateItemOnObject(fish.Resref, player);
+
                 SendMessageToPC(player, $"You landed a {fish.Name}!");
             }
 

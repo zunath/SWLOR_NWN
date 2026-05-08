@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
-            IsSkillSelectionVisible = !GetIsDM(Player);
+            IsSkillSelectionVisible = !GetIsDM(Player) && !GetIsDMPossessed(Player);
             LoadSkills();
             DiceCount = MinDiceCount;
             SelectedSkillId = (int)SkillType.Invalid;
@@ -112,7 +112,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var dieRoll = number + "d" + sides;
             var message = ColorToken.SkillCheck("Dice Roll: ") + dieRoll + ": " + value;
 
-            if (!GetIsDM(Player))
+            if (!GetIsDM(Player) && !GetIsDMPossessed(Player))
             {
                 var skillType = (SkillType)SelectedSkillId;
                 if (skillType != SkillType.Invalid)

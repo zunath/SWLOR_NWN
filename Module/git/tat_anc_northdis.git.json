@@ -351,7 +351,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Vêtements légers"
+                  "2": "VÃªtements lÃ©gers"
                 }
               },
               "Metal1Color": {
@@ -1387,7 +1387,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Vêtements légers"
+                  "2": "VÃªtements lÃ©gers"
                 }
               },
               "Metal1Color": {
@@ -2423,7 +2423,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Vêtements légers"
+                  "2": "VÃªtements lÃ©gers"
                 }
               },
               "Metal1Color": {
@@ -3590,7 +3590,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Astromech Droid",
-            "2": "Droïde Astromec douteux"
+            "2": "DroÃ¯de Astromec douteux"
           }
         },
         "fortbonus": {
@@ -4306,7 +4306,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Vêtements légers"
+                  "2": "VÃªtements lÃ©gers"
                 }
               },
               "Metal1Color": {
@@ -5251,7 +5251,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Revêtement de droïde agricole type-1"
+                  "2": "RevÃªtement de droÃ¯de agricole type-1"
                 }
               },
               "Metal1Color": {
@@ -5433,7 +5433,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Mouse Droid",
-            "2": "Droïde souris MSE-6"
+            "2": "DroÃ¯de souris MSE-6"
           }
         },
         "fortbonus": {
@@ -5515,7 +5515,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Pièces détachées de droïd"
+                  "0": "PiÃ¨ces dÃ©tachÃ©es de droÃ¯d"
                 }
               },
               "ModelPart1": {
@@ -6425,7 +6425,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Astromech Droid",
-            "2": "Unité droïde R5D4"
+            "2": "UnitÃ© droÃ¯de R5D4"
           }
         },
         "fortbonus": {
@@ -6507,7 +6507,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Pièces détachées de droïd"
+                  "0": "PiÃ¨ces dÃ©tachÃ©es de droÃ¯d"
                 }
               },
               "ModelPart1": {
@@ -7417,7 +7417,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Astromech Droid",
-            "2": "Unité droïde R5D4"
+            "2": "UnitÃ© droÃ¯de R5D4"
           }
         },
         "fortbonus": {
@@ -7499,7 +7499,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Pièces détachées de droïd"
+                  "0": "PiÃ¨ces dÃ©tachÃ©es de droÃ¯d"
                 }
               },
               "ModelPart1": {
@@ -8280,7 +8280,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Revêtement de droïde agricole type-1"
+                  "2": "RevÃªtement de droÃ¯de agricole type-1"
                 }
               },
               "Metal1Color": {
@@ -8462,7 +8462,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Agricultural Droid",
-            "2": "Droïde agricole"
+            "2": "DroÃ¯de agricole"
           }
         },
         "fortbonus": {
@@ -8544,7 +8544,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Pièces détachées de droïd"
+                  "0": "PiÃ¨ces dÃ©tachÃ©es de droÃ¯d"
                 }
               },
               "ModelPart1": {
@@ -43646,7 +43646,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Door",
-            "2": "Porte métallique coulissante oxydée"
+            "2": "Porte mÃ©tallique coulissante oxydÃ©e"
           }
         },
         "OnClick": {
@@ -43866,7 +43866,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Door",
-            "2": "Porte métallique coulissante rouillée"
+            "2": "Porte mÃ©tallique coulissante rouillÃ©e"
           }
         },
         "OnClick": {
@@ -44304,7 +44304,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Door",
-            "2": "Porte métallique coulissante vers le bas bleu"
+            "2": "Porte mÃ©tallique coulissante vers le bas bleu"
           }
         },
         "OnClick": {
@@ -44524,7 +44524,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Door",
-            "2": "Porte métallique coulissante vers le bas bleu"
+            "2": "Porte mÃ©tallique coulissante vers le bas bleu"
           }
         },
         "OnClick": {
@@ -44744,7 +44744,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Door",
-            "2": "Porte métallique coulissante rayée"
+            "2": "Porte mÃ©tallique coulissante rayÃ©e"
           }
         },
         "OnClick": {
@@ -44968,7 +44968,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Vaporateur d'humiditÃ©"
           }
         },
         "OnClick": {
@@ -79425,7 +79425,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Trafic aérien et terrestre"
+            "2": "Trafic aÃ©rien et terrestre"
           }
         },
         "Looping": {
@@ -79560,7 +79560,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Trafic aérien et terrestre"
+            "2": "Trafic aÃ©rien et terrestre"
           }
         },
         "Looping": {
@@ -79688,7 +79688,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Véhicule - Fonceur"
+            "2": "VÃ©hicule - Fonceur"
           }
         },
         "Looping": {
@@ -79809,7 +79809,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Véhicule - Pod Racer"
+            "2": "VÃ©hicule - Pod Racer"
           }
         },
         "Looping": {
@@ -79944,7 +79944,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Droïd - Déplacement droïde sonde"
+            "2": "DroÃ¯d - DÃ©placement droÃ¯de sonde"
           }
         },
         "Looping": {
@@ -80928,7 +80928,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Trafic aérien et terrestre"
+            "2": "Trafic aÃ©rien et terrestre"
           }
         },
         "Looping": {
@@ -87336,6 +87336,69 @@
         "ZPosition": {
           "type": "float",
           "value": 1.256964564323425
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Stuck â€” tat_anc_northdis"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "STUCK_WAYPOINT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_stuck"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 90.13581085205078
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 52.96572875976563
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -5.222045729169622e-006
         }
       }
     ]

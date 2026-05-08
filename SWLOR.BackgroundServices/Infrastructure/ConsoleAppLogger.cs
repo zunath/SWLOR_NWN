@@ -6,17 +6,17 @@ namespace SWLOR.BackgroundServices.Infrastructure
     {
         public void Info(string message)
         {
-            Log.Information(message);
+            Log.Information("{Message}", message);
         }
 
         public void Error(string message)
         {
-            Log.Error(message);
+            Log.Error("{Message}", message);
         }
 
         public void Error(string message, Exception exception)
         {
-            Log.Error(exception, message);
+            Log.Error(exception, "{Message}", message);
         }
     }
 }

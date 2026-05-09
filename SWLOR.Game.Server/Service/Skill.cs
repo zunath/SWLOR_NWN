@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// This is the maximum number of skill points a single character can have at any time.
         /// </summary>
-        public const int SkillCap = 350;
+        public const int SkillCap = 400;
 
         /// <summary>
         /// This is the maximum number of AP a single character can earn in total. This must be evenly divisible into SkillCap.
@@ -233,7 +233,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="dbPlayer">The database entity.</param>
         private static void ApplyAbilityPoint(uint player, Player dbPlayer)
         {
-            // Total AP have been earned (350SP = 35AP)
+            // Total AP have been earned (400SP = 40AP)
             if (dbPlayer.TotalAPAcquired >= SkillCap / 10) return;
 
             if (dbPlayer.TotalSPAcquired % 10 == 0)

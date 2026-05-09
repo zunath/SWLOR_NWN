@@ -22,12 +22,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
         private readonly Dictionary<int, RewardDetails> _rewardDetails = new()
         {
-            { 0, new RewardDetails(138, 21)},
-            { 1, new RewardDetails(343, 81)},
-            { 2, new RewardDetails(532, 117)},
-            { 3, new RewardDetails(733, 156)},
-            { 4, new RewardDetails(874, 195)},
-            { 5, new RewardDetails(960, 246)},
+            { 0, new RewardDetails(1000, 21)},
+            { 1, new RewardDetails(2500, 81)},
+            { 2, new RewardDetails(4000, 117)},
+            { 3, new RewardDetails(5500, 156)},
+            { 4, new RewardDetails(7200, 195)},
+            { 5, new RewardDetails(8200, 246)},
         };
 
         private readonly QuestBuilder _builder = new();
@@ -184,9 +184,9 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         }
 
         private void BuildItemTask(
-            string questId, 
-            string resref, 
-            int amount, 
+            string questId,
+            string resref,
+            int amount,
             int guildRank)
         {
             var itemName = Cache.GetItemNameByResref(resref);
@@ -198,11 +198,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText($"Collect {amount}x {itemName} and return to the Hunter's Guildmaster")
-                .AddCollectItemObjective(resref, amount)
+                .AddCollectItemObjective(resref, amount, CollectItemProducerRequirementType.None)
 
                 .AddGoldReward(rewardDetails.Gold)
                 .AddGPReward(GuildType.HuntersGuild, rewardDetails.GP);
         }
+
         private void BuildKillTask(
             string questId,
             NPCGroupType group,

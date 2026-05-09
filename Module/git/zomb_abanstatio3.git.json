@@ -1275,7 +1275,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "Almost all data has been purged on the terminal, but there is one message oddly left behind for someone to see, or perhaps something that escaped the data purge.\n\n<cÿ~ >Things will be difficult moving forward, but my work here has shown resounding success. Taking Drear's research and utilizing it as a weapon in itself feels like a stroke of genius, but I can't forget the years of pain and effort taken to reach this. Years of gaining trust on Odacer-Faustin. Years of searching the tower. Years of working my way up the chain in Czerka. But now I've succeeded in my pursuits.\n\nLet this facility be proof of my successes here, now. No one survives, though. Can't have any loose ends. That's why I've taken the liberty of administering this \"sickness\" into the food supply. It's possible one or two of them could be immune, but--[DATA CORRUPTED]-- getting back on track, I'll move forth to further this goal and proceed where Drear failed.</c>\n\nOne more thing that can be gleamed from the information remaining on the termal is a word: \"Vecten\""
+            "0": "Almost all data has been purged on the terminal, but there is one message oddly left behind for someone to see, or perhaps something that escaped the data purge.\n\n<cÃ¿~ >Things will be difficult moving forward, but my work here has shown resounding success. Taking Drear's research and utilizing it as a weapon in itself feels like a stroke of genius, but I can't forget the years of pain and effort taken to reach this. Years of gaining trust on Odacer-Faustin. Years of searching the tower. Years of working my way up the chain in Czerka. But now I've succeeded in my pursuits.\n\nLet this facility be proof of my successes here, now. No one survives, though. Can't have any loose ends. That's why I've taken the liberty of administering this \"sickness\" into the food supply. It's possible one or two of them could be immune, but--[DATA CORRUPTED]-- getting back on track, I'll move forth to further this goal and proceed where Drear failed.</c>\n\nOne more thing that can be gleamed from the information remaining on the termal is a word: \"Vecten\""
           }
         },
         "DisarmDC": {
@@ -11931,7 +11931,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "The controls are inaccessible, showing a single message on the screen.\n\n<cÿ  >STATION HANGAR BAY ACCESS | LOCKDOWN WHILE TRACTOR BEAM ACTIVE</c>"
+            "0": "The controls are inaccessible, showing a single message on the screen.\n\n<cÃ¿  >STATION HANGAR BAY ACCESS | LOCKDOWN WHILE TRACTOR BEAM ACTIVE</c>"
           }
         },
         "DisarmDC": {
@@ -12983,6 +12983,69 @@
         "ZPosition": {
           "type": "float",
           "value": -5.7220458984375e-006
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Stuck â€” zomb_abanstatio3"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "STUCK_WAYPOINT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_stuck"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 15.2797794342041
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 18.07762718200684
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -4.76837158203125e-007
         }
       }
     ]

@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText("You have recovered the stolen Sith artifact. Return it to Inquisitor Dral'kor Keth.")
                 .AddXPReward(2000)
-                .AddGoldReward(1000);
+                .AddGoldReward(1500);
                 
         }
 
@@ -66,7 +66,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText("You have demonstrated your knowledge of the Sith Code.")
                 .AddXPReward(5000)
-                .AddGoldReward(1500);
+                .AddGoldReward(2250);
         }
 
         // Quest 4: Proving Your Dominance
@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText("You have eliminated the weak apprentice. Return to Inquisitor Dral'kor Keth to complete your training.")
                 .AddXPReward(8000)
-                .AddGoldReward(3000)
+                .AddGoldReward(4500)
                 .AddItemReward("apprentice_dark_", 1);
         }
         private void FrogBoss()
@@ -98,7 +98,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText("The creature is slain. Return to Dral'kor Keth and report your findings.")
                 .AddXPReward(10000)
-                .AddGoldReward(4000);
+                .AddGoldReward(6000);
                 
         }
         private void EliminateKlorSlug()
@@ -112,7 +112,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText("You have successfully eliminated the K'lor'slugs. Return to the citizen to inform them of your success.")
                 .AddXPReward(5000)
-                .AddGoldReward(1000)
+                .AddGoldReward(1500)
                 .AddItemReward("slug_surprise", 1);
         }
         private void SkinsInTheShadows()
@@ -126,7 +126,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText("You've gathered the Tuk'ata hides. Return to the smuggler — and don't draw any attention.")
                 .AddXPReward(6000)
-                .AddGoldReward(2000);
+                .AddGoldReward(3000);
 
         }
         private void FactoryWorkerParts()
@@ -140,7 +140,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText("You have collected the electronic parts. Return to the factory worker.")
                 .AddXPReward(5000)
-                .AddGoldReward(1800);
+                .AddGoldReward(2700);
         }
     }
 }

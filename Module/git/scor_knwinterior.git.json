@@ -7942,7 +7942,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "Vek Sorn is a weathered Duros with cracked blue skin and deep-set, crimson eyes that have seen more than their share of trouble. She runs a decrepit apartment complex  in the Korriban Wastes. The building is barely standing�rusted durasteel beams jut out like broken bones, flickering wall sconces cast eerie shadows, and the air always carries the scent of dust, ozone, and old death."
+            "0": "Vek Sorn is a weathered Duros with cracked blue skin and deep-set, crimson eyes that have seen more than their share of trouble. She runs a decrepit apartment complex  in the Korriban Wastes. The building is barely standingrusted durasteel beams jut out like broken bones, flickering wall sconces cast eerie shadows, and the air always carries the scent of dust, ozone, and old death."
           }
         },
         "Dex": {
@@ -163016,6 +163016,69 @@
         "YOrientation": {
           "type": "float",
           "value": -0.9415439963340759
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 75.51008605957031
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -5.7220458984375e-006
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Stuck — scor_knwinterior"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "STUCK_WAYPOINT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_stuck"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 117.0065536499023
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
         },
         "YPosition": {
           "type": "float",

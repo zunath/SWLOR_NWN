@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasImpactAction((activator, target, level, location) =>
                 {
                     StatusEffect.ApplyStatusEffect(activator, activator, typeof(ForceBody1StatusEffect), 60f);
+                    CombatVisualEffect.ApplyStatusEffectVisual(activator, typeof(ForceBody1StatusEffect), false);
                 });
         }
         private void ForceBody2()
@@ -44,6 +45,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasImpactAction((activator, target, level, location) =>
                 {
                     StatusEffect.ApplyStatusEffect(activator, activator, typeof(ForceBody2StatusEffect), 60f);
+                    CombatVisualEffect.ApplyStatusEffectVisual(activator, typeof(ForceBody2StatusEffect), false);
                 });
         }
     }

@@ -24,6 +24,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             const float Duration = 6.1f;
             StatusEffect.ApplyStatusEffect(source, target, new ForceStunStatusEffect(), Duration);
+            CombatVisualEffect.ApplyStatusEffectVisual(target, typeof(ForceStunStatusEffect), true);
         }
 
         private static void ForceStun1(AbilityBuilder builder)

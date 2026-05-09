@@ -26,9 +26,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 .Level(1)
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.BreakerReversal, 60f)
-                .RequiresTarget()
                 .HasImpactAction(ImpactAction)
-                .IsCastedAbility()
+                .IsWeaponAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(10);

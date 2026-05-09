@@ -93,6 +93,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 SetCommandable(true, activator);
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), target);
                 StatusEffect.ApplyStatusEffect(activator, target, typeof(StunnedStatusEffect), Duration);
+                CombatVisualEffect.ApplyStatusEffectVisual(target, typeof(StunnedStatusEffect), true);
                 AssignCommand(activator, () =>
                 {
                     if (Item.LightsaberBaseItemTypes.Contains(rightHandBaseItemType))

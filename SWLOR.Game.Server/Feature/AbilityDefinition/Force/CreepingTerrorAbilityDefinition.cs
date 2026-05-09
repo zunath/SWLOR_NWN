@@ -35,6 +35,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasImpactAction((activator, target, level, location) =>
                 {
                     StatusEffect.ApplyStatusEffect(activator, target, new CreepingTerrorStatusEffect(1), 24f);
+                    CombatVisualEffect.ApplyStatusEffectVisual(target, typeof(CreepingTerrorStatusEffect), true);
                 });
         }
 
@@ -54,6 +55,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasImpactAction((activator, target, level, location) =>
                 {
                     StatusEffect.ApplyStatusEffect(activator, target, new CreepingTerrorStatusEffect(2), 24f);
+                    CombatVisualEffect.ApplyStatusEffectVisual(target, typeof(CreepingTerrorStatusEffect), true);
                 });
         }
 
@@ -73,6 +75,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasImpactAction((activator, target, level, location) =>
                 {
                     StatusEffect.ApplyStatusEffect(activator, target, new CreepingTerrorStatusEffect(3), 24f);
+                    CombatVisualEffect.ApplyStatusEffectVisual(target, typeof(CreepingTerrorStatusEffect), true);
                 });
         }
     }

@@ -304,6 +304,7 @@ namespace SWLOR.Game.Server.Service
 
             _activeConcentrationAbilities[creature] = new ActiveConcentrationAbility(target, feat, statusEffect);
             StatusEffect.ApplyStatusEffect(creature, target, statusEffect, 0.0f);
+            CombatVisualEffect.ApplyStatusEffectVisual(target, statusEffect, GetIsReactionTypeHostile(target, creature));
 
             Messaging.SendMessageNearbyToPlayers(creature, $"{GetName(creature)} begins concentrating...");
             SetLocalBool(creature, "CONCENTRATION_FIRST_USE", true);
@@ -415,7 +416,10 @@ namespace SWLOR.Game.Server.Service
         private static void ApplyAuraEffect(uint source, uint recipient, Type type)
         {
             if (!StatusEffect.HasStatusEffect(recipient, type, source))
+            {
                 StatusEffect.ApplyStatusEffect(source, recipient, type, 0f);
+                CombatVisualEffect.ApplyStatusEffectVisual(recipient, type, GetIsReactionTypeHostile(recipient, source));
+            }
         }
 
         private static void RemoveAuraEffect(uint source, uint recipient, Type type, bool sendsWornOffMessage = false)
@@ -845,6 +849,17 @@ namespace SWLOR.Game.Server.Service
                     creature = GetNextObjectInShape(Shape.Sphere, 5.0f, center, true);
                 }
 
+                if (creatures.Any(creature => GetIsObjectValid(creature) && GetIsReactionTypeHostile(creature, activator)))
+                {
+                    var areaVisualEffect = CombatVisualEffect.GetAreaImpactVisualEffect(
+                        skillType,
+                        baseDamage,
+                        statusEffect,
+                        additionalStatusEffects,
+                        CombatImpactAreaShape.Sphere);
+                    CombatVisualEffect.ApplyAtLocation(center, areaVisualEffect);
+                }
+
                 totalDamage = ApplyCombatImpactToCreatures(
                     activator,
                     creatures,
@@ -918,6 +933,13 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            var areaVisualLocation = Location(
+                GetArea(activator),
+                shape == CombatImpactAreaShape.Sphere
+                    ? GetAreaImpactPosition(activator, target, targetLocation, centerOnActivator)
+                    : GetPosition(activator),
+                0f);
+            var impactRotation = GetImpactRotationRadians(activator, target, targetLocation);
             var action = BuildTelegraphedCombatImpactAction(
                 skillType,
                 baseDamage,
@@ -926,14 +948,16 @@ namespace SWLOR.Game.Server.Service
                 savingThrow,
                 statusEffect,
                 additionalStatusEffects,
-                statusEffectFactory);
+                statusEffectFactory,
+                shape,
+                areaVisualLocation);
 
             switch (shape)
             {
                 case CombatImpactAreaShape.Sphere:
                     Telegraph.CreateSphereTelegraph(
                         activator,
-                        GetAreaImpactPosition(activator, target, targetLocation, centerOnActivator),
+                        GetPositionFromLocation(areaVisualLocation),
                         lengthOrRadius,
                         telegraphDuration,
                         true,
@@ -943,7 +967,7 @@ namespace SWLOR.Game.Server.Service
                     Telegraph.CreateConeTelegraph(
                         activator,
                         GetPosition(activator),
-                        GetImpactRotationRadians(activator, target, targetLocation),
+                        impactRotation,
                         lengthOrRadius,
                         width > 0f ? width : lengthOrRadius,
                         telegraphDuration,
@@ -954,7 +978,7 @@ namespace SWLOR.Game.Server.Service
                     Telegraph.CreateLineTelegraph(
                         activator,
                         GetPosition(activator),
-                        GetImpactRotationRadians(activator, target, targetLocation),
+                        impactRotation,
                         lengthOrRadius,
                         width > 0f ? width : 2.0f,
                         telegraphDuration,
@@ -1011,6 +1035,17 @@ namespace SWLOR.Game.Server.Service
                 creature = GetNearestCreatureToLocation(CreatureType.IsAlive, true, origin, nth);
             }
 
+            if (creatures.Any(creature => GetIsObjectValid(creature) && GetIsReactionTypeHostile(creature, activator)))
+            {
+                var areaVisualEffect = CombatVisualEffect.GetAreaImpactVisualEffect(
+                    skillType,
+                    baseDamage,
+                    statusEffect,
+                    additionalStatusEffects,
+                    shape);
+                CombatVisualEffect.ApplyAtLocation(origin, areaVisualEffect);
+            }
+
             ApplyCombatImpactToCreatures(
                 activator,
                 creatures,
@@ -1032,16 +1067,33 @@ namespace SWLOR.Game.Server.Service
             SavingThrow savingThrow,
             Type statusEffect,
             IEnumerable<Type> additionalStatusEffects,
-            Func<IStatusEffect> statusEffectFactory)
+            Func<IStatusEffect> statusEffectFactory,
+            CombatImpactAreaShape shape,
+            Location areaVisualLocation)
         {
             return (creator, creatures) =>
             {
                 if (!GetIsObjectValid(creator) || GetCurrentHitPoints(creator) <= 0)
                     return;
 
+                var hostileCreatures = creatures
+                    .Where(creature => GetIsObjectValid(creature) && GetIsReactionTypeHostile(creature, creator))
+                    .ToList();
+
+                if (hostileCreatures.Count <= 0)
+                    return;
+
+                var areaVisualEffect = CombatVisualEffect.GetAreaImpactVisualEffect(
+                    skillType,
+                    baseDamage,
+                    statusEffect,
+                    additionalStatusEffects,
+                    shape);
+                CombatVisualEffect.ApplyAtLocation(areaVisualLocation, areaVisualEffect);
+
                 ApplyCombatImpactToCreatures(
                     creator,
-                    creatures,
+                    hostileCreatures,
                     skillType,
                     baseDamage,
                     savingThrowDc,
@@ -1189,7 +1241,14 @@ namespace SWLOR.Game.Server.Service
                 Enmity.ModifyEnmity(activator, target, damage + 100);
             }
 
-            ApplyCombatImpactStatusEffect(activator, target, savingThrowDc, savingThrow, statusEffect, duration, additionalStatusEffects, statusEffectFactory);
+            var statusApplied = ApplyCombatImpactStatusEffect(activator, target, savingThrowDc, savingThrow, statusEffect, duration, additionalStatusEffects, statusEffectFactory);
+            var visualEffect = CombatVisualEffect.GetHostileImpactVisualEffect(
+                skillType,
+                damage > 0 ? baseDamage : 0,
+                statusApplied ? statusEffect : null,
+                statusApplied ? additionalStatusEffects : null);
+            CombatVisualEffect.ApplyToObject(target, visualEffect);
+
             CombatPoint.AddCombatPoint(activator, target, skillType, 3);
             return damage;
         }
@@ -1209,7 +1268,7 @@ namespace SWLOR.Game.Server.Service
             return Combat.ApplyDamageTakenModifiers(target, calculatedDamage);
         }
 
-        private static void ApplyCombatImpactStatusEffect(
+        private static bool ApplyCombatImpactStatusEffect(
             uint activator,
             uint target,
             int savingThrowDc,
@@ -1221,36 +1280,39 @@ namespace SWLOR.Game.Server.Service
         {
             var hasAdditionalStatusEffects = additionalStatusEffects?.Any(x => x != null) ?? false;
             if (duration <= 0 || (statusEffect == null && statusEffectFactory == null && !hasAdditionalStatusEffects))
-                return;
+                return false;
 
             if (savingThrowDc > 0 && !SavingThrowFailed(activator, target, savingThrow, savingThrowDc))
-                return;
+                return false;
 
+            var statusApplied = false;
             if (statusEffectFactory != null)
-                ApplyCombatImpactTrackedStatusEffect(activator, target, statusEffectFactory, duration);
+                statusApplied |= ApplyCombatImpactTrackedStatusEffect(activator, target, statusEffectFactory, duration);
             else if (statusEffect != null)
-                ApplyCombatImpactTrackedStatusEffect(activator, target, statusEffect, duration);
+                statusApplied |= ApplyCombatImpactTrackedStatusEffect(activator, target, statusEffect, duration);
 
             if (additionalStatusEffects != null)
             {
                 foreach (var additionalStatusEffect in additionalStatusEffects.Where(x => x != null && x != statusEffect).Distinct())
                 {
-                    ApplyCombatImpactTrackedStatusEffect(activator, target, additionalStatusEffect, duration);
+                    statusApplied |= ApplyCombatImpactTrackedStatusEffect(activator, target, additionalStatusEffect, duration);
                 }
             }
 
+            return statusApplied;
         }
 
-        private static void ApplyCombatImpactTrackedStatusEffect(
+        private static bool ApplyCombatImpactTrackedStatusEffect(
             uint activator,
             uint target,
             Type type,
             float duration)
         {
             StatusEffect.ApplyStatusEffect(activator, target, type, duration);
+            return true;
         }
 
-        private static void ApplyCombatImpactTrackedStatusEffect(
+        private static bool ApplyCombatImpactTrackedStatusEffect(
             uint activator,
             uint target,
             Func<IStatusEffect> statusEffectFactory,
@@ -1258,9 +1320,10 @@ namespace SWLOR.Game.Server.Service
         {
             var statusEffect = statusEffectFactory?.Invoke();
             if (statusEffect == null)
-                return;
+                return false;
 
             StatusEffect.ApplyStatusEffect(activator, target, statusEffect, duration);
+            return true;
         }
 
         private static bool SavingThrowFailed(uint activator, uint target, SavingThrow savingThrow, int dc)

@@ -157,6 +157,11 @@ Implement `Armor` exactly as written, including General, Heavy, and Light perk r
 
 Do not implement or retain the old Heavy Armor activation-time penalty. Bible armor mechanics include heavy/light armor traits and equipment prerequisites, not a blanket activation-time penalty.
 
+Open decision: Armor is effectively a required skill under the combat upgrade, so choose one of these paths before finalizing skill-cap and SP behavior:
+
+- Armor skill levels do not count toward the 350 skill cap, and Armor does not grant SP.
+- Players receive an extra 50 skill points to account for Armor effectively being required.
+
 Acceptance criteria:
 
 - Armor equip requirements use skill prerequisites from the Bible.

@@ -34,6 +34,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             where T : IStatusEffect
         {
             StatusEffect.ApplyStatusEffect<T>(activator, target, 600f);
+            CombatVisualEffect.ApplyStatusEffectVisual(target, typeof(T), false);
 
             CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
             Enmity.ModifyEnmityOnAll(activator, 250);

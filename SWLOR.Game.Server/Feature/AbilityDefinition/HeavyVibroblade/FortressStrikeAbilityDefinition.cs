@@ -26,9 +26,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .Name("Fortress Strike I")
                 .Level(1)
                 .HasActivationDelay(0f)
-                .RequiresTarget()
                 .HasImpactAction(ImpactAction)
-                .IsCastedAbility()
+                .IsWeaponAbility()
                 .IsHostileAbility()
                 .BreaksStealth();
         }
@@ -39,9 +38,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .Name("Fortress Strike II")
                 .Level(2)
                 .HasActivationDelay(0f)
-                .RequiresTarget()
                 .HasImpactAction(ImpactAction)
-                .IsCastedAbility()
+                .IsWeaponAbility()
                 .IsHostileAbility()
                 .BreaksStealth();
         }

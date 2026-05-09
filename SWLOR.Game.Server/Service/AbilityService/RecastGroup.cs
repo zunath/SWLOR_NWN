@@ -409,6 +409,8 @@ namespace SWLOR.Game.Server.Service.AbilityService
         Rampart = 201,
         [RecastGroup("Absolute Defense", "Abs. Defense", true)]
         AbsoluteDefense = 202,
+        [RecastGroup("Surge Strike", "Surge Strike", true)]
+        SurgeStrike = 203,
     }
 
     public class RecastGroupAttribute: Attribute

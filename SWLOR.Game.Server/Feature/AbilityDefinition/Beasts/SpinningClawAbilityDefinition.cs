@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
 {
@@ -39,6 +40,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
             {
                 if (GetIsReactionTypeHostile(creature, activator))
                 {
+                    if (count == 0)
+                    {
+                        CombatVisualEffect.ApplyAtLocation(GetLocation(activator), VisualEffect.Vfx_Fnf_Swinging_Blade);
+                    }
+
                     var attack = Stat.GetAttack(activator, AbilityType.Agility, SkillType.Invalid);
                     var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
                     var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
@@ -57,6 +63,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                         AssignCommand(activator, () =>
                         {
                             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), dTarget);
+                            CombatVisualEffect.ApplyToObject(dTarget, VisualEffect.Vfx_Com_Blood_Spark_Medium);
                         });
                     });
 

@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
@@ -119,6 +120,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
             DelayCommand(delay, () =>
             {
+                var visualEffect = GetExplosiveAreaVisualEffect(aoe);
+                if (visualEffect != VisualEffect.None)
+                {
+                    ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(visualEffect), targetLocation);
+                }
+
                 ApplyEffectAtLocation(
                     DurationType.Temporary,
                     EffectAreaOfEffect(aoe, enterScript, heartbeatScript),
@@ -136,6 +143,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             });
 
             TakeExplosives(activator);
+        }
+
+        private static VisualEffect GetExplosiveAreaVisualEffect(AreaOfEffect aoe)
+        {
+            return aoe switch
+            {
+                AreaOfEffect.FogAcid => VisualEffect.Vfx_Fnf_Gas_Explosion_Acid,
+                AreaOfEffect.FogFire => VisualEffect.Vfx_Fnf_Gas_Explosion_Fire,
+                _ => VisualEffect.None
+            };
         }
     }
 }

@@ -47,6 +47,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             if (WillSave(target, dc, SavingThrowType.None, activator) == SavingThrowResultType.Failed)
             {
                 StatusEffect.ApplyStatusEffect(activator, target, new MindTrickStatusEffect(), 6f);
+                CombatVisualEffect.ApplyStatusEffectVisual(target, typeof(MindTrickStatusEffect), true);
             }
 
             CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);

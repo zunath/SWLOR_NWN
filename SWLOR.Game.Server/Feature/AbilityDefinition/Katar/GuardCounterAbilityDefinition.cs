@@ -28,9 +28,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 .Level(1)
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.GuardCounter, 30f)
-                .RequiresTarget()
                 .HasImpactAction(ImpactAction)
-                .IsCastedAbility()
+                .IsWeaponAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(3);
@@ -43,9 +42,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 .Level(2)
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.GuardCounter, 30f)
-                .RequiresTarget()
                 .HasImpactAction(ImpactAction)
-                .IsCastedAbility()
+                .IsWeaponAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(5);
@@ -58,9 +56,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 .Level(3)
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.GuardCounter, 45f)
-                .RequiresTarget()
                 .HasImpactAction(ImpactAction)
-                .IsCastedAbility()
+                .IsWeaponAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(8);

@@ -51,10 +51,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             if (checkResult == SavingThrowResultType.Failed)
             {
                 StatusEffect.ApplyStatusEffect(activator, target, typeof(KnockdownStatusEffect), duration);
+                CombatVisualEffect.ApplyStatusEffectVisual(target, typeof(KnockdownStatusEffect), true);
             }
             else if (checkResult == SavingThrowResultType.Success)
             {
                 StatusEffect.ApplyStatusEffect(activator, target, typeof(HobbleStatusEffect), duration);
+                CombatVisualEffect.ApplyStatusEffectVisual(target, typeof(HobbleStatusEffect), true);
             }
 
             Enmity.ModifyEnmityOnAll(activator, level * 150);

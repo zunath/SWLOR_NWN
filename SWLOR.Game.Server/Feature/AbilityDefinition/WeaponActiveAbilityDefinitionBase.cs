@@ -198,7 +198,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         {
             ability.HasActivationDelay(0f)
                 .HasActivationAction((activator, target, level, targetLocation) => ToggleSelfStatus(activator, type))
-                .HasImpactAction((activator, target, level, targetLocation) => StatusEffect.ApplyStatusEffect(activator, activator, type, 0f))
+                .HasImpactAction((activator, target, level, targetLocation) =>
+                {
+                    StatusEffect.ApplyStatusEffect(activator, activator, type, 0f);
+                    CombatVisualEffect.ApplyStatusEffectVisual(activator, type, false);
+                })
                 .IsCastedAbility()
                 .BreaksStealth();
         }
@@ -210,6 +214,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 {
                     StatusEffect.ApplyStatusEffect(activator, activator, type, duration);
                     additionalAction?.Invoke(activator);
+                    CombatVisualEffect.ApplyStatusEffectVisual(activator, type, false);
                 })
                 .IsCastedAbility()
                 .BreaksStealth();
@@ -222,7 +227,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         {
             ability.HasActivationDelay(0f)
                 .RequiresTarget()
-                .HasImpactAction((activator, target, level, targetLocation) => StatusEffect.ApplyStatusEffect(activator, target, type, duration))
+                .HasImpactAction((activator, target, level, targetLocation) =>
+                {
+                    StatusEffect.ApplyStatusEffect(activator, target, type, duration);
+                    CombatVisualEffect.ApplyStatusEffectVisual(target, type, true);
+                })
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth();
@@ -295,6 +304,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             if (includeSelf)
             {
                 StatusEffect.ApplyStatusEffect(activator, activator, type, duration);
+                CombatVisualEffect.ApplyStatusEffectVisual(activator, type, false);
             }
 
             var location = GetLocation(activator);
@@ -305,6 +315,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 if (creature != activator && Party.IsInParty(activator, creature))
                 {
                     StatusEffect.ApplyStatusEffect(activator, creature, type, duration);
+                    CombatVisualEffect.ApplyStatusEffectVisual(creature, type, false);
                 }
 
                 creature = GetNextObjectInShape(Shape.Sphere, 5f, location, true);
@@ -328,6 +339,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 if (GetIsReactionTypeHostile(creature, activator))
                 {
                     StatusEffect.ApplyStatusEffect(activator, creature, type, duration);
+                    CombatVisualEffect.ApplyStatusEffectVisual(creature, type, true);
                     if (fpDrainPercent > 0)
                     {
                         var fpDrain = Math.Max(1, (int)Math.Ceiling(Stat.GetCurrentFP(creature) * (fpDrainPercent / 100f)));

@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasImpactAction((activator, target, level, location) =>
                 {
                     StatusEffect.ApplyStatusEffect(activator, activator, typeof(ForceMind1StatusEffect), 60f);
+                    CombatVisualEffect.ApplyStatusEffectVisual(activator, typeof(ForceMind1StatusEffect), false);
                 });
         }
         private void ForceMind2()
@@ -44,6 +45,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasImpactAction((activator, target, level, location) =>
                 {
                     StatusEffect.ApplyStatusEffect(activator, activator, typeof(ForceMind2StatusEffect), 60f);
+                    CombatVisualEffect.ApplyStatusEffectVisual(activator, typeof(ForceMind2StatusEffect), false);
                 });
         }
     }

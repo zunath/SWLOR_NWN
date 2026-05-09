@@ -24,10 +24,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
             builder.Create(FeatType.SurgeStrike1, PerkType.SurgeStrike)
                 .Name("Surge Strike")
                 .Level(1)
-                .HasActivationDelay(90f)
-                .RequiresTarget()
+                .HasActivationDelay(0f)
+                .HasRecastDelay(RecastGroup.SurgeStrike, 30f)
                 .HasImpactAction(ImpactAction)
-                .IsCastedAbility()
+                .IsWeaponAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(12);

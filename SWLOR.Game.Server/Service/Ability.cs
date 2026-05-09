@@ -147,15 +147,21 @@ namespace SWLOR.Game.Server.Service
                 return false;
             }
 
-            // Range check.
-            if (GetDistanceBetween(activator, target) > ability.MaxRange)
+            // Range check. Targetless activations, such as self buffs, queued attacks,
+            // and ground-targeted areas, should not validate against a synthetic target.
+            if (ability.RequiresTarget &&
+                GetIsObjectValid(target) &&
+                GetDistanceBetween(activator, target) > ability.MaxRange)
             {
                 SendMessageToPC(activator, "You are out of range.  This ability has a range of " + ability.MaxRange + " meters.");
                 return false;
             }
 
             // Hostility check
-            if (GetIsObjectValid(target) && !GetIsReactionTypeHostile(target, activator) && ability.IsHostileAbility)
+            if (ability.RequiresTarget &&
+                GetIsObjectValid(target) &&
+                !GetIsReactionTypeHostile(target, activator) &&
+                ability.IsHostileAbility)
             {
                 SendMessageToPC(activator, "You may only use this ability on enemies.");
                 return false;

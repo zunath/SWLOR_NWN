@@ -25,7 +25,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             Func<IStatusEffect> statusEffectFactory = null)
         {
             ability.HasActivationDelay(0f)
-                .RequiresTarget()
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
                     Ability.ApplyCombatImpact(
@@ -141,7 +140,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             Func<IStatusEffect> statusEffectFactory = null)
         {
             ability.HasActivationDelay(0f)
-                .RequiresTarget()
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
                     AssignCommand(target, () => ClearAllActions());
@@ -170,7 +168,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             bool centerOnActivator = false)
         {
             ability.HasActivationDelay(0f)
-                .RequiresTarget()
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
                     Ability.ApplyTelegraphedCombatImpact(

@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
             switch (level)
             {
                 case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Katar, 18, 30, 15, SavingThrow.Fortitude, typeof(PoisonStatusEffect), true);
+                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Katar, 18, 30, 15, SavingThrow.Fortitude, typeof(PoisonStatusEffect), CombatImpactAreaShape.Cone, 0.25f, 5f, 5f);
                     break;
             }
         }

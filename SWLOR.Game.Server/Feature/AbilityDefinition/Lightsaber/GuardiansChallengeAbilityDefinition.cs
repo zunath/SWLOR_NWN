@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
             switch (level)
             {
                 case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Lightsaber, 35, 0, 0, SavingThrow.Will, null, true);
+                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Lightsaber, 35, 0, 0, SavingThrow.Will, null, CombatImpactAreaShape.Cone, 0.25f, 5f, 5f);
                     break;
             }
         }

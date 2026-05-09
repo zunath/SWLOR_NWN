@@ -65,7 +65,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .Level(1)
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.AngerStrike, 45f)
-                .RequiresTarget()
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
                     var damage = Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.HeavyVibroblade, 12, 0, 0, SavingThrow.Will, null, false);
@@ -128,7 +127,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .Level(1)
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.EssenceHunter, 45f)
-                .RequiresTarget()
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
                     Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.HeavyVibroblade, 18, 12, 15, SavingThrow.Fortitude, typeof(EssenceDrainStatusEffect), false);
@@ -273,7 +271,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .Level(1)
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.SoulStrike, 45f)
-                .RequiresTarget()
                 .HasImpactAction((activator, target, level, targetLocation) => SoulStrikeImpact(activator, target, targetLocation, 15, 25))
                 .IsWeaponAbility()
                 .IsHostileAbility()
@@ -285,7 +282,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .Level(2)
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.SoulStrike, 45f)
-                .RequiresTarget()
                 .HasImpactAction((activator, target, level, targetLocation) => SoulStrikeImpact(activator, target, targetLocation, 30, 40))
                 .IsWeaponAbility()
                 .IsHostileAbility()
@@ -297,7 +293,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .Level(3)
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.SoulStrike, 45f)
-                .RequiresTarget()
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
                     var percent = Math.Min(90, 60 + Math.Max(0, GetAbilityModifier(AbilityType.Might, activator)));

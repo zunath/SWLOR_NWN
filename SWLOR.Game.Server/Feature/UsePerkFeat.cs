@@ -113,7 +113,7 @@ namespace SWLOR.Game.Server.Feature
             {
                 if (Ability.CanUseAbility(activator, target, feat, effectivePerkLevel, targetLocation))
                 {
-                    if (GetIsObjectValid(target))
+                    if (GetIsObjectValid(target) && target != activator)
                     {
                         if (ability.DisplaysActivationMessage)
                             Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} readies {ability.Name} on {GetName(target)}.");
@@ -177,7 +177,15 @@ namespace SWLOR.Game.Server.Feature
                     SetActionMode(activator, ActionMode.Stealth, false);
 
                 AssignCommand(activator, () => ClearAllActions());
-                BiowarePosition.TurnToFaceObject(target, activator);
+
+                if (GetIsObjectValid(target) && target != activator)
+                {
+                    BiowarePosition.TurnToFaceObject(target, activator);
+                }
+                else if (GetIsObjectValid(GetAreaFromLocation(targetLocation)))
+                {
+                    BiowarePosition.TurnToFaceLocation(targetLocation, activator);
+                }
 
                 // Display a casting visual effect if one has been specified.
                 if (ability.ActivationVisualEffect != VisualEffect.None)
@@ -254,7 +262,10 @@ namespace SWLOR.Game.Server.Feature
                 }
 
                 // If this is an attack make the NPC react.
-                Enmity.AttackHighestEnmityTarget(target);
+                if (GetIsObjectValid(target) && target != activator)
+                {
+                    Enmity.AttackHighestEnmityTarget(target);
+                }
 
                 if (!GetIsPC(activator))
                 {

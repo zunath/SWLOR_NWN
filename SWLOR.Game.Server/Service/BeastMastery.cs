@@ -830,7 +830,41 @@ namespace SWLOR.Game.Server.Service
             var beastDetail = GetBeastDetail(beastType);
             SetName(egg, $"Beast Egg: {beastDetail.Name}");
 
+            var addGoldPiece = CalculateEggVendorBonus(job);
+            ItemPlugin.SetAddGoldPieceValue(egg, addGoldPiece);
+
             DB.Delete<IncubationJob>(job.Id);
+        }
+
+        private static int CalculateEggVendorBonus(IncubationJob job)
+        {
+            const float maxPurityValue = 1000f;
+            var purities = new List<int>
+            {
+                job.AttackPurity,
+                job.AccuracyPurity,
+                job.EvasionPurity,
+                job.LearningPurity,
+                job.DefensePurities[CombatDamageType.Physical],
+                job.DefensePurities[CombatDamageType.Force],
+                job.DefensePurities[CombatDamageType.Fire],
+                job.DefensePurities[CombatDamageType.Poison],
+                job.DefensePurities[CombatDamageType.Electrical],
+                job.DefensePurities[CombatDamageType.Ice],
+                job.SavingThrowPurities[SavingThrow.Fortitude],
+                job.SavingThrowPurities[SavingThrow.Reflex],
+                job.SavingThrowPurities[SavingThrow.Will],
+            };
+
+            var averagePurity = purities.Average();
+            var qualityPercent = averagePurity / maxPurityValue;
+            var xpPenaltyAdjustment = 1f - (job.XPPenalty / maxPurityValue);
+
+            const int baseVendorBonus = 180;
+            const int qualityVendorRange = 1170;
+            var addGoldPiece = (int)Math.Round(baseVendorBonus + (qualityVendorRange * qualityPercent * xpPenaltyAdjustment));
+
+            return Math.Max(baseVendorBonus, addGoldPiece);
         }
 
         /// <summary>

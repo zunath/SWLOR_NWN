@@ -1,3 +1,4 @@
+using System.Linq;
 using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service;
@@ -7,10 +8,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
     public class SkillsDefinition: IGuiWindowDefinition
     {
+        private const float CategoryTabWidth = 90f;
+
         private readonly GuiWindowBuilder<SkillsViewModel> _builder = new();
 
         public GuiConstructedWindow BuildWindow()
         {
+            var activeCategories = Skill.GetAllActiveSkillCategories()
+                .OrderBy(category => category.Value.Sequence)
+                .ToList();
 
             _builder.CreateWindow(GuiWindowType.Skills)
                 .SetIsResizable(true)
@@ -21,17 +27,28 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 {
                     column.AddRow(row =>
                     {
-                        row.AddSpacer();
-                        var comboBox = row.AddComboBox()
-                            .BindSelectedIndex(model => model.SelectedCategoryId);
-
-                        comboBox.AddOption("<All Skills>", 0);
-                        foreach (var (type, detail) in Skill.GetAllActiveSkillCategories())
+                        row.AddGroup(group =>
                         {
-                            comboBox.AddOption(detail.Name, (int) type);
-                        }
+                            group.SetShowBorder(false);
+                            group.SetScrollbars(NuiScrollbars.Auto);
+                            group.AddColumn(tabColumn =>
+                            {
+                                tabColumn.AddRow(tabRow =>
+                                {
+                                    var tabs = tabRow.AddToggles()
+                                        .BindSelectedValue(model => model.SelectedCategoryId)
+                                        .SetHeight(32f)
+                                        .SetWidth(CategoryTabWidth * (activeCategories.Count + 1));
 
-                        row.AddSpacer();
+                                    tabs.AddOption("All");
+                                    foreach (var (_, detail) in activeCategories)
+                                    {
+                                        tabs.AddOption(detail.Name);
+                                    }
+                                });
+                            });
+                        })
+                            .SetHeight(48f);
                     });
 
                     column.AddRow(row =>

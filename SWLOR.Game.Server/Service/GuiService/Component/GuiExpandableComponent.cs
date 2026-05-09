@@ -106,6 +106,17 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         }
 
         /// <summary>
+        /// Adds a set of toggle tabs from which to choose.
+        /// </summary>
+        public GuiToggles<T> AddToggles()
+        {
+            var newToggles = new GuiToggles<T>();
+            Elements.Add(newToggles);
+
+            return newToggles;
+        }
+
+        /// <summary>
         /// Adds a progress bar.
         /// </summary>
         public GuiProgressBar<T> AddProgressBar()

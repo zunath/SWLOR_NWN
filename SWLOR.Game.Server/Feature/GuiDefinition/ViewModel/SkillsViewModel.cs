@@ -103,11 +103,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 if (value == 0)
                 {
-                    LoadSkills(Skill.GetAllActiveSkills());
+                    LoadSkills(Skill.GetAllActiveSkillsForDisplay());
                 }
                 else
                 {
-                    var skillsInCategory = Skill.GetActiveSkillsByCategory((SkillCategoryType)value);
+                    var skillsInCategory = Skill.GetActiveSkillsByCategoryForDisplay((SkillCategoryType)value);
                     LoadSkills(skillsInCategory);
                 }
             }
@@ -116,7 +116,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
             SelectedCategoryId = 0;
-            LoadSkills(Skill.GetAllActiveSkills());
+            LoadSkills(Skill.GetAllActiveSkillsForDisplay());
             WatchOnClient(model => model.SelectedCategoryId);
         }
 
@@ -290,6 +290,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var playerId = GetObjectUUID(Player);
                 var dbPlayer = DB.Get<Player>(playerId);
                 var index = _viewableSkills.IndexOf(skill);
+                if (index < 0)
+                    continue;
+
                 var pcSkill = dbPlayer.Skills[skill];
 
                 Levels[index] = pcSkill.Rank;

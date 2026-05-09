@@ -28,6 +28,8 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<SkillType, SkillAttribute> _activeSkillsContributingToCap = new();
         private static readonly Dictionary<SkillType, SkillAttribute> _activeCraftingSkills = new();
         private static readonly Dictionary<SkillType, SkillAttribute> _activeResearchableCraftingSkills = new();
+        private static readonly List<SkillType> _activeSkillsForDisplay = new();
+        private static readonly Dictionary<SkillCategoryType, List<SkillType>> _activeSkillsByCategoryForDisplay = new();
 
         /// <summary>
         /// When the module loads, skills and categories are organized into dictionaries for quick look-ups later on.
@@ -107,9 +109,39 @@ namespace SWLOR.Game.Server.Service
                 _allSkillsByCategory[skillDetail.Category].Add(skillType);
             }
 
+            OrganizeSkillsForDisplay();
+
             EventsPlugin.SignalEvent("SWLOR_CACHE_SKILLS_LOADED", GetModule());
             Console.WriteLine($"Loaded {_activeCategories.Count} skill categories.");
             Console.WriteLine($"Loaded {_allSkills.Count} skills.");
+        }
+
+        private static void OrganizeSkillsForDisplay()
+        {
+            _activeSkillsForDisplay.Clear();
+            _activeSkillsByCategoryForDisplay.Clear();
+
+            foreach (var (category, skills) in _activeSkillsByCategory)
+            {
+                _activeSkillsByCategoryForDisplay[category] = skills
+                    .OrderBy(skill => _activeSkills[skill].Name, StringComparer.OrdinalIgnoreCase)
+                    .ThenBy(skill => (int)skill)
+                    .ToList();
+            }
+
+            var nonLanguageSkills = _activeSkills
+                .Where(skill => skill.Value.Category != SkillCategoryType.Languages)
+                .OrderBy(skill => skill.Value.Name, StringComparer.OrdinalIgnoreCase)
+                .ThenBy(skill => (int)skill.Key)
+                .Select(skill => skill.Key);
+            var languageSkills = _activeSkills
+                .Where(skill => skill.Value.Category == SkillCategoryType.Languages)
+                .OrderBy(skill => skill.Value.Name, StringComparer.OrdinalIgnoreCase)
+                .ThenBy(skill => (int)skill.Key)
+                .Select(skill => skill.Key);
+
+            _activeSkillsForDisplay.AddRange(nonLanguageSkills);
+            _activeSkillsForDisplay.AddRange(languageSkills);
         }
 
         /// <summary>
@@ -128,6 +160,15 @@ namespace SWLOR.Game.Server.Service
         public static Dictionary<SkillType, SkillAttribute> GetAllActiveSkills()
         {
             return _activeSkills.ToDictionary(x => x.Key, y => y.Value);
+        }
+
+        /// <summary>
+        /// Retrieves a display-ordered list of all active skills.
+        /// </summary>
+        /// <returns>A display-ordered list of active skills.</returns>
+        public static Dictionary<SkillType, SkillAttribute> GetAllActiveSkillsForDisplay()
+        {
+            return _activeSkillsForDisplay.ToDictionary(x => x, y => _activeSkills[y]);
         }
 
         /// <summary>
@@ -220,6 +261,16 @@ namespace SWLOR.Game.Server.Service
         public static Dictionary<SkillType, SkillAttribute> GetActiveSkillsByCategory(SkillCategoryType category)
         {
             return _activeSkillsByCategory[category].ToDictionary(x => x, y => _activeSkills[y]);
+        }
+
+        /// <summary>
+        /// Retrieves display-ordered active skills by a given category, excluding inactive ones.
+        /// </summary>
+        /// <param name="category">The category of skills to retrieve.</param>
+        /// <returns>A dictionary containing display-ordered active skills in the specified category.</returns>
+        public static Dictionary<SkillType, SkillAttribute> GetActiveSkillsByCategoryForDisplay(SkillCategoryType category)
+        {
+            return _activeSkillsByCategoryForDisplay[category].ToDictionary(x => x, y => _activeSkills[y]);
         }
 
         /// <summary>

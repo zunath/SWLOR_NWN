@@ -4,7 +4,6 @@ using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.NWN.API.NWNX;
-using System;
 
 namespace SWLOR.Game.Server.Core
 {

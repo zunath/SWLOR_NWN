@@ -1,4 +1,3 @@
-using System;
 using System.Text;
 
 namespace SWLOR.Game.Server.Extension

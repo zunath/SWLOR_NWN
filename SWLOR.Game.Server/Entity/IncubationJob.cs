@@ -1,4 +1,3 @@
-using System;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
 using System.Collections.Generic;

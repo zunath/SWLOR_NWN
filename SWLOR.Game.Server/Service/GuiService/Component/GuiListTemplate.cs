@@ -1,4 +1,3 @@
-using System;
 using SWLOR.NWN.API.Engine;
 
 namespace SWLOR.Game.Server.Service.GuiService.Component

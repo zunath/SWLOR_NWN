@@ -1,5 +1,3 @@
-using System;
-
 namespace SWLOR.Game.Server.Core
 {
     public static class ServerManager

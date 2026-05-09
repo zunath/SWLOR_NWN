@@ -7,7 +7,6 @@ using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 using System.Collections.Generic;
 using System.Linq;
-using System;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {

@@ -1,5 +1,3 @@
-using System;
-
 namespace SWLOR.Game.Server.Enumeration
 {
     // Note - these MUST be assigned with power-of-2 values to allow them to be

@@ -1,6 +1,5 @@
 using SWLOR.Game.Server.Core;
 using System.Collections.Generic;
-using System;
 using System.Linq;
 using System.Numerics;
 using SWLOR.Game.Server.Core.Bioware;

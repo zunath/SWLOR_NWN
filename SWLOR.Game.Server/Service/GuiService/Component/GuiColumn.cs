@@ -1,4 +1,3 @@
-using System;
 using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.NWN.API.Engine;
 

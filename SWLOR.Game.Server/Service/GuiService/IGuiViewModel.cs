@@ -1,4 +1,3 @@
-using System;
 using SWLOR.Game.Server.Service.GuiService.Component;
 
 namespace SWLOR.Game.Server.Service.GuiService

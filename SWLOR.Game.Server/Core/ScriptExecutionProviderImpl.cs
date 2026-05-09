@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using SWLOR.NWN.API;
 

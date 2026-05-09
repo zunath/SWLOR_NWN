@@ -3,7 +3,6 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ChatCommandService;
 using SWLOR.Game.Server.Service.GuiService;
-using static SWLOR.NWN.API.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 {

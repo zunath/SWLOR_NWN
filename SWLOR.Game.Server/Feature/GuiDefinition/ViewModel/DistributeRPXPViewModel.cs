@@ -1,4 +1,3 @@
-using System;
 using System.Text.RegularExpressions;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;

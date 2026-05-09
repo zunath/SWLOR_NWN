@@ -1,5 +1,3 @@
-using System;
-
 namespace SWLOR.Game.Server.Service.CraftService
 {
     public enum RecipeCategoryType

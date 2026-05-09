@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Threading;
 using SWLOR.Game.Server.Core.Async.Awaiters;

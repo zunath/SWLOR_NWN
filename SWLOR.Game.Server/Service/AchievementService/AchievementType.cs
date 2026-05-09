@@ -1,5 +1,3 @@
-using System;
-
 namespace SWLOR.Game.Server.Service.AchievementService
 {
     public enum AchievementType

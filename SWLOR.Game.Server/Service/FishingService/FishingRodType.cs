@@ -1,5 +1,3 @@
-using System;
-
 namespace SWLOR.Game.Server.Service.FishingService
 {
     public enum FishingRodType

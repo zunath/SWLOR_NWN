@@ -1,11 +1,11 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
@@ -36,21 +36,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             return string.Empty;
         }
 
-        private void Impact(uint activator, uint target, int baseAmount)
+        private void Impact(uint activator, uint target, Type statusEffectType)
         {
             var willpowerMod = GetAbilityModifier(AbilityType.Willpower, activator);
             const float BaseLength = 900f;
             var length = BaseLength + willpowerMod * 30f;
 
-            for (var effect = GetFirstEffect(target); GetIsEffectValid(effect); effect = GetNextEffect(target))
-            {
-                if(GetEffectTag(effect) == "STASIS_FIELD")
-                    RemoveEffect(target, effect);
-            }
-
-            var acEffect = EffectACIncrease(baseAmount, ArmorClassModiferType.Natural);
-            acEffect = TagEffect(acEffect, "STASIS_FIELD");
-            ApplyEffectToObject(DurationType.Temporary, acEffect, target, length);
+            StatusEffect.ApplyStatusEffect(activator, target, statusEffectType, length);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Ac_Bonus), target);
 
             TakeStimPack(activator);
@@ -70,7 +62,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasCustomValidation(Validation)
                 .HasImpactAction((activator, target, _, _) =>
                 {
-                    Impact(activator, target, 2);
+                    Impact(activator, target, typeof(StasisField1StatusEffect));
 
                     Enmity.ModifyEnmityOnAll(activator, 250);
                     CombatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
@@ -91,7 +83,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasCustomValidation(Validation)
                 .HasImpactAction((activator, target, _, _) =>
                 {
-                    Impact(activator, target, 4);
+                    Impact(activator, target, typeof(StasisField2StatusEffect));
 
                     Enmity.ModifyEnmityOnAll(activator, 350);
                     CombatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
@@ -112,7 +104,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasCustomValidation(Validation)
                 .HasImpactAction((activator, target, _, _) =>
                 {
-                    Impact(activator, target, 6);
+                    Impact(activator, target, typeof(StasisField3StatusEffect));
 
                     Enmity.ModifyEnmityOnAll(activator, 450);
                     CombatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);

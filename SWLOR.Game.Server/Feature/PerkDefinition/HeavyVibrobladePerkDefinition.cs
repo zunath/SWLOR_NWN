@@ -1,5 +1,6 @@
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 using System.Collections.Generic;
 
@@ -54,6 +55,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Absolute Defense")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.AbsoluteDefense1)
                 .Description("All party members, excluding you, gain +40% Defense, +40% Force Defense, and immunity to Knockdown and Dazed for 15 seconds. Your HP, STM, and FP are restored by 25% of maximum.")
                 .Price(4)
                 .RequirementSkill(SkillType.HeavyVibroblade, 50);
@@ -66,6 +68,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Anger Strike")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.AngerStrike1)
                 .Description("Your next attack deals +12 DMG and generates extra enmity.")
                 .Price(2)
                 .RequirementSkill(SkillType.HeavyVibroblade, 8);
@@ -78,6 +81,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Bastion Stance")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.BastionStance1)
                 .Description("While active, grants +20% to Enmity generation, +15% Defense, +15% Force Defense, -20% Attack, and -20% Force Attack")
                 .Price(3)
                 .RequirementSkill(SkillType.HeavyVibroblade, 12);
@@ -90,6 +94,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Blazing Spikes")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.BlazingSpikes1)
                 .Description("While active, this effect delivers 10% of physical damage received back to the attacker. Damage dealt increases by 1% per Might. (Maximum 40%)")
                 .Price(3)
                 .RequirementSkill(SkillType.HeavyVibroblade, 40);
@@ -114,6 +119,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Bloodlust")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.Bloodlust1)
                 .Description("Sacrifice 40% HP in exchange for 20% of your maximum STM restored. Amount of STM restored increased by 1% per Might. (Maximum: 80%)")
                 .Price(4)
                 .RequirementSkill(SkillType.HeavyVibroblade, 42)
@@ -194,6 +200,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Essence Hunter")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.EssenceHunter1)
                 .Description("Your next attack deals +18 DMG and has a DC15 Fortitude check to inflict Essence Drain, reducing the target's Attack by 15% for 12 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.HeavyVibroblade, 12);
@@ -218,6 +225,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Flash")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.Flash1)
                 .Description("Enemies within the area of effect (sphere) around you receive the Flash effect which reduces their accuracy by 20% for 30 seconds. You generate significant enmity toward these enemies.")
                 .Price(4)
                 .RequirementSkill(SkillType.HeavyVibroblade, 18);
@@ -266,6 +274,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Guardian's Resolve")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.GuardiansResolve1)
                 .Description("Gain a damage absorption shield equal to 30% of your max HP for 30 seconds. While active, heal for 25% of damage absorbed.")
                 .Price(4)
                 .RequirementSkill(SkillType.HeavyVibroblade, 28);
@@ -290,6 +299,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Life Siphon")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.LifeSiphon1)
                 .Description("When below 50% HP, your attacks heal you for 15% of damage dealt and generate +20% enmity.")
                 .Price(3)
                 .RequirementSkill(SkillType.HeavyVibroblade, 20);
@@ -302,6 +312,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Rampart")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.Rampart1)
                 .Description("All allies within the area of effect (sphere) from you receive a +25% defense bonus for 1 minute.")
                 .Price(4)
                 .RequirementSkill(SkillType.HeavyVibroblade, 32);
@@ -339,6 +350,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Soul Ascension")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.SoulAscension1)
                 .Description("You receive the Soul Ascension effect which grants +35% Attack and heals you for 50% of physical damage dealt. This effect lasts for 20 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.HeavyVibroblade, 50);
@@ -376,6 +388,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Soul Devourer")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.SoulDevourer1)
                 .Description("While active, gain +35% Attack and +15% critical chance,  but each attack you make deals 40% of the damage back to you. Damage reduced by 1% per Might. (Minimum 10%)")
                 .Price(4)
                 .RequirementSkill(SkillType.HeavyVibroblade, 18);
@@ -400,6 +413,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Soul Sacrifice")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.SoulSacrifice1)
                 .Description("Sacrifice 50% max HP to gain +35% Attack and +20% critical chance for 30 seconds. HP sacrificed decreases by 1% per Might. (Minimum 20%)")
                 .Price(3)
                 .RequirementSkill(SkillType.HeavyVibroblade, 32);
@@ -412,6 +426,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Soul Storm")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.SoulStorm1)
                 .Description("Sacrifice 40% HP to raise the Attack of all nearby allies in area of effect (sphere) to you by 35%. HP sacrificed decreases by 1% per Might. (Minimum 10%)")
                 .Price(3)
                 .RequirementSkill(SkillType.HeavyVibroblade, 38);
@@ -424,16 +439,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Soul Strike")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.SoulStrike1)
                 .Description("Your next attack deals +15 DMG and heals you for 25% of damage dealt.")
                 .Price(2)
                 .RequirementSkill(SkillType.HeavyVibroblade, 8)
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.SoulStrike2)
                 .Description("Your next attack deals +30 DMG and heals you for 40% of damage dealt.")
                 .Price(4)
                 .RequirementSkill(SkillType.HeavyVibroblade, 28)
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.SoulStrike3)
                 .Description("Your next attack deals +45 DMG and heals you for 60% of damage dealt. Amount healed increased by 1% per Might. (Maximum 90%)")
                 .Price(3)
                 .RequirementSkill(SkillType.HeavyVibroblade, 45);
@@ -447,6 +465,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Grants +5% Attack Deflection. When attacks are deflected, you restore 10% of maximum STM. Deflection increases by 0.5% per Might. (Maximum: 20%)")
+                .IncreasesStat(
+                    StatType.AttackDeflection,
+                    creature => EquipmentPredicates.HasMainHandHeavyVibroblade(creature)
+                        ? Math.Min(20, 5 + Math.Max(0, GetAbilityScore(creature, AbilityType.Might)) / 2)
+                        : 0)
+                .IncreasesStat(
+                    StatType.DeflectionStaminaRestorePercent,
+                    creature => EquipmentPredicates.HasMainHandHeavyVibroblade(creature) ? 10 : 0)
                 .Price(3)
                 .RequirementSkill(SkillType.HeavyVibroblade, 22);
         }

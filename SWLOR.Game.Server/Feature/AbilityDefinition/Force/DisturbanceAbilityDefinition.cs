@@ -12,9 +12,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
     public class DisturbanceAbilityDefinition : IAbilityListDefinition
     {
         private readonly AbilityBuilder _builder = new();
-        private const string Tier1Tag = "EFFECT_DISTURBANCE_1";
-        private const string Tier2Tag = "EFFECT_DISTURBANCE_2";
-        private const string Tier3Tag = "EFFECT_DISTURBANCE_3";
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -25,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             return _builder.Build();
         }
 
-        private void Impact(uint activator, uint target, int dmg, int accDecrease, int tier, string effectTag, int dc)
+        private void Impact(uint activator, uint target, int dmg, int tier, Type statusEffect, int dc)
         {
             var attackerStat = GetAbilityScore(activator, AbilityType.Willpower);
             var defenderStat = GetAbilityScore(target, AbilityType.Willpower);
@@ -34,26 +31,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             dmg += (attackerStat * ((tier -1) / 2)) + attackerStat;
             var damage = Combat.CalculateDamage(attack, dmg, attackerStat, defense, defenderStat, 0);
 
-            if (HasMorePowerfulEffect(target, tier,
-                    new(Tier1Tag, 1),
-                    new(Tier2Tag, 2),
-                    new(Tier3Tag, 3)))
-            {
-                SendMessageToPC(activator, "Your target is already afflicted by a more powerful effect.");
-            }
-            else
-            {
-                RemoveEffectByTag(target, Tier1Tag, Tier2Tag, Tier3Tag);
+            dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Will, dc);
+            var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
 
-                dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Will, dc);
-                var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
-
-                if (checkResult == SavingThrowResultType.Failed)
-                {
-                    var accuracyDown = TagEffect(EffectAccuracyDecrease(accDecrease), effectTag);
-                    ApplyEffectToObject(DurationType.Temporary, accuracyDown, target, 60f);
-                    Messaging.SendMessageNearbyToPlayers(target, $"{GetName(target)} receives the effect of accuracy down.");
-                }
+            if (checkResult == SavingThrowResultType.Failed)
+            {
+                StatusEffect.ApplyStatusEffect(activator, target, statusEffect, 60f);
             }
 
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), target);
@@ -79,7 +62,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    Impact(activator, target, 0, 2, 1, Tier1Tag, 8);
+                    Impact(activator, target, 0, 1, typeof(Disturbance1StatusEffect), 8);
                 });
         }
 
@@ -99,9 +82,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    var willBonus = GetAbilityModifier(AbilityType.Willpower, activator);
-                    var willDMG = 30 + (willBonus * 4);
-                    Impact(activator, target, 15, 4, 2, Tier2Tag, 12);
+                    Impact(activator, target, 15, 2, typeof(Disturbance2StatusEffect), 12);
                 });
         }
 
@@ -121,7 +102,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    Impact(activator, target, 30, 6, 3, Tier3Tag, 14);
+                    Impact(activator, target, 30, 3, typeof(Disturbance3StatusEffect), 14);
                 });
         }
     }

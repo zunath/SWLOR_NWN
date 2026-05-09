@@ -1,6 +1,7 @@
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 using System.Collections.Generic;
 
@@ -13,9 +14,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         public Dictionary<PerkType, PerkDetail> BuildPerks()
         {
             BalancedAttunement();
+            CircleSlash();
             ConduitFlare();
             ConduitStance();
             ConduitTraining();
+            DoubleStrike();
             EnergizedForms();
             FlowOfTheMaelstrom();
             FocusedArc();
@@ -48,6 +51,33 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementCharacterType(CharacterType.ForceSensitive);
         }
 
+        private void CircleSlash()
+        {
+            _builder.Create(PerkCategoryType.SaberstaffTempest, PerkType.CircleSlash)
+                .Name("Circle Slash")
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.CircleSlash1)
+                .Description("Attacks up to 3 nearby enemies for weapon DMG + 10 each.")
+                .Price(3)
+                .RequirementSkill(SkillType.Saberstaff, 8)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.CircleSlash2)
+                .Description("Attacks up to 3 nearby enemies for weapon DMG + 18 each.")
+                .Price(3)
+                .RequirementSkill(SkillType.Saberstaff, 20)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.CircleSlash3)
+                .Description("Attacks up to 3 nearby enemies for weapon DMG + 28 each.")
+                .Price(3)
+                .RequirementSkill(SkillType.Saberstaff, 30)
+                .RequirementCharacterType(CharacterType.ForceSensitive);
+        }
+
         private void ConduitFlare()
         {
             _builder.Create(PerkCategoryType.SaberstaffConduit, PerkType.ConduitFlare)
@@ -67,6 +97,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Conduit Stance")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.ConduitStance1)
                 .Description("While active, grants +15% Force Attack and +15% Force Defense, but reduces Attack by 15%.")
                 .Price(2)
                 .RequirementSkill(SkillType.Saberstaff, 15)
@@ -94,6 +125,40 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Saberstaff attacks restore 3 FP and your Force Defense bonus increases to +15% total.")
                 .Price(3)
                 .RequirementSkill(SkillType.Saberstaff, 40)
+                .RequirementCharacterType(CharacterType.ForceSensitive);
+        }
+
+        private void DoubleStrike()
+        {
+            _builder.Create(PerkCategoryType.SaberstaffTempest, PerkType.DoubleStrike)
+                .Name("Double Strike")
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.DoubleStrike1)
+                .Description("Instantly attacks twice, each for weapon DMG + 12.")
+                .Price(3)
+                .RequirementSkill(SkillType.Saberstaff, 5)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.DoubleStrike2)
+                .Description("Instantly attacks twice, each for weapon DMG + 21.")
+                .Price(4)
+                .RequirementSkill(SkillType.Saberstaff, 18)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.DoubleStrike3)
+                .Description("Instantly attacks twice, each for weapon DMG + 29.")
+                .Price(3)
+                .RequirementSkill(SkillType.Saberstaff, 28)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.DoubleStrike4)
+                .Description("Instantly attacks twice, each for weapon DMG + 38. Targets affected by Force Erosion take +15 DMG from each strike.")
+                .Price(4)
+                .RequirementSkill(SkillType.Saberstaff, 42)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
         }
 
@@ -154,6 +219,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Force Capacitor")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.ForceCapacitor1)
                 .Description("For 20 seconds, 25% of STM spent on saberstaff abilities is restored as FP and 25% of FP spent on Force abilities is restored as STM.")
                 .Price(3)
                 .RequirementSkill(SkillType.Saberstaff, 45)
@@ -179,6 +245,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Force Lens")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.ForceLens1)
                 .Description("Allies in an area of effect (sphere) gain +15% Force Defense for 45 seconds. You gain +10 Attack Deflection.")
                 .Price(3)
                 .RequirementSkill(SkillType.Saberstaff, 25)
@@ -203,18 +270,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Guarded Channel")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.GuardedChannel1)
                 .Description("Gain +20 Attack Deflection and +20% Force Defense for 10 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Saberstaff, 12)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.GuardedChannel2)
                 .Description("Gain +30 Attack Deflection and +30% Force Defense for 12 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Saberstaff, 28)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.GuardedChannel3)
                 .Description("Gain +40 Attack Deflection and +35% Force Defense for 15 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Saberstaff, 42)
@@ -227,6 +297,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Infinite Conduit")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.InfiniteConduit1)
                 .Description("For 20 seconds, saberstaff attacks restore 5 FP and saberstaff combat abilities cost 3 less STM. The effect ends early if FP reaches zero.")
                 .Price(4)
                 .RequirementSkill(SkillType.Saberstaff, 50)
@@ -293,12 +364,15 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Gain +10 Attack Deflection. After deflecting an attack, your next Circle Slash deals +8 DMG.")
+                .IncreasesStat(StatType.AttackDeflection, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 10 : 0)
                 .Price(2)
                 .RequirementSkill(SkillType.Saberstaff, 22)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
                 .Description("Gain +20 Attack Deflection total. Deflecting an attack restores 4 FP.")
+                .IncreasesStat(StatType.AttackDeflection, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 20 : 0)
+                .IncreasesStat(StatType.DeflectionFPRestore, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 4 : 0)
                 .Price(2)
                 .RequirementSkill(SkillType.Saberstaff, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
@@ -335,6 +409,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Tempest Stance")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.TempestStance1)
                 .Description("While active, grants +15% Haste and +10% Force Attack, but reduces Defense by 20%.")
                 .Price(2)
                 .RequirementSkill(SkillType.Saberstaff, 15)

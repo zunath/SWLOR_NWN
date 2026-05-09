@@ -1,11 +1,7 @@
-using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 using System.Collections.Generic;
-using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
@@ -17,6 +13,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             AfflictionMastery();
             AmbushTactics();
+            Backstab();
             AssassinsFocus();
             CalculatedStrikes();
             CascadeFailure();
@@ -63,6 +60,30 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("After dealing a critical hit, your next attack within 8 seconds ignores 20% of defense.")
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroknife, 25);
+        }
+
+        private void Backstab()
+        {
+            _builder.Create(PerkCategoryType.VibroknifeShadow, PerkType.Backstab)
+                .Name("Backstab")
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.Backstab1)
+                .Description("Deals weapon DMG + 20 from behind your target.")
+                .Price(2)
+                .RequirementSkill(SkillType.Vibroknife, 10)
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.Backstab2)
+                .Description("Deals weapon DMG + 40 from behind your target.")
+                .Price(3)
+                .RequirementSkill(SkillType.Vibroknife, 18)
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.Backstab3)
+                .Description("Deals weapon DMG + 60 from behind your target. Fortitude DC14 check to Knockdown for 3 seconds.")
+                .Price(4)
+                .RequirementSkill(SkillType.Vibroknife, 35);
         }
 
         private void AssassinsFocus()
@@ -134,6 +155,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Deadly Precision")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.DeadlyPrecision1)
                 .Description("While active, grants +15% critical hit chance, -20% evasion, and -15% defense.")
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroknife, 12);
@@ -145,6 +167,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Debilitating Stance")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.DebilitatingStance1)
                 .Description("While active, your attacks inflict Hindered which slows attack speed by 15% for 8 seconds but reduces your attack by 10%.")
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroknife, 30);
@@ -156,6 +179,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Decoy")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.Decoy1)
                 .Description("For 12 seconds, enemies targeting you have -25% Accuracy.")
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroknife, 45);
@@ -191,11 +215,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Evasive Combat")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.EvasiveCombat1)
                 .Description("Increases evasion by 10%, reduces enmity by 15%, and reduces attack by 15% for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Vibroknife, 15)
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.EvasiveCombat2)
                 .Description("Increases evasion by 20%, reduces enmity by 25%, and reduces attack by 25% for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroknife, 38);
@@ -218,16 +244,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Hamstring")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.Hamstring1)
                 .Description("Your next attack deals +8 DMG. Reflex DC10 check to inflict Hamstring, slowing attack speed by 20% for 12 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Vibroknife, 10)
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.Hamstring2)
                 .Description("Your next attack deals +18 DMG. Reflex DC14 check to inflict Hamstring, slowing attack speed by 20% for 12 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroknife, 18)
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.Hamstring3)
                 .Description("Your next attack deals +28 DMG. Reflex DC18 check to inflict Hamstring, slowing attack speed by 20% for 12 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroknife, 32);
@@ -239,6 +268,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Incapacitate")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.Incapacitate1)
                 .Description("Enemies within the area of effect (sphere) receive the Incapacitate debuff which reduces their evasion by 20% for 20 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroknife, 42);
@@ -250,6 +280,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Marked for Death")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.MarkedForDeath1)
                 .Description("You mark a single target. Your next 3 attacks against them deal +12 DMG each.")
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroknife, 30);
@@ -343,11 +374,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Toxic Coating")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.ToxicCoating1)
                 .Description("Your next attack deals +10 DMG. Fortitude DC10 check to inflict Toxin for 30 seconds. Toxin deals damage equal to 1% max HP per second.")
                 .Price(2)
                 .RequirementSkill(SkillType.Vibroknife, 12)
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.ToxicCoating2)
                 .Description("Your next attack deals +22 DMG. Fortitude DC15 check to inflict Toxin for 30 seconds. Toxin deals damage equal to 1% max HP per second.")
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroknife, 40);

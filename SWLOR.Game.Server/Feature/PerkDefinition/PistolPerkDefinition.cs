@@ -1,4 +1,3 @@
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -15,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             DeadMansHand();
             DeadeyeReload();
             DisarmingShot();
+            DoubleShot();
             DuelistsDistance();
             EvasiveReload();
             FanTheHammer();
@@ -27,6 +27,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             LowShot();
             MobileFootwork();
             PointBlankBurst();
+            QuickDraw();
+            RapidShot();
             ReloadTempo();
             RicochetShot();
             SkirmishersNerve();
@@ -84,6 +86,30 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Pistol, 42);
         }
 
+        private void DoubleShot()
+        {
+            _builder.Create(PerkCategoryType.PistolGunslinger, PerkType.DoubleShot)
+                .Name("Double Shot")
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.DoubleShot1)
+                .Description("Instantly attacks twice, each for weapon DMG + 7.")
+                .Price(3)
+                .RequirementSkill(SkillType.Pistol, 8)
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.DoubleShot2)
+                .Description("Instantly attacks twice, each for weapon DMG + 15.")
+                .Price(3)
+                .RequirementSkill(SkillType.Pistol, 20)
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.DoubleShot3)
+                .Description("Instantly attacks twice, each for weapon DMG + 24.")
+                .Price(3)
+                .RequirementSkill(SkillType.Pistol, 30);
+        }
+
         private void DuelistsDistance()
         {
             _builder.Create(PerkCategoryType.PistolSkirmisher, PerkType.DuelistsDistance)
@@ -130,6 +156,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Gunfighter Stance")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.GunfighterStance1)
                 .Description("While active, grants +15% Attack and +10% Haste, but reduces Defense by 15%.")
                 .Price(2)
                 .RequirementSkill(SkillType.Pistol, 15);
@@ -141,6 +168,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Gunslinger Focus")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.GunslingerFocus1)
                 .Description("For 20 seconds, Quick Draw and Double Shot abilities cost 2 less STM and deal +10 DMG.")
                 .Price(3)
                 .RequirementSkill(SkillType.Pistol, 45);
@@ -163,11 +191,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Interrupting Shot")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.InterruptingShot1)
                 .Description("Interrupts your target's ability activation and has a Will DC12 check to inflict Foggy Mind for 12 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Pistol, 18)
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.InterruptingShot2)
                 .Description("Deals weapon DMG + 20, interrupts your target's ability activation, and has a Will DC16 check to inflict Foggy Mind for 20 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Pistol, 35);
@@ -231,6 +261,57 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Pistol, 38);
         }
 
+        private void QuickDraw()
+        {
+            _builder.Create(PerkCategoryType.PistolGunslinger, PerkType.QuickDraw)
+                .Name("Quick Draw")
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.QuickDraw1)
+                .Description("Instantly deals weapon DMG + 12 to your target.")
+                .Price(3)
+                .RequirementSkill(SkillType.Pistol, 5)
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.QuickDraw2)
+                .Description("Instantly deals weapon DMG + 24 to your target.")
+                .Price(4)
+                .RequirementSkill(SkillType.Pistol, 18)
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.QuickDraw3)
+                .Description("Instantly deals weapon DMG + 36 to your target.")
+                .Price(3)
+                .RequirementSkill(SkillType.Pistol, 28)
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.QuickDraw4)
+                .Description("Instantly deals weapon DMG + 50. Targets below 30% HP take an additional +20 DMG.")
+                .Price(4)
+                .RequirementSkill(SkillType.Pistol, 42);
+        }
+
+        private void RapidShot()
+        {
+            _builder.Create(PerkCategoryType.PistolGunslinger, PerkType.RapidShot)
+                .Name("Rapid Shot")
+
+                .AddPerkLevel()
+                .Description("Reduces pistol attack delay by 10%.")
+                .Price(3)
+                .RequirementSkill(SkillType.Pistol, 12)
+
+                .AddPerkLevel()
+                .Description("Reduces pistol attack delay by 20% total.")
+                .Price(2)
+                .RequirementSkill(SkillType.Pistol, 32)
+
+                .AddPerkLevel()
+                .Description("Reduces pistol attack delay by 30% total. Auto-attacks have a 10% chance to restore 2 STM.")
+                .Price(4)
+                .RequirementSkill(SkillType.Pistol, 48);
+        }
+
         private void ReloadTempo()
         {
             _builder.Create(PerkCategoryType.PistolGunslinger, PerkType.ReloadTempo)
@@ -271,6 +352,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Skirmisher Stance")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.SkirmisherStance1)
                 .Description("While active, grants +15% Evasion and reduces Enmity generation by 20%, but reduces Attack by 10%.")
                 .Price(2)
                 .RequirementSkill(SkillType.Pistol, 15);
@@ -294,11 +376,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Snap Roll")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.SnapRoll1)
                 .Description("Gain +25% Evasion for 6 seconds and reduce your current enmity by 10%.")
                 .Price(3)
                 .RequirementSkill(SkillType.Pistol, 12)
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.SnapRoll2)
                 .Description("Gain +35% Evasion for 8 seconds and your next pistol attack within 8 seconds deals +10 DMG.")
                 .Price(4)
                 .RequirementSkill(SkillType.Pistol, 28);

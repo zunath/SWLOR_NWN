@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
             return _builder.Build();
         }
-        
+
         private void Impact(uint activator, uint target, int dmg, int dc)
         {
             if (GetFactionEqual(activator, target))
@@ -36,9 +36,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             var damage = Combat.CalculateDamage(
                 attack,
                 dmg,
-                attackerStat, 
-                defense, 
-                defenderStat, 
+                attackerStat,
+                defense,
+                defenderStat,
                 0);
 
             if (dc > 0)
@@ -48,9 +48,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 if (checkResult == SavingThrowResultType.Failed)
                 {
                     const float Duration = 3f;
-                    ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), target, Duration);
-
-                    Ability.ApplyTemporaryImmunity(target, Duration, ImmunityType.Knockdown);
+                    StatusEffect.ApplyStatusEffect(activator, target, typeof(KnockdownStatusEffect), Duration);
                 }
             }
 

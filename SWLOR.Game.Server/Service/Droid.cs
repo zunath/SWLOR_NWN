@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
@@ -10,7 +9,6 @@ using SWLOR.Game.Server.Service.DroidService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
@@ -248,7 +246,7 @@ namespace SWLOR.Game.Server.Service
 
             constructedDroid.EquippedItems[slot] = constructedDroid.Inventory[itemId];
             constructedDroid.Inventory.Remove(itemId);
-            
+
             SaveConstructedDroid(controller, constructedDroid);
         }
 
@@ -282,7 +280,7 @@ namespace SWLOR.Game.Server.Service
 
             constructedDroid.Inventory[itemId] = constructedDroid.EquippedItems[slot];
             constructedDroid.EquippedItems.Remove(slot);
-            
+
             SaveConstructedDroid(controller, constructedDroid);
         }
 
@@ -544,8 +542,8 @@ namespace SWLOR.Game.Server.Service
 
             var skin = GetItemInSlot(InventorySlot.CreatureArmor, droid);
 
-            SetName(droid, string.IsNullOrWhiteSpace(details.CustomName) 
-                ? $"{GetName(player)}'s Droid" 
+            SetName(droid, string.IsNullOrWhiteSpace(details.CustomName)
+                ? $"{GetName(player)}'s Droid"
                 : details.CustomName);
 
             // Raw stats
@@ -859,7 +857,7 @@ namespace SWLOR.Game.Server.Service
                 itemType == BaseItem.CreatureSlashWeapon ||
                 itemType == BaseItem.CreatureItem)
                 return;
-            
+
             var controller = GetControllerItem(droid);
             var constructedDroid = LoadConstructedDroid(controller);
 
@@ -907,7 +905,7 @@ namespace SWLOR.Game.Server.Service
             var serialized = JsonConvert.SerializeObject(constructedDroid);
             SetLocalString(controller, ConstructedDroidVariable, serialized);
         }
-        
+
         [NWNEventHandler(ScriptName.OnDroidBlocked)]
         public static void DroidOnBlocked()
         {
@@ -990,7 +988,7 @@ namespace SWLOR.Game.Server.Service
 
             AssignCommand(droid, () => ClearAllActions());
 
-            StatusEffect.Apply(droid, droid, StatusEffectType.Rest, 0f);
+            StatusEffect.ApplyStatusEffect(droid, droid, typeof(RestStatusEffect), 0f);
         }
 
         [NWNEventHandler(ScriptName.OnDroidSpawn)]
@@ -1001,8 +999,9 @@ namespace SWLOR.Game.Server.Service
             AssignCommand(droid, () =>
             {
                 SetIsDestroyable(true, false, false);
-            }); 
+            });
             Stat.LoadNPCStats();
+            Stat.ApplyCreatureMovementRate(droid);
         }
 
         [NWNEventHandler(ScriptName.OnDroidSpellCast)]

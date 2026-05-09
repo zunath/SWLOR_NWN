@@ -1,10 +1,8 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Text;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.ActivityService;
 using SWLOR.Game.Server.Service.GuiService;
@@ -229,8 +227,8 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The ability type or AbilityType.Invalid if none is associated with the item.</returns>
         public static AbilityType GetWeaponDamageAbilityType(BaseItem itemType)
         {
-            return !_itemToDamageAbilityMapping.ContainsKey(itemType) 
-                ? AbilityType.Invalid 
+            return !_itemToDamageAbilityMapping.ContainsKey(itemType)
+                ? AbilityType.Invalid
                 : _itemToDamageAbilityMapping[itemType];
         }
 
@@ -428,7 +426,7 @@ namespace SWLOR.Game.Server.Service
                         {
                             DestroyObject(item);
                         }
-                        else 
+                        else
                         {
                             SetItemCharges(item, charges);
                         }
@@ -652,6 +650,16 @@ namespace SWLOR.Game.Server.Service
             BaseItem.TowerShield
         };
 
+        public static bool IsBaseItemType(uint item, IReadOnlyCollection<BaseItem> baseItemTypes)
+        {
+            return GetIsObjectValid(item) && baseItemTypes.Contains(GetBaseItemType(item));
+        }
+
+        public static bool IsBaseItemType(global::NWN.Native.API.CNWSItem item, IReadOnlyCollection<BaseItem> baseItemTypes)
+        {
+            return item != null && baseItemTypes.Contains((BaseItem)item.m_nBaseItem);
+        }
+
         /// <summary>
         /// Retrieves the list of Vibroblade base item types.
         /// </summary>
@@ -692,9 +700,12 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static List<BaseItem> HeavyVibrobladeBaseItemTypes { get; } = new List<BaseItem>
         {
+            BaseItem.DireMace,
             BaseItem.GreatAxe,
             BaseItem.GreatSword,
-            BaseItem.DwarvenWarAxe
+            BaseItem.DwarvenWarAxe,
+            BaseItem.HeavyFlail,
+            BaseItem.WarHammer
         };
 
         /// <summary>
@@ -742,7 +753,9 @@ namespace SWLOR.Game.Server.Service
             BaseItem.QuarterStaff,
             BaseItem.LightMace,
             BaseItem.Club,
-            BaseItem.MorningStar
+            BaseItem.MorningStar,
+            BaseItem.LightFlail,
+            BaseItem.LightHammer
         };
 
         /// <summary>
@@ -762,7 +775,7 @@ namespace SWLOR.Game.Server.Service
             BaseItem.Shuriken,
             BaseItem.Dart
         };
-        
+
         /// <summary>
         /// Retrieves the list of Rifle base item types.
         /// </summary>
@@ -845,7 +858,7 @@ namespace SWLOR.Game.Server.Service
         };
 
         /// <summary>
-        /// Retrieves the icon used on the UIs. 
+        /// Retrieves the icon used on the UIs.
         /// </summary>
         /// <param name="item">The item to retrieve the icon for.</param>
         /// <returns>A resref of the icon to use.</returns>

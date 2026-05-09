@@ -59,8 +59,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                             var checkResult = WillSave(nearest, dc, SavingThrowType.None, activator);
                             if (checkResult == SavingThrowResultType.Failed)
                             {
-                                ApplyEffectToObject(DurationType.Temporary, EffectStunned(), nearest, duration);
-                                Ability.ApplyTemporaryImmunity(nearest, duration, ImmunityType.Stun);
+                                StatusEffect.ApplyStatusEffect(activator, nearest, typeof(StunnedStatusEffect), duration);
                                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Sonic), nearest);
                             }
 

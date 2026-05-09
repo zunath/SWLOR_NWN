@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
         public int Version => 3;
         public void Migrate(uint player)
         {
-            Stat.ApplyPlayerMovementRate(player);
+            Stat.ApplyCreatureMovementRate(player);
         }
     }
 }

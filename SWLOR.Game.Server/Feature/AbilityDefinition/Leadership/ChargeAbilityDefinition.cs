@@ -1,8 +1,7 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
@@ -29,11 +28,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                 .UsesAnimation(Animation.FireForgetTaunt)
                 .HasActivationAction((activator, target, level, location) =>
                 {
-                    return Ability.ToggleAura(activator, StatusEffectType.Charge);
+                    return Ability.ToggleAura(activator, typeof(ChargeStatusEffect));
                 })
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    Ability.ApplyAura(activator, StatusEffectType.Charge, true, true, false);
+                    Ability.ApplyAura(activator, typeof(ChargeStatusEffect), true, true, false);
                 });
         }
     }

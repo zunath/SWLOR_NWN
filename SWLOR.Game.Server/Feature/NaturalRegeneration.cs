@@ -1,8 +1,7 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Feature.StatusEffectDefinition.StatusEffectData;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature
@@ -27,17 +26,9 @@ namespace SWLOR.Game.Server.Feature
 
                 var playerId = GetObjectUUID(player);
                 var dbPlayer = DB.Get<Player>(playerId);
-                var hpRegen = dbPlayer.HPRegen + vitalityBonus * 4;
-                var fpRegen = 1 + dbPlayer.FPRegen + vitalityBonus / 2;
-                var stmRegen = 1 + dbPlayer.STMRegen + vitalityBonus / 2;
-                var foodEffect = StatusEffect.GetEffectData<FoodEffectData>(player, StatusEffectType.Food);
-
-                if (foodEffect != null)
-                {
-                    hpRegen += foodEffect.HPRegen;
-                    fpRegen += foodEffect.FPRegen;
-                    stmRegen += foodEffect.STMRegen;
-                }
+                var hpRegen = dbPlayer.HPRegen + vitalityBonus * 4 + Stat.GetStatAdjustment(player, StatType.HPRegen);
+                var fpRegen = 1 + dbPlayer.FPRegen + vitalityBonus / 2 + Stat.GetStatAdjustment(player, StatType.FPRegen);
+                var stmRegen = 1 + dbPlayer.STMRegen + vitalityBonus / 2 + Stat.GetStatAdjustment(player, StatType.StaminaRegen);
 
                 if (hpRegen > 0 && GetCurrentHitPoints(player) < GetMaxHitPoints(player))
                 {

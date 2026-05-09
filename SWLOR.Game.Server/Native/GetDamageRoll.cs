@@ -8,7 +8,6 @@ using SWLOR.Game.Server.Service.LogService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
-using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
@@ -52,12 +51,12 @@ namespace SWLOR.Game.Server.Native
 
         [UnmanagedCallersOnly]
         private static int OnGetDamageRoll(
-            void* thisPtr, 
-            void* pTarget, 
-            int bOffHand, 
-            int bCritical, 
-            int bSneakAttack, 
-            int bDeathAttack, 
+            void* thisPtr,
+            void* pTarget,
+            int bOffHand,
+            int bCritical,
+            int bSneakAttack,
+            int bDeathAttack,
             int bForceMax)
         {
             return ServerManager.Executor.ExecuteInScriptContext(() =>
@@ -97,7 +96,7 @@ namespace SWLOR.Game.Server.Native
 
                 // Extract weapon damage properties and get ability stats
                 var dmgValues = ExtractWeaponDamageProperties(weapon);
-                var attackerStatType = GetWeaponDamageAbilityType(weapon);
+                var attackerStatType = GetWeaponDamageAbilityType(attacker.m_idSelf, weapon);
                 var weaponDeltaCap = GetWeaponDeltaCap(weapon);
 
                 var attackerStat = Stat.GetStatValueNative(attacker, attackerStatType);
@@ -244,7 +243,7 @@ namespace SWLOR.Game.Server.Native
             return dmgValues;
         }
 
-        private static AbilityType GetWeaponDamageAbilityType(CNWSItem weapon)
+        private static AbilityType GetWeaponDamageAbilityType(uint attacker, CNWSItem weapon)
         {
             if (weapon == null) return AbilityType.Might;
 
@@ -257,7 +256,7 @@ namespace SWLOR.Game.Server.Native
                 }
             }
 
-            return Item.GetWeaponDamageAbilityType((BaseItem)weapon.m_nBaseItem);
+            return Combat.GetWeaponDamageAbilityType(attacker, (BaseItem)weapon.m_nBaseItem);
         }
 
         private static int GetWeaponDeltaCap(CNWSItem weapon)
@@ -361,7 +360,7 @@ namespace SWLOR.Game.Server.Native
                 damage = target.DoDamageReduction(attacker, damage, damagePower, 0, 1, bRangedAttack);
             }
 
-            return damage;
+            return Combat.ApplyDamageTakenModifiers(target.m_idSelf, damage);
         }
 
         private static void PublishDamageDealtEvent(uint attacker, uint defender, int damage)

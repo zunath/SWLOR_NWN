@@ -3,7 +3,6 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -28,6 +27,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 .Name("Disarming Shot I")
                 .Level(1)
                 .HasActivationDelay(0f)
+                .HasRecastDelay(RecastGroup.DisarmingShot, 30f)
                 .RequiresTarget()
                 .HasImpactAction(ImpactAction)
                 .IsCastedAbility()
@@ -42,6 +42,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 .Name("Disarming Shot II")
                 .Level(2)
                 .HasActivationDelay(0f)
+                .HasRecastDelay(RecastGroup.DisarmingShot, 30f)
                 .RequiresTarget()
                 .HasImpactAction(ImpactAction)
                 .IsCastedAbility()
@@ -56,6 +57,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 .Name("Disarming Shot III")
                 .Level(3)
                 .HasActivationDelay(0f)
+                .HasRecastDelay(RecastGroup.DisarmingShot, 30f)
                 .RequiresTarget()
                 .HasImpactAction(ImpactAction)
                 .IsCastedAbility()
@@ -69,13 +71,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
             switch (level)
             {
                 case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Pistol, 8, 12, 12, SavingThrow.Reflex, StatusEffectType.Invalid, AbilityControlEffect.None, false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Pistol, 8, 12, 12, SavingThrow.Reflex, typeof(WeakenedStatusEffect), false);
                     break;
                 case 2:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Pistol, 18, 15, 15, SavingThrow.Reflex, StatusEffectType.Invalid, AbilityControlEffect.None, false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Pistol, 18, 15, 15, SavingThrow.Reflex, typeof(WeakenedStatusEffect), false);
                     break;
                 case 3:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Pistol, 32, 15, 18, SavingThrow.Reflex, StatusEffectType.Invalid, AbilityControlEffect.None, false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Pistol, 32, 15, 18, SavingThrow.Reflex, typeof(WeakenedStatusEffect), false);
                     break;
             }
         }

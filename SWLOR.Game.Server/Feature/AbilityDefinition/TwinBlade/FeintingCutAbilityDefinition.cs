@@ -3,7 +3,6 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -28,6 +27,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 .Name("Feinting Cut I")
                 .Level(1)
                 .HasActivationDelay(0f)
+                .HasRecastDelay(RecastGroup.FeintingCut, 45f)
                 .RequiresTarget()
                 .HasImpactAction(ImpactAction)
                 .IsCastedAbility()
@@ -42,6 +42,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 .Name("Feinting Cut II")
                 .Level(2)
                 .HasActivationDelay(0f)
+                .HasRecastDelay(RecastGroup.FeintingCut, 45f)
                 .RequiresTarget()
                 .HasImpactAction(ImpactAction)
                 .IsCastedAbility()
@@ -56,6 +57,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 .Name("Feinting Cut III")
                 .Level(3)
                 .HasActivationDelay(0f)
+                .HasRecastDelay(RecastGroup.FeintingCut, 45f)
                 .RequiresTarget()
                 .HasImpactAction(ImpactAction)
                 .IsCastedAbility()
@@ -69,13 +71,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
             switch (level)
             {
                 case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.TwinBlade, 12, 12, 12, SavingThrow.Reflex, StatusEffectType.Invalid, AbilityControlEffect.None, false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.TwinBlade, 12, 12, 12, SavingThrow.Reflex, typeof(WeakenedStatusEffect), false);
                     break;
                 case 2:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.TwinBlade, 22, 12, 15, SavingThrow.Reflex, StatusEffectType.Invalid, AbilityControlEffect.None, false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.TwinBlade, 22, 12, 15, SavingThrow.Reflex, typeof(WeakenedStatusEffect), false);
                     break;
                 case 3:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.TwinBlade, 32, 15, 18, SavingThrow.Reflex, StatusEffectType.Invalid, AbilityControlEffect.None, false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.TwinBlade, 32, 15, 18, SavingThrow.Reflex, typeof(WeakenedStatusEffect), false);
                     break;
             }
         }

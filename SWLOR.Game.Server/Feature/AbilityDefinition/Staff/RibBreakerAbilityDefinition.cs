@@ -3,7 +3,6 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -28,6 +27,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 .Name("Rib Breaker I")
                 .Level(1)
                 .HasActivationDelay(0f)
+                .HasRecastDelay(RecastGroup.RibBreaker, 45f)
                 .RequiresTarget()
                 .HasImpactAction(ImpactAction)
                 .IsCastedAbility()
@@ -42,6 +42,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 .Name("Rib Breaker II")
                 .Level(2)
                 .HasActivationDelay(0f)
+                .HasRecastDelay(RecastGroup.RibBreaker, 45f)
                 .RequiresTarget()
                 .HasImpactAction(ImpactAction)
                 .IsCastedAbility()
@@ -56,6 +57,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 .Name("Rib Breaker III")
                 .Level(3)
                 .HasActivationDelay(0f)
+                .HasRecastDelay(RecastGroup.RibBreaker, 45f)
                 .RequiresTarget()
                 .HasImpactAction(ImpactAction)
                 .IsCastedAbility()
@@ -69,13 +71,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
             switch (level)
             {
                 case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Staff, 18, 15, 14, SavingThrow.Fortitude, StatusEffectType.Invalid, AbilityControlEffect.None, false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Staff, 18, 15, 14, SavingThrow.Fortitude, typeof(WeakenedStatusEffect), false);
                     break;
                 case 2:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Staff, 30, 15, 16, SavingThrow.Fortitude, StatusEffectType.Invalid, AbilityControlEffect.None, false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Staff, 30, 15, 16, SavingThrow.Fortitude, typeof(WeakenedStatusEffect), false);
                     break;
                 case 3:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Staff, 42, 15, 18, SavingThrow.Fortitude, StatusEffectType.Invalid, AbilityControlEffect.None, false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Staff, 42, 15, 18, SavingThrow.Fortitude, typeof(WeakenedStatusEffect), false);
                     break;
             }
         }

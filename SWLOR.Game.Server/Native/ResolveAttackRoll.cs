@@ -3,9 +3,8 @@ using NWNX.NET;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWNX;
-using SWLOR.NWN.API.NWScript.Enum;
-using System;
 using System.Runtime.InteropServices;
 using AttackType = SWLOR.Game.Server.Enumeration.AttackType;
 using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
@@ -43,9 +42,6 @@ namespace SWLOR.Game.Server.Native
         private const float MediumRange = 30.0f;
         private const float LongRange = 40.0f;
 
-        // Deflection constants
-        private const int SaberDeflectChance = 5;
-
         // NPC object ID constant
         private const uint NpcActionTargetId = 2130706432;
 
@@ -80,15 +76,15 @@ namespace SWLOR.Game.Server.Native
 
                 /*
                  * Custom attack logic for SWLOR. Most default NWN logic does not apply.
-                 * 
+                 *
                  * The following default NWN functions don't exist in this engine.
                  * - Miss on 1
                  * - Hit on 20
                  * - Parry
                  * - Coup de Grace
                  * - Sneak Attack (/Death Attack)
-                 * 
-                 * Armor Class doesn't exist, and non-creature objects are hit automatically. 
+                 *
+                 * Armor Class doesn't exist, and non-creature objects are hit automatically.
                  * Critical hits come from beating the opposed roll by 30 or more.  Crit immunity applies as normal.
                  */
 
@@ -136,7 +132,7 @@ namespace SWLOR.Game.Server.Native
                 var attackType = (uint)AttackType.Melee;
                 var weapon = pCombatRound.GetCurrentAttackWeapon();
 
-                // Check whether this is a ranged weapon. 
+                // Check whether this is a ranged weapon.
                 if (weapon != null && pAttackData.m_bRangedAttack == 1 && attacker.GetRangeWeaponEquipped() == 1)
                 {
                     attackType = (uint)AttackType.Ranged;
@@ -170,7 +166,7 @@ namespace SWLOR.Game.Server.Native
                     attacker.m_ScriptVars.SetInt(new CExoString("I_LAST_ATTACKED"), (int)defender.m_idSelf);
                 }
 
-                // oidTarget will be 0 for a newly spawned NPC who hasn't been attacked yet.  Don't let them get taken by surprise in round 1. 
+                // oidTarget will be 0 for a newly spawned NPC who hasn't been attacked yet.  Don't let them get taken by surprise in round 1.
                 if (oidTarget != 0 && oidTarget != attacker.m_idSelf)
                 {
                     Log.Write(LogGroup.Attack, "Defender current target (" + oidTarget + ") is not attacker (" + attacker.m_idSelf + "). Assign circumstance bonus");
@@ -264,7 +260,7 @@ namespace SWLOR.Game.Server.Native
                 }
 
                 Log.Write(LogGroup.Attack, $"Resolving NWN defensive effects");
-                // Resolve any defensive effects (like concealment).  Do this after all the above so that the attack data is 
+                // Resolve any defensive effects (like concealment).  Do this after all the above so that the attack data is
                 // accurate.
                 attacker.ResolveDefensiveEffects(defender, isHit ? 1 : 0);
 
@@ -338,20 +334,18 @@ namespace SWLOR.Game.Server.Native
             if (attackType != (uint)AttackType.Ranged || !isHit || hasDeflected != 0)
                 return false;
 
-            var defenderWeapon = defender.m_pInventory.GetItemInSlot((uint)EquipmentSlot.RightHand);
-            var saberBlock = defenderWeapon != null && Item.LightsaberBaseItemTypes.Contains((BaseItem)defenderWeapon.m_nBaseItem);
-
-            if (!saberBlock)
+            var deflectChance = Stat.GetRangedAttackDeflectionChanceNative(defender);
+            if (deflectChance <= 0)
                 return false;
 
             defender.m_ScriptVars.SetInt(new CExoString("RESOLVE_ATTACK_ROLL_DEFLECT_BLASTER"), 1);
 
             var deflectRoll = Random.Next(1, 100);
-            var deflectChance = 0;
-
-            if (saberBlock) deflectChance += SaberDeflectChance;
-
             var deflected = deflectRoll <= deflectChance;
+            if (deflected)
+            {
+                Stat.ApplyAttackDeflectionEffectsNative(defender);
+            }
 
             var feedbackString = deflected ? "*success*" : "*failure*";
             var attackerName = ColorToken.GetNameColorNative(attacker);
@@ -360,7 +354,7 @@ namespace SWLOR.Game.Server.Native
 
             attacker.SendFeedbackString(new CExoString(feedbackString));
             defender.SendFeedbackString(new CExoString(feedbackString));
-            Log.Write(LogGroup.Attack, $"Deflect roll: {deflectRoll}, Hit: {!deflected}");
+            Log.Write(LogGroup.Attack, $"Deflect roll: {deflectRoll}, Chance: {deflectChance}, Hit: {!deflected}");
 
             return deflected;
         }
@@ -368,6 +362,13 @@ namespace SWLOR.Game.Server.Native
         private static int CalculateCriticalHitBonus(CNWSCreature attacker, CNWSItem weapon)
         {
             var criticalBonus = Math.Clamp((20 - attacker.m_pStats.GetCriticalHitRoll()) * 5, 0, 100);
+            if (weapon != null &&
+                Item.StaffBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem) &&
+                Perk.GetPerkLevel(attacker.m_idSelf, PerkType.CrushingStyle) > 0)
+            {
+                criticalBonus += 10;
+            }
+
             Log.Write(LogGroup.Attack, $"Base crit threat identified as: {criticalBonus}");
 
             return criticalBonus;

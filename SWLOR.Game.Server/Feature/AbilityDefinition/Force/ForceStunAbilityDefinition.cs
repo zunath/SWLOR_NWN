@@ -2,9 +2,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
@@ -24,33 +22,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void Impact(uint source, uint target)
         {
-            var dc = Combat.CalculateSavingThrowDC(source, SavingThrow.Will, 12);
-            const string EffectTag = "StatusEffectType.ForceStun";
-            var checkResult = WillSave(target, dc, SavingThrowType.None, source);
             const float Duration = 6.1f;
-
-            if (checkResult == SavingThrowResultType.Failed)
-            {
-                var effect = EffectDazed();
-                effect = EffectLinkEffects(effect, EffectVisualEffect(VisualEffect.Vfx_Dur_Iounstone_Blue));
-                effect = TagEffect(effect, EffectTag);
-                ApplyEffectToObject(DurationType.Temporary, effect, target, 6.1f);
-
-                Ability.ApplyTemporaryImmunity(target, Duration, ImmunityType.Dazed);
-            }
-            else if(checkResult == SavingThrowResultType.Success)
-            {
-                var effect = EffectAccuracyDecrease(2);
-                effect = EffectLinkEffects(effect, EffectACDecrease(2));
-                effect = TagEffect(effect, EffectTag);
-                ApplyEffectToObject(DurationType.Temporary, effect, target, 6.1f);
-            }
-
-            CombatPoint.AddCombatPoint(source, target, SkillType.Force, 3);
-
-            Enmity.ModifyEnmity(source, target, 850);
+            StatusEffect.ApplyStatusEffect(source, target, new ForceStunStatusEffect(), Duration);
         }
-        
+
         private static void ForceStun1(AbilityBuilder builder)
         {
             builder.Create(FeatType.ForceStun1, PerkType.ForceStun)
@@ -89,7 +64,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                     {
                         if (targetCreature != target && GetIsReactionTypeHostile(targetCreature, activator))
                         {
-                            // Apply to nearest other creature, then exit loop. 
+                            // Apply to nearest other creature, then exit loop.
                             Impact(activator, targetCreature);
                             break;
                         }

@@ -1,4 +1,3 @@
-﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core.NWNX.Enum;
@@ -10,7 +9,6 @@ using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
@@ -230,7 +228,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 new("<All Categories>", 0)
             };
 
-            foreach (var (type, detail) in Perk.GetAllActivePerkCategories(groupType)) 
+            foreach (var (type, detail) in Perk.GetAllActivePerkCategories(groupType))
             {
                 categories.Add(new GuiComboEntry(detail.Name, (int)type));
             }
@@ -274,7 +272,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var dbPlayer = DB.Get<Player>(playerId);
 
             _filteredPerks.Clear();
-            
+
             var perkButtonColors = new GuiBindingList<GuiColor>();
             var perkButtonIcons = new GuiBindingList<string>();
             var perkButtonTexts = new GuiBindingList<string>();
@@ -515,7 +513,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 // don't add the feat to the player's hot bar.
                 if (!Ability.IsFeatRegistered(feat)) continue;
                 var abilityDetail = Ability.GetAbilityDetail(feat);
-                if (abilityDetail.ImpactAction == null && abilityDetail.ConcentrationStatusEffectType == StatusEffectType.Invalid) continue;
+                if (abilityDetail.ImpactAction == null && abilityDetail.ConcentrationStatusEffect == null) continue;
 
                 AddFeatToHotBar(feat);
             }
@@ -593,14 +591,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     ? dbBeast.Perks[selectedPerk]
                     : 0;
             }
-            
+
             var detail = Perk.GetPerkDetails(selectedPerk);
-            
+
             var nextUpgrade = detail.PerkLevels.ContainsKey(rank + 1)
                 ? detail.PerkLevels[rank + 1]
                 : null;
 
-            ShowModal($"This upgrade will cost {nextUpgrade?.Price} SP. Are you sure you want to buy it?", 
+            ShowModal($"This upgrade will cost {nextUpgrade?.Price} SP. Are you sure you want to buy it?",
                 () =>
                 {
                     if (GetResRef(GetArea(Player)) == "char_migration")
@@ -750,7 +748,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
                 else
                 {
-                    // Some individual perks have validation checks. 
+                    // Some individual perks have validation checks.
                     // Run that now if specified.
                     var canRefund = perkDetail.RefundRequirement == null
                         ? string.Empty
@@ -767,7 +765,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         var refundAmount = perkDetail.PerkLevels
                             .Where(x => x.Key <= perkLevel)
                             .Sum(x => x.Value.Price);
-                        
+
                         dbPlayer.UnallocatedSP += refundAmount;
                         dbPlayer.Perks.Remove(selectedPerk);
 

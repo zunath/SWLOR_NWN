@@ -3,7 +3,6 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -26,6 +25,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 .Name("Leg Slash")
                 .Level(1)
                 .HasActivationDelay(1f)
+                .HasRecastDelay(RecastGroup.LegSlash, 60f)
                 .RequiresTarget()
                 .HasImpactAction(ImpactAction)
                 .IsCastedAbility()
@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
             switch (level)
             {
                 case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Lightsaber, 10, 20, 0, SavingThrow.Will, StatusEffectType.Invalid, AbilityControlEffect.None, false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Lightsaber, 10, 20, 0, SavingThrow.Will, typeof(DisorientedStatusEffect), false);
                     break;
             }
         }

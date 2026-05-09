@@ -1,13 +1,11 @@
-using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
-using SWLOR.Game.Server.Feature.StatusEffectDefinition.StatusEffectData;
 using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Service.StatService;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -115,12 +113,8 @@ namespace SWLOR.Game.Server.Service
 
                 if (!ignoreRecastReduction)
                 {
-                    var foodEffect = StatusEffect.GetEffectData<FoodEffectData>(activator, StatusEffectType.Food);
-                    var recastReduction = dbPlayer.AbilityRecastReduction;
-                    if (foodEffect != null)
-                    {
-                        recastReduction += foodEffect.RecastReductionPercent;
-                    }
+                    var recastReduction = dbPlayer.AbilityRecastReduction +
+                                          Stat.GetStatAdjustment(activator, StatType.AbilityRecastReductionPercent);
 
                     var recastPercentage = recastReduction * 0.01f;
                     if (recastPercentage > 0.5f)

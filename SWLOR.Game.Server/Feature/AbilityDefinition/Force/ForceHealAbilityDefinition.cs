@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
@@ -29,7 +28,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasActivationDelay(2f)
                 .RequirementFP(3)
                 .HasMaxRange(15)
-                .IsConcentrationAbility(StatusEffectType.ForceHeal1)
+                .IsConcentrationAbility(typeof(ForceHeal1StatusEffect))
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }
@@ -43,7 +42,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasActivationDelay(2f)
                 .RequirementFP(4)
                 .HasMaxRange(15)
-                .IsConcentrationAbility(StatusEffectType.ForceHeal2)
+                .IsConcentrationAbility(typeof(ForceHeal2StatusEffect))
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }
@@ -57,7 +56,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasActivationDelay(2f)
                 .RequirementFP(5)
                 .HasMaxRange(15)
-                .IsConcentrationAbility(StatusEffectType.ForceHeal3)
+                .IsConcentrationAbility(typeof(ForceHeal3StatusEffect))
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }
@@ -71,7 +70,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasActivationDelay(2f)
                 .RequirementFP(6)
                 .HasMaxRange(15)
-                .IsConcentrationAbility(StatusEffectType.ForceHeal4)
+                .IsConcentrationAbility(typeof(ForceHeal4StatusEffect))
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }
@@ -85,7 +84,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasActivationDelay(2f)
                 .RequirementFP(7)
                 .HasMaxRange(15)
-                .IsConcentrationAbility(StatusEffectType.ForceHeal5)
+                .IsConcentrationAbility(typeof(ForceHeal5StatusEffect))
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }

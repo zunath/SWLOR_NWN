@@ -1,9 +1,7 @@
-using System;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.DialogDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
-using SWLOR.Game.Server.Feature.StatusEffectDefinition.StatusEffectData;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.CraftService;
@@ -512,7 +510,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     skillRank = npcStats.Level;
                 }
 
-                var damageAbility = Item.GetWeaponDamageAbilityType(itemType);
+                var damageAbility = Combat.GetWeaponDamageAbilityType(_target, itemType);
                 var damageStat = GetAbilityScore(_target, damageAbility);
                 var dmg = Item.GetDMG(item) + Combat.GetMiscDMGBonus(_target, itemType);
                 var dmgText = $"{dmg} DMG";
@@ -524,7 +522,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return (dmgText, tooltip);
             }
 
-            var food = StatusEffect.GetEffectData<FoodEffectData>(Player, StatusEffectType.Food) ?? new FoodEffectData();
+            var food = StatusEffect.GetStatusEffect<FoodStatusEffect>(Player)?.Food ?? new FoodEffectData();
             var mainHand = GetItemInSlot(InventorySlot.RightHand, _target);
             var offHand = GetItemInSlot(InventorySlot.LeftHand, _target);
             var mainHandType = GetBaseItemType(mainHand);
@@ -566,16 +564,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
             else
             {
-                damageStat = Item.GetWeaponDamageAbilityType(mainHandType);
+                damageStat = Combat.GetWeaponDamageAbilityType(_target, mainHandType);
                 accuracyStatOverride = AbilityType.Invalid;
 
             }
-            
+
             var mainHandSkill = Skill.GetSkillTypeByBaseItem(mainHandType);
             Attack = Stat.GetAttack(_target, damageStat, mainHandSkill);
             DefensePhysical = Stat.GetDefense(_target, CombatDamageType.Physical, AbilityType.Vitality);
             DefenseForce = Stat.GetDefense(_target, CombatDamageType.Force, AbilityType.Willpower);
-            
+
             if (GetIsPC(_target))
             {
                 var playerId = GetObjectUUID(_target);
@@ -663,7 +661,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             RefreshEquipmentStats();
             RefreshAttributes();
         }
-        
+
         protected override void Initialize(CharacterSheetPayload initialPayload)
         {
             _target = GetIsObjectValid(initialPayload.Target) ? initialPayload.Target : Player;
@@ -689,7 +687,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             SP = $"{dbPlayer.TotalSPAcquired} / {Skill.SkillCap} ({dbPlayer.UnallocatedSP})";
             APOrLevel = $"{dbPlayer.TotalAPAcquired} / {Skill.APCap} ({dbPlayer.UnallocatedAP})";
-            
+
             RefreshStats();
         }
 

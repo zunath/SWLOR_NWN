@@ -4,7 +4,6 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
@@ -55,7 +54,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
             var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
             if (checkResult == SavingThrowResultType.Failed)
             {
-                StatusEffect.Apply(activator, target, StatusEffectType.Disease, 30f, level);
+                StatusEffect.ApplyStatusEffect(activator, target, new DiseaseStatusEffect(level), 30f);
             }
 
             Enmity.ModifyEnmity(activator, target, 250 + damage);

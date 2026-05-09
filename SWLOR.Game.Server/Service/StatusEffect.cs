@@ -1,28 +1,22 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.NWN.API.Engine;
+using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service
 {
     public static class StatusEffect
     {
-        private class StatusEffectGroup
-        {
-            public uint Source { get; set; }
-            public DateTime Expiration { get; set; }
-            public FeatType ConcentrationFeatType { get; set; }
-            public object EffectData { get; set; }
-        }
+        private const string StatusEffectTag = "STATUS_EFFECT";
+        private const float Interval = 1f;
 
-        private static readonly Dictionary<StatusEffectType, StatusEffectDetail> _statusEffects = new();
-        private static readonly Dictionary<uint, Dictionary<StatusEffectType, StatusEffectGroup>> _creaturesWithStatusEffects = new();
-        private static readonly Dictionary<uint, Dictionary<StatusEffectType, StatusEffectGroup>> _loggedOutPlayersWithEffects = new();
-
-        private static readonly Dictionary<EffectIconType, List<StatusEffectType>> _effectIconToStatusEffects = new();
+        private static readonly Dictionary<uint, CreatureStatusEffect> _creatureEffects = new();
+        private static readonly Dictionary<string, LoggedOutStatusEffects> _loggedOutPlayerEffects = new();
+        private static readonly Dictionary<Type, StatusEffectMetadata> _statusEffects = new();
         private static readonly Dictionary<EffectIconType, AbilityType> _abilityIncreaseIconType = new()
         {
             { EffectIconType.AbilityIncreaseSTR, AbilityType.Might },
@@ -37,7 +31,6 @@ namespace SWLOR.Game.Server.Service
             { EffectIconType.AbilityDecreaseWIS, AbilityType.Willpower },
             { EffectIconType.AbilityIncreaseCHA, AbilityType.Social },
             { EffectIconType.AbilityDecreaseCHA, AbilityType.Social },
-
         };
 
         private static readonly Dictionary<EffectIconType, EffectTypeScript> _effectIconToEffectType = new()
@@ -80,7 +73,7 @@ namespace SWLOR.Game.Server.Service
             { EffectIconType.ACDecrease, EffectTypeScript.ACDecrease },
             { EffectIconType.MovementSpeedIncrease, EffectTypeScript.MovementSpeedIncrease },
             { EffectIconType.MovementSpeedDecrease, EffectTypeScript.MovementSpeedDecrease },
-            { EffectIconType.SavingThrowIncrease, EffectTypeScript.SavingThrowDecrease },
+            { EffectIconType.SavingThrowIncrease, EffectTypeScript.SavingThrowIncrease },
             { EffectIconType.SpellResistanceIncrease, EffectTypeScript.SpellResistanceIncrease },
             { EffectIconType.SpellResistanceDecrease, EffectTypeScript.SpellResistanceDecrease },
             { EffectIconType.SkillIncrease, EffectTypeScript.SkillIncrease },
@@ -179,418 +172,812 @@ namespace SWLOR.Game.Server.Service
         };
 
         /// <summary>
-        /// When the module loads, cache all status effects.
+        /// When the module caches, status effects will be discovered and cached.
         /// </summary>
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
-        public static void CacheStatusEffects()
+        public static void CacheData()
         {
-            // Organize perks to make later reads quicker.
+            CacheStatusEffects();
+        }
+
+        private static void CacheStatusEffects()
+        {
+            _statusEffects.Clear();
+
             var types = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
-                .Where(w => typeof(IStatusEffectListDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
+                .Where(w => typeof(StatusEffectBase).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
 
             foreach (var type in types)
             {
-                var instance = (IStatusEffectListDefinition)Activator.CreateInstance(type);
-                var statusEffects = instance.BuildStatusEffects();
+                var effect = (StatusEffectBase)Activator.CreateInstance(type);
 
-                foreach (var (statusEffectType, detail) in statusEffects)
-                {
-                    _statusEffects[statusEffectType] = detail;
-                    if (!_effectIconToStatusEffects.ContainsKey(detail.EffectIconId))
-                        _effectIconToStatusEffects[detail.EffectIconId] = new List<StatusEffectType>();
-                    _effectIconToStatusEffects[detail.EffectIconId].Add(statusEffectType);
-                }
+                _statusEffects[type] = new StatusEffectMetadata(
+                    () => (IStatusEffect)Activator.CreateInstance(type),
+                    effect.Name,
+                    effect.Frequency);
+            }
+
+            Console.WriteLine($"Loaded {_statusEffects.Count} status effects.");
+        }
+
+        private static void EnsureStatusEffectsCached()
+        {
+            if (_statusEffects.Count <= 0)
+            {
+                CacheStatusEffects();
             }
         }
 
-        /// <summary>
-        /// Gives a status effect to a creature.
-        /// If creature already has the status effect, and their timer is shorter than length,
-        /// it will be extended to the length specified.
-        /// </summary>
-        /// <param name="source">The source of the status effect.</param>
-        /// <param name="target">The creature receiving the status effect.</param>
-        /// <param name="statusEffectType">The type of status effect to give.</param>
-        /// <param name="length">The amount of time, in seconds, the status effect should last. Set to 0.0f to make it permanent.</param>
-        /// <param name="effectData">Effect data used by the effect.</param>
-        /// <param name="concentrationFeatType">If status effect is associated with a concentration ability, this will track the feat type used.</param>
-        /// <param name="sendApplicationMessage">If true, a message will be sent to nearby players when the status effect is applied.</param>
-        public static void Apply(
-            uint source, 
-            uint target, 
-            StatusEffectType statusEffectType, 
-            float length, 
-            object effectData = null,
-            FeatType concentrationFeatType = FeatType.Invalid,
-            bool sendApplicationMessage = true)
+        private static bool TryCreateStatusEffect(Type statusEffectClass, out IStatusEffect statusEffect)
         {
-            var statusEffectDetail = _statusEffects[statusEffectType];
-            if (!_creaturesWithStatusEffects.ContainsKey(target))
-                _creaturesWithStatusEffects[target] = new Dictionary<StatusEffectType, StatusEffectGroup>();
+            EnsureStatusEffectsCached();
 
-            if (!_creaturesWithStatusEffects[target].ContainsKey(statusEffectType))
-                _creaturesWithStatusEffects[target][statusEffectType] = new StatusEffectGroup();
-
-            var expiration = length == 0.0f ? DateTime.MaxValue : DateTime.UtcNow.AddSeconds(length);
-            var addIcon = true;
-
-            // If the existing status effect will expire later than this, exit early.
-            if (_creaturesWithStatusEffects[target][statusEffectType].Expiration > expiration)
-                return;
-
-            // Can't stack - remove the effect then reapply it afterwards.
-            if (!statusEffectDetail.CanStack &&
-                HasStatusEffect(target, statusEffectType))
+            if (statusEffectClass != null &&
+                _statusEffects.TryGetValue(statusEffectClass, out var metadata))
             {
-                Remove(target, statusEffectType, false, false);
-                _creaturesWithStatusEffects[target][statusEffectType] = new StatusEffectGroup();
-                addIcon = false;
+                statusEffect = metadata.Create();
+                return true;
             }
 
-            // Remove any status effects this effect overrides.
-            if (statusEffectDetail.ReplacesEffects != null)
-            {
-                foreach (var effect in statusEffectDetail.ReplacesEffects)
-                {
-                    Remove(target, effect, false, false);
-                    addIcon = false;
-                }
-            }
-
-            // Prevent applying the status effect if a more powerful one is already in place.
-            if (statusEffectDetail.CannotReplaceEffects != null)
-            {
-                if (HasStatusEffect(target, statusEffectDetail.CannotReplaceEffects))
-                {
-                    const string Message = "A more powerful effect already exists.";
-                    SendMessageToPC(source, Message);
-
-                    if(source != target)
-                        SendMessageToPC(target, Message);
-                    return;
-                }
-            }
-
-            // Set the group details.
-            _creaturesWithStatusEffects[target][statusEffectType].Source = source;
-            _creaturesWithStatusEffects[target][statusEffectType].Expiration = expiration;
-            _creaturesWithStatusEffects[target][statusEffectType].ConcentrationFeatType = concentrationFeatType;
-            _creaturesWithStatusEffects[target][statusEffectType].EffectData = effectData;
-
-            // Run the Grant Action, if applicable.
-            statusEffectDetail.AppliedAction?.Invoke(source, target, length, effectData);
-
-            // Add the status effect icon if there is one.
-            if (addIcon && statusEffectDetail.EffectIconId != EffectIconType.Invalid)
-            {
-                var iconEffect = EffectIcon(statusEffectDetail.EffectIconId);
-                iconEffect = TagEffect(iconEffect, $"EFFECT_ICON_{statusEffectDetail.EffectIconId}");
-                
-                if(length > 0f)
-                    ApplyEffectToObject(DurationType.Temporary, iconEffect, target, length);
-                else 
-                    ApplyEffectToObject(DurationType.Permanent, iconEffect, target);
-            }
-
-            if(sendApplicationMessage)
-                Messaging.SendMessageNearbyToPlayers(target, $"{GetName(target)} receives the effect of {statusEffectDetail.Name}.", 20f);
-
-            Gui.PublishRefreshEvent(target, new StatusEffectReceivedRefreshEvent());
-        }
-
-        /// <summary>
-        /// When a player enters the server, if any of their status effects in limbo, re-add them to the
-        /// dictionary for processing.
-        /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleEnter)]
-        public static void PlayerEnter()
-        {
-            var player = GetEnteringObject();
-
-            if (_loggedOutPlayersWithEffects.ContainsKey(player))
-            {
-                var effects = _loggedOutPlayersWithEffects[player].ToDictionary(x => x.Key, y => y.Value);
-                _creaturesWithStatusEffects[player] = effects;
-
-                _loggedOutPlayersWithEffects.Remove(player);
-            }
-
-            ExecuteScript("assoc_stateffect", player);
-        }
-
-        /// <summary>
-        /// When a player leaves the server, move their status effects to a different dictionary
-        /// so they aren't processed unnecessarily.  
-        /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleExit)]
-        public static void PlayerExit()
-        {
-            var player = GetExitingObject();
-
-            if (!_creaturesWithStatusEffects.ContainsKey(player))
-                return;
-
-            var effects = _creaturesWithStatusEffects[player]
-                .Where(x => !(_statusEffects.TryGetValue(x.Key, out var detail) && detail.IsAura))
-                .ToDictionary(x => x.Key, y => y.Value);
-
-            if (effects.Count > 0)
-                _loggedOutPlayersWithEffects[player] = effects;
-
-            _creaturesWithStatusEffects.Remove(player);
-        }
-
-        /// <summary>
-        /// When the module heartbeat runs, execute and clean up status effects on all creatures.
-        /// </summary>
-        [NWNEventHandler(ScriptName.OnSwlorHeartbeat)]
-        public static void TickStatusEffects()
-        {
-            var now = DateTime.UtcNow;
-
-            foreach (var (creature, statusEffects) in _creaturesWithStatusEffects.ToDictionary(x => x.Key, y => y.Value))
-            {
-                // Creature is dead or invalid. Remove its status effects.
-                var removeAllEffects = !GetIsObjectValid(creature) || GetIsDead(creature);
-
-                // Iterate over each status effect, cleaning them up if they've expired or executing their tick if applicable.
-                foreach (var (statusEffect, group) in statusEffects)
-                {
-                    var activeConcentration = Ability.GetActiveConcentration(group.Source);
-
-                    // Concentration check - If caster is no longer channeling this feat, remove the status effect.
-                    if (group.ConcentrationFeatType != FeatType.Invalid)
-                    {
-                        if (activeConcentration.Feat != group.ConcentrationFeatType)
-                        {
-                            Remove(creature, statusEffect);
-                            continue;
-                        }
-                    }
-
-                    // Status effect has expired or creature is no longer valid. Remove it.
-                    if (removeAllEffects || now > group.Expiration)
-                    {
-                        Remove(creature, statusEffect);
-
-                        // Concentration - End the ability if this status effect was tied to a concentration ability
-                        // and the creature was the target.
-                        if (group.ConcentrationFeatType != FeatType.Invalid &&
-                            activeConcentration.Feat == group.ConcentrationFeatType &&
-                            activeConcentration.Target == creature)
-                        {
-                            Ability.EndConcentrationAbility(group.Source);
-                        }
-
-                    }
-                    // Otherwise do a Tick.
-                    else
-                    {
-                        var detail = _statusEffects[statusEffect];
-                        detail.TickAction?.Invoke(group.Source, creature, group.EffectData);
-                    }
-                }
-
-                // No more status effects. Remove the creature from the cache.
-                if (statusEffects.Count <= 0)
-                {
-                    _creaturesWithStatusEffects.Remove(creature);
-                }
-            }
-        }
-
-        /// <summary>
-        /// When a player dies, remove any status effects which are present.
-        /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleDeath)]
-        public static void OnPlayerDeath()
-        {
-            var player = GetLastPlayerDied();
-            if (!GetIsPC(player) || GetIsDM(player))
-                return;
-
-            if (!_creaturesWithStatusEffects.ContainsKey(player))
-                return;
-
-            var statusEffects = _creaturesWithStatusEffects[player].Select(s => s.Key);
-
-            foreach (var effect in statusEffects)
-            {
-                Remove(player, effect);
-            }
-        }
-
-        private static void Remove(uint creature, StatusEffectType statusEffectType, bool showMessage, bool removeIcon)
-        {
-            if (!HasStatusEffect(creature, statusEffectType, true)) return;
-
-            var effectInstance = _creaturesWithStatusEffects[creature][statusEffectType];
-            _creaturesWithStatusEffects[creature].Remove(statusEffectType);
-
-            var statusEffectDetail = _statusEffects[statusEffectType];
-            statusEffectDetail.RemoveAction?.Invoke(creature, effectInstance.EffectData);
-
-            if (removeIcon && statusEffectDetail.EffectIconId > 0 && GetIsObjectValid(creature))
-            {
-                RemoveEffectByTag(creature, $"EFFECT_ICON_{statusEffectDetail.EffectIconId}");
-            }
-
-            if(showMessage)
-                Messaging.SendMessageNearbyToPlayers(creature, $"{GetName(creature)}'s {statusEffectDetail.Name} effect has worn off.");
-
-            Gui.PublishRefreshEvent(creature, new StatusEffectRemovedRefreshEvent());
-        }
-
-        /// <summary>
-        /// Removes a status effect from a creature.
-        /// </summary>
-        /// <param name="creature">The creature to remove the status effect from.</param>
-        /// <param name="statusEffectType">The type of status effect to remove.</param>
-        /// <param name="showMessage">If true, a message will be displayed. Otherwise no message is displayed.</param>
-        public static void Remove(uint creature, StatusEffectType statusEffectType, bool showMessage = true)
-        {
-            Remove(creature, statusEffectType, showMessage, true);
-        }
-
-        /// <summary>
-        /// Removes all status effects from a creature.
-        /// </summary>
-        /// <param name="creature">The creature to remove all effects from.</param>
-        public static void RemoveAll(uint creature)
-        {
-            if (!_creaturesWithStatusEffects.ContainsKey(creature))
-                return;
-
-            foreach (var effectType in _creaturesWithStatusEffects[creature].Keys)
-            {
-                Remove(creature, effectType);
-            }
-        }
-
-        /// <summary>
-        /// Checks if a creature has a status effect.
-        /// If ignoreExpiration is true, even if the effect is expired this will return true.
-        /// This should only be used within this class to avoid confusion.
-        /// </summary>
-        /// <param name="creature">The creature to check.</param>
-        /// <param name="statusEffectType">The status effect type to look for.</param>
-        /// <param name="ignoreExpiration">If true, expired effects will return true. Otherwise, expiration will be checked.</param>
-        /// <returns>true if creature has status effect, false otherwise</returns>
-        private static bool HasStatusEffect(uint creature, StatusEffectType statusEffectType, bool ignoreExpiration)
-        {
-            // Creature doesn't exist in the cache.
-            if (!_creaturesWithStatusEffects.ContainsKey(creature))
-                return false;
-
-            // Status effect doesn't exist for this creature in the cache.
-            if (!_creaturesWithStatusEffects[creature].ContainsKey(statusEffectType))
-                return false;
-
-            // Status effect has expired, but hasn't cleaned up yet.
-            if (!ignoreExpiration)
-            {
-                var now = DateTime.UtcNow;
-                if (now > _creaturesWithStatusEffects[creature][statusEffectType].Expiration)
-                    return false;
-            }
-
-            // Status effect hasn't expired.
-            return true;
-        }
-
-        /// <summary>
-        /// Checks if a creature has a status effect.
-        /// If no status effect types are specified, false will be returned.
-        /// </summary>
-        /// <param name="creature">The creature to check.</param>
-        /// <param name="statusEffectTypes">The status effect types to look for.</param>
-        /// <returns>true if creature has status effect, false otherwise</returns>
-        public static bool HasStatusEffect(uint creature, params StatusEffectType[] statusEffectTypes)
-        {
-            foreach (var statusEffectType in statusEffectTypes)
-            {
-                if (HasStatusEffect(creature, statusEffectType, false))
-                    return true;
-            }
-
+            statusEffect = null;
             return false;
         }
 
         /// <summary>
-        /// Retrieves a status effect detail by its type.
+        /// When a player enters the server, apply the NWN effect system
         /// </summary>
-        /// <param name="type">The type to search for.</param>
-        /// <returns>A status effect detail</returns>
-        public static StatusEffectDetail GetDetail(StatusEffectType type)
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
+        public static void OnPlayerEnter()
         {
-            return _statusEffects[type];
-        }
+            var player = GetEnteringObject();
+            if (!GetIsPC(player) || GetIsDM(player))
+                return;
 
-        /// <summary>
-        /// Retrieves the effect data associated with a creature's effect.
-        /// If creature does not have effect, the default value of T will be returned.
-        /// </summary>
-        /// <typeparam name="T">The type of data to retrieve from the effect.</typeparam>
-        /// <param name="creature">The creature to check.</param>
-        /// <param name="effectType">The type of effect.</param>
-        /// <returns>An effect data object or a default object of type T</returns>
-        public static T GetEffectData<T>(uint creature, StatusEffectType effectType)
-        {
-            if (!_creaturesWithStatusEffects.ContainsKey(creature) ||
-                !_creaturesWithStatusEffects[creature].ContainsKey(effectType))
-                return default;
-
-            return (T)_creaturesWithStatusEffects[creature][effectType].EffectData;
-        }
-
-        /// <summary>
-        /// Retrieves the effect duration associated with a creature's effect.
-        /// </summary>
-        /// <param name="creature">The creature to check.</param>
-        /// <param name="effectTypes">The type(s) of effect.</param>
-        /// <returns>A float time remaining of the status effect</returns>
-        public static int GetEffectDuration(uint creature, params StatusEffectType[] effectTypes)
-        {
-            foreach (var effectType in effectTypes)
+            var playerId = GetObjectUUID(player);
+            if (_loggedOutPlayerEffects.TryGetValue(playerId, out var loggedOutEffects))
             {
-                if (!_creaturesWithStatusEffects.ContainsKey(creature) ||
-                !_creaturesWithStatusEffects[creature].ContainsKey(effectType))
-                    continue;
+                _loggedOutPlayerEffects.Remove(playerId);
+                ReassignSelfSourcedEffects(player, loggedOutEffects);
+                ReconcileLoggedOutEffects(player, loggedOutEffects);
 
-                if (_creaturesWithStatusEffects[creature][effectType].Expiration >= DateTime.MaxValue) return 0;
-
-                var effectTimespan = _creaturesWithStatusEffects[creature][effectType].Expiration - DateTime.UtcNow;
-
-                return (int)effectTimespan.TotalSeconds;
+                var effects = loggedOutEffects.Effects;
+                if (effects.GetAllEffects().Count > 0)
+                {
+                    _creatureEffects[player] = effects;
+                    ApplyNWNEffect(player);
+                    ReapplyNWNEffects(player, effects);
+                }
             }
 
-            return 0;
-            
+            Stat.ReapplyFoodHP(player);
+        }
+
+        /// <summary>
+        /// When a player exits the server, hold their status effects until they return.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleExit)]
+        public static void OnPlayerExit()
+        {
+            var player = GetExitingObject();
+            if (!GetIsPC(player) || GetIsDM(player))
+                return;
+
+            var playerId = GetObjectUUID(player);
+            if (_creatureEffects.TryGetValue(player, out var effects) &&
+                effects.GetAllEffects().Count > 0)
+            {
+                RemoveNonPersistentStatusEffects(player, effects);
+
+                if (effects.GetAllEffects().Count > 0)
+                {
+                    _loggedOutPlayerEffects[playerId] = new LoggedOutStatusEffects(player, effects, DateTime.UtcNow);
+                    RemoveTrackedNWNEffects(player, effects);
+                }
+                else
+                {
+                    RemoveEffectByTag(player, StatusEffectTag);
+                }
+            }
+
+            RemoveCreature(player);
+        }
+
+        public static void ClearStatusEffectsOnDeath(uint player)
+        {
+            if (!GetIsPC(player) || GetIsDM(player))
+                return;
+
+            RemoveAllStatusEffects(player);
+            RemoveCreature(player);
+        }
+
+        /// <summary>
+        /// Handle when a status effect is applied (called by NWN script)
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnApplyStatusEffect)]
+        public static void OnApplyStatusEffect()
+        {
+            OnApplyNWNStatusEffect(OBJECT_SELF);
+        }
+
+        /// <summary>
+        /// Handle when a status effect is removed (called by NWN script)
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnRemoveStatusEffect)]
+        public static void OnRemoveStatusEffect()
+        {
+            OnRemoveNWNStatusEffect(OBJECT_SELF);
+        }
+
+        /// <summary>
+        /// Handle status effect interval processing (called by NWN script)
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnStatusEffectInterval)]
+        public static void OnStatusEffectInterval()
+        {
+            OnNWNStatusEffectInterval(OBJECT_SELF);
+        }
+
+        private static void ApplyNWNEffect(uint creature)
+        {
+            if (HasEffectByTag(creature, StatusEffectTag))
+                return;
+
+            var effect = EffectRunScript(
+                ScriptName.OnApplyStatusEffect,
+                ScriptName.OnRemoveStatusEffect,
+                ScriptName.OnStatusEffectInterval,
+                Interval);
+            effect = TagEffect(effect, StatusEffectTag);
+            effect = SupernaturalEffect(effect);
+
+            ApplyEffectToObject(DurationType.Permanent, effect, creature);
+        }
+
+        private static CreatureStatusEffect EnsureCreatureStatusEffectTracker(uint creature)
+        {
+            ApplyNWNEffect(creature);
+
+            if (!_creatureEffects.TryGetValue(creature, out var effects))
+            {
+                effects = new CreatureStatusEffect();
+                _creatureEffects[creature] = effects;
+            }
+
+            return effects;
+        }
+
+        public static void OnApplyNWNStatusEffect(uint player)
+        {
+            if (!_creatureEffects.ContainsKey(player))
+                _creatureEffects[player] = new CreatureStatusEffect();
+        }
+
+        public static void OnRemoveNWNStatusEffect(uint player)
+        {
+            if (_creatureEffects.ContainsKey(player))
+                _creatureEffects.Remove(player);
+        }
+
+        public static void OnNWNStatusEffectInterval(uint creature)
+        {
+            // Clean up invalid creatures when we encounter them
+            if (!GetIsObjectValid(creature) || GetIsDead(creature))
+            {
+                if (_creatureEffects.ContainsKey(creature))
+                {
+                    _creatureEffects.Remove(creature);
+                }
+                RemoveEffectByTag(creature, StatusEffectTag);
+                return;
+            }
+
+            if (!_creatureEffects.ContainsKey(creature))
+            {
+                RemoveEffectByTag(creature, StatusEffectTag);
+                return;
+            }
+
+            var effects = _creatureEffects[creature];
+
+            foreach (var effect in effects.GetAllTickEffects())
+            {
+                if (effect.ActivationType != StatusEffectActivationType.Tick)
+                    continue;
+
+                if (effect.IsFlaggedForRemoval)
+                {
+                    RemoveStatusEffect(effect.GetType(), creature, effect.Source);
+                }
+                else
+                {
+                    effect.TickEffect(creature);
+
+                    if (effect.IsFlaggedForRemoval)
+                    {
+                        RemoveStatusEffect(effect.GetType(), creature, effect.Source);
+                    }
+                }
+            }
+        }
+
+        public static CreatureStatusEffect GetCreatureStatusEffects(uint creature)
+        {
+            return !_creatureEffects.ContainsKey(creature)
+                ? new CreatureStatusEffect()
+                : _creatureEffects[creature];
+        }
+
+        public static void ApplyPermanentStatusEffect<T>(uint source, uint creature)
+            where T: IStatusEffect
+        {
+            ApplyStatusEffectInternal((IStatusEffect)Activator.CreateInstance(typeof(T)), source, creature, -1, true);
+        }
+
+        public static void ApplyPermanentStatusEffect(Type type, uint source, uint creature)
+        {
+            if (type == null)
+                throw new ArgumentNullException(nameof(type));
+
+            ApplyStatusEffectInternal((IStatusEffect)Activator.CreateInstance(type), source, creature, -1, true);
+        }
+
+        private static void ApplyStatusEffectInternal(
+            IStatusEffect statusEffect,
+            uint source,
+            uint creature,
+            int durationTicks,
+            bool isPermanent)
+        {
+            if (!isPermanent && durationTicks <= 0)
+            {
+                SendMessageToPC(source, "Your spell was resisted.");
+                return;
+            }
+
+            var canApply = statusEffect.CanApply(creature);
+            if (!string.IsNullOrWhiteSpace(canApply))
+            {
+                var message = $"Effect failed to apply: {canApply}";
+                SendStatusEffectFailure(source, creature, message);
+                return;
+            }
+
+            foreach (var morePowerful in statusEffect.MorePowerfulEffectTypes)
+            {
+                if (HasEffect(morePowerful, creature))
+                {
+                    var message = "A more powerful effect is active.";
+                    SendStatusEffectFailure(source, creature, message);
+                    return;
+                }
+            }
+
+            var creatureEffects = EnsureCreatureStatusEffectTracker(creature);
+
+            switch (statusEffect.StackingType)
+            {
+                case StatusEffectStackType.Disabled:
+                case StatusEffectStackType.Invalid:
+                    RemoveStatusEffect(statusEffect.GetType(), creature, OBJECT_INVALID, false);
+                    break;
+                case StatusEffectStackType.StackFromMultipleSources:
+                    RemoveStatusEffect(statusEffect.GetType(), creature, source, false);
+                    break;
+            }
+
+            foreach (var lessPowerful in statusEffect.LessPowerfulEffectTypes)
+            {
+                RemoveStatusEffect(lessPowerful, creature, OBJECT_INVALID, false);
+            }
+
+            statusEffect.ApplyEffect(source, creature, durationTicks);
+            if (statusEffect.IsFlaggedForRemoval)
+            {
+                statusEffect.RemoveEffect(creature);
+                if (_creatureEffects.TryGetValue(creature, out creatureEffects) &&
+                    creatureEffects.GetAllEffects().Count <= 0)
+                {
+                    RemoveCreature(creature);
+                }
+
+                return;
+            }
+
+            creatureEffects = EnsureCreatureStatusEffectTracker(creature);
+            creatureEffects.Add(statusEffect);
+
+            if (statusEffect.StatGroup.Stats[StatType.MovementSpeedPercentAdjustment] != 0)
+            {
+                Stat.ApplyCreatureMovementRate(creature);
+            }
+
+            if (statusEffect.Icon != EffectIconType.Invalid)
+            {
+                var iconEffect = EffectIcon(statusEffect.Icon);
+                iconEffect = TagEffect(iconEffect, statusEffect.Id);
+                ApplyEffectToObject(DurationType.Permanent, iconEffect, creature);
+            }
+
+            ApplyAbilityStatEffects(creature, statusEffect);
+
+            if (statusEffect.SendsApplicationMessage)
+            {
+                var name = GetName(creature);
+                var effectName = statusEffect.Name;
+                Messaging.SendMessageNearbyToPlayers(creature,
+                    $"{name} receives the effect of {effectName}");
+            }
+        }
+
+        private static void SendStatusEffectFailure(uint source, uint creature, string message)
+        {
+            var recipient = GetIsObjectValid(source) && (GetIsPC(source) || GetIsDM(source))
+                ? source
+                : creature;
+
+            SendMessageToPC(recipient, message);
+        }
+
+        private static void ReapplyNWNEffects(uint creature, CreatureStatusEffect effects)
+        {
+            var shouldReapplyMovementRate = false;
+
+            foreach (var statusEffect in effects.GetAllEffects())
+            {
+                statusEffect.ReapplyEffect(creature);
+
+                if (statusEffect.Icon != EffectIconType.Invalid)
+                {
+                    var iconEffect = EffectIcon(statusEffect.Icon);
+                    iconEffect = TagEffect(iconEffect, statusEffect.Id);
+                    ApplyEffectToObject(DurationType.Permanent, iconEffect, creature);
+                }
+
+                ApplyAbilityStatEffects(creature, statusEffect);
+
+                if (statusEffect.StatGroup.Stats[StatType.MovementSpeedPercentAdjustment] != 0)
+                {
+                    shouldReapplyMovementRate = true;
+                }
+            }
+
+            if (shouldReapplyMovementRate)
+            {
+                Stat.ApplyCreatureMovementRate(creature);
+            }
+        }
+
+        private static void ReassignSelfSourcedEffects(uint creature, LoggedOutStatusEffects loggedOutEffects)
+        {
+            foreach (var statusEffect in loggedOutEffects.Effects.GetAllEffects()
+                         .Where(effect => effect.Source == loggedOutEffects.Creature))
+            {
+                statusEffect.ReassignSource(creature);
+            }
+        }
+
+        private static void ReconcileLoggedOutEffects(uint creature, LoggedOutStatusEffects loggedOutEffects)
+        {
+            var currentTime = DateTime.UtcNow;
+            if (currentTime < loggedOutEffects.LoggedOutAt)
+            {
+                currentTime = loggedOutEffects.LoggedOutAt;
+            }
+
+            var effects = loggedOutEffects.Effects;
+
+            foreach (var statusEffect in effects.GetAllEffects())
+            {
+                statusEffect.ReconcileElapsedTime(currentTime);
+
+                if (!statusEffect.IsFlaggedForRemoval)
+                    continue;
+
+                statusEffect.RemoveEffect(creature);
+                effects.Remove(statusEffect);
+                RemoveEffectByTag(creature, statusEffect.Id);
+            }
+        }
+
+        private static void RemoveNonPersistentStatusEffects(uint creature, CreatureStatusEffect effects)
+        {
+            foreach (var statusEffect in effects.GetAllEffects().Where(effect => !effect.PersistsOnLogout))
+            {
+                RemoveStatusEffect(creature, statusEffect.GetType(), statusEffect.Source, false);
+            }
+        }
+
+        private static void RemoveTrackedNWNEffects(uint creature, CreatureStatusEffect effects)
+        {
+            foreach (var statusEffect in effects.GetAllEffects())
+            {
+                RemoveEffectByTag(creature, statusEffect.Id);
+            }
+
+            RemoveEffectByTag(creature, StatusEffectTag);
+        }
+
+        public static void ApplyStatusEffect<T>(uint source, uint creature, float durationSeconds)
+            where T: IStatusEffect
+        {
+            ApplyStatusEffect(source, creature, (IStatusEffect)Activator.CreateInstance(typeof(T)), durationSeconds);
+        }
+
+        public static void ApplyStatusEffect(uint source, uint creature, IStatusEffect statusEffect, float durationSeconds)
+        {
+            var durationTicks = durationSeconds <= 0f
+                ? -1
+                : Math.Max(1, (int)Math.Ceiling(durationSeconds / Math.Max(1f, statusEffect.Frequency)));
+
+            ApplyStatusEffectInternal(statusEffect, source, creature, durationTicks, durationSeconds <= 0f);
+        }
+
+        public static void ApplyStatusEffect(
+            uint source,
+            uint creature,
+            Type statusEffectClass,
+            float durationSeconds)
+        {
+            if (!TryCreateStatusEffect(statusEffectClass, out var statusEffect))
+                throw new KeyNotFoundException($"Status effect '{statusEffectClass?.Name ?? "null"}' is not registered.");
+
+            var frequency = statusEffect.Frequency;
+            var durationTicks = durationSeconds <= 0f
+                ? -1
+                : Math.Max(1, (int)Math.Ceiling(durationSeconds / Math.Max(1f, frequency)));
+
+            ApplyStatusEffectInternal(
+                statusEffect,
+                source,
+                creature,
+                durationTicks,
+                durationSeconds <= 0f);
+        }
+
+        private static void ApplyAbilityStatEffects(uint creature, IStatusEffect statusEffect)
+        {
+            Effect linkedEffect = null;
+
+            foreach (var (ability, amount) in statusEffect.StatGroup.Abilities)
+            {
+                if (ability == AbilityType.Invalid || amount == 0)
+                    continue;
+
+                var effect = amount > 0
+                    ? EffectAbilityIncrease(ability, amount)
+                    : EffectAbilityDecrease(ability, Math.Abs(amount));
+
+                linkedEffect = linkedEffect == null
+                    ? effect
+                    : EffectLinkEffects(linkedEffect, effect);
+            }
+
+            if (linkedEffect == null)
+                return;
+
+            linkedEffect = TagEffect(linkedEffect, statusEffect.Id);
+            ApplyEffectToObject(DurationType.Permanent, linkedEffect, creature);
+        }
+
+        public static bool HasStatusEffectDefinition(Type statusEffectClass)
+        {
+            EnsureStatusEffectsCached();
+
+            return statusEffectClass != null && _statusEffects.ContainsKey(statusEffectClass);
+        }
+
+        public static bool HasStatusEffect(uint creature, Type statusEffectClass)
+        {
+            return _creatureEffects.ContainsKey(creature) &&
+                   _creatureEffects[creature].GetAllEffects().Any(x => x.GetType() == statusEffectClass);
+        }
+
+        public static bool HasStatusEffect<T>(uint creature)
+            where T : IStatusEffect
+        {
+            return HasStatusEffect(creature, typeof(T));
+        }
+
+        public static bool HasStatusEffect(uint creature, Type statusEffectClass, uint source)
+        {
+            return _creatureEffects.ContainsKey(creature) &&
+                   _creatureEffects[creature].GetAllEffects()
+                       .Any(x => x.GetType() == statusEffectClass && x.Source == source);
+        }
+
+        public static bool HasStatusEffect(uint creature, params Type[] statusEffectClasses)
+        {
+            return statusEffectClasses.Any(type => HasStatusEffect(creature, type));
+        }
+
+        public static bool HasCleanseableStatusEffect(uint creature, StatusEffectCleanseType cleanseType)
+        {
+            return GetCreatureStatusEffects(creature)
+                .GetAllEffects()
+                .Any(effect => HasCleanseType(effect, cleanseType));
+        }
+
+        public static void RemoveCleanseableStatusEffects(
+            uint creature,
+            StatusEffectCleanseType cleanseType,
+            bool sendsWornOffMessage = true)
+        {
+            var effects = GetCreatureStatusEffects(creature)
+                .GetAllEffects()
+                .Where(effect => HasCleanseType(effect, cleanseType))
+                .ToList();
+
+            foreach (var effect in effects)
+            {
+                RemoveStatusEffect(creature, effect.GetType(), effect.Source, sendsWornOffMessage);
+            }
+        }
+
+        public static bool HasCleanseType(IStatusEffect effect, StatusEffectCleanseType cleanseType)
+        {
+            return (effect.CleanseTypes & cleanseType) == cleanseType;
+        }
+
+        public static void RemoveStatusEffect(
+            uint creature,
+            Type statusEffectClass,
+            bool sendsWornOffMessage = true)
+        {
+            RemoveStatusEffect(statusEffectClass, creature, OBJECT_INVALID, sendsWornOffMessage);
+        }
+
+        public static void RemoveStatusEffect(
+            uint creature,
+            Type statusEffectClass,
+            uint source,
+            bool sendsWornOffMessage = true)
+        {
+            RemoveStatusEffect(statusEffectClass, creature, source, sendsWornOffMessage);
+        }
+
+        public static string GetStatusEffectName(Type statusEffectClass)
+        {
+            EnsureStatusEffectsCached();
+
+            return statusEffectClass != null && _statusEffects.TryGetValue(statusEffectClass, out var statusEffect)
+                ? statusEffect.Name
+                : statusEffectClass?.Name ?? "Unknown";
+        }
+
+        public static List<Type> GetStatusEffectsFromIcon(EffectIconType effectIcon)
+        {
+            EnsureStatusEffectsCached();
+
+            return _statusEffects
+                .Where(x => x.Value.Create().Icon == effectIcon)
+                .Select(x => x.Key)
+                .ToList();
+        }
+
+        public static List<Type> GetStatusEffectsFromIcon(uint creature, EffectIconType effectIcon)
+        {
+            var activeStatusTypes = GetCreatureStatusEffects(creature)
+                .GetAllEffects()
+                .Where(effect => effect.Icon == effectIcon)
+                .Select(effect => effect.GetType())
+                .ToList();
+
+            return activeStatusTypes.Count > 0
+                ? activeStatusTypes
+                : GetStatusEffectsFromIcon(effectIcon);
+        }
+
+        public static int GetEffectDuration(uint creature, params Type[] effectTypes)
+        {
+            if (!_creatureEffects.ContainsKey(creature))
+                return 0;
+
+            var effect = _creatureEffects[creature]
+                .GetAllEffects()
+                .FirstOrDefault(x => effectTypes.Contains(x.GetType()));
+
+            if (effect == null || effect.DurationTicks < 0)
+                return 0;
+
+            return (int)Math.Ceiling(effect.DurationTicks * effect.Frequency);
         }
 
         public static EffectTypeScript GetEffectTypeFromIcon(EffectIconType effectIcon)
         {
-            if (!_effectIconToEffectType.TryGetValue(effectIcon, out EffectTypeScript effectType))
-                return EffectTypeScript.Invalideffect;
-
-            return effectType;
+            return _effectIconToEffectType.TryGetValue(effectIcon, out var effectType)
+                ? effectType
+                : EffectTypeScript.Invalideffect;
         }
 
-        public static List<StatusEffectType> GetStatusEffectTypesFromIcon(EffectIconType effectIcon)
+        public static AbilityType GetAbilityTypeBuffed(EffectIconType effectIcon)
         {
-            if (!_effectIconToStatusEffects.TryGetValue(effectIcon, out List<StatusEffectType> statusTypes))
-                return new List<StatusEffectType>();
-
-            return statusTypes;
+            return _abilityIncreaseIconType.TryGetValue(effectIcon, out var abilityType)
+                ? abilityType
+                : AbilityType.Invalid;
         }
 
-        public static AbilityType GetAbilityTypeBuffed (EffectIconType effectIcon)
+        private static void RemoveStatusEffect(Type type, uint creature, uint source, bool sendsWornOffMessage = true)
         {
-            if (!_abilityIncreaseIconType.TryGetValue(effectIcon, out AbilityType abilityType))
-                return AbilityType.Invalid;
+            if (!_creatureEffects.TryGetValue(creature, out var creatureEffects))
+                return;
 
-            return abilityType;
+            var hasSentMessage = false;
+            var statusEffects = creatureEffects.GetAllEffects();
+            foreach (var statusEffect in statusEffects)
+            {
+                if (statusEffect.GetType() != type)
+                    continue;
+
+                if (source != OBJECT_INVALID && statusEffect.Source != source)
+                    continue;
+
+                if (sendsWornOffMessage && statusEffect.SendsWornOffMessage && !hasSentMessage)
+                {
+                    var name = GetName(creature);
+                    var effectName = statusEffect.Name;
+                    Messaging.SendMessageNearbyToPlayers(creature,
+                        $"{name}'s {effectName} effect has worn off.");
+
+                    hasSentMessage = true;
+                }
+
+                RemoveEffectByTag(creature, statusEffect.Id);
+                statusEffect.RemoveEffect(creature);
+                creatureEffects.Remove(statusEffect);
+
+                if (statusEffect.StatGroup.Stats[StatType.MovementSpeedPercentAdjustment] != 0)
+                {
+                    DelayCommand(0.1f, () => Stat.ApplyCreatureMovementRate(creature));
+                }
+            }
+
+            RemoveCreatureIfEmpty(creature, creatureEffects);
+        }
+
+        public static void RemoveStatusEffect<T>(uint creature)
+            where T: IStatusEffect
+        {
+            var type = typeof(T);
+            RemoveStatusEffect(type, creature);
+        }
+
+        public static void RemoveStatusEffect(Type type, uint creature)
+        {
+            RemoveStatusEffect(type, creature, OBJECT_INVALID);
+        }
+
+        public static void RemoveStatusEffectBySourceType(uint creature, StatusEffectSourceType sourceType)
+        {
+            var creatureEffects = GetCreatureStatusEffects(creature);
+            var effects = creatureEffects.GetAllBySourceType(sourceType);
+            foreach (var effect in effects)
+            {
+                RemoveStatusEffect(effect.GetType(), creature, effect.Source);
+            }
+        }
+
+        public static bool HasEffect(Type type, uint creature)
+        {
+            if (!_creatureEffects.ContainsKey(creature))
+                return false;
+
+            return _creatureEffects[creature].HasEffect(type);
+        }
+
+        public static bool HasEffect<T>(uint creature)
+            where T : IStatusEffect
+        {
+            return HasEffect(typeof(T), creature);
+        }
+
+        private static void RemoveStatusEffect(IStatusEffect statusEffect, uint creature, uint source = OBJECT_INVALID)
+        {
+            RemoveStatusEffect(statusEffect.GetType(), creature, source);
+        }
+
+        public static T GetStatusEffect<T>(uint creature)
+            where T : class, IStatusEffect
+        {
+            return !_creatureEffects.ContainsKey(creature)
+                ? null
+                : _creatureEffects[creature].GetEffect<T>();
+        }
+
+
+        public static void RemoveAllStatusEffects(uint creature)
+        {
+            if (!_creatureEffects.ContainsKey(creature))
+                return;
+
+            var effects = _creatureEffects[creature].GetAllEffects();
+            foreach (var effect in effects)
+            {
+                RemoveStatusEffect(effect.GetType(), creature);
+            }
+        }
+
+        /// <summary>
+        /// Removes a creature from the status effect system entirely
+        /// </summary>
+        public static void RemoveCreature(uint creature)
+        {
+            if (_creatureEffects.ContainsKey(creature))
+            {
+                _creatureEffects.Remove(creature);
+            }
+
+            RemoveEffectByTag(creature, StatusEffectTag);
+        }
+
+        private static void RemoveCreatureIfEmpty(uint creature, CreatureStatusEffect effects)
+        {
+            if (effects.GetAllEffects().Count > 0)
+                return;
+
+            RemoveCreature(creature);
+        }
+
+        [NWNEventHandler(ScriptName.OnSWLORDamage)]
+        public static void OnDealtDamage()
+        {
+            var attacker = OBJECT_SELF;
+            var defender = StringToObject(EventsPlugin.GetEventData("DEFENDER"));
+            var damage = Convert.ToInt32(EventsPlugin.GetEventData("DAMAGE"));
+
+            NotifyDamageStatusEffects(attacker, defender, damage);
+
+            var effects = GetCreatureStatusEffects(attacker);
+
+            foreach (var effect in effects.GetAllOnHitEffects())
+            {
+                effect.OnHitEffect(attacker, defender, damage);
+            }
+        }
+
+        private static void NotifyDamageStatusEffects(uint attacker, uint defender, int damage)
+        {
+            if (damage <= 0 || !GetIsObjectValid(attacker) || !GetIsObjectValid(defender))
+                return;
+
+            foreach (var effect in GetCreatureStatusEffects(attacker).GetAllEffects())
+            {
+                effect.OnDamageDealtEffect(attacker, defender, damage);
+            }
+
+            foreach (var effect in GetCreatureStatusEffects(defender).GetAllEffects())
+            {
+                effect.OnDamageTakenEffect(defender, attacker, damage);
+            }
+        }
+
+        private readonly struct StatusEffectMetadata
+        {
+            public Func<IStatusEffect> Create { get; }
+            public string Name { get; }
+            public float Frequency { get; }
+
+            public StatusEffectMetadata(Func<IStatusEffect> create, string name, float frequency)
+            {
+                Create = create;
+                Name = name;
+                Frequency = frequency;
+            }
+        }
+
+        private sealed class LoggedOutStatusEffects
+        {
+            public uint Creature { get; }
+            public CreatureStatusEffect Effects { get; }
+            public DateTime LoggedOutAt { get; }
+
+            public LoggedOutStatusEffects(uint creature, CreatureStatusEffect effects, DateTime loggedOutAt)
+            {
+                Creature = creature;
+                Effects = effects;
+                LoggedOutAt = loggedOutAt;
+            }
         }
     }
 }

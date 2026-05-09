@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -24,6 +23,21 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
             {
                 StatGroup.Resists.TryGetValue(type, out var current);
                 StatGroup.Resists[type] = current + value;
+            }
+
+            foreach (var (type, value) in statusEffect.StatGroup.Abilities)
+            {
+                StatGroup.Abilities.TryGetValue(type, out var current);
+                StatGroup.Abilities[type] = current + value;
+            }
+
+            foreach (var (bonusType, skills) in statusEffect.StatGroup.CraftSkillBonuses)
+            {
+                foreach (var (skill, value) in skills)
+                {
+                    StatGroup.CraftSkillBonuses[bonusType].TryGetValue(skill, out var current);
+                    StatGroup.CraftSkillBonuses[bonusType][skill] = current + value;
+                }
             }
 
             _allActiveEffects.Add(statusEffect);
@@ -54,6 +68,21 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
             {
                 if (StatGroup.Resists.TryGetValue(type, out var current))
                     StatGroup.Resists[type] = current - value;
+            }
+
+            foreach (var (type, value) in statusEffect.StatGroup.Abilities)
+            {
+                if (StatGroup.Abilities.TryGetValue(type, out var current))
+                    StatGroup.Abilities[type] = current - value;
+            }
+
+            foreach (var (bonusType, skills) in statusEffect.StatGroup.CraftSkillBonuses)
+            {
+                foreach (var (skill, value) in skills)
+                {
+                    if (StatGroup.CraftSkillBonuses[bonusType].TryGetValue(skill, out var current))
+                        StatGroup.CraftSkillBonuses[bonusType][skill] = current - value;
+                }
             }
 
             _allActiveEffects.Remove(statusEffect);
@@ -93,6 +122,17 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
         public bool HasEffect(Type effectType)
         {
             return _allActiveEffects.Any(x => x.GetType() == effectType);
+        }
+
+        public IStatusEffect GetEffect(Type effectType)
+        {
+            return _allActiveEffects.FirstOrDefault(x => x.GetType() == effectType);
+        }
+
+        public T GetEffect<T>()
+            where T : class, IStatusEffect
+        {
+            return _allActiveEffects.OfType<T>().FirstOrDefault();
         }
 
         public CreatureStatusEffect()

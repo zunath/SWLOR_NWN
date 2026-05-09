@@ -3,7 +3,6 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -26,6 +25,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 .Name("Systemic Shutdown")
                 .Level(1)
                 .HasActivationDelay(3f)
+                .HasRecastDelay(RecastGroup.SystemicShutdown, 90f)
                 .HasImpactAction(ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
             switch (level)
             {
                 case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Vibroknife, 15, 0, 0, SavingThrow.Will, StatusEffectType.Invalid, AbilityControlEffect.None, true);
+                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Vibroknife, 15, 15, 18, SavingThrow.Fortitude, typeof(ToxinStatusEffect), CombatImpactAreaShape.Sphere, 0.25f, 5f, additionalStatusEffects: new[] { typeof(WeakenedStatusEffect), typeof(HamstringStatusEffect), typeof(ExhaustedStatusEffect), typeof(DisorientedStatusEffect) });
                     break;
             }
         }

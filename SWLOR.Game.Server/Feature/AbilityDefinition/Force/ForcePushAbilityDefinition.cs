@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
             return builder.Build();
         }
-        
+
         private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             const float BaseDuration = 2f;
@@ -50,13 +50,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
             if (checkResult == SavingThrowResultType.Failed)
             {
-                ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), target, duration);
-
-                Ability.ApplyTemporaryImmunity(target, duration, ImmunityType.Knockdown);
+                StatusEffect.ApplyStatusEffect(activator, target, typeof(KnockdownStatusEffect), duration);
             }
             else if (checkResult == SavingThrowResultType.Success)
             {
-                ApplyEffectToObject(DurationType.Temporary, EffectSlow(), target, duration);
+                StatusEffect.ApplyStatusEffect(activator, target, typeof(HobbleStatusEffect), duration);
             }
 
             Enmity.ModifyEnmityOnAll(activator, level * 150);

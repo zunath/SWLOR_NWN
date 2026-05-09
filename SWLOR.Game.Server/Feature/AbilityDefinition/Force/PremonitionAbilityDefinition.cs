@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
@@ -26,7 +25,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasRecastDelay(RecastGroup.Premonition, 60f)
                 .RequirementFP(4)
                 .IsCastedAbility()
-                .IsConcentrationAbility(StatusEffectType.Premonition1)
+                .IsConcentrationAbility(typeof(Premonition1StatusEffect))
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }
@@ -39,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasRecastDelay(RecastGroup.Premonition, 60f)
                 .RequirementFP(6)
                 .IsCastedAbility()
-                .IsConcentrationAbility(StatusEffectType.Premonition2)
+                .IsConcentrationAbility(typeof(Premonition2StatusEffect))
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }

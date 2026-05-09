@@ -1,19 +1,16 @@
-using System;
 using System.Collections.Generic;
-using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
     public class BurstOfSpeedAbilityDefinition : IAbilityListDefinition
     {
-        private const string Tier1Tag = "EFFECT_BURST_OF_SPEED_1";
-        private const string Tier2Tag = "EFFECT_BURST_OF_SPEED_2";
-
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -25,9 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static string Validation(uint target, int tier)
         {
-            if (HasMorePowerfulEffect(target, tier,
-                    new(Tier1Tag, 1),
-                    new(Tier2Tag, 2)))
+            if (tier == 1 && StatusEffect.HasStatusEffect<BurstOfSpeed2StatusEffect>(target))
             {
                 return "Your target is already enhanced by a more powerful effect.";
             }
@@ -35,54 +30,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             return string.Empty;
         }
 
-        [NWNEventHandler(ScriptName.OnBurstOfSpeedApply)]
-        public static void ApplyEffect()
+        private static void Impact<T>(uint activator, uint target)
+            where T : IStatusEffect
         {
-            var activeEffect = GetLastRunScriptEffect();
-            var target = OBJECT_SELF;
-            var tier = Convert.ToInt32(GetEffectString(activeEffect, 0));
-            var movementIncrease = 0;
-            var acIncrease = 0;
-            var tag = string.Empty;
-
-            switch (tier)
-            {
-                case 1:
-                    movementIncrease = 15;
-                    acIncrease = 1;
-                    tag = Tier1Tag;
-                    break;
-                case 2:
-                    movementIncrease = 25;
-                    acIncrease = 2;
-                    tag = Tier2Tag;
-                    break;
-            }
-
-            var effect = EffectMovementSpeedIncrease(movementIncrease);
-            effect = EffectLinkEffects(EffectACIncrease(acIncrease), effect);
-            effect = EffectLinkEffects(effect, EffectIcon(EffectIconType.MovementSpeedIncrease));
-            effect = TagEffect(effect, tag);
-
-            ApplyEffectToObject(DurationType.Temporary, effect, target, 600f);
-
-            Stat.ApplyPlayerMovementRate(target);
-        }
-
-        [NWNEventHandler(ScriptName.OnBurstOfSpeedRemoved)]
-        public static void RemoveEffect()
-        {
-            var target = OBJECT_SELF;
-            Stat.ApplyPlayerMovementRate(target);
-        }
-
-        private static void Impact(uint activator, uint target, int tier, string effectTag)
-        {
-            RemoveEffectByTag(target, Tier1Tag, Tier2Tag);
-
-            var effect = EffectRunScript("bspeed_apply", "bspeed_removed", string.Empty, 0f, tier.ToString());
-            effect = TagEffect(effect, effectTag);
-            ApplyEffectToObject(DurationType.Temporary, effect, target, 600f);
+            StatusEffect.ApplyStatusEffect<T>(activator, target, 600f);
 
             CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
             Enmity.ModifyEnmityOnAll(activator, 250);
@@ -101,7 +52,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasCustomValidation((activator, target, level, location) => Validation(target, 1))
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    Impact(activator, target, 1, Tier1Tag);
+                    Impact<BurstOfSpeed1StatusEffect>(activator, target);
                 });
         }
         private static void BurstOfSpeed2(AbilityBuilder builder)
@@ -117,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasCustomValidation((activator, target, level, location) => Validation(target, 2))
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    Impact(activator, target, 2, Tier2Tag);
+                    Impact<BurstOfSpeed2StatusEffect>(activator, target);
                 });
         }
     }

@@ -494,6 +494,29 @@ namespace SWLOR.Game.Server.Service.PerkService
         WhirlingGuard = 607,
         WhirlwindAssault = 608,
         Worldbreaker = 609,
-        // IDs 610+ are free.
+        Backstab = 610,
+        CircleSlash = 611,
+        CripplingShot = 612,
+        CrossCut = 613,
+        DoubleShot = 614,
+        DoubleStrike = 615,
+        ExplosiveToss = 616,
+        HackingBlade = 617,
+        LegSweep = 618,
+        PiercingToss = 619,
+        QuickDraw = 620,
+        RiotBlade = 621,
+        ShieldBash = 622,
+        Slam = 623,
+        SpinningWhirl = 624,
+        StrikingCobra = 625,
+        TranquilizerShot = 626,
+        // IDs 627-639 are free.
+        RapidShot = 640,
+        Bulwark = 641,
+        Alacrity = 642,
+        CrushingStyle = 643,
+        FlurryStyle = 644,
+        // IDs 645+ are free.
     }
 }

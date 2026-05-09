@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                         return "Your target is too far away.";
                     }
 
-                    if (!StatusEffect.HasStatusEffect(target, StatusEffectType.Bleed, StatusEffectType.Poison))
+                    if (!StatusEffect.HasCleanseableStatusEffect(target, StatusEffectCleanseType.TreatmentKit1))
                     {
                         return "Your target is healthy.";
                     }
@@ -52,8 +52,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasImpactAction((activator, target, _, _) =>
                 {
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_G), target);
-                    StatusEffect.Remove(target, StatusEffectType.Bleed);
-                    StatusEffect.Remove(target, StatusEffectType.Poison);
+                    StatusEffect.RemoveCleanseableStatusEffects(target, StatusEffectCleanseType.TreatmentKit1);
                     RemoveEffect(target, EffectTypeScript.Poison, EffectTypeScript.Disease);
 
                     TakeMedicalSupplies(activator);
@@ -80,7 +79,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                         return "Your target is too far away.";
                     }
 
-                    if (!StatusEffect.HasStatusEffect(target, StatusEffectType.Bleed, StatusEffectType.Poison, StatusEffectType.Shock, StatusEffectType.Burn))
+                    if (!StatusEffect.HasCleanseableStatusEffect(target, StatusEffectCleanseType.TreatmentKit2))
                     {
                         return "Your target is healthy.";
                     }
@@ -95,11 +94,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasImpactAction((activator, target, _, _) =>
                 {
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_G), target);
-                    StatusEffect.Remove(target, StatusEffectType.Bleed);
-                    StatusEffect.Remove(target, StatusEffectType.Poison);
-                    StatusEffect.Remove(target, StatusEffectType.Shock);
-                    StatusEffect.Remove(target, StatusEffectType.Burn);
-                    StatusEffect.Remove(target, StatusEffectType.Disease);
+                    StatusEffect.RemoveCleanseableStatusEffects(target, StatusEffectCleanseType.TreatmentKit2);
                     RemoveEffect(target, EffectTypeScript.Poison, EffectTypeScript.Disease);
 
                     TakeMedicalSupplies(activator);

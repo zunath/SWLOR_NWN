@@ -1,4 +1,3 @@
-using System;
 using System.Numerics;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
@@ -6,7 +5,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.ActivityService;
 using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -124,7 +123,7 @@ namespace SWLOR.Game.Server.Feature
                         if (ability.DisplaysActivationMessage)
                             Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} readies {ability.Name}.");
                     }
-                    
+
                     ActivateAbility(activator, target, feat, ability, targetLocation);
                 }
             }
@@ -165,7 +164,9 @@ namespace SWLOR.Game.Server.Feature
             float CalculateActivationDelay()
             {
                 var abilityDelay = ability.ActivationDelay?.Invoke(activator, target, ability.AbilityLevel) ?? 0.0f;
-                return abilityDelay;
+                var delayAdjustment = Stat.GetStatAdjustment(activator, StatType.ActivationDelayFlatAdjustment);
+
+                return Math.Max(0f, abilityDelay + delayAdjustment);
             }
 
             // Handles displaying animation and visual effects.
@@ -229,11 +230,16 @@ namespace SWLOR.Game.Server.Feature
 
                 // Moved during casting or activator died. Cancel the activation.
                 if (GetLocalInt(activator, activationId) == (int)ActivationStatus.Interrupted || GetCurrentHitPoints(activator) <= 0)
+                {
+                    DeleteLocalInt(activator, activationId);
                     return;
-                
+                }
 
                 if (!Ability.CanUseAbility(activator, target, feat, ability.AbilityLevel, targetLocation))
+                {
+                    DeleteLocalInt(activator, activationId);
                     return;
+                }
 
                 DeleteLocalInt(activator, activationId);
 
@@ -242,14 +248,14 @@ namespace SWLOR.Game.Server.Feature
                 ability.ImpactAction?.Invoke(activator, target, ability.AbilityLevel, targetLocation);
                 Recast.ApplyRecastDelay(activator, ability.RecastGroup, abilityRecastDelay, false);
 
-                if (ability.ConcentrationStatusEffectType != StatusEffectType.Invalid)
+                if (ability.ConcentrationStatusEffect != null)
                 {
-                    Ability.StartConcentrationAbility(activator, target, feat, ability.ConcentrationStatusEffectType);
+                    Ability.StartConcentrationAbility(activator, target, feat, ability.ConcentrationStatusEffect);
                 }
 
                 // If this is an attack make the NPC react.
                 Enmity.AttackHighestEnmityTarget(target);
-                
+
                 if (!GetIsPC(activator))
                 {
                     var combatRoundEndScript = GetEventScript(activator, EventScript.Creature_OnEndCombatRound);
@@ -266,33 +272,36 @@ namespace SWLOR.Game.Server.Feature
             SetLocalInt(activator, activationId, (int)ActivationStatus.Started);
             CheckForActivationInterruption(activationId, position);
 
-            var executeImpact = ability.ActivationAction == null 
+            var executeImpact = ability.ActivationAction == null
                 ? true
                 : ability.ActivationAction?.Invoke(activator, target, ability.AbilityLevel, targetLocation);
 
-            if (executeImpact == true)
+            if (executeImpact != true)
             {
-                if (GetIsPC(activator))
-                {
-                    if (activationDelay > 0.0f)
-                    {
-                        PlayerPlugin.StartGuiTimingBar(activator, activationDelay, string.Empty);
-                    }
-                }
+                DeleteLocalInt(activator, activationId);
+                return;
+            }
 
-                Activity.SetBusy(activator, ActivityStatusType.AbilityActivation);
-                DelayCommand(activationDelay, () => CompleteActivation(activationId, recastDelay));
-
-                // If currently attacking a target, re-attack it after the end of the activation period.
-                // This mitigates the issue where a melee fighter's combat is disrupted for using an ability.
-                if (GetCurrentAction(activator) == ActionType.AttackObject)
+            if (GetIsPC(activator))
+            {
+                if (activationDelay > 0.0f)
                 {
-                    var attackTarget = GetAttackTarget(activator);
-                    DelayCommand(activationDelay + 0.1f, () =>
-                    {
-                        AssignCommand(activator, () => ActionAttack(attackTarget));
-                    });
+                    PlayerPlugin.StartGuiTimingBar(activator, activationDelay, string.Empty);
                 }
+            }
+
+            Activity.SetBusy(activator, ActivityStatusType.AbilityActivation);
+            DelayCommand(activationDelay, () => CompleteActivation(activationId, recastDelay));
+
+            // If currently attacking a target, re-attack it after the end of the activation period.
+            // This mitigates the issue where a melee fighter's combat is disrupted for using an ability.
+            if (GetCurrentAction(activator) == ActionType.AttackObject)
+            {
+                var attackTarget = GetAttackTarget(activator);
+                DelayCommand(activationDelay + 0.1f, () =>
+                {
+                    AssignCommand(activator, () => ActionAttack(attackTarget));
+                });
             }
         }
 
@@ -312,7 +321,7 @@ namespace SWLOR.Game.Server.Feature
             SetLocalString(activator, ActiveAbilityIdName, abilityId);
             SetLocalInt(activator, ActiveAbilityFeatIdName, (int)feat);
             SetLocalInt(activator, ActiveAbilityEffectivePerkLevelName, ability.AbilityLevel);
-            
+
             ApplyRequirementEffects(activator, ability);
 
             var abilityRecastDelay = ability.RecastDelay?.Invoke(activator) ?? 0.0f;
@@ -363,7 +372,7 @@ namespace SWLOR.Game.Server.Feature
             var targetLocation = GetLocation(target);
             var item = GetSpellCastItem();
 
-            // If this method was triggered by our own armor (from getting hit), return. 
+            // If this method was triggered by our own armor (from getting hit), return.
             if (GetBaseItemType(item) == BaseItem.Armor) return;
 
             var activeWeaponAbility = (FeatType)GetLocalInt(activator, ActiveAbilityFeatIdName);

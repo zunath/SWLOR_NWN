@@ -1,9 +1,8 @@
-﻿using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.AbilityService;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -74,7 +73,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                         var checkResult = ReflexSave(targetCopy, dc, SavingThrowType.None, activator);
                         if (checkResult == SavingThrowResultType.Failed)
                         {
-                            StatusEffect.Apply(activator, targetCopy, StatusEffectType.Freezing, 30f, level);
+                            StatusEffect.ApplyStatusEffect(activator, targetCopy, new FreezingStatusEffect(level), 30f);
                         }
                     });
                 }

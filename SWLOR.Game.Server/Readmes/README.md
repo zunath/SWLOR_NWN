@@ -22,7 +22,6 @@ Builders documented include:
 - ItemBuilder - For creating item use configurations
 - QuestBuilder - For creating quest configurations
 - ShipBuilder - For creating ship configurations
-- StatusEffectBuilder - For creating status effects
 - DialogBuilder - For creating NPC conversations
 - SnippetBuilder - For creating conditional dialog options
 - PropertyLayoutBuilder - For creating property layouts
@@ -160,4 +159,4 @@ This documentation should be updated when:
 
 ---
 
-*This documentation is maintained as part of the SWLOR.Game.Server project and should be kept up-to-date with the codebase.* 
+*This documentation is maintained as part of the SWLOR.Game.Server project and should be kept up-to-date with the codebase.*

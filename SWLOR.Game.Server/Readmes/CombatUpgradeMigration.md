@@ -4,10 +4,12 @@ This note tracks player migration work for `feature/combat-upgrade`. Keep it cur
 
 ## Current Migration Hook
 
-- Server migration: `SWLOR.Game.Server/Feature/MigrationDefinition/ServerMigration/_21_CombatUpgrade.cs`
+- Server migration: `SWLOR.Game.Server/Feature/MigrationDefinition/ServerMigration/_21_CombatSystemReplacement.cs`
 - Execution type: `PostDatabaseLoad`
 - Current behavior:
   - Refunds removed or materially changed combat perks through `RefundPerksByMapping`.
+  - Removes refunded legacy perk keys before the forced rebuild refund path can process them again.
+  - Preserves legacy numeric `FlurryStyle` saves as the current `FlurryStyle` perk so that investment is not silently dropped.
   - Forces every player through a full rebuild by setting `Player.RebuildComplete = false` via `RequireFullRebuildForAllPlayers()`.
 
 ## Player-Facing Migration Goals
@@ -20,7 +22,7 @@ This note tracks player migration work for `feature/combat-upgrade`. Keep it cur
 
 ## Forced Rebuild Flow
 
-- `_21_CombatUpgrade` sets `Player.RebuildComplete = false` for every stored player.
+- `_21_CombatSystemReplacement` sets `Player.RebuildComplete = false` for every stored player.
 - `PersistentLocation` detects `RebuildComplete == false` on login and sends the player to waypoint `REBUILD_LANDING`.
 - `CharacterFullRebuildViewModel` prevents players from leaving the rebuild area until the rebuild is completed.
 - Completing the rebuild sets `Player.RebuildComplete = true`.
@@ -31,7 +33,7 @@ This note tracks player migration work for `feature/combat-upgrade`. Keep it cur
 
 Important nuance: setting the flag to `false` does not itself reset the character. It redirects and locks the player into the rebuild area. The actual full reset happens when the player uses the rebuild UI's reset action, which refunds all remaining perks/skills, resets stats, and keeps `RebuildComplete = false` until the rebuilt character is saved.
 
-## Perks Currently Refunded By `_21_CombatUpgrade`
+## Perks Currently Refunded By `_21_CombatSystemReplacement`
 
 - `ImprovedTwoWeaponFightingBlade` level 1: 4 SP
 - `ImprovedTwoWeaponFightingHeavyWeapon` level 1: 4 SP
@@ -56,7 +58,7 @@ Important nuance: setting the flag to `false` does not itself reset the characte
 
 ## Follow-Up Checks Before Release
 
-- Confirm `_21_CombatUpgrade` is still the next valid server migration version. If another migration is added first, renumber this file/class/version.
+- Confirm `_21_CombatSystemReplacement` is still the next valid server migration version. If another migration is added first, renumber this file/class/version.
 - Confirm perk refund totals against the final perk prices in `PerkDefinition` files.
 - Confirm removed perks no longer appear in perk builders, droid default perk maps, or any player migration re-application logic.
 - Confirm stale BAB/attacks-per-round logic remains removed:

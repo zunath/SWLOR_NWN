@@ -3,7 +3,6 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -26,6 +25,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 .Name("Breach Strike")
                 .Level(1)
                 .HasActivationDelay(0f)
+                .HasRecastDelay(RecastGroup.BreachStrike, 45f)
                 .RequiresTarget()
                 .HasImpactAction(ImpactAction)
                 .IsCastedAbility()
@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
             switch (level)
             {
                 case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Spear, 10, 30, 14, SavingThrow.Reflex, StatusEffectType.Invalid, AbilityControlEffect.None, false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Spear, 10, 30, 14, SavingThrow.Reflex, null, false);
                     break;
             }
         }

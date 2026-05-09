@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -27,7 +26,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public AbilityActivationType ActivationType { get; set; }
         public PerkType EffectiveLevelPerkType { get; set; }
         public Animation AnimationType { get; set; }
-        public StatusEffectType ConcentrationStatusEffectType { get; set; }
+        public Type ConcentrationStatusEffect { get; set; }
         public bool CanBeUsedInSpace { get; set; }
         public float MaxRange { get; set; }
         public bool IsHostileAbility { get; set; }
@@ -41,7 +40,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
             ActivationVisualEffect = VisualEffect.None;
             AnimationType = Animation.Invalid;
             Requirements = new List<IAbilityActivationRequirement>();
-            ConcentrationStatusEffectType = StatusEffectType.Invalid;
+            ConcentrationStatusEffect = null;
             MaxRange = 5.0f;
             IsHostileAbility = false;
             DisplaysActivationMessage = true;

@@ -4,7 +4,6 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
@@ -51,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Com_Blood_Spark_Medium), target);
             });
 
-            StatusEffect.Apply(activator, activator, StatusEffectType.Assault, 30f);
+            StatusEffect.ApplyStatusEffect(activator, activator, typeof(AssaultStatusEffect), 30f);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Magblue), activator);
 
             Enmity.ModifyEnmity(activator, target, 350 + damage);

@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                         {
                             var duration = 8f + Random.NextFloat(1f, 5f);
 
-                            ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), nearest, duration);
+                            StatusEffect.ApplyStatusEffect(activator, nearest, typeof(KnockdownStatusEffect), duration);
                             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Com_Chunk_Stone_Small), nearest);
 
                             SendMessageToPC(nearest, "The earthquake knocks you down!");
@@ -76,7 +76,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                         {
                             var duration = 18f;
 
-                            ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), nearest, duration);
+                            StatusEffect.ApplyStatusEffect(activator, nearest, typeof(KnockdownStatusEffect), duration);
                             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Com_Chunk_Stone_Small), nearest);
 
                             SendMessageToPC(nearest, "The earthquake knocks you down!");

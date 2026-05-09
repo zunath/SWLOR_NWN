@@ -1,4 +1,3 @@
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -31,6 +30,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             SerpentsEclipse();
             SpreadingVenom();
             StaticPalm();
+            StrikingCobra();
             ToxicRush();
             ToxicTempo();
             TwinFangFlurry();
@@ -49,6 +49,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Adamantine Guard")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.AdamantineGuard1)
                 .Description("For 20 seconds, gain +40% guard chance. Guarded hits reduce physical damage by 40% and generate greatly increased enmity.")
                 .Price(4)
                 .RequirementSkill(SkillType.Katar, 50);
@@ -83,6 +84,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Cobra Stance")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.CobraStance1)
                 .Description("While active, attacks have a 10% chance to inflict Poison for 30 seconds and you gain +10% Attack, but Defense is reduced by 15%.")
                 .Price(2)
                 .RequirementSkill(SkillType.Katar, 15);
@@ -197,6 +199,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Iron Wall Stance")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.IronWallStance1)
                 .Description("While active, grants +25% Defense, +20% Force Defense, and +30% Enmity generation, but reduces Attack by 25%.")
                 .Price(4)
                 .RequirementSkill(SkillType.Katar, 42);
@@ -294,12 +297,37 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Katar, 38);
         }
 
+        private void StrikingCobra()
+        {
+            _builder.Create(PerkCategoryType.KatarVenomCurrent, PerkType.StrikingCobra)
+                .Name("Striking Cobra")
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.StrikingCobra1)
+                .Description("Your next attack deals weapon DMG + 8 and has a Fortitude DC12 check to inflict Poison for 30 seconds.")
+                .Price(3)
+                .RequirementSkill(SkillType.Katar, 5)
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.StrikingCobra2)
+                .Description("Your next attack deals weapon DMG + 18 and has a Fortitude DC15 check to inflict Poison for 60 seconds.")
+                .Price(4)
+                .RequirementSkill(SkillType.Katar, 18)
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.StrikingCobra3)
+                .Description("Your next attack deals weapon DMG + 28 and has a Fortitude DC20 check to inflict Poison for 60 seconds.")
+                .Price(4)
+                .RequirementSkill(SkillType.Katar, 35);
+        }
+
         private void ToxicRush()
         {
             _builder.Create(PerkCategoryType.KatarVenomCurrent, PerkType.ToxicRush)
                 .Name("Toxic Rush")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.ToxicRush1)
                 .Description("Gain +20% Haste and +15% Attack for 20 seconds. Attacks against poisoned targets restore 2 STM during this effect.")
                 .Price(3)
                 .RequirementSkill(SkillType.Katar, 45);
@@ -334,6 +362,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Twin Guard Stance")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.TwinGuardStance1)
                 .Description("While active, grants +15% Defense and +20% Enmity generation, but reduces Attack by 15%.")
                 .Price(3)
                 .RequirementSkill(SkillType.Katar, 12);
@@ -345,6 +374,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Twin Intercept")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.TwinIntercept1)
                 .Description("Target an ally within 6 meters. They gain a damage shield equal to 20% of your maximum HP and +15% Defense for 8 seconds. You gain extra enmity toward enemies near that ally.")
                 .Price(3)
                 .RequirementSkill(SkillType.Katar, 30);

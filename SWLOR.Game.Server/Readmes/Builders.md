@@ -42,7 +42,7 @@ builder.Create(FeatType.ForceLightning1, PerkType.ForceLightning)
 - **Level(int)** - Set the ability level
 - **IsCastedAbility()** - Mark as a casted ability with delay
 - **IsWeaponAbility()** - Mark as a weapon-triggered ability
-- **IsConcentrationAbility(StatusEffectType)** - Mark as a concentration ability
+- **IsConcentrationAbility(Type)** - Mark as a concentration ability
 - **HasRecastDelay(RecastGroup, float)** - Set cooldown timer
 - **HasActivationDelay(float)** - Set casting time
 - **HasMaxRange(float)** - Set maximum range
@@ -255,29 +255,11 @@ builder.Create("xwing_item")
 - **CapitalShip()** - Mark as capital ship
 - **RequirePerk(PerkType, int)** - Set required pilot level
 
-### 9. StatusEffectBuilder
+### 9. Status Effects
 
-**Location**: `Service/StatusEffectService/StatusEffectBuilder.cs`
+**Location**: `Feature/StatusEffectDefinition`
 
-The StatusEffectBuilder creates status effects that can be applied to creatures.
-
-#### Basic Usage
-
-```csharp
-var builder = new StatusEffectBuilder();
-builder.Create(StatusEffectType.ForceLightning)
-    .Name("Force Lightning")
-    .CanStack()
-    .TickAction((target, effectData) => {
-        // Damage over time logic
-    });
-```
-
-#### Key Methods
-
-- **Create(StatusEffectType)** - Initialize status effect
-- **Name(string)** - Set effect name
-- **CanStack()** - Allow multiple instances
+Status effects are concrete `StatusEffectBase` classes. Define the effect's icon, stat changes, replacement rules, and tick/apply/remove behavior on the status effect class itself.
 - **TickAction(StatusEffectTickAction)** - Set periodic effect
 
 ### 10. DialogBuilder
@@ -479,4 +461,4 @@ ConfigureManaPotion(itemBuilder);
 return itemBuilder.Build();
 ```
 
-This documentation covers all the major builders in the SWLOR.Game.Server project. Each builder follows the fluent interface pattern and provides a clean, readable way to create complex game objects. 
+This documentation covers all the major builders in the SWLOR.Game.Server project. Each builder follows the fluent interface pattern and provides a clean, readable way to create complex game objects.

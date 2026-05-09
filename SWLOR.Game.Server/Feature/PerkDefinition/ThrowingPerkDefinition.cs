@@ -1,4 +1,3 @@
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -21,12 +20,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             DeadeyeMastery();
             DeadeyeStance();
             DeepWound();
+            ExplosiveToss();
             FinishingToss();
             FireburstToss();
             FlashToss();
             MarkedTempo();
             MarkingToss();
             PerfectThrow();
+            PiercingToss();
             PinningToss();
             RainOfSteel();
             ReturningGrip();
@@ -67,6 +68,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Bombardier Stance")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.BombardierStance1)
                 .Description("While active, Throwing area abilities deal +15% damage, but Defense is reduced by 15%.")
                 .Price(2)
                 .RequirementSkill(SkillType.Throwing, 15);
@@ -130,6 +132,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Deadeye Stance")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.DeadeyeStance1)
                 .Description("While active, grants +15% accuracy and +15% critical chance, but reduces Evasion by 20%.")
                 .Price(2)
                 .RequirementSkill(SkillType.Throwing, 15);
@@ -142,6 +145,36 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Bleed effects you apply deal +25% damage and last 10 seconds longer.")
+                .Price(4)
+                .RequirementSkill(SkillType.Throwing, 42);
+        }
+
+        private void ExplosiveToss()
+        {
+            _builder.Create(PerkCategoryType.ThrowingBombardier, PerkType.ExplosiveToss)
+                .Name("Explosive Toss")
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.ExplosiveToss1)
+                .Description("Your next attack damages up to 3 creatures within 3 meters of your target for weapon DMG + 8.")
+                .Price(3)
+                .RequirementSkill(SkillType.Throwing, 5)
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.ExplosiveToss2)
+                .Description("Your next attack damages up to 3 creatures within 3 meters of your target for weapon DMG + 16.")
+                .Price(4)
+                .RequirementSkill(SkillType.Throwing, 18)
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.ExplosiveToss3)
+                .Description("Your next attack damages up to 3 creatures within 3 meters of your target for weapon DMG + 26.")
+                .Price(3)
+                .RequirementSkill(SkillType.Throwing, 28)
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.ExplosiveToss4)
+                .Description("Your next attack damages up to 3 creatures within 3 meters of your target for weapon DMG + 38 and has a Fortitude DC16 check to inflict Exposed for 15 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Throwing, 42);
         }
@@ -221,6 +254,30 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Deals weapon DMG + 80 to one target. If the target is bleeding, also inflict Hemorrhage, increasing damage taken by 10% for 15 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Throwing, 50);
+        }
+
+        private void PiercingToss()
+        {
+            _builder.Create(PerkCategoryType.ThrowingDeadeye, PerkType.PiercingToss)
+                .Name("Piercing Toss")
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.PiercingToss1)
+                .Description("Your next attack deals weapon DMG + 12 and has a Reflex DC12 check to inflict Bleed for 30 seconds.")
+                .Price(2)
+                .RequirementSkill(SkillType.Throwing, 5)
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.PiercingToss2)
+                .Description("Your next attack deals weapon DMG + 21 and has a Reflex DC15 check to inflict Bleed for 60 seconds.")
+                .Price(4)
+                .RequirementSkill(SkillType.Throwing, 18)
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.PiercingToss3)
+                .Description("Your next attack deals weapon DMG + 34 and has a Reflex DC18 check to inflict Bleed for 60 seconds.")
+                .Price(3)
+                .RequirementSkill(SkillType.Throwing, 30);
         }
 
         private void PinningToss()

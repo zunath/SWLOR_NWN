@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             if (GetFactionEqual(activator, target))
                 return;
 
-            ApplyEffectToObject(DurationType.Temporary, EffectAccuracyDecrease(abReduce), target, 20f);
+            StatusEffect.ApplyStatusEffect(activator, target, new FlashStatusEffect(abReduce), 20f);
 
             CombatPoint.AddCombatPoint(activator, target, SkillType.Devices, 3);
             Enmity.ModifyEnmity(activator, target, 250);

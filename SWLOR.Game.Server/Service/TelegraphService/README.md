@@ -143,7 +143,7 @@ Use the `TelegraphTest` class for testing telegraph functionality:
 
 ## Performance Considerations
 
-- Maximum of 8 telegraphs rendered per player at once
+- Maximum of 16 telegraphs rendered per player at once
 - Telegraphs are automatically cleaned up when areas are unloaded
 - Shader updates are limited to 30 FPS to maintain performance
 - Telegraphs are tracked by area for efficient management
@@ -163,7 +163,7 @@ To integrate telegraphs with existing abilities:
 public static void FireballAbility(uint caster, uint target)
 {
     var position = GetPosition(target);
-    
+
     // Create telegraph
     var telegraphId = TelegraphHelper.CreateSphereTelegraph(
         caster,
@@ -183,7 +183,7 @@ public static void FireballAbility(uint caster, uint target)
                 }
             }
         });
-    
+
     // Store telegraph ID for potential cancellation
     SetLocalString(caster, "FIREBALL_TELEGRAPH_ID", telegraphId);
 }

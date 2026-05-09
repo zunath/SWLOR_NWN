@@ -56,15 +56,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 {
                     var beast = GetAssociate(AssociateType.Henchman, activator);
 
-                    StatusEffect.Remove(beast, StatusEffectType.Bleed);
-                    StatusEffect.Remove(beast, StatusEffectType.Poison);
-                    StatusEffect.Remove(beast, StatusEffectType.Shock);
-                    StatusEffect.Remove(beast, StatusEffectType.Burn);
-                    StatusEffect.Remove(beast, StatusEffectType.Disease);
+                    StatusEffect.RemoveCleanseableStatusEffects(beast, StatusEffectCleanseType.SoothePet);
 
-                    RemoveEffect(beast, 
-                        EffectTypeScript.Disease, 
-                        EffectTypeScript.Poison, 
+                    RemoveEffect(beast,
+                        EffectTypeScript.Disease,
+                        EffectTypeScript.Poison,
                         EffectTypeScript.Confused,
                         EffectTypeScript.Paralyze,
                         EffectTypeScript.Stunned,

@@ -55,8 +55,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
             var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
             if (checkResult == SavingThrowResultType.Failed)
             {
-                ApplyEffectToObject(DurationType.Temporary, EffectStunned(), target, Duration);
-                Ability.ApplyTemporaryImmunity(target, Duration, ImmunityType.Stun);
+                StatusEffect.ApplyStatusEffect(activator, target, typeof(StunnedStatusEffect), Duration);
             }
 
             Enmity.ModifyEnmity(activator, target, 250 + damage);

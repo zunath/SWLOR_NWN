@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
@@ -29,7 +28,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasActivationDelay(2f)
                 .HasMaxRange(15.0f)
                 .RequirementFP(2)
-                .IsConcentrationAbility(StatusEffectType.ForceDrain1)
+                .IsConcentrationAbility(typeof(ForceDrain1StatusEffect))
                 .IsHostileAbility()
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
@@ -44,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasActivationDelay(2f)
                 .HasMaxRange(15.0f)
                 .RequirementFP(3)
-                .IsConcentrationAbility(StatusEffectType.ForceDrain2)
+                .IsConcentrationAbility(typeof(ForceDrain2StatusEffect))
                 .IsHostileAbility()
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
@@ -59,7 +58,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasActivationDelay(2f)
                 .HasMaxRange(15.0f)
                 .RequirementFP(4)
-                .IsConcentrationAbility(StatusEffectType.ForceDrain3)
+                .IsConcentrationAbility(typeof(ForceDrain3StatusEffect))
                 .IsHostileAbility()
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
@@ -74,7 +73,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasActivationDelay(2f)
                 .HasMaxRange(15.0f)
                 .RequirementFP(5)
-                .IsConcentrationAbility(StatusEffectType.ForceDrain4)
+                .IsConcentrationAbility(typeof(ForceDrain4StatusEffect))
                 .IsHostileAbility()
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
@@ -88,7 +87,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasActivationDelay(2f)
                 .HasMaxRange(15.0f)
                 .RequirementFP(6)
-                .IsConcentrationAbility(StatusEffectType.ForceDrain5)
+                .IsConcentrationAbility(typeof(ForceDrain5StatusEffect))
                 .IsHostileAbility()
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();

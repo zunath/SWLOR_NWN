@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Numerics;
 using SWLOR.Game.Server.Core;
@@ -11,9 +10,12 @@ namespace SWLOR.Game.Server.Service
 {
     public static class Telegraph
     {
-        private const float TargetFPS = 30f;
         public const int MaxRenderCount = 16;
-        
+        private const int TelegraphSizeScale = 10;
+        private const int MaxPackedTelegraphSize = 255;
+        private const int MaxPackedTelegraphRotation = 1023;
+        private const float TwoPi = (float)(Math.PI * 2.0);
+
         private static readonly Dictionary<uint, Dictionary<string, ActiveTelegraph>> _telegraphsByArea = new();
         private static readonly Dictionary<string, ActiveTelegraph> _allTelegraphs = new();
 
@@ -30,10 +32,10 @@ namespace SWLOR.Game.Server.Service
         /// <param name="action">Action to execute when telegraph completes</param>
         /// <returns>Unique ID for the telegraph</returns>
         public static string CreateTelegraph(
-            uint creator, 
-            Vector3 position, 
-            float rotation, 
-            Vector2 size, 
+            uint creator,
+            Vector3 position,
+            float rotation,
+            Vector2 size,
             float duration,
             bool isHostile,
             TelegraphType type,
@@ -82,7 +84,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>Dictionary of telegraph IDs to telegraph data</returns>
         public static Dictionary<string, ActiveTelegraph> GetTelegraphsInArea(uint area)
         {
-            return _telegraphsByArea.ContainsKey(area) 
+            return _telegraphsByArea.ContainsKey(area)
                 ? new Dictionary<string, ActiveTelegraph>(_telegraphsByArea[area])
                 : new Dictionary<string, ActiveTelegraph>();
         }
@@ -112,7 +114,7 @@ namespace SWLOR.Game.Server.Service
                 ScriptName.TelegraphEffect,
                 ScriptName.TelegraphEffect,
                 string.Empty);
-            
+
             OnApply(telegrapher, data, effect);
             ApplyEffectToObject(DurationType.Temporary, effect, telegrapher, data.Duration);
             UpdateShadersForAllPlayers();
@@ -241,18 +243,21 @@ namespace SWLOR.Game.Server.Service
             var directionX = (float)Math.Cos(data.Rotation);
             var directionY = (float)Math.Sin(data.Rotation);
             var directionZ = 0f;
-            
+
             var toPointX = position.X - data.Position.X;
             var toPointY = position.Y - data.Position.Y;
             var toPointZ = position.Z - data.Position.Z;
             var distance = (float)Math.Sqrt(toPointX * toPointX + toPointY * toPointY + toPointZ * toPointZ);
+            if (distance <= 0.01f)
+                return true;
 
             // Compute the actual cone angle dynamically
             var halfAngle = (float)Math.Atan(data.Size.Y * 0.5f / data.Size.X);
 
             // Angle between the direction and the point
             var dotProduct = toPointX * directionX + toPointY * directionY + toPointZ * directionZ;
-            var angleBetween = (float)Math.Acos(dotProduct / distance);
+            var cosAngle = Math.Clamp(dotProduct / distance, -1f, 1f);
+            var angleBetween = (float)Math.Acos(cosAngle);
 
             return distance <= data.Size.X && angleBetween <= halfAngle;
         }
@@ -275,6 +280,11 @@ namespace SWLOR.Game.Server.Service
                    && distFromCenter <= data.Size.Y * 0.5f; // Within width
         }
 
+        private static float DegreesToRadians(float degrees)
+        {
+            return degrees * ((float)Math.PI / 180f);
+        }
+
         private static TelegraphColorType DetermineTelegraphColorType(uint player, uint telegrapher, bool isHostile)
         {
             if (player == telegrapher)
@@ -285,9 +295,26 @@ namespace SWLOR.Game.Server.Service
                 : GetIsReactionTypeFriendly(player, telegrapher) == 1 ? TelegraphColorType.Friendly : TelegraphColorType.EnemyBeneficial;
         }
 
-        private static int PackShapeAndColor(TelegraphType shapeType, TelegraphColorType colorType)
+        private static int PackTelegraphData(TelegraphType shapeType, TelegraphColorType colorType, Vector2 size, float rotation)
         {
-            return (int)shapeType << 8 | (int)colorType;
+            var sizeX = Math.Clamp((int)Math.Round(size.X * TelegraphSizeScale), 0, MaxPackedTelegraphSize);
+            var sizeY = Math.Clamp((int)Math.Round(size.Y * TelegraphSizeScale), 0, MaxPackedTelegraphSize);
+            var normalizedRotation = NormalizeRotation(rotation);
+            var packedRotation = Math.Clamp((int)Math.Round(normalizedRotation / TwoPi * MaxPackedTelegraphRotation), 0, MaxPackedTelegraphRotation);
+
+            return ((int)shapeType & 0x7) |
+                   (((int)colorType & 0x3) << 3) |
+                   (sizeX << 5) |
+                   (sizeY << 13) |
+                   (packedRotation << 21);
+        }
+
+        private static float NormalizeRotation(float rotation)
+        {
+            var normalized = rotation % TwoPi;
+            return normalized < 0f
+                ? normalized + TwoPi
+                : normalized;
         }
 
         /// <summary>
@@ -297,15 +324,7 @@ namespace SWLOR.Game.Server.Service
         {
             _telegraphsByArea.Clear();
             _allTelegraphs.Clear();
-        }
-
-        /// <summary>
-        /// Initializes the telegraph system on module load.
-        /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleLoad)]
-        public static void OnModuleLoad()
-        {
-            UpdateShaderLerpTimer();
+            UpdateShadersForAllPlayers();
         }
 
         /// <summary>
@@ -327,13 +346,15 @@ namespace SWLOR.Game.Server.Service
         {
             var area = GetArea(player);
             if (!_telegraphsByArea.ContainsKey(area))
+            {
+                ResetTelegraphShaderSlots(player, 0);
                 return;
+            }
 
             var telegraphs = _telegraphsByArea[area];
-            var telegraphCountToRender = telegraphs.Count > MaxRenderCount 
-                ? MaxRenderCount 
+            var telegraphCountToRender = telegraphs.Count > MaxRenderCount
+                ? MaxRenderCount
                 : telegraphs.Count;
-            var telegraphCountToReset = MaxRenderCount - telegraphCountToRender;
 
             var i = 0;
             foreach (var (_, telegraph) in telegraphs)
@@ -346,54 +367,35 @@ namespace SWLOR.Game.Server.Service
                 var size = data.Size;
 
                 var colorType = DetermineTelegraphColorType(player, data.Creator, data.IsHostile);
-                var packed = PackShapeAndColor(data.Shape, colorType);
+                var packed = PackTelegraphData(data.Shape, colorType, size, data.Rotation);
 
                 SetShaderUniformInt(
-                    player, 
-                    ShaderUniformType.Type1 + i, 
+                    player,
+                    ShaderUniformType.Type1 + i,
                     packed);
 
                 SetShaderUniformVec(
-                    player, 
-                    ShaderUniformType.Type1 + (i * 2) + 0, 
-                    position.X, 
-                    position.Y, 
-                    position.Z, 
-                    telegraph.Data.Rotation);
-                SetShaderUniformVec(
-                    player, 
-                    ShaderUniformType.Type1 + (i * 2) + 1, 
-                    telegraph.Start, 
-                    telegraph.End, 
-                    size.X, 
-                    size.Y);
+                    player,
+                    ShaderUniformType.Type1 + i,
+                    position.X,
+                    position.Y,
+                    position.Z,
+                    0f);
 
                 i++;
             }
 
-            for (var x = 0; x < telegraphCountToReset; ++x)
+            ResetTelegraphShaderSlots(player, telegraphCountToRender);
+        }
+
+        private static void ResetTelegraphShaderSlots(uint player, int startIndex)
+        {
+            for (var x = startIndex; x < MaxRenderCount; ++x)
             {
-                var uniformIndex = ShaderUniformType.Type1 + telegraphCountToRender + x;
+                var uniformIndex = ShaderUniformType.Type1 + x;
                 SetShaderUniformInt(player, uniformIndex, (int)TelegraphType.None);
             }
         }
-
-        /// <summary>
-        /// Updates shader uniforms at the target FPS rate.
-        /// This method is called recursively to maintain smooth telegraph rendering.
-        /// </summary>
-        private static void UpdateShaderLerpTimer()
-        {
-            var counter = GetMicrosecondCounter();
-
-            for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
-            {
-                SetShaderUniformInt(player, ShaderUniformType.Type16, counter);
-            }
-
-            DelayCommand(1.0f / TargetFPS, UpdateShaderLerpTimer);
-        }
-
 
         /// <summary>
         /// Creates a simple sphere telegraph.
@@ -511,7 +513,7 @@ namespace SWLOR.Game.Server.Service
             ApplyTelegraphEffect action)
         {
             var position = GetPosition(target);
-            var rotation = GetFacing(target);
+            var rotation = DegreesToRadians(GetFacing(target));
 
             return CreateTelegraph(
                 creator,
@@ -547,7 +549,7 @@ namespace SWLOR.Game.Server.Service
             ApplyTelegraphEffect action)
         {
             var position = GetPosition(target);
-            var rotation = GetFacing(target);
+            var rotation = DegreesToRadians(GetFacing(target));
 
             // Calculate position in front of the creature
             var frontPosition = new Vector3(

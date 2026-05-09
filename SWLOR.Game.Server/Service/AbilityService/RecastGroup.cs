@@ -1,5 +1,3 @@
-using System;
-
 namespace SWLOR.Game.Server.Service.AbilityService
 {
     // Note: Short names are what's displayed on the recast Gui element. They are limited to 14 characters.
@@ -113,7 +111,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         SoldiersStrike = 52,
         [RecastGroup("Charge", "Charge", true)]
         Charge = 53,
-        [RecastGroup("Soldier's Precisionn", "Sol. Precision", true)]
+        [RecastGroup("Soldier's Precision", "Sol. Precision", true)]
         SoldiersPrecision = 54,
         [RecastGroup("Shocking Shout", "Shock. Shout", true)]
         ShockingShout = 55,
@@ -189,7 +187,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         PoisonBreath = 90,
         [RecastGroup("Ice Breath", "Ice Breath", true)]
         IceBreath = 91,
-        [RecastGroup("Evasive Manuever", "Eva. Maneuver", true)]
+        [RecastGroup("Evasive Maneuver", "Eva. Maneuver", true)]
         EvasiveManeuver = 92,
         [RecastGroup("Assault", "Assault", true)]
         Assault = 93,
@@ -201,6 +199,216 @@ namespace SWLOR.Game.Server.Service.AbilityService
         ForceRestore = 96,
         [RecastGroup("Adrenal Stim", "Adr. Stim", true)]
         AdrenalStim = 97,
+        [RecastGroup("Carve", "Carve", true)]
+        Carve = 98,
+        [RecastGroup("Covering Strike", "Cover Strike", true)]
+        CoveringStrike = 99,
+        [RecastGroup("Rending Strike", "Rend Strike", true)]
+        RendingStrike = 100,
+        [RecastGroup("Savage Cleave", "Savage Cleave", true)]
+        SavageCleave = 101,
+        [RecastGroup("Whirlwind Assault", "Whirlwind", true)]
+        WhirlwindAssault = 102,
+        [RecastGroup("Soul Burst", "Soul Burst", true)]
+        SoulBurst = 103,
+        [RecastGroup("Crushing Blow", "Crushing Blow", true)]
+        CrushingBlow = 104,
+        [RecastGroup("Edge of Darkness", "E. Darkness", true)]
+        EdgeOfDarkness = 105,
+        [RecastGroup("Sacrificial Blade", "Sacrif. Blade", true)]
+        SacrificialBlade = 106,
+        [RecastGroup("Iron Elbows", "Iron Elbows", true)]
+        IronElbows = 107,
+        [RecastGroup("Guard Counter", "Guard Counter", true)]
+        GuardCounter = 108,
+        [RecastGroup("Covering Claws", "Covering Claws", true)]
+        CoveringClaws = 109,
+        [RecastGroup("Whirling Guard", "Whirling Guard", true)]
+        WhirlingGuard = 110,
+        [RecastGroup("Breaker Reversal", "Breaker Rev.", true)]
+        BreakerReversal = 111,
+        [RecastGroup("Static Palm", "Static Palm", true)]
+        StaticPalm = 112,
+        [RecastGroup("Twin Fang Flurry", "Twin Flurry", true)]
+        TwinFangFlurry = 113,
+        [RecastGroup("Venom Splash", "Venom Splash", true)]
+        VenomSplash = 114,
+        [RecastGroup("Neural Shock", "Neural Shock", true)]
+        NeuralShock = 115,
+        [RecastGroup("Current Overload", "Curr. Overload", true)]
+        CurrentOverload = 116,
+        [RecastGroup("Serpent's Eclipse", "Serp. Eclipse", true)]
+        SerpentsEclipse = 117,
+        [RecastGroup("Punishing Strike", "Punish Strike", true)]
+        PunishingStrike = 118,
+        [RecastGroup("Guardian's Challenge", "Guard. Chall.", true)]
+        GuardiansChallenge = 119,
+        [RecastGroup("Versatile Strike", "Vers. Strike", true)]
+        VersatileStrike = 120,
+        [RecastGroup("Leg Slash", "Leg Slash", true)]
+        LegSlash = 121,
+        [RecastGroup("Ripple Slash", "Ripple Slash", true)]
+        RippleSlash = 122,
+        [RecastGroup("Fan the Hammer", "Fan the Hammer", true)]
+        FanTheHammer = 123,
+        [RecastGroup("Dead Man's Hand", "Dead Man Hand", true)]
+        DeadMansHand = 124,
+        [RecastGroup("Disarming Shot", "Disarming Shot", true)]
+        DisarmingShot = 125,
+        [RecastGroup("Ricochet Shot", "Ricochet Shot", true)]
+        RicochetShot = 126,
+        [RecastGroup("Low Shot", "Low Shot", true)]
+        LowShot = 127,
+        [RecastGroup("Point Blank Burst", "P. Blank Burst", true)]
+        PointBlankBurst = 128,
+        [RecastGroup("Smoke Round", "Smoke Round", true)]
+        SmokeRound = 129,
+        [RecastGroup("Last Word", "Last Word", true)]
+        LastWord = 130,
+        [RecastGroup("Aimed Shot", "Aimed Shot", true)]
+        AimedShot = 131,
+        [RecastGroup("Piercing Round", "Piercing Round", true)]
+        PiercingRound = 132,
+        [RecastGroup("Suppressive Line", "Suppress Line", true)]
+        SuppressiveLine = 133,
+        [RecastGroup("Expose Weak Point", "Expose W. Pt.", true)]
+        ExposeWeakPoint = 134,
+        [RecastGroup("Breach Round", "Breach Round", true)]
+        BreachRound = 135,
+        [RecastGroup("Headshot", "Headshot", true)]
+        Headshot = 136,
+        [RecastGroup("One Shot", "One Shot", true)]
+        OneShot = 137,
+        [RecastGroup("Pinning Fire", "Pinning Fire", true)]
+        PinningFire = 138,
+        [RecastGroup("Overwatch", "Overwatch", true)]
+        Overwatch = 139,
+        [RecastGroup("Neutralizing Shot", "Neutral Shot", true)]
+        NeutralizingShot = 140,
+        [RecastGroup("Pacification Field", "Pacify Field", true)]
+        PacificationField = 141,
+        [RecastGroup("Stasis Volley", "Stasis Volley", true)]
+        StasisVolley = 142,
+        [RecastGroup("Maelstrom Arc", "Maelstrom Arc", true)]
+        MaelstromArc = 143,
+        [RecastGroup("Force Gyre", "Force Gyre", true)]
+        ForceGyre = 144,
+        [RecastGroup("Tempest Release", "Temp. Release", true)]
+        TempestRelease = 145,
+        [RecastGroup("Saber Cyclone", "Saber Cyclone", true)]
+        SaberCyclone = 146,
+        [RecastGroup("Focused Arc", "Focused Arc", true)]
+        FocusedArc = 147,
+        [RecastGroup("Sever Focus", "Sever Focus", true)]
+        SeverFocus = 148,
+        [RecastGroup("Conduit Flare", "Conduit Flare", true)]
+        ConduitFlare = 149,
+        [RecastGroup("Force Suppression", "F. Suppress", true)]
+        ForceSuppression = 150,
+        [RecastGroup("Force Nullification", "F. Nullify", true)]
+        ForceNullification = 151,
+        [RecastGroup("Total Force Denial", "Force Denial", true)]
+        TotalForceDenial = 152,
+        [RecastGroup("Breach Strike", "Breach Strike", true)]
+        BreachStrike = 153,
+        [RecastGroup("Flanking Barrage", "Flank Barrage", true)]
+        FlankingBarrage = 154,
+        [RecastGroup("Sweeping Flank", "Sweeping Flank", true)]
+        SweepingFlank = 155,
+        [RecastGroup("Hampering Barrage", "Hamper Barr.", true)]
+        HamperingBarrage = 156,
+        [RecastGroup("Line Breaker", "Line Breaker", true)]
+        LineBreaker = 157,
+        [RecastGroup("Sweeping Guard", "Sweeping Guard", true)]
+        SweepingGuard = 158,
+        [RecastGroup("Rib Breaker", "Rib Breaker", true)]
+        RibBreaker = 159,
+        [RecastGroup("Ground Quake", "Ground Quake", true)]
+        GroundQuake = 160,
+        [RecastGroup("Skull Rattle", "Skull Rattle", true)]
+        SkullRattle = 161,
+        [RecastGroup("Bonecrusher", "Bonecrusher", true)]
+        Bonecrusher = 162,
+        [RecastGroup("Worldbreaker", "Worldbreaker", true)]
+        Worldbreaker = 163,
+        [RecastGroup("Concussive Toss", "Concuss Toss", true)]
+        ConcussiveToss = 164,
+        [RecastGroup("Fireburst Toss", "Fireburst Toss", true)]
+        FireburstToss = 165,
+        [RecastGroup("Cluster Storm", "Cluster Storm", true)]
+        ClusterStorm = 166,
+        [RecastGroup("Flash Toss", "Flash Toss", true)]
+        FlashToss = 167,
+        [RecastGroup("Saturation Toss", "Satur. Toss", true)]
+        SaturationToss = 168,
+        [RecastGroup("Rain of Steel", "Rain of Steel", true)]
+        RainOfSteel = 169,
+        [RecastGroup("Pinning Toss", "Pinning Toss", true)]
+        PinningToss = 170,
+        [RecastGroup("Marking Toss", "Marking Toss", true)]
+        MarkingToss = 171,
+        [RecastGroup("Ricochet Toss", "Ricochet Toss", true)]
+        RicochetToss = 172,
+        [RecastGroup("Severing Toss", "Severing Toss", true)]
+        SeveringToss = 173,
+        [RecastGroup("Finishing Toss", "Finishing Toss", true)]
+        FinishingToss = 174,
+        [RecastGroup("Perfect Throw", "Perfect Throw", true)]
+        PerfectThrow = 175,
+        [RecastGroup("Blade Vortex", "Blade Vortex", true)]
+        BladeVortex = 176,
+        [RecastGroup("Sweeping Advance", "Sweep Advance", true)]
+        SweepingAdvance = 177,
+        [RecastGroup("Storm Release", "Storm Release", true)]
+        StormRelease = 178,
+        [RecastGroup("Tempest Bloom", "Tempest Bloom", true)]
+        TempestBloom = 179,
+        [RecastGroup("Split Guard Strike", "Split Strike", true)]
+        SplitGuardStrike = 180,
+        [RecastGroup("Feinting Cut", "Feinting Cut", true)]
+        FeintingCut = 181,
+        [RecastGroup("Binding Cross", "Binding Cross", true)]
+        BindingCross = 182,
+        [RecastGroup("Reversal Cut", "Reversal Cut", true)]
+        ReversalCut = 183,
+        [RecastGroup("Cheap Shot", "Cheap Shot", true)]
+        CheapShot = 184,
+        [RecastGroup("Shadow Strike", "Shadow Strike", true)]
+        ShadowStrike = 185,
+        [RecastGroup("Vital Strike", "Vital Strike", true)]
+        VitalStrike = 186,
+        [RecastGroup("Enfeebling Strike", "Enfeeble Str.", true)]
+        EnfeeblingStrike = 187,
+        [RecastGroup("Sap Vitality", "Sap Vitality", true)]
+        SapVitality = 188,
+        [RecastGroup("Nerve Strike", "Nerve Strike", true)]
+        NerveStrike = 189,
+        [RecastGroup("Cascade Failure", "C. Failure", true)]
+        CascadeFailure = 190,
+        [RecastGroup("Systemic Shutdown", "Sys. Shutdown", true)]
+        SystemicShutdown = 191,
+        [RecastGroup("Soul Strike", "Soul Strike", true)]
+        SoulStrike = 192,
+        [RecastGroup("Essence Hunter", "Essence Hunt", true)]
+        EssenceHunter = 193,
+        [RecastGroup("Soul Devourer", "Soul Devour", true)]
+        SoulDevourer = 194,
+        [RecastGroup("Soul Sacrifice", "Soul Sacrifice", true)]
+        SoulSacrifice = 195,
+        [RecastGroup("Soul Storm", "Soul Storm", true)]
+        SoulStorm = 196,
+        [RecastGroup("Soul Ascension", "Soul Ascens.", true)]
+        SoulAscension = 197,
+        [RecastGroup("Anger Strike", "Anger Strike", true)]
+        AngerStrike = 198,
+        [RecastGroup("Bastion Stance", "Bastion St.", true)]
+        BastionStance = 199,
+        [RecastGroup("Guardian's Resolve", "Guardian Res", true)]
+        GuardiansResolve = 200,
+        [RecastGroup("Rampart", "Rampart", true)]
+        Rampart = 201,
+        [RecastGroup("Absolute Defense", "Abs. Defense", true)]
+        AbsoluteDefense = 202,
     }
 
     public class RecastGroupAttribute: Attribute

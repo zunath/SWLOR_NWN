@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
@@ -23,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
             return _builder.Build();
         }
 
-        private void Impact(uint activator, StatusEffectType statusEffect)
+        private void Impact(uint activator, Type statusEffect)
         {
             var master = GetMaster(activator);
             var beastmasterStat = GetAbilityModifier(AbilityType.Vitality, master) / 2;
@@ -31,7 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
             var totalStat = beastmasterStat + beastStat;
 
             var duration = 5 * 60f + totalStat * 10;
-            StatusEffect.Apply(activator, activator, statusEffect, duration);
+            StatusEffect.ApplyStatusEffect(activator, activator, statusEffect, duration);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Ac_Bonus), activator);
         }
 
@@ -46,7 +45,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .IsCastedAbility()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    Impact(activator, StatusEffectType.BolsterArmor1);
+                    Impact(activator, typeof(BolsterArmor1StatusEffect));
                 });
         }
         private void BolsterArmor2()
@@ -60,7 +59,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .IsCastedAbility()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    Impact(activator, StatusEffectType.BolsterArmor2);
+                    Impact(activator, typeof(BolsterArmor2StatusEffect));
                 });
         }
         private void BolsterArmor3()
@@ -74,7 +73,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .IsCastedAbility()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    Impact(activator, StatusEffectType.BolsterArmor3);
+                    Impact(activator, typeof(BolsterArmor3StatusEffect));
                 });
         }
         private void BolsterArmor4()
@@ -88,7 +87,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .IsCastedAbility()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    Impact(activator, StatusEffectType.BolsterArmor4);
+                    Impact(activator, typeof(BolsterArmor4StatusEffect));
                 });
         }
         private void BolsterArmor5()
@@ -102,7 +101,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .IsCastedAbility()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    Impact(activator, StatusEffectType.BolsterArmor5);
+                    Impact(activator, typeof(BolsterArmor5StatusEffect));
                 });
         }
     }

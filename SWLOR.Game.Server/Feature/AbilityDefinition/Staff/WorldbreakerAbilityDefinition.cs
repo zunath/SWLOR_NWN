@@ -3,7 +3,6 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -26,6 +25,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 .Name("Worldbreaker")
                 .Level(1)
                 .HasActivationDelay(2f)
+                .HasRecastDelay(RecastGroup.Worldbreaker, 1800f)
                 .HasImpactAction(ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
             switch (level)
             {
                 case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Staff, 45, 4, 18, SavingThrow.Reflex, StatusEffectType.Invalid, AbilityControlEffect.Knockdown, true);
+                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Staff, 45, 4, 18, SavingThrow.Reflex, typeof(KnockdownStatusEffect), CombatImpactAreaShape.Sphere, 0.25f, 5f, centerOnActivator: true);
                     break;
             }
         }

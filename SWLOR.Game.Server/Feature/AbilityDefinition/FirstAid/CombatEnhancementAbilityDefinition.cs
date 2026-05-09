@@ -35,27 +35,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             return string.Empty;
         }
 
-        private void Impact(uint activator, uint target, int baseAmount)
+        private void Impact(uint activator, uint target, Type statusEffect)
         {
-            for (var e = GetFirstEffect(target); GetIsEffectValid(e); e = GetNextEffect(target))
-            {
-                if (GetEffectTag(e) == "COMBAT_ENHANCEMENT" || GetEffectTag(e) == "FORCE_INSPIRATION")
-                {
-                    RemoveEffect(target, e);
-                }
-            }
-
             var willpowerMod = GetAbilityScore(activator, AbilityType.Willpower);
             const float BaseLength = 900f;
             var length = BaseLength + willpowerMod * 15f;
 
-            var effect = EffectLinkEffects(
-                EffectAbilityIncrease(AbilityType.Might, baseAmount),
-                EffectAbilityIncrease(AbilityType.Perception, baseAmount));
-            effect = EffectLinkEffects(effect, EffectAbilityIncrease(AbilityType.Vitality, baseAmount));
-            effect = TagEffect(effect, "COMBAT_ENHANCEMENT");
-
-            ApplyEffectToObject(DurationType.Temporary, effect, target, length);
+            StatusEffect.ApplyStatusEffect(activator, target, statusEffect, length);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Globe_Use), target);
 
             TakeStimPack(activator);
@@ -74,7 +60,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasCustomValidation(Validation)
                 .HasImpactAction((activator, target, _, _) =>
                 {
-                    Impact(activator, target, 1);
+                    Impact(activator, target, typeof(CombatEnhancement1StatusEffect));
 
                     Enmity.ModifyEnmity(activator, target, 250);
                     CombatPoint.AddCombatPoint(activator, target, SkillType.FirstAid, 3);
@@ -93,7 +79,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasCustomValidation(Validation)
                 .HasImpactAction((activator, target, _, _) =>
                 {
-                    Impact(activator, target, 2);
+                    Impact(activator, target, typeof(CombatEnhancement2StatusEffect));
 
                     Enmity.ModifyEnmity(activator, target, 350);
                     CombatPoint.AddCombatPoint(activator, target, SkillType.FirstAid, 3);
@@ -112,7 +98,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasCustomValidation(Validation)
                 .HasImpactAction((activator, target, _, _) =>
                 {
-                    Impact(activator, target, 3);
+                    Impact(activator, target, typeof(CombatEnhancement3StatusEffect));
 
                     Enmity.ModifyEnmity(activator, target, 450);
                     CombatPoint.AddCombatPoint(activator, target, SkillType.FirstAid, 3);

@@ -1,6 +1,6 @@
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 using System.Collections.Generic;
 
@@ -15,11 +15,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             Bonecrusher();
             BreakPosture();
             CrusherStance();
+            CrushingStyle();
             CrushingMastery();
+            FlurryStyle();
             FlowingDefense();
             GroundQuake();
             GuardingStep();
             HeavyHands();
+            LegSweep();
             LineBreaker();
             PatientSentinel();
             PerfectFootwork();
@@ -27,6 +30,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             SentinelGuard();
             SentinelStance();
             ShelterCircle();
+            Slam();
             SkullRattle();
             StaffParry();
             SweepingGuard();
@@ -65,9 +69,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Crusher Stance")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.CrusherStance1)
                 .Description("While active, grants +20% Attack and +15% critical chance, but reduces Defense by 20%.")
                 .Price(2)
                 .RequirementSkill(SkillType.Staff, 15);
+        }
+
+        private void CrushingStyle()
+        {
+            _builder.Create(PerkCategoryType.StaffCrusher, PerkType.CrushingStyle)
+                .Name("Crushing Style")
+
+                .AddPerkLevel()
+                .Description("You gain bonus damage with staves equal to your MGT modifier and +10% critical chance.")
+                .Price(3)
+                .RequirementSkill(SkillType.Staff, 5);
         }
 
         private void CrushingMastery()
@@ -89,6 +105,17 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Staff critical hits deal +20% damage and restore 4 STM. This can only trigger once every 6 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Staff, 48);
+        }
+
+        private void FlurryStyle()
+        {
+            _builder.Create(PerkCategoryType.StaffSentinel, PerkType.FlurryStyle)
+                .Name("Flurry Style")
+
+                .AddPerkLevel()
+                .Description("Staves use AGI to-hit and PER for damage. Staff attack delay is reduced by 10%.")
+                .Price(2)
+                .RequirementSkill(SkillType.Staff, 5);
         }
 
         private void FlowingDefense()
@@ -126,6 +153,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Guarding Step")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.GuardingStep1)
                 .Description("Gain +25% Evasion and +20% Defense for 8 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Staff, 20);
@@ -140,6 +168,30 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Staff combat abilities deal +10% damage to targets affected by Knockdown or Blind.")
                 .Price(2)
                 .RequirementSkill(SkillType.Staff, 22);
+        }
+
+        private void LegSweep()
+        {
+            _builder.Create(PerkCategoryType.StaffSentinel, PerkType.LegSweep)
+                .Name("Leg Sweep")
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.LegSweep1)
+                .Description("Deals weapon DMG + 6 and has a Reflex DC12 check to inflict Knockdown for 3 seconds.")
+                .Price(3)
+                .RequirementSkill(SkillType.Staff, 12)
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.LegSweep2)
+                .Description("Deals weapon DMG + 16 and has a Reflex DC15 check to inflict Knockdown for 3 seconds.")
+                .Price(2)
+                .RequirementSkill(SkillType.Staff, 22)
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.LegSweep3)
+                .Description("Deals weapon DMG + 26 and has a Reflex DC18 check to inflict Knockdown for 4 seconds.")
+                .Price(4)
+                .RequirementSkill(SkillType.Staff, 35);
         }
 
         private void LineBreaker()
@@ -206,6 +258,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Sentinel Guard")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.SentinelGuard1)
                 .Description("For 12 seconds, allies within 5 meters gain +10 Attack Deflection and you generate extra enmity.")
                 .Price(3)
                 .RequirementSkill(SkillType.Staff, 30);
@@ -217,6 +270,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Sentinel Stance")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.SentinelStance1)
                 .Description("While active, grants +15% Evasion and +15 Attack Deflection, but reduces Attack by 15%.")
                 .Price(2)
                 .RequirementSkill(SkillType.Staff, 15);
@@ -228,9 +282,34 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Shelter Circle")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.ShelterCircle1)
                 .Description("Allies in an area of effect (sphere) gain +20% Defense and +20% Evasion for 15 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Staff, 45);
+        }
+
+        private void Slam()
+        {
+            _builder.Create(PerkCategoryType.StaffCrusher, PerkType.Slam)
+                .Name("Slam")
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.Slam1)
+                .Description("Deals weapon DMG + 8 and has a Fortitude DC12 check to inflict Blind for 8 seconds.")
+                .Price(3)
+                .RequirementSkill(SkillType.Staff, 8)
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.Slam2)
+                .Description("Deals weapon DMG + 20 and has a Fortitude DC15 check to inflict Blind for 10 seconds.")
+                .Price(4)
+                .RequirementSkill(SkillType.Staff, 18)
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.Slam3)
+                .Description("Deals weapon DMG + 32 and has a Fortitude DC18 check to inflict Blind for 12 seconds.")
+                .Price(3)
+                .RequirementSkill(SkillType.Staff, 28);
         }
 
         private void SkullRattle()
@@ -252,21 +331,27 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Gain +10 Attack Deflection while wielding a staff.")
+                .IncreasesStat(StatType.AttackDeflection, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 10 : 0)
                 .Price(2)
                 .RequirementSkill(SkillType.Staff, 8)
 
                 .AddPerkLevel()
                 .Description("Gain +20 Attack Deflection total while wielding a staff.")
+                .IncreasesStat(StatType.AttackDeflection, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 20 : 0)
                 .Price(4)
                 .RequirementSkill(SkillType.Staff, 18)
 
                 .AddPerkLevel()
                 .Description("Gain +30 Attack Deflection total while wielding a staff. Deflecting attacks restores 2 STM.")
+                .IncreasesStat(StatType.AttackDeflection, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 30 : 0)
+                .IncreasesStat(StatType.DeflectionStaminaRestore, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 2 : 0)
                 .Price(4)
                 .RequirementSkill(SkillType.Staff, 28)
 
                 .AddPerkLevel()
                 .Description("Gain +40 Attack Deflection total while wielding a staff. Deflecting attacks restores 4 STM.")
+                .IncreasesStat(StatType.AttackDeflection, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 40 : 0)
+                .IncreasesStat(StatType.DeflectionStaminaRestore, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 4 : 0)
                 .Price(4)
                 .RequirementSkill(SkillType.Staff, 42);
         }
@@ -289,6 +374,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Unmoving Center")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.UnmovingCenter1)
                 .Description("For 20 seconds, you cannot be Knocked down or Dazed, gain +50 Attack Deflection, and staff attacks generate extra enmity.")
                 .Price(4)
                 .RequirementSkill(SkillType.Staff, 50);

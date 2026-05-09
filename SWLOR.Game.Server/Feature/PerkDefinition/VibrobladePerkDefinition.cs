@@ -1,11 +1,8 @@
-using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 using System.Collections.Generic;
-using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
@@ -24,10 +21,15 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             Executioner();
             FortifiedPosition();
             GuardiansRiposte();
+            HackingBlade();
             Invincible();
+            Alacrity();
+            Bulwark();
             RendingStrike();
+            RiotBlade();
             SavageCleave();
             SavageReflexes();
+            ShieldBash();
             ShieldTraining();
             ShieldWall();
             Unbreakable();
@@ -42,11 +44,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Berserker Stance")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.BerserkerStance1)
                 .Description("While active, grants +15% Attack, +10% Haste, -20% Defense, and -20% Force Defense.")
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroblade, 15)
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.BerserkerStance2)
                 .Description("While active, grants +25% Attack, +15% Haste, -20% Defense, and -20% Force Defense.")
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroblade, 48);
@@ -104,11 +108,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Defensive Stance")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.DefensiveStance1)
                 .Description("While active, grants +20% to Enmity generation, +15% Defense, +15% Force Defense, -20% Attack, and -20% Force Attack")
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroblade, 22)
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.DefensiveStance2)
                 .Description("While active, grants +30% to Enmity generation, +20% Defense, +20% Force Defense, -20% Attack, and -20% Force Attack")
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroblade, 45);
@@ -152,15 +158,76 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Vibroblade, 30);
         }
 
+        private void HackingBlade()
+        {
+            _builder.Create(PerkCategoryType.VibrobladeOffense, PerkType.HackingBlade)
+                .Name("Hacking Blade")
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.HackingBlade1)
+                .Description("Your next attack deals an additional 8 DMG and has a DC10 Fortitude check to inflict Bleed for 30 seconds.")
+                .Price(2)
+                .RequirementSkill(SkillType.Vibroblade, 8)
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.HackingBlade2)
+                .Description("Your next attack deals an additional 18 DMG and has a DC15 Fortitude check to inflict Bleed for 60 seconds.")
+                .Price(3)
+                .RequirementSkill(SkillType.Vibroblade, 20)
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.HackingBlade3)
+                .Description("Your next attack deals an additional 28 DMG and has a DC20 Fortitude check to inflict Bleed for 60 seconds.")
+                .Price(4)
+                .RequirementSkill(SkillType.Vibroblade, 35);
+        }
+
         private void Invincible()
         {
             _builder.Create(PerkCategoryType.VibrobladeDefense, PerkType.Invincible)
                 .Name("Invincible")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.Invincible1)
                 .Description("You become invulnerable to physical damage for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroblade, 50);
+        }
+
+        private void Alacrity()
+        {
+            _builder.Create(PerkCategoryType.VibrobladeDefense, PerkType.Alacrity)
+                .Name("Alacrity")
+
+                .AddPerkLevel()
+                .Description("Restore 4 STM when your shield deflects an attack.")
+                .IncreasesStat(StatType.DeflectionStaminaRestore, creature => EquipmentPredicates.HasOffHandShield(creature) ? 4 : 0)
+                .Price(3)
+                .RequirementSkill(SkillType.Vibroblade, 20);
+        }
+
+        private void Bulwark()
+        {
+            _builder.Create(PerkCategoryType.VibrobladeDefense, PerkType.Bulwark)
+                .Name("Bulwark")
+
+                .AddPerkLevel()
+                .Description("Grants +15 Shield Deflection with shield equipped.")
+                .IncreasesStat(StatType.AttackDeflection, creature => EquipmentPredicates.HasOffHandShield(creature) ? 15 : 0)
+                .Price(2)
+                .RequirementSkill(SkillType.Vibroblade, 10)
+
+                .AddPerkLevel()
+                .Description("Grants +25 Shield Deflection with shield equipped total.")
+                .IncreasesStat(StatType.AttackDeflection, creature => EquipmentPredicates.HasOffHandShield(creature) ? 25 : 0)
+                .Price(3)
+                .RequirementSkill(SkillType.Vibroblade, 28)
+
+                .AddPerkLevel()
+                .Description("Grants +35 Shield Deflection with shield equipped total.")
+                .IncreasesStat(StatType.AttackDeflection, creature => EquipmentPredicates.HasOffHandShield(creature) ? 35 : 0)
+                .Price(4)
+                .RequirementSkill(SkillType.Vibroblade, 40);
         }
 
         private void RendingStrike()
@@ -179,6 +246,30 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Deals weapon DMG + 32. Fortitude DC16 check to inflict Exposed which reduces Defense by 25% for 12s.")
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroblade, 38);
+        }
+
+        private void RiotBlade()
+        {
+            _builder.Create(PerkCategoryType.VibrobladeOffense, PerkType.RiotBlade)
+                .Name("Riot Blade")
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.RiotBlade1)
+                .Description("Instantly deals weapon DMG + 15 to your target.")
+                .Price(2)
+                .RequirementSkill(SkillType.Vibroblade, 10)
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.RiotBlade2)
+                .Description("Instantly deals weapon DMG + 30 to your target.")
+                .Price(3)
+                .RequirementSkill(SkillType.Vibroblade, 18)
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.RiotBlade3)
+                .Description("Instantly deals weapon DMG + 45 to your target.")
+                .Price(3)
+                .RequirementSkill(SkillType.Vibroblade, 28);
         }
 
         private void SavageCleave()
@@ -204,6 +295,30 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Vibroblade, 5);
         }
 
+        private void ShieldBash()
+        {
+            _builder.Create(PerkCategoryType.VibrobladeDefense, PerkType.ShieldBash)
+                .Name("Shield Bash")
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.ShieldBash1)
+                .Description("Bashes an enemy for 12 DMG and has a DC12 Will check to inflict Dazed for 3 seconds.")
+                .Price(2)
+                .RequirementSkill(SkillType.Vibroblade, 8)
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.ShieldBash2)
+                .Description("Bashes an enemy for 24 DMG and has a DC14 Will check to inflict Dazed for 6 seconds.")
+                .Price(3)
+                .RequirementSkill(SkillType.Vibroblade, 18)
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.ShieldBash3)
+                .Description("Bashes an enemy for 36 DMG and has a DC16 Will check to inflict Stunned for 3 seconds.")
+                .Price(4)
+                .RequirementSkill(SkillType.Vibroblade, 35);
+        }
+
         private void ShieldTraining()
         {
             _builder.Create(PerkCategoryType.VibrobladeDefense, PerkType.ShieldTraining)
@@ -221,6 +336,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Shield Wall")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.ShieldWall1)
                 .Description("Channel for up to 6s. Allies within 5m gain +15% Physical Defense, you gain +25% Enmity for 1 minute.")
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroblade, 25);

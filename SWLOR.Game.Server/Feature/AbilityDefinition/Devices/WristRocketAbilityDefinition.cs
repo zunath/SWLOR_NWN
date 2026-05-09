@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -32,10 +32,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
             var damage = Combat.CalculateDamage(
                 attack,
-                dmg, 
-                attackerStat, 
-                defense, 
-                defenderStat, 
+                dmg,
+                attackerStat,
+                defense,
+                defenderStat,
                 0);
 
             AssignCommand(activator, () =>
@@ -55,9 +55,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
                     if (checkResult == SavingThrowResultType.Failed)
                     {
-                        ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), target, Duration);
-
-                        Ability.ApplyTemporaryImmunity(target, Duration, ImmunityType.Knockdown);
+                        StatusEffect.ApplyStatusEffect(activator, target, typeof(KnockdownStatusEffect), Duration);
                     }
                 }
             });

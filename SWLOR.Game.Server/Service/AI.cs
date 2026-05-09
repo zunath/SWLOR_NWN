@@ -117,12 +117,14 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnCreatureSpawnAfter)]
         public static void CreatureSpawn()
         {
-            SetLocalString(OBJECT_SELF, "X2_SPECIAL_COMBAT_AI_SCRIPT", "xxx");
+            var creature = OBJECT_SELF;
 
+            SetLocalString(creature, "X2_SPECIAL_COMBAT_AI_SCRIPT", "xxx");
             Stat.LoadNPCStats();
+            Stat.ApplyCreatureMovementRate(creature);
             LoadAggroEffect();
             DoVFX();
-            SetLocalLocation(OBJECT_SELF, "HOME_LOCATION", GetLocation(OBJECT_SELF));
+            SetLocalLocation(creature, "HOME_LOCATION", GetLocation(creature));
         }
 
         /// <summary>
@@ -207,7 +209,7 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// When a creature exits the aggro aura of another creature, 
+        /// When a creature exits the aggro aura of another creature,
         /// </summary>
         [NWNEventHandler(ScriptName.OnCreatureAggroExit)]
         public static void CreatureAggroExit()
@@ -220,7 +222,7 @@ namespace SWLOR.Game.Server.Service
         public static void ProcessPerkAI(AIDefinitionType aiType, uint creature, bool usesEnmity)
         {
             // Petrified - do nothing else.
-            if (GetHasEffect(creature, EffectTypeScript.Petrify)) 
+            if (GetHasEffect(creature, EffectTypeScript.Petrify))
                 return;
 
             // Attempt to target the highest enmity creature.
@@ -317,17 +319,17 @@ namespace SWLOR.Game.Server.Service
             // Allow builders to put permanent effects on creatures - e.g. to make them statues, or make them glow.
             // Index of standard VFX effects here: https://nwnlexicon.com/index.php?title=Vfx_dur
             var vfx = GetLocalInt(OBJECT_SELF, "PERMANENT_VFX_ID");
-            if (vfx > 0) 
+            if (vfx > 0)
                 ApplyEffectToObject(DurationType.Permanent, EffectVisualEffect((VisualEffect)vfx), OBJECT_SELF);
 
             // Cutscene paralysis - for statues.
             var paralyze = GetLocalInt(OBJECT_SELF, "PARALYZE");
-            if (paralyze > 0) 
+            if (paralyze > 0)
                 ApplyEffectToObject(DurationType.Permanent, SupernaturalEffect(EffectCutsceneParalyze()), OBJECT_SELF);
 
             // Daze - for creatures that should not be able to attack.
             var daze = GetLocalInt(OBJECT_SELF, "DAZE");
-            if (daze > 0) 
+            if (daze > 0)
                 ApplyEffectToObject(DurationType.Permanent, SupernaturalEffect(EffectDazed()), OBJECT_SELF);
         }
 

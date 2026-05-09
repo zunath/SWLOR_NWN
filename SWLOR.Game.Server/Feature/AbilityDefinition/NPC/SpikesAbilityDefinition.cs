@@ -4,7 +4,6 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
@@ -38,15 +37,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                     var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
                     var damage = Combat.CalculateDamage(
                         attack,
-                        DMG, 
-                        attackerStat, 
-                        defense, 
-                        defenderStat, 
+                        DMG,
+                        attackerStat,
+                        defense,
+                        defenderStat,
                         0);
 
                     ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Piercing), target);
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Wallspike), target);
-                    StatusEffect.Apply(activator, target, StatusEffectType.Bleed, 45f);
+                    StatusEffect.ApplyStatusEffect(activator, target, typeof(BleedStatusEffect), 45f);
                 });
         }
     }

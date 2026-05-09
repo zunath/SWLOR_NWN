@@ -3,7 +3,6 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -27,6 +26,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 .Name("Pinning Fire I")
                 .Level(1)
                 .HasActivationDelay(0f)
+                .HasRecastDelay(RecastGroup.PinningFire, 45f)
                 .RequiresTarget()
                 .HasImpactAction(ImpactAction)
                 .IsCastedAbility()
@@ -41,6 +41,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 .Name("Pinning Fire II")
                 .Level(2)
                 .HasActivationDelay(0f)
+                .HasRecastDelay(RecastGroup.PinningFire, 60f)
                 .HasImpactAction(ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
@@ -53,10 +54,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
             switch (level)
             {
                 case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Rifle, 10, 2, 12, SavingThrow.Reflex, StatusEffectType.Invalid, AbilityControlEffect.Dazed, false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Rifle, 10, 2, 12, SavingThrow.Reflex, typeof(DazedStatusEffect), false);
                     break;
                 case 2:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Rifle, 18, 3, 14, SavingThrow.Reflex, StatusEffectType.Invalid, AbilityControlEffect.Knockdown, true);
+                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Rifle, 18, 3, 14, SavingThrow.Reflex, typeof(KnockdownStatusEffect), CombatImpactAreaShape.Line, 0.25f, 8f, 2.5f);
                     break;
             }
         }

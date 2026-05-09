@@ -3,7 +3,6 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -26,6 +25,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 .Name("Total Force Denial")
                 .Level(1)
                 .HasActivationDelay(2f)
+                .HasRecastDelay(RecastGroup.TotalForceDenial, 300f)
                 .HasImpactAction(ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
             switch (level)
             {
                 case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Spear, 28, 12, 16, SavingThrow.Will, StatusEffectType.Invalid, AbilityControlEffect.None, true);
+                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Spear, 28, 12, 16, SavingThrow.Will, typeof(ForceDisruptionStatusEffect), CombatImpactAreaShape.Cone, 0.25f, 5f, 5f);
                     break;
             }
         }

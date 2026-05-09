@@ -1,10 +1,9 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
@@ -22,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
             return _builder.Build();
         }
-        
+
         private void Impact(uint activator, uint target, int dmg, int dc, float bleedLength)
         {
             if (GetFactionEqual(activator, target))
@@ -36,10 +35,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
             var damage = Combat.CalculateDamage(
                 attack,
-                dmg, 
-                attackerStat, 
-                defense, 
-                defenderStat, 
+                dmg,
+                attackerStat,
+                defense,
+                defenderStat,
                 0);
 
             if (dc > 0)
@@ -48,7 +47,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 var checkResult = ReflexSave(target, dc, SavingThrowType.None, activator);
                 if (checkResult == SavingThrowResultType.Failed)
                 {
-                    StatusEffect.Apply(activator, target, StatusEffectType.Bleed, bleedLength);
+                    StatusEffect.ApplyStatusEffect(activator, target, typeof(BleedStatusEffect), bleedLength);
                 }
             }
 

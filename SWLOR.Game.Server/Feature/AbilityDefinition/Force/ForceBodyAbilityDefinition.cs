@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
@@ -30,8 +29,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    StatusEffect.Apply(activator, activator, StatusEffectType.ForceBody1, 60f);
-                    ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Vitality, 2), activator, 60f);
+                    StatusEffect.ApplyStatusEffect(activator, activator, typeof(ForceBody1StatusEffect), 60f);
                 });
         }
         private void ForceBody2()
@@ -45,8 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    StatusEffect.Apply(activator, activator, StatusEffectType.ForceBody2, 60f);
-                    ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Vitality, 4), activator, 60f);
+                    StatusEffect.ApplyStatusEffect(activator, activator, typeof(ForceBody2StatusEffect), 60f);
                 });
         }
     }

@@ -3,7 +3,6 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -27,6 +26,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 .Name("Cheap Shot I")
                 .Level(1)
                 .HasActivationDelay(0f)
+                .HasRecastDelay(RecastGroup.CheapShot, 45f)
                 .RequiresTarget()
                 .HasImpactAction(ImpactAction)
                 .IsCastedAbility()
@@ -41,6 +41,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 .Name("Cheap Shot II")
                 .Level(2)
                 .HasActivationDelay(0f)
+                .HasRecastDelay(RecastGroup.CheapShot, 45f)
                 .RequiresTarget()
                 .HasImpactAction(ImpactAction)
                 .IsCastedAbility()
@@ -54,10 +55,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
             switch (level)
             {
                 case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Vibroknife, 8, 6, 10, SavingThrow.Fortitude, StatusEffectType.Invalid, AbilityControlEffect.Blind, false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Vibroknife, 8, 6, 10, SavingThrow.Fortitude, typeof(BlindStatusEffect), false);
                     break;
                 case 2:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Vibroknife, 16, 9, 14, SavingThrow.Fortitude, StatusEffectType.Invalid, AbilityControlEffect.Blind, false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Vibroknife, 16, 9, 14, SavingThrow.Fortitude, typeof(BlindStatusEffect), false);
                     break;
             }
         }

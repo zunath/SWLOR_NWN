@@ -1,8 +1,7 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
@@ -30,7 +29,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 .HasImpactAction((activator, target, level, location) =>
                 {
                     ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Magenta), activator, 1.0f);
-                    StatusEffect.Apply(activator, activator, StatusEffectType.IronShell, 45f);
+                    StatusEffect.ApplyStatusEffect(activator, activator, typeof(IronShellStatusEffect), 45f);
                 });
         }
     }

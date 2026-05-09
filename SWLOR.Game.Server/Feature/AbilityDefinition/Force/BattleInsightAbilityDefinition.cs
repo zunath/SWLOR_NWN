@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
@@ -24,7 +23,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Level(1)
                 .HasRecastDelay(RecastGroup.BattleInsight, 60f)
                 .RequirementFP(3)
-                .IsConcentrationAbility(StatusEffectType.BattleInsight1)
+                .IsConcentrationAbility(typeof(BattleInsight1StatusEffect))
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }
@@ -35,7 +34,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Level(2)
                 .HasRecastDelay(RecastGroup.BattleInsight, 60f)
                 .RequirementFP(5)
-                .IsConcentrationAbility(StatusEffectType.BattleInsight2)
+                .IsConcentrationAbility(typeof(BattleInsight2StatusEffect))
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }

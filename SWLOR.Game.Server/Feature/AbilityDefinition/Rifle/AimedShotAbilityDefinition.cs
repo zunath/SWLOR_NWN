@@ -3,7 +3,6 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -28,6 +27,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 .Name("Aimed Shot I")
                 .Level(1)
                 .HasActivationDelay(1f)
+                .HasRecastDelay(RecastGroup.AimedShot, 30f)
                 .RequiresTarget()
                 .HasImpactAction(ImpactAction)
                 .IsCastedAbility()
@@ -42,6 +42,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 .Name("Aimed Shot II")
                 .Level(2)
                 .HasActivationDelay(1f)
+                .HasRecastDelay(RecastGroup.AimedShot, 30f)
                 .RequiresTarget()
                 .HasImpactAction(ImpactAction)
                 .IsCastedAbility()
@@ -56,6 +57,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 .Name("Aimed Shot III")
                 .Level(3)
                 .HasActivationDelay(1f)
+                .HasRecastDelay(RecastGroup.AimedShot, 30f)
                 .RequiresTarget()
                 .HasImpactAction(ImpactAction)
                 .IsCastedAbility()
@@ -69,13 +71,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
             switch (level)
             {
                 case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Rifle, 18, 0, 0, SavingThrow.Will, StatusEffectType.Invalid, AbilityControlEffect.None, false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Rifle, 18, 0, 0, SavingThrow.Will, null, false);
                     break;
                 case 2:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Rifle, 32, 0, 0, SavingThrow.Will, StatusEffectType.Invalid, AbilityControlEffect.None, false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Rifle, 32, 0, 0, SavingThrow.Will, null, false);
                     break;
                 case 3:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Rifle, 46, 0, 0, SavingThrow.Will, StatusEffectType.Invalid, AbilityControlEffect.None, false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Rifle, 46, 0, 0, SavingThrow.Will, null, false);
                     break;
             }
         }

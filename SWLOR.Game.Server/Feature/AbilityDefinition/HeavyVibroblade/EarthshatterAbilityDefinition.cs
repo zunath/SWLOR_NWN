@@ -3,7 +3,6 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -37,7 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
             switch (level)
             {
                 case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.HeavyVibroblade, 20, 12, 16, SavingThrow.Fortitude, StatusEffectType.Invalid, AbilityControlEffect.None, true);
+                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.HeavyVibroblade, 20, 12, 16, SavingThrow.Fortitude, typeof(ForceDisruptionStatusEffect), CombatImpactAreaShape.Line, 0.25f, 8f, 2.5f);
                     break;
             }
         }

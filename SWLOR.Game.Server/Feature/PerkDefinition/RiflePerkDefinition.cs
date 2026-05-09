@@ -1,4 +1,3 @@
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -16,6 +15,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             BallisticMastery();
             BreachRound();
             ContainmentNet();
+            CripplingShot();
             DeadCenter();
             ExposeWeakPoint();
             FieldSedatives();
@@ -35,6 +35,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             SteadyAim();
             SuppressiveLine();
             TranqCone();
+            TranquilizerShot();
             VeteranTracker();
 
             return _builder.Build();
@@ -98,6 +99,30 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Rifle, 40);
         }
 
+        private void CripplingShot()
+        {
+            _builder.Create(PerkCategoryType.RiflePacification, PerkType.CripplingShot)
+                .Name("Crippling Shot")
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.CripplingShot1)
+                .Description("Your next attack deals weapon DMG + 12 and has a Reflex DC12 check to inflict Disoriented for 12 seconds.")
+                .Price(2)
+                .RequirementSkill(SkillType.Rifle, 8)
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.CripplingShot2)
+                .Description("Your next attack deals weapon DMG + 22 and has a Reflex DC15 check to inflict Disoriented for 15 seconds.")
+                .Price(3)
+                .RequirementSkill(SkillType.Rifle, 20)
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.CripplingShot3)
+                .Description("Your next attack deals weapon DMG + 34 and has a Reflex DC18 check to inflict Disoriented for 20 seconds.")
+                .Price(4)
+                .RequirementSkill(SkillType.Rifle, 35);
+        }
+
         private void DeadCenter()
         {
             _builder.Create(PerkCategoryType.RifleMarksman, PerkType.DeadCenter)
@@ -150,6 +175,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Kill Zone")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.KillZone1)
                 .Description("For 20 seconds, repeated attacks against the same target stack +4% rifle damage, up to +20%. Switching targets clears this bonus.")
                 .Price(3)
                 .RequirementSkill(SkillType.Rifle, 45);
@@ -262,6 +288,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Sniper Stance")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.SniperStance1)
                 .Description("While active, grants +20% Attack and +15% critical damage, but reduces Evasion and Defense by 20%.")
                 .Price(2)
                 .RequirementSkill(SkillType.Rifle, 15);
@@ -284,6 +311,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Spotter Stance")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.SpotterStance1)
                 .Description("While active, grants +15% Accuracy and +15% Evasion against ranged attacks, but reduces Haste by 10%.")
                 .Price(2)
                 .RequirementSkill(SkillType.Rifle, 15);
@@ -335,14 +363,34 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Tranq Cone")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.TranqCone1)
                 .Description("Tranquilizes up to 3 enemies in a cone for up to 8 seconds. Damage breaks the effect prematurely.")
                 .Price(3)
                 .RequirementSkill(SkillType.Rifle, 25)
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.TranqCone2)
                 .Description("Tranquilizes up to 5 enemies in a cone for up to 10 seconds. Damage breaks the effect prematurely.")
                 .Price(3)
                 .RequirementSkill(SkillType.Rifle, 38);
+        }
+
+        private void TranquilizerShot()
+        {
+            _builder.Create(PerkCategoryType.RiflePacification, PerkType.TranquilizerShot)
+                .Name("Tranquilizer Shot")
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.TranquilizerShot1)
+                .Description("Your next attack tranquilizes the target for up to 8 seconds. Damage breaks the effect prematurely.")
+                .Price(2)
+                .RequirementSkill(SkillType.Rifle, 5)
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.TranquilizerShot2)
+                .Description("Your next attack tranquilizes the target for up to 14 seconds. Damage breaks the effect prematurely.")
+                .Price(4)
+                .RequirementSkill(SkillType.Rifle, 18);
         }
 
         private void VeteranTracker()

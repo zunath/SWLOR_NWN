@@ -1,0 +1,43 @@
+namespace SWLOR.Game.Server.Service.StatService
+{
+    public enum StatType
+    {
+        Invalid = 0,
+        AttackPercentAdjustment = 1,
+        DefensePercentAdjustment = 2,
+        PhysicalDefensePercentAdjustment = 3,
+        ForceDefensePercentAdjustment = 4,
+        AccuracyPercentAdjustment = 5,
+        EvasionPercentAdjustment = 6,
+        AttackDeflection = 7,
+        DeflectionStaminaRestore = 8,
+        DeflectionFPRestore = 9,
+        DeflectionStaminaRestorePercent = 10,
+        FPCostPercentAdjustment = 11,
+        FPCostFlatAdjustment = 12,
+        Attack = 13,
+        Defense = 14,
+        PhysicalDefense = 15,
+        ForceDefense = 16,
+        Accuracy = 17,
+        Evasion = 18,
+        MaxFP = 19,
+        MaxStamina = 20,
+        FireDefense = 21,
+        PoisonDefense = 22,
+        ElectricalDefense = 23,
+        IceDefense = 24,
+        DamageTakenPercentAdjustment = 25,
+        DamageTakenFlatAdjustment = 26,
+        AttackDelayReductionPercent = 27,
+        ActivationDelayFlatAdjustment = 28,
+        ExperiencePercentAdjustment = 29,
+        LanguageComprehension = 30,
+        HPRegen = 31,
+        FPRegen = 32,
+        StaminaRegen = 33,
+        RestRegen = 34,
+        AbilityRecastReductionPercent = 35,
+        MovementSpeedPercentAdjustment = 36
+    }
+}

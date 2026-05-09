@@ -1,11 +1,10 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.LanguageService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SkillType = SWLOR.Game.Server.Service.SkillService.SkillType;
 
@@ -90,17 +89,8 @@ namespace SWLOR.Game.Server.Service
                 dbListener.Skills[language].Rank;
             var maxRank = languageSkill.MaxRank;
 
-            // Check for the Comprehend Speech concentration ability.
             var grantSenseXP = false;
-            var statusEffectBonus = 0;
-            if (StatusEffect.HasStatusEffect(listener, StatusEffectType.ComprehendSpeech1))
-                statusEffectBonus = 5;
-            else if (StatusEffect.HasStatusEffect(listener, StatusEffectType.ComprehendSpeech2))
-                statusEffectBonus = 10;
-            else if (StatusEffect.HasStatusEffect(listener, StatusEffectType.ComprehendSpeech3))
-                statusEffectBonus = 15;
-            else if (StatusEffect.HasStatusEffect(listener, StatusEffectType.ComprehendSpeech4))
-                statusEffectBonus = 20;
+            var statusEffectBonus = Stat.GetStatAdjustment(listener, StatType.LanguageComprehension);
 
             if (statusEffectBonus > 0)
             {

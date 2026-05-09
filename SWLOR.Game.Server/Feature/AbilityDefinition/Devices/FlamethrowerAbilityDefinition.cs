@@ -1,10 +1,9 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -57,7 +56,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     var eDMG = EffectDamage(damage, DamageType.Fire);
                     Enmity.ModifyEnmity(activator, target, 280);
                     CombatPoint.AddCombatPoint(activator, target, SkillType.Devices, 3);
-                    
+
                     // Copying the target is needed because the variable gets adjusted outside the scope of the internal lambda.
                     var targetCopy = target;
                     DelayCommand(0.1f, () =>
@@ -69,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                         var checkResult = ReflexSave(targetCopy, dc, SavingThrowType.None, activator);
                         if (checkResult == SavingThrowResultType.Failed)
                         {
-                            StatusEffect.Apply(activator, targetCopy, StatusEffectType.Burn, 30f);
+                            StatusEffect.ApplyStatusEffect(activator, targetCopy, typeof(BurnStatusEffect), 30f);
                         }
                     });
                 }

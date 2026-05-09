@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -16,15 +15,23 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
         bool IsFlaggedForRemoval { get; }
         bool SendsApplicationMessage { get; }
         bool SendsWornOffMessage { get; }
-        bool IsRemovedOnJobChange { get; }
+        StatusEffectCleanseType CleanseTypes { get; }
         float Frequency { get; }
+        int DurationTicks { get; }
+        bool PersistsOnLogout { get; }
         StatGroup StatGroup { get; }
         List<Type> MorePowerfulEffectTypes { get; }
         List<Type> LessPowerfulEffectTypes { get; }
+        IStatusEffect Clone();
         string CanApply(uint creature);
         void ApplyEffect(uint source, uint creature, int durationTicks);
+        void ReassignSource(uint source);
+        void ReapplyEffect(uint creature);
         void RemoveEffect(uint creature);
         void TickEffect(uint creature);
+        void ReconcileElapsedTime(DateTime currentTime);
         void OnHitEffect(uint creature, uint target, int damage);
+        void OnDamageDealtEffect(uint attacker, uint defender, int damage);
+        void OnDamageTakenEffect(uint defender, uint attacker, int damage);
     }
 }

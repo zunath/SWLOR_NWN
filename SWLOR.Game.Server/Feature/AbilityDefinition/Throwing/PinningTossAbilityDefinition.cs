@@ -3,7 +3,6 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -28,6 +27,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 .Name("Pinning Toss I")
                 .Level(1)
                 .HasActivationDelay(0f)
+                .HasRecastDelay(RecastGroup.PinningToss, 30f)
                 .RequiresTarget()
                 .HasImpactAction(ImpactAction)
                 .IsCastedAbility()
@@ -42,6 +42,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 .Name("Pinning Toss II")
                 .Level(2)
                 .HasActivationDelay(0f)
+                .HasRecastDelay(RecastGroup.PinningToss, 30f)
                 .RequiresTarget()
                 .HasImpactAction(ImpactAction)
                 .IsCastedAbility()
@@ -56,6 +57,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 .Name("Pinning Toss III")
                 .Level(3)
                 .HasActivationDelay(0f)
+                .HasRecastDelay(RecastGroup.PinningToss, 30f)
                 .RequiresTarget()
                 .HasImpactAction(ImpactAction)
                 .IsCastedAbility()
@@ -69,13 +71,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
             switch (level)
             {
                 case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Throwing, 8, 12, 12, SavingThrow.Reflex, StatusEffectType.Invalid, AbilityControlEffect.None, false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Throwing, 8, 12, 12, SavingThrow.Reflex, typeof(DisorientedStatusEffect), false);
                     break;
                 case 2:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Throwing, 18, 15, 15, SavingThrow.Reflex, StatusEffectType.Invalid, AbilityControlEffect.None, false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Throwing, 18, 15, 15, SavingThrow.Reflex, typeof(DisorientedStatusEffect), false);
                     break;
                 case 3:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Throwing, 30, 20, 18, SavingThrow.Reflex, StatusEffectType.Invalid, AbilityControlEffect.None, false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Throwing, 30, 20, 18, SavingThrow.Reflex, typeof(DisorientedStatusEffect), false);
                     break;
             }
         }

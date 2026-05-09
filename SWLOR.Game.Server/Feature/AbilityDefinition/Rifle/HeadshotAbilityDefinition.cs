@@ -3,7 +3,6 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -26,6 +25,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 .Name("Headshot")
                 .Level(1)
                 .HasActivationDelay(2f)
+                .HasRecastDelay(RecastGroup.Headshot, 120f)
                 .RequiresTarget()
                 .HasImpactAction(ImpactAction)
                 .IsCastedAbility()
@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
             switch (level)
             {
                 case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Rifle, 60, 3, 18, SavingThrow.Fortitude, StatusEffectType.Invalid, AbilityControlEffect.Dazed, false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Rifle, 60, 3, 18, SavingThrow.Fortitude, typeof(DazedStatusEffect), false);
                     break;
             }
         }

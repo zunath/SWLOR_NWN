@@ -3,7 +3,6 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -28,6 +27,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
                 .Level(1)
                 .HasActivationDelay(0f)
                 .RequiresTarget()
+                .HasRecastDelay(RecastGroup.RendingStrike, 60f)
                 .HasImpactAction(ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
@@ -42,6 +42,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
                 .Level(2)
                 .HasActivationDelay(0f)
                 .RequiresTarget()
+                .HasRecastDelay(RecastGroup.RendingStrike, 60f)
                 .HasImpactAction(ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
@@ -54,10 +55,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
             switch (level)
             {
                 case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Vibroblade, 18, 0, 12, SavingThrow.Fortitude, StatusEffectType.Invalid, AbilityControlEffect.None, false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Vibroblade, 18, 10, 12, SavingThrow.Fortitude, typeof(ExposedStatusEffect), false);
                     break;
                 case 2:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Vibroblade, 32, 0, 16, SavingThrow.Fortitude, StatusEffectType.Invalid, AbilityControlEffect.None, false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Vibroblade, 32, 12, 16, SavingThrow.Fortitude, typeof(ExposedStatusEffect), false);
                     break;
             }
         }

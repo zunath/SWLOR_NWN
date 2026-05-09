@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
@@ -29,23 +28,23 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
             var beastStat = GetAbilityModifier(AbilityType.Agility, activator);
             var bonusDuration = 3f * (beastmasterStat + beastStat);
 
-            var statusEffectType = hastenLevel switch
+            var statusEffect = hastenLevel switch
             {
-                1 => StatusEffectType.Hasten1,
-                2 => StatusEffectType.Hasten2,
-                3 => StatusEffectType.Hasten3,
-                _ => StatusEffectType.Invalid
+                1 => typeof(Hasten1StatusEffect),
+                2 => typeof(Hasten2StatusEffect),
+                3 => typeof(Hasten3StatusEffect),
+                _ => null
             };
 
-            if (statusEffectType == StatusEffectType.Invalid)
+            if (statusEffect == null)
                 return;
 
-            StatusEffect.Apply(activator, activator, statusEffectType, 30f + bonusDuration);
+            StatusEffect.ApplyStatusEffect(activator, activator, statusEffect, 30f + bonusDuration);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Haste), activator);
 
             if (applyToBeastmaster)
             {
-                StatusEffect.Apply(activator, beastmaster, statusEffectType, 30f + bonusDuration);
+                StatusEffect.ApplyStatusEffect(activator, beastmaster, statusEffect, 30f + bonusDuration);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Haste), beastmaster);
             }
 

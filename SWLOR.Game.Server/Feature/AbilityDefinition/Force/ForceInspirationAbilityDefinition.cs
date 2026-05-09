@@ -20,26 +20,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             return builder.Build();
         }
 
-        private void Impact(uint activator, uint target, int baseAmount)
+        private void Impact(uint activator, uint target, Type statusEffect)
         {
             var willpowerMod = GetAbilityScore(activator, AbilityType.Willpower);
             const float BaseLength = 900f;
             var length = BaseLength + willpowerMod * 15f;
 
-            var effect = EffectLinkEffects(EffectAbilityIncrease(AbilityType.Willpower, baseAmount),
-                EffectAbilityIncrease(AbilityType.Agility, baseAmount));
-            effect = EffectLinkEffects(effect, EffectAbilityIncrease(AbilityType.Might, baseAmount));
-
-            for (var e = GetFirstEffect(target); GetIsEffectValid(e); e = GetNextEffect(target))
-            {
-                if (GetEffectTag(e) == "COMBAT_ENHANCEMENT" || GetEffectTag(e) == "FORCE_INSPIRATION")
-                {
-                    RemoveEffect(target, e);
-                }
-            }
-            effect = TagEffect(effect, "FORCE_INSPIRATION");
-
-            ApplyEffectToObject(DurationType.Temporary, effect, target, length);
+            StatusEffect.ApplyStatusEffect(activator, target, statusEffect, length);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Globe_Use), target);
 
             // WIL/AGI from this buff change max FP/STM (Stat.GetMaxFP / GetMaxStamina). Refresh UI — otherwise
@@ -62,7 +49,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .IsCastedAbility()
                 .HasImpactAction((activator, target, _, _) =>
                 {
-                    Impact(activator, target, 1);
+                    Impact(activator, target, typeof(ForceInspiration1StatusEffect));
                 });
         }
         private void ForceInspiration2(AbilityBuilder builder)
@@ -76,7 +63,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .IsCastedAbility()
                 .HasImpactAction((activator, target, _, _) =>
                 {
-                    Impact(activator, target, 2);
+                    Impact(activator, target, typeof(ForceInspiration2StatusEffect));
                 });
         }
         private void ForceInspiration3(AbilityBuilder builder)
@@ -90,7 +77,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .IsCastedAbility()
                 .HasImpactAction((activator, target, _, _) =>
                 {
-                    Impact(activator, target, 3);
+                    Impact(activator, target, typeof(ForceInspiration3StatusEffect));
                 });
         }
     }

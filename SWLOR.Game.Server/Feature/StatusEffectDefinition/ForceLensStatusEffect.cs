@@ -1,0 +1,22 @@
+using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Service.StatService;
+using SWLOR.NWN.API.NWScript.Enum;
+
+namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
+{
+    public sealed class ForceLensStatusEffect : StatusEffectBase
+    {
+        public override string Name => "Force Lens";
+        public override EffectIconType Icon => EffectIconType.DamageReduction;
+        public ForceLensStatusEffect()
+        {
+            StatGroup.Stats[StatType.ForceDefensePercentAdjustment] = 15;
+        }
+
+        protected override void Apply(uint creature, int durationTicks)
+        {
+            if (Source == creature)
+                StatGroup.Stats[StatType.AttackDeflection] = 10;
+        }
+    }
+}

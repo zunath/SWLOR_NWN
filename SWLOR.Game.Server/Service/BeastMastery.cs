@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
@@ -13,7 +12,7 @@ using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -100,7 +99,7 @@ namespace SWLOR.Game.Server.Service
         {
             const string FileName = "iprp_incubonus";
             var rowCount = Get2DARowCount(FileName);
-            
+
             for (var row = 1; row <= rowCount; row++)
             {
                 var label = Get2DAString(FileName, "Label", row);
@@ -164,26 +163,8 @@ namespace SWLOR.Game.Server.Service
 
             if (!ignoreBonuses)
             {
-                // Food Bonus
-                if (StatusEffect.HasStatusEffect(beast, StatusEffectType.PetFood))
-                {
-                    var xpBonus = StatusEffect.GetEffectData<int>(beast, StatusEffectType.PetFood);
-
-                    bonusPercentage += xpBonus * 0.01f;
-                }
-
-                // Dedication bonus
-                if (StatusEffect.HasStatusEffect(beast, StatusEffectType.Dedication))
-                {
-                    var source = StatusEffect.GetEffectData<uint>(beast, StatusEffectType.Dedication);
-
-                    if (GetIsObjectValid(source))
-                    {
-                        var effectiveLevel = Perk.GetPerkLevel(source, PerkType.Dedication);
-                        var sourceSocial = GetAbilityScore(source, AbilityType.Social);
-                        bonusPercentage += (10 + effectiveLevel * sourceSocial) * 0.01f;
-                    }
-                }
+                // Status bonus
+                bonusPercentage += Stat.GetStatAdjustment(beast, StatType.ExperiencePercentAdjustment) * 0.01f;
 
                 // Social bonus
                 if (social > 0)
@@ -268,7 +249,7 @@ namespace SWLOR.Game.Server.Service
             SetObjectVisualTransform(beast, ObjectVisualTransform.Scale, beastDetail.AppearanceScale);
             SetPortraitId(beast, dbBeast.PortraitId > -1 ? dbBeast.PortraitId : beastDetail.PortraitId);
             SetSoundset(beast, dbBeast.SoundSetId > -1 ? dbBeast.SoundSetId : beastDetail.SoundSetId);
-            
+
             ApplyStats(beast);
 
             AddHenchman(player, beast);
@@ -318,7 +299,7 @@ namespace SWLOR.Game.Server.Service
                         var healHP = (int)(GetMaxHitPoints(beast) * (percentHeal * 0.01f));
                         ApplyEffectToObject(DurationType.Instant, EffectHeal(healHP), beast);
                     }
-                        
+
                 });
             });
         }
@@ -331,17 +312,17 @@ namespace SWLOR.Game.Server.Service
 
             var skin = GetItemInSlot(InventorySlot.CreatureArmor, beast);
             var claw = GetItemInSlot(InventorySlot.CreatureLeft, beast);
-            
+
             var level = beastDetail.Levels[dbBeast.Level];
-            
+
             BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.NPCLevel, -1, dbBeast.Level), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
             BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.Stamina, -1, level.STM), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
             BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.FP, -1, level.FP), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-            
+
             BiowareXP2.IPSafeAddItemProperty(claw, ItemPropertyCustom(ItemPropertyType.DMG, (int)CombatDamageType.Physical, level.DMG), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
             BiowareXP2.IPSafeAddItemProperty(claw, ItemPropertyCustom(ItemPropertyType.DamageStat, (int)beastDetail.DamageStat), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
             BiowareXP2.IPSafeAddItemProperty(claw, ItemPropertyCustom(ItemPropertyType.AccuracyStat, (int)beastDetail.AccuracyStat), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-            
+
             ObjectPlugin.SetMaxHitPoints(beast, beastDetail.Levels[dbBeast.Level].HP);
             CreaturePlugin.SetRawAbilityScore(beast, AbilityType.Might, level.Stats[AbilityType.Might]);
             CreaturePlugin.SetRawAbilityScore(beast, AbilityType.Perception, level.Stats[AbilityType.Perception]);
@@ -437,7 +418,7 @@ namespace SWLOR.Game.Server.Service
             var beast = GetModuleItemAcquiredBy();
             if (!IsPlayerBeast(beast))
                 return;
-            
+
             var master = GetMaster(beast);
             var item = GetModuleItemAcquired();
             var type = GetBaseItemType(item);
@@ -535,7 +516,7 @@ namespace SWLOR.Game.Server.Service
 
             AssignCommand(beast, () => ClearAllActions());
 
-            StatusEffect.Apply(beast, beast, StatusEffectType.Rest, 0f);
+            StatusEffect.ApplyStatusEffect(beast, beast, typeof(RestStatusEffect), 0f);
         }
 
         [NWNEventHandler(ScriptName.OnBeastSpawn)]
@@ -548,6 +529,7 @@ namespace SWLOR.Game.Server.Service
                 SetIsDestroyable(true, false, false);
             });
             Stat.LoadNPCStats();
+            Stat.ApplyCreatureMovementRate(beast);
         }
 
         [NWNEventHandler(ScriptName.OnBeastSpellCast)]
@@ -573,7 +555,7 @@ namespace SWLOR.Game.Server.Service
                 SendMessageToPC(player, ColorToken.Red("Only players may use this terminal."));
                 return;
             }
-            
+
             Gui.TogglePlayerWindow(player, GuiWindowType.Stables, null, OBJECT_SELF);
         }
 
@@ -704,8 +686,8 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The percentage associated or 0.0 if not found.</returns>
         public static float GetIncubationPercentageById(int itemPropertyId)
         {
-            return !_incubationPercentages.ContainsKey(itemPropertyId) 
-                ? 0f 
+            return !_incubationPercentages.ContainsKey(itemPropertyId)
+                ? 0f
                 : _incubationPercentages[itemPropertyId];
         }
 
@@ -748,7 +730,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     SendMessageToPC(player, $"Another player's incubation job is active. This job has completed.");
                 }
-                
+
                 return;
             }
 

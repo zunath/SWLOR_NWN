@@ -1,16 +1,17 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Service.TelegraphService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using NumericsVector3 = System.Numerics.Vector3;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -290,11 +291,13 @@ namespace SWLOR.Game.Server.Service
         /// <param name="creature">The creature who will perform the concentration.</param>
         /// <param name="target">The target of the concentration effect.</param>
         /// <param name="feat">The type of ability to activate.</param>
-        /// <param name="statusEffectType">The concentration status effect to apply.</param>
-        public static void StartConcentrationAbility(uint creature, uint target, FeatType feat, StatusEffectType statusEffectType)
+        /// <param name="statusEffect">The concentration status effect to apply.</param>
+        public static void StartConcentrationAbility(uint creature, uint target, FeatType feat, Type statusEffect)
         {
-            _activeConcentrationAbilities[creature] = new ActiveConcentrationAbility(target, feat, statusEffectType);
-            StatusEffect.Apply(creature, target, statusEffectType, 0.0f, null, feat);
+            EndConcentrationAbility(creature, false);
+
+            _activeConcentrationAbilities[creature] = new ActiveConcentrationAbility(target, feat, statusEffect);
+            StatusEffect.ApplyStatusEffect(creature, target, statusEffect, 0.0f);
 
             Messaging.SendMessageNearbyToPlayers(creature, $"{GetName(creature)} begins concentrating...");
             SetLocalBool(creature, "CONCENTRATION_FIRST_USE", true);
@@ -313,9 +316,9 @@ namespace SWLOR.Game.Server.Service
                 return _activeConcentrationAbilities[creature];
             }
 
-            return new ActiveConcentrationAbility(OBJECT_INVALID, FeatType.Invalid, StatusEffectType.Invalid);
+            return new ActiveConcentrationAbility(OBJECT_INVALID, FeatType.Invalid, null);
         }
-        
+
         /// <summary>
         /// Ends a concentration effect on a specified creature.
         /// If creature isn't concentrating, nothing will happen.
@@ -323,14 +326,47 @@ namespace SWLOR.Game.Server.Service
         /// <param name="creature"></param>
         public static void EndConcentrationAbility(uint creature)
         {
+            EndConcentrationAbility(creature, true);
+        }
+
+        private static void EndConcentrationAbility(uint creature, bool sendMessage)
+        {
             if (_activeConcentrationAbilities.ContainsKey(creature))
             {
                 var activeConcentrationEffect = _activeConcentrationAbilities[creature];
-                StatusEffect.Remove(creature, activeConcentrationEffect.StatusEffectType);
+                var target = GetIsObjectValid(activeConcentrationEffect.Target)
+                    ? activeConcentrationEffect.Target
+                    : creature;
+
+                StatusEffect.RemoveStatusEffect(target, activeConcentrationEffect.StatusEffect, creature);
                 _activeConcentrationAbilities.Remove(creature);
 
-                SendMessageToPC(creature, "You stop concentrating.");
+                if (sendMessage)
+                    SendMessageToPC(creature, "You stop concentrating.");
+
                 DeleteLocalBool(creature, "CONCENTRATION_FIRST_USE");
+            }
+        }
+
+        [NWNEventHandler(ScriptName.OnModuleExit)]
+        public static void ClearConcentrationOnExit()
+        {
+            var player = GetExitingObject();
+            if (!GetIsPC(player) || GetIsDM(player))
+                return;
+
+            EndConcentrationAbility(player, false);
+            EndConcentrationAbilitiesTargeting(player);
+        }
+
+        private static void EndConcentrationAbilitiesTargeting(uint target)
+        {
+            foreach (var (creature, concentrationAbility) in _activeConcentrationAbilities.ToList())
+            {
+                if (concentrationAbility.Target != target)
+                    continue;
+
+                EndConcentrationAbility(creature);
             }
         }
 
@@ -370,7 +406,18 @@ namespace SWLOR.Game.Server.Service
             return count;
         }
 
-        public static void ApplyAura(uint activator, StatusEffectType type, bool targetsSelf, bool targetsParty, bool targetsEnemies)
+        private static void ApplyAuraEffect(uint source, uint recipient, Type type)
+        {
+            if (!StatusEffect.HasStatusEffect(recipient, type, source))
+                StatusEffect.ApplyStatusEffect(source, recipient, type, 0f);
+        }
+
+        private static void RemoveAuraEffect(uint source, uint recipient, Type type, bool sendsWornOffMessage = false)
+        {
+            StatusEffect.RemoveStatusEffect(recipient, type, source, sendsWornOffMessage);
+        }
+
+        public static void ApplyAura(uint activator, Type type, bool targetsSelf, bool targetsParty, bool targetsEnemies)
         {
             if (!_playerAuras.ContainsKey(activator))
                 _playerAuras.Add(activator, new PlayerAura());
@@ -378,25 +425,25 @@ namespace SWLOR.Game.Server.Service
             var aura = _playerAuras[activator];
 
             // Safety check - ensure the same aura never enters the cache more than once.
-            if (aura.Auras.Exists(x => x.Type == type))
+            if (aura.Auras.Exists(x => x.StatusEffect == type))
                 return;
 
             var maxAuras = GetMaxNumberOfAuras(activator);
-            var detail = StatusEffect.GetDetail(type);
+            var effectName = StatusEffect.GetStatusEffectName(type);
 
             while (aura.Auras.Count >= maxAuras)
             {
-                var removeType = aura.Auras[0].Type;
+                var removeType = aura.Auras[0].StatusEffect;
                 if (aura.Auras[0].TargetsSelf)
                 {
-                    StatusEffect.Remove(activator, removeType, false);
+                    RemoveAuraEffect(activator, activator, removeType);
                 }
 
                 if (aura.Auras[0].TargetsParty)
                 {
                     foreach (var member in aura.PartyMembersInRange)
                     {
-                        StatusEffect.Remove(member, removeType, false);
+                        RemoveAuraEffect(activator, member, removeType);
                     }
                 }
 
@@ -404,7 +451,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     foreach (var npc in aura.CreaturesInRange)
                     {
-                        StatusEffect.Remove(npc, removeType, false);
+                        RemoveAuraEffect(activator, npc, removeType);
                     }
                 }
 
@@ -413,17 +460,17 @@ namespace SWLOR.Game.Server.Service
 
             aura.Auras.Add(new PlayerAuraDetail(type, targetsSelf, targetsParty, targetsEnemies));
 
-            if (targetsSelf && !StatusEffect.HasStatusEffect(activator, type))
+            if (targetsSelf)
             {
-                StatusEffect.Apply(activator, activator, type, 0f, activator);
+                ApplyAuraEffect(activator, activator, type);
             }
 
             if (targetsParty)
             {
                 foreach (var member in aura.PartyMembersInRange)
                 {
-                    if (Party.IsInParty(activator, member) && !StatusEffect.HasStatusEffect(member, type))
-                        StatusEffect.Apply(activator, member, type, 0f, activator);
+                    if (Party.IsInParty(activator, member))
+                        ApplyAuraEffect(activator, member, type);
                 }
             }
 
@@ -432,17 +479,16 @@ namespace SWLOR.Game.Server.Service
                 foreach (var npc in aura.CreaturesInRange)
                 {
                     if (!GetIsDMPossessed(npc) && !GetIsDM(npc) &&
-                        (GetIsEnemy(activator, npc) || GetIsEnemy(npc, activator)) &&
-                        !StatusEffect.HasStatusEffect(npc, type))
-                        StatusEffect.Apply(activator, npc, type, 0f, activator);
+                        (GetIsEnemy(activator, npc) || GetIsEnemy(npc, activator)))
+                        ApplyAuraEffect(activator, npc, type);
                 }
             }
 
-            SendMessageToPC(activator, ColorToken.Green($"Aura '{detail.Name}' activated."));
+            SendMessageToPC(activator, ColorToken.Green($"Aura '{effectName}' activated."));
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Sound_Burst), activator);
         }
 
-        public static bool ToggleAura(uint activator, StatusEffectType type)
+        public static bool ToggleAura(uint activator, Type type)
         {
             if (!_playerAuras.ContainsKey(activator))
                 return true;
@@ -450,24 +496,23 @@ namespace SWLOR.Game.Server.Service
             // Aura is active and player wants to deactivate it.
             // Remove it from the list and send a notification message.
             var aura = _playerAuras[activator];
-            var existing = aura.Auras.FirstOrDefault(x => x.Type == type);
+            var existing = aura.Auras.FirstOrDefault(x => x.StatusEffect == type);
             if (existing != null)
             {
-                var statusEffect = StatusEffect.GetDetail(type);
+                var effectName = StatusEffect.GetStatusEffectName(type);
 
-                SendMessageToPC(activator, ColorToken.Red($"Aura '{statusEffect.Name}' deactivated."));
+                SendMessageToPC(activator, ColorToken.Red($"Aura '{effectName}' deactivated."));
 
                 if (existing.TargetsSelf)
                 {
-                    StatusEffect.Remove(activator, type, false);
+                    RemoveAuraEffect(activator, activator, type);
                 }
 
                 if (existing.TargetsParty)
                 {
                     foreach (var member in aura.PartyMembersInRange)
                     {
-                        if (!HasAlternativeAuraSource(member, type, activator))
-                            StatusEffect.Remove(member, type, false);
+                        RemoveAuraEffect(activator, member, type);
                     }
                 }
 
@@ -475,8 +520,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     foreach (var npc in aura.CreaturesInRange)
                     {
-                        if (!HasAlternativeAuraSource(npc, type, activator))
-                            StatusEffect.Remove(npc, type, false);
+                        RemoveAuraEffect(activator, npc, type);
                     }
                 }
 
@@ -502,15 +546,14 @@ namespace SWLOR.Game.Server.Service
             {
                 if (aura.TargetsSelf)
                 {
-                    StatusEffect.Remove(activator, aura.Type);
+                    RemoveAuraEffect(activator, activator, aura.StatusEffect, true);
                 }
 
                 if (aura.TargetsParty)
                 {
                     foreach (var member in auraDetails.PartyMembersInRange)
                     {
-                        if (!HasAlternativeAuraSource(member, aura.Type, activator))
-                            StatusEffect.Remove(member, aura.Type, false);
+                        RemoveAuraEffect(activator, member, aura.StatusEffect);
                     }
                 }
 
@@ -518,8 +561,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     foreach (var npc in auraDetails.CreaturesInRange)
                     {
-                        if (!HasAlternativeAuraSource(npc, aura.Type, activator))
-                            StatusEffect.Remove(npc, aura.Type, false);
+                        RemoveAuraEffect(activator, npc, aura.StatusEffect);
                     }
                 }
             }
@@ -535,14 +577,14 @@ namespace SWLOR.Game.Server.Service
         /// <param name="target">The creature to remove from all aura ranges.</param>
         public static void RemoveCreatureFromAllAuraRanges(uint target)
         {
-            foreach (var (_, playerAura) in _playerAuras)
+            foreach (var (leader, playerAura) in _playerAuras)
             {
                 if (playerAura.PartyMembersInRange.Remove(target))
                 {
                     foreach (var aura in playerAura.Auras)
                     {
                         if (aura.TargetsParty)
-                            StatusEffect.Remove(target, aura.Type, false);
+                            RemoveAuraEffect(leader, target, aura.StatusEffect);
                     }
                 }
 
@@ -551,7 +593,7 @@ namespace SWLOR.Game.Server.Service
                     foreach (var aura in playerAura.Auras)
                     {
                         if (aura.TargetsEnemies)
-                            StatusEffect.Remove(target, aura.Type, false);
+                            RemoveAuraEffect(leader, target, aura.StatusEffect);
                     }
                 }
             }
@@ -574,8 +616,8 @@ namespace SWLOR.Game.Server.Service
                 {
                     foreach (var aura in playerAura.Auras)
                     {
-                        if (aura.TargetsParty && !StatusEffect.HasStatusEffect(target, aura.Type))
-                            StatusEffect.Apply(leader, target, aura.Type, 0f, leader);
+                        if (aura.TargetsParty)
+                            ApplyAuraEffect(leader, target, aura.StatusEffect);
                     }
                 }
 
@@ -585,37 +627,11 @@ namespace SWLOR.Game.Server.Service
                 {
                     foreach (var aura in playerAura.Auras)
                     {
-                        if (aura.TargetsEnemies && !StatusEffect.HasStatusEffect(target, aura.Type))
-                            StatusEffect.Apply(leader, target, aura.Type, 0f, leader);
+                        if (aura.TargetsEnemies)
+                            ApplyAuraEffect(leader, target, aura.StatusEffect);
                     }
                 }
             }
-        }
-
-        /// <summary>
-        /// Returns true if any leader other than the excluded one has the given aura type active
-        /// and the recipient is still tracked in that leader's range list. Used to avoid stripping
-        /// an effect from a recipient when a second leader with the same aura is still in range.
-        /// </summary>
-        private static bool HasAlternativeAuraSource(uint recipient, StatusEffectType type, uint excludeLeader)
-        {
-            foreach (var (leader, playerAura) in _playerAuras)
-            {
-                if (leader == excludeLeader) continue;
-
-                foreach (var aura in playerAura.Auras)
-                {
-                    if (aura.Type != type) continue;
-
-                    if (aura.TargetsParty && playerAura.PartyMembersInRange.Contains(recipient))
-                        return true;
-
-                    if (aura.TargetsEnemies && playerAura.CreaturesInRange.Contains(recipient))
-                        return true;
-                }
-            }
-
-            return false;
         }
 
         private static AreaOfEffect GetAuraAOE(int level)
@@ -724,9 +740,9 @@ namespace SWLOR.Game.Server.Service
 
                 foreach (var detail in _playerAuras[self].Auras)
                 {
-                    if (detail.TargetsParty && !StatusEffect.HasStatusEffect(entering, detail.Type))
+                    if (detail.TargetsParty)
                     {
-                        StatusEffect.Apply(self, entering, detail.Type, 0f, self);
+                        ApplyAuraEffect(self, entering, detail.StatusEffect);
                     }
                 }
             }
@@ -739,9 +755,9 @@ namespace SWLOR.Game.Server.Service
 
                 foreach (var detail in _playerAuras[self].Auras)
                 {
-                    if (detail.TargetsEnemies && !StatusEffect.HasStatusEffect(entering, detail.Type))
+                    if (detail.TargetsEnemies)
                     {
-                        StatusEffect.Apply(self, entering, detail.Type, 0f, self);
+                        ApplyAuraEffect(self, entering, detail.StatusEffect);
                     }
                 }
             }
@@ -768,9 +784,9 @@ namespace SWLOR.Game.Server.Service
 
                 foreach (var detail in _playerAuras[self].Auras)
                 {
-                    if (detail.TargetsParty && !HasAlternativeAuraSource(exiting, detail.Type, self))
+                    if (detail.TargetsParty)
                     {
-                        StatusEffect.Remove(exiting, detail.Type, false);
+                        RemoveAuraEffect(self, exiting, detail.StatusEffect);
                     }
                 }
             }
@@ -784,9 +800,9 @@ namespace SWLOR.Game.Server.Service
 
                 foreach (var detail in _playerAuras[self].Auras)
                 {
-                    if (detail.TargetsEnemies && !HasAlternativeAuraSource(exiting, detail.Type, self))
+                    if (detail.TargetsEnemies)
                     {
-                        StatusEffect.Remove(exiting, detail.Type, false);
+                        RemoveAuraEffect(self, exiting, detail.StatusEffect);
                     }
                 }
             }
@@ -795,7 +811,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Applies the standard hostile combat impact used by weapon and martial abilities.
         /// </summary>
-        public static void ApplyCombatImpact(
+        public static int ApplyCombatImpact(
             uint activator,
             uint target,
             Location targetLocation,
@@ -804,60 +820,361 @@ namespace SWLOR.Game.Server.Service
             int duration,
             int savingThrowDc,
             SavingThrow savingThrow,
-            StatusEffectType statusEffect,
-            AbilityControlEffect controlEffect,
-            bool isArea)
+            Type statusEffect,
+            bool isArea,
+            IEnumerable<Type> additionalStatusEffects = null,
+            Func<IStatusEffect> statusEffectFactory = null)
         {
+            var totalDamage = 0;
+
             if (isArea)
             {
                 var center = GetIsObjectValid(target) ? GetLocation(target) : targetLocation;
                 var creature = GetFirstObjectInShape(Shape.Sphere, 5.0f, center, true);
+                var creatures = new List<uint>();
                 while (GetIsObjectValid(creature))
                 {
-                    if (GetIsReactionTypeHostile(creature, activator))
-                    {
-                        ApplyHostileCombatImpact(
-                            activator,
-                            creature,
-                            skillType,
-                            baseDamage,
-                            savingThrowDc,
-                            savingThrow,
-                            statusEffect,
-                            controlEffect,
-                            duration);
-                    }
+                    creatures.Add(creature);
 
                     creature = GetNextObjectInShape(Shape.Sphere, 5.0f, center, true);
                 }
-            }
-            else if (GetIsObjectValid(target))
-            {
-                ApplyHostileCombatImpact(
+
+                totalDamage = ApplyCombatImpactToCreatures(
                     activator,
-                    target,
+                    creatures,
                     skillType,
                     baseDamage,
                     savingThrowDc,
                     savingThrow,
                     statusEffect,
-                    controlEffect,
-                    duration);
+                    duration,
+                    additionalStatusEffects,
+                    statusEffectFactory);
+            }
+            else if (GetIsObjectValid(target))
+            {
+                totalDamage = ApplyCombatImpactToCreatures(
+                    activator,
+                    new[] { target },
+                    skillType,
+                    baseDamage,
+                    savingThrowDc,
+                    savingThrow,
+                    statusEffect,
+                    duration,
+                    additionalStatusEffects,
+                    statusEffectFactory);
+            }
+
+            AssignCommand(activator, () => ActionPlayAnimation(Animation.DoubleStrike));
+            return totalDamage;
+        }
+
+        /// <summary>
+        /// Applies a hostile combat impact after a visible telegraph resolves.
+        /// </summary>
+        public static void ApplyTelegraphedCombatImpact(
+            uint activator,
+            uint target,
+            Location targetLocation,
+            SkillType skillType,
+            int baseDamage,
+            int duration,
+            int savingThrowDc,
+            SavingThrow savingThrow,
+            Type statusEffect,
+            CombatImpactAreaShape shape,
+            float telegraphDuration,
+            float lengthOrRadius,
+            float width = 0f,
+            IEnumerable<Type> additionalStatusEffects = null,
+            bool centerOnActivator = false,
+            Func<IStatusEffect> statusEffectFactory = null)
+        {
+            if (telegraphDuration <= 0f)
+            {
+                ApplyCombatImpactInShape(
+                    activator,
+                    target,
+                    targetLocation,
+                    skillType,
+                    baseDamage,
+                    duration,
+                    savingThrowDc,
+                    savingThrow,
+                    statusEffect,
+                    shape,
+                    lengthOrRadius,
+                    width,
+                    additionalStatusEffects,
+                    centerOnActivator,
+                    statusEffectFactory);
+                return;
+            }
+
+            var action = BuildTelegraphedCombatImpactAction(
+                skillType,
+                baseDamage,
+                duration,
+                savingThrowDc,
+                savingThrow,
+                statusEffect,
+                additionalStatusEffects,
+                statusEffectFactory);
+
+            switch (shape)
+            {
+                case CombatImpactAreaShape.Sphere:
+                    Telegraph.CreateSphereTelegraph(
+                        activator,
+                        GetAreaImpactPosition(activator, target, targetLocation, centerOnActivator),
+                        lengthOrRadius,
+                        telegraphDuration,
+                        true,
+                        action);
+                    break;
+                case CombatImpactAreaShape.Cone:
+                    Telegraph.CreateConeTelegraph(
+                        activator,
+                        GetPosition(activator),
+                        GetImpactRotationRadians(activator, target, targetLocation),
+                        lengthOrRadius,
+                        width > 0f ? width : lengthOrRadius,
+                        telegraphDuration,
+                        true,
+                        action);
+                    break;
+                case CombatImpactAreaShape.Line:
+                    Telegraph.CreateLineTelegraph(
+                        activator,
+                        GetPosition(activator),
+                        GetImpactRotationRadians(activator, target, targetLocation),
+                        lengthOrRadius,
+                        width > 0f ? width : 2.0f,
+                        telegraphDuration,
+                        true,
+                        action);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(shape), shape, null);
             }
 
             AssignCommand(activator, () => ActionPlayAnimation(Animation.DoubleStrike));
         }
 
-        private static void ApplyHostileCombatImpact(
+        private static void ApplyCombatImpactInShape(
+            uint activator,
+            uint target,
+            Location targetLocation,
+            SkillType skillType,
+            int baseDamage,
+            int duration,
+            int savingThrowDc,
+            SavingThrow savingThrow,
+            Type statusEffect,
+            CombatImpactAreaShape shape,
+            float lengthOrRadius,
+            float width,
+            IEnumerable<Type> additionalStatusEffects,
+            bool centerOnActivator,
+            Func<IStatusEffect> statusEffectFactory)
+        {
+            var creatures = new List<uint>();
+            var origin = shape == CombatImpactAreaShape.Sphere
+                ? Location(GetArea(activator), GetAreaImpactPosition(activator, target, targetLocation, centerOnActivator), 0f)
+                : GetLocation(activator);
+            var maxDistance = shape == CombatImpactAreaShape.Sphere
+                ? lengthOrRadius
+                : Math.Max(lengthOrRadius, width);
+
+            var nth = 1;
+            var creature = GetNearestCreatureToLocation(CreatureType.IsAlive, true, origin, nth);
+            var rotation = GetImpactRotationRadians(activator, target, targetLocation);
+            var originPosition = GetPositionFromLocation(origin);
+
+            while (GetIsObjectValid(creature) &&
+                   GetDistanceBetweenLocations(origin, GetLocation(creature)) <= maxDistance)
+            {
+                var creaturePosition = GetPosition(creature);
+                if (IsPositionInCombatImpactShape(creaturePosition, originPosition, rotation, shape, lengthOrRadius, width))
+                {
+                    creatures.Add(creature);
+                }
+
+                nth++;
+                creature = GetNearestCreatureToLocation(CreatureType.IsAlive, true, origin, nth);
+            }
+
+            ApplyCombatImpactToCreatures(
+                activator,
+                creatures,
+                skillType,
+                baseDamage,
+                savingThrowDc,
+                savingThrow,
+                statusEffect,
+                duration,
+                additionalStatusEffects,
+                statusEffectFactory);
+        }
+
+        private static ApplyTelegraphEffect BuildTelegraphedCombatImpactAction(
+            SkillType skillType,
+            int baseDamage,
+            int duration,
+            int savingThrowDc,
+            SavingThrow savingThrow,
+            Type statusEffect,
+            IEnumerable<Type> additionalStatusEffects,
+            Func<IStatusEffect> statusEffectFactory)
+        {
+            return (creator, creatures) =>
+            {
+                if (!GetIsObjectValid(creator) || GetCurrentHitPoints(creator) <= 0)
+                    return;
+
+                ApplyCombatImpactToCreatures(
+                    creator,
+                    creatures,
+                    skillType,
+                    baseDamage,
+                    savingThrowDc,
+                    savingThrow,
+                    statusEffect,
+                    duration,
+                    additionalStatusEffects,
+                    statusEffectFactory);
+            };
+        }
+
+        private static int ApplyCombatImpactToCreatures(
+            uint activator,
+            IEnumerable<uint> creatures,
+            SkillType skillType,
+            int baseDamage,
+            int savingThrowDc,
+            SavingThrow savingThrow,
+            Type statusEffect,
+            int duration,
+            IEnumerable<Type> additionalStatusEffects = null,
+            Func<IStatusEffect> statusEffectFactory = null)
+        {
+            var totalDamage = 0;
+
+            foreach (var creature in creatures.Distinct())
+            {
+                if (!GetIsObjectValid(creature) || !GetIsReactionTypeHostile(creature, activator))
+                    continue;
+
+                totalDamage += ApplyHostileCombatImpact(
+                    activator,
+                    creature,
+                    skillType,
+                    baseDamage,
+                    savingThrowDc,
+                    savingThrow,
+                    statusEffect,
+                    duration,
+                    additionalStatusEffects,
+                    statusEffectFactory);
+            }
+
+            return totalDamage;
+        }
+
+        private static NumericsVector3 GetAreaImpactPosition(uint activator, uint target, Location targetLocation, bool centerOnActivator = false)
+        {
+            if (centerOnActivator)
+                return GetPosition(activator);
+
+            if (GetIsObjectValid(target))
+                return GetPosition(target);
+
+            var targetArea = GetAreaFromLocation(targetLocation);
+            return GetIsObjectValid(targetArea)
+                ? GetPositionFromLocation(targetLocation)
+                : GetPosition(activator);
+        }
+
+        private static float GetImpactRotationRadians(uint activator, uint target, Location targetLocation)
+        {
+            var origin = GetPosition(activator);
+            var destination = GetIsObjectValid(target)
+                ? GetPosition(target)
+                : GetIsObjectValid(GetAreaFromLocation(targetLocation))
+                    ? GetPositionFromLocation(targetLocation)
+                    : origin;
+            var delta = destination - origin;
+
+            if (Math.Abs(delta.X) <= 0.01f && Math.Abs(delta.Y) <= 0.01f)
+                return DegreesToRadians(GetFacing(activator));
+
+            return (float)Math.Atan2(delta.Y, delta.X);
+        }
+
+        private static float DegreesToRadians(float degrees)
+        {
+            return degrees * ((float)Math.PI / 180f);
+        }
+
+        private static bool IsPositionInCombatImpactShape(
+            NumericsVector3 position,
+            NumericsVector3 origin,
+            float rotation,
+            CombatImpactAreaShape shape,
+            float lengthOrRadius,
+            float width)
+        {
+            switch (shape)
+            {
+                case CombatImpactAreaShape.Sphere:
+                    return NumericsVector3.Distance(position, origin) <= lengthOrRadius;
+                case CombatImpactAreaShape.Cone:
+                    return IsPositionInCone(position, origin, rotation, lengthOrRadius, width > 0f ? width : lengthOrRadius);
+                case CombatImpactAreaShape.Line:
+                    return IsPositionInLine(position, origin, rotation, lengthOrRadius, width > 0f ? width : 2.0f);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(shape), shape, null);
+            }
+        }
+
+        private static bool IsPositionInCone(NumericsVector3 position, NumericsVector3 origin, float rotation, float length, float width)
+        {
+            var toPoint = position - origin;
+            var distance = toPoint.Length();
+            if (distance <= 0.01f)
+                return true;
+
+            var direction = new NumericsVector3((float)Math.Cos(rotation), (float)Math.Sin(rotation), 0f);
+            var cosAngle = Math.Clamp(NumericsVector3.Dot(toPoint, direction) / distance, -1f, 1f);
+            var angleBetween = (float)Math.Acos(cosAngle);
+            var halfAngle = (float)Math.Atan(width * 0.5f / length);
+
+            return distance <= length && angleBetween <= halfAngle;
+        }
+
+        private static bool IsPositionInLine(NumericsVector3 position, NumericsVector3 origin, float rotation, float length, float width)
+        {
+            var toPoint = position - origin;
+            var rotatedX = toPoint.X * (float)Math.Cos(-rotation) - toPoint.Y * (float)Math.Sin(-rotation);
+            var rotatedY = toPoint.X * (float)Math.Sin(-rotation) + toPoint.Y * (float)Math.Cos(-rotation);
+
+            return rotatedX >= 0f &&
+                   rotatedX <= length &&
+                   Math.Abs(rotatedY) <= width * 0.5f;
+        }
+
+        private static int ApplyHostileCombatImpact(
             uint activator,
             uint target,
             SkillType skillType,
             int baseDamage,
             int savingThrowDc,
             SavingThrow savingThrow,
-            StatusEffectType statusEffect,
-            AbilityControlEffect controlEffect,
-            int duration)
+            Type statusEffect,
+            int duration,
+            IEnumerable<Type> additionalStatusEffects,
+            Func<IStatusEffect> statusEffectFactory)
         {
             var damage = CalculateCombatImpactDamage(activator, target, skillType, baseDamage);
             if (damage > 0)
@@ -866,8 +1183,9 @@ namespace SWLOR.Game.Server.Service
                 Enmity.ModifyEnmity(activator, target, damage + 100);
             }
 
-            ApplyCombatImpactStatusEffect(activator, target, savingThrowDc, savingThrow, statusEffect, controlEffect, duration);
+            ApplyCombatImpactStatusEffect(activator, target, savingThrowDc, savingThrow, statusEffect, duration, additionalStatusEffects, statusEffectFactory);
             CombatPoint.AddCombatPoint(activator, target, skillType, 3);
+            return damage;
         }
 
         private static int CalculateCombatImpactDamage(uint activator, uint target, SkillType skillType, int baseDamage)
@@ -881,7 +1199,8 @@ namespace SWLOR.Game.Server.Service
             var attackStat = GetAbilityScore(activator, ability);
             var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
             var defenderStat = GetAbilityModifier(AbilityType.Vitality, target);
-            return Combat.CalculateDamage(attack, damage, attackStat, defense, defenderStat, 0);
+            var calculatedDamage = Combat.CalculateDamage(attack, damage, attackStat, defense, defenderStat, 0);
+            return Combat.ApplyDamageTakenModifiers(target, calculatedDamage);
         }
 
         private static void ApplyCombatImpactStatusEffect(
@@ -889,38 +1208,53 @@ namespace SWLOR.Game.Server.Service
             uint target,
             int savingThrowDc,
             SavingThrow savingThrow,
-            StatusEffectType statusEffect,
-            AbilityControlEffect controlEffect,
-            int duration)
+            Type statusEffect,
+            int duration,
+            IEnumerable<Type> additionalStatusEffects,
+            Func<IStatusEffect> statusEffectFactory)
         {
-            if (duration <= 0 || (statusEffect == StatusEffectType.Invalid && controlEffect == AbilityControlEffect.None))
+            var hasAdditionalStatusEffects = additionalStatusEffects?.Any(x => x != null) ?? false;
+            if (duration <= 0 || (statusEffect == null && statusEffectFactory == null && !hasAdditionalStatusEffects))
                 return;
 
             if (savingThrowDc > 0 && !SavingThrowFailed(activator, target, savingThrow, savingThrowDc))
                 return;
 
-            if (statusEffect != StatusEffectType.Invalid)
-                StatusEffect.Apply(activator, target, statusEffect, duration);
+            if (statusEffectFactory != null)
+                ApplyCombatImpactTrackedStatusEffect(activator, target, statusEffectFactory, duration);
+            else if (statusEffect != null)
+                ApplyCombatImpactTrackedStatusEffect(activator, target, statusEffect, duration);
 
-            switch (controlEffect)
+            if (additionalStatusEffects != null)
             {
-                case AbilityControlEffect.Dazed:
-                    ApplyEffectToObject(DurationType.Temporary, EffectDazed(), target, duration);
-                    ApplyTemporaryImmunity(target, duration, ImmunityType.Dazed);
-                    break;
-                case AbilityControlEffect.Stunned:
-                    ApplyEffectToObject(DurationType.Temporary, EffectStunned(), target, duration);
-                    break;
-                case AbilityControlEffect.Knockdown:
-                    ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), target, duration);
-                    break;
-                case AbilityControlEffect.Entangle:
-                    ApplyEffectToObject(DurationType.Temporary, EffectEntangle(), target, duration);
-                    break;
-                case AbilityControlEffect.Blind:
-                    ApplyEffectToObject(DurationType.Temporary, EffectBlindness(), target, duration);
-                    break;
+                foreach (var additionalStatusEffect in additionalStatusEffects.Where(x => x != null && x != statusEffect).Distinct())
+                {
+                    ApplyCombatImpactTrackedStatusEffect(activator, target, additionalStatusEffect, duration);
+                }
             }
+
+        }
+
+        private static void ApplyCombatImpactTrackedStatusEffect(
+            uint activator,
+            uint target,
+            Type type,
+            float duration)
+        {
+            StatusEffect.ApplyStatusEffect(activator, target, type, duration);
+        }
+
+        private static void ApplyCombatImpactTrackedStatusEffect(
+            uint activator,
+            uint target,
+            Func<IStatusEffect> statusEffectFactory,
+            float duration)
+        {
+            var statusEffect = statusEffectFactory?.Invoke();
+            if (statusEffect == null)
+                return;
+
+            StatusEffect.ApplyStatusEffect(activator, target, statusEffect, duration);
         }
 
         private static bool SavingThrowFailed(uint activator, uint target, SavingThrow savingThrow, int dc)

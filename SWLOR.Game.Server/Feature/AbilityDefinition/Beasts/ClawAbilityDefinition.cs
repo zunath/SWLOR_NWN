@@ -4,7 +4,6 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
@@ -50,12 +49,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), target);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Com_Blood_Spark_Small), target);
             });
-            
+
             dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Fortitude, dc);
             var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
             if (checkResult == SavingThrowResultType.Failed)
             {
-                StatusEffect.Apply(activator, target, StatusEffectType.Bleed, 30f, level);
+                StatusEffect.ApplyStatusEffect(activator, target, typeof(BleedStatusEffect), 30f);
             }
 
             Enmity.ModifyEnmity(activator, target, 250 + damage);

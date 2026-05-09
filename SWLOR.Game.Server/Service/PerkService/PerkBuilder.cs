@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service.PerkService
@@ -131,6 +132,20 @@ namespace SWLOR.Game.Server.Service.PerkService
         public PerkBuilder GrantsFeat(FeatType feat)
         {
             _activeLevel.GrantedFeats.Add(feat);
+            return this;
+        }
+
+        public PerkBuilder IncreasesStat(StatType stat, int amount)
+        {
+            _activeLevel.StatBonuses.Add(new PerkStatBonus(stat, amount));
+            return this;
+        }
+
+        public PerkBuilder IncreasesStat(
+            StatType stat,
+            PerkStatBonusCalculation calculation)
+        {
+            _activeLevel.StatBonuses.Add(new PerkStatBonus(stat, calculation));
             return this;
         }
 

@@ -3,7 +3,6 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -27,6 +26,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 .Name("Concussive Toss I")
                 .Level(1)
                 .HasActivationDelay(0f)
+                .HasRecastDelay(RecastGroup.ConcussiveToss, 60f)
                 .HasImpactAction(ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
@@ -40,6 +40,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 .Name("Concussive Toss II")
                 .Level(2)
                 .HasActivationDelay(0f)
+                .HasRecastDelay(RecastGroup.ConcussiveToss, 60f)
                 .HasImpactAction(ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
@@ -52,10 +53,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
             switch (level)
             {
                 case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Throwing, 14, 2, 14, SavingThrow.Reflex, StatusEffectType.Invalid, AbilityControlEffect.Dazed, true);
+                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Throwing, 14, 2, 14, SavingThrow.Reflex, typeof(DazedStatusEffect), CombatImpactAreaShape.Sphere, 0.25f, 5f);
                     break;
                 case 2:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Throwing, 26, 3, 16, SavingThrow.Reflex, StatusEffectType.Invalid, AbilityControlEffect.Dazed, true);
+                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Throwing, 26, 3, 16, SavingThrow.Reflex, typeof(DazedStatusEffect), CombatImpactAreaShape.Sphere, 0.25f, 5f);
                     break;
             }
         }

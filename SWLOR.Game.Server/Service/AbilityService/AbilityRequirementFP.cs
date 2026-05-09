@@ -1,5 +1,3 @@
-﻿using SWLOR.Game.Server.Service.StatusEffectService;
-
 namespace SWLOR.Game.Server.Service.AbilityService
 {
     /// <summary>
@@ -19,20 +17,23 @@ namespace SWLOR.Game.Server.Service.AbilityService
             // DMs are assumed to be able to activate.
             if (GetIsDM(player)) return string.Empty;
 
+            var requiredFP = GetAdjustedRequiredFP(player);
             var fp = Stat.GetCurrentFP(player);
 
-            if (fp >= RequiredFP) return string.Empty;
-            return $"Not enough FP. (Required: {RequiredFP})";
+            if (fp >= requiredFP) return string.Empty;
+            return $"Not enough FP. (Required: {requiredFP})";
         }
 
         public void AfterActivationAction(uint player)
         {
             if (GetIsDM(player)) return;
 
-            // Force Attunement reduces FP costs to zero.
-            if (StatusEffect.HasStatusEffect(player, StatusEffectType.ForceAttunement)) return;
+            Stat.ReduceFP(player, GetAdjustedRequiredFP(player));
+        }
 
-            Stat.ReduceFP(player, RequiredFP);
+        private int GetAdjustedRequiredFP(uint player)
+        {
+            return Stat.GetAdjustedRequiredFP(player, RequiredFP);
         }
     }
 }

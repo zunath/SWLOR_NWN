@@ -3,10 +3,8 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
-using SWLOR.Game.Server.Feature.StatusEffectDefinition.StatusEffectData;
-using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using Player = SWLOR.Game.Server.Entity.Player;
@@ -34,9 +32,9 @@ namespace SWLOR.Game.Server.Service
         /// <param name="ignoreBonuses">If true, bonuses from food and other sources will NOT be applied.</param>
         /// <param name="applyHenchmanPenalty">If true, a penalty will apply if the player has a henchman active (droid, pet, etc.)</param>
         public static void GiveSkillXP(
-            uint player, 
-            SkillType skill, 
-            int xp, 
+            uint player,
+            SkillType skill,
+            int xp,
             bool ignoreBonuses = false,
             bool applyHenchmanPenalty = true)
         {
@@ -60,28 +58,11 @@ namespace SWLOR.Game.Server.Service
                 if (social > 0)
                     bonusPercentage += social * 0.025f;
 
-                // Food bonus
-                var foodEffect = StatusEffect.GetEffectData<FoodEffectData>(player, StatusEffectType.Food);
-                if (foodEffect != null)
-                {
-                    bonusPercentage += foodEffect.XPBonusPercent * 0.01f;
-                }
+                // Status bonus
+                bonusPercentage += Stat.GetStatAdjustment(player, StatType.ExperiencePercentAdjustment) * 0.01f;
 
                 // DM bonus
                 bonusPercentage += dbPlayer.DMXPBonus * 0.01f;
-
-                // Dedication bonus
-                if (StatusEffect.HasStatusEffect(player, StatusEffectType.Dedication))
-                {
-                    var source = StatusEffect.GetEffectData<uint>(player, StatusEffectType.Dedication);
-
-                    if (GetIsObjectValid(source))
-                    {
-                        var effectiveLevel = Perk.GetPerkLevel(source, PerkType.Dedication);
-                        social = GetAbilityScore(source, AbilityType.Social);
-                        bonusPercentage += (10 + effectiveLevel * social) * 0.01f;
-                    }
-                }
 
                 // Apply bonuses
                 xp += (int)(xp * bonusPercentage);
@@ -121,7 +102,7 @@ namespace SWLOR.Game.Server.Service
                 DB.Set(dbPlayer);
                 return;
             }
-            
+
             var totalRanks = dbPlayer.Skills
                 .Where(x =>
                 {
@@ -181,7 +162,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     ApplyAbilityPoint(player, dbPlayer);
                 }
-                
+
                 totalRanks = dbPlayer.Skills
                     .Where(x =>
                     {
@@ -295,7 +276,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The maximum amount of XP that can be safely distributed</returns>
         public static int GetMaxDistributableXP(uint player, SkillType skillType)
         {
-            if (skillType == SkillType.Invalid || !GetIsPC(player) || GetIsDM(player)) 
+            if (skillType == SkillType.Invalid || !GetIsPC(player) || GetIsDM(player))
                 return 0;
 
             var playerId = GetObjectUUID(player);
@@ -316,7 +297,7 @@ namespace SWLOR.Game.Server.Service
             {
                 var requiredXPForNextRank = GetRequiredXP(currentRank);
                 var xpNeededForThisRank = requiredXPForNextRank - currentXP;
-                
+
                 totalDistributableXP += xpNeededForThisRank;
                 currentRank++;
                 currentXP = 0; // After first rank, we start from 0 XP for subsequent ranks

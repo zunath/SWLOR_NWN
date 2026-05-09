@@ -26,18 +26,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             if (GetFactionEqual(activator, target))
                 return;
 
-            var effect = EffectSlow();
+            var statusEffect = typeof(HobbleStatusEffect);
             if (immobilizeDC > 0)
             {
                 var dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Fortitude, immobilizeDC);
                 var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
                 if (checkResult == SavingThrowResultType.Failed)
                 {
-                    effect = EffectCutsceneImmobilize();
+                    statusEffect = typeof(ImmobilizedStatusEffect);
                 }
             }
 
-            ApplyEffectToObject(DurationType.Temporary, effect, target, slowLength);
+            StatusEffect.ApplyStatusEffect(activator, target, statusEffect, slowLength);
 
             CombatPoint.AddCombatPoint(activator, target, SkillType.Devices, 3);
             Enmity.ModifyEnmity(activator, target, 150);

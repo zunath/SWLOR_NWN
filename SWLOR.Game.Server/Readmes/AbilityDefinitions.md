@@ -125,14 +125,14 @@ private static void ForceShield1(AbilityBuilder builder)
     builder.Create(FeatType.ForceShield1, PerkType.ForceShield)
         .Name("Force Shield I")
         .Level(1)
-        .IsConcentrationAbility(StatusEffectType.ForceShield)
+        .IsConcentrationAbility(typeof(ForceShield1StatusEffect))
         .RequirementFP(1)
         .HasImpactAction(ImpactAction);
 }
 ```
 
 **Key Features:**
-- `IsConcentrationAbility(StatusEffectType)` - Marks as concentration ability
+- `IsConcentrationAbility(Type)` - Marks as concentration ability
 - Requires corresponding status effect
 - Drains resources over time
 
@@ -425,7 +425,7 @@ builder.Create(FeatType.AbilityName, PerkType.AbilityPerk)
 Concentration abilities require corresponding status effects:
 
 ```csharp
-.IsConcentrationAbility(StatusEffectType.AbilityStatus)
+.IsConcentrationAbility(typeof(MyStatusEffect))
 ```
 
 ### Combat System

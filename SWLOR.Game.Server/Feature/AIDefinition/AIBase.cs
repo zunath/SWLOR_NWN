@@ -2,7 +2,6 @@ using SWLOR.Game.Server.Service.AIService;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Service;
-using System;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -52,16 +51,16 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
             Self = self;
             Target = target;
 
-            
+
             SelfHPPercentage = CalculateAverageHP(Self);
 
             foreach (var ally in allies)
             {
-                if (!GetIsObjectValid(AllyWithTreatmentKit1StatusEffect) &&  
-                    StatusEffect.HasStatusEffect(ally, StatusEffectType.Bleed, StatusEffectType.Poison))
+                if (!GetIsObjectValid(AllyWithTreatmentKit1StatusEffect) &&
+                    StatusEffect.HasCleanseableStatusEffect(ally, StatusEffectCleanseType.TreatmentKit1))
                     AllyWithTreatmentKit1StatusEffect = ally;
-                if (!GetIsObjectValid(AllyWithTreatmentKit2StatusEffect) && 
-                    StatusEffect.HasStatusEffect(ally, StatusEffectType.Shock, StatusEffectType.Burn))
+                if (!GetIsObjectValid(AllyWithTreatmentKit2StatusEffect) &&
+                    StatusEffect.HasCleanseableStatusEffect(ally, StatusEffectCleanseType.TreatmentKit2))
                     AllyWithTreatmentKit2StatusEffect = ally;
 
                 // Exit if we've found a target for both abilities.
@@ -647,19 +646,19 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
         protected (bool, (FeatType, uint)) Shielding()
         {
             // Shielding
-            if (CheckIfCanUseFeat(Self, Self, FeatType.Shielding4, () => !StatusEffect.HasStatusEffect(Self, StatusEffectType.Shielding1, StatusEffectType.Shielding2, StatusEffectType.Shielding3, StatusEffectType.Shielding4)))
+            if (CheckIfCanUseFeat(Self, Self, FeatType.Shielding4, () => !StatusEffect.HasStatusEffect(Self, typeof(Shielding1StatusEffect), typeof(Shielding2StatusEffect), typeof(Shielding3StatusEffect), typeof(Shielding4StatusEffect))))
             {
                 return (true, (FeatType.Shielding4, Self));
             }
-            if (CheckIfCanUseFeat(Self, Self, FeatType.Shielding3, () => !StatusEffect.HasStatusEffect(Self, StatusEffectType.Shielding1, StatusEffectType.Shielding2, StatusEffectType.Shielding3, StatusEffectType.Shielding4)))
+            if (CheckIfCanUseFeat(Self, Self, FeatType.Shielding3, () => !StatusEffect.HasStatusEffect(Self, typeof(Shielding1StatusEffect), typeof(Shielding2StatusEffect), typeof(Shielding3StatusEffect), typeof(Shielding4StatusEffect))))
             {
                 return (true, (FeatType.Shielding3, Self));
             }
-            if (CheckIfCanUseFeat(Self, Self, FeatType.Shielding2, () => !StatusEffect.HasStatusEffect(Self, StatusEffectType.Shielding1, StatusEffectType.Shielding2, StatusEffectType.Shielding3, StatusEffectType.Shielding4)))
+            if (CheckIfCanUseFeat(Self, Self, FeatType.Shielding2, () => !StatusEffect.HasStatusEffect(Self, typeof(Shielding1StatusEffect), typeof(Shielding2StatusEffect), typeof(Shielding3StatusEffect), typeof(Shielding4StatusEffect))))
             {
                 return (true, (FeatType.Shielding2, Self));
             }
-            if (CheckIfCanUseFeat(Self, Self, FeatType.Shielding1, () => !StatusEffect.HasStatusEffect(Self, StatusEffectType.Shielding1, StatusEffectType.Shielding2, StatusEffectType.Shielding3, StatusEffectType.Shielding4)))
+            if (CheckIfCanUseFeat(Self, Self, FeatType.Shielding1, () => !StatusEffect.HasStatusEffect(Self, typeof(Shielding1StatusEffect), typeof(Shielding2StatusEffect), typeof(Shielding3StatusEffect), typeof(Shielding4StatusEffect))))
             {
                 return (true, (FeatType.Shielding1, Self));
             }

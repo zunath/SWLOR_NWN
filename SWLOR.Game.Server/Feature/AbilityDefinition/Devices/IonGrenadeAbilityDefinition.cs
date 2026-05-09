@@ -52,8 +52,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
                 if (checkResult == SavingThrowResultType.Failed)
                 {
-                    ApplyEffectToObject(DurationType.Temporary, EffectStunned(), target, Duration);
-                    Ability.ApplyTemporaryImmunity(target, Duration, ImmunityType.Stun);
+                    StatusEffect.ApplyStatusEffect(activator, target, typeof(StunnedStatusEffect), Duration);
                 }
             }
 

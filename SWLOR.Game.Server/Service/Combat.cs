@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using NWN.Native.API;
@@ -8,7 +7,7 @@ using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
@@ -145,7 +144,7 @@ namespace SWLOR.Game.Server.Service
             int percentageModifier)
         {
             const int BaseHitRate = 75;
-            
+
             var hitRate = BaseHitRate + (int)Math.Floor((attackerAccuracy - defenderEvasion) / 2.0f) + percentageModifier;
 
             if (hitRate < 20)
@@ -215,9 +214,26 @@ namespace SWLOR.Game.Server.Service
             return (int)Random.NextFloat(minDamage, maxDamage);
         }
 
+        public static int ApplyDamageTakenModifiers(uint defender, int damage)
+        {
+            if (damage <= 0)
+                return damage;
+
+            var percentAdjustment = Stat.GetStatAdjustment(defender, StatType.DamageTakenPercentAdjustment);
+            if (percentAdjustment <= -100)
+                return 0;
+
+            if (percentAdjustment != 0)
+                damage += (int)Math.Ceiling(damage * (percentAdjustment / 100f));
+
+            damage += Stat.GetStatAdjustment(defender, StatType.DamageTakenFlatAdjustment);
+
+            return Math.Max(0, damage);
+        }
+
         /// <summary>
         /// Return a damage bonus equal to 0.15 of the player's relevant skill or an NPC's level.
-        /// This helps abilities as the player progresses. 
+        /// This helps abilities as the player progresses.
         ///
         /// Global scaling on gear is closer to 0.25 DMG per player skill level so low tier abilities will still
         /// become less useful over time, and get replaced by higher tier ones.  But they will have some utility still.
@@ -342,18 +358,42 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(weapon)) return 0;
             var weaponType = GetBaseItemType(weapon);
 
-            if (Item.LightsaberBaseItemTypes.Contains(weaponType))
-                return GetAbilityScore(attacker, AbilityType.Perception);
+            return GetAbilityScore(attacker, GetWeaponDamageAbilityType(attacker, weaponType));
+        }
 
-            if (Item.SaberstaffBaseItemTypes.Contains(weaponType))
-                return GetAbilityScore(attacker, AbilityType.Perception);
+        public static AbilityType GetWeaponDamageAbilityType(uint creature, BaseItem weaponType)
+        {
+            if (Item.StaffBaseItemTypes.Contains(weaponType) &&
+                Perk.GetPerkLevel(creature, PerkType.FlurryStyle) > 0)
+            {
+                return AbilityType.Perception;
+            }
 
-            return GetAbilityScore(attacker, Item.GetWeaponDamageAbilityType(weaponType));
+            return Item.GetWeaponDamageAbilityType(weaponType);
+        }
+
+        public static AbilityType GetWeaponAccuracyAbilityType(uint creature, BaseItem weaponType)
+        {
+            if (Item.StaffBaseItemTypes.Contains(weaponType) &&
+                Perk.GetPerkLevel(creature, PerkType.FlurryStyle) > 0)
+            {
+                return AbilityType.Agility;
+            }
+
+            return Item.GetWeaponAccuracyAbilityType(weaponType);
         }
 
         public static int GetMiscDMGBonus(uint attacker, BaseItem weaponType)
         {
-            return GetPowerAttackDMGBonus(attacker);
+            var bonus = GetPowerAttackDMGBonus(attacker);
+
+            if (Item.StaffBaseItemTypes.Contains(weaponType) &&
+                Perk.GetPerkLevel(attacker, PerkType.CrushingStyle) > 0)
+            {
+                bonus += Math.Max(0, GetAbilityModifier(AbilityType.Might, attacker));
+            }
+
+            return bonus;
         }
 
         /// <summary>
@@ -379,9 +419,9 @@ namespace SWLOR.Game.Server.Service
         /// <param name="abilityOverride">Use this to specify a specific ability to be used.</param>
         /// <returns>A DC value with any bonuses applied.</returns>
         public static int CalculateSavingThrowDC(
-            uint attacker, 
-            SavingThrow type, 
-            int baseDC, 
+            uint attacker,
+            SavingThrow type,
+            int baseDC,
             AbilityType abilityOverride = AbilityType.Invalid)
         {
             var ability = abilityOverride;
@@ -470,15 +510,33 @@ namespace SWLOR.Game.Server.Service
 
             var totalReduction = 0;
 
-            var hastenLevel = GetHastenLevel(attacker);
-            if (hastenLevel > 0)
-                totalReduction += hastenLevel * 10;
+            totalReduction += Stat.GetStatAdjustment(attacker, StatType.AttackDelayReductionPercent);
 
             var beastSpeedLevel = Perk.GetPerkLevel(attacker, PerkType.BeastSpeed);
             if (beastSpeedLevel > 0)
                 totalReduction += beastSpeedLevel * 10;
 
+            var rapidShotLevel = Perk.GetPerkLevel(attacker, PerkType.RapidShot);
+            if (rapidShotLevel > 0 && IsWieldingWeapon(attacker, Item.PistolBaseItemTypes))
+                totalReduction += rapidShotLevel * 10;
+
+            if (Perk.GetPerkLevel(attacker, PerkType.FlurryStyle) > 0 &&
+                IsWieldingWeapon(attacker, Item.StaffBaseItemTypes))
+            {
+                totalReduction += 10;
+            }
+
             return Math.Min(totalReduction, 50);
+        }
+
+        private static bool IsWieldingWeapon(uint creature, IReadOnlyCollection<BaseItem> weaponTypes)
+        {
+            var rightHand = GetItemInSlot(InventorySlot.RightHand, creature);
+            if (GetIsObjectValid(rightHand) && weaponTypes.Contains(GetBaseItemType(rightHand)))
+                return true;
+
+            var leftHand = GetItemInSlot(InventorySlot.LeftHand, creature);
+            return GetIsObjectValid(leftHand) && weaponTypes.Contains(GetBaseItemType(leftHand));
         }
 
         private static int GetWeaponDelay(uint item)
@@ -499,19 +557,5 @@ namespace SWLOR.Game.Server.Service
             return delay;
         }
 
-        private static int GetHastenLevel(uint creature)
-        {
-            if (!GetIsObjectValid(creature))
-                return 0;
-
-            if (StatusEffect.HasStatusEffect(creature, StatusEffectType.Hasten3))
-                return 3;
-            if (StatusEffect.HasStatusEffect(creature, StatusEffectType.Hasten2))
-                return 2;
-            if (StatusEffect.HasStatusEffect(creature, StatusEffectType.Hasten1))
-                return 1;
-
-            return 0;
-        }
     }
 }

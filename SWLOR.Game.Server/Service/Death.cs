@@ -1,5 +1,6 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -37,6 +38,8 @@ namespace SWLOR.Game.Server.Service
                 factionMember = GetNextFactionMember(hostile, false);
             }
 
+            StatusEffect.ClearStatusEffectsOnDeath(player);
+
             if (GetIsPC(hostile) && !GetIsDM(hostile) && !GetIsDMPossessed(hostile))
             {
                 var hostilePlayerId = GetObjectUUID(hostile);
@@ -47,10 +50,8 @@ namespace SWLOR.Game.Server.Service
                     Messaging.SendMessageNearbyToPlayers(player, $"{GetName(player)} has been subdued by {GetName(hostile)}.");
                     ApplyEffectToObject(DurationType.Instant, EffectResurrection(), player);
                     DelayCommand(0.1f, () => Ability.ReapplyAuraEffectsForCreature(player));
-                    ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), player, 60f);
-                    ApplyEffectToObject(DurationType.Temporary, EffectSlow(), player, 300f);
-                    ApplyEffectToObject(DurationType.Temporary, EffectACDecrease(10), player, 300f);
-                    ApplyEffectToObject(DurationType.Temporary, EffectAccuracyDecrease(10), player, 300f);
+                    StatusEffect.ApplyStatusEffect(player, player, typeof(KnockdownStatusEffect), 60f);
+                    StatusEffect.ApplyStatusEffect(player, player, typeof(SubdualPenaltyStatusEffect), 300f);
                 }
             }
             else

@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Feature
     public class PlayerInitialization
     {
         /// <summary>
-        /// Handles 
+        /// Handles
         /// </summary>
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void InitializePlayer()
@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Feature
             GiveStartingItems(player);
             AssignCharacterType(player, dbPlayer);
             RegisterDefaultRespawnPoint(dbPlayer);
-            Stat.ApplyPlayerMovementRate(player);
+            Stat.ApplyCreatureMovementRate(player);
 
             DB.Set(dbPlayer);
 
@@ -155,9 +155,6 @@ namespace SWLOR.Game.Server.Feature
 
         public static void GrantBasicFeats(uint player)
         {
-            CreaturePlugin.AddFeatByLevel(player, FeatType.ArmorProficiencyLight, 1);
-            CreaturePlugin.AddFeatByLevel(player, FeatType.ArmorProficiencyMedium, 1);
-            CreaturePlugin.AddFeatByLevel(player, FeatType.ArmorProficiencyHeavy, 1);
             CreaturePlugin.AddFeatByLevel(player, FeatType.ShieldProficiency, 1);
             CreaturePlugin.AddFeatByLevel(player, FeatType.WeaponProficiencyExotic, 1);
             CreaturePlugin.AddFeatByLevel(player, FeatType.WeaponProficiencyMartial, 1);
@@ -169,7 +166,7 @@ namespace SWLOR.Game.Server.Feature
         public static void InitializeHotBar(uint player)
         {
             var structureTool = PlayerQuickBarSlot.UseFeat(FeatType.PropertyMenu);
-            
+
             PlayerPlugin.SetQuickBarSlot(player, 0, structureTool);
         }
 

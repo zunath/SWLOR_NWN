@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
@@ -23,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
             return _builder.Build();
         }
 
-        private void Impact(uint activator, StatusEffectType statusEffect)
+        private void Impact(uint activator, Type statusEffect)
         {
             var master = GetMaster(activator);
             var beastmasterStat = GetAbilityModifier(AbilityType.Agility, master) / 2;
@@ -31,7 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
             var totalStat = beastmasterStat + beastStat;
 
             var duration = 5 * 60f + totalStat * 10;
-            StatusEffect.Apply(activator, activator, statusEffect, duration);
+            StatusEffect.ApplyStatusEffect(activator, activator, statusEffect, duration);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Howl_Odd), activator);
         }
 
@@ -46,7 +45,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .IsCastedAbility()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    Impact(activator, StatusEffectType.EvasiveManeuver1);
+                    Impact(activator, typeof(EvasiveManeuver1StatusEffect));
                 });
         }
         private void EvasiveManeuver2()
@@ -60,7 +59,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .IsCastedAbility()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    Impact(activator, StatusEffectType.EvasiveManeuver2);
+                    Impact(activator, typeof(EvasiveManeuver2StatusEffect));
                 });
         }
         private void EvasiveManeuver3()
@@ -74,7 +73,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .IsCastedAbility()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    Impact(activator, StatusEffectType.EvasiveManeuver3);
+                    Impact(activator, typeof(EvasiveManeuver3StatusEffect));
                 });
         }
         private void EvasiveManeuver4()
@@ -88,7 +87,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .IsCastedAbility()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    Impact(activator, StatusEffectType.EvasiveManeuver4);
+                    Impact(activator, typeof(EvasiveManeuver4StatusEffect));
                 });
         }
         private void EvasiveManeuver5()
@@ -102,7 +101,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .IsCastedAbility()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    Impact(activator, StatusEffectType.EvasiveManeuver5);
+                    Impact(activator, typeof(EvasiveManeuver5StatusEffect));
                 });
         }
     }

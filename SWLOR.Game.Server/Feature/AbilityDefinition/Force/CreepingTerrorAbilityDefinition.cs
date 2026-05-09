@@ -1,8 +1,7 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
@@ -35,7 +34,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .IsHostileAbility()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    StatusEffect.Apply(activator, target, StatusEffectType.CreepingTerror, 24f, 1);
+                    StatusEffect.ApplyStatusEffect(activator, target, new CreepingTerrorStatusEffect(1), 24f);
                 });
         }
 
@@ -54,7 +53,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .IsHostileAbility()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    StatusEffect.Apply(activator, target, StatusEffectType.CreepingTerror, 24f, 2);
+                    StatusEffect.ApplyStatusEffect(activator, target, new CreepingTerrorStatusEffect(2), 24f);
                 });
         }
 
@@ -73,7 +72,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .IsHostileAbility()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    StatusEffect.Apply(activator, target, StatusEffectType.CreepingTerror, 24f, 3);
+                    StatusEffect.ApplyStatusEffect(activator, target, new CreepingTerrorStatusEffect(3), 24f);
                 });
         }
     }

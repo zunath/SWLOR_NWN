@@ -3,7 +3,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
@@ -28,7 +27,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Level(1)
                 .HasRecastDelay(RecastGroup.ComprehendSpeech, 12f)
                 .RequirementFP(2)
-                .IsConcentrationAbility(StatusEffectType.ComprehendSpeech1)
+                .IsConcentrationAbility(typeof(ComprehendSpeech1StatusEffect))
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }
@@ -39,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Level(2)
                 .HasRecastDelay(RecastGroup.ComprehendSpeech, 12f)
                 .RequirementFP(3)
-                .IsConcentrationAbility(StatusEffectType.ComprehendSpeech2)
+                .IsConcentrationAbility(typeof(ComprehendSpeech2StatusEffect))
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }
@@ -50,7 +49,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Level(3)
                 .HasRecastDelay(RecastGroup.ComprehendSpeech, 12f)
                 .RequirementFP(4)
-                .IsConcentrationAbility(StatusEffectType.ComprehendSpeech3)
+                .IsConcentrationAbility(typeof(ComprehendSpeech3StatusEffect))
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }
@@ -61,7 +60,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Level(4)
                 .HasRecastDelay(RecastGroup.ComprehendSpeech, 12f)
                 .RequirementFP(5)
-                .IsConcentrationAbility(StatusEffectType.ComprehendSpeech4)
+                .IsConcentrationAbility(typeof(ComprehendSpeech4StatusEffect))
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }

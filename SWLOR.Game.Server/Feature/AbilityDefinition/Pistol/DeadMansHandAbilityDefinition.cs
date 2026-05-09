@@ -3,7 +3,6 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -26,6 +25,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 .Name("Dead Man's Hand")
                 .Level(1)
                 .HasActivationDelay(2f)
+                .HasRecastDelay(RecastGroup.DeadMansHand, 1800f)
                 .HasImpactAction(ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
             switch (level)
             {
                 case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Pistol, 10, 0, 0, SavingThrow.Will, StatusEffectType.Invalid, AbilityControlEffect.None, true);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Pistol, 10, 0, 0, SavingThrow.Will, null, true);
                     break;
             }
         }

@@ -64,14 +64,26 @@ namespace SWLOR.Game.Server.Service.AbilityService
         /// Indicates this is a concentration ability which stays active and drains resources until turned off or player runs out of required resources.
         /// A corresponding status effect must also be defined and this will be applied when the concentration ability is activated and removed when it ends.
         /// </summary>
-        /// <param name="concentrationStatusEffectType">The status effect to use for this concentration ability.</param>
+        /// <param name="concentrationStatusEffect">The status effect to use for this concentration ability.</param>
         /// <returns>An ability builder with the configured options.</returns>
-        public AbilityBuilder IsConcentrationAbility(StatusEffectType concentrationStatusEffectType)
+        public AbilityBuilder IsConcentrationAbility(Type concentrationStatusEffect)
         {
             _activeAbility.ActivationType = AbilityActivationType.Concentration;
-            _activeAbility.ConcentrationStatusEffectType = concentrationStatusEffectType;
+            _activeAbility.ConcentrationStatusEffect = concentrationStatusEffect;
 
             return this;
+        }
+
+        /// <summary>
+        /// Indicates this is a concentration ability which stays active and drains resources until turned off or player runs out of required resources.
+        /// A corresponding status effect must also be defined and this will be applied when the concentration ability is activated and removed when it ends.
+        /// </summary>
+        /// <typeparam name="T">The status effect to use for this concentration ability.</typeparam>
+        /// <returns>An ability builder with the configured options.</returns>
+        public AbilityBuilder IsConcentrationAbility<T>()
+            where T : IStatusEffect
+        {
+            return IsConcentrationAbility(typeof(T));
         }
 
         /// <summary>

@@ -92,8 +92,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 const float Duration = 2f;
                 SetCommandable(true, activator);
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), target);
-                ApplyEffectToObject(DurationType.Temporary, EffectStunned(), target, Duration);
-                Ability.ApplyTemporaryImmunity(target, Duration, ImmunityType.Stun);
+                StatusEffect.ApplyStatusEffect(activator, target, typeof(StunnedStatusEffect), Duration);
                 AssignCommand(activator, () =>
                 {
                     if (Item.LightsaberBaseItemTypes.Contains(rightHandBaseItemType))

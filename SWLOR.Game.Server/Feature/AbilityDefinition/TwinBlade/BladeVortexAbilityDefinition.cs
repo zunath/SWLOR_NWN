@@ -3,7 +3,6 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -27,6 +26,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 .Name("Blade Vortex I")
                 .Level(1)
                 .HasActivationDelay(0f)
+                .HasRecastDelay(RecastGroup.BladeVortex, 75f)
                 .HasImpactAction(ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
@@ -40,6 +40,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 .Name("Blade Vortex II")
                 .Level(2)
                 .HasActivationDelay(0f)
+                .HasRecastDelay(RecastGroup.BladeVortex, 75f)
                 .HasImpactAction(ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
@@ -52,10 +53,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
             switch (level)
             {
                 case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.TwinBlade, 18, 0, 0, SavingThrow.Will, StatusEffectType.Invalid, AbilityControlEffect.None, true);
+                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.TwinBlade, 18, 0, 0, SavingThrow.Will, null, CombatImpactAreaShape.Sphere, 0.25f, 5f, centerOnActivator: true);
                     break;
                 case 2:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.TwinBlade, 26, 12, 15, SavingThrow.Fortitude, StatusEffectType.Invalid, AbilityControlEffect.None, true);
+                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.TwinBlade, 26, 12, 15, SavingThrow.Fortitude, typeof(ExposedStatusEffect), CombatImpactAreaShape.Sphere, 0.25f, 5f, centerOnActivator: true);
                     break;
             }
         }

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
@@ -8,6 +7,7 @@ using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWNX;
 using Player = SWLOR.Game.Server.Entity.Player;
 
@@ -42,6 +42,7 @@ namespace SWLOR.Game.Server.Service
 
         private static readonly Dictionary<PerkType, Dictionary<int, int>> _perkLevelTiers = new();
         private static readonly Dictionary<SkillType, List<PerkType>> _perksWithSkillRequirement = new();
+        private static readonly Dictionary<PerkType, PerkDetail> _perksWithStatBonuses = new();
 
         /// <summary>
         /// When the module loads, cache all perk and character type information.
@@ -151,7 +152,7 @@ namespace SWLOR.Game.Server.Service
                                 _perksWithSkillRequirement[req.Type].Add(perkType);
                             }
                         }
-                        
+
                         var tier = highestRank / 10 + 1;
                         if (tier < 1)
                             tier = 1;
@@ -162,6 +163,11 @@ namespace SWLOR.Game.Server.Service
                             _perkLevelTiers[perkType] = new Dictionary<int, int>();
 
                         _perkLevelTiers[perkType][level] = tier;
+
+                        if (perkLevel.StatBonuses.Count > 0)
+                        {
+                            _perksWithStatBonuses[perkType] = perkDetail;
+                        }
                     }
 
                     // Add to the perks by category cache.
@@ -279,6 +285,28 @@ namespace SWLOR.Game.Server.Service
             return _allPerks.ToDictionary(x => x.Key, y => y.Value);
         }
 
+        public static int GetStatBonus(uint creature, StatType stat)
+        {
+            var bonus = 0;
+
+            foreach (var (perkType, perkDetail) in _perksWithStatBonuses)
+            {
+                var level = GetPerkLevel(creature, perkType);
+                if (level <= 0 || !perkDetail.PerkLevels.TryGetValue(level, out var perkLevel))
+                    continue;
+
+                foreach (var statBonus in perkLevel.StatBonuses)
+                {
+                    if (statBonus.Stat == stat)
+                    {
+                        bonus += statBonus.Calculate(creature);
+                    }
+                }
+            }
+
+            return bonus;
+        }
+
         /// <summary>
         /// Retrieves a list of all active perks, excluding inactive ones, by group.
         /// </summary>
@@ -383,7 +411,7 @@ namespace SWLOR.Game.Server.Service
             if (perkType == PerkType.Invalid)
                 return 0;
 
-            if (GetIsDM(creature) && !GetIsDMPossessed(creature)) 
+            if (GetIsDM(creature) && !GetIsDMPossessed(creature))
                 return 0;
 
             // Players
@@ -473,7 +501,7 @@ namespace SWLOR.Game.Server.Service
             foreach (var (level, detail) in perkLevels)
             {
                 // No requirements set for this perk level. Return the level.
-                if (detail.Requirements.Count <= 0) 
+                if (detail.Requirements.Count <= 0)
                     return level;
 
                 var meetsRequirements = true;
@@ -532,12 +560,12 @@ namespace SWLOR.Game.Server.Service
             foreach (var (level, detail) in perkLevels)
             {
                 // No requirements set for this perk level. Return the level.
-                if (detail.Requirements.Count <= 0) 
+                if (detail.Requirements.Count <= 0)
                     return level;
 
                 foreach (var req in detail.Requirements)
                 {
-                    if (string.IsNullOrWhiteSpace(req.CheckRequirements(player))) 
+                    if (string.IsNullOrWhiteSpace(req.CheckRequirements(player)))
                         return level;
                 }
             }
@@ -575,7 +603,7 @@ namespace SWLOR.Game.Server.Service
         public static void RemovePerkLevelOnSkillDecay()
         {
             var skillType = (SkillType)Convert.ToInt32(EventsPlugin.GetEventData("SKILL_TYPE_ID"));
-            
+
             // Early exit - if no perks are tied to this skill, then it doesn't matter. There's nothing to remove.
             if (!_perksWithSkillRequirement.ContainsKey(skillType))
                 return;
@@ -585,7 +613,7 @@ namespace SWLOR.Game.Server.Service
             var dbPlayer = DB.Get<Player>(playerId);
 
             var possiblePerks = _perksWithSkillRequirement[skillType];
-            
+
             foreach (var perkType in possiblePerks)
             {
                 // Player doesn't have this perk. Move to the next.
@@ -610,7 +638,7 @@ namespace SWLOR.Game.Server.Service
                     {
                         CreaturePlugin.RemoveFeat(player, feat);
                     }
-                    
+
                     Log.Write(LogGroup.PerkRefund, $"AUTOMATIC DECAY REFUND - {playerId} - Refunded Date {DateTime.UtcNow} - Level {perkLevel} - PerkID {perkType}");
                     FloatingTextStringOnCreature($"Perk '{perkDetail.Name}' level {level} was refunded because your skill fell under the minimum requirements. You reclaimed {perkLevel.Price} SP.", player, false);
                 }

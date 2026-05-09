@@ -5,7 +5,6 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
@@ -23,13 +22,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         private static string Validation(uint activator, uint target, int level, Location targetLocation)
         {
             var race = GetRacialType(target);
-            if (race == RacialType.Cyborg || 
+            if (race == RacialType.Cyborg ||
                 race == RacialType.Robot ||
                 race == RacialType.Droid)
             {
                 return "Mind trick does not work on this creature.";
             }
-            
+
             return string.Empty;
         }
 
@@ -45,16 +44,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             }
 
             var dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Will, 12);
-            const string EffectTag = "StatusEffectType.MindTrick";
-            var checkResult = WillSave(target, dc, SavingThrowType.None, activator);
-
-            if (checkResult == SavingThrowResultType.Failed)
+            if (WillSave(target, dc, SavingThrowType.None, activator) == SavingThrowResultType.Failed)
             {
-                var effect = EffectConfused();
-                effect = EffectLinkEffects(effect, EffectVisualEffect(VisualEffect.Vfx_Imp_Confusion_S));
-                effect = TagEffect(effect, EffectTag);
-                ApplyEffectToObject(DurationType.Temporary, effect, target, 6f);
+                StatusEffect.ApplyStatusEffect(activator, target, new MindTrickStatusEffect(), 6f);
             }
+
             CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
             Enmity.ModifyEnmity(activator, target, 400);
         }
@@ -104,7 +98,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                         }
                         targetCreature = GetNextObjectInShape(Shape.Sphere, Radius, GetLocation(target), true);
                     }
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
                 });
         }
     }

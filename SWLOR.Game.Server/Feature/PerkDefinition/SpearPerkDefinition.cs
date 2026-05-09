@@ -74,6 +74,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Calming Stance")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.CalmingStance1)
                 .Description("While active, your STM regenerates by 3 every second. Your attack, force attack, defense, and force defense are reduced by 40%.")
                 .Price(3)
                 .RequirementSkill(SkillType.Spear, 45);
@@ -86,6 +87,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Crippling Defense")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.CripplingDefense1)
                 .Description("All enemies within area of effect (sphere) around you receive Crippled Defense, reducing Defense by 35% for 15 seconds. Additionally restores 25 STM.")
                 .Price(4)
                 .RequirementSkill(SkillType.Spear, 50);
@@ -98,16 +100,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Disabling Strike")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.DisablingStrike1)
                 .Description("Your next attack deals +12 DMG and has a DC12 Will check to inflict Force Disruption for 8 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Spear, 8)
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.DisablingStrike2)
                 .Description("Your next attack deals +18 DMG and has a DC16 Will check to inflict Force Disruption for 8 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Spear, 22)
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.DisablingStrike3)
                 .Description("Your next attack deals +26 DMG and has a DC20 Will check to inflict Force Disruption for 8 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Spear, 40);
@@ -132,6 +137,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Disruption Field")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.DisruptionField1)
                 .Description("Forms a disruption field at a targeted location. All enemies within the area of effect (sphere) lose 5% of FP per second. Field lasts for 20 seconds")
                 .Price(3)
                 .RequirementSkill(SkillType.Spear, 25);
@@ -191,6 +197,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Flanking Stance")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.FlankingStance1)
                 .Description("While active, attacks from the side deal +20% damage and have +15% accuracy. Your defense and force defense are reduced by 25%.")
                 .Price(3)
                 .RequirementSkill(SkillType.Spear, 12);
@@ -258,6 +265,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Forcebane")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.Forcebane1)
                 .Description("Enemies within the area of effect (sphere) receive the Forcebane debuff, losing 50% of current FP and preventing FP recovery for 8 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Spear, 50);
@@ -296,6 +304,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Improved Attentiveness")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.ImprovedAttentiveness1)
                 .Description("Your party members, excluding you, receive +25% to accuracy for 1 minute.")
                 .Price(3)
                 .RequirementSkill(SkillType.Spear, 28);
@@ -308,11 +317,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Interruption Strike")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.InterruptionStrike1)
                 .Description("Your target's ability activation is interrupted.  Additionally, target has a Will DC12 check to inflict Foggy Mind which increases activation times by 2 seconds for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Spear, 12)
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.InterruptionStrike2)
                 .Description("Your target's ability activation is interrupted.  Additionally, target has a Will DC18 check to inflict Foggy Mind which increases activation times by 2 seconds for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Spear, 28);
@@ -354,6 +365,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Perceptive Stance")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.PerceptiveStance1)
                 .Description("While active, gain +10% critical chance and +15% critical damage. Additionally, attacks have a 10% chance to interrupt ability activation. Chance to interrupt increases by 1% per Might. (Maximum 30%)")
                 .Price(2)
                 .RequirementSkill(SkillType.Spear, 15);
@@ -378,16 +390,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Side Assault")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.SideAssault1)
                 .Description("Your next attack deals +12 DMG. If you are facing the side of your target, this increases to +16 DMG.")
                 .Price(2)
                 .RequirementSkill(SkillType.Spear, 15)
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.SideAssault2)
                 .Description("Your next attack deals +25 DMG. If you are facing the side of your target, this increases to +35 DMG.")
                 .Price(3)
                 .RequirementSkill(SkillType.Spear, 30)
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.SideAssault3)
                 .Description("Your next attack deals +35 DMG. If you are facing the side of your target, this increases to +50 DMG.")
                 .Price(4)
                 .RequirementSkill(SkillType.Spear, 42);

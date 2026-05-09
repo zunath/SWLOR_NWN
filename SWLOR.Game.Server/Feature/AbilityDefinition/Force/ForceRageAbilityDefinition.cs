@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
@@ -36,7 +35,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 {
                     var willpowerBonus = GetAbilityModifier(AbilityType.Willpower, activator) * 30f;
 
-                    StatusEffect.Apply(activator, target, StatusEffectType.ForceRage1, 60f * 15f + willpowerBonus);
+                    StatusEffect.ApplyStatusEffect(activator, target, typeof(ForceRage1StatusEffect), 60f * 15f + willpowerBonus);
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Negative_Energy), target);
 
                     CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
@@ -59,7 +58,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 {
                     var willpowerBonus = GetAbilityModifier(AbilityType.Willpower, activator) * 30f;
 
-                    StatusEffect.Apply(activator, target, StatusEffectType.ForceRage2, 60f * 15f + willpowerBonus);
+                    StatusEffect.ApplyStatusEffect(activator, target, typeof(ForceRage2StatusEffect), 60f * 15f + willpowerBonus);
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Negative_Energy), target);
 
                     CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);

@@ -1,6 +1,7 @@
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 using System.Collections.Generic;
 
@@ -80,6 +81,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Brutal Assault")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.BrutalAssault1)
                 .Description("Allies within the area of effect (sphere) receive Brutal Assault which increases their critical hit rate by 10% for 1 minute. You do not receive this benefit.")
                 .Price(3)
                 .RequirementSkill(SkillType.Lightsaber, 20)
@@ -106,12 +108,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Centering")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.Centering1)
                 .Description("Reduces enmity by 25% and increases accuracy by 10% for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Lightsaber, 12)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.Centering2)
                 .Description("Reduces enmity by 50% and increases accuracy by 20% for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Lightsaber, 42)
@@ -165,18 +169,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Grants +15 Attack Deflection.")
+                .IncreasesStat(StatType.AttackDeflection, creature => EquipmentPredicates.HasMainHandLightsaber(creature) ? 15 : 0)
                 .Price(2)
                 .RequirementSkill(SkillType.Lightsaber, 5)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
                 .Description("Grants +25 Attack Deflection.")
+                .IncreasesStat(StatType.AttackDeflection, creature => EquipmentPredicates.HasMainHandLightsaber(creature) ? 25 : 0)
                 .Price(3)
                 .RequirementSkill(SkillType.Lightsaber, 15)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
                 .Description("Grants +35 Attack Deflection.")
+                .IncreasesStat(StatType.AttackDeflection, creature => EquipmentPredicates.HasMainHandLightsaber(creature) ? 35 : 0)
                 .Price(4)
                 .RequirementSkill(SkillType.Lightsaber, 32)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
@@ -202,6 +209,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Ferocity Stance")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.FerocityStance1)
                 .Description("While active, grants -20% to offhand weapon delay, +10% attack, and -20% to evasion.")
                 .Price(2)
                 .RequirementSkill(SkillType.Lightsaber, 8)
@@ -215,6 +223,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Focused Stance")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.FocusedStance1)
                 .Description("While active, your DMG is increased by your Might attribute when equipped with a one-handed weapon and no off-hand weapon.")
                 .Price(2)
                 .RequirementSkill(SkillType.Lightsaber, 18)
@@ -228,6 +237,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Guardian Master")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.GuardianMaster1)
                 .Description("Grants the ability Guardian's Wrath which guarantees all attacks toward you will be deflected for 30 seconds. Additionally, increases your natural attack deflection cap to 75% when equipped with a lightsaber.")
                 .Price(4)
                 .RequirementSkill(SkillType.Lightsaber, 50)
@@ -255,6 +265,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Guardian's Influence")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.GuardiansInfluence1)
                 .Description("Allies within the area of effect (sphere) receive Deflecting Aura which increases their attack deflection by 15 for 1 minute. You do not receive this benefit.")
                 .Price(3)
                 .RequirementSkill(SkillType.Lightsaber, 20)
@@ -268,6 +279,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Impenetrable Guard")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.ImpenetrableGuard1)
                 .Description("While active, grants +15% attack deflection, +10% enmity generation, -20% attack, -20% force attack.")
                 .Price(4)
                 .RequirementSkill(SkillType.Lightsaber, 42)
@@ -349,6 +361,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Purify")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.Purify1)
                 .Description("One debuff is removed from you. Willpower DC15 check on a nearby enemy to apply the debuff to them.")
                 .Price(2)
                 .RequirementSkill(SkillType.Lightsaber, 30)
@@ -363,12 +376,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("When you deflect an attack, restore 2 FP.")
+                .IncreasesStat(StatType.DeflectionFPRestore, creature => EquipmentPredicates.HasMainHandLightsaber(creature) ? 2 : 0)
                 .Price(2)
                 .RequirementSkill(SkillType.Lightsaber, 8)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
                 .Description("When you deflect an attack, restore 4 FP.")
+                .IncreasesStat(StatType.DeflectionFPRestore, creature => EquipmentPredicates.HasMainHandLightsaber(creature) ? 4 : 0)
                 .Price(3)
                 .RequirementSkill(SkillType.Lightsaber, 22)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
@@ -408,6 +423,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Second Wind")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.SecondWind1)
                 .Description("Restores STM equal to 50% of your max. Amount additionally increases at 1% per MGT, to a maximum of 75%.")
                 .Price(3)
                 .RequirementSkill(SkillType.Lightsaber, 22)
@@ -435,6 +451,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Taunting Deflection")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.TauntingDeflection1)
                 .Description("Goads all nearby enemies into attacking you and grants the buff Taunting Deflection, which increases your attack deflection by 10 for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Lightsaber, 10)

@@ -1,6 +1,6 @@
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 using System.Collections.Generic;
 
@@ -15,6 +15,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             BindingCross();
             BladeVortex();
             CenterlineGuard();
+            CrossCut();
             CycloneMastery();
             CycloneStance();
             DuelistsChallenge();
@@ -31,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             PunishingAngle();
             ReversalCut();
             SplitGuardStrike();
+            SpinningWhirl();
             StormRelease();
             SweepingAdvance();
             TempestBloom();
@@ -81,8 +83,39 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Gain +10 Attack Deflection while wielding a twin blade. After deflecting an attack, your next attack within 8 seconds deals +8 DMG.")
+                .IncreasesStat(StatType.AttackDeflection, creature => EquipmentPredicates.HasMainHandTwinBlade(creature) ? 10 : 0)
                 .Price(2)
                 .RequirementSkill(SkillType.TwinBlade, 5);
+        }
+
+        private void CrossCut()
+        {
+            _builder.Create(PerkCategoryType.TwinBladeCyclone, PerkType.CrossCut)
+                .Name("Cross Cut")
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.CrossCut1)
+                .Description("Instantly attacks twice, each for weapon DMG + 8, and has a Reflex DC12 check to inflict Disoriented for 8 seconds.")
+                .Price(3)
+                .RequirementSkill(SkillType.TwinBlade, 5)
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.CrossCut2)
+                .Description("Instantly attacks twice, each for weapon DMG + 17, and has a Reflex DC15 check to inflict Disoriented for 10 seconds.")
+                .Price(4)
+                .RequirementSkill(SkillType.TwinBlade, 18)
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.CrossCut3)
+                .Description("Instantly attacks twice, each for weapon DMG + 25, and has a Reflex DC18 check to inflict Disoriented for 12 seconds.")
+                .Price(3)
+                .RequirementSkill(SkillType.TwinBlade, 28)
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.CrossCut4)
+                .Description("Instantly attacks twice, each for weapon DMG + 34. Reflex DC18 check to inflict Disoriented and Hamstring for 12 seconds.")
+                .Price(4)
+                .RequirementSkill(SkillType.TwinBlade, 42);
         }
 
         private void CycloneMastery()
@@ -102,6 +135,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Cyclone Stance")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.CycloneStance1)
                 .Description("While active, grants +15% Haste and +10% Attack, but reduces Defense by 20%.")
                 .Price(2)
                 .RequirementSkill(SkillType.TwinBlade, 15);
@@ -113,6 +147,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Duelist's Challenge")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.DuelistsChallenge1)
                 .Description("Mark a target for 20 seconds. You and the target deal +20% damage to each other, but you gain +20% Defense against that target.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwinBlade, 45);
@@ -124,6 +159,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Duelist Stance")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.DuelistStance1)
                 .Description("While active, single-target Twin Blade combat abilities deal +15% damage and grant +10 Attack Deflection for 6 seconds, but area Twin Blade abilities deal -15% damage.")
                 .Price(2)
                 .RequirementSkill(SkillType.TwinBlade, 15);
@@ -170,6 +206,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Final Form")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.FinalForm1)
                 .Description("For 20 seconds, single-target Twin Blade combat abilities deal +25% damage and you gain +25 Attack Deflection.")
                 .Price(4)
                 .RequirementSkill(SkillType.TwinBlade, 50);
@@ -289,6 +326,30 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SplitGuardStrike3)
                 .Description("Deals weapon DMG + 34 and grants +25% Defense for 10 seconds.")
+                .Price(3)
+                .RequirementSkill(SkillType.TwinBlade, 30);
+        }
+
+        private void SpinningWhirl()
+        {
+            _builder.Create(PerkCategoryType.TwinBladeCyclone, PerkType.SpinningWhirl)
+                .Name("Spinning Whirl")
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.SpinningWhirl1)
+                .Description("Attacks up to 3 nearby enemies for weapon DMG + 10 each.")
+                .Price(3)
+                .RequirementSkill(SkillType.TwinBlade, 8)
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.SpinningWhirl2)
+                .Description("Attacks up to 3 nearby enemies for weapon DMG + 18 each.")
+                .Price(3)
+                .RequirementSkill(SkillType.TwinBlade, 20)
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.SpinningWhirl3)
+                .Description("Attacks up to 3 nearby enemies for weapon DMG + 28 each.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwinBlade, 30);
         }

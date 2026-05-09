@@ -1,5 +1,4 @@
-﻿using NWN.Native.API;
-using System;
+using NWN.Native.API;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -272,14 +271,14 @@ namespace SWLOR.Game.Server.Service
         // _.GetNameNPCColor()
         //
         // Returns the name of creature in either light blue or purple, if the creature
-        // is a PC or an NPC. 
+        // is a PC or an NPC.
         //
 
         public static string GetNameColorNative(CNWSCreature creature)
         {
             var creatureName = (creature.GetFirstName().GetSimple() + " " + creature.GetLastName().GetSimple()).Trim();
-            return Convert.ToBoolean(creature.m_bPlayerCharacter) 
-                ? Custom(creatureName, 153, 255, 255) 
+            return Convert.ToBoolean(creature.m_bPlayerCharacter)
+                ? Custom(creatureName, 153, 255, 255)
                 : Custom(creatureName, 204, 153, 204);
         }
 

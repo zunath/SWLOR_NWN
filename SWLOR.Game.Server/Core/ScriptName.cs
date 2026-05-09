@@ -357,8 +357,6 @@ namespace SWLOR.Game.Server.Core
         public const string OnGrenadeGas3Heartbeat = "grenade_gas3_hb";
 
         // Burst of Speed events
-        public const string OnBurstOfSpeedApply = "bspeed_apply";
-        public const string OnBurstOfSpeedRemoved = "bspeed_removed";
 
         // Store events
         public const string OnStoreSellAfter = "store_sell_aft";

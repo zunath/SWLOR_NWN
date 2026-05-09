@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<uint, CreatureStatusEffect> _creatureEffects = new();
         private static readonly Dictionary<string, LoggedOutStatusEffects> _loggedOutPlayerEffects = new();
         private static readonly Dictionary<Type, StatusEffectMetadata> _statusEffects = new();
+        private static readonly HashSet<string> _suppressedStatusEffectRemovalIds = new();
         private static readonly Dictionary<EffectIconType, AbilityType> _abilityIncreaseIconType = new()
         {
             { EffectIconType.AbilityIncreaseSTR, AbilityType.Might },
@@ -245,7 +246,6 @@ namespace SWLOR.Game.Server.Service
                 if (effects.GetAllEffects().Count > 0)
                 {
                     _creatureEffects[player] = effects;
-                    ApplyNWNEffect(player);
                     ReapplyNWNEffects(player, effects);
                 }
             }
@@ -319,26 +319,8 @@ namespace SWLOR.Game.Server.Service
             OnNWNStatusEffectInterval(OBJECT_SELF);
         }
 
-        private static void ApplyNWNEffect(uint creature)
-        {
-            if (HasEffectByTag(creature, StatusEffectTag))
-                return;
-
-            var effect = EffectRunScript(
-                ScriptName.OnApplyStatusEffect,
-                ScriptName.OnRemoveStatusEffect,
-                ScriptName.OnStatusEffectInterval,
-                Interval);
-            effect = TagEffect(effect, StatusEffectTag);
-            effect = SupernaturalEffect(effect);
-
-            ApplyEffectToObject(DurationType.Permanent, effect, creature);
-        }
-
         private static CreatureStatusEffect EnsureCreatureStatusEffectTracker(uint creature)
         {
-            ApplyNWNEffect(creature);
-
             if (!_creatureEffects.TryGetValue(creature, out var effects))
             {
                 effects = new CreatureStatusEffect();
@@ -356,11 +338,43 @@ namespace SWLOR.Game.Server.Service
 
         public static void OnRemoveNWNStatusEffect(uint player)
         {
-            if (_creatureEffects.ContainsKey(player))
-                _creatureEffects.Remove(player);
+            var tag = GetLastStatusEffectTag();
+            if (string.IsNullOrWhiteSpace(tag) || tag == StatusEffectTag)
+            {
+                if (_creatureEffects.ContainsKey(player))
+                    _creatureEffects.Remove(player);
+
+                return;
+            }
+
+            if (_suppressedStatusEffectRemovalIds.Contains(tag))
+                return;
+
+            RemoveStatusEffectById(player, tag, true, false);
+        }
+
+        private static string GetLastStatusEffectTag()
+        {
+            var effect = GetLastRunScriptEffect();
+            var tag = GetEffectTag(effect);
+            return !string.IsNullOrWhiteSpace(tag)
+                ? tag
+                : GetEffectString(effect, 0);
         }
 
         public static void OnNWNStatusEffectInterval(uint creature)
+        {
+            var tag = GetLastStatusEffectTag();
+            if (string.IsNullOrWhiteSpace(tag) || tag == StatusEffectTag)
+            {
+                TickAllStatusEffects(creature);
+                return;
+            }
+
+            TickStatusEffectById(creature, tag);
+        }
+
+        private static void TickAllStatusEffects(uint creature)
         {
             // Clean up invalid creatures when we encounter them
             if (!GetIsObjectValid(creature) || GetIsDead(creature))
@@ -386,18 +400,50 @@ namespace SWLOR.Game.Server.Service
                 if (effect.ActivationType != StatusEffectActivationType.Tick)
                     continue;
 
+                TickStatusEffect(creature, effect);
+            }
+        }
+
+        private static void TickStatusEffectById(uint creature, string statusEffectId)
+        {
+            if (!GetIsObjectValid(creature) || GetIsDead(creature))
+            {
+                RemoveStatusEffectById(creature, statusEffectId, false, true);
+                return;
+            }
+
+            if (!_creatureEffects.TryGetValue(creature, out var effects))
+            {
+                RemoveEffectByTag(creature, statusEffectId);
+                return;
+            }
+
+            var effect = effects.GetAllTickEffects().FirstOrDefault(x => x.Id == statusEffectId);
+            if (effect == null)
+            {
+                RemoveEffectByTag(creature, statusEffectId);
+                return;
+            }
+
+            TickStatusEffect(creature, effect);
+        }
+
+        private static void TickStatusEffect(uint creature, IStatusEffect effect)
+        {
+            if (effect.ActivationType != StatusEffectActivationType.Tick)
+                return;
+
+            if (effect.IsFlaggedForRemoval)
+            {
+                RemoveStatusEffectById(creature, effect.Id, true, true);
+            }
+            else
+            {
+                effect.TickEffect(creature);
+
                 if (effect.IsFlaggedForRemoval)
                 {
-                    RemoveStatusEffect(effect.GetType(), creature, effect.Source);
-                }
-                else
-                {
-                    effect.TickEffect(creature);
-
-                    if (effect.IsFlaggedForRemoval)
-                    {
-                        RemoveStatusEffect(effect.GetType(), creature, effect.Source);
-                    }
+                    RemoveStatusEffectById(creature, effect.Id, true, true);
                 }
             }
         }
@@ -493,14 +539,7 @@ namespace SWLOR.Game.Server.Service
                 Stat.ApplyCreatureMovementRate(creature);
             }
 
-            if (statusEffect.Icon != EffectIconType.Invalid)
-            {
-                var iconEffect = EffectIcon(statusEffect.Icon);
-                iconEffect = TagEffect(iconEffect, statusEffect.Id);
-                ApplyEffectToObject(DurationType.Permanent, iconEffect, creature);
-            }
-
-            ApplyAbilityStatEffects(creature, statusEffect);
+            ApplyTrackedNWNEffect(creature, statusEffect, durationTicks, isPermanent);
 
             if (statusEffect.SendsApplicationMessage)
             {
@@ -527,15 +566,7 @@ namespace SWLOR.Game.Server.Service
             foreach (var statusEffect in effects.GetAllEffects())
             {
                 statusEffect.ReapplyEffect(creature);
-
-                if (statusEffect.Icon != EffectIconType.Invalid)
-                {
-                    var iconEffect = EffectIcon(statusEffect.Icon);
-                    iconEffect = TagEffect(iconEffect, statusEffect.Id);
-                    ApplyEffectToObject(DurationType.Permanent, iconEffect, creature);
-                }
-
-                ApplyAbilityStatEffects(creature, statusEffect);
+                ApplyTrackedNWNEffect(creature, statusEffect, statusEffect.DurationTicks, statusEffect.DurationTicks < 0);
 
                 if (statusEffect.StatGroup.Stats[StatType.MovementSpeedPercentAdjustment] != 0)
                 {
@@ -593,7 +624,7 @@ namespace SWLOR.Game.Server.Service
         {
             foreach (var statusEffect in effects.GetAllEffects())
             {
-                RemoveEffectByTag(creature, statusEffect.Id);
+                RemoveNativeStatusEffect(creature, statusEffect.Id);
             }
 
             RemoveEffectByTag(creature, StatusEffectTag);
@@ -636,7 +667,62 @@ namespace SWLOR.Game.Server.Service
                 durationSeconds <= 0f);
         }
 
-        private static void ApplyAbilityStatEffects(uint creature, IStatusEffect statusEffect)
+        private static void ApplyTrackedNWNEffect(uint creature, IStatusEffect statusEffect, int durationTicks, bool isPermanent)
+        {
+            if (HasEffectByTag(creature, statusEffect.Id))
+                return;
+
+            var effect = BuildNativeStatusEffect(statusEffect);
+
+            if (isPermanent || durationTicks < 0)
+            {
+                ApplyEffectToObject(DurationType.Permanent, effect, creature);
+                return;
+            }
+
+            var durationSeconds = GetStatusEffectDurationSeconds(statusEffect, durationTicks);
+            ApplyEffectToObject(DurationType.Temporary, effect, creature, durationSeconds);
+        }
+
+        private static Effect BuildNativeStatusEffect(IStatusEffect statusEffect)
+        {
+            var intervalScript = statusEffect.ActivationType == StatusEffectActivationType.Tick
+                ? ScriptName.OnStatusEffectInterval
+                : string.Empty;
+
+            var effect = EffectRunScript(
+                ScriptName.OnApplyStatusEffect,
+                ScriptName.OnRemoveStatusEffect,
+                intervalScript,
+                Interval,
+                statusEffect.Id);
+            effect = TagEffect(effect, statusEffect.Id);
+
+            if (statusEffect.Icon != EffectIconType.Invalid)
+            {
+                var iconEffect = TagEffect(EffectIcon(statusEffect.Icon), statusEffect.Id);
+                effect = LinkEffect(effect, iconEffect);
+            }
+
+            var abilityStatEffects = BuildAbilityStatEffects(statusEffect);
+            effect = LinkEffect(effect, abilityStatEffects);
+            effect = TagEffect(effect, statusEffect.Id);
+            return SupernaturalEffect(effect);
+        }
+
+        private static float GetStatusEffectDurationSeconds(IStatusEffect statusEffect, int durationTicks)
+        {
+            return durationTicks * Math.Max(1f, statusEffect.Frequency);
+        }
+
+        private static Effect LinkEffect(Effect linkedEffect, Effect effect)
+        {
+            return effect == null
+                ? linkedEffect
+                : EffectLinkEffects(linkedEffect, effect);
+        }
+
+        private static Effect BuildAbilityStatEffects(IStatusEffect statusEffect)
         {
             Effect linkedEffect = null;
 
@@ -648,17 +734,14 @@ namespace SWLOR.Game.Server.Service
                 var effect = amount > 0
                     ? EffectAbilityIncrease(ability, amount)
                     : EffectAbilityDecrease(ability, Math.Abs(amount));
+                effect = TagEffect(effect, statusEffect.Id);
 
                 linkedEffect = linkedEffect == null
                     ? effect
                     : EffectLinkEffects(linkedEffect, effect);
             }
 
-            if (linkedEffect == null)
-                return;
-
-            linkedEffect = TagEffect(linkedEffect, statusEffect.Id);
-            ApplyEffectToObject(DurationType.Permanent, linkedEffect, creature);
+            return linkedEffect;
         }
 
         public static bool HasStatusEffectDefinition(Type statusEffectClass)
@@ -781,7 +864,25 @@ namespace SWLOR.Game.Server.Service
             if (effect == null || effect.DurationTicks < 0)
                 return 0;
 
-            return (int)Math.Ceiling(effect.DurationTicks * effect.Frequency);
+            var nativeDuration = GetNativeStatusEffectDuration(creature, effect.Id);
+            return nativeDuration > 0
+                ? nativeDuration
+                : (int)Math.Ceiling(effect.DurationTicks * effect.Frequency);
+        }
+
+        private static int GetNativeStatusEffectDuration(uint creature, string statusEffectId)
+        {
+            var remaining = 0;
+
+            for (var effect = GetFirstEffect(creature); GetIsEffectValid(effect); effect = GetNextEffect(creature))
+            {
+                if (GetEffectTag(effect) != statusEffectId)
+                    continue;
+
+                remaining = Math.Max(remaining, GetEffectDurationRemaining(effect));
+            }
+
+            return remaining;
         }
 
         public static EffectTypeScript GetEffectTypeFromIcon(EffectIconType effectIcon)
@@ -813,27 +914,73 @@ namespace SWLOR.Game.Server.Service
                 if (source != OBJECT_INVALID && statusEffect.Source != source)
                     continue;
 
-                if (sendsWornOffMessage && statusEffect.SendsWornOffMessage && !hasSentMessage)
-                {
-                    var name = GetName(creature);
-                    var effectName = statusEffect.Name;
-                    Messaging.SendMessageNearbyToPlayers(creature,
-                        $"{name}'s {effectName} effect has worn off.");
-
-                    hasSentMessage = true;
-                }
-
-                RemoveEffectByTag(creature, statusEffect.Id);
-                statusEffect.RemoveEffect(creature);
-                creatureEffects.Remove(statusEffect);
-
-                if (statusEffect.StatGroup.Stats[StatType.MovementSpeedPercentAdjustment] != 0)
-                {
-                    DelayCommand(0.1f, () => Stat.ApplyCreatureMovementRate(creature));
-                }
+                var shouldSendMessage = sendsWornOffMessage && !hasSentMessage;
+                RemoveStatusEffectInstance(creature, creatureEffects, statusEffect, shouldSendMessage, true);
+                hasSentMessage |= shouldSendMessage && statusEffect.SendsWornOffMessage;
             }
 
             RemoveCreatureIfEmpty(creature, creatureEffects);
+        }
+
+        private static void RemoveStatusEffectById(
+            uint creature,
+            string statusEffectId,
+            bool sendsWornOffMessage = true,
+            bool removeNativeEffect = true)
+        {
+            if (!_creatureEffects.TryGetValue(creature, out var creatureEffects))
+            {
+                if (removeNativeEffect)
+                    RemoveNativeStatusEffect(creature, statusEffectId);
+
+                return;
+            }
+
+            var statusEffect = creatureEffects.GetAllEffects().FirstOrDefault(x => x.Id == statusEffectId);
+            if (statusEffect == null)
+            {
+                if (removeNativeEffect)
+                    RemoveNativeStatusEffect(creature, statusEffectId);
+
+                return;
+            }
+
+            RemoveStatusEffectInstance(creature, creatureEffects, statusEffect, sendsWornOffMessage, removeNativeEffect);
+            RemoveCreatureIfEmpty(creature, creatureEffects);
+        }
+
+        private static void RemoveStatusEffectInstance(
+            uint creature,
+            CreatureStatusEffect creatureEffects,
+            IStatusEffect statusEffect,
+            bool sendsWornOffMessage,
+            bool removeNativeEffect)
+        {
+            if (sendsWornOffMessage && statusEffect.SendsWornOffMessage)
+            {
+                var name = GetName(creature);
+                var effectName = statusEffect.Name;
+                Messaging.SendMessageNearbyToPlayers(creature,
+                    $"{name}'s {effectName} effect has worn off.");
+            }
+
+            if (removeNativeEffect)
+                RemoveNativeStatusEffect(creature, statusEffect.Id);
+
+            statusEffect.RemoveEffect(creature);
+            creatureEffects.Remove(statusEffect);
+
+            if (statusEffect.StatGroup.Stats[StatType.MovementSpeedPercentAdjustment] != 0)
+            {
+                DelayCommand(0.1f, () => Stat.ApplyCreatureMovementRate(creature));
+            }
+        }
+
+        private static void RemoveNativeStatusEffect(uint creature, string statusEffectId)
+        {
+            _suppressedStatusEffectRemovalIds.Add(statusEffectId);
+            RemoveEffectByTag(creature, statusEffectId);
+            _suppressedStatusEffectRemovalIds.Remove(statusEffectId);
         }
 
         public static void RemoveStatusEffect<T>(uint creature)

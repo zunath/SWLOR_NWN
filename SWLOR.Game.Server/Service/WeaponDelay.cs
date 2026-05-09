@@ -115,7 +115,7 @@ namespace SWLOR.Game.Server.Service
         public static void ApplyWeaponDelayFallback()
         {
             var item = GetPCItemLastEquipped();
-            if (!GetIsObjectValid(item)) 
+            if (!GetIsObjectValid(item))
                 return;
 
             ApplyDelayPropertyIfMissing(item);

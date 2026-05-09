@@ -126,8 +126,8 @@ namespace SWLOR.Game.Server.Service
         public static uint GetHighestEnmityTarget(uint enemy)
         {
             var enmityTable = GetEnmityTable(enemy);
-            var target = enmityTable.Count <= 0 
-                ? OBJECT_INVALID 
+            var target = enmityTable.Count <= 0
+                ? OBJECT_INVALID
                 : enmityTable.MaxBy(o => o.Value).Key;
 
             return target;
@@ -311,7 +311,7 @@ namespace SWLOR.Game.Server.Service
         {
             var target = GetHighestEnmityTarget(creature);
 
-            if (!GetIsObjectValid(target) || 
+            if (!GetIsObjectValid(target) ||
                 GetArea(creature) != GetArea(target))
                 return;
 
@@ -335,8 +335,8 @@ namespace SWLOR.Game.Server.Service
         /// <returns>A dictionary of enmity values for a given creature.</returns>
         public static Dictionary<uint, int> GetEnmityTowardsAllEnemies(uint creature)
         {
-            var enemyList = _creatureToEnemies.ContainsKey(creature) 
-                ? _creatureToEnemies[creature] 
+            var enemyList = _creatureToEnemies.ContainsKey(creature)
+                ? _creatureToEnemies[creature]
                 : new List<uint>();
 
             var result = new Dictionary<uint, int>();

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq.Expressions;
 using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.NWN.API.Engine;
@@ -11,11 +11,11 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         private string Text { get; set; }
         private string TextBindName { get; set; }
         private bool IsTextBound => !string.IsNullOrWhiteSpace(TextBindName);
-        
+
         private bool IsToggled { get; set; }
         private string IsToggledBindName { get; set; }
         private bool IsToggledBound => !string.IsNullOrWhiteSpace(IsToggledBindName);
-        
+
         /// <summary>
         /// Sets a static value for the text property of the button.
         /// </summary>
@@ -67,7 +67,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         {
             if (string.IsNullOrWhiteSpace(Id))
                 Id = Guid.NewGuid().ToString();
-            
+
             Events["click"] = GuiHelper<TDataModel>.GetMethodInfo(expression);
 
             return this;

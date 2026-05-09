@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             if (CombatPoint.GetTaggedCreatureCount(activator) == 0)
             {
                 // Scale XP to the thing we just fought -- only give XP if we're not in combat.
-                // Retrieve the level of our recent enemy from the CombatPoint service, and use the Skill service 
+                // Retrieve the level of our recent enemy from the CombatPoint service, and use the Skill service
                 // delta function to get base XP based on relative level.
                 // If AddCombatPoint... returns 0, but GetRecentEnemyLevel returns > -1, then we are out of combat but recently were in combat.
                 var enemyLevel = CombatPoint.GetRecentEnemyLevel(activator);

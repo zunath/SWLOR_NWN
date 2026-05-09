@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             get => Get<bool>();
             set => Set(value);
         }
-        
+
         public string ActivePortrait
         {
             get => Get<string>();
@@ -39,13 +39,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             get => Get<bool>();
             set => Set(value);
         }
-        
+
         public string CustomPortraitFile
         {
             get => Get<string>();
             set => Set(value);
         }
-        
+
         private int _selectedSoundSetIndex;
         private List<int> _soundSetIds;
         public GuiBindingList<string> SoundSetNames
@@ -104,10 +104,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsPortraitSelected = true;
             IsVoiceSelected = false;
             IsCustomPortraitVisible = _target == Player;
-            
+
             ChangePartialView(PartialElement, PortraitPartial);
             LoadCurrentPortrait();
-            
+
             WatchOnClient(model => model.CustomPortraitFile);
         }
 
@@ -115,11 +115,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             IsPortraitSelected = false;
             IsVoiceSelected = true;
-            
+
             ChangePartialView(PartialElement, VoicePartial);
             LoadSoundSets();
         }
-        
+
         private void LoadCurrentPortrait()
         {
             var resref = GetPortraitResRef(_target);
@@ -146,11 +146,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 soundSetToggles.Add(activeSoundSetId == soundSet);
                 _soundSetIds.Add(soundSet);
             }
-            
+
             SoundSetNames = soundSetNames;
             SoundSetToggles = soundSetToggles;
         }
-        
+
         protected override void Initialize(CustomizeCharacterPayload initialPayload)
         {
             _target = GetIsObjectValid(initialPayload.Target) ? initialPayload.Target : Player;
@@ -158,9 +158,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             CustomPortraitFile = string.Empty;
             MaximumPortraits = Cache.PortraitCount;
             MaxPortraitsText = $"/ {MaximumPortraits}";
-            
+
             LoadPortraitView();
-            
+
             WatchOnClient(model => model.ActivePortraitInternalId);
         }
 
@@ -173,7 +173,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             LoadVoiceView();
         };
-        
+
         public Action OnPreviousPortraitClick() => () =>
         {
             var newId = _activePortraitInternalId - 1;
@@ -216,7 +216,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 SetPortraitResRef(_target, CustomPortraitFile);
                 ActivePortrait = CustomPortraitFile + "l";
             }
-            
+
             if (isDroid)
             {
                 var controller = Droid.GetControllerItem(_target);

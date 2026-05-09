@@ -1808,7 +1808,7 @@ namespace SWLOR.NWN.API.NWNX
         /// This returns the chance percentage that the creature can bypass the specified immunity type.
         /// Returns 0 if the creature cannot bypass the immunity type.
         /// </remarks>
-        public static int GetBypassEffectImmunity(uint creature, int immunityType)        
+        public static int GetBypassEffectImmunity(uint creature, int immunityType)
         {
             return global::NWN.Core.NWNX.CreaturePlugin.GetBypassEffectImmunity(creature, immunityType);
         }

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.LootService;
 
 namespace SWLOR.Game.Server.Feature.LootTableDefinition
@@ -155,7 +155,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("ref_jasioclase", 2, 1)
                 .AddItem("ship_fuelcapsule", 1, 5)
                 .AddItem("ship_missile", 2, 12);
-            
+
             _builder.Create("SPACE_BASIC_T5_RARES")
                 .IsRare()
                 .AddItem("diamond", 1, 1, true)

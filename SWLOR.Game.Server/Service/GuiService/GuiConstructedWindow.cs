@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.NWN.API.Engine;
 
@@ -14,8 +14,8 @@ namespace SWLOR.Game.Server.Service.GuiService
         public Dictionary<string, Json> PartialViews { get; set; }
 
         public GuiConstructedWindow(
-            GuiWindowType type, 
-            string windowId, 
+            GuiWindowType type,
+            string windowId,
             Json window,
             GuiRectangle initialGeometry,
             Dictionary<string, Json> partialViews,

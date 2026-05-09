@@ -1,4 +1,4 @@
-﻿using NWNX.NET;
+using NWNX.NET;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.LogService;

@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Service.CraftService;
+using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.SkillService;
 

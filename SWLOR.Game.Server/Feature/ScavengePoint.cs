@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Feature
     public static class ScavengePoint
     {
         /// <summary>
-        /// 
+        ///
         /// </summary>
         [NWNEventHandler(ScriptName.OnScavengeOpened)]
         public static void OnOpened()
@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Feature
                 SendMessageToPC(user, "This object has already been searched through.");
                 return;
             }
-            
+
             var scavengingLevel = Perk.GetPerkLevel(user, PerkType.Scavenging);
             var hardLookLevel = Perk.GetPerkLevel(user, PerkType.HardLook);
             var requiredLevel = GetLocalInt(placeable, "SCAVENGE_POINT_LEVEL");
@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Feature
                 AssignCommand(user, () => ActionInteractObject(placeable));
                 return;
             }
-            
+
             // Perk level isn't high enough.
             if (scavengingLevel < requiredLevel)
             {
@@ -66,7 +66,7 @@ namespace SWLOR.Game.Server.Feature
             var playerId = GetObjectUUID(user);
             var dbPlayer = DB.Get<Player>(playerId);
             var dbSkill = dbPlayer.Skills[SkillType.Gathering];
-            var scavLevel = 10 * requiredLevel;            
+            var scavLevel = 10 * requiredLevel;
             var delta = scavLevel - dbSkill.Rank;
             var deltaXP = Skill.GetDeltaXP(delta);
             var treasureHunterLevel = Perk.GetPerkLevel(user, PerkType.TreasureHunter);
@@ -150,7 +150,7 @@ namespace SWLOR.Game.Server.Feature
 
             if (!GetIsPC(user) || GetIsDM(user)) return;
 
-            // In case the user is not skilled enough to scavenge this resource, we don't want to destroy it. 
+            // In case the user is not skilled enough to scavenge this resource, we don't want to destroy it.
             if (GetLocalBool(placeable, "DO_NOT_DESTROY"))
             {
                 DeleteLocalBool(placeable, "DO_NOT_DESTROY");

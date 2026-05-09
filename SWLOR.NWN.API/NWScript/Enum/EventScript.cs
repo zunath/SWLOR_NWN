@@ -74,7 +74,7 @@ namespace SWLOR.NWN.API.NWScript.Enum
         Placeable_OnUserDefined = 9013,
         Placeable_OnDialogue = 9014,
         Placeable_OnLeftClick = 9015,
-        
+
         Door_OnOpen = 10000,
         Door_OnClose = 10001,
         Door_OnDamage = 10002,

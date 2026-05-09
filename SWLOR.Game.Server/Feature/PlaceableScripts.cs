@@ -86,7 +86,7 @@ namespace SWLOR.Game.Server.Feature
 
             var vfxId = GetLocalInt(target, "PERMANENT_VFX_ID");
             var vfx = vfxId > 0 ? (VisualEffect) vfxId : VisualEffect.None;
-            
+
             if (vfx != VisualEffect.None)
             {
                 ApplyEffectToObject(DurationType.Permanent, EffectVisualEffect(vfx), target);
@@ -123,7 +123,7 @@ namespace SWLOR.Game.Server.Feature
             }
         }
         /// <summary>
-        /// Handle sitting on an object.        
+        /// Handle sitting on an object.
         /// </summary>
         [NWNEventHandler(ScriptName.OnPlaceableSit)]
         public static void Sit()
@@ -134,10 +134,10 @@ namespace SWLOR.Game.Server.Feature
             if (GetObjectVisualTransform(user, ObjectVisualTransform.Scale) == 1.0) return;
 
             // Transformed creatures sit at the height of their transform. Normalise them to the height of the chair.
-            // We want to take the negative/opposite of their differential from "standard" and divide by 2.  So a 
+            // We want to take the negative/opposite of their differential from "standard" and divide by 2.  So a
             // creature at 1.6 scale (0.6 above standard) should be Z-transformed by -0.3.
             float fScale = GetObjectVisualTransform(user, ObjectVisualTransform.Scale) - 1.0f;
-            SetObjectVisualTransform(user, ObjectVisualTransform.TranslateZ, (-fScale) / 2.0f);           
+            SetObjectVisualTransform(user, ObjectVisualTransform.TranslateZ, (-fScale) / 2.0f);
         }
 
         /// <summary>

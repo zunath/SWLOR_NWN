@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using SWLOR.Game.Server.Service.GuiService.Component;
 
 namespace SWLOR.Game.Server.Service.GuiService
@@ -26,10 +26,10 @@ namespace SWLOR.Game.Server.Service.GuiService
         /// <param name="type">The type of window in use.</param>
         /// <param name="payload">The initial payload passed in by the caller</param>
         /// <param name="tetherObject">The object to tether the window to.</param>
-        void Bind(uint player, 
-            int windowToken, 
-            GuiRectangle initialGeometry, 
-            GuiWindowType type, 
+        void Bind(uint player,
+            int windowToken,
+            GuiRectangle initialGeometry,
+            GuiWindowType type,
             GuiPayloadBase payload,
             uint tetherObject);
 

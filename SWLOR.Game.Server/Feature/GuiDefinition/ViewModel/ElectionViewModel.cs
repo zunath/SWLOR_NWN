@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
@@ -98,7 +98,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var selectedCandidateId = election.VoterSelections.ContainsKey(cdKey)
                 ? election.VoterSelections[cdKey].CandidatePlayerId
                 : new ElectionVoter().CandidatePlayerId;
-            
+
             _candidatePlayerIds.Clear();
             _candidatePlayerIds.Add(string.Empty);
             candidateNames.Add("[ABSTAIN]");
@@ -170,7 +170,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // If we're in the 'Voting' process, it will cast the player's vote toward the selected candidate.
             if (dbElection.Stage == ElectionStageType.Registration)
             {
-                // Player is currently in the race. 
+                // Player is currently in the race.
                 if (dbElection.CandidatePlayerIds.Contains(playerId))
                 {
                     ShowModal("Are you sure you want to withdraw the race? Any votes cast for you will be lost should you decide to enter again.",

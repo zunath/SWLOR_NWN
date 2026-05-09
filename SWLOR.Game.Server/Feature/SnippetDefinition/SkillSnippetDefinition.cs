@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     return false;
                 });
         }
-        
+
         private void ConditionHasAllSkills()
         {
             _builder.Create("condition-all-skills")

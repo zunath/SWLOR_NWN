@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Service
             public bool IsOOC { get; set; }
             public bool IsEmote { get; set; }
         }
-        
+
         private enum WorkingOnEmoteStyle
         {
             None,
@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Service
         {
             var dm = OBJECT_SELF;
             var target = StringToObject(EventsPlugin.GetEventData("TARGET"));
-            
+
             // Unpossession - Remove the variable
             if (!GetIsObjectValid(target))
             {
@@ -61,7 +61,7 @@ namespace SWLOR.Game.Server.Service
             else
             {
                 SetLocalObject(dm, DMPossessedCreature, target);
-                
+
                 // Clear busy status of the possessed creature to prevent ability usage issues
                 Activity.ClearBusy(target);
             }
@@ -79,7 +79,7 @@ namespace SWLOR.Game.Server.Service
 
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId) ?? new Player(playerId);
-            
+
             SetLocalBool(player, "DISPLAY_HOLONET", dbPlayer.Settings.IsHolonetEnabled);
         }
 
@@ -129,7 +129,7 @@ namespace SWLOR.Game.Server.Service
                 channel == ChatChannel.PlayerWhisper ||
                 channel == ChatChannel.PlayerParty ||
                 channel == ChatChannel.PlayerShout;
-            
+
             var messageToDm = channel == ChatChannel.PlayerDM;
 
             var sender = ChatPlugin.GetSender();
@@ -137,7 +137,7 @@ namespace SWLOR.Game.Server.Service
 
             // if this is a DMFI chat command, exit as ProcessNativeChatMessage has already handled via mod_chat event.
             if (GetIsDM(sender) && message.Length >= 1 && message.Substring(0, 1) == ".")
-            {                
+            {
                 return;
             }
 
@@ -178,7 +178,7 @@ namespace SWLOR.Game.Server.Service
                     IsTranslatable = false
                 };
                 chatComponents.Add(component);
-                
+
                 if (channel == ChatChannel.PlayerShout)
                 {
                     SendMessageToPC(sender, "Out-of-character messages cannot be sent on the Holonet.");
@@ -197,8 +197,8 @@ namespace SWLOR.Game.Server.Service
             }
             else
             {
-                chatComponents = GetEmoteStyle(sender) == EmoteStyle.Regular 
-                    ? SplitMessageIntoComponents_Regular(message) 
+                chatComponents = GetEmoteStyle(sender) == EmoteStyle.Regular
+                    ? SplitMessageIntoComponents_Regular(message)
                     : SplitMessageIntoComponents_Novel(message);
 
                 // For any components with color, set the emote color.
@@ -255,7 +255,7 @@ namespace SWLOR.Game.Server.Service
             for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
             {
                 allPlayersAndDMs.Add(player);
-                
+
                 if (GetIsDM(player) || GetIsDMPossessed(player))
                 {
                     allDMs.Add(player);
@@ -312,7 +312,7 @@ namespace SWLOR.Game.Server.Service
                     {
                         target = possessedNPC;
                     }
-                    
+
                     var distance = GetDistanceBetween(sender, target);
 
                     if (GetArea(target) == GetArea(sender) &&

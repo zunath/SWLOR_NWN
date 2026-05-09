@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
@@ -119,7 +119,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     var dbShip = DB.Get<PlayerShip>(dbPlayer.ActiveShipId);
                     var dbProperty = DB.Get<WorldProperty>(dbShip.PropertyId);
                     dbProperty.Positions.Remove(PropertyLocationType.CurrentPosition);
-                    
+
                     // Docking at an NPC starport will update the safety location to that dock.
                     // In the event that the ship is docked at a player starport and it gets destroyed or
                     // otherwise goes away, the player's ship will return back to the last NPC dock it visited.
@@ -149,7 +149,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                             DB.Set(dbOldStarport);
 
                             Log.Write(LogGroup.Property, $"Unregistered player ship '{dbProperty.CustomName}' ({dbProperty.Id}) from old starport '{dbOldStarport.CustomName}' ({dbOldStarport.Id}).");
-                            
+
                             // Refresh the starport object we're working with in the event the "old" starport
                             // is actually the current one. This ensures we don't get a duplicate starship property Id in the list.
                             if(dbStarport != null && dbOldStarport.Id == dbStarport.Id)

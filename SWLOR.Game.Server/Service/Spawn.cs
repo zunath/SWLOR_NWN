@@ -121,7 +121,7 @@ namespace SWLOR.Game.Server.Service
                         Log.Write(LogGroup.Error, $"Area has an invalid spawn table Id. ({spawnTableId}) is not defined. Do you have the right spawn table Id?");
                         return;
                     }
-                    
+
                     var spawnTable = _spawnTables[spawnTableId];
                     if (spawnTable.Spawns == null || spawnTable.Spawns.Count == 0)
                     {
@@ -161,7 +161,7 @@ namespace SWLOR.Game.Server.Service
                     // Hand-placed creature information is stored and the actual NPC is destroyed so it can be spawned by the system.
                     if (type == ObjectType.Creature)
                     {
-                        // Some plot creatures use the Object Visibility service.  This relies on object references so we 
+                        // Some plot creatures use the Object Visibility service.  This relies on object references so we
                         // should not spawn new instances of those creatures.  Just leave them as they are.
                         if (!String.IsNullOrEmpty(GetLocalString(obj, "VISIBILITY_OBJECT_ID")))
                         {
@@ -235,7 +235,7 @@ namespace SWLOR.Game.Server.Service
             // Found the local variable. Use that count.
             if (count > 0) return count;
 
-            // Local variable wasn't found or was zero. 
+            // Local variable wasn't found or was zero.
             // Determine the count by the size of the area.
             var width = GetAreaSize(Dimension.Width, area);
             var height = GetAreaSize(Dimension.Height, area);
@@ -264,7 +264,7 @@ namespace SWLOR.Game.Server.Service
             // Found the local variable. Use that count.
             if (count > 0) return count;
 
-            // Local variable wasn't found or was zero. 
+            // Local variable wasn't found or was zero.
             // Determine the count by the size of the area.
             var width = GetAreaSize(Dimension.Width, area);
             var height = GetAreaSize(Dimension.Height, area);
@@ -346,16 +346,16 @@ namespace SWLOR.Game.Server.Service
         private static void QueueResourceDespawn(uint resourceObject, Guid spawnDetailId, int despawnMinutes)
         {
             var now = DateTime.UtcNow;
-            
+
             // Add random variance of ±25% to stagger despawn times
             var variancePercent = Random.Next(-25, 26); // -25% to +25%
             var variance = (int)(despawnMinutes * (variancePercent / 100.0f));
             var actualDespawnMinutes = despawnMinutes + variance;
-            
+
             // Ensure minimum despawn time of 1 minute
             if (actualDespawnMinutes < 1)
                 actualDespawnMinutes = 1;
-            
+
             var resourceDespawn = new ResourceDespawn
             {
                 ResourceObject = resourceObject,
@@ -454,7 +454,7 @@ namespace SWLOR.Game.Server.Service
                     if (spawnedObject == OBJECT_INVALID)
                     {
                         queuedSpawn.FailureCount++;
-                        
+
                         // If we've failed too many times (10 attempts), remove this spawn to prevent infinite loops
                         if (queuedSpawn.FailureCount >= 10)
                         {
@@ -462,7 +462,7 @@ namespace SWLOR.Game.Server.Service
                             RemoveQueuedSpawn(queuedSpawn);
                             continue;
                         }
-                        
+
                         // Exponential backoff: delay gets longer with each failure
                         var backoffMinutes = detail.RespawnDelayMinutes * Math.Pow(2, Math.Min(queuedSpawn.FailureCount - 1, 4)); // Cap at 16x delay
                         queuedSpawn.RespawnTime = now.AddMinutes(backoffMinutes);
@@ -558,7 +558,7 @@ namespace SWLOR.Game.Server.Service
             for (var index = _queuedResourceDespawns.Count - 1; index >= 0; index--)
             {
                 var resourceDespawn = _queuedResourceDespawns[index];
-                
+
                 // Resource object no longer exists, remove from queue
                 if (!GetIsObjectValid(resourceDespawn.ResourceObject))
                 {

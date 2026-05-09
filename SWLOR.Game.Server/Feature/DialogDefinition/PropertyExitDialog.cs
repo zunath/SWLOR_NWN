@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DialogService;
 using SWLOR.Game.Server.Service.PropertyService;
@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             var returningArea = string.IsNullOrWhiteSpace(propertyLocation.AreaResref)
                 ? Property.GetRegisteredInstance(propertyLocation.InstancePropertyId).Area
                 : Area.GetAreaByResref(propertyLocation.AreaResref);
-            
+
             var location = Location(
                 returningArea,
                 Vector3(propertyLocation.X, propertyLocation.Y, propertyLocation.Z),
@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 });
             }
             // The existence of a "Last Docked" position means this is a starship currently docked at a starport.
-            else if (property != null && 
+            else if (property != null &&
                      property.Positions.ContainsKey(PropertyLocationType.DockPosition))
             {
                 page.AddResponse("Exit", () =>

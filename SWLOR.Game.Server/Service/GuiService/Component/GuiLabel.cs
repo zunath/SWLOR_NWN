@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq.Expressions;
 using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.NWN.API.Engine;
@@ -11,11 +11,11 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         private string Text { get; set; }
         private string TextBindName { get; set; }
         private bool IsTextBound => !string.IsNullOrWhiteSpace(TextBindName);
-        
+
         private NuiHorizontalAlign HorizontalAlign { get; set; }
         private string HorizontalAlignBindName { get; set; }
         private bool IsHorizontalAlignBound => !string.IsNullOrWhiteSpace(HorizontalAlignBindName);
-        
+
         private NuiVerticalAlign VerticalAlign { get; set; }
         private string VerticalAlignBindName { get; set; }
         private bool IsVerticalAlignBound => !string.IsNullOrWhiteSpace(VerticalAlignBindName);

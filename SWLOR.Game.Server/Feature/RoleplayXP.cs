@@ -60,7 +60,7 @@ namespace SWLOR.Game.Server.Feature
                 dbPlayer.RoleplayProgress.TotalRPExpGained += (ulong)xp;
                 dbPlayer.UnallocatedXP += xp;
                 DB.Set(dbPlayer);
-                
+
                 SendMessageToPC(player, $"You gained {xp} roleplay XP.");
             }
         }
@@ -140,7 +140,7 @@ namespace SWLOR.Game.Server.Feature
                     if (GetObjectUUID(member) == playerId) continue;
                     return true;
                 }
-                
+
                 return false;
             }
 
@@ -156,7 +156,7 @@ namespace SWLOR.Game.Server.Feature
                     distance = 4.0f;
                 }
                 else break;
-                
+
                 if (GetDistanceBetween(player, currentPlayer) <= distance)
                 {
                     return true;

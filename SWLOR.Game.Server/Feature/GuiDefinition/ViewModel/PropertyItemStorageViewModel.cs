@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
@@ -211,15 +211,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             foreach (var category in categories)
             {
                 var permission = permissions.SingleOrDefault(x => x.PropertyId == category.Id);
-                
+
                 _categoryIds.Add(category.Id);
                 categoryNames.Add(category.Name);
                 categoryToggles.Add(false);
                 categoryEnables.Add(permission != null && permission.Permissions[PropertyPermissionType.AccessStorage]);
             }
-            
+
             RefreshItemCount(
-                categories.Sum(x => x.Items.Count), 
+                categories.Sum(x => x.Items.Count),
                 property.ItemStorageCount);
             CategoryNames = categoryNames;
             CategoryToggles = categoryToggles;
@@ -373,7 +373,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                     var query = new DBQuery<WorldPropertyPermission>()
                         .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), categoryId, false);
-                    
+
                     // Remove any permissions specific to this category.
                     var permissions = DB.Search(query);
                     foreach (var permission in permissions)
@@ -390,7 +390,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     CategoryToggles.RemoveAt(SelectedCategoryIndex);
                     _categoryIds.RemoveAt(SelectedCategoryIndex);
                     SelectedCategoryIndex = -1;
-                    
+
                     LoadCategory();
 
                     Instructions = $"Category deleted successfully.";

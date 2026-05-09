@@ -20,8 +20,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .CombatStats(AbilityType.Agility, AbilityType.Perception)
                 .Role(BeastRoleType.Evasion)
 
-                
-                
+
+
                 ;
 
 			Level1();
@@ -79,7 +79,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
             return _builder.Build();
         }
 
-        
+
 		private void Level1()
 		{
 			_builder

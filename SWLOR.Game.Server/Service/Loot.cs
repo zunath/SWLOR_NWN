@@ -201,7 +201,7 @@ namespace SWLOR.Game.Server.Service
         {
             return _lootTables.ContainsKey(name);
         }
-        
+
         /// <summary>
         /// Returns all of the loot table details found on a creature's local variables.
         /// </summary>
@@ -240,7 +240,7 @@ namespace SWLOR.Game.Server.Service
         {
             var attacker = OBJECT_SELF;
             var target = GetSpellTargetObject();
-            if (GetIsPC(target) || GetIsDM(target)) 
+            if (GetIsPC(target) || GetIsDM(target))
                 return;
 
             var currentCreditFinder = GetLocalInt(target, "CREDITFINDER_LEVEL");
@@ -404,7 +404,7 @@ namespace SWLOR.Game.Server.Service
                     SetLocalObject(extractCorpse, CorpseBodyVariable, corpseOwner);
                     SetLocalInt(extractCorpse, BeastMastery.BeastTypeVariable, beastTypeId);
                     SetLocalInt(extractCorpse, BeastMastery.BeastLevelVariable, level);
-                    
+
                     AssignCommand(extractCorpse, () =>
                     {
                         ScheduleCorpseCleanup(extractCorpse);

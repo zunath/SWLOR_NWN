@@ -311,12 +311,12 @@ Features use builders to create configurations:
 public Dictionary<FeatType, AbilityDetail> BuildAbilities()
 {
     var builder = new AbilityBuilder();
-    
+
     // Create multiple abilities
     CreateAbility1(builder);
     CreateAbility2(builder);
     CreateAbility3(builder);
-    
+
     return builder.Build();
 }
 
@@ -409,17 +409,17 @@ public class MyNewAbilityDefinition : IAbilityListDefinition
     public Dictionary<FeatType, AbilityDetail> BuildAbilities()
     {
         var builder = new AbilityBuilder();
-        
+
         builder.Create(FeatType.MyNewAbility, PerkType.MyNewAbility)
             .Name("My New Ability")
             .Level(1)
             .HasRecastDelay(RecastGroup.MyNewAbility, 30f)
             .IsCastedAbility()
             .HasImpactAction(ImpactAction);
-            
+
         return builder.Build();
     }
-    
+
     private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
     {
         // Ability logic here
@@ -453,10 +453,10 @@ public void TestMyNewAbility()
     // Setup test environment
     var player = CreateTestPlayer();
     var target = CreateTestTarget();
-    
+
     // Test ability usage
     var result = Ability.UseAbility(player, target, FeatType.MyNewAbility);
-    
+
     // Verify results
     Assert.IsTrue(result);
     Assert.IsTrue(Stat.GetCurrentHP(target) < Stat.GetMaxHP(target));
@@ -549,10 +549,10 @@ public static void ImpactAction(uint activator, uint target, int level, Location
 {
     // Use combat service
     var damage = Combat.CalculateDamage(/* parameters */);
-    
+
     // Use stat service
     Stat.ModifyStat(target, AbilityType.Constitution, -damage);
-    
+
     // Use logging service
     Log.Write(LogGroup.Combat, $"Ability used: {damage} damage");
 }
@@ -567,13 +567,13 @@ Features use builders for configuration:
 public Dictionary<FeatType, AbilityDetail> BuildAbilities()
 {
     var builder = new AbilityBuilder();
-    
+
     // Configure abilities using builder
     builder.Create(FeatType.Ability, PerkType.Ability)
         .Name("Ability Name")
         .Level(1)
         .HasImpactAction(ImpactAction);
-        
+
     return builder.Build();
 }
 ```
@@ -590,7 +590,7 @@ public static void QuestComplete(uint player, string questId)
     var quest = DB.Query<PCQuest>()
         .Where(x => x.CharacterID == player && x.QuestID == questId)
         .FirstOrDefault();
-        
+
     if (quest != null)
     {
         quest.QuestState = QuestStateType.Completed;
@@ -630,4 +630,4 @@ When deprecating features:
 3. **Remove** - Remove after migration period
 4. **Update** - Update documentation
 
-This documentation provides a comprehensive overview of the Feature layer in SWLOR.Game.Server, covering the main feature categories, patterns, and best practices for working with game content. 
+This documentation provides a comprehensive overview of the Feature layer in SWLOR.Game.Server, covering the main feature categories, patterns, and best practices for working with game content.

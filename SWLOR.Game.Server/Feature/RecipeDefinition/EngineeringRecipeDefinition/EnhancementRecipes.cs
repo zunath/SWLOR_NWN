@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -1022,7 +1022,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_scordspar", 1)
 				.Component("elec_flawed", 1)
 				;
-			
+
 			// Weapon Enhancement - DMG - Poison I
 			_builder.Create(RecipeType.WeaponEnhancementDMGPoison1, SkillType.Engineering)
 				.Category(RecipeCategoryType.WeaponEnhancement)
@@ -1699,7 +1699,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_plagionite", 3)
 				.Component("elec_good", 2)
 				;
-			
+
 			// Weapon Enhancement - Evasion III
 			_builder.Create(RecipeType.WeaponEnhancementEvasion3, SkillType.Engineering)
 				.Category(RecipeCategoryType.WeaponEnhancement)
@@ -2304,7 +2304,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_keromber", 1)
 				.Component("elec_imperfect", 1)
 				;
-			
+
 			// Weapon Enhancement - DMG - Poison II
 			_builder.Create(RecipeType.WeaponEnhancementDMGPoison2, SkillType.Engineering)
 				.Category(RecipeCategoryType.WeaponEnhancement)

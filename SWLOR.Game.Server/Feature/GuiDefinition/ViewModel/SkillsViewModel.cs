@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
@@ -113,7 +113,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
             }
         }
-        
+
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
             SelectedCategoryId = 0;

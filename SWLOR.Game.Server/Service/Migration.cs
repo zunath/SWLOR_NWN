@@ -174,7 +174,7 @@ namespace SWLOR.Game.Server.Service
 
                 if(instance.ExecutionType == MigrationExecutionType.PostDatabaseLoad)
                     _serverMigrationsPostDatabase.Add(instance.Version, instance);
-                else 
+                else
                     _serverMigrationsPostCache.Add(instance.Version, instance);
             }
         }

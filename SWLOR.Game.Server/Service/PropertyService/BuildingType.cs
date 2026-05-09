@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Game.Server.Service.PropertyService
+namespace SWLOR.Game.Server.Service.PropertyService
 {
     public enum BuildingType
     {

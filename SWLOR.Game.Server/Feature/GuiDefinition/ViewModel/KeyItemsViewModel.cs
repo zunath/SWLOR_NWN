@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
@@ -59,7 +59,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 // If a key item filter is applied and this key item isn't part of this category,
                 // skip it and move to the next.
-                if (SelectedCategoryId != 0 && SelectedCategoryId != (int) detail.Category) 
+                if (SelectedCategoryId != 0 && SelectedCategoryId != (int) detail.Category)
                     continue;
 
                 names.Add(detail.Name);

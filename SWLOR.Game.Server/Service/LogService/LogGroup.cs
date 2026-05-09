@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Service.LogService

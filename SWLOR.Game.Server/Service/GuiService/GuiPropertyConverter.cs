@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Newtonsoft.Json.Linq;
 using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Service.GuiService.Component;

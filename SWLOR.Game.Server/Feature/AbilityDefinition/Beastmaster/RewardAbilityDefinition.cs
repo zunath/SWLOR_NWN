@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
             return _builder.Build();
         }
-        
+
         private bool HasPetTreat(uint activator)
         {
             // NPCs don't need supplies.
@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
             // NPCs don't need supplies.
             if (!GetIsPC(activator))
                 return;
-            
+
             var item = GetItemPossessedBy(activator, PetTreatTag);
             Item.ReduceItemStack(item, 1);
         }

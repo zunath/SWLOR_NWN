@@ -65,7 +65,7 @@ namespace SWLOR.Game.Server.Feature
         public static void OnEquip()
         {
             SyncFromEvent(GetPCItemLastEquippedBy());
-        }  
+        }
 
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void OnClientEnter()

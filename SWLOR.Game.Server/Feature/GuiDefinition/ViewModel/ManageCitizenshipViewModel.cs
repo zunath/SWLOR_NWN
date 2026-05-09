@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
@@ -185,7 +185,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                             s.ChildPropertyIds.ContainsKey(PropertyChildType.Interior)
                                 ? s.ChildPropertyIds[PropertyChildType.Interior]
                                 : new List<string>()).ToList();
-                        
+
                         // Always remove any city permissions
                         interiorPropertyIds.Add(_cityPropertyId);
 

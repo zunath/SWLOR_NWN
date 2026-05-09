@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 
@@ -106,7 +106,7 @@ namespace SWLOR.Game.Server.Service.CraftService
 
             return this;
         }
-        
+
         /// <summary>
         /// Deactivates the recipe which will prevent players from learning and crafting the item.
         /// </summary>

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace SWLOR.Game.Server.Service.LootService
 {
@@ -11,9 +11,9 @@ namespace SWLOR.Game.Server.Service.LootService
         public Action<uint> OnSpawn { get; set; }
 
         public LootTableItem(
-            string resref, 
-            int maxQuantity, 
-            int weight, 
+            string resref,
+            int maxQuantity,
+            int weight,
             bool isRare)
         {
             Resref = resref;

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace SWLOR.Game.Server.Service.PropertyService
 {
@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
 
         // Apartments, Buildings, Starships
         [PropertyPermission("Enter Property", "Can enter the property.", true)]
-        EnterProperty = 8, 
+        EnterProperty = 8,
 
         // Starships
         [PropertyPermission("Pilot Ship", "Can pilot the starship.", true)]

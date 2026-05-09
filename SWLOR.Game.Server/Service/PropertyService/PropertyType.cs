@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace SWLOR.Game.Server.Service.PropertyService
 {
@@ -41,8 +41,8 @@ namespace SWLOR.Game.Server.Service.PropertyService
         public PropertySpawnType SpawnType { get; set; }
 
         public PropertyTypeAttribute(
-            string name, 
-            bool hasStorage, 
+            string name,
+            bool hasStorage,
             PropertyPublicType publicSetting,
             PropertySpawnType spawnType)
         {

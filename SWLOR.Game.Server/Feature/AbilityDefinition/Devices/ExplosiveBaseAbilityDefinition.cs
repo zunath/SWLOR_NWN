@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
@@ -70,7 +70,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         }
 
         protected void ExplosiveImpact(
-            uint activator, 
+            uint activator,
             Location targetLocation,
             Effect vfxEffect,
             string sound,
@@ -121,9 +121,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             DelayCommand(delay, () =>
             {
                 ApplyEffectAtLocation(
-                    DurationType.Temporary, 
-                    EffectAreaOfEffect(aoe, enterScript, heartbeatScript), 
-                    targetLocation, 
+                    DurationType.Temporary,
+                    EffectAreaOfEffect(aoe, enterScript, heartbeatScript),
+                    targetLocation,
                     duration);
 
                 var AOEObject = GetNearestObjectToLocation(targetLocation, ObjectType.AreaOfEffect);

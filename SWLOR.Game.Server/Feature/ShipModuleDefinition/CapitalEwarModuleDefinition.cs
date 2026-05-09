@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.SpaceService;
@@ -64,7 +64,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         }
 
                         nearby = GetNextObjectInShape(Shape.Sphere, Distance, GetLocation(activator), true, ObjectType.Creature);
-                        
+
                     }
 
                     CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Piloting);

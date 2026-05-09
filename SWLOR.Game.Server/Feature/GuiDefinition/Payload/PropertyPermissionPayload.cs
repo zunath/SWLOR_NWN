@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.PropertyService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.Payload
@@ -11,8 +11,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.Payload
         public string CityId { get; set; }
 
         public PropertyPermissionPayload(
-            PropertyType propertyType, 
-            string propertyId, 
+            PropertyType propertyType,
+            string propertyId,
             string cityId,
             bool isCategory)
         {

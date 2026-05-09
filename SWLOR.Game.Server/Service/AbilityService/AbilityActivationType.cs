@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Game.Server.Service.AbilityService
+namespace SWLOR.Game.Server.Service.AbilityService
 {
     public enum AbilityActivationType
     {

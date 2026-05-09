@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Core.NWNX.Enum;
+using SWLOR.Game.Server.Core.NWNX.Enum;
 
 namespace SWLOR.NWN.API.NWNX
 {
@@ -32,8 +32,8 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="tag2_tag">An optional third tag to filter your metrics</param>
         /// <param name="tag2_value">The third tag's value for which to filter.</param>
         public static void PushPerfScope(
-            string name, 
-            string tag0_tag = "", 
+            string name,
+            string tag0_tag = "",
             string tag0_value = "",
             string tag1_tag = "",
             string tag1_value = "",
@@ -43,7 +43,7 @@ namespace SWLOR.NWN.API.NWNX
             // The core plugin only supports one tag pair, so we'll use the first non-empty tag pair
             string primaryTag = "";
             string primaryValue = "";
-            
+
             if (!string.IsNullOrWhiteSpace(tag0_value) && !string.IsNullOrWhiteSpace(tag0_tag))
             {
                 primaryTag = tag0_tag;
@@ -59,7 +59,7 @@ namespace SWLOR.NWN.API.NWNX
                 primaryTag = tag2_tag;
                 primaryValue = tag2_value;
             }
-            
+
             global::NWN.Core.NWNX.ProfilerPlugin.PushPerfScope(name, primaryTag, primaryValue);
         }
 
@@ -71,10 +71,10 @@ namespace SWLOR.NWN.API.NWNX
         public static void PushPerfScope(uint target, string scriptName)
         {
             var internalObjectType = GetIsObjectValid(target) == 1
-                ? ObjectPlugin.GetInternalObjectType(target) 
+                ? ObjectPlugin.GetInternalObjectType(target)
                 : InternalObjectType.Invalid;
-            var objectTypeName = internalObjectType == InternalObjectType.Invalid 
-                ? "(unknown)" 
+            var objectTypeName = internalObjectType == InternalObjectType.Invalid
+                ? "(unknown)"
                 : internalObjectType.ToString();
             string areaResref;
 
@@ -82,13 +82,13 @@ namespace SWLOR.NWN.API.NWNX
                 areaResref = "--MODULE--";
             else if (internalObjectType == InternalObjectType.Invalid)
                 areaResref = "(unknown)";
-            else 
+            else
                 areaResref = GetResRef(GetArea(target));
 
             if (string.IsNullOrWhiteSpace(areaResref))
                 areaResref = "(unknown)";
 
-            PushPerfScope("RunScript", 
+            PushPerfScope("RunScript",
                 "Script", scriptName,
                 "Area", areaResref,
                 "ObjectType", objectTypeName);

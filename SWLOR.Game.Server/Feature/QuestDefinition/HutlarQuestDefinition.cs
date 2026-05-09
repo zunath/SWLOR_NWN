@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.NPCService;
@@ -95,7 +95,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .OnAcceptAction((player, sourceObject) =>
                 {
-                    // Southeast 
+                    // Southeast
                     ObjectVisibility.AdjustVisibilityByObjectId(player, "9CD9E7D9-4F10-4A0E-B67D-293CE6EA8EF5", VisibilityType.Visible);
                 })
                 .OnAbandonAction(player =>
@@ -107,7 +107,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                     ObjectVisibility.AdjustVisibilityByObjectId(player, "83652C7A-7D38-4304-AD4B-92D5783AB279", VisibilityType.Hidden);
                     ObjectVisibility.AdjustVisibilityByObjectId(player, "AA0E6798-38E4-4E50-8F0A-C3177FBF2717", VisibilityType.Hidden);
                 })
-                
+
                 .OnAdvanceAction((player, sourceObject, state) =>
                 {
                     string visibilityObject;

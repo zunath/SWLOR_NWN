@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.SpawnService;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -88,7 +88,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         {
             _builder.Create("SPACE_RESOURCES_DATHOMIR_ORBIT", "Space Resources - Dathomir Orbit")
                 .ResourceDespawnDelay(75) // 1.25 hours for very high-tier space asteroids
-                
+
                 .AddSpawn(ObjectType.Placeable, "asteroid_bariniu")
                 .WithFrequency(37)
 
@@ -99,7 +99,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .WithFrequency(3);
         }
         private void DantooineOrbit()
-        { 
+        {
             _builder.Create("SPACE_RESOURCES_DANTOOINE_ORBIT", "Space Resources - Dantooine Orbit")
                 .ResourceDespawnDelay(90) // 1.5 hours for high-tier space asteroids
 

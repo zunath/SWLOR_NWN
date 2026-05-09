@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace SWLOR.Game.Server.Service.PropertyService
 {
@@ -1618,7 +1618,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             "incubator",
             "",
             true,
-            0, 
+            0,
             PropertyType.Lab,
             PropertyLayoutType.Invalid,
             true,

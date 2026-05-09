@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Game.Server.Service.BeastMasteryService
+namespace SWLOR.Game.Server.Service.BeastMasteryService
 {
     public enum EnzymeColorType
     {

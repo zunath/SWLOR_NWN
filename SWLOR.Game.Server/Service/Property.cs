@@ -391,7 +391,7 @@ namespace SWLOR.Game.Server.Service
         private static Vector4 GetEntrancePosition(string areaResref)
         {
             var area = Area.GetAreaByResref(areaResref);
-            
+
             for (var obj = GetFirstObjectInArea(area); GetIsObjectValid(obj); obj = GetNextObjectInArea(area))
             {
                 if (GetTag(obj) != "PROPERTY_ENTRANCE") continue;
@@ -399,7 +399,7 @@ namespace SWLOR.Game.Server.Service
                 var position = GetPosition(obj);
                 return new Vector4(position, GetFacing(obj));
             }
-            
+
             return new Vector4();
         }
 
@@ -444,7 +444,7 @@ namespace SWLOR.Game.Server.Service
         {
             return _propertyInstances[propertyId];
         }
-        
+
         /// <summary>
         /// When the module loads, remove all data marked for deletion and any properties with expired leases.
         /// </summary>
@@ -517,7 +517,7 @@ namespace SWLOR.Game.Server.Service
                         Log.Write(LogGroup.Property, $"Starship '{property.CustomName}' ({property.Id}) was docked at a non-existent player starport. It has been relocated to the last NPC dock position at '{property.Positions[PropertyLocationType.LastNPCDockPosition].AreaResref}'.");
                     }
                 }
-                
+
                 DB.Set(property);
             }
         }
@@ -649,7 +649,7 @@ namespace SWLOR.Game.Server.Service
                     .Single();
 
                 DB.Delete<WorldPropertyPermission>(mayorPermission.Id);
-                
+
                 var winnerPermission = DB.Search(new DBQuery<WorldPropertyPermission>()
                         .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), winnerPlayerId, false)
                         .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), city.Id, false))
@@ -742,7 +742,7 @@ namespace SWLOR.Game.Server.Service
                             $"**Total Votes Cast**: {orderedVotes.Sum(x => x.Value):N0}");
                     }
                     // Otherwise, take the person with the highest votes.
-                    else 
+                    else
                     {
                         var winnerPlayerId = orderedVotes.ElementAt(0).Key;
                         TransferPermissions(winnerPlayerId);
@@ -772,7 +772,7 @@ namespace SWLOR.Game.Server.Service
                     DB.Set(city);
                     DB.Delete<Election>(election.Id);
                 }
-                // Registration cut-off has passed. 
+                // Registration cut-off has passed.
                 // If no one has registered, the incumbent mayor wins by default.
                 // If only one person has registered, they become mayor without proceeding to the voting stage.
                 //     -> If this was a different person from the incumbent, they receive mayor power immediately.
@@ -781,7 +781,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     // In the event that absolutely no one ran for election,
                     // the incumbent mayor stays in power and another election is scheduled
-                    // three weeks from now. 
+                    // three weeks from now.
                     if (election.CandidatePlayerIds.Count <= 0)
                     {
                         city.Dates[PropertyDateType.ElectionStart] = city.Dates[PropertyDateType.ElectionStart]
@@ -867,7 +867,7 @@ namespace SWLOR.Game.Server.Service
             var mayorLevel = mayor.Perks.ContainsKey(PerkType.CityManagement)
                 ? mayor.Perks[PerkType.CityManagement] + 1
                 : 1;
-            
+
             // Mayor's perk level has fallen below the city level.
             if (mayorLevel < currentLevel)
             {
@@ -922,7 +922,7 @@ namespace SWLOR.Game.Server.Service
         private static void ProcessUpkeep(DateTime now, WorldProperty city)
         {
             Log.Write(LogGroup.Property, $"Processing city '{city.CustomName}' ({city.Id}) upkeep...");
-            
+
             // If upkeep wasn't fully paid for this week, process the destruction date
             if (city.Upkeep > 0)
             {
@@ -979,7 +979,7 @@ namespace SWLOR.Game.Server.Service
                     Log.Write(LogGroup.Property, $"City upkeep was paid. Removing destruction date.");
                 }
             }
-            
+
             // Calculate new upkeep price for this week.
             var dbMayor = DB.Get<Player>(city.OwnerPlayerId);
             var upkeepReductionPercent = dbMayor.Perks.ContainsKey(PerkType.Upkeep)
@@ -990,7 +990,7 @@ namespace SWLOR.Game.Server.Service
             var basePrice = layout.PricePerDay * 7;
             basePrice -= (int)(basePrice * upkeepReductionPercent);
 
-            var upgradePrice = 
+            var upgradePrice =
                 (city.Upgrades[PropertyUpgradeType.BankLevel] - 1) * UpgradeBasePrice +
                 (city.Upgrades[PropertyUpgradeType.MedicalCenterLevel] - 1) * UpgradeBasePrice +
                 (city.Upgrades[PropertyUpgradeType.StarportLevel] - 1) * UpgradeBasePrice +
@@ -1150,7 +1150,7 @@ namespace SWLOR.Game.Server.Service
                     var permissionCount = (int)DB.SearchCount(permissionQuery);
                     var dbPropertyPermissions = DB.Search(permissionQuery.AddPaging(permissionCount, 0))
                         .ToList();
-                    
+
                     foreach (var propertyPermission in dbPropertyPermissions)
                     {
                         // Perform a refresh of permissions (adding/removing as needed)
@@ -1261,10 +1261,10 @@ namespace SWLOR.Game.Server.Service
             {
                 SpawnIntoWorld(property, OBJECT_INVALID);
             }
-            
+
             foreach (var property in worldProperties)
             {
-                // If the parent is contained in the instance list, this world property needs to 
+                // If the parent is contained in the instance list, this world property needs to
                 // be spawned inside the instance.
                 if (_propertyInstances.ContainsKey(property.ParentPropertyId))
                 {
@@ -1337,10 +1337,10 @@ namespace SWLOR.Game.Server.Service
 
         private static WorldProperty CreateProperty(
             uint creatorPlayer,
-            string ownerPlayerId, 
+            string ownerPlayerId,
             string propertyName,
-            PropertyType type, 
-            PropertyLayoutType layout, 
+            PropertyType type,
+            PropertyLayoutType layout,
             uint targetArea = OBJECT_INVALID,
             Action<WorldProperty> constructionAction = null)
         {
@@ -1413,7 +1413,7 @@ namespace SWLOR.Game.Server.Service
                     DB.Set(categoryPermission);
                 }
             }
-            
+
             SpawnIntoWorld(property, targetArea);
 
             Log.Write(LogGroup.Property, $"{GetName(creatorPlayer)} ({GetPCPlayerName(creatorPlayer)} / {GetPCPublicCDKey(creatorPlayer)}) placed {propertyDetail.Name}.");
@@ -1447,10 +1447,10 @@ namespace SWLOR.Game.Server.Service
         /// <param name="landingLocation">Location of the ground transfer point (when a player is converted back to normal)</param>
         /// <returns>The new world property.</returns>
         public static WorldProperty CreateStarship(
-            uint player, 
-            PropertyLayoutType layout, 
+            uint player,
+            PropertyLayoutType layout,
             PlanetType planetType,
-            Location spaceLocation, 
+            Location spaceLocation,
             Location landingLocation)
         {
             var spacePosition = GetPositionFromLocation(spaceLocation);
@@ -1466,7 +1466,7 @@ namespace SWLOR.Game.Server.Service
 
             // In the event the starport a ship is located at is destroyed or otherwise disappears,
             // we need to know the location of the planet's NPC starport so the ship can be returned there.
-            // If we don't capture this correctly, the ship will be lost in limbo and the players won't be 
+            // If we don't capture this correctly, the ship will be lost in limbo and the players won't be
             // able to access it.
             var planet = Planet.GetPlanetByType(planetType);
             var npcLandingWaypoint = GetWaypointByTag(planet.LandingWaypointTag);
@@ -1587,10 +1587,10 @@ namespace SWLOR.Game.Server.Service
         /// <param name="location">The location to spawn the structure.</param>
         /// <returns>The new world property.</returns>
         public static void CreateBuilding(
-            uint player, 
-            uint item, 
-            string parentCityId, 
-            PropertyType propertyType, 
+            uint player,
+            uint item,
+            string parentCityId,
+            PropertyType propertyType,
             PropertyLayoutType layout,
             StructureType structureType,
             Location location)
@@ -1604,14 +1604,14 @@ namespace SWLOR.Game.Server.Service
             //          -> Contains: Structure (buildings)
             //              -> Contains: Building interiors
             var buildingStructure = CreateStructure(parentCityId, item, structureType, location);
-            
+
             var interior = CreateProperty(
                 player,
                 city.OwnerPlayerId,
-                propertyName, 
-                propertyType, 
-                layout, 
-                OBJECT_INVALID, 
+                propertyName,
+                propertyType,
+                layout,
+                OBJECT_INVALID,
                 interiorProperty =>
             {
                 interiorProperty.ParentPropertyId = buildingStructure.Id;
@@ -1633,9 +1633,9 @@ namespace SWLOR.Game.Server.Service
         /// <param name="type">The type of structure to spawn.</param>
         /// <param name="location">The location to spawn the structure at.</param>
         public static WorldProperty CreateStructure(
-            string parentPropertyId, 
+            string parentPropertyId,
             uint item,
-            StructureType type, 
+            StructureType type,
             Location location)
         {
             var structureDetail = GetStructureByType(type);
@@ -1677,7 +1677,7 @@ namespace SWLOR.Game.Server.Service
                 parentProperty.ChildPropertyIds[PropertyChildType.Structure] = new List<string>();
 
             parentProperty.ChildPropertyIds[PropertyChildType.Structure].Add(structure.Id);
-            parentProperty.ItemStorageCount += structureItemStorage; 
+            parentProperty.ItemStorageCount += structureItemStorage;
 
             DB.Set(structure);
             DB.Set(parentProperty);
@@ -1804,8 +1804,8 @@ namespace SWLOR.Game.Server.Service
         /// <returns>A placeable or OBJECT_INVALID if not found.</returns>
         public static uint GetPlaceableByPropertyId(string propertyId)
         {
-            return !_structurePropertyIdToPlaceable.ContainsKey(propertyId) 
-                ? OBJECT_INVALID 
+            return !_structurePropertyIdToPlaceable.ContainsKey(propertyId)
+                ? OBJECT_INVALID
                 : _structurePropertyIdToPlaceable[propertyId];
         }
 
@@ -1830,7 +1830,7 @@ namespace SWLOR.Game.Server.Service
         {
             var player = GetLastUsedBy();
             var terminal = OBJECT_SELF;
-            
+
             Gui.TogglePlayerWindow(player, GuiWindowType.ManageApartment, null, terminal);
         }
 
@@ -1847,7 +1847,7 @@ namespace SWLOR.Game.Server.Service
             // DMs always have permission.
             if (GetIsDM(player) || GetIsDMPossessed(player))
                 return true;
-            
+
             if (!GetIsPC(player))
                 return false;
 
@@ -2077,7 +2077,7 @@ namespace SWLOR.Game.Server.Service
                 FloatingTextStringOnCreature($"You do not have permission to access this property.", player, false);
                 return;
             }
-            
+
             Gui.TogglePlayerWindow(player, GuiWindowType.ManageStructures);
         }
 
@@ -2142,7 +2142,7 @@ namespace SWLOR.Game.Server.Service
                 Dialog.StartConversation(player, player, nameof(PlaceCityHallDialog));
                 return;
             }
-            
+
             if (structureType == StructureType.Invalid) return;
 
             // Must be in a player property.
@@ -2164,7 +2164,7 @@ namespace SWLOR.Game.Server.Service
                 FloatingTextStringOnCreature($"You do not have permission to place structures within this property.", player, false);
                 return;
             }
-            
+
             var property = DB.Get<WorldProperty>(propertyId);
             var layout = GetLayoutByType(property.Layout);
             int structureLimit;
@@ -2244,11 +2244,11 @@ namespace SWLOR.Game.Server.Service
             {
                 var structureLayout = GetLayoutByType(structureDetail.LayoutType);
                 CreateBuilding(
-                    player, 
-                    item, 
-                    propertyId, 
-                    structureLayout.PropertyType, 
-                    structureDetail.LayoutType, 
+                    player,
+                    item,
+                    propertyId,
+                    structureLayout.PropertyType,
+                    structureDetail.LayoutType,
                     structureType, location);
             }
 
@@ -2282,7 +2282,7 @@ namespace SWLOR.Game.Server.Service
                 _structurePropertyIdToPlaceable[property.Id] = placeable;
 
                 // Some structures have custom spawn-in actions which also need to be run
-                // when brought into the world. 
+                // when brought into the world.
                 RunStructureChangedEvent(property.StructureType, StructureChangeType.PositionChanged, property, placeable);
             }
             // Instance spawns are instanced areas that are spawned dynamically into the game world.
@@ -2292,7 +2292,7 @@ namespace SWLOR.Game.Server.Service
                 var layout = GetLayoutByType(property.Layout);
                 var targetArea = CreateArea(layout.AreaInstanceResref);
                 RegisterInstance(property.Id, targetArea, property.Layout);
-                
+
                 SetName(targetArea, "{PC} " + property.CustomName);
 
                 if (layout.OnSpawnAction != null)
@@ -2317,7 +2317,7 @@ namespace SWLOR.Game.Server.Service
             var player = GetLastUsedBy();
             var playerId = GetObjectUUID(player);
             var door = OBJECT_SELF;
-            
+
             // Buildings only ever have one child which is the interior area instance
             var buildingId = GetPropertyId(door);
             var building = DB.Get<WorldProperty>(buildingId);

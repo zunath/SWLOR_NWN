@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Game.Server.Service
+namespace SWLOR.Game.Server.Service
 {
     public static class Random
     {
@@ -119,7 +119,7 @@
             for (int x = 1; x <= numberOfDice; x++)
             {
                 // Random.Next() returns a number between (min) and (max-1).  So add +1 to max
-                // to include it in the range. 
+                // to include it in the range.
                 result += _random.Next(min, max + 1);
             }
 

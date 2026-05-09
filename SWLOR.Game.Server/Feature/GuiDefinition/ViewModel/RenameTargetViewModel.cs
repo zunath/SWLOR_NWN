@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var type = GetObjectType(_target);
 
             // Player hasn't specified a new name for this item.
-            if ((type == ObjectType.Item && string.IsNullOrWhiteSpace(NewName)) || 
+            if ((type == ObjectType.Item && string.IsNullOrWhiteSpace(NewName)) ||
                 (GetIsPC(_target) && string.IsNullOrWhiteSpace(NewFirstName) && string.IsNullOrWhiteSpace(NewLastName)))
             {
                 Header = "Enter a new name then click Change Name.";

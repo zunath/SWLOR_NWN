@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Feature
             var message = GetLocalString(trigger, "DISPLAY_TEXT");
             SendMessageToPC(player, ColorToken.Cyan(message));
             SetLocalBool(player, triggerId, true);
-            
+
             AssignCommand(player, () => PlaySound("gui_prompt"));
         }
     }

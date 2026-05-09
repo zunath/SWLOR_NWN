@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Service.AIService;
@@ -52,11 +52,11 @@ namespace SWLOR.Game.Server.Service.SpawnService
 
             var weights = filteredList.Select(s => s.Weight).ToArray();
             var index = Random.GetRandomWeightedIndex(weights);
-            
+
             // If GetRandomWeightedIndex returns -1 (no valid weights), return null
             if (index == -1 || index >= filteredList.Count)
                 return null;
-                
+
             return filteredList.ElementAt(index);
         }
 

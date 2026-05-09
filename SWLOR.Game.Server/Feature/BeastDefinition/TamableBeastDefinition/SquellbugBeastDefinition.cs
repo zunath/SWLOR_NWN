@@ -86,7 +86,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
             return _builder.Build();
         }
 
-        
+
 		private void Level1()
 		{
 			_builder

@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Game.Server.Service.AbilityService
+namespace SWLOR.Game.Server.Service.AbilityService
 {
     /// <summary>
     /// Adds a stamina requirement to activate a perk.

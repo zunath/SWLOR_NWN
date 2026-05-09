@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.Service
             var player = GetEnteringObject();
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
-            // Toggle visibility of all hidden objects 
+            // Toggle visibility of all hidden objects
             foreach (var hiddenObject in _defaultHiddenObjects)
             {
                 VisibilityPlugin.SetVisibilityOverride(player, hiddenObject, VisibilityType.Hidden);

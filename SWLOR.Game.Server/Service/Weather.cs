@@ -257,7 +257,7 @@ namespace SWLOR.Game.Server.Service
                 return NWN.API.NWScript.Enum.Weather.Foggy;
             }
 
-            // Rather unfortunately, the default method is also called GetWeather. 
+            // Rather unfortunately, the default method is also called GetWeather.
             return NWScript.GetWeather(oArea);
         }
 
@@ -681,7 +681,7 @@ namespace SWLOR.Game.Server.Service
                     {
                         var vPosition = GetPosition(GetEnteringObject());
 
-                        // Vectors are in meters - 10 meters to a tile. 
+                        // Vectors are in meters - 10 meters to a tile.
                         vPosition.X = IntToFloat(Random(nSizeX * 10));
                         vPosition.Y = IntToFloat(Random(nSizeY * 10));
 

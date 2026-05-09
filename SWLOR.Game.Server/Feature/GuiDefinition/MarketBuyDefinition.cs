@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Core.Beamdog;
+using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
 
@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .SetHeight(35f)
                                     .SetWidth(180f)
                                     .BindOnClicked(model => model.OnClickClearFilters());
-                            }); 
+                            });
 
                             col2.AddRow(row2 =>
                             {

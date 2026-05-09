@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             return builder.Build();
         }
 
-        private void Impact(uint activator, uint target, int baseAmount) 
+        private void Impact(uint activator, uint target, int baseAmount)
         {
             var willpowerMod = GetAbilityScore(activator, AbilityType.Willpower);
             const float BaseLength = 900f;

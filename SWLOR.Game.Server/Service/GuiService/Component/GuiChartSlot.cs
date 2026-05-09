@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using SWLOR.Game.Server.Core.Beamdog;
@@ -10,15 +10,15 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         where T: IGuiViewModel
     {
         private NuiChartType Type { get; set; }
-        
+
         private string Legend { get; set; }
         private string LegendBindName { get; set; }
         private bool IsLegendBound => !string.IsNullOrWhiteSpace(LegendBindName);
-        
+
         private GuiColor Color { get; set; }
         private string ColorBindName { get; set; }
         private bool IsColorBound => !string.IsNullOrWhiteSpace(ColorBindName);
-        
+
         private List<float> Data { get; set; }
         private string DataBindName { get; set; }
         private bool IsDataBound => !string.IsNullOrWhiteSpace(DataBindName);

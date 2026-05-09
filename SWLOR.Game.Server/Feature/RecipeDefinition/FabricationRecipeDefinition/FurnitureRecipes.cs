@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -2263,7 +2263,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("ref_keromber", 3)
                 .Component("aracia_wood", 2);
 
-            // Foyer, Chandelier 
+            // Foyer, Chandelier
             _builder.Create(RecipeType.FoyerChandelier, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Lighting)
                 .Resref("structure_0247")
@@ -3175,7 +3175,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("elec_imperfect", 3)
                 .Component("ref_jasioclase", 2);
 
-            // Wall Metal, Door Light 
+            // Wall Metal, Door Light
             _builder.Create(RecipeType.MetalWallDoorLight, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Wall)
                 .Resref("structure_0248")
@@ -3728,7 +3728,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("ref_arkoxit", 20)
                 .Component("emerald", 10)
                 .Component("zinsiam", 5);
-                
+
         }
     }
 }

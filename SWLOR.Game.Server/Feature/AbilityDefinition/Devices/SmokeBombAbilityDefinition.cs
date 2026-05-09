@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
             return _builder.Build();
         }
-        
+
         private void SmokeBomb1()
         {
             _builder.Create(FeatType.SmokeBomb1, PerkType.SmokeBomb)
@@ -59,7 +59,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {
                     ExplosiveAOEImpact(
-                        activator, 
+                        activator,
                         targetLocation,
                         AreaOfEffect.FogOfBewilderment,
                         "grenade_smoke_en",

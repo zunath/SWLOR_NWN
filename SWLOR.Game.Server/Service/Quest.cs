@@ -242,10 +242,10 @@ namespace SWLOR.Game.Server.Service
             if (possibleQuests.Count <= 0) return;
 
             // We can't use GetLastKiller() as various abilities deal damage that isn't sourced from
-            // the PC.  So use the enmity service to pull the highest enmity PC (i.e. the one that 
+            // the PC.  So use the enmity service to pull the highest enmity PC (i.e. the one that
             // did the most attacks).  If we can't find one for some reason, pull the nearest PC.
             // Note: this event needs to be called before the Enmity tables are cleared up after
-            // creature death. 
+            // creature death.
             var killer = Enmity.GetHighestEnmityTarget(creature);
             if (killer == OBJECT_INVALID) killer = GetNearestCreature(CreatureType.PlayerCharacter, 1, creature);
 
@@ -253,7 +253,7 @@ namespace SWLOR.Game.Server.Service
             // Every player who needs this NPCGroupType for a quest will have their objective advanced if they are within range and in the same area.
             for (var member = GetFirstFactionMember(killer); GetIsObjectValid(member); member = GetNextFactionMember(killer))
             {
-                if (!GetIsPC(member) || GetIsDM(member)) 
+                if (!GetIsPC(member) || GetIsDM(member))
                     continue;
 
                 if (GetArea(member) != GetArea(killer))
@@ -299,7 +299,7 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// When an item collector placeable is opened, 
+        /// When an item collector placeable is opened,
         /// </summary>
         [NWNEventHandler(ScriptName.OnQuestCollectOpen)]
         public static void OpenItemCollector()
@@ -356,7 +356,7 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// When an item collector placeable is disturbed, 
+        /// When an item collector placeable is disturbed,
         /// </summary>
         [NWNEventHandler(ScriptName.OnQuestCollectDisturbed)]
         public static void DisturbItemCollector()
@@ -421,7 +421,7 @@ namespace SWLOR.Game.Server.Service
             // Give the player an update and reduce the item stack.
             var itemName = Cache.GetItemNameByResref(resref);
             SendMessageToPC(player, $"You need {dbPlayer.Quests[questId].ItemProgresses[resref]}x {itemName} to complete this quest.");
-            
+
             // Attempt to advance the quest.
             // If player hasn't completed the other objectives, nothing will happen when this is called.
             AdvanceQuest(player, owner, questId);

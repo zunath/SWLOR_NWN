@@ -99,7 +99,7 @@ namespace SWLOR.Game.Server.Service
 
                 // The first command that fails will result in failure.
                 var commandResult = _appearsWhenCommands[snippetName].ConditionAction(player, args.ToArray());
-                
+
                 // "Not" conditions check for the opposite condition.
                 if (notConditionEnabled && commandResult)
                     return false;

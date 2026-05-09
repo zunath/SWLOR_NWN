@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
             {
                 return "Only players may use this ability.";
             }
-            
+
             var beast = GetAssociate(AssociateType.Henchman, activator);
             if (!BeastMastery.IsPlayerBeast(beast))
             {

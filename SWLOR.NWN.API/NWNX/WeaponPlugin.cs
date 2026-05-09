@@ -223,12 +223,12 @@ namespace SWLOR.NWN.API.NWNX
             /// The weapon object.
             /// </summary>
             public uint Weapon { get; set; }
-            
+
             /// <summary>
             /// The target object.
             /// </summary>
             public uint Target { get; set; }
-            
+
             /// <summary>
             /// The damage amount.
             /// </summary>

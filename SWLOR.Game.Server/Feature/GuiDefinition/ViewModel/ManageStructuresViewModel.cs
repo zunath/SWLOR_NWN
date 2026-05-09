@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -220,7 +220,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var permissions = Property.GetCategoryPermissions(playerId, propertyId);
             var propertyTypeDetail = Property.GetPropertyDetail(property.PropertyType);
 
-            IsOpenStorageEnabled = propertyTypeDetail.HasStorage && 
+            IsOpenStorageEnabled = propertyTypeDetail.HasStorage &&
                                    (permissions.Count > 0 || canEditCategories);
         }
 
@@ -239,7 +239,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Gui.TogglePlayerWindow(Player, GuiWindowType.ManageStructures);
                 return;
             }
-            
+
             var property = DB.Get<WorldProperty>(propertyId);
             ManageButtonText = property.PropertyType == PropertyType.Apartment
                 ? "Manage Property"
@@ -421,10 +421,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     InstructionColor = GuiColor.Red;
                     return;
                 }
-                
+
                 var item = ObjectPlugin.Deserialize(structure.SerializedItem);
                 ObjectPlugin.AcquireItem(Player, item);
-                
+
                 // Remove the structure from the parent's child list.
                 parentProperty.ChildPropertyIds[PropertyChildType.Structure].Remove(structure.Id);
                 parentProperty.ItemStorageCount -= structure.ItemStorageCount;
@@ -433,7 +433,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 // Some structures have specific logic which must be run when they're picked up. Do that now.
                 Property.RunStructureChangedEvent(structure.StructureType, StructureChangeType.Retrieved, structure, placeable);
-                
+
                 Property.DeleteProperty(structure);
 
                 StructureNames.RemoveAt(SelectedStructureIndex);

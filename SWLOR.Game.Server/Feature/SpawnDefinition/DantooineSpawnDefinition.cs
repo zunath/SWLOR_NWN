@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.SpawnService;
 using SWLOR.NWN.API.NWScript.Enum;
 using Random = SWLOR.Game.Server.Service.Random;
@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             DantooineCanyon();
             DantooineWorldBoss();
             DantooineSouthPlains();
-            
+
             return _builder.Build();
         }
 
@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "iriaz")
                 .RandomlyWalks()
                 .WithFrequency(100)
-                .ReturnsHome()  
+                .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "thune")
                 .RandomlyWalks()
@@ -67,7 +67,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "gizka")
                 .RandomlyWalks()
                 .WithFrequency(20)
-                .ReturnsHome()  
+                .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "thune")
                 .RandomlyWalks()
@@ -167,7 +167,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RandomlyWalks()
                 .WithFrequency(3)
                 .RespawnDelay(60 + Random.D100(1));
-          
+
         }
     }
 }

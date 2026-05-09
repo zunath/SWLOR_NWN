@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -143,7 +143,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                             // Notify the receiver that the call attempt has ended
                             SendMessageToPC(callReceiver, "Your HoloCom stops buzzing.");
                         }
-                        
+
                         // Clean up call attempt state
                         HoloCom.CleanupCallAttempt(user, callReceiver);
                         SendMessageToPC(user, "You cancel your HoloCom call.");
@@ -283,7 +283,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         var dateTime = DateTime.ParseExact(lastSubmission, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
                         if (DateTime.UtcNow <= dateTime.AddSeconds(30))
                         {
-                            // Player submitted a second request within 30 seconds of the last one. 
+                            // Player submitted a second request within 30 seconds of the last one.
                             // This is a confirmation they want to delete.
                             isFirstSubmission = false;
                         }
@@ -309,7 +309,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     }
                 });
         }
-        
+
         private void ToggleEmoteStyle()
         {
             _builder.Create("emotestyle")
@@ -522,19 +522,19 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 
                     var playerId = GetObjectUUID(user);
                     var dbPlayer = DB.Get<Player>(playerId);
-                    
+
                     // Clear all stored window geometries
                     dbPlayer.WindowGeometries.Clear();
-                    
+
                     // Save the player data
                     DB.Set(dbPlayer);
-                    
+
                     // Update all player window instances with default geometries
                     // This ensures that when windows are reopened, they use default positions
                     foreach (GuiWindowType type in Enum.GetValues(typeof(GuiWindowType)))
                     {
                         if (type == GuiWindowType.Invalid) continue;
-                        
+
                         try
                         {
                             var playerWindow = Gui.GetPlayerWindow(user, type);
@@ -547,7 +547,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                             continue;
                         }
                     }
-                    
+
                     SendMessageToPC(user, ColorToken.Green("All window positions and sizes have been reset to their default values."));
                 });
         }

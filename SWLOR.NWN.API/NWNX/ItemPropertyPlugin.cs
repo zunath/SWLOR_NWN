@@ -13,7 +13,7 @@ namespace SWLOR.NWN.API.NWNX
         public static ItemPropertyUnpacked UnpackIP(ItemProperty ip)
         {
             var nwnxResult = global::NWN.Core.NWNX.ItempropPlugin.UnpackIP(ip);
-            
+
             return new ItemPropertyUnpacked
             {
                 Id = nwnxResult.sID,
@@ -55,7 +55,7 @@ namespace SWLOR.NWN.API.NWNX
                 oCreator = itemProperty.Creator,
                 sTag = itemProperty.Tag
             };
-            
+
             return global::NWN.Core.NWNX.ItempropPlugin.PackIP(nwnxInput);
         }
 
@@ -68,7 +68,7 @@ namespace SWLOR.NWN.API.NWNX
         public static ItemPropertyUnpacked GetActiveProperty(uint oItem, int nIndex)
         {
             var nwnxResult = global::NWN.Core.NWNX.ItempropPlugin.GetActiveProperty(oItem, nIndex);
-            
+
             return new ItemPropertyUnpacked
             {
                 Id = string.Empty, // Not returned by GetActiveProperty

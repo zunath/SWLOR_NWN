@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using SWLOR.Game.Server.Core.Beamdog;
@@ -12,15 +12,15 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         private GuiColor Color { get; set; }
         private string ColorBindName { get; set; }
         private bool IsColorBound => !string.IsNullOrWhiteSpace(ColorBindName);
-        
+
         private bool IsFilled { get; set; }
         private string IsFilledBindName { get; set; }
         private bool IsFilledBound => !string.IsNullOrWhiteSpace(IsFilledBindName);
-        
+
         private float LineThickness { get; set; }
         private string LineThicknessBindName { get; set; }
         private bool IsLineThicknessBound => !string.IsNullOrWhiteSpace(LineThicknessBindName);
-        
+
         private List<GuiVector2> Points { get; set; }
         private string PointsBindName { get; set; }
         private bool IsPointsBound => !string.IsNullOrWhiteSpace(PointsBindName);

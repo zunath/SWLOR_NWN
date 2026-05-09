@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq.Expressions;
 using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.NWN.API.Engine;
@@ -11,11 +11,11 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         private GuiColor Color { get; set; }
         private string ColorBindName { get; set; }
         private bool IsColorBound => !string.IsNullOrWhiteSpace(ColorBindName);
-        
+
         private GuiRectangle Bounds { get; set; }
         private string BoundsBindName { get; set; }
         private bool IsBoundsBound => !string.IsNullOrWhiteSpace(BoundsBindName);
-        
+
         private string Text { get; set; }
         private string TextBindName { get; set; }
         private bool IsTextBound => !string.IsNullOrWhiteSpace(TextBindName);
@@ -126,7 +126,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             var bounds = IsBoundsBound ? Nui.Bind(BoundsBindName) : Bounds.ToJson();
             var text = IsTextBound ? Nui.Bind(TextBindName) : JsonString(Text);
 
-            return Nui.DrawListText(isEnabled, color, bounds, text); 
+            return Nui.DrawListText(isEnabled, color, bounds, text);
         }
     }
 }

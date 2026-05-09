@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             var selectedShipInfo = string.Empty;
             var spaceWaypointTag = GetLocalString(OBJECT_SELF, "STARPORT_TELEPORT_WAYPOINT");
             var landingWaypointTag = GetLocalString(OBJECT_SELF, "STARPORT_LANDING_WAYPOINT");
-            
+
             page.Header = ColorToken.Green("Starport Menu") + "\n" +
                           selectedShipInfo + "\n" +
                           "What would you like to do?";

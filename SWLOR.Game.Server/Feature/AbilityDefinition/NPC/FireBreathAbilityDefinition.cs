@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 {
                     var attackerStat = GetAbilityScore(activator, AbilityType.Perception);
                     var dmg = 3;
-                    
+
                     var coneTarget = GetFirstObjectInShape(Shape.SpellCone, 14.0f, location);
                     while (GetIsObjectValid(coneTarget))
                     {
@@ -43,11 +43,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                             var defense = Stat.GetDefense(coneTarget, CombatDamageType.Fire, AbilityType.Vitality);
                             var defenderStat = GetAbilityScore(coneTarget, AbilityType.Vitality);
                             var damage = Combat.CalculateDamage(
-                                attack, 
-                                dmg, 
-                                attackerStat, 
-                                defense, 
-                                defenderStat, 
+                                attack,
+                                dmg,
+                                attackerStat,
+                                defense,
+                                defenderStat,
                                 0);
 
                             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Com_Hit_Fire), coneTarget);

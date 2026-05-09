@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace SWLOR.Game.Server.Service.DialogService
 {
@@ -8,10 +8,10 @@ namespace SWLOR.Game.Server.Service.DialogService
         public bool IsActive { get; set; }
         public Action Action { get; set; }
         public object Data { get; set; }
-        
+
         public DialogResponse(
-            string text, 
-            Action action, 
+            string text,
+            Action action,
             bool isVisible = true,
             object data = null)
         {

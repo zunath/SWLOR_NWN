@@ -94,7 +94,7 @@ namespace SWLOR.Game.Server.Native
                     {
                         _creatureAttackDelays.Remove(pCreature.m_idSelf);
                     }
-                    
+
                     pCreature.ChangeAttackTarget(pNode, OBJECT_INVALID);
                     return ACTION_FAILED;
                 }
@@ -372,8 +372,8 @@ namespace SWLOR.Game.Server.Native
                     {
                         bTargetDead = true;
                     }
-                    else if (pTargetObject.AsNWSCreature() != null && 
-                             pTargetObject.AsNWSCreature().m_bPlayerCharacter == 1 && 
+                    else if (pTargetObject.AsNWSCreature() != null &&
+                             pTargetObject.AsNWSCreature().m_bPlayerCharacter == 1 &&
                              pTargetObject.AsNWSCreature().GetIsPCDying() == 1)
                     {
                         bTargetDead = true;
@@ -388,7 +388,7 @@ namespace SWLOR.Game.Server.Native
                     var calculatedDelay = Combat.CalculateAttackDelay(pCreature.m_idSelf);
                     var delay = calculatedDelay + BaseAttackDelay;
                     var timeSinceLastAttack = (DateTime.UtcNow - _creatureAttackDelays[pCreature.m_idSelf]).TotalMilliseconds;
-                    
+
                     if (timeSinceLastAttack < delay)
                     {
                         // Still in delay period, return in progress
@@ -440,7 +440,7 @@ namespace SWLOR.Game.Server.Native
                                         if (!bOverrideAction)
                                         {
                                             pCreature.SetAnimation(nAnimation);
-                                            
+
                                             if (oidAttackTarget != oidTarget)
                                             {
                                                 if (pPendingAction.m_bActionRetargettable == 1)
@@ -454,7 +454,7 @@ namespace SWLOR.Game.Server.Native
                                             }
 
                                             pCreature.m_pcCombatRound.SetRoundPaused(1, pCreature.m_idSelf);
-                                            
+
                                             // Set pause timer for single attack
                                             pCreature.m_pcCombatRound.SetPauseTimer(nTimeAnimation);
 
@@ -476,7 +476,7 @@ namespace SWLOR.Game.Server.Native
 
                                             // Process the attack (delay already checked at function start)
                                             var isParalyzed = Combat.HandleParalyze(pCreature.m_idSelf);
-                                            
+
                                             if (isParalyzed)
                                             {
                                                 Log.Write(LogGroup.Attack, $"Creature {pCreature.m_idSelf:X8} is paralyzed, recomputing round");
@@ -486,11 +486,11 @@ namespace SWLOR.Game.Server.Native
                                             {
                                                 pCreature.ResolveAttack(oidTarget, nAttacks, nTimeAnimation);
                                                 bTargetActive = true;
-                                                
+
                                                 // Set the delay timestamp after the attack resolves
                                                 // This ensures the first attack is instant, subsequent attacks respect delay
                                                 _creatureAttackDelays[pCreature.m_idSelf] = DateTime.UtcNow;
-                                                
+
                                                 // After resolving attack, ensure the combat round continues
                                                 // This should trigger the next attack action to be generated
                                                 pCreature.m_pcCombatRound.RecomputeRound();
@@ -589,7 +589,7 @@ namespace SWLOR.Game.Server.Native
             });
         }
 
-        
+
         private static float MagnitudeSquared(Vector v)
         {
             return v.x * v.x + v.y * v.y + v.z * v.z;

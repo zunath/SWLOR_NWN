@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature
 
             var effect = EffectVisualEffect(VisualEffect.LightsaberHum);
             effect = TagEffect(effect, "LIGHTSABER_HUM");
-            
+
             ApplyEffectToObject(DurationType.Permanent, effect, player);
             AssignCommand(player, () => PlaySound("saberon"));
         }
@@ -53,7 +53,7 @@ namespace SWLOR.Game.Server.Feature
                     return;
                 }
             }
-            
+
         }
     }
 }

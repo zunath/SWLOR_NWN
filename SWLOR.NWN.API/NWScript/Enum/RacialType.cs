@@ -26,9 +26,9 @@ namespace SWLOR.NWN.API.NWScript.Enum
         Shapechanger = 23,
         Undead = 24,
         Vermin = 25,
-        All = 28, 
-        Invalid = 28, 
-        Ooze = 29, 
+        All = 28,
+        Invalid = 28,
+        Ooze = 29,
         Plant = 52,
 
         Robot = 150,

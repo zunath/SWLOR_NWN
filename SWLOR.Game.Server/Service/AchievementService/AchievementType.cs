@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace SWLOR.Game.Server.Service.AchievementService
 {
@@ -311,7 +311,7 @@ namespace SWLOR.Game.Server.Service.AchievementService
 
         [Achievement("Explore Dantooine Lake", "Explore Dantooine's Lake.", true)]
         ExploreDantooineLake = 114,
-        
+
         [Achievement("Explore Dantooine Kinrath Tunnels", "Explore Dantooine's Kinrath Tunnels.", true)]
         ExploreDantooineKinrathTunnels = 115,
 

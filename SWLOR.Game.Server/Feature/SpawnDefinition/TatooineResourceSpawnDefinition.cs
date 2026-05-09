@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.SpawnService;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -66,7 +66,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Placeable, "fiberp_bush_4")
                 .WithFrequency(10);
         }
-        
+
         private void TuskenCamp()
         {
             _builder.Create("TATTOOINE_TUSKEN_CAMP")

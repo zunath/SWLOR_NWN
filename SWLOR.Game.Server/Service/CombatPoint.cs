@@ -306,7 +306,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="player">The player to check for tagged NPCs.</param>
         /// <returns>
-        /// Number of creatures tagged by the player. 
+        /// Number of creatures tagged by the player.
         /// 0 is none, -1 if the player is not initialized in the playerToCreatureTracker.
         /// </returns>
         public static int GetTaggedCreatureCount(uint player)

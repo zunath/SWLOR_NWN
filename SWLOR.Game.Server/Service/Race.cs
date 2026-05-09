@@ -518,7 +518,7 @@ namespace SWLOR.Game.Server.Service
         }
         /// <summary>
         /// When a player enters the server, apply the proper scaling to their character.
-        /// 
+        ///
         /// </summary>
         [NWNEventHandler(ScriptName.OnModuleEnter)]
             public static void ApplyWookieeScaling()
@@ -592,6 +592,5 @@ namespace SWLOR.Game.Server.Service
                     _defaultRaceAppearancesFemale[race] :
                     _defaultRaceAppearancesMale[race];
             }
-        } 
-    } 
-
+        }
+    }

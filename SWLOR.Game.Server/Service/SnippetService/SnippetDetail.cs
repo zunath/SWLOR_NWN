@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Game.Server.Service.SnippetService
+namespace SWLOR.Game.Server.Service.SnippetService
 {
     public delegate bool SnippetConditionDelegate(uint player, string[] args);
 

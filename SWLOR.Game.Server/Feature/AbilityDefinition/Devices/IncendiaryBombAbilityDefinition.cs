@@ -23,10 +23,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             var defenderStat = GetAbilityScore(creature, AbilityType.Vitality);
             var damage = Combat.CalculateDamage(
                 attack,
-                dmg, 
-                attackerStat, 
-                defense, 
-                defenderStat, 
+                dmg,
+                attackerStat,
+                defense,
+                defenderStat,
                 0);
 
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Fire), creature);
@@ -94,7 +94,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
             return _builder.Build();
         }
-        
+
         private void IncendiaryBomb1()
         {
             _builder.Create(FeatType.IncendiaryBomb1, PerkType.IncendiaryBomb)

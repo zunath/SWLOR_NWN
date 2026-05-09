@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -1963,7 +1963,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("alzabi", 6)
                 .Component("distilled_water", 2);
-    
+
             // Dantooine Flapjacks
             _builder.Create(RecipeType.DantooineFlapJack, SkillType.Agriculture)
                 .Category(RecipeCategoryType.Food)
@@ -1990,7 +1990,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("milk", 6)
                 .Component("carrot", 3);
-          
+
             // Krafter's Kebab
             _builder.Create(RecipeType.KraftersKebab, SkillType.Agriculture)
                 .Category(RecipeCategoryType.Food)

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using SWLOR.Game.Server.Core.Beamdog;
@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         private bool IsConstrainedToTargetBounds { get; set; }
         private string IsConstrainedBindName { get; set; }
         private bool IsConstrainedBound => !string.IsNullOrWhiteSpace(IsConstrainedBindName);
-        
+
         private List<IGuiDrawListItem> DrawItems { get; set; }
 
         /// <summary>

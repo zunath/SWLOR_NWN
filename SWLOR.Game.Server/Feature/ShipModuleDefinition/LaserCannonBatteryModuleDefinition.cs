@@ -1,4 +1,4 @@
-﻿ using System.Collections.Generic;
+ using System.Collections.Generic;
  using SWLOR.Game.Server.Service;
  using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -73,9 +73,9 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                             var nearbyTarget = GetFirstObjectInShape(Shape.Sphere, 20f, GetLocation(activator), true, ObjectType.Creature);
                             while (GetIsObjectValid(nearbyTarget))
                             {
-                                if (nearbyTarget != activator && 
-                                    Random.D4(1) != 1 && 
-                                    GetIsEnemy(nearbyTarget, activator) && 
+                                if (nearbyTarget != activator &&
+                                    Random.D4(1) != 1 &&
+                                    GetIsEnemy(nearbyTarget, activator) &&
                                     Space.GetShipStatus(nearbyTarget) != null)
                                 {
                                     var nearbyShipStatus = Space.GetShipStatus(nearbyTarget);

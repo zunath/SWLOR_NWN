@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
             return _builder.Build();
         }
-        
+
         private void Impact(uint activator, uint target, int dmg, int dc)
         {
             if (GetFactionEqual(activator, target))
@@ -36,10 +36,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
             var damage = Combat.CalculateDamage(
                 attack,
-                dmg, 
-                attackerStat, 
-                defense, 
-                defenderStat, 
+                dmg,
+                attackerStat,
+                defense,
+                defenderStat,
                 0);
 
             var race = GetRacialType(target);

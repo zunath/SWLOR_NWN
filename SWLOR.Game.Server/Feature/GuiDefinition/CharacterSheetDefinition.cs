@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Core.Beamdog;
+using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
@@ -146,7 +146,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetHeight(IncreaseButtonSize)
                             .SetText("+")
                             .SetIsVisible(false);
-                        
+
                         row.BindIsVisible(model => model.ShowSP);
                     });
 
@@ -466,7 +466,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetHorizontalAlign(NuiHorizontalAlign.Left);
                     });
                 })
-                
+
                 .AddColumn(col =>
                 {
                     col.AddRow(row =>
@@ -581,8 +581,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                     col.BindIsVisible(model => model.IsPlayerMode);
                 })
-                
-                
+
+
                 ;
 
             return _builder.Build();

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using SWLOR.Game.Server.Enumeration;
@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         if (DateTime.UtcNow <= dateTime)
                         {
                             return "You may only submit one bug report per minute. Please wait and try again.";
-                        }                        
+                        }
                     }
 
                     return string.Empty;
@@ -61,7 +61,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     var appSettings = ApplicationSettings.Get();
                     var authorization = Authorization.GetAuthorizationLevel(user);
 
-                    if (appSettings.ServerEnvironment == ServerEnvironmentType.Test || 
+                    if (appSettings.ServerEnvironment == ServerEnvironmentType.Test ||
                         authorization == AuthorizationLevel.DM)
                     {
                         SendMessageToPC(user, ChatCommand.HelpTextDM);
@@ -94,7 +94,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Permissions(AuthorizationLevel.All)
                 .Validate((user, args) =>
                 {
-                    var lastSubmission = GetLocalString(user, "STUCK_REPORT_LAST_SUBMISSION");                    
+                    var lastSubmission = GetLocalString(user, "STUCK_REPORT_LAST_SUBMISSION");
                     if (!string.IsNullOrWhiteSpace(lastSubmission))
                     {
                         var dateTime = DateTime.ParseExact(lastSubmission, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
@@ -102,7 +102,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         if (DateTime.UtcNow <= dateTime)
                         {
                             return "You may only use the stuck command every thirty minutes. Please wait and try again.";
-                        }                        
+                        }
                     }
 
                     return string.Empty;

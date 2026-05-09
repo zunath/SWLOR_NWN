@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq.Expressions;
 using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.NWN.API.Engine;
@@ -11,15 +11,15 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         private float Value { get; set; }
         private string ValueBindName { get; set; }
         private bool IsValueBound => !string.IsNullOrWhiteSpace(ValueBindName);
-        
+
         private float Minimum { get; set; }
         private string MinimumBindName { get; set; }
         private bool IsMinimumBound => !string.IsNullOrWhiteSpace(MinimumBindName);
-        
+
         private float Maximum { get; set; }
         private string MaximumBindName { get; set; }
         private bool IsMaximumBound => !string.IsNullOrWhiteSpace(MaximumBindName);
-        
+
         private float StepSize { get; set; }
         private string StepSizeBindName { get; set; }
         private bool IsStepSizeBound => !string.IsNullOrWhiteSpace(StepSizeBindName);

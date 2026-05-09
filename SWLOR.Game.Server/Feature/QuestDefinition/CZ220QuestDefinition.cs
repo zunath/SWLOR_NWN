@@ -190,7 +190,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText("Avix Tatham needs you to head down to the maintenance level and harvest some ore. When you have four pieces, return to him to collect the work receipt.")
                 .AddCollectItemObjective("raw_veldite", 4)
-                
+
                 .AddState()
                 .SetStateJournalText("Speak to Avix Tatham for your reward.")
 
@@ -241,10 +241,10 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText("You made quick work of the rampaging Colicoid experiment. Return to Halron Linth to let him know the work is done.")
-                
+
                 .AddGoldReward(375, false)
                 .AddXPReward(600)
-                
+
                 .OnAcceptAction((player, sourceObject) =>
                 {
                     KeyItem.GiveKeyItem(player, KeyItemType.CZ220ExperimentRoomKey);

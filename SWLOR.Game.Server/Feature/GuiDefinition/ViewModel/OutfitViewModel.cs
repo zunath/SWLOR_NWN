@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
@@ -333,7 +333,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Name = $"Outfit #{outfitCount+1}",
                 PlayerId = playerId
             };
-            
+
             DB.Set(newOutfit);
             _outfitIds.Add(newOutfit.Id);
             SlotNames.Add(newOutfit.Name);
@@ -349,7 +349,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 var outfitId = _outfitIds[SelectedSlotIndex];
                 var dbOutfit = DB.Get<PlayerOutfit>(outfitId);
-                
+
                 DB.Delete<PlayerOutfit>(dbOutfit.Id);
 
                 _outfitIds.RemoveAt(SelectedSlotIndex);

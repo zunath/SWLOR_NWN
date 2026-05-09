@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using SWLOR.Game.Server.Core.Beamdog;
@@ -23,15 +23,15 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         private bool IsEnabled { get; set; }
         private string IsEnabledBindName { get; set; }
         private bool IsEnableBound => !string.IsNullOrWhiteSpace(IsEnabledBindName);
-        
+
         private bool IsVisible { get; set; }
         private string IsVisibleBindName { get; set; }
         private bool IsVisibleBound => !string.IsNullOrWhiteSpace(IsVisibleBindName);
-        
+
         private string Tooltip { get; set; }
         private string TooltipBindName { get; set; }
         private bool IsTooltipBound => !string.IsNullOrWhiteSpace(TooltipBindName);
-        
+
         private string DisabledTooltip { get; set; }
         private string DisabledTooltipBindName { get; set; }
         private bool IsDisabledTooltipBound => !string.IsNullOrWhiteSpace(DisabledTooltipBindName);

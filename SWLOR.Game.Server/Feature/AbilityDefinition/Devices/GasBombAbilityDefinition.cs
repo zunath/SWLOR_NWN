@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
             return _builder.Build();
         }
-        
+
         private void GasBomb1()
         {
             _builder.Create(FeatType.GasBomb1, PerkType.GasBomb)

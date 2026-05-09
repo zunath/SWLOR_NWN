@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class CreatureManagerViewModel: GuiViewModelBase<CreatureManagerViewModel, GuiPayloadBase>
     {
-        private readonly List<string> _creatureIds = new();        
+        private readonly List<string> _creatureIds = new();
         private const int ListingsPerPage = 20;
         private bool _skipPaginationSearch;
 
@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         protected override void Initialize(GuiPayloadBase initialPayload)
-        {   
+        {
             SearchText = string.Empty;
             Search();
 
@@ -69,10 +69,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                  if (!GetIsObjectValid(creature) || GetIsDM(creature) || GetIsPC(creature))
                  {
                      return;
-                 }                     
+                 }
 
                  if (GetObjectType(creature) != ObjectType.Creature)
-                 {                     
+                 {
                      return;
                  }
 
@@ -84,7 +84,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                  Search();
              });
-            
+
         };
 
         public Action OnSelectCreature() => () =>
@@ -135,7 +135,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 return;
             }
-            
+
             if (!GetIsObjectValid(GetLocalObject(player, "DMCM_CREATURE_TO_SPAWN")))
             {
                 return;
@@ -150,7 +150,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void Search()
         {
             var query = new DBQuery<DMCreature>()
-                .OrderBy(nameof(DMCreature.Name));                
+                .OrderBy(nameof(DMCreature.Name));
 
             if (!string.IsNullOrWhiteSpace(SearchText)) query.AddFieldSearch(nameof(DMCreature.Name), SearchText, true);
 
@@ -165,9 +165,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var creatureNames = new GuiBindingList<string>();
 
             foreach (var record in results)
-            {                
+            {
                 _creatureIds.Add(record.Id);
-                creatureNames.Add(record.Name);                
+                creatureNames.Add(record.Name);
             }
 
             CreatureNames = creatureNames;

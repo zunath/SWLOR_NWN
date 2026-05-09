@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq.Expressions;
 using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.NWN.API.Engine;
@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         private GuiColor SelectedColor { get; set; }
         private string SelectedColorBindName { get; set; }
         private bool IsSelectedColorBound => !string.IsNullOrWhiteSpace(SelectedColorBindName);
-        
+
         public GuiColorPicker()
         {
             SelectedColor = new GuiColor(0, 0, 0);

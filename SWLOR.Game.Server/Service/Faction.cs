@@ -134,7 +134,7 @@ namespace SWLOR.Game.Server.Service
             {
                 dbPlayer.Factions[faction] = new PlayerFactionStanding();
             }
-            
+
             dbPlayer.Factions[faction].Points += adjustBy;
             if (dbPlayer.Factions[faction].Points < 0)
                 dbPlayer.Factions[faction].Points = 0;

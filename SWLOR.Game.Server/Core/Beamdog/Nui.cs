@@ -1,4 +1,4 @@
-﻿using SWLOR.NWN.API.Engine;
+using SWLOR.NWN.API.Engine;
 
 namespace SWLOR.Game.Server.Core.Beamdog
 {
@@ -66,7 +66,7 @@ namespace SWLOR.Game.Server.Core.Beamdog
             ret = JsonObjectSet(ret, "accepts_input", jAcceptsInput);
             return ret;
         }
-        
+
         private static Json NuiElement(
           string sType,
           Json jLabel,
@@ -217,9 +217,9 @@ namespace SWLOR.Game.Server.Core.Beamdog
         {
             return JsonObjectSet(jElem, "disabled_tooltip", jTooltip);
         }
-        
+
         /// <summary>
-        /// Encouraged elements have a breathing animated glow inside of it. 
+        /// Encouraged elements have a breathing animated glow inside of it.
         /// </summary>
         public static Json Encouraged(Json jElem, Json jEncouraged)
         {
@@ -467,8 +467,8 @@ namespace SWLOR.Game.Server.Core.Beamdog
         /// <param name="showBorder">true to show the border, false otherwise</param>
         /// <param name="scrollbars">The type of scroll bars to use, if any.</param>
         public static Json List(
-            Json jTemplate, 
-            Json jRowCount, 
+            Json jTemplate,
+            Json jRowCount,
             float fRowHeight = NuiStyle.RowHeight,
             bool showBorder = true,
             NuiScrollbars scrollbars = NuiScrollbars.Y)
@@ -565,12 +565,12 @@ namespace SWLOR.Game.Server.Core.Beamdog
             var ret = NuiElement("chart", JsonNull(), jSlots);
             return ret;
         }
-        
+
         private static Json NuiDrawListItem(
-            NuiDrawListItemType nType, 
-            Json jEnabled, 
-            Json jColor, 
-            Json jFill, 
+            NuiDrawListItemType nType,
+            Json jEnabled,
+            Json jColor,
+            Json jFill,
             Json jLineThickness,
             NuiDrawListItemOrderType nOrder = NuiDrawListItemOrderType.After,
             NuiDrawListItemRenderType nRender = NuiDrawListItemRenderType.Always)
@@ -597,10 +597,10 @@ namespace SWLOR.Game.Server.Core.Beamdog
         /// <param name="nOrder">Int:NUI_DRAW_LIST_ITEM_ORDER_*</param>
         /// <param name="nRender">Int:NUI_DRAW_LIST_ITEM_RENDER_*</param>
         public static Json DrawListPolyLine(
-            Json jEnabled, 
-            Json jColor, 
-            Json jFill, 
-            Json jLineThickness, 
+            Json jEnabled,
+            Json jColor,
+            Json jFill,
+            Json jLineThickness,
             Json jPoints,
             NuiDrawListItemOrderType nOrder = NuiDrawListItemOrderType.After,
             NuiDrawListItemRenderType nRender = NuiDrawListItemRenderType.Always)
@@ -623,12 +623,12 @@ namespace SWLOR.Game.Server.Core.Beamdog
         /// <param name="nOrder">Int:NUI_DRAW_LIST_ITEM_ORDER_*</param>
         /// <param name="nRender">Int:NUI_DRAW_LIST_ITEM_RENDER_*</param>
         public static Json DrawListCurve(
-            Json jEnabled, 
-            Json jColor, 
-            Json jLineThickness, 
-            Json jA, 
-            Json jB, 
-            Json jCtrl0, 
+            Json jEnabled,
+            Json jColor,
+            Json jLineThickness,
+            Json jA,
+            Json jB,
+            Json jCtrl0,
             Json jCtrl1,
             NuiDrawListItemOrderType nOrder = NuiDrawListItemOrderType.After,
             NuiDrawListItemRenderType nRender = NuiDrawListItemRenderType.Always)
@@ -652,10 +652,10 @@ namespace SWLOR.Game.Server.Core.Beamdog
         /// <param name="nOrder">Int:NUI_DRAW_LIST_ITEM_ORDER_*</param>
         /// <param name="nRender">Int:NUI_DRAW_LIST_ITEM_RENDER_*</param>
         public static Json DrawListCircle(
-            Json jEnabled, 
-            Json jColor, 
-            Json jFill, 
-            Json jLineThickness, 
+            Json jEnabled,
+            Json jColor,
+            Json jFill,
+            Json jLineThickness,
             Json jRect,
             NuiDrawListItemOrderType nOrder = NuiDrawListItemOrderType.After,
             NuiDrawListItemRenderType nRender = NuiDrawListItemRenderType.Always)
@@ -679,13 +679,13 @@ namespace SWLOR.Game.Server.Core.Beamdog
         /// <param name="nOrder">Int:NUI_DRAW_LIST_ITEM_ORDER_*</param>
         /// <param name="nRender">Int:NUI_DRAW_LIST_ITEM_RENDER_*</param>
         public static Json DrawListArc(
-            Json jEnabled, 
-            Json jColor, 
-            Json jFill, 
-            Json jLineThickness, 
-            Json jCenter, 
-            Json jRadius, 
-            Json jAMin, 
+            Json jEnabled,
+            Json jColor,
+            Json jFill,
+            Json jLineThickness,
+            Json jCenter,
+            Json jRadius,
+            Json jAMin,
             Json jAMax,
             NuiDrawListItemOrderType nOrder = NuiDrawListItemOrderType.After,
             NuiDrawListItemRenderType nRender = NuiDrawListItemRenderType.Always)
@@ -708,9 +708,9 @@ namespace SWLOR.Game.Server.Core.Beamdog
         /// <param name="nOrder">Int:NUI_DRAW_LIST_ITEM_ORDER_*</param>
         /// <param name="nRender">Int:NUI_DRAW_LIST_ITEM_RENDER_*</param>
         public static Json DrawListText(
-            Json jEnabled, 
-            Json jColor, 
-            Json jRect, 
+            Json jEnabled,
+            Json jColor,
+            Json jRect,
             Json jText,
             NuiDrawListItemOrderType nOrder = NuiDrawListItemOrderType.After,
             NuiDrawListItemRenderType nRender = NuiDrawListItemRenderType.Always)
@@ -733,11 +733,11 @@ namespace SWLOR.Game.Server.Core.Beamdog
         /// <param name="nOrder">Int:NUI_DRAW_LIST_ITEM_ORDER_*</param>
         /// <param name="nRender">Int:NUI_DRAW_LIST_ITEM_RENDER_*</param>
         public static Json DrawListImage(
-            Json jEnabled, 
-            Json jResRef, 
-            Json jRect, 
-            Json jAspect, 
-            Json jHAlign, 
+            Json jEnabled,
+            Json jResRef,
+            Json jRect,
+            Json jAspect,
+            Json jHAlign,
             Json jVAlign,
             NuiDrawListItemOrderType nOrder = NuiDrawListItemOrderType.After,
             NuiDrawListItemRenderType nRender = NuiDrawListItemRenderType.Always)

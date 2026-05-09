@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Service.GuiService
         public static string GetPropertyName<TProperty>(Expression<Func<T, TProperty>> expression)
         {
             var type = typeof(T);
-            
+
             var member = expression.Body as MemberExpression;
             if (member == null)
                 throw new ArgumentException($"Expression '{expression}' refers to a method, not a property.");

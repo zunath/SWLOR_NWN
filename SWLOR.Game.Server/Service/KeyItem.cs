@@ -102,8 +102,8 @@ namespace SWLOR.Game.Server.Service
         /// <returns>A KeyItemType matching the Id.</returns>
         public static KeyItemType GetKeyItemTypeById(int keyItemId)
         {
-            return !_keyItemsByTypeId.ContainsKey(keyItemId) ? 
-                KeyItemType.Invalid : 
+            return !_keyItemsByTypeId.ContainsKey(keyItemId) ?
+                KeyItemType.Invalid :
                 _keyItemsByTypeId[keyItemId];
         }
 
@@ -115,8 +115,8 @@ namespace SWLOR.Game.Server.Service
         /// <returns>A KeyItemType matching the name.</returns>
         public static KeyItemType GetKeyItemTypeByName(string name)
         {
-            return !_keyItemsByTypeName.ContainsKey(name) ? 
-                KeyItemType.Invalid : 
+            return !_keyItemsByTypeName.ContainsKey(name) ?
+                KeyItemType.Invalid :
                 _keyItemsByTypeName[name];
         }
 
@@ -225,7 +225,7 @@ namespace SWLOR.Game.Server.Service
 
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
-            
+
             foreach (var ki in keyItems)
             {
                 if (!dbPlayer.KeyItems.ContainsKey(ki))

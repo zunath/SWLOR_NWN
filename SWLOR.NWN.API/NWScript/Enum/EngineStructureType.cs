@@ -1,11 +1,11 @@
-﻿namespace SWLOR.NWN.API.NWScript.Enum
+namespace SWLOR.NWN.API.NWScript.Enum
 {
     public enum EngineStructureType
     {
         Count = 8,
 
         Effect = 0,
-        Event = 1, 
+        Event = 1,
         Location = 2,
         Talent = 3,
         ItemProperty = 4,

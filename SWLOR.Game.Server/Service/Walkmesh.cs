@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Service
             {
                 BakeArea(area);
             }
-            
+
             var serverConfig = DB.Get<ModuleCache>("SWLOR_CACHE") ?? new ModuleCache{ Id = "SWLOR_CACHE" };
             serverConfig.WalkmeshesByArea = _walkmeshesByArea;
             DB.Set(serverConfig);
@@ -141,11 +141,11 @@ namespace SWLOR.Game.Server.Service
         public static Location GetRandomLocation(uint area)
         {
             var resref = GetResRef(area);
-            if (!_walkmeshesByArea.ContainsKey(resref)) 
+            if (!_walkmeshesByArea.ContainsKey(resref))
                 return Location(area, Vector3.Zero, 0.0f);
 
             var count = _walkmeshesByArea[resref].Count;
-            if (count <= 0) 
+            if (count <= 0)
                 return Location(area, Vector3.Zero, 0.0f);
 
             var index = Random.Next(count);

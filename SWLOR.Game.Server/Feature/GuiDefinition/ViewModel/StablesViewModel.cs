@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core.Bioware;
@@ -343,7 +343,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             WatchOnClient(model => model.Name);
         }
-        
+
         private void LoadBeasts()
         {
             var playerId = GetObjectUUID(Player);
@@ -365,10 +365,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _beastIds.Add(dbBeast.Id);
                 beastNames.Add(dbBeast.Name);
                 beastToggles.Add(false);
-                
+
                 if(dbBeast.Id == dbPlayer.ActiveBeastId)
                     beastNameColors.Add(GuiColor.Green);
-                else 
+                else
                     beastNameColors.Add(GuiColor.White);
             }
 
@@ -556,7 +556,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 BeastToggles[_selectedBeastIndex] = false;
             }
-            
+
             _selectedBeastIndex = NuiGetEventArrayIndex();
 
             BeastToggles[_selectedBeastIndex] = true;

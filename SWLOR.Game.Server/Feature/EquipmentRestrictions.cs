@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Feature
                 }
                 SendMessageToPC(messageTarget, ColorToken.Red(canUseItem));
             }
-            
+
             EventsPlugin.SkipEvent();
         }
 
@@ -58,8 +58,8 @@ namespace SWLOR.Game.Server.Feature
             var leftHandType = GetBaseItemType(leftHand);
 
             // Two-handed weapons
-            if (Item.TwoHandedMeleeItemTypes.Contains(itemType) || 
-                Item.TwinBladeBaseItemTypes.Contains(itemType) || 
+            if (Item.TwoHandedMeleeItemTypes.Contains(itemType) ||
+                Item.TwinBladeBaseItemTypes.Contains(itemType) ||
                 Item.SaberstaffBaseItemTypes.Contains(itemType) ||
                 Item.RifleBaseItemTypes.Contains(itemType) ||
                 Item.PistolBaseItemTypes.Contains(itemType))
@@ -69,12 +69,12 @@ namespace SWLOR.Game.Server.Feature
                     return true;
             }
             // Shields & One-Handed Weapons
-            else if (Item.ShieldBaseItemTypes.Contains(itemType) || 
-                     Item.OneHandedMeleeItemTypes.Contains(itemType) || 
+            else if (Item.ShieldBaseItemTypes.Contains(itemType) ||
+                     Item.OneHandedMeleeItemTypes.Contains(itemType) ||
                      Item.ThrowingWeaponBaseItemTypes.Contains(itemType))
             {
-                if (Item.TwoHandedMeleeItemTypes.Contains(rightHandType) || 
-                    Item.TwinBladeBaseItemTypes.Contains(rightHandType) || 
+                if (Item.TwoHandedMeleeItemTypes.Contains(rightHandType) ||
+                    Item.TwinBladeBaseItemTypes.Contains(rightHandType) ||
                     Item.SaberstaffBaseItemTypes.Contains(rightHandType) ||
                     Item.RifleBaseItemTypes.Contains(rightHandType) ||
                     Item.PistolBaseItemTypes.Contains(rightHandType))
@@ -113,7 +113,7 @@ namespace SWLOR.Game.Server.Feature
             var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
             var slot = (InventorySlot)Convert.ToInt32(EventsPlugin.GetEventData("SLOT"));
 
-            // The unequip event doesn't fire if an item is being swapped out. 
+            // The unequip event doesn't fire if an item is being swapped out.
             // If there's an item in the slot, run the unequip triggers first.
             var existingItemInSlot = GetItemInSlot(slot, player);
             if (GetIsObjectValid(existingItemInSlot))

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.SpawnService;
 using SWLOR.NWN.API.NWScript.Enum;
 using Random = SWLOR.Game.Server.Service.Random;
@@ -94,11 +94,11 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "vdathturtle")
                 .RandomlyWalks()
                 .WithFrequency(5)
-                
+
                 .AddSpawn(ObjectType.Creature, "vdathssurian")
                 .RandomlyWalks()
                 .WithFrequency(100)
-                
+
                 .AddSpawn(ObjectType.Creature, "vdathpurbole")
                 .RandomlyWalks()
                 .WithFrequency(100);
@@ -150,7 +150,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "vdathsquell")
                 .RandomlyWalks()
                 .WithFrequency(100)
-                
+
                 .AddSpawn(ObjectType.Creature, "vdathssurian")
                 .RandomlyWalks()
                 .WithFrequency(10);
@@ -162,7 +162,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "vdathsprantal")
                 .RandomlyWalks()
                 .WithFrequency(100)
-                
+
                 .AddSpawn(ObjectType.Creature, "vdathsquell")
                 .RandomlyWalks()
                 .WithFrequency(100);
@@ -202,7 +202,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "vdathswampland")
                 .RandomlyWalks()
                 .WithFrequency(100)
-                
+
                 .AddSpawn(ObjectType.Creature, "vdathshear")
                 .RandomlyWalks()
                 .WithFrequency(100);

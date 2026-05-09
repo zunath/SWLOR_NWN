@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
@@ -30,4 +30,3 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
         }
     }
 }
-

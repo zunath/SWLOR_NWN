@@ -109,7 +109,7 @@ namespace SWLOR.Game.Server.Service
                     : defaultGeometry;
                 var resizable = JsonObjectGet(window.Window, "resizable");
 
-                // If the window cannot be resized and there isn't a bind on it, 
+                // If the window cannot be resized and there isn't a bind on it,
                 // the default width and height are used.
                 var forceResize = JsonGetInt(resizable) != 1 &&
                                   string.IsNullOrWhiteSpace(JsonGetString(JsonObjectGet(resizable, "bind")));
@@ -236,7 +236,7 @@ namespace SWLOR.Game.Server.Service
             var action = method?.Invoke(playerWindow.ViewModel, args.ToArray());
             ((Action)action)?.Invoke();
 
-            // If the window was closed, save its geometry 
+            // If the window was closed, save its geometry
             if (eventType == "close")
             {
                 SaveWindowGeometry(playerId, windowType, viewModel.Geometry);
@@ -345,7 +345,7 @@ namespace SWLOR.Game.Server.Service
             {
                 SaveWindowGeometry(playerId, type, playerWindow.ViewModel.Geometry);
                 NuiDestroy(player, playerWindow.WindowToken);
-                
+
                 // Call OnWindowClosed to ensure proper cleanup (like returning items to player)
                 playerWindow.ViewModel.OnWindowClosed()?.Invoke();
             }

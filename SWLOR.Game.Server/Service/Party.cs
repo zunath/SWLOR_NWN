@@ -113,7 +113,7 @@ namespace SWLOR.Game.Server.Service
         private static void RemoveCreatureFromParty(uint creature)
         {
             if (!_creatureToParty.ContainsKey(creature)) return;
-            
+
             var partyId = _creatureToParty[creature];
 
             // Remove this creature from the caches.
@@ -134,7 +134,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            // The party is still valid but the creature who left was its leader. 
+            // The party is still valid but the creature who left was its leader.
             // Swap leadership to the next person in the party list.
             creature = _parties[partyId].First();
             if (_partyLeaders[partyId] == creature)

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
@@ -131,7 +131,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         private bool CanAdjustPermission(
-            WorldPropertyPermission grantorPermissions, 
+            WorldPropertyPermission grantorPermissions,
             WorldPropertyPermission targetPermissions,
             PropertyPermissionType type,
             string targetPlayerId,
@@ -163,13 +163,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var playerId = GetObjectUUID(Player);
             var targetPlayerId = _playerIds[SelectedPlayerIndex];
-            
+
             var dbPlayer = DB.Get<Player>(targetPlayerId);
             var grantorPermissions = DB.Search(new DBQuery<WorldPropertyPermission>()
                 .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false)
                 .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), PropertyId, false))
                 .First();
-            
+
             var targetPermissions = DB.Search(new DBQuery<WorldPropertyPermission>()
                 .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), targetPlayerId, false)
                 .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), PropertyId, false))
@@ -206,7 +206,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 permissionStates.Add(targetPermissions.Permissions[type]);
                 permissionGrantingStates.Add(targetPermissions.GrantPermissions[type]);
 
-                if(CanAdjustPermission(grantorPermissions, targetPermissions, type, targetPlayerId, ownerPlayerId)) 
+                if(CanAdjustPermission(grantorPermissions, targetPermissions, type, targetPlayerId, ownerPlayerId))
                     permissionEnabled.Add(true);
                 else
                     permissionEnabled.Add(false);
@@ -216,7 +216,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 else
                     grantPermissionEnabled.Add(false);
             }
-            
+
             PermissionStates = permissionStates;
             PermissionGrantingStates = permissionGrantingStates;
             PermissionNames = permissionNames;
@@ -236,7 +236,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _propertyType = initialPayload.PropertyType;
             _cityId = initialPayload.CityId;
             IsPlayerSelected = false;
-            
+
             AvailablePermissions = Property.GetPermissionsByPropertyType(_propertyType);
 
             if (_isCategory)

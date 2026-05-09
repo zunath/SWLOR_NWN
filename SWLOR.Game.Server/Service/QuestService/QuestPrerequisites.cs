@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.FactionService;
 using SWLOR.Game.Server.Service.KeyItemService;
 

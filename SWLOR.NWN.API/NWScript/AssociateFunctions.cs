@@ -43,9 +43,9 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The level the creature now is, or 0 if it fails</returns>
         /// <remarks>If you specify a class to which the creature has no package specified, they will use the default package for that class for their levelup choices (e.g., no Barbarian Savage/Wizard Divination combinations).</remarks>
         public static int LevelUpHenchman(
-            uint oCreature, 
+            uint oCreature,
             ClassType nClass = ClassType.Invalid,
-            bool bReadyAllSpells = false, 
+            bool bReadyAllSpells = false,
             Package nPackage = Package.Invalid)
         {
             return global::NWN.Core.NWScript.LevelUpHenchman(oCreature, (int)nClass, bReadyAllSpells ? 1 : 0, (int)nPackage);

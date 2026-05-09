@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
@@ -78,7 +78,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             var orientation = GetFacingFromLocation(location);
 
             orientation = orientation + orientationAdjustment;
-            if (orientation > 360.0) 
+            if (orientation > 360.0)
                 orientation -= 360.0f;
 
             var mod = sqrt(sqrtAdjustment) * sin(orientation);
@@ -126,7 +126,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         private static void AdjustBuildingName(WorldProperty property)
         {
             // If the interior has been linked, also update its name.
-            var interiorId = property.ChildPropertyIds.ContainsKey(PropertyChildType.Interior) 
+            var interiorId = property.ChildPropertyIds.ContainsKey(PropertyChildType.Interior)
                 ? property.ChildPropertyIds[PropertyChildType.Interior].SingleOrDefault()
                 : null;
             if (!string.IsNullOrWhiteSpace(interiorId))

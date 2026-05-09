@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace SWLOR.Game.Server.Service.CraftService
@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.Service.CraftService
 
             return set[index];
         }
-        
+
         private List<BlueprintBonus> Tier1WeaponCombatBonuses()
         {
             var list = new List<BlueprintBonus>
@@ -64,11 +64,11 @@ namespace SWLOR.Game.Server.Service.CraftService
                 // Attack
                 new(10, EnhancementSubType.Attack, 1),
                 new(5, EnhancementSubType.Attack, 2),
-                
+
                 // Accuracy
                 new(10, EnhancementSubType.Accuracy, 1),
                 new(5, EnhancementSubType.Accuracy, 2),
-                
+
                 // Force Attack
                 new(10, EnhancementSubType.ForceAttack, 1),
                 new(5, EnhancementSubType.ForceAttack, 2),
@@ -119,12 +119,12 @@ namespace SWLOR.Game.Server.Service.CraftService
                 new(15, EnhancementSubType.Attack, 1),
                 new(10, EnhancementSubType.Attack, 2),
                 new(5, EnhancementSubType.Attack, 3),
-                
+
                 // Accuracy
                 new(15, EnhancementSubType.Accuracy, 1),
                 new(10, EnhancementSubType.Accuracy, 2),
                 new(5, EnhancementSubType.Accuracy, 3),
-                
+
                 // Force Attack
                 new(15, EnhancementSubType.ForceAttack, 1),
                 new(10, EnhancementSubType.ForceAttack, 2),
@@ -186,12 +186,12 @@ namespace SWLOR.Game.Server.Service.CraftService
                 new(15, EnhancementSubType.Attack, 2),
                 new(10, EnhancementSubType.Attack, 3),
                 new(5, EnhancementSubType.Attack, 4),
-                
+
                 // Accuracy
                 new(15, EnhancementSubType.Accuracy, 2),
                 new(10, EnhancementSubType.Accuracy, 3),
                 new(5, EnhancementSubType.Accuracy, 4),
-                
+
                 // Force Attack
                 new(15, EnhancementSubType.ForceAttack, 2),
                 new(10, EnhancementSubType.ForceAttack, 3),
@@ -255,7 +255,7 @@ namespace SWLOR.Game.Server.Service.CraftService
                 new(5, EnhancementSubType.ControlFabrication, 2),
                 new(10, EnhancementSubType.ControlSmithery, 1),
                 new(5, EnhancementSubType.ControlSmithery, 2),
-                
+
 
                 // Craftsmanship
                 new(10, EnhancementSubType.CraftsmanshipAgriculture, 1),
@@ -308,7 +308,7 @@ namespace SWLOR.Game.Server.Service.CraftService
                 new(15, EnhancementSubType.ControlSmithery, 1),
                 new(10, EnhancementSubType.ControlSmithery, 2),
                 new(5, EnhancementSubType.ControlSmithery, 3),
-                
+
 
                 // Craftsmanship
                 new(15, EnhancementSubType.CraftsmanshipAgriculture, 1),
@@ -369,7 +369,7 @@ namespace SWLOR.Game.Server.Service.CraftService
                 new(15, EnhancementSubType.ControlSmithery, 2),
                 new(10, EnhancementSubType.ControlSmithery, 3),
                 new(5, EnhancementSubType.ControlSmithery, 4),
-                
+
                 // Craftsmanship
                 new(15, EnhancementSubType.CraftsmanshipAgriculture, 2),
                 new(10, EnhancementSubType.CraftsmanshipAgriculture, 3),
@@ -425,27 +425,27 @@ namespace SWLOR.Game.Server.Service.CraftService
                 new(10, EnhancementSubType.DefenseIce, 3),
                 new(20, EnhancementSubType.DefensePoison, 2),
                 new(10, EnhancementSubType.DefensePoison, 3),
-            
+
                 // Evasion
                 new(5, EnhancementSubType.Evasion, 1),
                 new(1, EnhancementSubType.Evasion, 2),
-            
+
                 // FP
                 new(15, EnhancementSubType.FP, 1),
                 new(10, EnhancementSubType.FP, 2),
                 new(5, EnhancementSubType.FP, 3),
                 new(2, EnhancementSubType.FP, 4),
-            
+
                 // HP
                 new(15, EnhancementSubType.HP, 5),
                 new(10, EnhancementSubType.HP, 7),
                 new(5, EnhancementSubType.HP, 9),
                 new(2, EnhancementSubType.HP, 11),
-            
+
                 // Recast Reduction
                 new(5, EnhancementSubType.RecastReduction, 1),
                 new(1, EnhancementSubType.RecastReduction, 2),
-            
+
                 // STM
                 new(15, EnhancementSubType.Stamina, 1),
                 new(10, EnhancementSubType.Stamina, 2),
@@ -479,28 +479,28 @@ namespace SWLOR.Game.Server.Service.CraftService
                 new(25, EnhancementSubType.DefensePoison, 2),
                 new(20, EnhancementSubType.DefensePoison, 3),
                 new(5, EnhancementSubType.DefensePoison, 4),
-            
+
                 // Evasion
                 new(10, EnhancementSubType.Evasion, 1),
                 new(5, EnhancementSubType.Evasion, 2),
                 new(1, EnhancementSubType.Evasion, 3),
-            
+
                 // FP
                 new(15, EnhancementSubType.FP, 2),
                 new(10, EnhancementSubType.FP, 3),
                 new(5, EnhancementSubType.FP, 4),
                 new(2, EnhancementSubType.FP, 5),
-            
+
                 // HP
                 new(15, EnhancementSubType.HP, 7),
                 new(10, EnhancementSubType.HP, 9),
                 new(5, EnhancementSubType.HP, 11),
                 new(2, EnhancementSubType.HP, 13),
-            
+
                 // Recast Reduction
                 new(5, EnhancementSubType.RecastReduction, 2),
                 new(1, EnhancementSubType.RecastReduction, 3),
-            
+
                 // STM
                 new(15, EnhancementSubType.Stamina, 2),
                 new(10, EnhancementSubType.Stamina, 3),
@@ -535,28 +535,28 @@ namespace SWLOR.Game.Server.Service.CraftService
                 new(25, EnhancementSubType.DefensePoison, 3),
                 new(20, EnhancementSubType.DefensePoison, 4),
                 new(5, EnhancementSubType.DefensePoison, 5),
-            
+
                 // Evasion
                 new(10, EnhancementSubType.Evasion, 2),
                 new(5, EnhancementSubType.Evasion, 3),
                 new(1, EnhancementSubType.Evasion, 4),
-            
+
                 // FP
                 new(15, EnhancementSubType.FP, 3),
                 new(10, EnhancementSubType.FP, 4),
                 new(5, EnhancementSubType.FP, 5),
                 new(2, EnhancementSubType.FP, 6),
-            
+
                 // HP
                 new(15, EnhancementSubType.HP, 9),
                 new(10, EnhancementSubType.HP, 11),
                 new(5, EnhancementSubType.HP, 13),
                 new(2, EnhancementSubType.HP, 15),
-            
+
                 // Recast Reduction
                 new(5, EnhancementSubType.RecastReduction, 3),
                 new(1, EnhancementSubType.RecastReduction, 4),
-            
+
                 // STM
                 new(15, EnhancementSubType.Stamina, 3),
                 new(10, EnhancementSubType.Stamina, 4),
@@ -580,7 +580,7 @@ namespace SWLOR.Game.Server.Service.CraftService
                 new(5, EnhancementSubType.ControlFabrication, 2),
                 new(10, EnhancementSubType.ControlSmithery, 1),
                 new(5, EnhancementSubType.ControlSmithery, 2),
-                
+
                 // Craftsmanship
                 new(10, EnhancementSubType.CraftsmanshipAgriculture, 1),
                 new(5, EnhancementSubType.CraftsmanshipAgriculture, 2),
@@ -590,23 +590,23 @@ namespace SWLOR.Game.Server.Service.CraftService
                 new(5, EnhancementSubType.CraftsmanshipFabrication, 2),
                 new(10, EnhancementSubType.CraftsmanshipSmithery, 1),
                 new(5, EnhancementSubType.CraftsmanshipSmithery, 2),
-            
+
                 // Evasion
                 new(5, EnhancementSubType.Evasion, 1),
                 new(1, EnhancementSubType.Evasion, 2),
-            
+
                 // FP
                 new(15, EnhancementSubType.FP, 1),
                 new(10, EnhancementSubType.FP, 2),
                 new(5, EnhancementSubType.FP, 3),
                 new(2, EnhancementSubType.FP, 4),
-            
+
                 // HP
                 new(15, EnhancementSubType.HP, 5),
                 new(10, EnhancementSubType.HP, 7),
                 new(5, EnhancementSubType.HP, 9),
                 new(2, EnhancementSubType.HP, 11),
-            
+
                 // STM
                 new(15, EnhancementSubType.Stamina, 1),
                 new(10, EnhancementSubType.Stamina, 2),
@@ -637,7 +637,7 @@ namespace SWLOR.Game.Server.Service.CraftService
                 new(15, EnhancementSubType.ControlSmithery, 1),
                 new(10, EnhancementSubType.ControlSmithery, 2),
                 new(5, EnhancementSubType.ControlSmithery, 3),
-                
+
                 // Craftsmanship
                 new(15, EnhancementSubType.CraftsmanshipAgriculture, 1),
                 new(10, EnhancementSubType.CraftsmanshipAgriculture, 2),
@@ -651,24 +651,24 @@ namespace SWLOR.Game.Server.Service.CraftService
                 new(15, EnhancementSubType.CraftsmanshipSmithery, 1),
                 new(10, EnhancementSubType.CraftsmanshipSmithery, 2),
                 new(5, EnhancementSubType.CraftsmanshipSmithery, 3),
-            
+
                 // Evasion
                 new(10, EnhancementSubType.Evasion, 1),
                 new(5, EnhancementSubType.Evasion, 2),
                 new(1, EnhancementSubType.Evasion, 3),
-            
+
                 // FP
                 new(15, EnhancementSubType.FP, 2),
                 new(10, EnhancementSubType.FP, 3),
                 new(5, EnhancementSubType.FP, 4),
                 new(2, EnhancementSubType.FP, 5),
-            
+
                 // HP
                 new(15, EnhancementSubType.HP, 7),
                 new(10, EnhancementSubType.HP, 9),
                 new(5, EnhancementSubType.HP, 11),
                 new(2, EnhancementSubType.HP, 13),
-            
+
                 // STM
                 new(15, EnhancementSubType.Stamina, 2),
                 new(10, EnhancementSubType.Stamina, 3),
@@ -697,7 +697,7 @@ namespace SWLOR.Game.Server.Service.CraftService
                 new(15, EnhancementSubType.ControlSmithery, 2),
                 new(10, EnhancementSubType.ControlSmithery, 3),
                 new(5, EnhancementSubType.ControlSmithery, 4),
-                
+
                 // Craftsmanship
                 new(15, EnhancementSubType.CraftsmanshipAgriculture, 2),
                 new(10, EnhancementSubType.CraftsmanshipAgriculture, 3),
@@ -711,24 +711,24 @@ namespace SWLOR.Game.Server.Service.CraftService
                 new(15, EnhancementSubType.CraftsmanshipSmithery, 2),
                 new(10, EnhancementSubType.CraftsmanshipSmithery, 3),
                 new(5, EnhancementSubType.CraftsmanshipSmithery, 4),
-            
+
                 // Evasion
                 new(10, EnhancementSubType.Evasion, 2),
                 new(5, EnhancementSubType.Evasion, 3),
                 new(1, EnhancementSubType.Evasion, 4),
-            
+
                 // FP
                 new(15, EnhancementSubType.FP, 3),
                 new(10, EnhancementSubType.FP, 4),
                 new(5, EnhancementSubType.FP, 5),
                 new(2, EnhancementSubType.FP, 6),
-            
+
                 // HP
                 new(15, EnhancementSubType.HP, 9),
                 new(10, EnhancementSubType.HP, 11),
                 new(5, EnhancementSubType.HP, 13),
                 new(2, EnhancementSubType.HP, 15),
-            
+
                 // STM
                 new(15, EnhancementSubType.Stamina, 3),
                 new(10, EnhancementSubType.Stamina, 4),
@@ -738,7 +738,7 @@ namespace SWLOR.Game.Server.Service.CraftService
 
             return list;
         }
-        
+
         private List<BlueprintBonus> Tier1FoodBonuses()
         {
             var list = new List<BlueprintBonus>

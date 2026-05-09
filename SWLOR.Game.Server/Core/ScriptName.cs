@@ -703,4 +703,4 @@ namespace SWLOR.Game.Server.Core
         public const string OnItemScrollLearnBefore = "scroll_lrn_bef";
         public const string OnItemScrollLearnAfter = "scroll_lrn_aft";
     }
-} 
+}

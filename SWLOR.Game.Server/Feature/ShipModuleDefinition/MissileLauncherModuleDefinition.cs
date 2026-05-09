@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -9,7 +9,7 @@ using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 {
-    public class MissileLauncherModuleDefinition : IShipModuleListDefinition    
+    public class MissileLauncherModuleDefinition : IShipModuleListDefinition
     {
         private readonly ShipModuleBuilder _builder = new();
 

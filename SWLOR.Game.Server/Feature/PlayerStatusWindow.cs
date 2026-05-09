@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature
         public static void PlayerEquipItem()
         {
             var player = OBJECT_SELF;
-            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player)) 
+            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                 return;
 
             Gui.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.HP));
@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Feature
         public static void PlayerUnequipItem()
         {
             var player = OBJECT_SELF;
-            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player)) 
+            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                 return;
 
             Gui.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.HP));

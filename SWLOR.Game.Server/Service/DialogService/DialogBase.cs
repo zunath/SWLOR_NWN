@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace SWLOR.Game.Server.Service.DialogService
 {
@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Service.DialogService
         }
 
         /// <summary>
-        /// Retrieves the data model used by the conversation. 
+        /// Retrieves the data model used by the conversation.
         /// </summary>
         /// <typeparam name="T">The type of data</typeparam>
         /// <returns>A data model used by the conversation</returns>

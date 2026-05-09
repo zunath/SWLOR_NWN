@@ -462,7 +462,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         SetLocalString(target, "DESTINATION", args[0]);
                         SendMessageToPC(user, "Destination tag set to " + args[0] + ".");
                     }
-                }); 
+                });
         }
 
         private void SetPortrait()
@@ -542,7 +542,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
         private void GiveRPXP()
         {
             const int MaxAmount = 500000;
-            
+
             _builder.Create("giverpxp", "xp")
                 .Description("Gives XP to a target player or beast.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
@@ -567,7 +567,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     {
                         return "Please specify a valid amount between 1 and " + MaxAmount + ".";
                     }
-                    
+
                     return string.Empty;
                 })
                 .Action((user, target, location, args) =>
@@ -650,7 +650,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     {
                         return "Enter the ID from visauleffects.2da. Example: /playvfx 123";
                     }
-                    
+
                     return string.Empty;
                 })
                 .Action((user, target, location, args) =>
@@ -682,7 +682,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     var dbPlayer = DB.Get<Player>(playerId);
                     dbPlayer.RecastTimes.Clear();
                     DB.Set(dbPlayer);
-                    
+
                     SendMessageToPC(user, $"You have reset all of {targetName}'s cooldowns.");
                     SendMessageToPC(target, "A DM has reset all of your cooldowns.");
                 });
@@ -859,10 +859,10 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         SendMessageToPC(user, "Only players may be targeted with this command.");
                         return;
                     }
-                    
+
                     var playerId = GetObjectUUID(target);
                     var dbPlayer = DB.Get<Player>(playerId);
-                    
+
                     SendMessageToPC(user, $"{GetName(target)}'s DM XP bonus is {dbPlayer.DMXPBonus}%.");
                 });
         }
@@ -877,7 +877,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Action((user, target, location, args) =>
                 {
                     var playerId = GetObjectUUID(target);
-                    
+
                     SendMessageToPC(user, $"{GetName(target)}'s player Id is {playerId}.");
                 });
         }
@@ -952,7 +952,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 
                     for (var onlinePlayer = GetFirstPC(); GetIsObjectValid(onlinePlayer); onlinePlayer = GetNextPC())
                         ChatPlugin.SendMessage(ChatChannel.DMShout, message, user, onlinePlayer);
-                    
+
                     var authorName = $"{GetName(user)} ({GetPCPlayerName(user)}) [{GetPCPublicCDKey(user)}]";
                     if (!string.IsNullOrWhiteSpace(url))
                     {
@@ -1115,7 +1115,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                             dbPlayerShip.Status.Hull = targetStatus.Hull;
 
                             DB.Set(dbPlayerShip);
-                            
+
                             // Trigger UI refresh events after database update
                             ExecuteScript(ScriptName.OnPlayerShieldAdjusted, target);
                             ExecuteScript(ScriptName.OnPlayerHullAdjusted, target);

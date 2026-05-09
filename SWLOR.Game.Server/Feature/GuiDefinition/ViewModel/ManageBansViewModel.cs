@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
@@ -88,7 +88,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             if (SelectedUserIndex > -1)
                 UserToggles[SelectedUserIndex] = false;
-            
+
             var index = NuiGetEventArrayIndex();
             SelectedUserIndex = index;
             var userId = _userIds[index];
@@ -109,7 +109,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 CDKey = string.Empty,
                 Reason = string.Empty
             };
-            
+
             _userIds.Add(newBan.Id);
             CDKeys.Add(newBan.CDKey);
             UserToggles.Add(false);

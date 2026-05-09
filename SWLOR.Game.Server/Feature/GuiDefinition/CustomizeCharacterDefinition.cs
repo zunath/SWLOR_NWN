@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Core.Beamdog;
+using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
 
@@ -67,7 +67,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 .BindValue(model => model.CustomPortraitFile)
                                 .BindIsVisible(model => model.IsCustomPortraitVisible);
                         });
-                        
+
                         col.AddRow(row =>
                         {
                             row.AddButton()
@@ -99,7 +99,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         });
                     });
                 })
-                
+
                 .DefinePartialView(CustomizeCharacterViewModel.VoicePartial, partial =>
                 {
                     partial.AddColumn(col =>
@@ -120,7 +120,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         });
                     });
                 })
-                
+
                 .AddColumn(col =>
                 {
                     col.AddRow(row =>
@@ -138,7 +138,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetHeight(32f);
                         row.AddSpacer();
                     });
-                    
+
                     col.AddRow(row =>
                     {
                         row.AddPartialView(CustomizeCharacterViewModel.PartialElement);

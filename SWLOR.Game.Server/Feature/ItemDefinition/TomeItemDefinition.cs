@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.DialogDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     {
                         return "Only players may use this item.";
                     }
-                    
+
                     if (Currency.GetCurrency(user, CurrencyType.PerkRefundToken) >= 99)
                     {
                         return "You cannot add any more perk refunds to your collection.";

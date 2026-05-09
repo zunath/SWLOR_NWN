@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core.Bioware;
@@ -65,10 +65,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         protected override void Initialize(DroidAIPayload initialPayload)
         {
             _controller = initialPayload.ControllerItem;
-            
+
             var constructedDroid = Droid.LoadConstructedDroid(_controller);
             var controllerStats = Droid.LoadDroidItemPropertyDetails(_controller);
-            
+
             var availablePerkNames = new GuiBindingList<string>();
             var availablePerkSelections = new GuiBindingList<bool>();
             var activePerkNames = new GuiBindingList<string>();
@@ -167,7 +167,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                                 return;
                             }
 
-                            
+
                             // Tier too high.
                             if (tier > controllerDetails.Tier)
                             {
@@ -223,7 +223,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var tier = Perk.GetPerkLevelTier(perk.Perk, perk.Level);
                 if (tier > controllerDetails.Tier)
                     continue;
-                
+
                 var perkDetail = Perk.GetPerkDetails(perk.Perk);
                 var perkLevel = perkDetail.PerkLevels[perk.Level];
                 var currentAISlotsUsed = CalculateAISlots(constructedDroid);
@@ -263,7 +263,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 // Not selected - skip it.
                 if (!isSelected)
                     continue;
-                
+
                 ActivePerkSelections.RemoveAt(index);
                 ActivePerkNames.RemoveAt(index);
                 _activeDroidPerks.RemoveAt(index);

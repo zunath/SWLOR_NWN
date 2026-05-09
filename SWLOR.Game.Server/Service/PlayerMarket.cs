@@ -246,7 +246,7 @@ namespace SWLOR.Game.Server.Service
             //Starship Ammo
             if (Space.IsStarshipAmmo(item))
                 return MarketCategoryType.StarshipAmmo;
-            
+
             return MarketCategoryType.Miscellaneous;
         }
     }

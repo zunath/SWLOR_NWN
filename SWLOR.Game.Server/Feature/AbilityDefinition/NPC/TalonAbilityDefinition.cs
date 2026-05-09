@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -37,10 +37,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                     var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
                     var damage = Combat.CalculateDamage(
                         attack,
-                        DMG, 
-                        attackerStat, 
-                        defense, 
-                        defenderStat, 
+                        DMG,
+                        attackerStat,
+                        defense,
+                        defenderStat,
                         0);
 
                     ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Piercing), target);

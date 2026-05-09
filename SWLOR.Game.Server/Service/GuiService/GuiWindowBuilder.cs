@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core.Beamdog;
@@ -59,7 +59,7 @@ namespace SWLOR.Game.Server.Service.GuiService
 
             if(_activeWindow.ClosedEventMethodInfo != null)
                 Gui.RegisterElementEvent(windowEventKey, "close", _activeWindow.ClosedEventMethodInfo);
-            
+
             // Recurse over all elements in the window, looking for and registering any events
             RegisterElementEvents(_activeWindow.PartialViews.Values.ToList(), windowId);
             RegisterElementEvents(_activeWindow.Elements, windowId);

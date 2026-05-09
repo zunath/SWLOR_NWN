@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq.Expressions;
 using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.NWN.API.Engine;
@@ -11,19 +11,19 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         private string Resref { get; set; }
         private string ResrefBindName { get; set; }
         private bool IsResrefBound => !string.IsNullOrWhiteSpace(ResrefBindName);
-        
+
         private GuiRectangle Position { get; set; }
         private string PositionBindName { get; set; }
         private bool IsPositionBound => !string.IsNullOrWhiteSpace(PositionBindName);
-        
+
         private NuiAspect Aspect { get; set; }
         private string AspectBindName { get; set; }
         private bool IsAspectBound => !string.IsNullOrWhiteSpace(AspectBindName);
-        
+
         private NuiHorizontalAlign HorizontalAlign { get; set; }
         private string HorizontalAlignBindName { get; set; }
         private bool IsHorizontalAlignBound => !string.IsNullOrWhiteSpace(HorizontalAlignBindName);
-        
+
         private NuiVerticalAlign VerticalAlign { get; set; }
         private string VerticalAlignBindName { get; set; }
         private bool IsVerticalAlignBound => !string.IsNullOrWhiteSpace(VerticalAlignBindName);

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.NPCService;
@@ -148,9 +148,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .OnCompleteAction((player, sourceObject) =>
                 {
                     KeyItem.GiveKeyItem(player, KeyItemType.DantooineShovel);
-                }); 
+                });
 
         }
     }
 }
-

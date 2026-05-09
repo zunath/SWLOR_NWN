@@ -131,7 +131,7 @@ namespace SWLOR.Game.Server.Service
                             foreach (var fish in list)
                             {
                                 var fishDetail = _fish[fish.Type];
-                                if (fishDetail.DisplayInDescription && 
+                                if (fishDetail.DisplayInDescription &&
                                     !_fishResrefsByLocation[locationType].Contains(fishDetail.Resref))
                                 {
                                     _fishResrefsByLocation[locationType].Add(fishDetail.Resref);

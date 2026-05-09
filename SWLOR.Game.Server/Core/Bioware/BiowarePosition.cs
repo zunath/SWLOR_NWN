@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Numerics;
 using SWLOR.NWN.API.Engine;
 
@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Core.Bioware
             });
         }
         /// <summary>
-        /// Convenience function to calculate the change in the X axis. 
+        /// Convenience function to calculate the change in the X axis.
         /// </summary>
         /// <param name="fDistance"></param>
         /// <param name="fAngle"></param>
@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Core.Bioware
         }
 
         /// <summary>
-        /// Convenience function to calculate the change in the Y axis. 
+        /// Convenience function to calculate the change in the Y axis.
         /// </summary>
         /// <param name="fDistance"></param>
         /// <param name="fAngle"></param>
@@ -92,10 +92,10 @@ namespace SWLOR.Game.Server.Core.Bioware
             var angle = (float)Math.Atan(diffX / diffY);
 
             // @@@ PROBABLE BUG - this should probably be NWScript.atan not Math.Atan as the latter
-            // returns a result in radians. 
+            // returns a result in radians.
 
-            // atan returns -90 to +90.  We need to turn it into a 360 degree facing based on 
-            // whether diffX and diffY are positive.  
+            // atan returns -90 to +90.  We need to turn it into a 360 degree facing based on
+            // whether diffX and diffY are positive.
             // if diffX and diffY are positive, we should have a facing of 0-90.
             //   - angle will already be 0-90 and correct
             // if diffX is positive and diffY is negative, we should have a facing of 90-180.
@@ -105,7 +105,7 @@ namespace SWLOR.Game.Server.Core.Bioware
             // if diffX is negative and diffY is positive, we should have a facing of 270-360.
             //   - angle will be -90 to 0, so needs +360.
             // doing atan Y/X and then doing 90-atan for positive diffX and 270-atan for negative
-            // diffX should be equivalent. 
+            // diffX should be equivalent.
 
             if (angle >= 0 && diffX >= 0 && diffY >= 0) angle += 0.0f;
             else if (angle <= 0 && diffX >= 0 && diffY <= 0) angle += 180.0f;

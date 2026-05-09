@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -454,7 +454,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_currian", 5)
 				.Component("elec_flawed", 3);
-			
+
 			// Hypermatter Injector I
 			_builder.Create(RecipeType.FuelInjector1, SkillType.Engineering)
 				.Category(RecipeCategoryType.ShipModule)
@@ -465,7 +465,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_currian", 5)
 				.Component("elec_flawed", 3);
-			
+
 			// Mirror Plating I
 			_builder.Create(RecipeType.ThermalArmor1, SkillType.Engineering)
 				.Category(RecipeCategoryType.ShipModule)
@@ -476,7 +476,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_currian", 5)
 				.Component("elec_flawed", 1);
-			
+
 			// Supplemental Ion Shielding I
 			_builder.Create(RecipeType.IonArmor1, SkillType.Engineering)
 				.Category(RecipeCategoryType.ShipModule)

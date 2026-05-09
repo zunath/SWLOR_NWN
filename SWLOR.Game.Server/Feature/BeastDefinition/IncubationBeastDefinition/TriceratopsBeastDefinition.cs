@@ -20,8 +20,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .CombatStats(AbilityType.Perception, AbilityType.Vitality)
                 .Role(BeastRoleType.Bruiser)
 
-                
-                
+
+
                 ;
 
 			Level1();
@@ -79,7 +79,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
             return _builder.Build();
         }
 
-        
+
 		private void Level1()
 		{
 			_builder

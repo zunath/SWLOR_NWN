@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             get => Get<GuiColor>();
             set => Set(value);
         }
-        
+
         public GuiColor Bar2Color
         {
             get => Get<GuiColor>();
@@ -101,7 +101,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _screenHeight = -1;
             _screenScale = -1;
             _screenWidth = -1;
-            
+
             UpdateWidget();
             UpdateAllData();
         }

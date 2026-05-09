@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             get => Get<GuiBindingList<bool>>();
             set => Set(value);
         }
-        
+
         public GuiBindingList<GuiColor> TaskColors
         {
             get => Get<GuiBindingList<GuiColor>>();

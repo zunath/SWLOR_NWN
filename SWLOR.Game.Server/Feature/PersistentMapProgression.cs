@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Feature
         {
             var player = GetEnteringObject();
 
-            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player)) 
+            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                 return;
 
             var area = OBJECT_SELF;
@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Feature
                     Log.Write(LogGroup.Error, $"MAP_KEY_ITEM_ID '{mapKeyItemId}' is misconfigured on area '{GetName(area)}'.");
                 }
             }
-            
+
             var areaResref = GetResRef(area);
 
             // Did we already load this area's progression since the last restart?

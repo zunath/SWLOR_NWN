@@ -121,7 +121,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         private const int MaxAbilityIncreases = 15;
-        
+
         private int _remainingAbilityPoints;
         private int _remainingSkillPoints;
         private int _might;
@@ -292,7 +292,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var slot = (InventorySlot)index;
                     var item = GetItemInSlot(slot, Player);
                     if (GetIsObjectValid(item)
-                        && slot != InventorySlot.CreatureArmor 
+                        && slot != InventorySlot.CreatureArmor
                         && slot != InventorySlot.CreatureBite
                         && slot != InventorySlot.CreatureLeft
                         && slot != InventorySlot.CreatureRight)
@@ -321,7 +321,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     dbPlayer.UnallocatedSP += refundAmount;
                     dbPlayer.Perks.Remove(type);
                     Log.Write(LogGroup.PerkRefund, $"REFUND - {playerId} - Refunded Date {DateTime.UtcNow} - Level {level} - PerkID {type}");
-                   
+
                     // Remove all feats granted by all levels of this perk.
                     var feats = perkDetail.PerkLevels.Values.SelectMany(s => s.GrantedFeats);
                     foreach (var feat in feats)
@@ -343,7 +343,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 var playerId = GetObjectUUID(Player);
                 var dbPlayer = DB.Get<Player>(playerId);
-                
+
                 foreach (var (type, _) in dbPlayer.Skills)
                 {
                     var detail = Skill.GetSkillDetails(type);

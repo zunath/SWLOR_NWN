@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq.Expressions;
 using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.NWN.API.Engine;
@@ -11,23 +11,23 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         private GuiColor Color { get; set; }
         private string ColorBindName { get; set; }
         private bool IsColorBound => !string.IsNullOrWhiteSpace(ColorBindName);
-        
+
         private float LineThickness { get; set; }
         private string LineThicknessBindName { get; set; }
         private bool IsLineThicknessBound => !string.IsNullOrWhiteSpace(LineThicknessBindName);
-        
+
         private GuiVector2 A { get; set; }
         private string ABindName { get; set; }
         private bool IsABound => !string.IsNullOrWhiteSpace(ABindName);
-        
+
         private GuiVector2 B { get; set; }
         private string BBindName { get; set; }
         private bool IsBBound => !string.IsNullOrWhiteSpace(BBindName);
-        
+
         private GuiVector2 Ctrl0 { get; set; }
         private string Ctrl0BindName { get; set; }
         private bool IsCtrl0Bound => !string.IsNullOrWhiteSpace(Ctrl0BindName);
-        
+
         private GuiVector2 Ctrl1 { get; set; }
         private string Ctrl1BindName { get; set; }
         private bool IsCtrl1Bound => !string.IsNullOrWhiteSpace(Ctrl1BindName);
@@ -95,7 +95,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             LineThicknessBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
-        
+
         /// <summary>
         /// Sets a static value for the A property of the curve.
         /// </summary>

@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Feature
             var item = GetModuleItemAcquired();
             DeleteLocalBool(item, StoreServiceItem);
         }
-        
+
         private static void HandleIncreasedPriceItemProperty()
         {
             var item = GetModuleItemAcquired();

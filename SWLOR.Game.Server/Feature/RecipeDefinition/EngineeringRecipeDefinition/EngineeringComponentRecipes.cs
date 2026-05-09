@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -475,7 +475,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("elec_imperfect", 3)
                 .Component("ruby", 4)
                 .Component("katrium", 3);
-            
+
             // Droid Sensor Delta
             _builder.Create(RecipeType.DroidSensorDelta, SkillType.Engineering)
                 .Category(RecipeCategoryType.DroidComponent)

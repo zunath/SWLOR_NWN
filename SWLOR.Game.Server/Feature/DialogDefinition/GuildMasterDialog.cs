@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
@@ -63,8 +63,8 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             var requiredPoints = Guild.GetGPRequiredForRank(pcGuild.Rank);
 
             page.Header = ColorToken.Green("Guild: ") + guild.Name + "\n" +
-                          ColorToken.Green("Rank: ") + pcGuild.Rank + " (" + pcGuild.Points + " / " + requiredPoints + " GP)\n" + 
-                          ColorToken.Green("Description: ") + guild.Name + "\n\n" + 
+                          ColorToken.Green("Rank: ") + pcGuild.Rank + " (" + pcGuild.Points + " / " + requiredPoints + " GP)\n" +
+                          ColorToken.Green("Description: ") + guild.Name + "\n\n" +
                           "Welcome to my guild, " + playerName + ". What can I help you with?";
 
             page.AddResponse("Tell me about guilds.", () =>

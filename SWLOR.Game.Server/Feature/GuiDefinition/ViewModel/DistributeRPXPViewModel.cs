@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Text.RegularExpressions;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
@@ -74,7 +74,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _maxDistributableXP = Skill.GetMaxDistributableXP(Player, _skillType);
             SkillName = initialPayload.SkillName;
             AvailableRPXP = $"Available RP XP: {initialPayload.MaxRPXP}";
-            
+
             UpdateMaxDistributableInfo();
 
             WatchOnClient(model => model.Distribution);
@@ -150,7 +150,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _availableRPXP = dbPlayer.UnallocatedXP;
             _maxDistributableXP = Skill.GetMaxDistributableXP(Player, _skillType);
             AvailableRPXP = $"Available RP XP: {dbPlayer.UnallocatedXP}";
-            
+
             UpdateMaxDistributableInfo();
         }
     }

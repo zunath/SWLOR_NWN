@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Game.Server.Service.AnimationService
+namespace SWLOR.Game.Server.Service.AnimationService
 {
     /// <summary>
     /// Subset of supported NWN events for animating

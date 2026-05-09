@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetIsCollapsible(true)
                 .SetInitialGeometry(0, 0, 480f, 540f)
                 .SetTitle("Droid Assembly")
-                
+
                 .AddColumn(col =>
                 {
                     col.AddRow(row =>
@@ -186,7 +186,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             });
                         });
                     });
-                    
+
                     col.AddRow(row =>
                     {
                         row.AddColumn(col2 =>

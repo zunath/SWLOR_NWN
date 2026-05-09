@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
@@ -198,7 +198,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var dbProperty = DB.Get<WorldProperty>(propertyId);
             var dbBuilding = DB.Get<WorldProperty>(dbProperty.ParentPropertyId);
             _cityId = dbBuilding.ParentPropertyId;
-            
+
             RefreshPermissions();
             RefreshCitizenList();
             RefreshUpgradeLevels();
@@ -288,7 +288,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Treasury = $"Treasury: {dbCity.Treasury} cr";
             CityLevel = $"Level: {Property.GetCityLevelName(level)} (Lvl. {level})";
         }
-        
+
         private void RefreshUpkeep()
         {
             var dbCity = DB.Get<WorldProperty>(_cityId);
@@ -487,7 +487,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     }
                 });
         }
-        
+
 
         public Action UpgradeBankLevel() => () =>
         {

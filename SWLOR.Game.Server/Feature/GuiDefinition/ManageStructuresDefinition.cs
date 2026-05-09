@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Core.Beamdog;
+using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
 
@@ -205,7 +205,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetWidth(32f)
                             .SetHeight(32f)
                             .BindIsEnabled(model => model.IsEditStructureEnabled);
-                        
+
                         row.AddButtonImage()
                             .SetImageResref("east")
                             .SetTooltip("East")
@@ -224,7 +224,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                         row.AddSpacer();
                     });
-                    
+
                     col.AddRow(row =>
                     {
                         row.AddSpacer();

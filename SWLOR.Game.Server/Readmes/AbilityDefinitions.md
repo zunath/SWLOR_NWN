@@ -213,11 +213,11 @@ private static void ImpactAction(uint activator, uint target, int level, Locatio
     }
 
     dmg += Combat.GetAbilityDamageBonus(activator, SkillType.Force);
-    
+
     // Apply damage to target
     var damage = Combat.CalculateDamage(attack, dmg, attackerStat, defense, defenderStat, 0);
     ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Electrical), target);
-    
+
     // Add combat points and enmity
     CombatPoint.AddCombatPoint(activator, target, SkillType.Force, 3);
     Enmity.ModifyEnmity(activator, target, 100 * level + damage);
@@ -295,7 +295,7 @@ private static void ConfigureAbility(AbilityBuilder builder, int level)
 {
     var damage = level * 10;
     var cooldown = 30f - (level * 5f);
-    
+
     builder.Create(GetFeatType(level), PerkType.AbilityName)
         .Name($"Ability Name {GetRomanNumeral(level)}")
         .Level(level)
@@ -314,10 +314,10 @@ private static void ImpactAction(uint activator, uint target, int level, Locatio
     // Common logic for all levels
     var baseDamage = CalculateBaseDamage(level);
     var finalDamage = ApplyBonuses(activator, baseDamage);
-    
+
     // Apply damage
     ApplyDamage(activator, target, finalDamage);
-    
+
     // Common effects
     AddCombatPoints(activator, target);
     ModifyEnmity(activator, target, finalDamage);
@@ -349,13 +349,13 @@ else
 public Dictionary<FeatType, AbilityDetail> BuildAbilities()
 {
     var builder = new AbilityBuilder();
-    
+
     // Create multiple levels
     for (int i = 1; i <= 4; i++)
     {
         CreateAbilityLevel(builder, i);
     }
-    
+
     return builder.Build();
 }
 
@@ -375,7 +375,7 @@ private static void CreateAbilityLevel(AbilityBuilder builder, int level)
 private static void CreateAbility(AbilityBuilder builder, bool isActive)
 {
     if (!isActive) return;
-    
+
     builder.Create(FeatType.AbilityName, PerkType.AbilityName)
         .Name("Ability Name")
         .Level(1)
@@ -390,7 +390,7 @@ private static void SharedImpactAction(uint activator, uint target, int level, L
 {
     // Common setup
     var damage = CalculateDamage(activator, level);
-    
+
     // Apply effects
     ApplyDamage(activator, target, damage);
     AddCombatPoints(activator, target);

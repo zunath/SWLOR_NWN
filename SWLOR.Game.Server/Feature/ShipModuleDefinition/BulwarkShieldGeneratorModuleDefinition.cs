@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
@@ -51,17 +51,17 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
                     while (GetIsObjectValid(nearby) && count <= 6)
                     {
-                        if (!GetIsEnemy(nearby, activator) && 
-                            !GetIsDead(activator) && 
+                        if (!GetIsEnemy(nearby, activator) &&
+                            !GetIsDead(activator) &&
                             Space.GetShipStatus(nearby) != null &&
                             nearby != activator)
                         {
                             var nearbyStatus = Space.GetShipStatus(nearby);
-                            
+
                             ApplyEffectToObject(DurationType.Temporary, EffectBeam(VisualEffect.Vfx_Beam_Cold, activator, BodyNode.Chest), nearby, 2.0f);
                             ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Blue_White), nearby, 2.0f);
                             ApplyEffectToObject(DurationType.Temporary, EffectAbilityIncrease(AbilityType.Vitality, 4), nearby, 10.0f);
-                        
+
                             Space.RestoreShield(nearby, nearbyStatus, recovery);
 
                             if (GetIsPC(nearby) && !GetIsDM(nearby) && !GetIsDMPossessed(nearby))

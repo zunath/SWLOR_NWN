@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.BeastMasteryService;
@@ -85,7 +85,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
                     {
                         // Value is divided by 10 because the item property Ids scale from 0-1000 (represents 0.0% to 100.0%)
-                        var costId = GetItemPropertyCostTableValue(ip) / 10; 
+                        var costId = GetItemPropertyCostTableValue(ip) / 10;
                         var subType = GetItemPropertySubType(ip);
                         switch (GetItemPropertyType(ip))
                         {

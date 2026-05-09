@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Game.Server.Core.NWNX.Enum
+namespace SWLOR.Game.Server.Core.NWNX.Enum
 {
     public enum LocalVariableType
     {

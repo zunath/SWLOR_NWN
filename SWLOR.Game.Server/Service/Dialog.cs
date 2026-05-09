@@ -85,7 +85,7 @@ namespace SWLOR.Game.Server.Service
                     player = GetClickingObject();
                     break;
             }
-            
+
             var conversation = GetLocalString(OBJECT_SELF, "CONVERSATION");
 
             if (!string.IsNullOrWhiteSpace(conversation))
@@ -464,7 +464,7 @@ namespace SWLOR.Game.Server.Service
 
                     dialog.CurrentPageName = previous.PageName;
                     dialog.PageOffset = 0;
-                    
+
                     foreach (var initializationAction in dialog.InitializationActions)
                     {
                         initializationAction();

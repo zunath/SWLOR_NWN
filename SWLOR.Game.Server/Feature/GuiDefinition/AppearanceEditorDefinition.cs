@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Core.Beamdog;
+using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
@@ -250,9 +250,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 {
                     CreateFilledButton(
                         row,
-                        "gui_pal_tattoo", 
-                        model => model.GlobalLeather1Region, 
-                        MainColorChannelButtonSize, 
+                        "gui_pal_tattoo",
+                        model => model.GlobalLeather1Region,
+                        MainColorChannelButtonSize,
                         4f,
                         model => model.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Leather1),
                         model => model.OnClickClearColor(AppearanceEditorViewModel.ColorTarget.Invalid, AppearanceArmorColor.Leather1));
@@ -260,15 +260,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         row,
                         "gui_pal_tattoo",
                         model => model.GlobalCloth1Region,
-                        MainColorChannelButtonSize, 
+                        MainColorChannelButtonSize,
                         4f,
                         model => model.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Cloth1),
                         model => model.OnClickClearColor(AppearanceEditorViewModel.ColorTarget.Invalid, AppearanceArmorColor.Cloth1));
                     CreateFilledButton(
-                        row, 
+                        row,
                         "gui_pal_armor01",
                         model => model.GlobalMetal1Region,
-                        MainColorChannelButtonSize, 
+                        MainColorChannelButtonSize,
                         4f,
                         model => model.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Metal1),
                         model => model.OnClickClearColor(AppearanceEditorViewModel.ColorTarget.Invalid, AppearanceArmorColor.Metal1));
@@ -279,7 +279,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         row,
                         "gui_pal_tattoo",
                         model => model.GlobalLeather2Region,
-                        MainColorChannelButtonSize, 
+                        MainColorChannelButtonSize,
                         4f,
                         model => model.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Leather2),
                         model => model.OnClickClearColor(AppearanceEditorViewModel.ColorTarget.Invalid, AppearanceArmorColor.Leather2));
@@ -287,15 +287,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         row,
                         "gui_pal_tattoo",
                         model => model.GlobalCloth2Region,
-                        MainColorChannelButtonSize, 
+                        MainColorChannelButtonSize,
                         4f,
                         model => model.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Cloth2),
                         model => model.OnClickClearColor(AppearanceEditorViewModel.ColorTarget.Invalid, AppearanceArmorColor.Cloth2));
                     CreateFilledButton(
-                        row, 
+                        row,
                         "gui_pal_armor01",
                         model => model.GlobalMetal2Region,
-                        MainColorChannelButtonSize, 
+                        MainColorChannelButtonSize,
                         4f,
                         model => model.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Metal2),
                         model => model.OnClickClearColor(AppearanceEditorViewModel.ColorTarget.Invalid, AppearanceArmorColor.Metal2));
@@ -308,7 +308,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             }
 
             void CreatePartEditor(
-                GuiColumn<AppearanceEditorViewModel> col, 
+                GuiColumn<AppearanceEditorViewModel> col,
                 string partName,
                 AppearanceArmor partType,
                 AppearanceEditorViewModel.ColorTarget colorTarget,
@@ -359,9 +359,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     row.AddSpacer();
                     CreateFilledButton(
                         row,
-                        "gui_pal_tattoo", 
-                        leather1RegionBinding, 
-                        PartColorChannelButtonSize, 
+                        "gui_pal_tattoo",
+                        leather1RegionBinding,
+                        PartColorChannelButtonSize,
                         2f,
                         model => model.OnClickColorTarget(colorTarget, AppearanceArmorColor.Leather1),
                         model => model.OnClickClearColor(colorTarget, AppearanceArmorColor.Leather1));
@@ -369,7 +369,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         row,
                         "gui_pal_tattoo",
                         cloth1RegionBinding,
-                        PartColorChannelButtonSize, 
+                        PartColorChannelButtonSize,
                         2f,
                         model => model.OnClickColorTarget(colorTarget, AppearanceArmorColor.Cloth1),
                         model => model.OnClickClearColor(colorTarget, AppearanceArmorColor.Cloth1));
@@ -377,7 +377,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         row,
                         "gui_pal_armor01",
                         metal1RegionBinding,
-                        PartColorChannelButtonSize, 
+                        PartColorChannelButtonSize,
                         2f,
                         model => model.OnClickColorTarget(colorTarget, AppearanceArmorColor.Metal1),
                         model => model.OnClickClearColor(colorTarget, AppearanceArmorColor.Metal1));
@@ -391,7 +391,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         row,
                         "gui_pal_tattoo",
                         leather2RegionBinding,
-                        PartColorChannelButtonSize, 
+                        PartColorChannelButtonSize,
                         2f,
                         model => model.OnClickColorTarget(colorTarget, AppearanceArmorColor.Leather2),
                         model => model.OnClickClearColor(colorTarget, AppearanceArmorColor.Leather2));
@@ -399,15 +399,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         row,
                         "gui_pal_tattoo",
                         cloth2RegionBinding,
-                        PartColorChannelButtonSize, 
+                        PartColorChannelButtonSize,
                         2f,
                         model => model.OnClickColorTarget(colorTarget, AppearanceArmorColor.Cloth2),
                         model => model.OnClickClearColor(colorTarget, AppearanceArmorColor.Cloth2));
                     CreateFilledButton(
-                        row, 
+                        row,
                         "gui_pal_armor01",
                         metal2RegionBinding,
-                        PartColorChannelButtonSize, 
+                        PartColorChannelButtonSize,
                         2f,
                         model => model.OnClickColorTarget(colorTarget, AppearanceArmorColor.Metal2),
                         model => model.OnClickClearColor(colorTarget, AppearanceArmorColor.Metal2));
@@ -436,11 +436,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 mainRow.AddColumn(col =>
                 {
                     CreatePartEditor(
-                        col, 
-                        "Left Shoulder", 
+                        col,
+                        "Left Shoulder",
                         AppearanceArmor.LeftShoulder,
                         AppearanceEditorViewModel.ColorTarget.LeftShoulder,
-                        model => model.LeftShoulderOptions, 
+                        model => model.LeftShoulderOptions,
                         model => model.LeftShoulderSelection,
                         model => model.LeftShoulderLeather1Region,
                         model => model.LeftShoulderLeather2Region,
@@ -449,7 +449,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         model => model.LeftShoulderMetal1Region,
                         model => model.LeftShoulderMetal2Region);
                     CreatePartEditor(
-                        col, 
+                        col,
                         "Left Bicep",
                         AppearanceArmor.LeftBicep,
                         AppearanceEditorViewModel.ColorTarget.LeftBicep,
@@ -462,7 +462,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         model => model.LeftBicepMetal1Region,
                         model => model.LeftBicepMetal2Region);
                     CreatePartEditor(
-                        col, 
+                        col,
                         "Left Forearm",
                         AppearanceArmor.LeftForearm,
                         AppearanceEditorViewModel.ColorTarget.LeftForearm,
@@ -475,7 +475,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         model => model.LeftForearmMetal1Region,
                         model => model.LeftForearmMetal2Region);
                     CreatePartEditor(
-                        col, 
+                        col,
                         "Left Hand",
                         AppearanceArmor.LeftHand,
                         AppearanceEditorViewModel.ColorTarget.LeftHand,
@@ -488,7 +488,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         model => model.LeftHandMetal1Region,
                         model => model.LeftHandMetal2Region);
                     CreatePartEditor(
-                        col, 
+                        col,
                         "Left Thigh",
                         AppearanceArmor.LeftThigh,
                         AppearanceEditorViewModel.ColorTarget.LeftThigh,
@@ -501,7 +501,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         model => model.LeftThighMetal1Region,
                         model => model.LeftThighMetal2Region);
                     CreatePartEditor(
-                        col, 
+                        col,
                         "Left Shin",
                         AppearanceArmor.LeftShin,
                         AppearanceEditorViewModel.ColorTarget.LeftShin,
@@ -514,7 +514,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         model => model.LeftShinMetal1Region,
                         model => model.LeftShinMetal2Region);
                     CreatePartEditor(
-                        col, 
+                        col,
                         "Left Foot",
                         AppearanceArmor.LeftFoot,
                         AppearanceEditorViewModel.ColorTarget.LeftFoot,
@@ -533,7 +533,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 mainRow.AddColumn(col =>
                 {
                     CreatePartEditor(
-                        col, 
+                        col,
                         "Neck",
                         AppearanceArmor.Neck,
                         AppearanceEditorViewModel.ColorTarget.Neck,
@@ -546,7 +546,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         model => model.NeckMetal1Region,
                         model => model.NeckMetal2Region);
                     CreatePartEditor(
-                        col, 
+                        col,
                         "Chest",
                         AppearanceArmor.Torso,
                         AppearanceEditorViewModel.ColorTarget.Chest,
@@ -559,7 +559,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         model => model.ChestMetal1Region,
                         model => model.ChestMetal2Region);
                     CreatePartEditor(
-                        col, 
+                        col,
                         "Belt",
                         AppearanceArmor.Belt,
                         AppearanceEditorViewModel.ColorTarget.Belt,
@@ -572,7 +572,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         model => model.BeltMetal1Region,
                         model => model.BeltMetal2Region);
                     CreatePartEditor(
-                        col, 
+                        col,
                         "Pelvis",
                         AppearanceArmor.Pelvis,
                         AppearanceEditorViewModel.ColorTarget.Pelvis,
@@ -585,7 +585,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         model => model.PelvisMetal1Region,
                         model => model.PelvisMetal2Region);
                     CreatePartEditor(
-                        col, 
+                        col,
                         "Robe",
                         AppearanceArmor.Robe,
                         AppearanceEditorViewModel.ColorTarget.Robe,
@@ -617,7 +617,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 mainRow.AddColumn(col =>
                 {
                     CreatePartEditor(
-                        col, 
+                        col,
                         "Right Shoulder",
                         AppearanceArmor.RightShoulder,
                         AppearanceEditorViewModel.ColorTarget.RightShoulder,
@@ -630,7 +630,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         model => model.RightShoulderMetal1Region,
                         model => model.RightShoulderMetal2Region);
                     CreatePartEditor(
-                        col, 
+                        col,
                         "Right Bicep",
                         AppearanceArmor.RightBicep,
                         AppearanceEditorViewModel.ColorTarget.RightBicep,
@@ -643,7 +643,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         model => model.RightBicepMetal1Region,
                         model => model.RightBicepMetal2Region);
                     CreatePartEditor(
-                        col, 
+                        col,
                         "Right Forearm",
                         AppearanceArmor.RightForearm,
                         AppearanceEditorViewModel.ColorTarget.RightForearm,
@@ -656,7 +656,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         model => model.RightForearmMetal1Region,
                         model => model.RightForearmMetal2Region);
                     CreatePartEditor(
-                        col, 
+                        col,
                         "Right Hand",
                         AppearanceArmor.RightHand,
                         AppearanceEditorViewModel.ColorTarget.RightHand,
@@ -669,7 +669,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         model => model.RightHandMetal1Region,
                         model => model.RightHandMetal2Region);
                     CreatePartEditor(
-                        col, 
+                        col,
                         "Right Thigh",
                         AppearanceArmor.RightThigh,
                         AppearanceEditorViewModel.ColorTarget.RightThigh,
@@ -682,7 +682,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         model => model.RightThighMetal1Region,
                         model => model.RightThighMetal2Region);
                     CreatePartEditor(
-                        col, 
+                        col,
                         "Right Shin",
                         AppearanceArmor.RightShin,
                         AppearanceEditorViewModel.ColorTarget.RightShin,
@@ -695,7 +695,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         model => model.RightShinMetal1Region,
                         model => model.RightShinMetal2Region);
                     CreatePartEditor(
-                        col, 
+                        col,
                         "Right Foot",
                         AppearanceArmor.RightFoot,
                         AppearanceEditorViewModel.ColorTarget.RightFoot,
@@ -934,10 +934,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 AppearanceEditorViewModel.ColorSize - 4);
 
                             CreateFilledButton(
-                                uiRow, 
-                                texture, 
-                                null, 
-                                PartColorChannelButtonSize, 
+                                uiRow,
+                                texture,
+                                null,
+                                PartColorChannelButtonSize,
                                 2f,
                                 model => model.OnClickColorPalette(paletteIndex),
                                 model => model.OnClickClearColor(AppearanceEditorViewModel.ColorTarget.Invalid, AppearanceArmorColor.Cloth1),

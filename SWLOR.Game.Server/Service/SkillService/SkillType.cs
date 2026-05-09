@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Service.SkillService
@@ -85,7 +85,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             true,
             "Ability to harvest raw materials and scavenge for supplies.",
             true,
-            false, 
+            false,
             false)]
         Gathering = 11,
 
@@ -478,7 +478,7 @@ namespace SWLOR.Game.Server.Service.SkillService
         public bool IsShownInResearchMenu { get; set; }
         public CharacterType CharacterTypeRestriction { get; set; }
 
-        public CombatPointCategoryType CombatPointCategory { get; set; } 
+        public CombatPointCategoryType CombatPointCategory { get; set; }
 
         public SkillAttribute(
             SkillCategoryType category,

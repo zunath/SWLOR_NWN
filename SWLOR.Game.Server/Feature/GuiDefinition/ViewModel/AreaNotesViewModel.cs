@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
@@ -107,7 +107,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             PublicText = string.Empty;
             IsAreaSelected = false;
             IsSaveEnabled = false;
-                        
+
             SearchText = string.Empty;
             Search();
 
@@ -167,7 +167,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _isLoadingNote = false;
             }
 
-            var message = AreaNames[SelectedAreaIndex] + ": " + notes[0].PublicText;            
+            var message = AreaNames[SelectedAreaIndex] + ": " + notes[0].PublicText;
             foreach (var player in Area.GetPlayersInArea(_areas[SelectedAreaIndex]))
             {
                 SendMessageToPC(player, ColorToken.Purple(message));
@@ -185,7 +185,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
 
             ShowModal($"Are you sure you want to delete the note for this area? '{AreaNames[SelectedAreaIndex]}'", () =>
-            {                                
+            {
                 PrivateText = string.Empty;
                 PublicText = string.Empty;
                 _isLoadingNote = true;
@@ -236,7 +236,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             AreaNames.Clear();
             AreaResrefs.Clear();
 
-            if (string.IsNullOrWhiteSpace(SearchText)) 
+            if (string.IsNullOrWhiteSpace(SearchText))
             {
                 foreach (var area in Area.GetAreas())
                 {

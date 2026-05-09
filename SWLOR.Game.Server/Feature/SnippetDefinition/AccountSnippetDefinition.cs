@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.SnippetService;
@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
     public class AccountSnippetDefinition: ISnippetListDefinition
     {
         private readonly SnippetBuilder _builder = new SnippetBuilder();
-        
+
         public Dictionary<string, SnippetDetail> BuildSnippets()
         {
             // Conditions

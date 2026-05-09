@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -62,8 +62,8 @@ namespace SWLOR.Game.Server.Service.FishingService
         /// <param name="baitType">The type of bait to associate with this fish.</param>
         /// <param name="fish">The fish detail to add to the list.</param>
         public void AddFish(
-            FishingRodType rodType, 
-            FishingBaitType baitType, 
+            FishingRodType rodType,
+            FishingBaitType baitType,
             FishDetail fish)
         {
             var key = new Tuple<FishingRodType, FishingBaitType>(rodType, baitType);

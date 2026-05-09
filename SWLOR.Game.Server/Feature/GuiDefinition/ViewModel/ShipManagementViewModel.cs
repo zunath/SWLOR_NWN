@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
@@ -613,7 +613,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 .Select(s => s.PropertyId)
                 .ToList();
 
-            if (propertyIds.Count <= 0) 
+            if (propertyIds.Count <= 0)
                 return new List<PlayerShip>();
 
             var shipQuery = new DBQuery<PlayerShip>()
@@ -1232,7 +1232,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             ToggleRegisterButtons();
         }
-        
+
         private uint GetShipLocation(WorldProperty property)
         {
             if (property.Positions.ContainsKey(PropertyLocationType.CurrentPosition))
@@ -1322,10 +1322,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 // Spawn the property associated with this ship.
                 var property = Property.CreateStarship(
-                    Player, 
-                    shipDetail.Layout, 
+                    Player,
+                    shipDetail.Layout,
                     _planetType,
-                    _spaceLocation, 
+                    _spaceLocation,
                     _landingLocation);
 
                 var ship = new PlayerShip
@@ -1511,12 +1511,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ? dbShip.Status.HighPowerModules[slot]
                 : null;
 
-            // No module is equipped in this slot. 
+            // No module is equipped in this slot.
             // Put player into targeting mode to select a module.
             if (module == null)
             {
                 Targeting.EnterTargetingMode(Player, ObjectType.Item, "Please click on a ship high-powered module within your inventory.",
-                    item => 
+                    item =>
                 {
                     dbShip = DB.Get<PlayerShip>(shipId);
                     var itemTag = GetTag(item);
@@ -1581,7 +1581,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ? dbShip.Status.LowPowerModules[slot]
                 : null;
 
-            // No module is equipped in this slot. 
+            // No module is equipped in this slot.
             // Put player into targeting mode to select a module.
             if (module == null)
             {
@@ -1652,7 +1652,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ? dbShip.Status.ConfigurationModules[slot]
                 : null;
 
-            // No module is equipped in this slot. 
+            // No module is equipped in this slot.
             // Put player into targeting mode to select a module.
             if (module == null)
             {
@@ -1843,7 +1843,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var shipId = _shipIds[SelectedShipIndex];
             var dbShip = DB.Get<PlayerShip>(shipId);
-            
+
             var payload = new PropertyPermissionPayload(PropertyType.Starship, dbShip.PropertyId, string.Empty, false);
             Gui.TogglePlayerWindow(Player, GuiWindowType.PermissionManagement, payload, TetherObject);
         };

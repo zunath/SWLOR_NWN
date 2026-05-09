@@ -210,7 +210,7 @@ namespace SWLOR.Game.Server.Service
                 var type = entity.GetType();
                 // Register the type by itself first.
                 _keyPrefixByType[type] = type.Name;
-                
+
                 // Register the search client.
                 _searchClientsByType[type] = new Client(type.Name, _multiplexer.GetDatabase());
                 ProcessIndex(entity);
@@ -280,7 +280,7 @@ namespace SWLOR.Game.Server.Service
             else
             {
                 RedisValue data = _multiplexer.GetDatabase().JsonGet($"{keyPrefix}:{id}").ToString();
-                
+
                 if (string.IsNullOrWhiteSpace(data))
                     return default;
 

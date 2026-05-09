@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="selectionAction">The action to run when an object is targeted.</param>
         /// <param name="message">The message to send to the player when entering targeting mode.</param>
         public static void EnterTargetingMode(
-            uint player, 
+            uint player,
             ObjectType objectType,
             string message,
             Action<uint> selectionAction)

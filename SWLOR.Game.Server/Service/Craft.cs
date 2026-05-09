@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Service
                     _activeCategories[category] = categoryDetail;
                 }
             }
-            
+
             Console.WriteLine($"Loaded {_allCategories.Count} recipe category types.");
         }
 
@@ -90,10 +90,10 @@ namespace SWLOR.Game.Server.Service
                         recipe.IsItemIntendedForCrafting = true;
                     }
                 }
-                
+
                 DestroyObject(item);
             }
-            
+
             var types = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
                 .Where(w => typeof(IRecipeListDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
@@ -170,7 +170,7 @@ namespace SWLOR.Game.Server.Service
                     }
                 }
             }
-            
+
             Console.WriteLine($"Loaded {_recipes.Count} recipes.");
         }
 
@@ -189,10 +189,10 @@ namespace SWLOR.Game.Server.Service
                 var detail = type.GetAttribute<EnhancementSubType, EnhancementSubTypeAttribute>();
                 _enhancementSubTypes[type] = detail;
             }
-            
+
             Console.WriteLine($"Loaded {_enhancementSubTypes.Count} enhancement sub types.");
         }
-        
+
         /// <summary>
         /// Retrieves the details about a recipe.
         /// If recipe type has not been registered, an exception will be raised.
@@ -401,18 +401,18 @@ namespace SWLOR.Game.Server.Service
             recipeDetailColors.Add(GuiColor.Cyan);
             var tempStorage = GetObjectByTag("TEMP_ITEM_STORAGE");
             var item = CreateItemOnObject(detail.Resref, tempStorage);
-            
+
             foreach (var ip in Item.BuildItemPropertyList(item))
             {
                 recipeDetails.Add(ip);
                 recipeDetailColors.Add(GuiColor.White);
             }
-            
+
             DestroyObject(item);
 
             recipeDetails.Add(string.Empty);
             recipeDetailColors.Add(GuiColor.White);
-            
+
             if (blueprint != null && blueprint.Recipe != RecipeType.Invalid)
             {
                 recipeDetails.Add("[BLUEPRINT]");
@@ -448,9 +448,9 @@ namespace SWLOR.Game.Server.Service
                         recipeDetailColors.Add(GuiColor.White);
                     }
                 }
-                
+
             }
-            
+
             return (recipeDetails, recipeDetailColors);
         }
 
@@ -492,7 +492,7 @@ namespace SWLOR.Game.Server.Service
 
             return Perk.GetPerkLevel(player, PerkType.Research) >= tier;
         }
-        
+
         /// <summary>
         /// Retrieves a recipe's level detail by the given level number.
         /// </summary>
@@ -543,9 +543,9 @@ namespace SWLOR.Game.Server.Service
                     return ItemPropertyCustom(ItemPropertyType.Control, 1, amount);
                 case EnhancementSubType.CraftsmanshipSmithery: // Craftsmanship - Smithery
                     return ItemPropertyCustom(ItemPropertyType.Craftsmanship, 1, amount);
-                
+
                 // 16 and 17 are applied within the view model, as they are not actually item properties.
-                
+
                 case EnhancementSubType.DMGPhysical: // DMG - Physical
                     return ItemPropertyCustom(ItemPropertyType.DMG, (int)CombatDamageType.Physical, amount);
                 case EnhancementSubType.DMGForce: // DMG - Force
@@ -628,9 +628,9 @@ namespace SWLOR.Game.Server.Service
                     return ItemPropertyCustom(ItemPropertyType.StarshipBonus, 57, amount);
                 case EnhancementSubType.Agility: // Agility
                     return ItemPropertyAbilityBonus(AbilityType.Agility, amount);
-                
+
                 // 59 is free
-                
+
                 case EnhancementSubType.FoodBonusAttack: // Food Bonus - Attack
                     return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.Attack, amount);
                 case EnhancementSubType.FoodBonusAccuracy: // Food Bonus - Accuracy
@@ -751,7 +751,7 @@ namespace SWLOR.Game.Server.Service
                 SendMessageToPC(player, $"Perk 'Research I' is required to use research terminals.");
                 return;
             }
-            
+
             var propertyId = Property.GetPropertyId(terminal);
 
             if (string.IsNullOrWhiteSpace(propertyId))
@@ -793,7 +793,7 @@ namespace SWLOR.Game.Server.Service
                 }
             }
         }
-        
+
         /// <summary>
         /// Retrieves a blueprint detail object about an item.
         /// If item is not a blueprint, resulting recipe type will be Invalid.
@@ -851,7 +851,7 @@ namespace SWLOR.Game.Server.Service
                     var enhancementIP = BuildItemPropertyForEnhancement((EnhancementSubType)subType, costValue);
                     blueprintDetail.GuaranteedBonuses.Add(enhancementIP);
                 }
-                
+
             }
 
             return blueprintDetail;
@@ -870,17 +870,17 @@ namespace SWLOR.Game.Server.Service
                 DestroyObject(blueprint);
                 return;
             }
-            
+
             SetLocalInt(blueprint, "BLUEPRINT_RECIPE_ID", (int)blueprintDetail.Recipe);
             SetLocalBool(blueprint, "BLUEPRINT_RANDOM_ENHANCEMENT_SLOT_GRANTED", blueprintDetail.RandomEnhancementSlotGranted);
-            
+
             BiowareXP2.IPSafeAddItemProperty(blueprint, ItemPropertyCustom(ItemPropertyType.Blueprint, (int)BlueprintSubType.Level, blueprintDetail.Level), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
             BiowareXP2.IPSafeAddItemProperty(blueprint, ItemPropertyCustom(ItemPropertyType.Blueprint, (int)BlueprintSubType.LicensedRuns, blueprintDetail.LicensedRuns), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
             BiowareXP2.IPSafeAddItemProperty(blueprint, ItemPropertyCustom(ItemPropertyType.Blueprint, (int)BlueprintSubType.ItemBonuses, blueprintDetail.ItemBonuses), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
             BiowareXP2.IPSafeAddItemProperty(blueprint, ItemPropertyCustom(ItemPropertyType.Blueprint, (int)BlueprintSubType.CreditReduction, blueprintDetail.CreditReduction), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
             BiowareXP2.IPSafeAddItemProperty(blueprint, ItemPropertyCustom(ItemPropertyType.Blueprint, (int)BlueprintSubType.TimeReduction, blueprintDetail.TimeReduction), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
             BiowareXP2.IPSafeAddItemProperty(blueprint, ItemPropertyCustom(ItemPropertyType.Blueprint, (int)BlueprintSubType.EnhancementSlots, blueprintDetail.EnhancementSlots), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-            
+
         }
 
         private static int CalculateResearchCost(RecipeType recipe, int blueprintLevel, int baseConstant, float reductionBonus)

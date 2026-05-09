@@ -149,7 +149,7 @@ namespace SWLOR.Game.Server.Service.QuestService
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
             var quest = dbPlayer.Quests.ContainsKey(questId) ? dbPlayer.Quests[questId] : new PlayerQuest();
-            
+
             quest.KillProgresses[Group] = _amount;
             dbPlayer.Quests[questId] = quest;
             DB.Set(dbPlayer);
@@ -207,7 +207,7 @@ namespace SWLOR.Game.Server.Service.QuestService
 
             var npcGroup = NPCGroup.GetNPCGroup(Group);
             var numberRemaining = dbPlayer.Quests[questId].KillProgresses[Group];
-            
+
             return $"{_amount - numberRemaining} / {_amount} {npcGroup.Name}";
         }
     }

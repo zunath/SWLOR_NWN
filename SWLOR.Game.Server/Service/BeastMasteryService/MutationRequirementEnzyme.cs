@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
 
 namespace SWLOR.Game.Server.Service.BeastMasteryService

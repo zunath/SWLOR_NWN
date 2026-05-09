@@ -1,4 +1,4 @@
-﻿namespace SWLOR.NWN.API.NWScript.Enum
+namespace SWLOR.NWN.API.NWScript.Enum
 {
     public enum EffectIconType
     {
@@ -58,7 +58,7 @@
         TrueSeeing = 53,
         SeeInvisibility = 54,
         Timestop = 55,
-        Blindness = 56, 
+        Blindness = 56,
         SpellLevelAbsorption = 57,
         DispelMagicBest = 58,
         AbilityIncreaseDEX = 59,
@@ -107,7 +107,7 @@
         ReflexSaveIncreased = 102,
         FortitudeSaveIncreased = 103,
         WillSaveIncreased = 104,
-        Taunted = 105, 
+        Taunted = 105,
         SpellImmunity = 106,
         Etherealness = 107,
         Concealment = 108,

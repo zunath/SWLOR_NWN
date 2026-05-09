@@ -122,9 +122,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _racialAppearances[AppearanceType.MonCalamari] = new MonCalamariRacialAppearanceDefinition();
             _racialAppearances[AppearanceType.Ugnaught] = new UgnaughtRacialAppearanceDefinition();
             _racialAppearances[AppearanceType.Droid] = new DroidRacialAppearanceDefinition();
-            _racialAppearances[AppearanceType.Nautolan] = new NautolanRacialAppearanceDefinition(); 
+            _racialAppearances[AppearanceType.Nautolan] = new NautolanRacialAppearanceDefinition();
             _racialAppearances[AppearanceType.Ewok] = new EwokRacialAppearanceDefinition();
-            
+
         }
 
         private static void LoadArmorAppearances()
@@ -694,7 +694,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     !_armorAppearances[appearanceType].Bicep.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftBicep)) ||
                     !_armorAppearances[appearanceType].Forearm.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftForearm)) ||
                     !_armorAppearances[appearanceType].Hand.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftHand)) ||
-                    
+
                     !_armorAppearances[appearanceType].Thigh.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftThigh)) ||
                     !_armorAppearances[appearanceType].Shin.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftShin)) ||
                     !_armorAppearances[appearanceType].Foot.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftFoot)) ||
@@ -713,7 +713,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     return false;
                 }
             }
-            
+
             // Weapons must be registered in the weapon appearances list in order to show up.
             // Also, if it has an appearance on the top, middle,or bottom model which isn't available in the menu, we treat it as invalid.
             if (SelectedItemTypeIndex == 3 || SelectedItemTypeIndex == 4) // 3 = Weapon (Main Hand), 4 = Weapon (Off Hand)
@@ -1280,7 +1280,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             _colorTarget = ColorTarget.Invalid;
             ColorTargetText = string.Empty;
-            
+
             // If we don't delay the watch, NUI will reset values of some parts back to default (first item in the list)
             // This is related to the dropdown menu options for each part type.
             DelayCommand(3f, StartArmorClientWatches);
@@ -2205,7 +2205,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var barrel = GetObjectByTag(OutfitBarrelTag);
             return barrel;
         }
-        
+
         private void CopyColors(ref uint item, ColorTarget copyToTarget, ColorTarget copyFromTarget)
         {
             var copyFrom = GetArmorModelType(copyFromTarget);
@@ -2332,7 +2332,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // Copy the item from the outfit barrel back to the player.
             var updatedItem = CopyItem(item, _target, true);
             DestroyObject(item);
-            
+
             AssignCommand(_target, () => ActionEquipItem(updatedItem, InventorySlot.Chest));
 
             DelayCommand(1f, () =>
@@ -2403,7 +2403,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // Copy the item from the outfit barrel back to the player.
             var updatedItem = CopyItem(item, _target, true);
             DestroyObject(item);
-            
+
             AssignCommand(_target, () => ActionEquipItem(updatedItem, InventorySlot.Chest));
 
             DelayCommand(1f, () =>

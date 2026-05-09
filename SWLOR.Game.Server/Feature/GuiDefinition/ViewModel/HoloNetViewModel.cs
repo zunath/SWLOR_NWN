@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;

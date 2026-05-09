@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq.Expressions;
 using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.NWN.API.Engine;
@@ -11,27 +11,27 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         private GuiColor Color { get; set; }
         private string ColorBindName { get; set; }
         private bool IsColorBound => !string.IsNullOrWhiteSpace(ColorBindName);
-       
+
         private bool IsFilled { get; set; }
         private string IsFilledBindName { get; set; }
         private bool IsFilledBound => !string.IsNullOrWhiteSpace(IsFilledBindName);
-       
+
         private float LineThickness { get; set; }
         private string LineThicknessBindName { get; set; }
         private bool IsLineThicknessBound => !string.IsNullOrWhiteSpace(LineThicknessBindName);
-        
+
         private GuiVector2 Center { get; set; }
         private string CenterBindName { get; set; }
         private bool IsCenterBound => !string.IsNullOrWhiteSpace(CenterBindName);
-        
+
         private float Radius { get; set; }
         private string RadiusBindName { get; set; }
         private bool IsRadiusBound => !string.IsNullOrWhiteSpace(RadiusBindName);
-        
+
         private float AMinimum { get; set; }
         private string AMinimumBindName { get; set; }
         private bool IsAMinimumBound => !string.IsNullOrWhiteSpace(AMinimumBindName);
-        
+
         private float AMaximum { get; set; }
         private string AMaximumBindName { get; set; }
         private bool IsAMaximumBound => !string.IsNullOrWhiteSpace(AMaximumBindName);

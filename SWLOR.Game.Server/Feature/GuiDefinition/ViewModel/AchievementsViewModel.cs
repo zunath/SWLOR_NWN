@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             get => Get<GuiBindingList<GuiComboEntry>>();
             set => Set(value);
         }
-        
+
 
         protected override void Initialize(GuiPayloadBase initialPayload)
         {

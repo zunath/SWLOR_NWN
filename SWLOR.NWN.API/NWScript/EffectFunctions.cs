@@ -1304,7 +1304,7 @@ namespace SWLOR.NWN.API.NWScript
         {
             return global::NWN.Core.NWScript.GetEffectString(eEffect, nIndex);
         }
-        
+
         /// <summary>
         /// Gets the object parameter of the effect at the specified index.
         /// </summary>

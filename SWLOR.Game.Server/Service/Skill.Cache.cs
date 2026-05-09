@@ -103,7 +103,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     _activeCategories[skillDetail.Category] = categoryDetail;
                 }
-                
+
                 // Add to the skills by category cache.
                 _allSkillsByCategory[skillDetail.Category].Add(skillType);
             }

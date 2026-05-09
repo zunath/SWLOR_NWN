@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.ChatCommandService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Description("Plays a bow animation.")
                 .Permissions(AuthorizationLevel.All)
                 .AnimationAction(Animation.FireForgetBow)
-                .IsEmote(); 
+                .IsEmote();
             builder.Create("cower")
                 .Description("Plays a cower animation.")
                 .Permissions(AuthorizationLevel.All)
@@ -30,12 +30,12 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Description("Plays a cross arms animation.")
                 .Permissions(AuthorizationLevel.All)
                 .AnimationLoopingAction(Animation.CrossArms)
-                .IsEmote(); 
+                .IsEmote();
             builder.Create("crouch")
                 .Description("Plays a crouch animation.")
                 .Permissions(AuthorizationLevel.All)
                 .AnimationLoopingAction(Animation.Crouch)
-                .IsEmote(); 
+                .IsEmote();
             builder.Create("deadback")
                 .Description("Plays a dead back animation.")
                 .Permissions(AuthorizationLevel.All)

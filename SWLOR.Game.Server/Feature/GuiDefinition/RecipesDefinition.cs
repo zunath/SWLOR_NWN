@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Core.Beamdog;
+using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
 
@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .BindOptions(model => model.Categories)
                             .BindIsEnabled(model => model.IsSkillSelected)
                             .SetWidth(200f);
-                        
+
                         row.AddButton()
                             .SetText("Select Blueprint")
                             .BindIsVisible(model => model.ShowSelectBlueprint)
@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .AddOption("Level 40-49", 5)
                             .AddOption("Level 50+", 6)
                             .SetWidth(200f);
-                        
+
                         row.AddCheckBox()
                             .SetText("Show Only Craftable")
                             .BindIsChecked(model => model.ShowOnlyCraftableRecipes)

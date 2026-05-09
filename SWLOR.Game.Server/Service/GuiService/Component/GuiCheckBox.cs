@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq.Expressions;
 using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.NWN.API.Engine;
@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         private string Text { get; set; }
         private string TextBindName { get; set; }
         private bool IsTextBound => !string.IsNullOrWhiteSpace(TextBindName);
-        
+
         private bool IsChecked { get; set; }
         private string IsCheckedBindName { get; set; }
         private bool IsCheckedBound => !string.IsNullOrWhiteSpace(IsCheckedBindName);

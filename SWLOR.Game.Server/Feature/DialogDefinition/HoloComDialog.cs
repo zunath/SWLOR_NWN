@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DialogService;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
@@ -6,7 +6,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
     public class HoloComDialog: DialogBase
     {
         private const string MainPageId = "MAIN_PAGE";
-        
+
         public override PlayerDialog SetUp(uint player)
         {
             var builder = new DialogBuilder()
@@ -49,10 +49,10 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 {
                     // Notify the sender that their call was declined
                     SendMessageToPC(callSender, "Your HoloCom call was declined.");
-                    
+
                     // Clean up call attempt state
                     HoloCom.CleanupCallAttempt(callSender, player);
-                    
+
                     EndConversation();
                 });
             }
@@ -68,10 +68,10 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     {
                         // Notify the receiver that the call attempt has ended
                         SendMessageToPC(callReceiver, "Your HoloCom stops buzzing.");
-                        
+
                         // Clean up call attempt state
                         HoloCom.CleanupCallAttempt(player, callReceiver);
-                        
+
                         SendMessageToPC(player, "You cancel your HoloCom call.");
                         EndConversation();
                     });
@@ -83,19 +83,19 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     {
                         // Clean up call attempt state
                         HoloCom.CleanupCallAttempt(player, callReceiver);
-                        
+
                         SendMessageToPC(player, "You cancel your HoloCom call.");
                         EndConversation();
                     });
                 }
             }
 
-            if (HoloCom.IsCallReceiver(player) || HoloCom.IsInCall(player) || HoloCom.IsCallSender(player)) 
+            if (HoloCom.IsCallReceiver(player) || HoloCom.IsInCall(player) || HoloCom.IsCallSender(player))
                 return;
 
             for (var pc = GetFirstPC(); GetIsObjectValid(pc); pc = GetNextPC())
             {
-                if (GetIsDM(pc) || pc == player || GetIsDMPossessed(pc) || Space.IsPlayerInSpaceMode(pc)) 
+                if (GetIsDM(pc) || pc == player || GetIsDMPossessed(pc) || Space.IsPlayerInSpaceMode(pc))
                     continue;
 
                 var message = $"Call {GetName(pc)}";

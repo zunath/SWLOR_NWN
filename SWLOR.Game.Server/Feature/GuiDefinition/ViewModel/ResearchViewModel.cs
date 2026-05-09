@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core.Bioware;
@@ -406,7 +406,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             void AddBlueprintBonus()
             {
-                var hasEnhancementBonus = blueprintDetails.EnhancementSlots > 0 && 
+                var hasEnhancementBonus = blueprintDetails.EnhancementSlots > 0 &&
                                           blueprintDetails.Level < Craft.MaxResearchLevel;
 
                 int[] weights;
@@ -429,7 +429,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         400
                     };
                 }
-                
+
                 var index = Random.GetRandomWeightedIndex(weights);
 
                 if (index == 0) // 0 = Licensed Runs

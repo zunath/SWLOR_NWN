@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.SpawnService;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             SithCrypt();
             SithTemples();
             KorribanFortress();
-            
+
 
             return _builder.Build();
         }

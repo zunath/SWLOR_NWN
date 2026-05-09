@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Entity
         public int AccuracyPurity { get; set; }
 
         public int EvasionPurity { get; set; }
-        
+
         public int LearningPurity { get; set; }
 
         public Dictionary<CombatDamageType, int> DefensePurities { get; set; }

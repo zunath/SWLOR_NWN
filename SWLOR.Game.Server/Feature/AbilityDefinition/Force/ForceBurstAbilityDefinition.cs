@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                         PlaySound("plr_force_blast");
                         DoFireball(target);
                     });
-                    
+
                     DelayCommand(delay, () =>
                     {
                         ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), dTarget);
@@ -77,12 +77,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                         ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.VFX_IMP_KIN_L), dTarget);
                         ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Pulse_Wind), target);
                     });
-                    
+
                     DelayCommand(delay + 0.1f, () =>
                     {
                         ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Pulse_Wind), target);
                     });
-                    
+
                     DelayCommand(delay + 0.2f, () =>
                     {
                         ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Pulse_Wind), target);

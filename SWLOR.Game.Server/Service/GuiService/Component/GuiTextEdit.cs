@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq.Expressions;
 using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.NWN.API.Engine;
@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         private string Placeholder { get; set; }
         private string PlaceholderBindName { get; set; }
         private bool IsPlaceholderBound => !string.IsNullOrWhiteSpace(PlaceholderBindName);
-        
+
         private string Value { get; set; }
         private string ValueBindName { get; set; }
         private bool IsValueBound => !string.IsNullOrWhiteSpace(ValueBindName);

@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.Feature
         private static void HookPlayerEvents()
         {
             var player = GetEnteringObject();
-            if (!GetIsPC(player) || GetIsDM(player)) 
+            if (!GetIsPC(player) || GetIsDM(player))
                 return;
 
             SetEventScript(player, EventScript.Creature_OnHeartbeat, ScriptName.OnPlayerHeartbeat);

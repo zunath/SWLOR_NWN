@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Entity;
 
 namespace SWLOR.Game.Server.Service.PerkService
 {

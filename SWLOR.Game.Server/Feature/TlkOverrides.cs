@@ -41,8 +41,8 @@ namespace SWLOR.Game.Server.Feature
 
             SetTlkOverride(457, BuildRecommendedButtonText());
 
-            SetTlkOverride(459, 
-                "Might improves damage dealt by melee weapons and increases carrying capacity.\n\n" + 
+            SetTlkOverride(459,
+                "Might improves damage dealt by melee weapons and increases carrying capacity.\n\n" +
                 "Primary Skills: Vibroblade, Heavy Vibroblade, Spear, Twin Blade, Katar, Staff, Smithery, Gathering\n\n" +
                 "Other Notes:\n\n" +
                 "Improves damage dealt by regular melee weapons.\n" +
@@ -59,7 +59,7 @@ namespace SWLOR.Game.Server.Feature
                 "Improves damage of finesse melee weapons.\n" +
                 "Improves damage of ranged weapons.\n" +
                 "Increases Reflex saving throws.");
-            SetTlkOverride(461, 
+            SetTlkOverride(461,
                 "Vitality improves your max hit points and reduces damage received.\n\n" +
                 "Primary Skills: Armor, Smithery, Engineering\n\n" +
                 "Other Notes:\n\n" +
@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.Feature
                 "Willpower improves your force attack, force defense, max force points, and first aid capabilities.\n\n" +
                 "Primary Skills: Force, Fabrication, Agriculture, First Aid\n\n" +
                 "Other Notes:\n\n" +
-                "Increases maximum FP.\n" + 
+                "Increases maximum FP.\n" +
                 "Improves force defense (reducing damage taken).\n" +
                 "Improves effectiveness of First Aid abilities.\n" +
                 "Improves effectiveness of Force abilities.\n" +
@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Feature
             SetTlkOverride(463,
                 "Agility improves accuracy of ranged and finesse weapons, evasion, and max stamina.\n\n" +
                 "Primary Skills: Vibroknife, Lightsaber, Saberstaff, Katar, Pistol, Rifle, Throwing, Engineering\n\n" +
-                "Other Notes:\n\n" + 
+                "Other Notes:\n\n" +
                 "Increases maximum stamina.\n" +
                 "Improves evasion.\n" +
                 "Improves accuracy of finesse weapons.\n" +
@@ -91,11 +91,11 @@ namespace SWLOR.Game.Server.Feature
             SetTlkOverride(478,
                 "Social improves your XP gain and leadership capabilities.\n\n" +
                 "Primary Skills: Leadership, Agriculture\n\n" +
-                "Other Notes:\n\n" + 
+                "Other Notes:\n\n" +
                 "Improves guild point acquisition.\n" +
-                "Improves quest credit rewards.\n" + 
-                "Improves XP gain.\n" + 
-                "Reduces XP debt on death.\n" + 
+                "Improves quest credit rewards.\n" +
+                "Improves XP gain.\n" +
+                "Reduces XP debt on death.\n" +
                 "Reduces ship repair bills.");
 
             SetTlkOverride(535, "Credit"); // Gold Piece
@@ -242,7 +242,7 @@ namespace SWLOR.Game.Server.Feature
 
                     // Some perks only grant one feat and improve the effectiveness of that feat on each level.
                     // For these, we display every perk level on the feat & spell description (if applicable)
-                    if (level > 1 && 
+                    if (level > 1 &&
                         !string.IsNullOrWhiteSpace(levelOneDescription) &&
                         perkLevel.GrantedFeats.Count <= 0)
                     {

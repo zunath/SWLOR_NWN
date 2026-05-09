@@ -12,11 +12,11 @@ namespace SWLOR.Game.Server.Feature
     public static class ServerTasks
     {
         // This determines what time the server will restart.
-        // Restarts happen within a range of 30 seconds of this specified time. 
+        // Restarts happen within a range of 30 seconds of this specified time.
         // All times are in UTC.
         private static TimeSpan RestartTime => new TimeSpan(0, 10, 0, 0); // 0 = Restarts happen at 6 AM eastern time
         private static DateTime _nextNotification;
-        
+
         /// <summary>
         /// Every six seconds, the server will check to see if an automated restart is required.
         /// The time must be within 30 seconds of the schedule restart time (see RestartTime above)
@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Feature
                 }
 
                 Log.Write(LogGroup.Server, "Server shutting down for automated restart.", true);
-                
+
                 DelayCommand(0.1f, () =>
                 {
                     AdministrationPlugin.ShutdownServer();
@@ -94,7 +94,7 @@ namespace SWLOR.Game.Server.Feature
                 {
                     restartDate = restartDate.AddDays(1);
                 }
-                
+
                 if (now >= _nextNotification)
                 {
                     var delta = restartDate - now;
@@ -112,8 +112,8 @@ namespace SWLOR.Game.Server.Feature
                             SendMessageToPC(player, message);
                     }
 
-                    _nextNotification = delta.TotalMinutes <= 15 
-                        ? now.AddMinutes(1) 
+                    _nextNotification = delta.TotalMinutes <= 15
+                        ? now.AddMinutes(1)
                         : now.AddHours(1);
                 }
             }, TimeSpan.FromMinutes(1));

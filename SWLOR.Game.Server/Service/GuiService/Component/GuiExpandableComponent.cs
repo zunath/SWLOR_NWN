@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using SWLOR.Game.Server.Core.Beamdog;
 
 namespace SWLOR.Game.Server.Service.GuiService.Component

@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Game.Server.Core.Beamdog
+namespace SWLOR.Game.Server.Core.Beamdog
 {
     public enum NuiHorizontalAlign
     {

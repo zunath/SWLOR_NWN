@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
+using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition
@@ -171,13 +171,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 .SetColor(255, 0, 0)
                                 .SetWidth(64f)
                                 .SetIsEnabled(false);
-                            
+
                             row.AddTextEdit()
                                 .BindValue(model => model.CurrentGreen)
                                 .SetColor(0, 255, 0)
                                 .SetWidth(64f)
                                 .SetIsEnabled(false);
-                            
+
                             row.AddTextEdit()
                                 .BindValue(model => model.CurrentBlue)
                                 .SetColor(7, 99, 218)

@@ -142,11 +142,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SelectedPageIndex = 0;
             SearchText = string.Empty;
             WindowTitle = $"{regionDetail.Name} Market";
-            
+
             // Always default to lowest price first
             _sortByPriceAscending = true;
             SortByPriceText = "Price: Low-High";
-            
+
             LoadData();
             Search();
 
@@ -384,7 +384,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             _sortByPriceAscending = !_sortByPriceAscending;
             SortByPriceText = _sortByPriceAscending ? "Price: Low-High" : "Price: High-Low";
-            
+
             _skipPaginationSearch = true;
             SelectedPageIndex = 0;
             _skipPaginationSearch = false;

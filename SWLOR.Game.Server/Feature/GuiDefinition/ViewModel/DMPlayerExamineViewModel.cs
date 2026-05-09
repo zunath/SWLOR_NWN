@@ -323,7 +323,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             if (_noteIds.Count > MaxNotes)
                 return;
-            
+
             var dbNote = new PlayerNote
             {
                 PlayerId = _playerId,

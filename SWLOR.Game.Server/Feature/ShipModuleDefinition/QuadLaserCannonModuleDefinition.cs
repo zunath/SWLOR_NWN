@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
                 var sound = EffectVisualEffect(VisualEffect.Vfx_Ship_Blast);
                 var missile = EffectVisualEffect(VisualEffect.Mirv_StarWars_Bolt2);
-                
+
                 for (var i = 0; i < totalAttacks; i++)
                 {
                     var delay = i * 0.25f;

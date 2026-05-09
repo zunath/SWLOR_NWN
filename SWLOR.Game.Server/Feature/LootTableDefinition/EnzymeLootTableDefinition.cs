@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.LootService;
@@ -157,8 +157,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         }
 
         private void SpawnAction(
-            uint item, 
-            IList<IncubationStatType> primaryStats, 
+            uint item,
+            IList<IncubationStatType> primaryStats,
             IList<IncubationStatType> secondaryStats)
         {
             var primaryIndex = Random.GetRandomWeightedIndex(_primaryWeights);

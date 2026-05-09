@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq.Expressions;
@@ -165,10 +165,10 @@ namespace SWLOR.Game.Server.Service.GuiService
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-            
+
             var value = _propertyValues[propertyName].Value;
             var json = _converter.ToJson(value);
-            
+
             if (_propertyValues[propertyName].IsGuiList)
             {
                 var list = (IGuiBindingList)_propertyValues[propertyName].Value;
@@ -222,9 +222,9 @@ namespace SWLOR.Game.Server.Service.GuiService
         /// <param name="payload">The payload sent in by the caller.</param>
         /// <param name="tetherObject">The object to tether the window to.</param>
         public void Bind(
-            uint player, 
-            int windowToken, 
-            GuiRectangle initialGeometry, 
+            uint player,
+            int windowToken,
+            GuiRectangle initialGeometry,
             GuiWindowType type,
             GuiPayloadBase payload,
             uint tetherObject)
@@ -286,7 +286,7 @@ namespace SWLOR.Game.Server.Service.GuiService
             var propertyName = GuiHelper<TDerived>.GetPropertyName(expression);
             if (!_propertyValues.ContainsKey(propertyName))
                 _propertyValues[propertyName] = new PropertyDetail();
-            
+
             var value = _propertyValues[propertyName].Value;
             var json = _converter.ToJson(value);
 
@@ -303,10 +303,10 @@ namespace SWLOR.Game.Server.Service.GuiService
         /// <param name="confirmText">The confirmation text to display.</param>
         /// <param name="cancelText">The cancel text to display.</param>
         protected void ShowModal(
-            string prompt, 
-            Action confirmAction, 
-            Action cancelAction = null, 
-            string confirmText = "Yes", 
+            string prompt,
+            Action confirmAction,
+            Action cancelAction = null,
+            string confirmText = "Yes",
             string cancelText = "No")
         {
             ModalPromptText = prompt;
@@ -324,7 +324,7 @@ namespace SWLOR.Game.Server.Service.GuiService
             var window = Gui.GetWindowTemplate(WindowType);
             var partial = window.PartialViews[partialName];
             NuiSetGroupLayout(Player, WindowToken, elementId, partial);
-            
+
             ApplyRefreshBugFix();
         }
 
@@ -365,7 +365,7 @@ namespace SWLOR.Game.Server.Service.GuiService
         public Action OnModalConfirmClick() => () =>
         {
             ChangePartialView("_window_", "%%WINDOW_MAIN%%");
-            
+
             if (_callerConfirmAction != null)
                 _callerConfirmAction();
         };

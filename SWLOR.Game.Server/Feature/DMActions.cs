@@ -65,4 +65,4 @@ namespace SWLOR.Game.Server.Feature
             SendMessageToPC(dm, "The vanilla DM Give/Take Level command is disabled. Use /giverpxp <amount> instead to give RP XP.");
         }
     }
-} 
+}

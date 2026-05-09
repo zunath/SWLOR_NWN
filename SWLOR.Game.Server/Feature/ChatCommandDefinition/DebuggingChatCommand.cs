@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
@@ -108,7 +108,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 {
                     var playerId = GetObjectUUID(user);
                     var dbPlayer = DB.Get<Player>(playerId);
-                    
+
                     dbPlayer.ActiveBeastId = string.Empty;
                     DB.Set(dbPlayer);
 

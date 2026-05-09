@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                         Log.Write(LogGroup.Error, Error);
                         return false;
                     }
-                    
+
                     // Try to find by faction Id
                     if (!int.TryParse(args[0], out var factionId))
                     {

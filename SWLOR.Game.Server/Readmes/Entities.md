@@ -232,4 +232,4 @@ Entity/
 
 ---
 
-*This documentation should be updated when new entities are added or existing entities are modified.* 
+*This documentation should be updated when new entities are added or existing entities are modified.*

@@ -86,7 +86,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
             return _builder.Build();
         }
-        
+
         private void KoltoBomb1()
         {
             _builder.Create(FeatType.KoltoBomb1, PerkType.KoltoBomb)

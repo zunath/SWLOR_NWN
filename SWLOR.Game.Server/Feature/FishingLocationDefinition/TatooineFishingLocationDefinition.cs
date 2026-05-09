@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Service.FishingService;
+using SWLOR.Game.Server.Service.FishingService;
 using System.Collections.Generic;
 
 namespace SWLOR.Game.Server.Feature.FishingLocationDefinition

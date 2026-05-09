@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
@@ -298,7 +298,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     IsStartJobEnabled = false;
                     ChangePartialView(PartialElement, InProgressJobPartial);
                 }
-                
+
             }
         }
 
@@ -960,7 +960,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var erraticGeniusBonus = (job.CurrentStage <= 0 && IsErraticGeniusChecked ? GetErraticGeniusBonus() : 0) * 10;
             var mutationChance = _mutationChance + (_stageMutationChance > MaxStageIncrease ? MaxStageIncrease : _stageMutationChance) + erraticGeniusBonus;
-            
+
             var attackPurity = _attack + (_stageAttack > MaxStageIncrease ? MaxStageIncrease : _stageAttack);
             var accuracyPurity = _accuracy + (_stageAccuracy > MaxStageIncrease ? MaxStageIncrease : _stageAccuracy);
             var evasionPurity = _evasion + (_stageEvasion > MaxStageIncrease ? MaxStageIncrease : _stageEvasion);

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using SWLOR.Game.Server.Core.Beamdog;
@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         private List<GuiComboEntry> Options { get; set; }
         private string OptionsBindName { get; set; }
         private bool IsOptionsBound => !string.IsNullOrWhiteSpace(OptionsBindName);
-        
+
         private int SelectedIndex { get; set; }
         private string SelectedIndexBindName { get; set; }
         private bool IsSelectedIndexBound => !string.IsNullOrWhiteSpace(SelectedIndexBindName);

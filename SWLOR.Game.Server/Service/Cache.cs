@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Service
         private static Dictionary<int, string> PortraitResrefByInternalId { get; } = new();
         private static Dictionary<string, int> PortraitInternalIdsByPortraitResref { get; } = new();
         private static Dictionary<int, string> SoundSets { get; set; } = new();
-        
+
         [NWNEventHandler(ScriptName.OnModuleContentChange)]
         public static void CacheItemNamesByResref()
         {
@@ -140,7 +140,7 @@ namespace SWLOR.Game.Server.Service
 
             SoundSets = SoundSets.OrderBy(o => o.Value).ToDictionary(x => x.Key, y => y.Value);
         }
-        
+
         /// <summary>
         /// Retrieves the portrait 2DA Id from the internal Id of the portrait.
         /// The value returned by this method can be used with NWScript.SetPortrait

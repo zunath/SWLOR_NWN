@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server
@@ -32,12 +32,12 @@ namespace SWLOR.Game.Server
             PropertyBroadcastWebhookUrl = Environment.GetEnvironmentVariable("SWLOR_PROPERTY_BROADCAST_WEBHOOK_URL");
 
             var environment = Environment.GetEnvironmentVariable("SWLOR_ENVIRONMENT");
-            if (!string.IsNullOrWhiteSpace(environment) && 
+            if (!string.IsNullOrWhiteSpace(environment) &&
                 (environment.ToLower() == "prod" || environment.ToLower() == "production"))
             {
                 ServerEnvironment = ServerEnvironmentType.Production;
             }
-            else if (!string.IsNullOrWhiteSpace(environment) && 
+            else if (!string.IsNullOrWhiteSpace(environment) &&
                      (environment.ToLower() == "test" || environment.ToLower() == "testing"))
             {
                 ServerEnvironment = ServerEnvironmentType.Test;

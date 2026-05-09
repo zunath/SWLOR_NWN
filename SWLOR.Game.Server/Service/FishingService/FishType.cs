@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service.FishingService
@@ -133,8 +133,8 @@ namespace SWLOR.Game.Server.Service.FishingService
 
 
         public FishAttribute(
-            string name, 
-            string resref, 
+            string name,
+            string resref,
             int level,
             bool displayInDescription,
             ObjectType objectType = ObjectType.Item)

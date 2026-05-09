@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
             }
 
             skillLevel += dbPlayer.Skills[SkillType.Armor].Rank;
-            
+
             return (int)(skillLevel / 2f);
         }
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using SWLOR.Game.Server.Core.Beamdog;
@@ -14,26 +14,26 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         private string Title { get; set; }
         private string TitleBindName { get; set; }
         private bool IsTitleBound => !string.IsNullOrWhiteSpace(TitleBindName);
-        
+
         public GuiRectangle Geometry { get; private set; }
         private string GeometryBindName { get; set; } = "Geometry";
 
         private bool IsResizable { get; set; }
         private string IsResizableBindName { get; set; }
         private bool IsResizableBound => !string.IsNullOrWhiteSpace(IsResizableBindName);
-        
+
         private bool IsCollapsible { get; set; }
         private string IsCollapsibleBindName { get; set; }
         private bool IsCollapsibleBound => !string.IsNullOrWhiteSpace(IsCollapsibleBindName);
-        
+
         private bool IsClosable { get; set; }
         private string IsClosableBindName { get; set; }
         private bool IsClosableBound => !string.IsNullOrWhiteSpace(IsClosableBindName);
-        
+
         private bool IsTransparent { get; set; }
         private string IsTransparentBindName { get; set; }
         private bool IsTransparentBound => !string.IsNullOrWhiteSpace(IsTransparentBindName);
-        
+
         private bool ShowBorder { get; set; }
         private string ShowBorderBindName { get; set; }
         private bool IsShowBorderBound => !string.IsNullOrWhiteSpace(ShowBorderBindName);
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             Geometry = bounds;
             return this;
         }
-        
+
         /// <summary>
         /// Sets a static value for whether the window can be resized by the user.
         /// </summary>
@@ -237,7 +237,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
 
             return this;
         }
-        
+
         public GuiMethodDetail OpenedEventMethodInfo { get; private set; }
         public GuiMethodDetail ClosedEventMethodInfo { get; private set; }
 

@@ -99,7 +99,7 @@ namespace SWLOR.NWN.API.NWNX
         /// - The other subscribers will still be called.
         /// - The original function in the base game will be skipped.
         /// - The matching after event (NWNX_ON_EXAMINE_OBJECT_AFTER) will also be executed.
-        /// 
+        ///
         /// THIS SHOULD ONLY BE CALLED FROM WITHIN AN EVENT HANDLER.
         /// ONLY WORKS WITH THE FOLLOWING EVENTS:
         /// - Feat events

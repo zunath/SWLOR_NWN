@@ -55,7 +55,7 @@ namespace SWLOR.Game.Server.Feature
         public static void SaveLocationOnRest()
         {
             var player = GetLastPCRested();
-            if (GetLastRestEventType() != RestEventType.Started) 
+            if (GetLastRestEventType() != RestEventType.Started)
                 return;
 
             SaveLocation(player);

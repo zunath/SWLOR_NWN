@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.LogService;
@@ -95,7 +95,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     var questId = args[0];
                     var playerId = GetObjectUUID(player);
                     var dbPlayer = DB.Get<Player>(playerId);
-                    if (!dbPlayer.Quests.ContainsKey(questId)) 
+                    if (!dbPlayer.Quests.ContainsKey(questId))
                         return false;
 
                     // Try to parse each Id. If it parses, check the player's current state.

@@ -83,8 +83,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Armor
                         if (GetDistanceBetweenLocations(GetLocation(nearest), location) > 8f)
                             break;
 
-                        if (!GetIsPC(nearest) && 
-                            !BeastMastery.IsPlayerBeast(nearest) && 
+                        if (!GetIsPC(nearest) &&
+                            !BeastMastery.IsPlayerBeast(nearest) &&
                             !Droid.IsDroid(nearest))
                         {
                             var enmityBonus = GetAbilityScore(activator, AbilityType.Vitality) * 50;

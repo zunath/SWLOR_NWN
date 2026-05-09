@@ -291,4 +291,4 @@ Configure resource limits and reservations in the Docker Compose file:
 
 ---
 
-*This documentation should be updated when deployment configuration changes or new deployment processes are added.* 
+*This documentation should be updated when deployment configuration changes or new deployment processes are added.*

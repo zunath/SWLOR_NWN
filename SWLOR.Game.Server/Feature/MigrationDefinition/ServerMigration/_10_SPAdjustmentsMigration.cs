@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 
             {(PerkType.ForceValor, 1), 3},
             {(PerkType.ForceValor, 2), 3},
-            
+
             // Force - Dark Side Price Changes
             {(PerkType.ForceDrain, 1), 2},
             {(PerkType.ForceDrain, 2), 2},

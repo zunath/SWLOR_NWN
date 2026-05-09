@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Service
         public static void OnModuleDeath()
         {
             var player = GetLastPlayerDied();
-            if (IsInCall(player)) 
+            if (IsInCall(player))
                 SetIsInCall(player, GetTargetForActiveCall(player), false);
 
         }
@@ -65,7 +65,7 @@ namespace SWLOR.Game.Server.Service
 
             var receiver = GetHoloGram(sender);
             if (!GetIsObjectValid(receiver)) return;
-            
+
             var text = GetPCChatMessage().Trim();
 
             if (text.StartsWith("/")) return;
@@ -173,7 +173,7 @@ namespace SWLOR.Game.Server.Service
                 // Destroy holograms if they are valid
                 var senderHologram = GetHoloGram(sender);
                 var receiverHologram = GetHoloGram(receiver);
-                
+
                 if (GetIsObjectValid(senderHologram))
                 {
                     DestroyObject(senderHologram);
@@ -281,7 +281,7 @@ namespace SWLOR.Game.Server.Service
                 DeleteLocalObject(receiver, HolocomCallSenderObject);
                 DeleteLocalInt(receiver, HolocomCallAttempt);
             }
-            
+
             // Clean up the sender's call state
             SetIsCallSender(sender, false);
             DeleteLocalObject(sender, HolocomCallSenderObject);
@@ -303,21 +303,21 @@ namespace SWLOR.Game.Server.Service
                 {
                     // Notify the receiver that the call attempt has ended
                     SendMessageToPC(receiver, "Your HoloCom stops buzzing.");
-                    
+
                     // Clean up receiver's state
                     SetIsCallReceiver(receiver, false);
                     DeleteLocalObject(receiver, HolocomCallReceiverObject);
                     DeleteLocalObject(receiver, HolocomCallSenderObject);
                     DeleteLocalInt(receiver, HolocomCallAttempt);
                 }
-                
+
                 // Clean up sender's state
                 SetIsCallSender(player, false);
                 DeleteLocalObject(player, HolocomCallSenderObject);
                 DeleteLocalObject(player, HolocomCallReceiverObject);
                 DeleteLocalInt(player, HolocomCallAttempt);
             }
-            
+
             // Clean up call receiver state
             if (IsCallReceiver(player))
             {
@@ -326,21 +326,21 @@ namespace SWLOR.Game.Server.Service
                 {
                     // Notify the sender that the call attempt has ended
                     SendMessageToPC(sender, "Your HoloCom call went unanswered.");
-                    
+
                     // Clean up sender's state
                     SetIsCallSender(sender, false);
                     DeleteLocalObject(sender, HolocomCallSenderObject);
                     DeleteLocalObject(sender, HolocomCallReceiverObject);
                     DeleteLocalInt(sender, HolocomCallAttempt);
                 }
-                
+
                 // Clean up receiver's state
                 SetIsCallReceiver(player, false);
                 DeleteLocalObject(player, HolocomCallReceiverObject);
                 DeleteLocalObject(player, HolocomCallSenderObject);
                 DeleteLocalInt(player, HolocomCallAttempt);
             }
-            
+
             // Clean up active call state
             if (IsInCall(player))
             {

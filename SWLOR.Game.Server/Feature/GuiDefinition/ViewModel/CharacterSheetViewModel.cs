@@ -24,7 +24,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         IGuiRefreshable<StatusEffectRemovedRefreshEvent>,
         IGuiRefreshable<BeastGainXPRefreshEvent>
     {
-        private const int MaxAttributeScore = 26;
+        private const int MaxPurchasedAttributeScore = 26;
+        private const int RacialAttributeBonus = 1;
+        private const int MaxRacialAttributeScore = MaxPurchasedAttributeScore + RacialAttributeBonus;
         private uint _target;
 
         public bool IsPlayerMode
@@ -343,6 +345,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Gui.TogglePlayerWindow(Player, GuiWindowType.Settings);
         };
 
+        private static int GetPurchasedAttributeScore(Player dbPlayer, AbilityType ability)
+        {
+            var baseScore = dbPlayer.BaseStats.TryGetValue(ability, out var baseValue)
+                ? baseValue
+                : 0;
+            var upgradedScore = dbPlayer.UpgradedStats.TryGetValue(ability, out var upgradedValue)
+                ? upgradedValue
+                : 0;
+
+            return baseScore + upgradedScore;
+        }
+
         private void UpgradeAttribute(AbilityType ability, string abilityName)
         {
             var playerId = GetObjectUUID(_target);
@@ -363,16 +377,33 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 playerId = GetObjectUUID(_target);
                 dbPlayer = DB.Get<Player>(playerId);
                 isRacial = dbPlayer.RacialStat == AbilityType.Invalid;
+                var rawScore = CreaturePlugin.GetRawAbilityScore(_target, ability);
+                var purchasedScore = GetPurchasedAttributeScore(dbPlayer, ability);
 
-                if (CreaturePlugin.GetRawAbilityScore(_target, ability) >= MaxAttributeScore)
+                if (isRacial)
                 {
-                    FloatingTextStringOnCreature($"You cannot upgrade this attribute beyond {MaxAttributeScore}.", _target, false);
-                    return;
+                    if (rawScore >= MaxRacialAttributeScore || purchasedScore > MaxPurchasedAttributeScore)
+                    {
+                        FloatingTextStringOnCreature($"You cannot upgrade this attribute beyond {MaxRacialAttributeScore} with a racial bonus.", _target, false);
+                        return;
+                    }
+
+                    dbPlayer.RacialStat = ability;
                 }
-
-                // Racial upgrades don't reduce AP.
-                if (!isRacial)
+                else
                 {
+                    if (purchasedScore >= MaxPurchasedAttributeScore)
+                    {
+                        FloatingTextStringOnCreature($"You cannot upgrade this attribute beyond {MaxPurchasedAttributeScore} with AP.", _target, false);
+                        return;
+                    }
+
+                    if (rawScore >= MaxRacialAttributeScore)
+                    {
+                        FloatingTextStringOnCreature($"You cannot upgrade this attribute beyond {MaxRacialAttributeScore}.", _target, false);
+                        return;
+                    }
+
                     if (dbPlayer.UnallocatedAP <= 0)
                     {
                         FloatingTextStringOnCreature("You do not have enough AP to purchase this upgrade.", _target, false);
@@ -381,10 +412,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                     dbPlayer.UnallocatedAP--;
                     dbPlayer.UpgradedStats[ability]++;
-                }
-                else
-                {
-                    dbPlayer.RacialStat = ability;
                 }
 
                 CreaturePlugin.ModifyRawAbilityScore(_target, ability, 1);
@@ -398,10 +425,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private bool IsAttributeUpgradeAvailable(Player dbPlayer, AbilityType ability, bool isRacialBonusAvailable)
         {
-            if (CreaturePlugin.GetRawAbilityScore(_target, ability) >= MaxAttributeScore)
-                return false;
+            var rawScore = CreaturePlugin.GetRawAbilityScore(_target, ability);
+            var purchasedScore = GetPurchasedAttributeScore(dbPlayer, ability);
 
-            return dbPlayer.UnallocatedAP > 0 || isRacialBonusAvailable;
+            if (isRacialBonusAvailable)
+            {
+                return rawScore < MaxRacialAttributeScore &&
+                       purchasedScore <= MaxPurchasedAttributeScore;
+            }
+
+            return dbPlayer.UnallocatedAP > 0 &&
+                   purchasedScore < MaxPurchasedAttributeScore &&
+                   rawScore < MaxRacialAttributeScore;
         }
 
         public Action OnClickUpgradeMight() => () =>

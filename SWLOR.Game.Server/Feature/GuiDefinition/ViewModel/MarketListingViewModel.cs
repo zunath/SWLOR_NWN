@@ -147,7 +147,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var maxListings = GetMarketListingLimit();
             ListCount = $"  {_itemCount} / {maxListings} Items Listed";
-            IsAddItemEnabled = _itemIds.Count < maxListings;
+            IsAddItemEnabled = _itemCount < maxListings;
         }
 
         protected override void Initialize(MarketPayload initialPayload)
@@ -186,7 +186,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
-            if (_itemIds.Count >= GetMarketListingLimit())
+            if (_itemCount >= GetMarketListingLimit())
             {
                 FloatingTextStringOnCreature("You cannot list any more items.", Player, false);
                 return;

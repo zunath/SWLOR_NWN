@@ -13,8 +13,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class OutfitViewModel: GuiViewModelBase<OutfitViewModel, GuiPayloadBase>
     {
-        private const int MaxOutfits = 25;
-
         private List<string> _outfitIds = new();
 
         public GuiBindingList<string> SlotNames
@@ -73,6 +71,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             get => Get<string>();
             set => Set(value);
+        }
+
+        private int GetOutfitSlotLimit()
+        {
+            var dbPlayer = DB.Get<Player>(GetObjectUUID(Player));
+            return dbPlayer?.OutfitSlotLimit > 0 ? dbPlayer.OutfitSlotLimit : Entity.Player.DefaultOutfitSlotLimit;
         }
 
         private List<PlayerOutfit> GetOutfits()
@@ -322,9 +326,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var outfitCount = DB.SearchCount(new DBQuery<PlayerOutfit>()
                 .AddFieldSearch(nameof(PlayerOutfit.PlayerId), playerId, false));
 
-            if (outfitCount >= MaxOutfits)
+            var maxOutfits = GetOutfitSlotLimit();
+
+            if (outfitCount >= maxOutfits)
             {
-                FloatingTextStringOnCreature($"You may only create {MaxOutfits} outfits.", Player, false);
+                FloatingTextStringOnCreature($"You may only create {maxOutfits} outfits.", Player, false);
                 return;
             }
 

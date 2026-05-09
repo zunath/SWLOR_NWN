@@ -21,6 +21,9 @@ namespace SWLOR.Game.Server.Entity
 {
     public class Player: EntityBase
     {
+        public const int DefaultOutfitSlotLimit = 25;
+        public const int DefaultMarketListingLimit = 25;
+
         public Player()
         {
             Init();
@@ -89,6 +92,8 @@ namespace SWLOR.Game.Server.Entity
             CPBonus = new Dictionary<SkillType, int>();
             AbilityToggles = new Dictionary<AbilityToggleType, bool>();
             Currencies = new Dictionary<CurrencyType, int>();
+            OutfitSlotLimit = DefaultOutfitSlotLimit;
+            MarketListingLimit = DefaultMarketListingLimit;
         }
 
 
@@ -141,6 +146,8 @@ namespace SWLOR.Game.Server.Entity
         public float MovementRate { get; set; }
         public int AbilityRecastReduction { get; set; }
         public int MarketTill { get; set; }
+        public int OutfitSlotLimit { get; set; }
+        public int MarketListingLimit { get; set; }
         [Indexed]
         public string CitizenPropertyId { get; set; }
         public int PropertyOwedTaxes { get; set; }

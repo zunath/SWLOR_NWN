@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -520,7 +521,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnSaveLayout() => () =>
         {
-            var layoutName = LayoutName.Trim();
+            var layoutName = (LayoutName ?? string.Empty).Trim();
             if (string.IsNullOrWhiteSpace(layoutName))
             {
                 Instructions = "Enter a layout name before saving.";
@@ -582,15 +583,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 LayoutName = layoutName;
                 existing.Entries = entries;
                 DB.Set(existing);
+                LoadLayouts();
+                Instructions = $"Layout '{layoutName}' saved ({entries.Count} placeables).";
+                InstructionColor = GuiColor.Green;
+            }
+            catch (Exception ex)
+            {
+                Log.Write(LogGroup.Error, $"Failed to save DM placeable layout '{layoutName}' in area '{GetResRef(area)}'. {ex}");
+                Instructions = "Unable to save layout right now. Please try again.";
+                InstructionColor = GuiColor.Red;
             }
             finally
             {
                 SetLocalInt(area, AreaLayoutSaveLockTimestampVariable, 0);
             }
-
-            LoadLayouts();
-            Instructions = $"Layout '{layoutName}' saved ({entries.Count} placeables).";
-            InstructionColor = GuiColor.Green;
         };
 
         public Action OnLoadLayout() => () =>

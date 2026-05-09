@@ -929,11 +929,22 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
                 .Action((user, target, location, args) =>
                 {
-                    Gui.TogglePlayerWindow(user, GuiWindowType.DMTools);
+                    var player = user;
+                    var uiTarget = OBJECT_INVALID;
+                    if (GetIsDMPossessed(player))
+                    {
+                        uiTarget = player;
+                        player = GetMaster(player);
+                    }
+
+                    Gui.TogglePlayerWindow(player, GuiWindowType.DMTools, null, OBJECT_INVALID, uiTarget);
+                });
+        }
+
         private void MusicWindow()
         {
             _builder.Create("music")
-                .Description("Toggles the area music picker window.")
+                .Description("Toggles the Area Music Picker window.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
                 .AvailableToAllOnTestEnvironment()
                 .Action((user, target, location, args) =>

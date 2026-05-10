@@ -794,7 +794,10 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Action((user, target, location, args) =>
                 {
                     var notificationMessage = $"Manual restart initiated by {GetName(user)} ({GetPCPlayerName(user)}) [{GetPCPublicCDKey(user)}] at {DateTime.UtcNow:yyyy-MM-dd HH:mm:ss} UTC.";
-                    ServerTasks.SendServerLifecycleNotification(notificationMessage);
+                    ServerTasks.SendServerLifecycleNotification(notificationMessage)
+                        .ConfigureAwait(false)
+                        .GetAwaiter()
+                        .GetResult();
 
                     uint player = GetFirstPC();
                     while (player != OBJECT_INVALID)

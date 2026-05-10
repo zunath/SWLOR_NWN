@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Entity;
@@ -41,10 +42,12 @@ namespace SWLOR.Game.Server.Feature
                 }
 
                 Log.Write(LogGroup.Server, "Server shutting down for automated restart.", true);
-                SendServerLifecycleNotification("Automated restart has started. Server is shutting down now.");
-                
                 DelayCommand(0.1f, () =>
                 {
+                    SendServerLifecycleNotification("Automated restart has started. Server is shutting down now.")
+                        .ConfigureAwait(false)
+                        .GetAwaiter()
+                        .GetResult();
                     AdministrationPlugin.ShutdownServer();
                 });
             }
@@ -57,20 +60,35 @@ namespace SWLOR.Game.Server.Feature
         public static void ProcessBootUp()
         {
             Log.Write(LogGroup.Server, "Server is starting up.");
-            SendServerLifecycleNotification("Server boot process has started.");
+            _ = SendServerLifecycleNotification("Server boot process has started.");
             ConfigureServerSettings();
             ApplyBans();
             ScheduleRestartReminder();
-            SendServerLifecycleNotification("Server boot process is complete. Server is fully online and available for play.");
+            _ = SendServerLifecycleNotification("Server boot process is complete. Server is fully online and available for play.");
         }
 
-        public static void SendServerLifecycleNotification(string message)
+        public static async Task<bool> SendServerLifecycleNotification(string message)
         {
             var url = _appSettings.ServerNotificationWebhookUrl;
-            if (string.IsNullOrWhiteSpace(url)) return;
+            if (string.IsNullOrWhiteSpace(url)) return true;
 
             var authorName = "SWLOR Server";
-            _ = BackgroundJob.EnqueueDiscordWebhook(url, authorName, message, 15158332);
+
+            try
+            {
+                var enqueued = await BackgroundJob.EnqueueDiscordWebhook(url, authorName, message, 15158332);
+                if (!enqueued)
+                {
+                    Serilog.Log.Error("SendServerLifecycleNotification: BackgroundJob.EnqueueDiscordWebhook returned false for message: {Message}", message);
+                }
+
+                return enqueued;
+            }
+            catch (Exception ex)
+            {
+                Serilog.Log.Error(ex, "SendServerLifecycleNotification: BackgroundJob.EnqueueDiscordWebhook threw for message: {Message}", message);
+                return false;
+            }
         }
 
         private static void ConfigureServerSettings()

@@ -1,0 +1,645 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SWLOR Character Sheet Mock-up</title>
+  <style>
+    :root {
+      --bg: #11151a;
+      --panel: #1b222a;
+      --panel-2: #202a34;
+      --line: #3b4652;
+      --line-strong: #677485;
+      --text: #e7edf3;
+      --muted: #a7b2bd;
+      --blue: #6fb7d6;
+      --green: #8fcf7f;
+      --amber: #d5ae5d;
+      --red: #d97668;
+      --violet: #bba4ff;
+      --button: #26313d;
+      --button-hover: #334252;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background:
+        linear-gradient(135deg, #161b21 0%, #0d1116 52%, #171417 100%);
+      color: var(--text);
+      font-family: "Segoe UI", Tahoma, sans-serif;
+      font-size: 14px;
+    }
+
+    .mockup-frame {
+      width: min(960px, calc(100vw - 32px));
+      padding: 18px;
+      background: #0c0f13;
+      border: 1px solid #252c34;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+    }
+
+    .window {
+      width: 100%;
+      min-height: 520px;
+      background: var(--bg);
+      border: 1px solid var(--line-strong);
+      display: grid;
+      grid-template-rows: 34px 1fr;
+    }
+
+    .titlebar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 10px 0 12px;
+      background: #252f3a;
+      border-bottom: 1px solid var(--line-strong);
+      font-weight: 600;
+      letter-spacing: 0;
+    }
+
+    .window-icons {
+      display: flex;
+      gap: 6px;
+    }
+
+    .window-icon {
+      width: 14px;
+      height: 14px;
+      border: 1px solid #95a0aa;
+      background: #313b45;
+    }
+
+    .sheet {
+      display: grid;
+      grid-template-columns: 220px minmax(0, 1fr) 230px;
+      min-height: 486px;
+      min-width: 0;
+    }
+
+    .identity {
+      padding: 14px;
+      border-right: 1px solid var(--line);
+      background: #151a20;
+      display: grid;
+      grid-template-rows: auto auto auto 1fr auto;
+      gap: 12px;
+    }
+
+    .name {
+      font-size: 18px;
+      font-weight: 700;
+      line-height: 1.15;
+    }
+
+    .subtle {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 3px;
+    }
+
+    .portrait {
+      height: 188px;
+      border: 1px solid var(--line-strong);
+      background:
+        linear-gradient(180deg, rgba(111, 183, 214, 0.16), rgba(213, 174, 93, 0.08)),
+        repeating-linear-gradient(90deg, #242c35 0 1px, #1a2028 1px 12px);
+      display: grid;
+      place-items: center;
+      color: #c7d3df;
+      text-align: center;
+      font-weight: 600;
+    }
+
+    .portrait span {
+      padding: 8px 10px;
+      border: 1px solid rgba(231, 237, 243, 0.22);
+      background: rgba(12, 15, 19, 0.52);
+    }
+
+    .resource-stack {
+      display: grid;
+      gap: 6px;
+    }
+
+    .resource {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      gap: 8px;
+      align-items: center;
+      padding: 5px 7px;
+      border: 1px solid var(--line);
+      background: #1a2027;
+    }
+
+    .resource b {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .hp strong {
+      color: var(--red);
+    }
+
+    .fp strong {
+      color: var(--blue);
+    }
+
+    .stm strong {
+      color: var(--green);
+    }
+
+    .sp strong,
+    .ap strong {
+      color: var(--amber);
+    }
+
+    .identity-actions {
+      display: grid;
+      gap: 8px;
+      align-self: end;
+    }
+
+    button {
+      border: 1px solid var(--line-strong);
+      background: var(--button);
+      color: var(--text);
+      min-height: 30px;
+      padding: 5px 10px;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    button:hover,
+    .tab.active {
+      background: var(--button-hover);
+      border-color: #8da0b1;
+    }
+
+    button:disabled {
+      opacity: 0.48;
+      cursor: default;
+    }
+
+    .content {
+      display: grid;
+      grid-template-rows: auto 1fr;
+      min-width: 0;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 6px;
+      padding: 12px 12px 0;
+    }
+
+    .tab {
+      min-width: 120px;
+      height: 32px;
+      border-bottom-color: var(--line);
+    }
+
+    .tab-panel {
+      display: none;
+      padding: 12px;
+      min-width: 0;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .section {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      min-width: 0;
+    }
+
+    .section-title {
+      padding: 7px 9px;
+      border-bottom: 1px solid var(--line);
+      background: var(--panel-2);
+      font-weight: 700;
+      color: #f0f4f8;
+    }
+
+    .rows {
+      display: grid;
+    }
+
+    .stat-row,
+    .res-row {
+      display: grid;
+      align-items: center;
+      min-height: 34px;
+      border-bottom: 1px solid rgba(59, 70, 82, 0.72);
+    }
+
+    .stat-row {
+      grid-template-columns: 1fr auto 24px;
+      gap: 8px;
+      padding: 5px 7px;
+    }
+
+    .stat-row:last-child,
+    .res-row:last-child {
+      border-bottom: 0;
+    }
+
+    .label {
+      color: var(--muted);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .value {
+      font-weight: 700;
+      text-align: right;
+    }
+
+    .plus {
+      width: 22px;
+      height: 22px;
+      min-height: 22px;
+      padding: 0;
+      color: var(--amber);
+      font-weight: 700;
+    }
+
+    .plus.hidden {
+      visibility: hidden;
+    }
+
+    .data-table,
+    .resistance-table {
+      border: 1px solid var(--line);
+      background: var(--panel);
+    }
+
+    .craft-header,
+    .craft-row,
+    .res-header,
+    .res-row {
+      grid-template-columns: minmax(110px, 1fr) 56px minmax(120px, 1fr) minmax(124px, 1fr);
+      gap: 8px;
+      padding: 7px 9px;
+    }
+
+    .craft-header,
+    .res-header {
+      display: grid;
+      background: var(--panel-2);
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .res-header div,
+    .res-row div {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .craft-row {
+      display: grid;
+      grid-template-columns: 1fr 110px 130px;
+      align-items: center;
+      min-height: 38px;
+      border-bottom: 1px solid rgba(59, 70, 82, 0.72);
+    }
+
+    .craft-header {
+      grid-template-columns: 1fr 110px 130px;
+    }
+
+    .craft-row:last-child {
+      border-bottom: 0;
+    }
+
+    .res-row strong {
+      color: var(--text);
+    }
+
+    .res-score {
+      font-weight: 700;
+      color: var(--amber);
+    }
+
+    .actions-rail {
+      padding: 12px;
+      border-left: 1px solid var(--line);
+      background: #141920;
+      display: grid;
+      gap: 10px;
+      align-content: start;
+      min-height: 0;
+      overflow-y: auto;
+    }
+
+    .action-group {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+
+    .action-buttons {
+      display: grid;
+      gap: 8px;
+      padding: 10px;
+      align-content: start;
+    }
+
+    .action-buttons button {
+      width: 100%;
+      text-align: left;
+    }
+
+    .disabled-note {
+      color: var(--muted);
+      font-size: 12px;
+      padding-left: 2px;
+    }
+
+    @media (max-width: 760px) {
+      .sheet {
+        grid-template-columns: 1fr;
+      }
+
+      .identity {
+        grid-template-columns: 120px 1fr;
+        grid-template-rows: auto auto auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .portrait {
+        height: 150px;
+        grid-row: 1 / span 3;
+      }
+
+      .actions-rail {
+        padding: 12px;
+        border-left: 0;
+        border-top: 1px solid var(--line);
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .craft-header,
+      .craft-row {
+        grid-template-columns: 1fr 82px 96px;
+      }
+
+      .res-header,
+      .res-row {
+        grid-template-columns: 1fr 48px 92px;
+      }
+
+      .res-header div:nth-child(4),
+      .res-row div:nth-child(4) {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="mockup-frame">
+    <div class="window">
+      <div class="titlebar">
+        <div>Character Sheet</div>
+        <div class="window-icons" aria-hidden="true">
+          <div class="window-icon"></div>
+          <div class="window-icon"></div>
+        </div>
+      </div>
+
+      <main class="sheet">
+        <aside class="identity">
+          <div>
+            <div class="name">Kael Venn</div>
+            <div class="subtle">Human - Force Sensitive</div>
+          </div>
+
+          <div class="portrait">
+            <span>PORTRAIT</span>
+          </div>
+
+          <div class="resource-stack">
+            <div class="resource hp"><b>HP</b><strong>182 / 210</strong></div>
+            <div class="resource fp"><b>FP</b><strong>64 / 92</strong></div>
+            <div class="resource stm"><b>STM</b><strong>118 / 135</strong></div>
+            <div class="resource sp"><b>SP</b><strong>284 / 300 (6)</strong></div>
+            <div class="resource ap"><b>AP</b><strong>31 / 35 (2)</strong></div>
+          </div>
+
+          <div></div>
+
+          <div class="identity-actions">
+            <button>Customize</button>
+          </div>
+        </aside>
+
+        <section class="content">
+          <nav class="tabs" aria-label="Character sheet tabs">
+            <button class="tab active" data-tab="stats">Stats</button>
+            <button class="tab" data-tab="resistances">Resistances</button>
+            <button class="tab" data-tab="crafting">Crafting</button>
+          </nav>
+
+          <section id="stats" class="tab-panel active">
+            <div class="stats-grid">
+              <div class="section">
+                <div class="section-title">Attributes</div>
+                <div class="rows">
+                  <div class="stat-row"><div class="label">Might</div><div class="value">18</div><button class="plus">+</button></div>
+                  <div class="stat-row"><div class="label">Perception</div><div class="value">22</div><button class="plus hidden">+</button></div>
+                  <div class="stat-row"><div class="label">Vitality</div><div class="value">20</div><button class="plus">+</button></div>
+                  <div class="stat-row"><div class="label">Willpower</div><div class="value">24</div><button class="plus hidden">+</button></div>
+                  <div class="stat-row"><div class="label">Agility</div><div class="value">17</div><button class="plus">+</button></div>
+                  <div class="stat-row"><div class="label">Social</div><div class="value">13</div><button class="plus hidden">+</button></div>
+                </div>
+              </div>
+
+              <div class="section">
+                <div class="section-title">Combat</div>
+                <div class="rows">
+                  <div class="stat-row"><div class="label">Main Hand</div><div class="value">42 DMG</div><button class="plus hidden">+</button></div>
+                  <div class="stat-row"><div class="label">Off Hand</div><div class="value">28 DMG</div><button class="plus hidden">+</button></div>
+                  <div class="stat-row"><div class="label">Attack</div><div class="value">97</div><button class="plus hidden">+</button></div>
+                  <div class="stat-row"><div class="label">Accuracy</div><div class="value">84</div><button class="plus hidden">+</button></div>
+                  <div class="stat-row"><div class="label">Evasion</div><div class="value">61</div><button class="plus hidden">+</button></div>
+                  <div class="stat-row"><div class="label">Phys. DEF</div><div class="value">73</div><button class="plus hidden">+</button></div>
+                  <div class="stat-row"><div class="label">Force DEF</div><div class="value">88</div><button class="plus hidden">+</button></div>
+                </div>
+              </div>
+
+            </div>
+          </section>
+
+          <section id="resistances" class="tab-panel">
+            <div class="resistance-table">
+              <div class="res-header">
+                <div>Resistance</div>
+                <div>Score</div>
+                <div>Damage Taken</div>
+                <div>Status Duration</div>
+              </div>
+              <div class="res-row">
+                <div><strong>Fire</strong></div>
+                <div class="res-score">38</div>
+                <div>57% taken</div>
+                <div>Reduced</div>
+              </div>
+              <div class="res-row">
+                <div><strong>Poison</strong></div>
+                <div class="res-score">22</div>
+                <div>69% taken</div>
+                <div>Slightly reduced</div>
+              </div>
+              <div class="res-row">
+                <div><strong>Electrical</strong></div>
+                <div class="res-score">44</div>
+                <div>53% taken</div>
+                <div>Reduced</div>
+              </div>
+              <div class="res-row">
+                <div><strong>Ice</strong></div>
+                <div class="res-score">15</div>
+                <div>77% taken</div>
+                <div>Slightly reduced</div>
+              </div>
+              <div class="res-row">
+                <div><strong>Mind</strong></div>
+                <div class="res-score">31</div>
+                <div>62% taken</div>
+                <div>Reduced</div>
+              </div>
+              <div class="res-row">
+                <div><strong>Mobility</strong></div>
+                <div class="res-score">26</div>
+                <div>66% taken</div>
+                <div>Reduced</div>
+              </div>
+              <div class="res-row">
+                <div><strong>Trauma</strong></div>
+                <div class="res-score">48</div>
+                <div>51% taken</div>
+                <div>Strongly reduced</div>
+              </div>
+              <div class="res-row">
+                <div><strong>Disruption</strong></div>
+                <div class="res-score">41</div>
+                <div>55% taken</div>
+                <div>Reduced</div>
+              </div>
+            </div>
+          </section>
+
+          <section id="crafting" class="tab-panel">
+            <div class="data-table">
+              <div class="craft-header">
+                <div>Craft</div>
+                <div>Control</div>
+                <div>Craftsmanship</div>
+              </div>
+              <div class="craft-row">
+                <div><strong>Smithery</strong></div>
+                <div class="res-score">32</div>
+                <div class="res-score">35</div>
+              </div>
+              <div class="craft-row">
+                <div><strong>Engineering</strong></div>
+                <div class="res-score">41</div>
+                <div class="res-score">44</div>
+              </div>
+              <div class="craft-row">
+                <div><strong>Fabrication</strong></div>
+                <div class="res-score">28</div>
+                <div class="res-score">30</div>
+              </div>
+              <div class="craft-row">
+                <div><strong>Agriculture</strong></div>
+                <div class="res-score">17</div>
+                <div class="res-score">21</div>
+              </div>
+            </div>
+          </section>
+        </section>
+
+        <aside class="actions-rail" aria-label="Character sheet actions">
+          <div class="action-group">
+            <div class="section-title">Progression</div>
+            <div class="action-buttons">
+              <button>Skills</button>
+              <button>Perks</button>
+              <button>Recipes</button>
+            </div>
+          </div>
+
+          <div class="action-group">
+            <div class="section-title">Records</div>
+            <div class="action-buttons">
+              <button>Quests</button>
+              <button>Key Items</button>
+              <button>Currencies</button>
+              <button>Achievements</button>
+              <button>Notes</button>
+            </div>
+          </div>
+
+          <div class="action-group">
+              <div class="section-title">Character</div>
+              <div class="action-buttons">
+                <button>Appearance</button>
+                <button>Settings</button>
+              </div>
+          </div>
+
+          <div class="action-group">
+            <div class="section-title">Utility</div>
+            <div class="action-buttons">
+              <button disabled>HoloCom</button>
+              <div class="disabled-note">Unavailable in space</div>
+              <button>Open Trash</button>
+            </div>
+          </div>
+        </aside>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    const tabs = Array.from(document.querySelectorAll(".tab"));
+    const panels = Array.from(document.querySelectorAll(".tab-panel"));
+
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        const target = tab.dataset.tab;
+
+        tabs.forEach((item) => item.classList.toggle("active", item === tab));
+        panels.forEach((panel) => panel.classList.toggle("active", panel.id === target));
+      });
+    });
+  </script>
+</body>
+</html>

@@ -113,12 +113,23 @@ namespace SWLOR.Game.Server.Service
         private static void RemoveCreatureFromParty(uint creature)
         {
             if (!_creatureToParty.ContainsKey(creature)) return;
-            
+
             var partyId = _creatureToParty[creature];
+            var wasLeader = _partyLeaders[partyId] == creature;
 
             // Remove this creature from the caches.
             _parties[partyId].Remove(creature);
             _creatureToParty.Remove(creature);
+
+            // Ensure any active aura effects that this creature was receiving from former party members are removed.
+            Ability.RefreshPartyAuraEligibility(creature);
+
+            // Party composition changed. Refresh aura recipients for remaining members too,
+            // so effects from the departing member are not retained.
+            foreach (var member in _parties[partyId])
+            {
+                Ability.RefreshPartyAuraEligibility(member);
+            }
 
             // If there is now only one party member (or fewer)
             // Party needs to be disbanded and caches updated.
@@ -136,10 +147,9 @@ namespace SWLOR.Game.Server.Service
 
             // The party is still valid but the creature who left was its leader. 
             // Swap leadership to the next person in the party list.
-            creature = _parties[partyId].First();
-            if (_partyLeaders[partyId] == creature)
+            if (wasLeader)
             {
-                _partyLeaders[partyId] = creature;
+                _partyLeaders[partyId] = _parties[partyId].First();
             }
         }
 

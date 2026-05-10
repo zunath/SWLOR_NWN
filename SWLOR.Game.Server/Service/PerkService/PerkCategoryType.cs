@@ -11,12 +11,6 @@ namespace SWLOR.Game.Server.Service.PerkService
         [PerkCategory("Armor - General", true)]
         ArmorGeneral = 2,
 
-        [PerkCategory("Armor - Heavy", true)]
-        ArmorHeavy = 3,
-
-        [PerkCategory("Armor - Light", true)]
-        ArmorLight = 4,
-
         [PerkCategory("Piloting", true)]
         Piloting = 5,
 

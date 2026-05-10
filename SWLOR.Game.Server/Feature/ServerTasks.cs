@@ -64,6 +64,12 @@ namespace SWLOR.Game.Server.Feature
             _ = SendServerLifecycleNotification("Server boot process is complete. Server is fully online and available for play.");
         }
 
+        [NWNEventHandler(ScriptName.OnModulePreload)]
+        public static void ProcessBootStart()
+        {
+            _ = SendServerLifecycleNotification("Server boot process has started.");
+        }
+
 
         public static void SendServerLifecycleNotificationForShutdown(string message)
         {

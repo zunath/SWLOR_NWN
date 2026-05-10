@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.AIService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -320,6 +321,14 @@ namespace SWLOR.Game.Server.Service.AbilityService
         {
             _activeAbility.AbilityLevel = level;
 
+            return this;
+        }
+
+        public AbilityBuilder AIEvaluation(int order, AIPhaseType phase, AITargetType targetType)
+        {
+            _activeAbility.AIEvaluationOrder = order;
+            _activeAbility.AIPhase = phase;
+            _activeAbility.AITargetType = targetType;
             return this;
         }
 

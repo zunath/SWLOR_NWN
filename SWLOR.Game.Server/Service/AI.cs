@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public static void CacheAIData()
         {
+            AIBase.InitializeEvaluators();
             _aiDefinitions[AIDefinitionType.Generic] = new GenericAIDefinition();
             _aiDefinitions[AIDefinitionType.Droid] = new DroidAIDefinition();
             _aiDefinitions[AIDefinitionType.Beast] = new BeastAIDefinition();

@@ -9,6 +9,12 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
 {
     public abstract class AIBase : IAIDefinition
     {
+        protected readonly struct EvaluatorRegistration
+        {
+            public int Priority { get; init; }
+            public Func<(bool success, (FeatType feat, uint target) result)> Evaluate { get; init; }
+        }
+
         protected uint Self { get; private set; }
         protected uint Target { get; private set; }
         protected RacialType SelfRace { get; private set; }
@@ -20,6 +26,7 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
         protected FeatType SelfActiveConcentration { get; private set; }
         protected uint AllyWithTreatmentKit1StatusEffect { get; private set; }
         protected uint AllyWithTreatmentKit2StatusEffect { get; private set; }
+        protected AIContext CachedContext { get; private set; } = new();
 
         private void ResetCachedData()
         {
@@ -75,6 +82,26 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
             LowestHPAllyRace = GetRacialType(LowestHPAlly);
             AllyCount = allies.Count;
             SelfActiveConcentration = Ability.GetActiveConcentration(self).Feat;
+            CachedContext = BuildContext();
+        }
+
+        protected AIContext BuildContext()
+        {
+            var context = new AIContext
+            {
+                Self = Self,
+                CurrentTarget = Target,
+                LowestHPAlly = LowestHPAlly,
+                AllyWithTreatmentKit1Status = AllyWithTreatmentKit1StatusEffect,
+                AllyWithTreatmentKit2Status = AllyWithTreatmentKit2StatusEffect,
+                SelfHPPercentage = SelfHPPercentage,
+                LowestHPAllyPercentage = LowestHPAllyPercentage,
+                AllyCount = AllyCount,
+                ActiveConcentrationFeat = SelfActiveConcentration,
+            };
+
+            context.Phase = AIPhaseResolver.Resolve(context);
+            return context;
         }
 
         /// <summary>
@@ -101,133 +128,61 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
         /// <inheritdoc />
         public virtual (FeatType, uint) DeterminePerkAbility()
         {
-            // Note: The order is important here. The top-most abilities take precedence over lower ones.
-
-            var (success, result) = Benevolence();
-            if (success) return result;
-
-            (success, result) = ForceHeal();
-            if (success) return result;
-
-            (success, result) = MedKit();
-            if (success) return result;
-
-            (success, result) = KoltoBomb();
-            if (success) return result;
-
-            (success, result) = KoltoGrenade();
-            if (success) return result;
-
-            (success, result) = KoltoRecovery();
-            if (success) return result;
-
-            (success, result) = Infusion();
-            if (success) return result;
-
-            (success, result) = Provoke();
-            if (success) return result;
-
-            (success, result) = Resuscitation();
-            if (success) return result;
-
-            (success, result) = TreatmentKit();
-            if (success) return result;
-
-            (success, result) = BattleInsight();
-            if (success) return result;
-
-            (success, result) = ThrowSaber();
-            if (success) return result;
-
-            (success, result) = ForceStun();
-            if (success) return result;
-
-            (success, result) = AdhesiveGrenade();
-            if (success) return result;
-
-            (success, result) = ConcussionGrenade();
-            if (success) return result;
-
-            (success, result) = Flamethrower();
-            if (success) return result;
-
-            (success, result) = FlashbangGrenade();
-            if (success) return result;
-
-            (success, result) = FragGrenade();
-            if (success) return result;
-
-            (success, result) = GasBomb();
-            if (success) return result;
-
-            (success, result) = IncendiaryBomb();
-            if (success) return result;
-
-            (success, result) = IonGrenade();
-            if (success) return result;
-
-            (success, result) = SmokeBomb();
-            if (success) return result;
-
-            (success, result) = WristRocket();
-            if (success) return result;
-
-            (success, result) = StealthGenerator();
-            if (success) return result;
-
-            (success, result) = DeflectorShield();
-            if (success) return result;
-
-            (success, result) = CombatEnhancement();
-            if (success) return result;
-
-            (success, result) = Shielding();
-            if (success) return result;
-
-            (success, result) = StasisField();
-            if (success) return result;
-
-            (success, result) = CreepingTerror();
-            if (success) return result;
-
-            (success, result) = Disturbance();
-            if (success) return result;
-
-            (success, result) = ForceSpark();
-            if (success) return result;
-
-            (success, result) = ForceLightning();
-            if (success) return result;
-
-            (success, result) = ForceBurst();
-            if (success) return result;
-
-            (success, result) = ThrowRock();
-            if (success) return result;
-
-            (success, result) = ForceDrain();
-            if (success) return result;
-
-            (success, result) = ForcePush();
-            if (success) return result;
-
-            (success, result) = ForceInspiration();
-            if (success) return result;
-
-            (success, result) = MindTrick();
-            if (success) return result;
-
-            (success, result) = BurstOfSpeed();
-            if (success) return result;
-
-            (success, result) = ForceLeap();
-            if (success) return result;
-
-            (success, result) = NPCAbilities();
-            if (success) return result;
-
+            foreach (var registration in GetEvaluatorRegistrations().OrderBy(x => x.Priority))
+            {
+                var (success, result) = registration.Evaluate();
+                if (success) return result;
+            }
 
             return NoAction.Item2;
+        }
+
+        protected virtual IEnumerable<EvaluatorRegistration> GetEvaluatorRegistrations()
+        {
+            return new[]
+            {
+                new EvaluatorRegistration { Priority = 100, Evaluate = Benevolence },
+                new EvaluatorRegistration { Priority = 110, Evaluate = ForceHeal },
+                new EvaluatorRegistration { Priority = 120, Evaluate = MedKit },
+                new EvaluatorRegistration { Priority = 130, Evaluate = KoltoBomb },
+                new EvaluatorRegistration { Priority = 140, Evaluate = KoltoGrenade },
+                new EvaluatorRegistration { Priority = 150, Evaluate = KoltoRecovery },
+                new EvaluatorRegistration { Priority = 160, Evaluate = Infusion },
+                new EvaluatorRegistration { Priority = 170, Evaluate = Provoke },
+                new EvaluatorRegistration { Priority = 180, Evaluate = Resuscitation },
+                new EvaluatorRegistration { Priority = 190, Evaluate = TreatmentKit },
+                new EvaluatorRegistration { Priority = 200, Evaluate = BattleInsight },
+                new EvaluatorRegistration { Priority = 210, Evaluate = ThrowSaber },
+                new EvaluatorRegistration { Priority = 220, Evaluate = ForceStun },
+                new EvaluatorRegistration { Priority = 230, Evaluate = AdhesiveGrenade },
+                new EvaluatorRegistration { Priority = 240, Evaluate = ConcussionGrenade },
+                new EvaluatorRegistration { Priority = 250, Evaluate = Flamethrower },
+                new EvaluatorRegistration { Priority = 260, Evaluate = FlashbangGrenade },
+                new EvaluatorRegistration { Priority = 270, Evaluate = FragGrenade },
+                new EvaluatorRegistration { Priority = 280, Evaluate = GasBomb },
+                new EvaluatorRegistration { Priority = 290, Evaluate = IncendiaryBomb },
+                new EvaluatorRegistration { Priority = 300, Evaluate = IonGrenade },
+                new EvaluatorRegistration { Priority = 310, Evaluate = SmokeBomb },
+                new EvaluatorRegistration { Priority = 320, Evaluate = WristRocket },
+                new EvaluatorRegistration { Priority = 330, Evaluate = StealthGenerator },
+                new EvaluatorRegistration { Priority = 340, Evaluate = DeflectorShield },
+                new EvaluatorRegistration { Priority = 350, Evaluate = CombatEnhancement },
+                new EvaluatorRegistration { Priority = 360, Evaluate = Shielding },
+                new EvaluatorRegistration { Priority = 370, Evaluate = StasisField },
+                new EvaluatorRegistration { Priority = 380, Evaluate = CreepingTerror },
+                new EvaluatorRegistration { Priority = 390, Evaluate = Disturbance },
+                new EvaluatorRegistration { Priority = 400, Evaluate = ForceSpark },
+                new EvaluatorRegistration { Priority = 410, Evaluate = ForceLightning },
+                new EvaluatorRegistration { Priority = 420, Evaluate = ForceBurst },
+                new EvaluatorRegistration { Priority = 430, Evaluate = ThrowRock },
+                new EvaluatorRegistration { Priority = 440, Evaluate = ForceDrain },
+                new EvaluatorRegistration { Priority = 450, Evaluate = ForcePush },
+                new EvaluatorRegistration { Priority = 460, Evaluate = ForceInspiration },
+                new EvaluatorRegistration { Priority = 470, Evaluate = MindTrick },
+                new EvaluatorRegistration { Priority = 480, Evaluate = BurstOfSpeed },
+                new EvaluatorRegistration { Priority = 490, Evaluate = ForceLeap },
+                new EvaluatorRegistration { Priority = 500, Evaluate = NPCAbilities },
+            };
         }
 
         protected static (bool, (FeatType, uint)) NoAction => (false, (FeatType.Invalid, OBJECT_INVALID));

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.AIService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -66,6 +67,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             _builder.Create(FeatType.WristRocket1, PerkType.WristRocket)
                 .Name("Wrist Rocket I")
                 .Level(1)
+                .AIEvaluation(230, AIPhaseType.Damage, AITargetType.CurrentTarget)
                 .HasRecastDelay(RecastGroup.WristRocket, 24f)
                 .HasActivationDelay(0.5f)
                 .RequirementStamina(1)
@@ -89,6 +91,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             _builder.Create(FeatType.WristRocket2, PerkType.WristRocket)
                 .Name("Wrist Rocket II")
                 .Level(2)
+                .AIEvaluation(231, AIPhaseType.Damage, AITargetType.CurrentTarget)
                 .HasRecastDelay(RecastGroup.WristRocket, 24f)
                 .HasActivationDelay(0.5f)
                 .RequirementStamina(2)
@@ -113,6 +116,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             _builder.Create(FeatType.WristRocket3, PerkType.WristRocket)
                 .Name("Wrist Rocket III")
                 .Level(3)
+                .AIEvaluation(232, AIPhaseType.Damage, AITargetType.CurrentTarget)
                 .HasRecastDelay(RecastGroup.WristRocket, 24f)
                 .HasActivationDelay(0.5f)
                 .RequirementStamina(3)

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.AIService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -34,6 +35,9 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public bool BreaksStealth { get; set; }
         public bool RequiresTarget { get; set; }
         public int AbilityLevel { get; set; }
+        public int AIEvaluationOrder { get; set; }
+        public AIPhaseType AIPhase { get; set; }
+        public AITargetType AITargetType { get; set; }
 
         public AbilityDetail()
         {
@@ -47,6 +51,9 @@ namespace SWLOR.Game.Server.Service.AbilityService
             BreaksStealth = false;
             RequiresTarget = false;
             AbilityLevel = 1;
+            AIEvaluationOrder = 0;
+            AIPhase = AIPhaseType.Damage;
+            AITargetType = AITargetType.CurrentTarget;
         }
     }
 }

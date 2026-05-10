@@ -20,6 +20,49 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<FeatType, AbilityDetail> _abilities = new();
         private static readonly Dictionary<uint, ActiveConcentrationAbility> _activeConcentrationAbilities = new();
         private static readonly Dictionary<uint, PlayerAura> _playerAuras = new();
+        private static readonly Dictionary<PerkType, (int BaseOrder, AIService.AIPhaseType Phase, AIService.AITargetType TargetType)> _explicitAIBalance = new()
+        {
+            { PerkType.Benevolence, (100, AIService.AIPhaseType.Support, AIService.AITargetType.LowestHPAlly) },
+            { PerkType.ForceHeal, (110, AIService.AIPhaseType.Survival, AIService.AITargetType.LowestHPAlly) },
+            { PerkType.MedKit, (120, AIService.AIPhaseType.Support, AIService.AITargetType.LowestHPAlly) },
+            { PerkType.KoltoBomb, (130, AIService.AIPhaseType.Support, AIService.AITargetType.LowestHPAlly) },
+            { PerkType.KoltoGrenade, (140, AIService.AIPhaseType.Support, AIService.AITargetType.LowestHPAlly) },
+            { PerkType.KoltoRecovery, (150, AIService.AIPhaseType.Support, AIService.AITargetType.LowestHPAlly) },
+            { PerkType.Infusion, (160, AIService.AIPhaseType.Support, AIService.AITargetType.LowestHPAlly) },
+            { PerkType.Provoke, (170, AIService.AIPhaseType.Control, AIService.AITargetType.CurrentTarget) },
+            { PerkType.Resuscitation, (180, AIService.AIPhaseType.Survival, AIService.AITargetType.LowestHPAlly) },
+            { PerkType.TreatmentKit, (190, AIService.AIPhaseType.Support, AIService.AITargetType.LowestHPAlly) },
+            { PerkType.BattleInsight, (200, AIService.AIPhaseType.Support, AIService.AITargetType.Self) },
+            { PerkType.ThrowLightsaber, (210, AIService.AIPhaseType.Damage, AIService.AITargetType.Self) },
+            { PerkType.ForceStun, (220, AIService.AIPhaseType.Control, AIService.AITargetType.CurrentTarget) },
+            { PerkType.AdhesiveGrenade, (230, AIService.AIPhaseType.Control, AIService.AITargetType.CurrentTarget) },
+            { PerkType.ConcussionGrenade, (240, AIService.AIPhaseType.Control, AIService.AITargetType.CurrentTarget) },
+            { PerkType.Flamethrower, (250, AIService.AIPhaseType.Damage, AIService.AITargetType.CurrentTarget) },
+            { PerkType.FlashbangGrenade, (260, AIService.AIPhaseType.Control, AIService.AITargetType.CurrentTarget) },
+            { PerkType.FragGrenade, (270, AIService.AIPhaseType.Damage, AIService.AITargetType.CurrentTarget) },
+            { PerkType.GasBomb, (280, AIService.AIPhaseType.Control, AIService.AITargetType.CurrentTarget) },
+            { PerkType.IncendiaryBomb, (290, AIService.AIPhaseType.Damage, AIService.AITargetType.CurrentTarget) },
+            { PerkType.IonGrenade, (300, AIService.AIPhaseType.Control, AIService.AITargetType.CurrentTarget) },
+            { PerkType.SmokeBomb, (310, AIService.AIPhaseType.Control, AIService.AITargetType.CurrentTarget) },
+            { PerkType.WristRocket, (320, AIService.AIPhaseType.Damage, AIService.AITargetType.CurrentTarget) },
+            { PerkType.StealthGenerator, (330, AIService.AIPhaseType.Support, AIService.AITargetType.Self) },
+            { PerkType.DeflectorShield, (340, AIService.AIPhaseType.Support, AIService.AITargetType.Self) },
+            { PerkType.CombatEnhancement, (350, AIService.AIPhaseType.Support, AIService.AITargetType.Self) },
+            { PerkType.Shielding, (360, AIService.AIPhaseType.Support, AIService.AITargetType.Self) },
+            { PerkType.StasisField, (370, AIService.AIPhaseType.Control, AIService.AITargetType.CurrentTarget) },
+            { PerkType.CreepingTerror, (380, AIService.AIPhaseType.Control, AIService.AITargetType.CurrentTarget) },
+            { PerkType.Disturbance, (390, AIService.AIPhaseType.Control, AIService.AITargetType.CurrentTarget) },
+            { PerkType.ForceSpark, (400, AIService.AIPhaseType.Damage, AIService.AITargetType.CurrentTarget) },
+            { PerkType.ForceLightning, (410, AIService.AIPhaseType.Damage, AIService.AITargetType.CurrentTarget) },
+            { PerkType.ForceBurst, (420, AIService.AIPhaseType.Damage, AIService.AITargetType.CurrentTarget) },
+            { PerkType.ThrowRock, (430, AIService.AIPhaseType.Damage, AIService.AITargetType.CurrentTarget) },
+            { PerkType.ForceDrain, (440, AIService.AIPhaseType.Damage, AIService.AITargetType.CurrentTarget) },
+            { PerkType.ForcePush, (450, AIService.AIPhaseType.Control, AIService.AITargetType.CurrentTarget) },
+            { PerkType.ForceInspiration, (460, AIService.AIPhaseType.Support, AIService.AITargetType.Self) },
+            { PerkType.MindTrick, (470, AIService.AIPhaseType.Control, AIService.AITargetType.CurrentTarget) },
+            { PerkType.BurstOfSpeed, (480, AIService.AIPhaseType.Support, AIService.AITargetType.Self) },
+            { PerkType.ForceLeap, (490, AIService.AIPhaseType.Damage, AIService.AITargetType.CurrentTarget) },
+        };
 
         private const int MaxNumberOfAuras = 4;
 
@@ -49,7 +92,51 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
+            ApplyAIEvaluationDefaults();
+
             Console.WriteLine($"Loaded {_abilities.Count} abilities.");
+        }
+
+        private static void ApplyAIEvaluationDefaults()
+        {
+            var sorted = _abilities
+                .OrderBy(x => x.Value.AIEvaluationOrder <= 0 ? 1 : 0) // Explicitly configured entries keep precedence.
+                .ThenBy(x => x.Value.AIEvaluationOrder)
+                .ThenBy(x => x.Value.AbilityLevel)
+                .ThenBy(x => (int)x.Key)
+                .ToList();
+
+            var order = 1;
+            foreach (var (_, detail) in sorted)
+            {
+                ApplyExplicitAIBalance(detail, order);
+
+                // Clamp so explicit values cannot break sorting guarantees.
+                if (detail.AIEvaluationOrder < 1)
+                    detail.AIEvaluationOrder = 1;
+
+                order++;
+            }
+        }
+
+        private static void ApplyExplicitAIBalance(AbilityDetail detail, int fallbackOrder)
+        {
+            if (_explicitAIBalance.TryGetValue(detail.EffectiveLevelPerkType, out var balance))
+            {
+                detail.AIPhase = balance.Phase;
+                detail.AITargetType = balance.TargetType;
+                if (detail.AIEvaluationOrder <= 0)
+                    detail.AIEvaluationOrder = balance.BaseOrder + detail.AbilityLevel;
+                return;
+            }
+
+            // Fallback for perks not yet explicitly balanced.
+            if (detail.AITargetType == AIService.AITargetType.CurrentTarget && !detail.RequiresTarget && !detail.IsHostileAbility)
+                detail.AITargetType = AIService.AITargetType.Self;
+            if (detail.AIPhase == AIService.AIPhaseType.Damage && !detail.IsHostileAbility)
+                detail.AIPhase = AIService.AIPhaseType.Support;
+            if (detail.AIEvaluationOrder <= 0)
+                detail.AIEvaluationOrder = 9000 + fallbackOrder;
         }
 
         /// <summary>

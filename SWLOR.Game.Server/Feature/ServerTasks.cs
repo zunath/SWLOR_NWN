@@ -13,6 +13,7 @@ namespace SWLOR.Game.Server.Feature
     public static class ServerTasks
     {
         private static readonly ApplicationSettings _appSettings = ApplicationSettings.Get();
+        private const int LifecycleNotificationColor = 15158332; // #E74C3C (red)
         // This determines what time the server will restart.
         // Restarts happen within a range of 30 seconds of this specified time. 
         // All times are in UTC.
@@ -87,13 +88,13 @@ namespace SWLOR.Game.Server.Feature
         public static async Task<bool> SendServerLifecycleNotification(string message)
         {
             var url = _appSettings.ServerNotificationWebhookUrl;
-            if (string.IsNullOrWhiteSpace(url)) return true;
+            if (string.IsNullOrWhiteSpace(url)) return false;
 
             var authorName = "SWLOR Server";
 
             try
             {
-                var enqueued = await BackgroundJob.EnqueueDiscordWebhook(url, authorName, message, 15158332);
+                var enqueued = await BackgroundJob.EnqueueDiscordWebhook(url, authorName, message, LifecycleNotificationColor);
                 if (!enqueued)
                 {
                     Serilog.Log.Error("SendServerLifecycleNotification: BackgroundJob.EnqueueDiscordWebhook returned false for message: {Message}", message);

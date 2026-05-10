@@ -1602,6 +1602,24 @@ namespace SWLOR.Game.Server.Service
             var leftHand = GetItemInSlot(InventorySlot.LeftHand, attacker);
 
             var delay = GetWeaponDelay(rightHand) + GetWeaponDelay(leftHand);
+            if (delay == 0)
+            {
+                var creatureRight = GetItemInSlot(InventorySlot.CreatureRight, attacker);
+                var creatureLeft = GetItemInSlot(InventorySlot.CreatureLeft, attacker);
+                var creatureBite = GetItemInSlot(InventorySlot.CreatureBite, attacker);
+
+                var creatureDelays = new[]
+                {
+                    GetWeaponDelay(creatureRight),
+                    GetWeaponDelay(creatureLeft),
+                    GetWeaponDelay(creatureBite)
+                };
+
+                delay = creatureDelays
+                    .Where(creatureDelay => creatureDelay > 0)
+                    .DefaultIfEmpty(0)
+                    .Min();
+            }
 
             // Convert delay units to milliseconds: 60 delay units = 1 second.
             var finalDelay = (int)(delay / 60f * 1000);

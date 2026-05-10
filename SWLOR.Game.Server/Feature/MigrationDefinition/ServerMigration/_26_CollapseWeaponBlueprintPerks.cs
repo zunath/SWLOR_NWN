@@ -7,9 +7,9 @@ using SWLOR.Game.Server.Service.MigrationService;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 {
-    public class _25_CollapseWeaponBlueprintPerks : ServerMigrationBase, IServerMigration
+    public class _26_CollapseWeaponBlueprintPerks : ServerMigrationBase, IServerMigration
     {
-        public int Version => 25;
+        public int Version => 26;
         public MigrationExecutionType ExecutionType => MigrationExecutionType.PostDatabaseLoad;
 
         public void Migrate()

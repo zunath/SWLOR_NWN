@@ -85,6 +85,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        private int GetMarketListingLimit()
+        {
+            var dbPlayer = DB.Get<Player>(GetObjectUUID(Player));
+            return dbPlayer?.MarketListingLimit > 0 ? dbPlayer.MarketListingLimit : Entity.Player.DefaultMarketListingLimit;
+        }
+
         private void LoadData()
         {
             var itemIconResrefs = new GuiBindingList<string>();
@@ -138,8 +144,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void UpdateItemCount()
         {
-            ListCount = $"  {_itemCount} / {PlayerMarket.MaxListingsPerMarket} Items Listed";
-            IsAddItemEnabled = _itemIds.Count < PlayerMarket.MaxListingsPerMarket;
+            var maxListings = GetMarketListingLimit();
+            ListCount = $"  {_itemCount} / {maxListings} Items Listed";
+            IsAddItemEnabled = _itemCount < maxListings;
         }
 
         protected override void Initialize(MarketPayload initialPayload)
@@ -178,7 +185,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
-            if (_itemIds.Count >= PlayerMarket.MaxListingsPerMarket)
+            if (_itemCount >= GetMarketListingLimit())
             {
                 FloatingTextStringOnCreature("You cannot list any more items.", Player, false);
                 return;

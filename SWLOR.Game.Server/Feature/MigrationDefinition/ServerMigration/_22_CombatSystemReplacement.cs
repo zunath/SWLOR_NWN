@@ -13,7 +13,7 @@ using SWLOR.Game.Server.Service.CraftService;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 {
-    public class _21_CombatSystemReplacement : ServerMigrationBase, IServerMigration
+    public class _22_CombatSystemReplacement : ServerMigrationBase, IServerMigration
     {
         private const int LegacyFlurryStylePerkId = 236;
         private static readonly string CurrentFlurryStyleKey = nameof(PerkType.FlurryStyle);
@@ -227,7 +227,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             {"PommelStrike", 300},
         };
 
-        public int Version => 21;
+        public int Version => 22;
         public MigrationExecutionType ExecutionType => MigrationExecutionType.PostDatabaseLoad;
 
         public void Migrate()

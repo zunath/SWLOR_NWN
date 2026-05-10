@@ -7,9 +7,9 @@ using SWLOR.Game.Server.Service.MigrationService;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 {
-    public class _22_UpdateSerializedItemRequirements : ServerMigrationBase, IServerMigration
+    public class _23_UpdateSerializedItemRequirements : ServerMigrationBase, IServerMigration
     {
-        public int Version => 22;
+        public int Version => 23;
         public MigrationExecutionType ExecutionType => MigrationExecutionType.PostDatabaseLoad;
 
         public void Migrate()

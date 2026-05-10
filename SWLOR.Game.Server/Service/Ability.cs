@@ -674,6 +674,33 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
+
+        /// <summary>
+        /// Refreshes party-aura eligibility for a creature against all active aura leaders.
+        /// If the creature is still tracked in a party aura range but is no longer in the leader's party,
+        /// remove the cached range entry and strip relevant aura effects.
+        /// </summary>
+        /// <param name="target">The creature whose party aura eligibility should be refreshed.</param>
+        public static void RefreshPartyAuraEligibility(uint target)
+        {
+            foreach (var (leader, playerAura) in _playerAuras)
+            {
+                if (!playerAura.PartyMembersInRange.Contains(target))
+                    continue;
+
+                if (Party.IsInParty(leader, target))
+                    continue;
+
+                playerAura.PartyMembersInRange.Remove(target);
+
+                foreach (var aura in playerAura.Auras)
+                {
+                    if (aura.TargetsParty)
+                        RemoveAuraEffect(leader, target, aura.StatusEffect);
+                }
+            }
+        }
+
         /// <summary>
         /// Re-applies any aura effects that a creature should be receiving based on their current position
         /// in active aura range lists. Used after in-place resurrection (subdual, revive) where the

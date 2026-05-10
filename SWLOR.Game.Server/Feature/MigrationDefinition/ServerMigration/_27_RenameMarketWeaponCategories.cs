@@ -8,9 +8,9 @@ using SWLOR.Game.Server.Service.PlayerMarketService;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 {
-    public class _26_RenameMarketWeaponCategories : ServerMigrationBase, IServerMigration
+    public class _27_RenameMarketWeaponCategories : ServerMigrationBase, IServerMigration
     {
-        public int Version => 26;
+        public int Version => 27;
         public MigrationExecutionType ExecutionType => MigrationExecutionType.PostDatabaseLoad;
 
         public void Migrate()

@@ -7,9 +7,9 @@ using SWLOR.Game.Server.Service.PlayerMarketService;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 {
-    public class _23_CollapseMarketArmorCategories : ServerMigrationBase, IServerMigration
+    public class _24_CollapseMarketArmorCategories : ServerMigrationBase, IServerMigration
     {
-        public int Version => 23;
+        public int Version => 24;
         public MigrationExecutionType ExecutionType => MigrationExecutionType.PostDatabaseLoad;
 
         public void Migrate()

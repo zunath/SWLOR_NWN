@@ -15,7 +15,7 @@ using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 {
-    public class _24_RenameDroidBoostRecipes : ServerMigrationBase, IServerMigration
+    public class _25_RenameDroidBoostRecipes : ServerMigrationBase, IServerMigration
     {
         private static readonly Dictionary<int, int[]> LegacyDroidStatMap = new()
         {
@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 
         private const string BlueprintRecipeIdVariable = "BLUEPRINT_RECIPE_ID";
 
-        public int Version => 24;
+        public int Version => 25;
         public MigrationExecutionType ExecutionType => MigrationExecutionType.PostDatabaseLoad;
 
         public void Migrate()

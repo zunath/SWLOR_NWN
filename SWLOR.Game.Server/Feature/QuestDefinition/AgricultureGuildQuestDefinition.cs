@@ -109,7 +109,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             BuildItemTask(builder, "agr_tsk_223", "muddy_siredon", 4, 1, AgricultureCollectActivity.Catch);
             BuildItemTask(builder, "agr_tsk_224", "istavrit", 4, 1, AgricultureCollectActivity.Catch);
             BuildItemTask(builder, "agr_tsk_225", "fish_broth", 1, 1);
-            BuildItemTask(builder, "agr_tsk_226", "cooked_sardine", 1, 1);
+            BuildItemTask(builder, "agr_tsk_226", "sliced_sardine", 1, 1);
             BuildItemTask(builder, "agr_tsk_227", "rakaz_special", 1, 1);
             BuildItemTask(builder, "agr_tsk_228", "maringna", 1, 1);
             BuildItemTask(builder, "agr_tsk_229", "cooked_mackerel", 1, 1);

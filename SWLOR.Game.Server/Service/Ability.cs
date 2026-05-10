@@ -49,7 +49,28 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
+            ApplyAIEvaluationDefaults();
+
             Console.WriteLine($"Loaded {_abilities.Count} abilities.");
+        }
+
+        private static void ApplyAIEvaluationDefaults()
+        {
+            var sorted = _abilities.OrderBy(x => (int)x.Key).ToList();
+            var order = 1;
+            foreach (var (_, detail) in sorted)
+            {
+                if (detail.AIEvaluationOrder <= 0)
+                    detail.AIEvaluationOrder = order;
+
+                if (detail.AITargetType == AIService.AITargetType.CurrentTarget && !detail.RequiresTarget && !detail.IsHostileAbility)
+                    detail.AITargetType = AIService.AITargetType.Self;
+
+                if (detail.AIPhase == AIService.AIPhaseType.Damage && !detail.IsHostileAbility)
+                    detail.AIPhase = AIService.AIPhaseType.Support;
+
+                order++;
+            }
         }
 
         /// <summary>

@@ -12,6 +12,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.SpaceService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -1549,17 +1550,17 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Gets the ability score stat used by the attacking ship.
-        /// If attacker has the Intuitive Piloting feat and WIL > PER, then WIL is returned.
+        /// If attacker can use Willpower for module effectiveness and WIL > PER, then WIL is returned.
         /// Otherwise returns PER
         /// </summary>
         /// <param name="attacker">The attacker to check</param>
-        /// <returns>The raw stat value of the attacker. This will be either WIL or PER depending on Intuitive Piloting.</returns>
+        /// <returns>The raw stat value of the attacker. This will be either WIL or PER depending on available stat adjustments.</returns>
         public static int GetAttackStat(uint attacker)
         {
             var wil = GetAbilityScore(attacker, AbilityType.Willpower);
             var per = GetAbilityScore(attacker, AbilityType.Perception);
 
-            if (GetHasFeat(FeatType.IntuitivePiloting, attacker) && wil > per)
+            if (Stat.GetStatAdjustment(attacker, StatType.UseWillpowerForPilotingModuleEffectiveness) > 0 && wil > per)
             {
                 return wil;
             }

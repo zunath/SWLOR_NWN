@@ -5,7 +5,6 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.LogService;
-using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -363,22 +362,26 @@ namespace SWLOR.Game.Server.Service
 
         public static AbilityType GetWeaponDamageAbilityType(uint creature, BaseItem weaponType)
         {
-            if (Item.StaffBaseItemTypes.Contains(weaponType) &&
-                Perk.GetPerkLevel(creature, PerkType.FlurryStyle) > 0)
-            {
-                return AbilityType.Perception;
-            }
+            var overrideAbility = GetAbilityOverride(
+                creature,
+                weaponType,
+                Item.StaffBaseItemTypes,
+                StatType.StaffDamageAbilityOverride);
+            if (overrideAbility != AbilityType.Invalid)
+                return overrideAbility;
 
             return Item.GetWeaponDamageAbilityType(weaponType);
         }
 
         public static AbilityType GetWeaponAccuracyAbilityType(uint creature, BaseItem weaponType)
         {
-            if (Item.StaffBaseItemTypes.Contains(weaponType) &&
-                Perk.GetPerkLevel(creature, PerkType.FlurryStyle) > 0)
-            {
-                return AbilityType.Agility;
-            }
+            var overrideAbility = GetAbilityOverride(
+                creature,
+                weaponType,
+                Item.StaffBaseItemTypes,
+                StatType.StaffAccuracyAbilityOverride);
+            if (overrideAbility != AbilityType.Invalid)
+                return overrideAbility;
 
             return Item.GetWeaponAccuracyAbilityType(weaponType);
         }
@@ -387,13 +390,29 @@ namespace SWLOR.Game.Server.Service
         {
             var bonus = GetPowerAttackDMGBonus(attacker);
 
-            if (Item.StaffBaseItemTypes.Contains(weaponType) &&
-                Perk.GetPerkLevel(attacker, PerkType.CrushingStyle) > 0)
+            if (Item.StaffBaseItemTypes.Contains(weaponType))
             {
-                bonus += Math.Max(0, GetAbilityModifier(AbilityType.Might, attacker));
+                var mightMultiplier = Stat.GetStatAdjustment(attacker, StatType.StaffMightModifierDamageMultiplier);
+                bonus += Math.Max(0, GetAbilityModifier(AbilityType.Might, attacker)) * mightMultiplier;
             }
 
             return bonus;
+        }
+
+        private static AbilityType GetAbilityOverride(
+            uint creature,
+            BaseItem weaponType,
+            IReadOnlyCollection<BaseItem> weaponTypes,
+            StatType statType)
+        {
+            if (!weaponTypes.Contains(weaponType))
+                return AbilityType.Invalid;
+
+            var value = Stat.GetStatAdjustment(creature, statType);
+            if (value <= 0 || value > (int)AbilityType.Social + 1)
+                return AbilityType.Invalid;
+
+            return (AbilityType)(value - 1);
         }
 
         /// <summary>
@@ -498,7 +517,7 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Calculates the attack delay reduction percentage based on creature perks and active speed effects.
+        /// Calculates the attack delay reduction percentage based on stat adjustments and active speed effects.
         /// Cumulative reductions are capped at 50%.
         /// </summary>
         /// <param name="attacker">The creature to calculate delay reduction for.</param>
@@ -508,35 +527,9 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(attacker))
                 return 0;
 
-            var totalReduction = 0;
-
-            totalReduction += Stat.GetStatAdjustment(attacker, StatType.AttackDelayReductionPercent);
-
-            var beastSpeedLevel = Perk.GetPerkLevel(attacker, PerkType.BeastSpeed);
-            if (beastSpeedLevel > 0)
-                totalReduction += beastSpeedLevel * 10;
-
-            var rapidShotLevel = Perk.GetPerkLevel(attacker, PerkType.RapidShot);
-            if (rapidShotLevel > 0 && IsWieldingWeapon(attacker, Item.PistolBaseItemTypes))
-                totalReduction += rapidShotLevel * 10;
-
-            if (Perk.GetPerkLevel(attacker, PerkType.FlurryStyle) > 0 &&
-                IsWieldingWeapon(attacker, Item.StaffBaseItemTypes))
-            {
-                totalReduction += 10;
-            }
+            var totalReduction = Stat.GetStatAdjustment(attacker, StatType.AttackDelayReductionPercent);
 
             return Math.Min(totalReduction, 50);
-        }
-
-        private static bool IsWieldingWeapon(uint creature, IReadOnlyCollection<BaseItem> weaponTypes)
-        {
-            var rightHand = GetItemInSlot(InventorySlot.RightHand, creature);
-            if (GetIsObjectValid(rightHand) && weaponTypes.Contains(GetBaseItemType(rightHand)))
-                return true;
-
-            var leftHand = GetItemInSlot(InventorySlot.LeftHand, creature);
-            return GetIsObjectValid(leftHand) && weaponTypes.Contains(GetBaseItemType(leftHand));
         }
 
         private static int GetWeaponDelay(uint item)

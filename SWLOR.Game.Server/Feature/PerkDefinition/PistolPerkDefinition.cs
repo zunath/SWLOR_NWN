@@ -1,5 +1,6 @@
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 using System.Collections.Generic;
 
@@ -298,16 +299,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Reduces pistol attack delay by 10%.")
+                .IncreasesStat(StatType.AttackDelayReductionPercent, creature => EquipmentPredicates.HasPistol(creature) ? 10 : 0)
                 .Price(3)
                 .RequirementSkill(SkillType.Pistol, 12)
 
                 .AddPerkLevel()
                 .Description("Reduces pistol attack delay by 20% total.")
+                .IncreasesStat(StatType.AttackDelayReductionPercent, creature => EquipmentPredicates.HasPistol(creature) ? 20 : 0)
                 .Price(2)
                 .RequirementSkill(SkillType.Pistol, 32)
 
                 .AddPerkLevel()
                 .Description("Reduces pistol attack delay by 30% total. Auto-attacks have a 10% chance to restore 2 STM.")
+                .IncreasesStat(StatType.AttackDelayReductionPercent, creature => EquipmentPredicates.HasPistol(creature) ? 30 : 0)
                 .Price(4)
                 .RequirementSkill(SkillType.Pistol, 48);
         }

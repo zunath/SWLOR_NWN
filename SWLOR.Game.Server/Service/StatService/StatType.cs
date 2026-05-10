@@ -38,6 +38,11 @@ namespace SWLOR.Game.Server.Service.StatService
         StaminaRegen = 33,
         RestRegen = 34,
         AbilityRecastReductionPercent = 35,
-        MovementSpeedPercentAdjustment = 36
+        MovementSpeedPercentAdjustment = 36,
+        UseWillpowerForPilotingModuleEffectiveness = 37,
+        CriticalRatePercentAdjustment = 38,
+        StaffDamageAbilityOverride = 39,
+        StaffAccuracyAbilityOverride = 40,
+        StaffMightModifierDamageMultiplier = 41
     }
 }

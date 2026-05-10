@@ -9,6 +9,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
     public class StaffPerkDefinition: IPerkListDefinition
     {
         private readonly PerkBuilder _builder = new();
+        private static int AbilityStatValue(AbilityType ability) => (int)ability + 1;
 
         public Dictionary<PerkType, PerkDetail> BuildPerks()
         {
@@ -82,6 +83,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("You gain bonus damage with staves equal to your MGT modifier and +10% critical chance.")
+                .IncreasesStat(StatType.StaffMightModifierDamageMultiplier, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 1 : 0)
+                .IncreasesStat(StatType.CriticalRatePercentAdjustment, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 10 : 0)
                 .Price(3)
                 .RequirementSkill(SkillType.Staff, 5);
         }
@@ -98,11 +101,15 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Bonus damage with staves increases to 2x your MGT modifier and critical chance increases by an additional 10%.")
+                .IncreasesStat(StatType.StaffMightModifierDamageMultiplier, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 1 : 0)
+                .IncreasesStat(StatType.CriticalRatePercentAdjustment, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 10 : 0)
                 .Price(2)
                 .RequirementSkill(SkillType.Staff, 32)
 
                 .AddPerkLevel()
                 .Description("Staff critical hits deal +20% damage and restore 4 STM. This can only trigger once every 6 seconds.")
+                .IncreasesStat(StatType.StaffMightModifierDamageMultiplier, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 1 : 0)
+                .IncreasesStat(StatType.CriticalRatePercentAdjustment, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 10 : 0)
                 .Price(4)
                 .RequirementSkill(SkillType.Staff, 48);
         }
@@ -114,6 +121,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Staves use AGI to-hit and PER for damage. Staff attack delay is reduced by 10%.")
+                .IncreasesStat(StatType.StaffDamageAbilityOverride, creature => EquipmentPredicates.HasMainHandStaff(creature) ? AbilityStatValue(AbilityType.Perception) : 0)
+                .IncreasesStat(StatType.StaffAccuracyAbilityOverride, creature => EquipmentPredicates.HasMainHandStaff(creature) ? AbilityStatValue(AbilityType.Agility) : 0)
+                .IncreasesStat(StatType.AttackDelayReductionPercent, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 10 : 0)
                 .Price(2)
                 .RequirementSkill(SkillType.Staff, 5);
         }

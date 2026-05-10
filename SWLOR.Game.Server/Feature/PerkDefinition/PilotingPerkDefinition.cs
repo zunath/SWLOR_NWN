@@ -1,5 +1,6 @@
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatService;
 using System.Collections.Generic;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
@@ -77,7 +78,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Allows for Willpower to be used in place of Perception for starship module effectiveness.")
-                .Price(3);
+                .Price(3)
+                .IncreasesStat(StatType.UseWillpowerForPilotingModuleEffectiveness, 1);
         }
 
 

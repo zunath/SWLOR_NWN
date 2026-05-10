@@ -3,7 +3,7 @@ using NWNX.NET;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.LogService;
-using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWNX;
 using System.Runtime.InteropServices;
 using AttackType = SWLOR.Game.Server.Enumeration.AttackType;
@@ -362,12 +362,7 @@ namespace SWLOR.Game.Server.Native
         private static int CalculateCriticalHitBonus(CNWSCreature attacker, CNWSItem weapon)
         {
             var criticalBonus = Math.Clamp((20 - attacker.m_pStats.GetCriticalHitRoll()) * 5, 0, 100);
-            if (weapon != null &&
-                Item.StaffBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem) &&
-                Perk.GetPerkLevel(attacker.m_idSelf, PerkType.CrushingStyle) > 0)
-            {
-                criticalBonus += 10;
-            }
+            criticalBonus += Stat.GetStatAdjustment(attacker.m_idSelf, StatType.CriticalRatePercentAdjustment);
 
             Log.Write(LogGroup.Attack, $"Base crit threat identified as: {criticalBonus}");
 

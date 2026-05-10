@@ -2,6 +2,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.NWN.API.NWScript.Enum;
 using System.Collections.Generic;
@@ -817,16 +818,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("The beast's attack delay reduces by 10%.")
+                .IncreasesStat(StatType.AttackDelayReductionPercent, 10)
                 .Price(3)
                 .RequirementBeastLevel(15)
 
                 .AddPerkLevel()
                 .Description("The beast's attack delay reduces by 20%.")
+                .IncreasesStat(StatType.AttackDelayReductionPercent, 20)
                 .Price(3)
                 .RequirementBeastLevel(30)
 
                 .AddPerkLevel()
                 .Description("The beast's attack delay reduces by 30%.")
+                .IncreasesStat(StatType.AttackDelayReductionPercent, 30)
                 .Price(3)
                 .RequirementBeastLevel(45);
         }

@@ -67,7 +67,7 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler(ScriptName.OnModulePreload)]
         public static void ProcessBootStart()
         {
-            _ = SendServerLifecycleNotification("Server boot process has started.");
+            _ = SendServerLifecycleNotification("Server boot process has started. Please wait until it is fully online before joining.");
         }
 
 

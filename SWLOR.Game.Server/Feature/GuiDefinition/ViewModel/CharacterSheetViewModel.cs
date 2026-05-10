@@ -27,7 +27,26 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private const int MaxPurchasedAttributeScore = 26;
         private const int RacialAttributeBonus = 1;
         private const int MaxRacialAttributeScore = MaxPurchasedAttributeScore + RacialAttributeBonus;
+        private const int StatsTabId = 0;
+        private const int ResistancesTabId = 1;
+        private const int CraftingTabId = 2;
+        public const string TabContentPartialElement = "character_sheet_tab_content";
+        public const string StatsTabPartial = "CHARACTER_SHEET_STATS_TAB";
+        public const string ResistancesTabPartial = "CHARACTER_SHEET_RESISTANCES_TAB";
+        public const string CraftingTabPartial = "CHARACTER_SHEET_CRAFTING_TAB";
+
         private uint _target;
+
+        public int SelectedTabId
+        {
+            get => Get<int>();
+            set
+            {
+                Set(value);
+
+                RestoreSelectedTabPartial();
+            }
+        }
 
         public bool IsPlayerMode
         {
@@ -119,6 +138,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         public string Name
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string IdentitySubtitle
         {
             get => Get<string>();
             set => Set(value);
@@ -223,6 +248,48 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public string Craftsmanship
         {
             get => Get<string>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<string> ResistanceNames
+        {
+            get => Get<GuiBindingList<string>>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<string> ResistanceScores
+        {
+            get => Get<GuiBindingList<string>>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<string> ResistanceDamageTaken
+        {
+            get => Get<GuiBindingList<string>>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<string> ResistanceStatusDurations
+        {
+            get => Get<GuiBindingList<string>>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<string> CraftNames
+        {
+            get => Get<GuiBindingList<string>>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<string> CraftControls
+        {
+            get => Get<GuiBindingList<string>>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<string> CraftCraftsmanship
+        {
+            get => Get<GuiBindingList<string>>();
             set => Set(value);
         }
 
@@ -368,59 +435,98 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             ShowModal(promptMessage, () =>
             {
-                if (GetResRef(GetArea(_target)) == "char_migration")
+                try
                 {
-                    FloatingTextStringOnCreature($"Stats cannot be upgraded in this area.", _target, false);
+                    if (GetResRef(GetArea(_target)) == "char_migration")
+                    {
+                        FloatingTextStringOnCreature($"Stats cannot be upgraded in this area.", _target, false);
+                        return;
+                    }
+
+                    playerId = GetObjectUUID(_target);
+                    dbPlayer = DB.Get<Player>(playerId);
+                    isRacial = dbPlayer.RacialStat == AbilityType.Invalid;
+                    var rawScore = CreaturePlugin.GetRawAbilityScore(_target, ability);
+                    var purchasedScore = GetPurchasedAttributeScore(dbPlayer, ability);
+
+                    if (isRacial)
+                    {
+                        if (rawScore >= MaxRacialAttributeScore || purchasedScore > MaxPurchasedAttributeScore)
+                        {
+                            FloatingTextStringOnCreature($"You cannot upgrade this attribute beyond {MaxRacialAttributeScore} with a racial bonus.", _target, false);
+                            return;
+                        }
+
+                        dbPlayer.RacialStat = ability;
+                    }
+                    else
+                    {
+                        if (purchasedScore >= MaxPurchasedAttributeScore)
+                        {
+                            FloatingTextStringOnCreature($"You cannot upgrade this attribute beyond {MaxPurchasedAttributeScore} with AP.", _target, false);
+                            return;
+                        }
+
+                        if (rawScore >= MaxRacialAttributeScore)
+                        {
+                            FloatingTextStringOnCreature($"You cannot upgrade this attribute beyond {MaxRacialAttributeScore}.", _target, false);
+                            return;
+                        }
+
+                        if (dbPlayer.UnallocatedAP <= 0)
+                        {
+                            FloatingTextStringOnCreature("You do not have enough AP to purchase this upgrade.", _target, false);
+                            return;
+                        }
+
+                        dbPlayer.UnallocatedAP--;
+                        dbPlayer.UpgradedStats[ability]++;
+                    }
+
+                    CreaturePlugin.ModifyRawAbilityScore(_target, ability, 1);
+
+                    DB.Set(dbPlayer);
+
+                    FloatingTextStringOnCreature($"Your {abilityName} attribute has increased!", _target, false);
+                    LoadData();
+                }
+                finally
+                {
+                    RestoreSelectedTabPartial();
+                }
+            }, RestoreSelectedTabPartial);
+        }
+
+        private void RestoreSelectedTabPartial()
+        {
+            void RefreshSelectedTabData()
+            {
+                if (!GetIsObjectValid(_target))
                     return;
-                }
 
-                playerId = GetObjectUUID(_target);
-                dbPlayer = DB.Get<Player>(playerId);
-                isRacial = dbPlayer.RacialStat == AbilityType.Invalid;
-                var rawScore = CreaturePlugin.GetRawAbilityScore(_target, ability);
-                var purchasedScore = GetPurchasedAttributeScore(dbPlayer, ability);
-
-                if (isRacial)
+                if (SelectedTabId == ResistancesTabId)
                 {
-                    if (rawScore >= MaxRacialAttributeScore || purchasedScore > MaxPurchasedAttributeScore)
-                    {
-                        FloatingTextStringOnCreature($"You cannot upgrade this attribute beyond {MaxRacialAttributeScore} with a racial bonus.", _target, false);
-                        return;
-                    }
-
-                    dbPlayer.RacialStat = ability;
+                    RefreshResistances();
                 }
-                else
+                else if (SelectedTabId == CraftingTabId)
                 {
-                    if (purchasedScore >= MaxPurchasedAttributeScore)
-                    {
-                        FloatingTextStringOnCreature($"You cannot upgrade this attribute beyond {MaxPurchasedAttributeScore} with AP.", _target, false);
-                        return;
-                    }
-
-                    if (rawScore >= MaxRacialAttributeScore)
-                    {
-                        FloatingTextStringOnCreature($"You cannot upgrade this attribute beyond {MaxRacialAttributeScore}.", _target, false);
-                        return;
-                    }
-
-                    if (dbPlayer.UnallocatedAP <= 0)
-                    {
-                        FloatingTextStringOnCreature("You do not have enough AP to purchase this upgrade.", _target, false);
-                        return;
-                    }
-
-                    dbPlayer.UnallocatedAP--;
-                    dbPlayer.UpgradedStats[ability]++;
+                    RefreshCraftingStats();
                 }
+            }
 
-                CreaturePlugin.ModifyRawAbilityScore(_target, ability, 1);
+            void ApplySelectedTabPartial()
+            {
+                RefreshSelectedTabData();
+                ChangePartialView(TabContentPartialElement, GetTabPartialName(SelectedTabId));
+                RefreshSelectedTabData();
+            }
 
-                DB.Set(dbPlayer);
-
-                FloatingTextStringOnCreature($"Your {abilityName} attribute has increased!", _target, false);
-                LoadData();
-            });
+            // Use the same root redraw path as modal close/open before replacing the nested tab panel.
+            ChangePartialView("_window_", "%%WINDOW_MAIN%%");
+            ApplySelectedTabPartial();
+            // NUI can drop nested partial layouts while its parent is being redrawn.
+            // Reapply on the next tick so tab switches use the same refresh path as modal swaps.
+            DelayCommand(0.0f, ApplySelectedTabPartial);
         }
 
         private bool IsAttributeUpgradeAvailable(Player dbPlayer, AbilityType ability, bool isRacialBonusAvailable)
@@ -505,10 +611,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Willpower = GetAbilityScore(_target, AbilityType.Willpower);
             Agility = GetAbilityScore(_target, AbilityType.Agility);
             Social = GetAbilityScore(_target, AbilityType.Social);
-            StatusResistances = Resistance.GetResistance(_target, ResistanceType.Mind) + "/" +
-                                Resistance.GetResistance(_target, ResistanceType.Mobility) + "/" +
-                                Resistance.GetResistance(_target, ResistanceType.Trauma) + "/" +
-                                Resistance.GetResistance(_target, ResistanceType.Disruption);
 
             if (IsPlayerMode)
             {
@@ -609,27 +711,98 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             DefensePhysical = Stat.GetDefense(_target, CombatDamageType.Physical, AbilityType.Vitality);
             DefenseForce = Stat.GetDefense(_target, CombatDamageType.Force, AbilityType.Willpower);
 
+            Accuracy = Stat.GetAccuracy(_target, mainHand, accuracyStatOverride, SkillType.Invalid);
+            Evasion = Stat.GetEvasion(_target, SkillType.Invalid);
+
+            RefreshResistances();
+            RefreshCraftingStats();
+        }
+
+        private static string GetStatusDurationLabel(int score)
+        {
+            return score switch
+            {
+                <= 0 => "Full Duration",
+                < 25 => "Slightly reduced",
+                < 45 => "Reduced",
+                < 60 => "Strongly reduced",
+                _ => "Greatly reduced"
+            };
+        }
+
+        private static string GetTabPartialName(int tabId)
+        {
+            return tabId switch
+            {
+                ResistancesTabId => ResistancesTabPartial,
+                CraftingTabId => CraftingTabPartial,
+                _ => StatsTabPartial
+            };
+        }
+
+        private void RefreshResistances()
+        {
+            var names = new GuiBindingList<string>();
+            var scores = new GuiBindingList<string>();
+            var damageTaken = new GuiBindingList<string>();
+            var statusDurations = new GuiBindingList<string>();
+
+            foreach (var resistanceType in Resistance.GetAllResistanceTypes())
+            {
+                var score = Resistance.GetResistance(_target, resistanceType);
+                var takenPercent = (int)Math.Round(Resistance.CalculateResistanceDamageMultiplier(_target, resistanceType) * 100f);
+
+                names.Add(resistanceType.ToString());
+                scores.Add(score.ToString());
+                damageTaken.Add($"{takenPercent}% taken");
+                statusDurations.Add(GetStatusDurationLabel(score));
+            }
+
+            ResistanceNames = names;
+            ResistanceScores = scores;
+            ResistanceDamageTaken = damageTaken;
+            ResistanceStatusDurations = statusDurations;
+
             var fireDefense = Resistance.GetResistance(_target, ResistanceType.Fire);
             var poisonDefense = Resistance.GetResistance(_target, ResistanceType.Poison);
             var electricalDefense = Resistance.GetResistance(_target, ResistanceType.Electrical);
             var iceDefense = Resistance.GetResistance(_target, ResistanceType.Ice);
             DefenseElemental = $"{fireDefense}/{poisonDefense}/{electricalDefense}/{iceDefense}";
 
-            Accuracy = Stat.GetAccuracy(_target, mainHand, accuracyStatOverride, SkillType.Invalid);
-            Evasion = Stat.GetEvasion(_target, SkillType.Invalid);
+            StatusResistances = Resistance.GetResistance(_target, ResistanceType.Mind) + "/" +
+                                Resistance.GetResistance(_target, ResistanceType.Mobility) + "/" +
+                                Resistance.GetResistance(_target, ResistanceType.Trauma) + "/" +
+                                Resistance.GetResistance(_target, ResistanceType.Disruption);
+        }
 
-            var smithery = Stat.CalculateControl(_target, SkillType.Smithery);
-            var engineering = Stat.CalculateControl(_target, SkillType.Engineering);
-            var fabrication = Stat.CalculateControl(_target, SkillType.Fabrication);
-            var agriculture = Stat.CalculateControl(_target, SkillType.Agriculture);
+        private void RefreshCraftingStats()
+        {
+            var names = new GuiBindingList<string>();
+            var controls = new GuiBindingList<string>();
+            var craftsmanship = new GuiBindingList<string>();
+            var legacyControl = string.Empty;
+            var legacyCraftsmanship = string.Empty;
 
-            Control = $"{smithery}/{engineering}/{fabrication}/{agriculture}";
+            var index = 0;
+            foreach (var (skillType, detail) in Skill.GetActiveCraftingSkills())
+            {
+                var control = Stat.CalculateControl(_target, skillType);
+                var craft = Stat.CalculateCraftsmanship(_target, skillType);
 
-            smithery = Stat.CalculateCraftsmanship(_target, SkillType.Smithery);
-            engineering = Stat.CalculateCraftsmanship(_target, SkillType.Engineering);
-            fabrication = Stat.CalculateCraftsmanship(_target, SkillType.Fabrication);
-            agriculture = Stat.CalculateCraftsmanship(_target, SkillType.Agriculture);
-            Craftsmanship = $"{smithery}/{engineering}/{fabrication}/{agriculture}";
+                names.Add(detail.Name);
+                controls.Add(control.ToString());
+                craftsmanship.Add(craft.ToString());
+
+                legacyControl += index == 0 ? control.ToString() : $"/{control}";
+                legacyCraftsmanship += index == 0 ? craft.ToString() : $"/{craft}";
+                index++;
+            }
+
+            CraftNames = names;
+            CraftControls = controls;
+            CraftCraftsmanship = craftsmanship;
+            Control = legacyControl;
+            Craftsmanship = legacyCraftsmanship;
         }
 
         private void RefreshAttributes()
@@ -662,12 +835,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             CharacterType = GetClassByPosition(1, _target) == ClassType.Standard ? "Standard" : "Force Sensitive";
             Race = GetStringByStrRef(Convert.ToInt32(Get2DAString("racialtypes", "Name", (int)GetRacialType(_target))), GetGender(_target));
+            IdentitySubtitle = $"{Race} - {CharacterType}";
             IsHolocomEnabled = !Space.IsPlayerInSpaceMode(_target);
 
             if (IsPlayerMode)
             {
                 APOrLevelLabel = "AP";
-                APOrLevelTooltip = "Ability Points - Used to increase your attributes.";
+                APOrLevelTooltip = "Increase attributes.";
             }
             else
             {
@@ -686,8 +860,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsPlayerMode = initialPayload.IsPlayerMode;
             ShowSP = IsPlayerMode || BeastMastery.IsPlayerBeast(_target);
             ShowAPOrLevel = ShowSP;
+            SelectedTabId = StatsTabId;
 
             LoadData();
+            WatchOnClient(model => model.SelectedTabId);
         }
 
         public void Refresh(ChangePortraitRefreshEvent payload)

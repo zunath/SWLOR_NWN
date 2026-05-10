@@ -44,10 +44,7 @@ namespace SWLOR.Game.Server.Feature
                 Log.Write(LogGroup.Server, "Server shutting down for automated restart.", true);
                 DelayCommand(0.1f, () =>
                 {
-                    SendServerLifecycleNotification("Automated restart has started. Server is shutting down now.")
-                        .ConfigureAwait(false)
-                        .GetAwaiter()
-                        .GetResult();
+                    SendServerLifecycleNotificationForShutdown("Automated restart has started. Server is shutting down now.");
                     AdministrationPlugin.ShutdownServer();
                 });
             }
@@ -67,6 +64,26 @@ namespace SWLOR.Game.Server.Feature
             _ = SendServerLifecycleNotification("Server boot process is complete. Server is fully online and available for play.");
         }
 
+
+        public static void SendServerLifecycleNotificationForShutdown(string message)
+        {
+            if (string.IsNullOrWhiteSpace(_appSettings.ServerNotificationWebhookUrl))
+                return;
+
+            try
+            {
+                var enqueueTask = SendServerLifecycleNotification(message);
+                var completedInTime = enqueueTask.Wait(TimeSpan.FromSeconds(2));
+                if (!completedInTime)
+                {
+                    Serilog.Log.Error("SendServerLifecycleNotificationForShutdown: Timed out waiting for SendServerLifecycleNotification before shutdown.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Serilog.Log.Error(ex, "SendServerLifecycleNotificationForShutdown: Unexpected error while waiting for SendServerLifecycleNotification before shutdown.");
+            }
+        }
         public static async Task<bool> SendServerLifecycleNotification(string message)
         {
             var url = _appSettings.ServerNotificationWebhookUrl;

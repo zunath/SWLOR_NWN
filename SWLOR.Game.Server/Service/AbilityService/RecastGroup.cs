@@ -411,6 +411,10 @@ namespace SWLOR.Game.Server.Service.AbilityService
         AbsoluteDefense = 202,
         [RecastGroup("Surge Strike", "Surge Strike", true)]
         SurgeStrike = 203,
+        [RecastGroup("Quick Draw", "Quick Draw", true)]
+        QuickDraw = 204,
+        [RecastGroup("Snap Roll", "Snap Roll", true)]
+        SnapRoll = 205,
     }
 
     public class RecastGroupAttribute: Attribute

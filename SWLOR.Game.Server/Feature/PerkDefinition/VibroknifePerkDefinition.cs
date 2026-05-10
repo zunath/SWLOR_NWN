@@ -1,5 +1,6 @@
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 using System.Collections.Generic;
 
@@ -93,6 +94,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("After landing a critical hit, gain +5% Accuracy for 30 seconds.")
+                .IncreasesStat(StatType.CriticalAccuracyPercentAdjustment, creature => EquipmentPredicates.HasMainHandVibroknife(creature) ? 5 : 0)
+                .IncreasesStat(StatType.CriticalAccuracyDurationSeconds, creature => EquipmentPredicates.HasMainHandVibroknife(creature) ? 30 : 0)
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroknife, 32);
         }
@@ -104,6 +107,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Auto-attacks have 15% chance to reduce target's Accuracy by 10% for 6s.")
+                .IncreasesStat(StatType.AutoAttackTargetAccuracyPercentAdjustmentChance, 15)
+                .IncreasesStat(StatType.AutoAttackTargetAccuracyPercentAdjustment, -10)
+                .IncreasesStat(StatType.AutoAttackTargetAccuracyPercentAdjustmentDurationSeconds, 6)
                 .Price(2)
                 .RequirementSkill(SkillType.Vibroknife, 5);
         }
@@ -145,6 +151,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Your critical hits reduce target's Evasion by 15% for 10s.")
+                .IncreasesStat(StatType.CriticalTargetEvasionPercentAdjustment, creature => EquipmentPredicates.HasMainHandVibroknife(creature) ? -15 : 0)
+                .IncreasesStat(StatType.CriticalTargetEvasionDurationSeconds, creature => EquipmentPredicates.HasMainHandVibroknife(creature) ? 10 : 0)
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroknife, 25);
         }
@@ -234,6 +242,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Deal +12% damage to enemies affected by any debuff.")
+                .IncreasesStat(StatType.DamageToDebuffedTargetPercentAdjustment, 12)
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroknife, 15);
         }
@@ -316,6 +325,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Critical hits deal +10% damage.")
+                .IncreasesStat(StatType.CriticalDamagePercentAdjustment, creature => EquipmentPredicates.HasMainHandVibroknife(creature) ? 10 : 0)
                 .Price(2)
                 .RequirementSkill(SkillType.Vibroknife, 5);
         }

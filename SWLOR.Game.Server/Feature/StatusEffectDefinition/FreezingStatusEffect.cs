@@ -10,6 +10,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         private readonly int _level;
         public override string Name => "Freezing";
         public override EffectIconType Icon => EffectIconType.DamageImmunityColdDecrease;
+        public override StatusEffectCategory Categories => StatusEffectCategory.Debuff;
         public override float Frequency => 6f;
 
         public FreezingStatusEffect()

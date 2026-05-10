@@ -63,6 +63,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Defeating an enemy restores 15 STM and grants +10% Haste for 30 seconds.")
+                .IncreasesStat(StatType.DefeatedEnemyStaminaRestore, 15)
+                .IncreasesStat(StatType.DefeatedEnemyAttackDelayReductionPercent, 10)
+                .IncreasesStat(StatType.DefeatedEnemyAttackDelayReductionDurationSeconds, 30)
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroblade, 50);
         }
@@ -127,6 +130,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Deal +15% damage to targets below 30% HP.")
+                .IncreasesStat(StatType.TargetLowHPDamageThresholdPercent, 30)
+                .IncreasesStat(StatType.TargetLowHPDamagePercentAdjustment, 15)
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroblade, 32);
         }
@@ -138,11 +143,17 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Grants +2 Will, +2 Fortitude, +2 Reflex with shield equipped.")
+                .IncreasesStat(StatType.WillSavingThrow, creature => EquipmentPredicates.HasOffHandShield(creature) ? 2 : 0)
+                .IncreasesStat(StatType.FortitudeSavingThrow, creature => EquipmentPredicates.HasOffHandShield(creature) ? 2 : 0)
+                .IncreasesStat(StatType.ReflexSavingThrow, creature => EquipmentPredicates.HasOffHandShield(creature) ? 2 : 0)
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroblade, 15)
 
                 .AddPerkLevel()
                 .Description("Grants +4 Will, +4 Fortitude, +4 Reflex with shield equipped total.")
+                .IncreasesStat(StatType.WillSavingThrow, creature => EquipmentPredicates.HasOffHandShield(creature) ? 4 : 0)
+                .IncreasesStat(StatType.FortitudeSavingThrow, creature => EquipmentPredicates.HasOffHandShield(creature) ? 4 : 0)
+                .IncreasesStat(StatType.ReflexSavingThrow, creature => EquipmentPredicates.HasOffHandShield(creature) ? 4 : 0)
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroblade, 38);
         }
@@ -291,6 +302,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Auto-attacks have 10% chance to deal +8 DMG.")
+                .IncreasesStat(StatType.AutoAttackDamageBonusChance, 10)
+                .IncreasesStat(StatType.AutoAttackDamageBonus, 8)
                 .Price(2)
                 .RequirementSkill(SkillType.Vibroblade, 5);
         }
@@ -326,6 +339,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("When you successfully deflect an attack with a shield, gain +3% Evasion and +3% Enmity for 10 seconds.")
+                .IncreasesStat(StatType.DeflectionEvasionPercentAdjustment, creature => EquipmentPredicates.HasOffHandShield(creature) ? 3 : 0)
+                .IncreasesStat(StatType.DeflectionEvasionEnmityPercentAdjustment, creature => EquipmentPredicates.HasOffHandShield(creature) ? 3 : 0)
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroblade, 5);
         }
@@ -349,6 +364,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("When reduced below 25% HP with shield equipped, gain +40% Physical Defense for 10s. Once per 5min.")
+                .IncreasesStat(StatType.LowHPPhysicalDefenseThresholdPercent, creature => EquipmentPredicates.HasOffHandShield(creature) ? 25 : 0)
+                .IncreasesStat(StatType.LowHPPhysicalDefensePercentAdjustment, creature => EquipmentPredicates.HasOffHandShield(creature) ? 40 : 0)
+                .IncreasesStat(StatType.LowHPPhysicalDefenseDurationSeconds, creature => EquipmentPredicates.HasOffHandShield(creature) ? 10 : 0)
+                .IncreasesStat(StatType.LowHPPhysicalDefenseCooldownSeconds, creature => EquipmentPredicates.HasOffHandShield(creature) ? 300 : 0)
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroblade, 42);
         }

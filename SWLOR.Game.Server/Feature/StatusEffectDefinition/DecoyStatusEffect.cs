@@ -8,6 +8,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     {
         public override string Name => "Decoy";
         public override EffectIconType Icon => EffectIconType.AttackDecrease;
+        public override StatusEffectCategory Categories => StatusEffectCategory.Debuff;
         public DecoyStatusEffect()
         {
             StatGroup.Stats[StatType.AccuracyPercentAdjustment] = -25;

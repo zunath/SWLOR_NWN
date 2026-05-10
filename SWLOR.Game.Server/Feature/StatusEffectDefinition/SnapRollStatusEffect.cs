@@ -9,8 +9,13 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override string Name => "Snap Roll";
         public override EffectIconType Icon => EffectIconType.ACIncrease;
         public SnapRollStatusEffect()
+            : this(25)
         {
-            StatGroup.Stats[StatType.EvasionPercentAdjustment] = 25;
+        }
+
+        public SnapRollStatusEffect(int evasionPercent)
+        {
+            StatGroup.Stats[StatType.EvasionPercentAdjustment] = evasionPercent;
         }
 
     }

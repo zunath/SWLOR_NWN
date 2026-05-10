@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.ActivityService;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
@@ -139,8 +140,23 @@ namespace SWLOR.Game.Server.Feature
         {
             foreach (var req in ability.Requirements)
             {
-                req.AfterActivationAction(activator);
+                req.AfterActivationAction(activator, ability);
             }
+        }
+
+        private static void ExecuteAbilityImpact(
+            uint activator,
+            uint target,
+            FeatType feat,
+            AbilityDetail ability,
+            Location targetLocation)
+        {
+            Ability.BeginAbilityImpact(activator, ability);
+            ability.ImpactAction?.Invoke(activator, target, ability.AbilityLevel, targetLocation);
+            var summary = Ability.EndAbilityImpact(activator);
+
+            Combat.ApplyAbilityActivatedEffects(activator, target, feat, ability, summary);
+            Combat.ApplyAbilityImpactEffects(activator, summary);
         }
 
 
@@ -163,6 +179,10 @@ namespace SWLOR.Game.Server.Feature
         {
             float CalculateActivationDelay()
             {
+                var abilitySkillType = Combat.GetAbilitySkillType(activator, ability);
+                if (Combat.ConsumeNextAbilityNoDelay(activator, abilitySkillType))
+                    return 0f;
+
                 var abilityDelay = ability.ActivationDelay?.Invoke(activator, target, ability.AbilityLevel) ?? 0.0f;
                 var delayAdjustment = Stat.GetStatAdjustment(activator, StatType.ActivationDelayFlatAdjustment);
 
@@ -253,7 +273,7 @@ namespace SWLOR.Game.Server.Feature
 
                 ApplyRequirementEffects(activator, ability);
                 HandleStealthBreaking(activator, ability);
-                ability.ImpactAction?.Invoke(activator, target, ability.AbilityLevel, targetLocation);
+                ExecuteAbilityImpact(activator, target, feat, ability, targetLocation);
                 Recast.ApplyRecastDelay(activator, ability.RecastGroup, abilityRecastDelay, false);
 
                 if (ability.ConcentrationStatusEffect != null)
@@ -393,7 +413,11 @@ namespace SWLOR.Game.Server.Feature
 
             var abilityDetail = Ability.GetAbilityDetail(activeWeaponAbility);
             HandleStealthBreaking(activator, abilityDetail);
+            Ability.BeginAbilityImpact(activator, abilityDetail);
             abilityDetail.ImpactAction?.Invoke(activator, target, activeAbilityEffectivePerkLevel, targetLocation);
+            var summary = Ability.EndAbilityImpact(activator);
+            Combat.ApplyAbilityActivatedEffects(activator, target, activeWeaponAbility, abilityDetail, summary);
+            Combat.ApplyAbilityImpactEffects(activator, summary);
 
             DeleteLocalString(activator, ActiveAbilityIdName);
             DeleteLocalInt(activator, ActiveAbilityFeatIdName);

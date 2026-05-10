@@ -1,4 +1,5 @@
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -59,6 +60,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("After using a pistol combat ability, your next auto-attack within 6 seconds deals +10 DMG.")
+                .IncreasesStat(StatType.PistolAbilityUsedNextAutoAttackDamageBonus, 10)
+                .IncreasesStat(StatType.PistolAbilityUsedNextAutoAttackDamageDurationSeconds, 6)
                 .Price(2)
                 .RequirementSkill(SkillType.Pistol, 22);
         }
@@ -118,6 +121,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Deal +12% pistol damage to enemies within 8 meters that are not targeting you.")
+                .IncreasesStat(StatType.DamageToNearbyNonTargetingTargetPercentAdjustment, creature => EquipmentPredicates.HasPistol(creature) ? 12 : 0)
                 .Price(3)
                 .RequirementSkill(SkillType.Pistol, 40);
         }
@@ -129,6 +133,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Using Snap Roll or Ricochet Shot reduces Disarming Shot cooldowns by 10 seconds.")
+                .IncreasesStat(StatType.AbilityUsedRecastReductionTriggerGroup, (int)RecastGroup.SnapRoll)
+                .IncreasesStat(StatType.AbilityUsedRecastReductionSecondaryTriggerGroup, (int)RecastGroup.RicochetShot)
+                .IncreasesStat(StatType.AbilityUsedRecastReductionTargetGroup, (int)RecastGroup.DisarmingShot)
+                .IncreasesStat(StatType.AbilityUsedRecastReductionSeconds, 10)
                 .Price(2)
                 .RequirementSkill(SkillType.Pistol, 32);
         }
@@ -246,6 +254,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("After using a pistol ability, gain +10% Evasion for 6 seconds.")
+                .IncreasesStat(StatType.PistolAbilityUsedEvasionPercentAdjustment, 10)
+                .IncreasesStat(StatType.PistolAbilityUsedEvasionDurationSeconds, 6)
                 .Price(2)
                 .RequirementSkill(SkillType.Pistol, 5);
         }
@@ -312,6 +322,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Reduces pistol attack delay by 30% total. Auto-attacks have a 10% chance to restore 2 STM.")
                 .IncreasesStat(StatType.AttackDelayReductionPercent, creature => EquipmentPredicates.HasPistol(creature) ? 30 : 0)
+                .IncreasesStat(StatType.AutoAttackStaminaRestoreChance, 10)
+                .IncreasesStat(StatType.AutoAttackStaminaRestore, 2)
                 .Price(4)
                 .RequirementSkill(SkillType.Pistol, 48);
         }
@@ -323,6 +335,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Defeating an enemy restores 10 STM and reduces Quick Draw cooldowns by 15 seconds.")
+                .IncreasesStat(StatType.DefeatedEnemyStaminaRestore, 10)
+                .IncreasesStat(StatType.DefeatedEnemyRecastReductionGroup, (int)RecastGroup.QuickDraw)
+                .IncreasesStat(StatType.DefeatedEnemyRecastReductionSeconds, 15)
                 .Price(2)
                 .RequirementSkill(SkillType.Pistol, 40);
         }
@@ -346,6 +361,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("When reduced below 40% HP, your next pistol ability costs 0 STM and grants +20% Evasion for 8 seconds. This can only trigger once every 2 minutes.")
+                .IncreasesStat(StatType.LowHPEvasionThresholdPercent, 40)
+                .IncreasesStat(StatType.LowHPEvasionPercentAdjustment, 20)
+                .IncreasesStat(StatType.LowHPEvasionDurationSeconds, 8)
+                .IncreasesStat(StatType.LowHPEvasionCooldownSeconds, 120)
+                .IncreasesStat(StatType.LowHPNextAbilityNoStaminaCostThresholdPercent, 40)
+                .IncreasesStat(StatType.LowHPNextAbilityNoStaminaCostSkillType, (int)SkillType.Pistol)
+                .IncreasesStat(StatType.LowHPNextAbilityNoStaminaCostDurationSeconds, 8)
+                .IncreasesStat(StatType.LowHPNextAbilityNoStaminaCostCooldownSeconds, 120)
                 .Price(4)
                 .RequirementSkill(SkillType.Pistol, 48);
         }

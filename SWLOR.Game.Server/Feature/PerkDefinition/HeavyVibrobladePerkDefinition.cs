@@ -108,6 +108,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("2% of the combat damage you deal is restored to your HP.")
+                .IncreasesStat(StatType.DamageDealtHPPercentRestore, 2)
                 .Price(3)
                 .RequirementSkill(SkillType.HeavyVibroblade, 45);
         }
@@ -214,6 +215,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("When you take damage, gain +8% Attack for 15 seconds.")
+                .IncreasesStat(StatType.DamageTakenAttackPercentAdjustment, 8)
+                .IncreasesStat(StatType.DamageTakenAttackDurationSeconds, 15)
                 .Price(2)
                 .RequirementSkill(SkillType.HeavyVibroblade, 5);
         }
@@ -263,6 +266,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Defeating an enemy restores 20% max HP to you and grants +15% Physical Defense to all nearby allies for 25 seconds.")
+                .IncreasesStat(StatType.DefeatedEnemyHPPercentRestore, 20)
+                .IncreasesStat(StatType.DefeatedEnemyNearbyAllyPhysicalDefensePercentAdjustment, 15)
+                .IncreasesStat(StatType.DefeatedEnemyNearbyAllyPhysicalDefenseDurationSeconds, 25)
                 .Price(4)
                 .RequirementSkill(SkillType.HeavyVibroblade, 48);
         }
@@ -288,6 +294,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("When reduced below 25% HP, perform a Fortitude DC15 check. If passed, gain a damage shield equal to 20% of maximum HP for 12 seconds. This can only trigger once per 10 minutes.")
+                .IncreasesStat(StatType.LowHPTemporaryHPThresholdPercent, 25)
+                .IncreasesStat(StatType.LowHPTemporaryHPPercent, 20)
+                .IncreasesStat(StatType.LowHPTemporaryHPDurationSeconds, 12)
+                .IncreasesStat(StatType.LowHPTemporaryHPCooldownSeconds, 600)
+                .IncreasesStat(StatType.LowHPTemporaryHPFortitudeSaveDC, 15)
                 .Price(3)
                 .RequirementSkill(SkillType.HeavyVibroblade, 20);
         }
@@ -363,7 +374,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Soul Barrier")
 
                 .AddPerkLevel()
-                .Description("When HP drops below 50% of maximum, a temporary shield forms which absorbs damage equal to 25% of max HP.")
+                .Description("When HP drops below 50% of maximum, a temporary shield forms which absorbs damage equal to 25% of max HP for 12 seconds. This can only trigger once every 3 minutes.")
+                .IncreasesStat(StatType.LowHPNoSaveTemporaryHPThresholdPercent, 50)
+                .IncreasesStat(StatType.LowHPNoSaveTemporaryHPPercent, 25)
+                .IncreasesStat(StatType.LowHPNoSaveTemporaryHPDurationSeconds, 12)
+                .IncreasesStat(StatType.LowHPNoSaveTemporaryHPCooldownSeconds, 180)
                 .Price(2)
                 .RequirementSkill(SkillType.HeavyVibroblade, 35);
         }
@@ -402,6 +417,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Defeating an enemy restores 15% max HP and grants +20% Attack for 30 seconds.")
+                .IncreasesStat(StatType.DefeatedEnemyHPPercentRestore, 15)
+                .IncreasesStat(StatType.DefeatedEnemyAttackPercentAdjustment, 20)
+                .IncreasesStat(StatType.DefeatedEnemyAttackDurationSeconds, 30)
                 .Price(4)
                 .RequirementSkill(SkillType.HeavyVibroblade, 48);
         }
@@ -485,6 +503,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Critical hits restore HP equal to 40% of damage dealt. Amount healed increases by 1% per Might. (Maximum 75%)")
+                .IncreasesStat(
+                    StatType.CriticalHPPercentOfDamageRestore,
+                    creature => EquipmentPredicates.HasMainHandHeavyVibroblade(creature)
+                        ? Math.Min(75, 40 + Math.Max(0, GetAbilityModifier(AbilityType.Might, creature)))
+                        : 0)
                 .Price(3)
                 .RequirementSkill(SkillType.HeavyVibroblade, 22);
         }

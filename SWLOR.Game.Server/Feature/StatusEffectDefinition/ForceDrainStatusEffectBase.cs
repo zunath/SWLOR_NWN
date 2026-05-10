@@ -10,6 +10,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public abstract class ForceDrainStatusEffectBase : StatusEffectBase
     {
         public override EffectIconType Icon => EffectIconType.LevelDrain;
+        public override StatusEffectCategory Categories => StatusEffectCategory.Debuff;
         public override float Frequency => 6f;
         public override bool PersistsOnLogout => false;
 

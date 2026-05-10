@@ -60,6 +60,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Critical staff hits inflict Exposed, reducing Defense by 10% for 10 seconds.")
+                .IncreasesStat(StatType.CriticalTargetDefensePercentAdjustment, creature => EquipmentPredicates.HasMainHandStaff(creature) ? -10 : 0)
+                .IncreasesStat(StatType.CriticalTargetDefenseDurationSeconds, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 10 : 0)
                 .Price(2)
                 .RequirementSkill(SkillType.Staff, 40);
         }
@@ -96,11 +98,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Critical staff hits deal +10% damage and restore 2 STM. This can only trigger once every 6 seconds.")
+                .IncreasesStat(StatType.CriticalDamagePercentAdjustment, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 10 : 0)
+                .IncreasesStat(StatType.CriticalStaminaRestore, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 2 : 0)
+                .IncreasesStat(StatType.CriticalStaminaRestoreSkillType, creature => EquipmentPredicates.HasMainHandStaff(creature) ? (int)SkillType.Staff : 0)
+                .IncreasesStat(StatType.CriticalStaminaRestoreCooldownSeconds, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 6 : 0)
                 .Price(3)
                 .RequirementSkill(SkillType.Staff, 12)
 
                 .AddPerkLevel()
                 .Description("Bonus damage with staves increases to 2x your MGT modifier and critical chance increases by an additional 10%.")
+                .IncreasesStat(StatType.CriticalDamagePercentAdjustment, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 10 : 0)
+                .IncreasesStat(StatType.CriticalStaminaRestore, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 2 : 0)
+                .IncreasesStat(StatType.CriticalStaminaRestoreSkillType, creature => EquipmentPredicates.HasMainHandStaff(creature) ? (int)SkillType.Staff : 0)
+                .IncreasesStat(StatType.CriticalStaminaRestoreCooldownSeconds, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 6 : 0)
                 .IncreasesStat(StatType.StaffMightModifierDamageMultiplier, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 1 : 0)
                 .IncreasesStat(StatType.CriticalRatePercentAdjustment, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 10 : 0)
                 .Price(2)
@@ -108,6 +118,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Staff critical hits deal +20% damage and restore 4 STM. This can only trigger once every 6 seconds.")
+                .IncreasesStat(StatType.CriticalDamagePercentAdjustment, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 20 : 0)
+                .IncreasesStat(StatType.CriticalStaminaRestore, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 4 : 0)
+                .IncreasesStat(StatType.CriticalStaminaRestoreSkillType, creature => EquipmentPredicates.HasMainHandStaff(creature) ? (int)SkillType.Staff : 0)
+                .IncreasesStat(StatType.CriticalStaminaRestoreCooldownSeconds, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 6 : 0)
                 .IncreasesStat(StatType.StaffMightModifierDamageMultiplier, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 1 : 0)
                 .IncreasesStat(StatType.CriticalRatePercentAdjustment, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 10 : 0)
                 .Price(4)
@@ -176,6 +190,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Staff combat abilities deal +10% damage to targets affected by Knockdown or Blind.")
+                .IncreasesStat(StatType.AbilityDamageToKnockdownOrBlindTargetPercentAdjustment, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 10 : 0)
                 .Price(2)
                 .RequirementSkill(SkillType.Staff, 22);
         }
@@ -234,6 +249,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("When reduced below 40% HP, gain +30% Evasion for 10 seconds. This can only trigger once every 3 minutes.")
+                .IncreasesStat(StatType.LowHPEvasionThresholdPercent, 40)
+                .IncreasesStat(StatType.LowHPEvasionPercentAdjustment, 30)
+                .IncreasesStat(StatType.LowHPEvasionDurationSeconds, 10)
+                .IncreasesStat(StatType.LowHPEvasionCooldownSeconds, 180)
                 .Price(4)
                 .RequirementSkill(SkillType.Staff, 48);
         }

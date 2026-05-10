@@ -15,6 +15,9 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override EffectIconType Icon => _isDazed
             ? EffectIconType.Dazed
             : EffectIconType.Invalid;
+        public override StatusEffectCategory Categories => _isDazed
+            ? StatusEffectCategory.Debuff | StatusEffectCategory.Control
+            : StatusEffectCategory.Debuff;
         public override StatusEffectCleanseType CleanseTypes => StatusEffectCleanseType.Purify | StatusEffectCleanseType.SoothePet;
 
         public override string CanApply(uint creature)

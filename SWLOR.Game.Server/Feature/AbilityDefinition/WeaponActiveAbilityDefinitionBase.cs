@@ -25,6 +25,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             Func<IStatusEffect> statusEffectFactory = null)
         {
             ability.HasActivationDelay(0f)
+                .SkillType(skill)
+                .IsSingleTargetAbility()
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
                     Ability.ApplyCombatImpact(
@@ -61,6 +63,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             int extraDamageWhenLowHp = 0)
         {
             ability.HasActivationDelay(0f)
+                .SkillType(skill)
+                .IsSingleTargetAbility()
                 .RequiresTarget()
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
@@ -95,6 +99,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             int bonusDamage = 0)
         {
             ability.HasActivationDelay(0f)
+                .SkillType(skill)
+                .IsSingleTargetAbility()
                 .RequiresTarget()
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
@@ -140,6 +146,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             Func<IStatusEffect> statusEffectFactory = null)
         {
             ability.HasActivationDelay(0f)
+                .SkillType(skill)
+                .IsSingleTargetAbility()
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
                     AssignCommand(target, () => ClearAllActions());
@@ -168,6 +176,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             bool centerOnActivator = false)
         {
             ability.HasActivationDelay(0f)
+                .SkillType(skill)
+                .IsAreaAbility()
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
                     Ability.ApplyTelegraphedCombatImpact(
@@ -209,12 +219,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
         protected static void ConfigureSelfStatus(AbilityBuilder ability, Type type, float duration, int stamina, Action<uint> additionalAction = null)
         {
+            ConfigureSelfStatus(ability, () => (IStatusEffect)Activator.CreateInstance(type), duration, stamina, additionalAction);
+        }
+
+        protected static void ConfigureSelfStatus(AbilityBuilder ability, Func<IStatusEffect> statusEffectFactory, float duration, int stamina, Action<uint> additionalAction = null)
+        {
             ability.HasActivationDelay(0f)
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
-                    StatusEffect.ApplyStatusEffect(activator, activator, type, duration);
+                    var statusEffect = statusEffectFactory();
+                    StatusEffect.ApplyStatusEffect(activator, activator, statusEffect, duration);
                     additionalAction?.Invoke(activator);
-                    CombatVisualEffect.ApplyStatusEffectVisual(activator, type, false);
+                    CombatVisualEffect.ApplyStatusEffectVisual(activator, statusEffect.GetType(), false);
                 })
                 .IsCastedAbility()
                 .BreaksStealth();

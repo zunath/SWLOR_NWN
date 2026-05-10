@@ -1,0 +1,34 @@
+using System.Collections.Generic;
+using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.NWN.API.NWScript.Enum;
+
+namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
+{
+    public class TwinInterceptAbilityDefinition : WeaponActiveAbilityDefinitionBase, IAbilityListDefinition
+    {
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        {
+            var builder = new AbilityBuilder();
+
+            builder.Create(FeatType.TwinIntercept1, PerkType.TwinIntercept)
+                .Name("Twin Intercept")
+                .Level(1)
+                .HasActivationDelay(0f)
+                .RequiresTarget()
+                .HasImpactAction((activator, target, level, targetLocation) =>
+                {
+                    var shield = Math.Max(1, (int)Math.Ceiling(GetMaxHitPoints(activator) * 0.2f));
+                    ApplyEffectToObject(DurationType.Temporary, EffectTemporaryHitpoints(shield), target, 8f);
+                    StatusEffect.ApplyStatusEffect(activator, target, typeof(TwinInterceptStatusEffect), 8f);
+                    Enmity.ModifyEnmityOnAll(activator, 450);
+                })
+                .IsCastedAbility()
+                .BreaksStealth()
+                .RequirementStamina(10);
+
+            return builder.Build();
+        }
+    }
+}

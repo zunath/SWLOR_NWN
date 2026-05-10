@@ -27,6 +27,9 @@ namespace SWLOR.Game.Server.Service
         private const float DefaultNPCMovementSpeedIncrease = 0.30f;
         private const int BaseLightsaberAttackDeflectionChance = 5;
         private const int MaximumAttackDeflectionChance = 100;
+        private const float DeflectionEvasionBoostDurationSeconds = 10f;
+        private const float DeflectionEnmityBoostDurationSeconds = 12f;
+        private const float DeflectionDefenseBoostDurationSeconds = 12f;
 
         /// <summary>
         /// When a player enters the server, reapply HP and temporary stats.
@@ -1001,7 +1004,30 @@ namespace SWLOR.Game.Server.Service
         private static int ApplyPostAttackStatusModifiers(uint creature, int attack)
         {
             var adjustment = GetStatAdjustment(creature, StatType.AttackPercentAdjustment);
+            adjustment += GetHighFPAndStaminaAttackAdjustment(creature);
             return Math.Max(1, ApplyPercentAdjustment(attack, adjustment));
+        }
+
+        private static int GetHighFPAndStaminaAttackAdjustment(uint creature)
+        {
+            var threshold = GetStatAdjustment(creature, StatType.HighFPAndStaminaAttackThresholdPercent);
+            var adjustment = GetStatAdjustment(creature, StatType.HighFPAndStaminaAttackPercentAdjustment);
+
+            if (threshold <= 0 || adjustment == 0)
+                return 0;
+
+            var currentFP = GetCurrentFP(creature);
+            var maxFP = GetMaxFP(creature);
+            var currentStamina = GetCurrentStamina(creature);
+            var maxStamina = GetMaxStamina(creature);
+
+            if (maxFP <= 0 || maxStamina <= 0)
+                return 0;
+
+            return currentFP >= maxFP * (threshold / 100f) &&
+                   currentStamina >= maxStamina * (threshold / 100f)
+                ? adjustment
+                : 0;
         }
 
         private static int ApplyPostDefenseStatusModifiers(uint creature, CombatDamageType type, int defense)
@@ -1311,6 +1337,14 @@ namespace SWLOR.Game.Server.Service
             var staminaRestore = GetStatAdjustment(creatureId, StatType.DeflectionStaminaRestore);
             var fpRestore = GetStatAdjustment(creatureId, StatType.DeflectionFPRestore);
             var staminaRestorePercent = GetStatAdjustment(creatureId, StatType.DeflectionStaminaRestorePercent);
+            var evasionBoost = GetStatAdjustment(creatureId, StatType.DeflectionEvasionPercentAdjustment);
+            var evasionEnmityBoost = GetStatAdjustment(creatureId, StatType.DeflectionEvasionEnmityPercentAdjustment);
+            var enmityBoost = GetStatAdjustment(creatureId, StatType.DeflectionEnmityPercentAdjustment);
+            var defenseBoost = GetStatAdjustment(creatureId, StatType.DeflectionDefensePercentAdjustment);
+            var forceDefenseBoost = GetStatAdjustment(creatureId, StatType.DeflectionForceDefensePercentAdjustment);
+            var nextAbilityDamagePerkType = GetStatAdjustment(creatureId, StatType.DeflectionNextAbilityDamageBonusPerkType);
+            var nextAbilityDamageBonus = GetStatAdjustment(creatureId, StatType.DeflectionNextAbilityDamageBonus);
+            var nextAbilityDamageDuration = GetStatAdjustment(creatureId, StatType.DeflectionNextAbilityDamageBonusDurationSeconds);
 
             if (staminaRestore > 0)
             {
@@ -1327,6 +1361,54 @@ namespace SWLOR.Game.Server.Service
                 var amount = (int)Math.Ceiling(GetMaxStamina(creatureId) * (staminaRestorePercent / 100f));
                 RestoreStamina(creatureId, amount);
             }
+
+            if (evasionBoost != 0 || evasionEnmityBoost != 0)
+            {
+                TemporaryStatModifier.Replace(
+                    creatureId,
+                    StatType.EvasionPercentAdjustment,
+                    evasionBoost,
+                    DeflectionEvasionBoostDurationSeconds,
+                    StatType.DeflectionEvasionPercentAdjustment);
+                TemporaryStatModifier.Replace(
+                    creatureId,
+                    StatType.EnmityPercentAdjustment,
+                    evasionEnmityBoost,
+                    DeflectionEvasionBoostDurationSeconds,
+                    StatType.DeflectionEvasionPercentAdjustment);
+            }
+
+            if (enmityBoost != 0)
+            {
+                TemporaryStatModifier.Replace(
+                    creatureId,
+                    StatType.EnmityPercentAdjustment,
+                    enmityBoost,
+                    DeflectionEnmityBoostDurationSeconds,
+                    StatType.DeflectionEnmityPercentAdjustment);
+            }
+
+            if (defenseBoost != 0 || forceDefenseBoost != 0)
+            {
+                TemporaryStatModifier.Replace(
+                    creatureId,
+                    StatType.PhysicalDefensePercentAdjustment,
+                    defenseBoost,
+                    DeflectionDefenseBoostDurationSeconds,
+                    StatType.DeflectionDefensePercentAdjustment);
+                TemporaryStatModifier.Replace(
+                    creatureId,
+                    StatType.ForceDefensePercentAdjustment,
+                    forceDefenseBoost,
+                    DeflectionDefenseBoostDurationSeconds,
+                    StatType.DeflectionDefensePercentAdjustment);
+            }
+
+            Combat.GrantNextAbilityDamageBonus(
+                creatureId,
+                nextAbilityDamagePerkType,
+                nextAbilityDamageBonus,
+                nextAbilityDamageDuration);
         }
 
         private static int ApplyPostAccuracyStatusModifiers(uint creature, int accuracy)
@@ -1369,8 +1451,9 @@ namespace SWLOR.Game.Server.Service
         {
             var statusAdjustment = StatusEffect.GetCreatureStatusEffects(creature).StatGroup.Stats[stat];
             var perkAdjustment = Perk.GetStatBonus(creature, stat);
+            var temporaryAdjustment = TemporaryStatModifier.GetStatAdjustment(creature, stat);
 
-            return statusAdjustment + perkAdjustment;
+            return statusAdjustment + perkAdjustment + temporaryAdjustment;
         }
 
         private static int ApplyPercentAdjustment(int value, int percentAdjustment)

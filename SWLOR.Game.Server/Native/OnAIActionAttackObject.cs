@@ -382,7 +382,8 @@ namespace SWLOR.Game.Server.Native
                 // Check attack delay before starting or processing combat
                 // First attack is always instant, subsequent attacks respect delay
                 // Skip delay check if target is dead
-                if (_creatureAttackDelays.ContainsKey(pCreature.m_idSelf) && !bTargetDead)
+                if (_creatureAttackDelays.ContainsKey(pCreature.m_idSelf) &&
+                    !bTargetDead)
                 {
                     var calculatedDelay = Combat.CalculateAttackDelay(pCreature.m_idSelf);
                     var delay = calculatedDelay + BaseAttackDelay;

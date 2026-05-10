@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
             RequiredFP = requiredFP;
         }
 
-        public string CheckRequirements(uint player)
+        public string CheckRequirements(uint player, AbilityDetail ability = null)
         {
             // DMs are assumed to be able to activate.
             if (GetIsDM(player)) return string.Empty;
@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
             return $"Not enough FP. (Required: {requiredFP})";
         }
 
-        public void AfterActivationAction(uint player)
+        public void AfterActivationAction(uint player, AbilityDetail ability = null)
         {
             if (GetIsDM(player)) return;
 

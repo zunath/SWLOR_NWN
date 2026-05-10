@@ -1,5 +1,6 @@
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 using System.Collections.Generic;
 
@@ -47,6 +48,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Deal +12% Throwing damage to bleeding targets.")
+                .IncreasesStat(StatType.DamageToBleedingTargetPercentAdjustment, creature => EquipmentPredicates.HasThrowing(creature) ? 12 : 0)
                 .Price(4)
                 .RequirementSkill(SkillType.Throwing, 28);
         }
@@ -58,6 +60,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Each enemy hit by a Throwing area ability grants +2% Attack for 10 seconds, up to +20%.")
+                .IncreasesStat(StatType.ThrowingAreaAbilityAttackPercentPerTarget, 2)
+                .IncreasesStat(StatType.ThrowingAreaAbilityAttackDurationSeconds, 10)
+                .IncreasesStat(StatType.ThrowingAreaAbilityAttackPercentMax, 20)
                 .Price(2)
                 .RequirementSkill(SkillType.Throwing, 40);
         }
@@ -81,6 +86,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Throwing combat abilities that hit 3 or more targets restore 4 STM.")
+                .IncreasesStat(StatType.ThrowingAreaAbilityMinTargetsStaminaRestoreThreshold, 3)
+                .IncreasesStat(StatType.ThrowingAreaAbilityMinTargetsStaminaRestore, 4)
                 .Price(2)
                 .RequirementSkill(SkillType.Throwing, 22);
         }
@@ -323,6 +330,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("After using a Throwing combat ability, your next auto-attack within 8 seconds deals +8 DMG.")
+                .IncreasesStat(StatType.ThrowingAbilityUsedNextAutoAttackDamageBonus, 8)
+                .IncreasesStat(StatType.ThrowingAbilityUsedNextAutoAttackDamageDurationSeconds, 8)
                 .Price(3)
                 .RequirementSkill(SkillType.Throwing, 12);
         }

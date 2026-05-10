@@ -8,6 +8,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     {
         public override string Name => "Stunned";
         public override EffectIconType Icon => EffectIconType.Stunned;
+        public override StatusEffectCategory Categories => StatusEffectCategory.Control;
         public override StatusEffectCleanseType CleanseTypes => StatusEffectCleanseType.Purify | StatusEffectCleanseType.SoothePet;
 
         protected override void Apply(uint creature, int durationTicks)

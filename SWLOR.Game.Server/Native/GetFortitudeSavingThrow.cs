@@ -1,6 +1,8 @@
 using NWN.Native.API;
 using NWNX.NET;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 using System.Runtime.InteropServices;
 using SavingThrow = NWN.Native.API.SavingThrow;
@@ -45,8 +47,9 @@ namespace SWLOR.Game.Server.Native
 
                 var effectBonus = CalculateEffectBonus(stats, bExcludeEffectBonus);
                 var featModifiers = CalculateFeatModifiers(stats);
+                var statBonus = Stat.GetStatAdjustment(stats.m_pBaseCreature.m_idSelf, StatType.FortitudeSavingThrow);
 
-                return CalculateTotal(stats, effectBonus, featModifiers);
+                return CalculateTotal(stats, effectBonus, featModifiers, statBonus);
             });
         }
 
@@ -87,13 +90,14 @@ namespace SWLOR.Game.Server.Native
                 : (sbyte)0;
         }
 
-        private static sbyte CalculateTotal(CNWSCreatureStats stats, int effectBonus, sbyte featModifiers)
+        private static sbyte CalculateTotal(CNWSCreatureStats stats, int effectBonus, sbyte featModifiers, int statBonus)
         {
             return (sbyte)(stats.m_nStrengthModifier +
                           stats.GetBaseFortSavingThrow() +
                           stats.m_nFortSavingThrowMisc +
                           effectBonus +
-                          featModifiers);
+                          featModifiers +
+                          statBonus);
         }
     }
 }

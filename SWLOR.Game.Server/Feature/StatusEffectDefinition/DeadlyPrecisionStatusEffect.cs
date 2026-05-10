@@ -10,6 +10,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override EffectIconType Icon => EffectIconType.DamageIncrease;
         public DeadlyPrecisionStatusEffect()
         {
+            StatGroup.Stats[StatType.CriticalRatePercentAdjustment] = 15;
             StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment] = -15;
             StatGroup.Stats[StatType.ForceDefensePercentAdjustment] = -15;
             StatGroup.Stats[StatType.EvasionPercentAdjustment] = -20;

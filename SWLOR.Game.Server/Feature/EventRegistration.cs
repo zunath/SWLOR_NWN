@@ -584,15 +584,5 @@ namespace SWLOR.Game.Server.Feature
             }, TimeSpan.FromSeconds(6));
         }
 
-        /// <summary>
-        /// A handful of NWNX functions require special calls to load persistence.
-        /// When the module loads, run those methods here.
-        /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleLoad)]
-        public static void TriggerNWNXPersistence()
-        {
-            var firstObject = GetFirstObjectInArea(GetFirstArea());
-            CreaturePlugin.SetCriticalRangeModifier(firstObject, 0, 0, true);
-        }
     }
 }

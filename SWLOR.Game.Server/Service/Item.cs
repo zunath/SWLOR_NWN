@@ -1097,20 +1097,6 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Retrieves the critical modifier for a given item type.
-        /// The value returned is based on the baseitems.2da file.
-        /// </summary>
-        /// <param name="type">The item type to check</param>
-        /// <returns>The critical modifer value.</returns>
-        public static int GetCriticalModifier(BaseItem type)
-        {
-            var mod = _2daCache[(int)type][1];
-            Log.Write(LogGroup.Attack, "Crit multiplier for item type " + type + " is " + mod);
-
-            return mod;
-        }
-
-        /// <summary>
         /// Reduces an item stack by a specific amount.
         /// If there are not enough items in the stack to reduce, false will be returned.
         /// If the stack size of the item will reach 0, the item is destroyed and true will be returned.

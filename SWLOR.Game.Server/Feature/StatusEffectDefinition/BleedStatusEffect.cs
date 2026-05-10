@@ -7,6 +7,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     {
         public override string Name => "Bleed";
         public override EffectIconType Icon => EffectIconType.Wounding;
+        public override StatusEffectCategory Categories => StatusEffectCategory.Debuff | StatusEffectCategory.Bleeding;
         public override StatusEffectCleanseType CleanseTypes =>
             StatusEffectCleanseType.Purify |
             StatusEffectCleanseType.TreatmentKit1 |

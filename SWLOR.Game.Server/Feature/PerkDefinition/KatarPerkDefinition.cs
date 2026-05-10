@@ -1,5 +1,6 @@
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 using System.Collections.Generic;
 
@@ -74,6 +75,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Critical hits against poisoned targets restore 4 STM.")
+                .IncreasesStat(StatType.CriticalPoisonedTargetStaminaRestore, creature => EquipmentPredicates.HasMainHandKatar(creature) ? 4 : 0)
                 .Price(2)
                 .RequirementSkill(SkillType.Katar, 32);
         }
@@ -340,6 +342,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Katar abilities deal +8% damage to targets affected by Poison or Disoriented.")
+                .IncreasesStat(StatType.DamageToPoisonedOrDisorientedTargetPercentAdjustment, creature => EquipmentPredicates.HasMainHandKatar(creature) ? 8 : 0)
                 .Price(2)
                 .RequirementSkill(SkillType.Katar, 22);
         }
@@ -387,6 +390,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Attacks against poisoned targets have a 15% chance to deal +6 DMG.")
+                .IncreasesStat(StatType.DamageToPoisonedTargetFlatBonusChance, 15)
+                .IncreasesStat(StatType.DamageToPoisonedTargetFlatBonus, 6)
                 .Price(3)
                 .RequirementSkill(SkillType.Katar, 12);
         }

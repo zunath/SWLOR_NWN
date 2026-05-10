@@ -8,6 +8,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     {
         public override string Name => "Essence Drain";
         public override EffectIconType Icon => EffectIconType.LevelDrain;
+        public override StatusEffectCategory Categories => StatusEffectCategory.Debuff;
         public EssenceDrainStatusEffect()
         {
             StatGroup.Stats[StatType.AttackPercentAdjustment] = -15;

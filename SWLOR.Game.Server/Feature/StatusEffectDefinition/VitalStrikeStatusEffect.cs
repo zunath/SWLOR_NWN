@@ -8,6 +8,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     {
         public override string Name => "Vital Strike";
         public override EffectIconType Icon => EffectIconType.DamageIncrease;
+        public override StatusEffectCategory Categories => StatusEffectCategory.Debuff;
         public VitalStrikeStatusEffect()
         {
             StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment] = -10;

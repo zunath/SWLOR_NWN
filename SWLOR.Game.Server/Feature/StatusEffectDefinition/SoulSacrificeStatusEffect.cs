@@ -11,6 +11,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public SoulSacrificeStatusEffect()
         {
             StatGroup.Stats[StatType.AttackPercentAdjustment] = 35;
+            StatGroup.Stats[StatType.CriticalRatePercentAdjustment] = 20;
         }
 
     }

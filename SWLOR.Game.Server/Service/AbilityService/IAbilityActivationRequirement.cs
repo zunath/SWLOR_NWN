@@ -2,7 +2,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
 {
     public interface IAbilityActivationRequirement
     {
-        string CheckRequirements(uint player);
-        void AfterActivationAction(uint player);
+        string CheckRequirements(uint player, AbilityDetail ability = null);
+        void AfterActivationAction(uint player, AbilityDetail ability = null);
     }
 }

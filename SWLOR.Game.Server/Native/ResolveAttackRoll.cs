@@ -85,7 +85,8 @@ namespace SWLOR.Game.Server.Native
                  * - Sneak Attack (/Death Attack)
                  *
                  * Armor Class doesn't exist, and non-creature objects are hit automatically.
-                 * Critical hits come from beating the opposed roll by 30 or more.  Crit immunity applies as normal.
+                 * Critical hits use SWLOR's PER vs MGT critical rate plus StatType modifiers.
+                 * Crit immunity applies as normal.
                  */
 
                 var attacker = CNWSCreature.FromPointer(thisPtr);
@@ -210,8 +211,8 @@ namespace SWLOR.Game.Server.Native
                 {
                     var criticalStat = attackerStats.GetDEXStat();
                     var criticalRoll = Random.Next(1, 100);
-                    var criticalBonus = CalculateCriticalHitBonus(attacker, weapon);
-                    var criticalRate = Combat.CalculateCriticalRate(criticalStat, defender.m_pStats.GetSTRStat(), criticalBonus);
+                    var criticalModifier = CalculateCriticalRateModifier(attacker);
+                    var criticalRate = Combat.CalculateCriticalRate(criticalStat, defender.m_pStats.GetSTRStat(), criticalModifier);
 
                     // Critical
                     if (criticalRoll <= criticalRate)
@@ -359,14 +360,13 @@ namespace SWLOR.Game.Server.Native
             return deflected;
         }
 
-        private static int CalculateCriticalHitBonus(CNWSCreature attacker, CNWSItem weapon)
+        private static int CalculateCriticalRateModifier(CNWSCreature attacker)
         {
-            var criticalBonus = Math.Clamp((20 - attacker.m_pStats.GetCriticalHitRoll()) * 5, 0, 100);
-            criticalBonus += Stat.GetStatAdjustment(attacker.m_idSelf, StatType.CriticalRatePercentAdjustment);
+            var criticalModifier = Stat.GetStatAdjustment(attacker.m_idSelf, StatType.CriticalRatePercentAdjustment);
 
-            Log.Write(LogGroup.Attack, $"Base crit threat identified as: {criticalBonus}");
+            Log.Write(LogGroup.Attack, $"SWLOR crit rate modifier: {criticalModifier}");
 
-            return criticalBonus;
+            return criticalModifier;
         }
 
     }

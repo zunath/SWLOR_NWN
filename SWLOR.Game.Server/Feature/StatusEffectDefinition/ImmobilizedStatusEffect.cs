@@ -7,6 +7,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     {
         public override string Name => "Immobilized";
         public override EffectIconType Icon => EffectIconType.Entangle;
+        public override StatusEffectCategory Categories => StatusEffectCategory.Control;
         public override StatusEffectCleanseType CleanseTypes => StatusEffectCleanseType.Purify | StatusEffectCleanseType.SoothePet;
 
         protected override void Apply(uint creature, int durationTicks)

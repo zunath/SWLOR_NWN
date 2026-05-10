@@ -8,6 +8,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         private readonly int _level;
         public override string Name => "Shock";
         public override EffectIconType Icon => EffectIconType.Shocked;
+        public override StatusEffectCategory Categories => StatusEffectCategory.Debuff;
         public override StatusEffectCleanseType CleanseTypes =>
             StatusEffectCleanseType.Purify |
             StatusEffectCleanseType.TreatmentKit2 |

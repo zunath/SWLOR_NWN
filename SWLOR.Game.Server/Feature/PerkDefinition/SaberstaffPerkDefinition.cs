@@ -46,6 +46,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("While both FP and STM are above 50%, gain +10% Attack and +10% Force Attack.")
+                .IncreasesStat(StatType.HighFPAndStaminaAttackThresholdPercent, 50)
+                .IncreasesStat(StatType.HighFPAndStaminaAttackPercentAdjustment, 10)
                 .Price(4)
                 .RequirementSkill(SkillType.Saberstaff, 48)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
@@ -111,18 +113,27 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Gain +5% Force Defense and saberstaff attacks restore 1 FP. FP restoration can only trigger once every 4 seconds.")
+                .IncreasesStat(StatType.ForceDefensePercentAdjustment, 5)
+                .IncreasesStat(StatType.AutoAttackFPRestore, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 1 : 0)
+                .IncreasesStat(StatType.AutoAttackFPRestoreCooldownSeconds, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 4 : 0)
                 .Price(2)
                 .RequirementSkill(SkillType.Saberstaff, 5)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
                 .Description("Saberstaff attacks restore 2 FP and your Force Defense bonus increases to +10% total.")
+                .IncreasesStat(StatType.ForceDefensePercentAdjustment, 10)
+                .IncreasesStat(StatType.AutoAttackFPRestore, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 2 : 0)
+                .IncreasesStat(StatType.AutoAttackFPRestoreCooldownSeconds, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 4 : 0)
                 .Price(3)
                 .RequirementSkill(SkillType.Saberstaff, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
                 .Description("Saberstaff attacks restore 3 FP and your Force Defense bonus increases to +15% total.")
+                .IncreasesStat(StatType.ForceDefensePercentAdjustment, 15)
+                .IncreasesStat(StatType.AutoAttackFPRestore, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 3 : 0)
+                .IncreasesStat(StatType.AutoAttackFPRestoreCooldownSeconds, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 4 : 0)
                 .Price(3)
                 .RequirementSkill(SkillType.Saberstaff, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
@@ -181,6 +192,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("After hitting 3 or more enemies with one saberstaff ability, gain +15% Haste and +10 Attack Deflection for 12 seconds.")
+                .IncreasesStat(StatType.SaberstaffAreaAbilityMinTargetsBuffThreshold, 3)
+                .IncreasesStat(StatType.SaberstaffAreaAbilityHastePercentAdjustment, 15)
+                .IncreasesStat(StatType.SaberstaffAreaAbilityAttackDeflection, 10)
+                .IncreasesStat(StatType.SaberstaffAreaAbilityBuffDurationSeconds, 12)
                 .Price(4)
                 .RequirementSkill(SkillType.Saberstaff, 48)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
@@ -259,6 +274,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Hitting 2 or more enemies with a saberstaff ability restores 2 FP and 2 STM. This can only trigger once every 4 seconds.")
+                .IncreasesStat(StatType.SaberstaffAreaAbilityMinTargetsResourceRestoreThreshold, 2)
+                .IncreasesStat(StatType.SaberstaffAreaAbilityFPRestore, 2)
+                .IncreasesStat(StatType.SaberstaffAreaAbilityStaminaRestore, 2)
+                .IncreasesStat(StatType.SaberstaffAreaAbilityResourceRestoreCooldownSeconds, 4)
                 .Price(3)
                 .RequirementSkill(SkillType.Saberstaff, 12)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
@@ -365,6 +384,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Gain +10 Attack Deflection. After deflecting an attack, your next Circle Slash deals +8 DMG.")
                 .IncreasesStat(StatType.AttackDeflection, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 10 : 0)
+                .IncreasesStat(StatType.DeflectionNextAbilityDamageBonusPerkType, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? (int)PerkType.CircleSlash : 0)
+                .IncreasesStat(StatType.DeflectionNextAbilityDamageBonus, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 8 : 0)
+                .IncreasesStat(StatType.DeflectionNextAbilityDamageBonusDurationSeconds, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 8 : 0)
                 .Price(2)
                 .RequirementSkill(SkillType.Saberstaff, 22)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -372,6 +394,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Gain +20 Attack Deflection total. Deflecting an attack restores 4 FP.")
                 .IncreasesStat(StatType.AttackDeflection, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 20 : 0)
+                .IncreasesStat(StatType.DeflectionNextAbilityDamageBonusPerkType, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? (int)PerkType.CircleSlash : 0)
+                .IncreasesStat(StatType.DeflectionNextAbilityDamageBonus, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 8 : 0)
+                .IncreasesStat(StatType.DeflectionNextAbilityDamageBonusDurationSeconds, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 8 : 0)
                 .IncreasesStat(StatType.DeflectionFPRestore, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 4 : 0)
                 .Price(2)
                 .RequirementSkill(SkillType.Saberstaff, 40)

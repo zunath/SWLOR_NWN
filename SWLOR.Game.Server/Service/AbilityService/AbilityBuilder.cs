@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -319,6 +320,29 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public AbilityBuilder Level(int level)
         {
             _activeAbility.AbilityLevel = level;
+
+            return this;
+        }
+
+        public AbilityBuilder SkillType(SkillType skillType)
+        {
+            _activeAbility.SkillType = skillType;
+
+            return this;
+        }
+
+        public AbilityBuilder IsAreaAbility()
+        {
+            _activeAbility.IsAreaAbility = true;
+            _activeAbility.IsSingleTargetAbility = false;
+
+            return this;
+        }
+
+        public AbilityBuilder IsSingleTargetAbility()
+        {
+            _activeAbility.IsSingleTargetAbility = true;
+            _activeAbility.IsAreaAbility = false;
 
             return this;
         }

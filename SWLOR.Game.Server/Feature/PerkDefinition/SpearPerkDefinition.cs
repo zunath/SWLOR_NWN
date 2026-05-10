@@ -1,5 +1,6 @@
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 using System.Collections.Generic;
 
@@ -224,6 +225,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Critical hit chance increases by 5%. Additionally, critical hits reduce FP by 10% of the damage dealt.")
+                .IncreasesStat(StatType.CriticalRatePercentAdjustment, creature => EquipmentPredicates.HasMainHandSpear(creature) ? 5 : 0)
+                .IncreasesStat(StatType.CriticalTargetFPLossPercentOfDamage, creature => EquipmentPredicates.HasMainHandSpear(creature) ? 10 : 0)
                 .Price(4)
                 .RequirementSkill(SkillType.Spear, 18);
         }
@@ -379,6 +382,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Critical hit rate increases by 10%. Additionally, if you were at the side of your target, crticial hits have a 35% chance to restore 15 STM.")
+                .IncreasesStat(StatType.CriticalRatePercentAdjustment, creature => EquipmentPredicates.HasMainHandSpear(creature) ? 10 : 0)
+                .IncreasesStat(StatType.CriticalSideAttackStaminaRestoreChance, creature => EquipmentPredicates.HasMainHandSpear(creature) ? 35 : 0)
+                .IncreasesStat(StatType.CriticalSideAttackStaminaRestore, creature => EquipmentPredicates.HasMainHandSpear(creature) ? 15 : 0)
                 .Price(3)
                 .RequirementSkill(SkillType.Spear, 38);
         }

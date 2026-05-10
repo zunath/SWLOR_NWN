@@ -9,6 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         private readonly int _level;
         public override string Name => "Burn";
         public override EffectIconType Icon => EffectIconType.Burning;
+        public override StatusEffectCategory Categories => StatusEffectCategory.Debuff;
         public override StatusEffectCleanseType CleanseTypes =>
             StatusEffectCleanseType.Purify |
             StatusEffectCleanseType.TreatmentKit2 |

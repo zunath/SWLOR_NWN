@@ -20,6 +20,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<FeatType, AbilityDetail> _abilities = new();
         private static readonly Dictionary<uint, ActiveConcentrationAbility> _activeConcentrationAbilities = new();
         private static readonly Dictionary<uint, PlayerAura> _playerAuras = new();
+        private static readonly Dictionary<uint, TrackedAbilityImpact> _trackedAbilityImpacts = new();
 
         private const int MaxNumberOfAuras = 4;
 
@@ -75,6 +76,70 @@ namespace SWLOR.Game.Server.Service
                 throw new KeyNotFoundException($"Feat '{featType}' is not registered to an ability.");
 
             return _abilities[featType];
+        }
+
+        public static void BeginAbilityImpact(uint activator, AbilityDetail ability)
+        {
+            if (!GetIsObjectValid(activator) || ability == null)
+                return;
+
+            var nextAbilityDamageBonus = Combat.ConsumeNextAbilityDamageBonus(activator, ability.EffectiveLevelPerkType);
+            BeginAbilityImpact(activator, ability, nextAbilityDamageBonus);
+        }
+
+        private static void BeginAbilityImpact(uint activator, AbilityDetail ability, int nextAbilityDamageBonus)
+        {
+            if (!GetIsObjectValid(activator) || ability == null)
+                return;
+
+            _trackedAbilityImpacts[activator] = new TrackedAbilityImpact(ability, nextAbilityDamageBonus);
+        }
+
+        public static AbilityImpactSummary EndAbilityImpact(uint activator)
+        {
+            if (!_trackedAbilityImpacts.TryGetValue(activator, out var impact))
+                return new AbilityImpactSummary();
+
+            _trackedAbilityImpacts.Remove(activator);
+            return impact.Summary;
+        }
+
+        private static TrackedAbilityImpact GetTrackedAbilityImpact(uint activator)
+        {
+            return _trackedAbilityImpacts.TryGetValue(activator, out var impact)
+                ? impact
+                : null;
+        }
+
+        private static void RecordAbilityImpactShape(uint activator, SkillType skillType, bool isArea)
+        {
+            var impact = GetTrackedAbilityImpact(activator);
+            if (impact == null)
+                return;
+
+            impact.RecordShape(skillType, isArea);
+        }
+
+        private static void RecordAbilityImpactTarget(uint activator, uint target, SkillType skillType, bool isArea)
+        {
+            var impact = GetTrackedAbilityImpact(activator);
+            if (impact == null || !GetIsObjectValid(target))
+                return;
+
+            impact.RecordShape(skillType, isArea);
+            impact.RecordTarget(target);
+        }
+
+        private static bool IsTrackedAbilityArea(uint activator)
+        {
+            var impact = GetTrackedAbilityImpact(activator);
+            return impact?.Summary.IsAreaAbility ?? false;
+        }
+
+        private static bool IsTrackedAbilitySingleTarget(uint activator)
+        {
+            var impact = GetTrackedAbilityImpact(activator);
+            return impact?.Summary.IsSingleTargetAbility ?? false;
         }
 
 
@@ -170,7 +235,7 @@ namespace SWLOR.Game.Server.Service
             // Perk-specific requirement checks
             foreach (var req in ability.Requirements)
             {
-                var requirementError = req.CheckRequirements(activator);
+                var requirementError = req.CheckRequirements(activator, ability);
                 if (!string.IsNullOrWhiteSpace(requirementError))
                 {
                     SendMessageToPC(activator, requirementError);
@@ -226,7 +291,7 @@ namespace SWLOR.Game.Server.Service
             // Perk-specific requirement checks
             foreach (var req in ability.Requirements)
             {
-                var requirementError = req.CheckRequirements(activator);
+                var requirementError = req.CheckRequirements(activator, ability);
                 if (!string.IsNullOrWhiteSpace(requirementError))
                 {
                     SendMessageToPC(activator, requirementError);
@@ -283,7 +348,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     foreach (var req in ability.Requirements)
                     {
-                        req.AfterActivationAction(creature);
+                        req.AfterActivationAction(creature, ability);
                     }
                 }
                 DeleteLocalBool(creature, "CONCENTRATION_FIRST_USE");
@@ -836,6 +901,7 @@ namespace SWLOR.Game.Server.Service
             Func<IStatusEffect> statusEffectFactory = null)
         {
             var totalDamage = 0;
+            RecordAbilityImpactShape(activator, skillType, isArea);
 
             if (isArea)
             {
@@ -912,6 +978,8 @@ namespace SWLOR.Game.Server.Service
             bool centerOnActivator = false,
             Func<IStatusEffect> statusEffectFactory = null)
         {
+            RecordAbilityImpactShape(activator, skillType, true);
+
             if (telegraphDuration <= 0f)
             {
                 ApplyCombatImpactInShape(
@@ -940,6 +1008,7 @@ namespace SWLOR.Game.Server.Service
                     : GetPosition(activator),
                 0f);
             var impactRotation = GetImpactRotationRadians(activator, target, targetLocation);
+            var trackedImpact = GetTrackedAbilityImpact(activator);
             var action = BuildTelegraphedCombatImpactAction(
                 skillType,
                 baseDamage,
@@ -950,7 +1019,9 @@ namespace SWLOR.Game.Server.Service
                 additionalStatusEffects,
                 statusEffectFactory,
                 shape,
-                areaVisualLocation);
+                areaVisualLocation,
+                trackedImpact?.Ability,
+                trackedImpact?.NextAbilityDamageBonus ?? 0);
 
             switch (shape)
             {
@@ -1009,6 +1080,8 @@ namespace SWLOR.Game.Server.Service
             bool centerOnActivator,
             Func<IStatusEffect> statusEffectFactory)
         {
+            RecordAbilityImpactShape(activator, skillType, true);
+
             var creatures = new List<uint>();
             var origin = shape == CombatImpactAreaShape.Sphere
                 ? Location(GetArea(activator), GetAreaImpactPosition(activator, target, targetLocation, centerOnActivator), 0f)
@@ -1069,7 +1142,9 @@ namespace SWLOR.Game.Server.Service
             IEnumerable<Type> additionalStatusEffects,
             Func<IStatusEffect> statusEffectFactory,
             CombatImpactAreaShape shape,
-            Location areaVisualLocation)
+            Location areaVisualLocation,
+            AbilityDetail ability,
+            int nextAbilityDamageBonus)
         {
             return (creator, creatures) =>
             {
@@ -1082,6 +1157,12 @@ namespace SWLOR.Game.Server.Service
 
                 if (hostileCreatures.Count <= 0)
                     return;
+
+                if (ability != null)
+                {
+                    BeginAbilityImpact(creator, ability, nextAbilityDamageBonus);
+                    RecordAbilityImpactShape(creator, skillType, true);
+                }
 
                 var areaVisualEffect = CombatVisualEffect.GetAreaImpactVisualEffect(
                     skillType,
@@ -1102,6 +1183,12 @@ namespace SWLOR.Game.Server.Service
                     duration,
                     additionalStatusEffects,
                     statusEffectFactory);
+
+                if (ability != null)
+                {
+                    var summary = EndAbilityImpact(creator);
+                    Combat.ApplyAbilityImpactEffects(creator, summary);
+                }
             };
         }
 
@@ -1238,6 +1325,7 @@ namespace SWLOR.Game.Server.Service
             if (damage > 0)
             {
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
+                Combat.ApplyDamageDealtEffects(activator, target, damage);
                 Enmity.ModifyEnmity(activator, target, damage + 100);
             }
 
@@ -1250,6 +1338,7 @@ namespace SWLOR.Game.Server.Service
             CombatVisualEffect.ApplyToObject(target, visualEffect);
 
             CombatPoint.AddCombatPoint(activator, target, skillType, 3);
+            RecordAbilityImpactTarget(activator, target, skillType, false);
             return damage;
         }
 
@@ -1258,14 +1347,35 @@ namespace SWLOR.Game.Server.Service
             if (baseDamage <= 0)
                 return 0;
 
+            var trackedImpact = GetTrackedAbilityImpact(activator);
             var ability = GetCombatImpactDamageAbility(skillType);
             var damage = baseDamage + Combat.GetAbilityDamageBonus(activator, skillType);
+            if (trackedImpact != null)
+            {
+                damage += trackedImpact.NextAbilityDamageBonus;
+            }
+
             var attack = Stat.GetAttack(activator, ability, skillType);
             var attackStat = GetAbilityScore(activator, ability);
             var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
             var defenderStat = GetAbilityModifier(AbilityType.Vitality, target);
-            var calculatedDamage = Combat.CalculateDamage(attack, damage, attackStat, defense, defenderStat, 0);
-            return Combat.ApplyDamageTakenModifiers(target, calculatedDamage);
+            var criticalRating = Combat.CalculateAbilityCriticalRating(activator, skillType, IsTrackedAbilityArea(activator));
+            var calculatedDamage = Combat.CalculateDamage(attack, damage, attackStat, defense, defenderStat, criticalRating);
+            calculatedDamage = Combat.ApplyDamageDealtModifiers(activator, target, calculatedDamage, skillType, true);
+            calculatedDamage = Combat.ApplyDamageTakenModifiers(target, calculatedDamage);
+
+            if (criticalRating > 0)
+            {
+                Combat.ApplyCriticalHitEffects(
+                    activator,
+                    target,
+                    calculatedDamage,
+                    criticalRating,
+                    IsTrackedAbilitySingleTarget(activator),
+                    skillType);
+            }
+
+            return calculatedDamage;
         }
 
         private static bool ApplyCombatImpactStatusEffect(
@@ -1381,6 +1491,57 @@ namespace SWLOR.Game.Server.Service
             var effect = EffectImmunity(immunity);
             effect = TagEffect(effect, effectTag);
             ApplyEffectToObject(DurationType.Temporary, effect, target, duration);
+        }
+
+        private sealed class TrackedAbilityImpact
+        {
+            private readonly HashSet<uint> _impactedTargets = new();
+
+            public AbilityDetail Ability { get; }
+            public AbilityImpactSummary Summary { get; }
+            public int NextAbilityDamageBonus { get; }
+
+            public TrackedAbilityImpact(AbilityDetail ability, int nextAbilityDamageBonus)
+            {
+                Ability = ability;
+                NextAbilityDamageBonus = nextAbilityDamageBonus;
+                Summary = new AbilityImpactSummary
+                {
+                    SkillType = ability.SkillType,
+                    IsAreaAbility = ability.IsAreaAbility,
+                    IsSingleTargetAbility = ability.IsSingleTargetAbility
+                };
+            }
+
+            public void RecordShape(SkillType skillType, bool isArea)
+            {
+                if (Summary.SkillType == SkillType.Invalid && skillType != SkillType.Invalid)
+                {
+                    Summary.SkillType = skillType;
+                }
+
+                if (isArea)
+                {
+                    Summary.IsAreaAbility = true;
+                    Summary.IsSingleTargetAbility = false;
+                }
+                else if (!Summary.IsAreaAbility)
+                {
+                    Summary.IsSingleTargetAbility = true;
+                }
+            }
+
+            public void RecordTarget(uint target)
+            {
+                _impactedTargets.Add(target);
+                Summary.ImpactedTargetCount = _impactedTargets.Count;
+
+                if (_impactedTargets.Count > 1)
+                {
+                    Summary.IsAreaAbility = true;
+                    Summary.IsSingleTargetAbility = false;
+                }
+            }
         }
     }
 }

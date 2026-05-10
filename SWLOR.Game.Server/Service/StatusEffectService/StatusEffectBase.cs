@@ -15,6 +15,7 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
         public virtual StatusEffectSourceType SourceType => StatusEffectSourceType.Normal;
         public abstract string Name { get; }
         public abstract EffectIconType Icon { get; }
+        public virtual StatusEffectCategory Categories => StatusEffectCategory.None;
         public virtual StatusEffectStackType StackingType => StatusEffectStackType.Disabled;
         public bool IsFlaggedForRemoval { get; protected set; }
         public virtual bool SendsApplicationMessage => true;

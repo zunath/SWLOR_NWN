@@ -1,5 +1,6 @@
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 using System.Collections.Generic;
 
@@ -130,6 +131,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Rifle critical hits restore 4 STM and cause your next Aimed Shot within 8 seconds to deal +10 DMG. This can only trigger once every 6 seconds.")
+                .IncreasesStat(StatType.CriticalStaminaRestore, creature => EquipmentPredicates.HasRifle(creature) ? 4 : 0)
+                .IncreasesStat(StatType.CriticalStaminaRestoreSkillType, creature => EquipmentPredicates.HasRifle(creature) ? (int)SkillType.Rifle : 0)
+                .IncreasesStat(StatType.CriticalStaminaRestoreCooldownSeconds, creature => EquipmentPredicates.HasRifle(creature) ? 6 : 0)
+                .IncreasesStat(StatType.CriticalNextAbilityDamageBonusTriggerSkillType, creature => EquipmentPredicates.HasRifle(creature) ? (int)SkillType.Rifle : 0)
+                .IncreasesStat(StatType.CriticalNextAbilityDamageBonusPerkType, creature => EquipmentPredicates.HasRifle(creature) ? (int)PerkType.AimedShot : 0)
+                .IncreasesStat(StatType.CriticalNextAbilityDamageBonus, creature => EquipmentPredicates.HasRifle(creature) ? 10 : 0)
+                .IncreasesStat(StatType.CriticalNextAbilityDamageBonusDurationSeconds, creature => EquipmentPredicates.HasRifle(creature) ? 8 : 0)
+                .IncreasesStat(StatType.CriticalNextAbilityDamageBonusCooldownSeconds, creature => EquipmentPredicates.HasRifle(creature) ? 6 : 0)
                 .Price(3)
                 .RequirementSkill(SkillType.Rifle, 38);
         }
@@ -278,6 +287,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Rifle critical hits deal +15% damage.")
+                .IncreasesStat(StatType.CriticalDamagePercentAdjustment, creature => EquipmentPredicates.HasRifle(creature) ? 15 : 0)
                 .Price(3)
                 .RequirementSkill(SkillType.Rifle, 20);
         }
@@ -301,6 +311,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Deal +10% rifle damage to enemies affected by Disoriented, Dazed, or tranquilizer effects.")
+                .IncreasesStat(StatType.DamageToDisorientedDazedTargetPercentAdjustment, creature => EquipmentPredicates.HasRifle(creature) ? 10 : 0)
                 .Price(2)
                 .RequirementSkill(SkillType.Rifle, 22);
         }
@@ -400,6 +411,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Rifle damage increases by 15% against enemies affected by any control effect.")
+                .IncreasesStat(StatType.DamageToControlTargetPercentAdjustment, creature => EquipmentPredicates.HasRifle(creature) ? 15 : 0)
                 .Price(4)
                 .RequirementSkill(SkillType.Rifle, 48);
         }

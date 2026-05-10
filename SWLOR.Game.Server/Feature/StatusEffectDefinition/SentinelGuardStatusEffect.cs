@@ -15,5 +15,13 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             StatGroup.Stats[StatType.AttackDeflection] = 10;
         }
 
+        protected override void Apply(uint creature, int durationTicks)
+        {
+            if (creature == Source)
+            {
+                StatGroup.Stats[StatType.EnmityPercentAdjustment] = 20;
+            }
+        }
+
     }
 }

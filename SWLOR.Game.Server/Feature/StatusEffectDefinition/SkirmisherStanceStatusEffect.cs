@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             StatGroup.Stats[StatType.AttackPercentAdjustment] = -10;
             StatGroup.Stats[StatType.EvasionPercentAdjustment] = 15;
+            StatGroup.Stats[StatType.EnmityPercentAdjustment] = -20;
         }
 
     }

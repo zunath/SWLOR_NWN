@@ -775,6 +775,14 @@ namespace SWLOR.Game.Server.Service
             return statusEffectClasses.Any(type => HasStatusEffect(creature, type));
         }
 
+        public static bool HasStatusEffectCategory(uint creature, StatusEffectCategory category)
+        {
+            return _creatureEffects.ContainsKey(creature) &&
+                   _creatureEffects[creature]
+                       .GetAllEffects()
+                       .Any(effect => (effect.Categories & category) == category);
+        }
+
         public static bool HasCleanseableStatusEffect(uint creature, StatusEffectCleanseType cleanseType)
         {
             return GetCreatureStatusEffects(creature)

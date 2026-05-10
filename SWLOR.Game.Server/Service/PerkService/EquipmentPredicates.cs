@@ -16,10 +16,35 @@ namespace SWLOR.Game.Server.Service.PerkService
             return HasItemInSlot(creature, InventorySlot.RightHand, Item.StaffBaseItemTypes);
         }
 
+        public static bool HasMainHandSpear(uint creature)
+        {
+            return HasItemInSlot(creature, InventorySlot.RightHand, Item.SpearBaseItemTypes);
+        }
+
         public static bool HasPistol(uint creature)
         {
             return HasItemInSlot(creature, InventorySlot.RightHand, Item.PistolBaseItemTypes) ||
                    HasItemInSlot(creature, InventorySlot.LeftHand, Item.PistolBaseItemTypes);
+        }
+
+        public static bool HasRifle(uint creature)
+        {
+            return HasItemInSlot(creature, InventorySlot.RightHand, Item.RifleBaseItemTypes);
+        }
+
+        public static bool HasThrowing(uint creature)
+        {
+            return HasItemInSlot(creature, InventorySlot.RightHand, Item.ThrowingWeaponBaseItemTypes);
+        }
+
+        public static bool HasMainHandKatar(uint creature)
+        {
+            return HasItemInSlot(creature, InventorySlot.RightHand, Item.KatarBaseItemTypes);
+        }
+
+        public static bool HasMainHandVibroknife(uint creature)
+        {
+            return HasItemInSlot(creature, InventorySlot.RightHand, Item.VibroknifeBaseItemTypes);
         }
 
         public static bool HasMainHandSaberstaff(uint creature)

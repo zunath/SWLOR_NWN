@@ -11,6 +11,7 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
         StatusEffectSourceType SourceType { get; }
         string Name { get; }
         EffectIconType Icon { get; }
+        StatusEffectCategory Categories { get; }
         StatusEffectStackType StackingType { get; }
         bool IsFlaggedForRemoval { get; }
         bool SendsApplicationMessage { get; }

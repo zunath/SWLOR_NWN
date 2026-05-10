@@ -125,6 +125,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Area Twin Blade abilities gain +10% critical chance and restore 1 STM per target hit, up to 5 STM.")
+                .IncreasesStat(StatType.TwinBladeAreaAbilityCriticalRatePercentAdjustment, 10)
+                .IncreasesStat(StatType.TwinBladeAreaAbilityStaminaRestorePerTarget, 1)
+                .IncreasesStat(StatType.TwinBladeAreaAbilityStaminaRestoreMax, 5)
                 .Price(4)
                 .RequirementSkill(SkillType.TwinBlade, 48);
         }
@@ -219,6 +222,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("After using a Twin Blade combat ability, gain +10% Evasion for 8 seconds.")
+                .IncreasesStat(StatType.TwinBladeAbilityUsedEvasionPercentAdjustment, 10)
+                .IncreasesStat(StatType.TwinBladeAbilityUsedEvasionDurationSeconds, 8)
                 .Price(2)
                 .RequirementSkill(SkillType.TwinBlade, 22);
         }
@@ -230,6 +235,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Using a single-target Twin Blade ability grants +8 Attack Deflection for 8 seconds.")
+                .IncreasesStat(StatType.TwinBladeSingleTargetAbilityAttackDeflection, 8)
+                .IncreasesStat(StatType.TwinBladeSingleTargetAbilityAttackDeflectionDurationSeconds, 8)
                 .Price(4)
                 .RequirementSkill(SkillType.TwinBlade, 28);
         }
@@ -241,6 +248,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("When hit by a target you damaged within the last 6 seconds, you have a 15% chance for your next Twin Blade ability to have no attack delay.")
+                .IncreasesStat(StatType.DamageTakenRecentTargetNextAbilityNoDelayChance, creature => EquipmentPredicates.HasMainHandTwinBlade(creature) ? 15 : 0)
+                .IncreasesStat(StatType.DamageTakenRecentTargetNextAbilityNoDelaySkillType, creature => EquipmentPredicates.HasMainHandTwinBlade(creature) ? (int)SkillType.TwinBlade : 0)
+                .IncreasesStat(StatType.DamageTakenRecentTargetWindowSeconds, creature => EquipmentPredicates.HasMainHandTwinBlade(creature) ? 6 : 0)
                 .Price(3)
                 .RequirementSkill(SkillType.TwinBlade, 20);
         }
@@ -252,11 +262,20 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Twin Blade abilities that hit 2 or more enemies grant +5% Haste for 8 seconds, up to +15%.")
+                .IncreasesStat(StatType.TwinBladeAreaAbilityMinTargetsHasteThreshold, 2)
+                .IncreasesStat(StatType.TwinBladeAreaAbilityHastePercentAdjustment, 5)
+                .IncreasesStat(StatType.TwinBladeAreaAbilityHasteDurationSeconds, 8)
+                .IncreasesStat(StatType.TwinBladeAreaAbilityHastePercentMax, 15)
                 .Price(3)
                 .RequirementSkill(SkillType.TwinBlade, 12)
 
                 .AddPerkLevel()
                 .Description("Momentum can stack up to +25% Haste and restores 2 STM whenever a stack is gained.")
+                .IncreasesStat(StatType.TwinBladeAreaAbilityMinTargetsHasteThreshold, 2)
+                .IncreasesStat(StatType.TwinBladeAreaAbilityHastePercentAdjustment, 5)
+                .IncreasesStat(StatType.TwinBladeAreaAbilityHasteDurationSeconds, 8)
+                .IncreasesStat(StatType.TwinBladeAreaAbilityHastePercentMax, 25)
+                .IncreasesStat(StatType.TwinBladeAreaAbilityStaminaRestoreOnHasteStack, 2)
                 .Price(2)
                 .RequirementSkill(SkillType.TwinBlade, 32);
         }
@@ -268,6 +287,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Single-target Twin Blade abilities restore 3 STM. Area Twin Blade abilities restore 1 STM per target hit, up to 5 STM. This can only trigger once every 8 seconds.")
+                .IncreasesStat(StatType.TwinBladeSingleTargetAbilityStaminaRestore, 3)
+                .IncreasesStat(StatType.TwinBladeSingleTargetAbilityStaminaRestoreCooldownSeconds, 8)
+                .IncreasesStat(StatType.TwinBladeAreaAbilityCooldownStaminaRestorePerTarget, 1)
+                .IncreasesStat(StatType.TwinBladeAreaAbilityCooldownStaminaRestoreMax, 5)
+                .IncreasesStat(StatType.TwinBladeAreaAbilityCooldownStaminaRestoreCooldownSeconds, 8)
                 .Price(4)
                 .RequirementSkill(SkillType.TwinBlade, 48);
         }
@@ -279,6 +303,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Single-target critical hits reduce the target's Defense by 10% for 10 seconds.")
+                .IncreasesStat(StatType.SingleTargetCriticalTargetDefensePercentAdjustment, creature => EquipmentPredicates.HasMainHandTwinBlade(creature) ? -10 : 0)
+                .IncreasesStat(StatType.SingleTargetCriticalTargetDefenseDurationSeconds, creature => EquipmentPredicates.HasMainHandTwinBlade(creature) ? 10 : 0)
                 .Price(3)
                 .RequirementSkill(SkillType.TwinBlade, 40);
         }
@@ -290,6 +316,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Deal +12% damage to targets affected by Weakened or Hamstring.")
+                .IncreasesStat(StatType.DamageToWeakenedOrHamstringTargetPercentAdjustment, 12)
                 .Price(2)
                 .RequirementSkill(SkillType.TwinBlade, 32);
         }

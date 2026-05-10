@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Service.SkillService;
 namespace SWLOR.Game.Server.Service.AbilityService
 {
     /// <summary>
@@ -12,22 +13,43 @@ namespace SWLOR.Game.Server.Service.AbilityService
             RequiredSTM = requiredSTM;
         }
 
-        public string CheckRequirements(uint player)
+        public string CheckRequirements(uint player, AbilityDetail ability = null)
         {
             // DMs are assumed to be able to activate.
             if (GetIsDM(player)) return string.Empty;
 
+            var requiredSTM = GetRequiredStaminaForCheck(player, ability);
             var stamina = Stat.GetCurrentStamina(player);
 
-            if (stamina >= RequiredSTM) return string.Empty;
-            return $"Not enough stamina. (Required: {RequiredSTM})";
+            if (stamina >= requiredSTM) return string.Empty;
+            return $"Not enough stamina. (Required: {requiredSTM})";
         }
 
-        public void AfterActivationAction(uint player)
+        public void AfterActivationAction(uint player, AbilityDetail ability = null)
         {
             if (GetIsDM(player)) return;
 
-            Stat.ReduceStamina(player, RequiredSTM);
+            var requiredSTM = GetRequiredStaminaForActivation(player, ability);
+            if (requiredSTM <= 0)
+                return;
+
+            Stat.ReduceStamina(player, requiredSTM);
+        }
+
+        private int GetRequiredStaminaForCheck(uint player, AbilityDetail ability)
+        {
+            var abilitySkillType = Combat.GetAbilitySkillType(player, ability);
+            return ability != null && abilitySkillType != SkillType.Invalid && Combat.HasNextAbilityNoStaminaCost(player, abilitySkillType)
+                ? 0
+                : RequiredSTM;
+        }
+
+        private int GetRequiredStaminaForActivation(uint player, AbilityDetail ability)
+        {
+            var abilitySkillType = Combat.GetAbilitySkillType(player, ability);
+            return ability != null && abilitySkillType != SkillType.Invalid && Combat.ConsumeNextAbilityNoStaminaCost(player, abilitySkillType)
+                ? 0
+                : RequiredSTM;
         }
     }
 }

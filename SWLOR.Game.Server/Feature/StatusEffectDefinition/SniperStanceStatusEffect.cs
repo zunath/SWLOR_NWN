@@ -11,6 +11,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public SniperStanceStatusEffect()
         {
             StatGroup.Stats[StatType.AttackPercentAdjustment] = 20;
+            StatGroup.Stats[StatType.CriticalDamagePercentAdjustment] = 15;
             StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment] = -20;
             StatGroup.Stats[StatType.ForceDefensePercentAdjustment] = -20;
             StatGroup.Stats[StatType.EvasionPercentAdjustment] = -20;

@@ -9,6 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         private readonly int _accuracyPenalty;
         public override string Name => "Flash";
         public override EffectIconType Icon => EffectIconType.Blindness;
+        public override StatusEffectCategory Categories => StatusEffectCategory.Debuff;
 
         public FlashStatusEffect()
             : this(2)

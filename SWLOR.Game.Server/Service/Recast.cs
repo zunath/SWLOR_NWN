@@ -132,5 +132,65 @@ namespace SWLOR.Game.Server.Service
             }
 
         }
+
+        public static void ReduceRecastDelay(uint activator, RecastGroup group, float reduceSeconds)
+        {
+            if (!GetIsObjectValid(activator) || group == RecastGroup.Invalid || reduceSeconds <= 0f)
+                return;
+
+            var now = DateTime.UtcNow;
+
+            if (!GetIsPC(activator) || GetIsDMPossessed(activator))
+            {
+                var localName = $"ABILITY_RECAST_ID_{(int)group}";
+                var unlockDate = GetLocalString(activator, localName);
+                if (string.IsNullOrWhiteSpace(unlockDate))
+                    return;
+
+                var dateTime = DateTime.ParseExact(unlockDate, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
+                if (dateTime <= now)
+                {
+                    DeleteLocalString(activator, localName);
+                    return;
+                }
+
+                var reducedDate = dateTime.AddSeconds(-reduceSeconds);
+                if (reducedDate <= now)
+                {
+                    DeleteLocalString(activator, localName);
+                }
+                else
+                {
+                    SetLocalString(activator, localName, reducedDate.ToString("yyyy-MM-dd HH:mm:ss"));
+                }
+            }
+            else if (GetIsPC(activator) && !GetIsDM(activator))
+            {
+                var playerId = GetObjectUUID(activator);
+                var dbPlayer = DB.Get<Player>(playerId);
+
+                if (!dbPlayer.RecastTimes.TryGetValue(group, out var unlockDate))
+                    return;
+
+                if (unlockDate <= now)
+                {
+                    dbPlayer.RecastTimes.Remove(group);
+                    DB.Set(dbPlayer);
+                    return;
+                }
+
+                var reducedDate = unlockDate.AddSeconds(-reduceSeconds);
+                if (reducedDate <= now)
+                {
+                    dbPlayer.RecastTimes.Remove(group);
+                }
+                else
+                {
+                    dbPlayer.RecastTimes[group] = reducedDate;
+                }
+
+                DB.Set(dbPlayer);
+            }
+        }
     }
 }

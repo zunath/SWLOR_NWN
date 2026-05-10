@@ -36,6 +36,8 @@ namespace SWLOR.Game.Server.Feature
             // Current time is within 30 seconds of the specified restart time.
             if ((now > RestartTime) && (now < restartRange))
             {
+                SendServerLifecycleNotificationForShutdown("Automated restart has started. Server is shutting down now.");
+
                 for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
                 {
                     ExportSingleCharacter(player);
@@ -45,8 +47,7 @@ namespace SWLOR.Game.Server.Feature
                 Log.Write(LogGroup.Server, "Server shutting down for automated restart.", true);
                 DelayCommand(0.1f, () =>
                 {
-                    SendServerLifecycleNotificationForShutdown("Automated restart has started. Server is shutting down now.");
-                    AdministrationPlugin.ShutdownServer();
+                    _ = Task.Run(() => AdministrationPlugin.ShutdownServer());
                 });
             }
         }

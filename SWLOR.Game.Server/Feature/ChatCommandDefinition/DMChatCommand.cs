@@ -798,13 +798,9 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     var cdKey = GetPCPublicCDKey(user);
                     var restartUtc = DateTime.UtcNow;
 
-                    Serilog.Log.Information(
-                        "Manual restart audit: InitiatorName={InitiatorName}, AccountName={AccountName}, CdKey={CdKey}, RestartUtc={RestartUtc}, Reason={Reason}",
-                        initiatorName,
-                        accountName,
-                        cdKey,
-                        restartUtc,
-                        "Manual /restartserver command");
+                    Log.Write(
+                        LogGroup.Server,
+                        $"Manual restart audit: InitiatorName={initiatorName}, AccountName={accountName}, CdKey={cdKey}, RestartUtc={restartUtc:O}, Reason=Manual /restartserver command");
 
                     var notificationMessage = $"Manual restart initiated by {initiatorName} ({accountName}) [{cdKey}] at {restartUtc:yyyy-MM-dd HH:mm:ss} UTC.";
                     ServerTasks.SendServerLifecycleNotificationForShutdown(notificationMessage);

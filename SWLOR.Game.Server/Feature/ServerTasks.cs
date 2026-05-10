@@ -82,12 +82,12 @@ namespace SWLOR.Game.Server.Feature
                 var completedInTime = enqueueTask.Wait(TimeSpan.FromSeconds(2));
                 if (!completedInTime)
                 {
-                    Serilog.Log.Error("SendServerLifecycleNotificationForShutdown: Timed out waiting for SendServerLifecycleNotification before shutdown.");
+                    Log.Write(LogGroup.Error, "SendServerLifecycleNotificationForShutdown: Timed out waiting for SendServerLifecycleNotification before shutdown.");
                 }
             }
             catch (Exception ex)
             {
-                Serilog.Log.Error(ex, "SendServerLifecycleNotificationForShutdown: Unexpected error while waiting for SendServerLifecycleNotification before shutdown.");
+                Log.Write(LogGroup.Error, $"SendServerLifecycleNotificationForShutdown: Unexpected error while waiting for SendServerLifecycleNotification before shutdown. {ex}");
             }
         }
         public static async Task<bool> SendServerLifecycleNotification(string message)
@@ -102,14 +102,14 @@ namespace SWLOR.Game.Server.Feature
                 var enqueued = await BackgroundJob.EnqueueDiscordWebhook(url, authorName, message, LifecycleNotificationColor);
                 if (!enqueued)
                 {
-                    Serilog.Log.Error("SendServerLifecycleNotification: BackgroundJob.EnqueueDiscordWebhook returned false for message: {Message}", message);
+                    Log.Write(LogGroup.Error, $"SendServerLifecycleNotification: BackgroundJob.EnqueueDiscordWebhook returned false for message: {message}");
                 }
 
                 return enqueued;
             }
             catch (Exception ex)
             {
-                Serilog.Log.Error(ex, "SendServerLifecycleNotification: BackgroundJob.EnqueueDiscordWebhook threw for message: {Message}", message);
+                Log.Write(LogGroup.Error, $"SendServerLifecycleNotification: BackgroundJob.EnqueueDiscordWebhook threw for message: {message}. {ex}");
                 return false;
             }
         }

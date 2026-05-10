@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -21,23 +22,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             return _builder.Build();
         }
 
-        private void Impact(uint activator, uint target, int immobilizeChance, float slowLength, int immobilizeDC)
+        private void Impact(uint activator, uint target, bool immobilizes, float duration)
         {
             if (GetFactionEqual(activator, target))
                 return;
 
             var statusEffect = typeof(HobbleStatusEffect);
-            if (immobilizeDC > 0)
+            if (immobilizes)
             {
-                var dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Fortitude, immobilizeDC);
-                var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
-                if (checkResult == SavingThrowResultType.Failed)
-                {
-                    statusEffect = typeof(ImmobilizedStatusEffect);
-                }
+                statusEffect = typeof(ImmobilizedStatusEffect);
             }
 
-            StatusEffect.ApplyStatusEffect(activator, target, statusEffect, slowLength);
+            StatusEffect.ApplyStatusEffect(activator, target, statusEffect, duration, CombatDamageType.Physical);
 
             CombatPoint.AddCombatPoint(activator, target, SkillType.Devices, 3);
             Enmity.ModifyEnmity(activator, target, 150);
@@ -59,7 +55,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 {
                     ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffect.Fnf_Dispel_Greater), string.Empty, RadiusSize.Large, (target) =>
                     {
-                        Impact(activator, target, 0, 4f, -1);
+                        Impact(activator, target, false, 4f);
                     });
                 });
         }
@@ -80,7 +76,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 {
                     ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffect.Fnf_Dispel_Greater), string.Empty, RadiusSize.Large, (target) =>
                     {
-                        Impact(activator, target, 30, 6f, 8);
+                        Impact(activator, target, true, 6f);
                     });
                 });
         }
@@ -101,7 +97,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 {
                     ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffect.Fnf_Dispel_Greater), string.Empty, RadiusSize.Large, (target) =>
                     {
-                        Impact(activator, target, 50, 8f, 12);
+                        Impact(activator, target, true, 8f);
                     });
                 });
         }

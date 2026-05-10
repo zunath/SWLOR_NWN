@@ -402,6 +402,15 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .RequirementPerk(PerkType.CookingRecipes, 1)
                 .Component("gimp_blood", 3)
                 .Component("kinrath_limb", 2);
+
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceFire1, "cen_res_fir1", 5, 1, "gimp_meat", 3, "waro_leg", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistancePoison1, "cen_res_psn1", 6, 1, "kath_blood", 3, "herb_v", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceElectrical1, "cen_res_elec1", 7, 1, "gimp_blood", 3, "kinrath_limb", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceIce1, "cen_res_ice1", 8, 1, "v_orange", 3, "herb_v", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceMind1, "cen_res_mnd1", 5, 1, "mynock_wing", 3, "mynock_meat", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceMobility1, "cen_res_mob1", 6, 1, "kinrath_limb", 3, "gimp_meat", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceTrauma1, "cen_res_tra1", 7, 1, "warocas_meat", 3, "v_pebble", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceDisruption1, "cen_res_dis1", 8, 1, "kinrath_meat", 3, "herb_v", 2);
         }
 
         private void Tier2()
@@ -796,6 +805,15 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .RequirementPerk(PerkType.CookingRecipes, 2)
                 .Component("nashtah_meat", 3)
                 .Component("raivor_scale", 2);
+
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceFire2, "cen_res_fir2", 15, 2, "nashtah_meat", 3, "nashtah_foot", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistancePoison2, "cen_res_psn2", 16, 2, "raivor_blood", 3, "herb_m", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceElectrical2, "cen_res_elec2", 17, 2, "raivor_scale", 3, "raivor_meat", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceIce2, "cen_res_ice2", 18, 2, "passion_fruit", 3, "herb_m", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceMind2, "cen_res_mnd2", 15, 2, "raivor_meat", 3, "raivor_scale", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceMobility2, "cen_res_mob2", 16, 2, "nashtah_foot", 3, "v_apple", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceTrauma2, "cen_res_tra2", 17, 2, "cairnmog_meat", 3, "passion_fruit", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceDisruption2, "cen_res_dis2", 18, 2, "cairnmog_meat", 3, "herb_m", 2);
         }
 
         private void Tier3()
@@ -1181,6 +1199,15 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .RequirementPerk(PerkType.CookingRecipes, 3)
                 .Component("viper_guts", 3)
                 .Component("aradile_tail", 2);
+
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceFire3, "cen_res_fir3", 25, 3, "amphi_blood", 3, "byysk_tail", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistancePoison3, "cen_res_psn3", 26, 3, "byysk_meat", 3, "herb_c", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceElectrical3, "cen_res_elec3", 27, 3, "aradile_tail", 3, "aradile_meat", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceIce3, "cen_res_ice3", 28, 3, "s_pineapple", 3, "herb_c", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceMind3, "cen_res_mnd3", 25, 3, "aradile_meat", 3, "aradile_tail", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceMobility3, "cen_res_mob3", 26, 3, "viper_meat", 3, "byysk_tail", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceTrauma3, "cen_res_tra3", 27, 3, "viper_guts", 3, "aradile_tail", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceDisruption3, "cen_res_dis3", 28, 3, "q_tiger_paw", 3, "herb_c", 2);
         }
 
         private void Tier4()
@@ -1578,6 +1605,15 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .RequirementPerk(PerkType.CookingRecipes, 4)
                 .Component("gimp_blood", 3)
                 .Component("kinrath_limb", 2);
+
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceFire4, "cen_res_fir4", 35, 4, "sand_demon_leg", 3, "tusken_bones", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistancePoison4, "cen_res_psn4", 36, 4, "sanddemon_meat", 3, "herb_t", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceElectrical4, "cen_res_elec4", 37, 4, "tusken_bones", 3, "wompratmeat", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceIce4, "cen_res_ice4", 38, 4, "melon", 3, "herb_t", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceMind4, "cen_res_mnd4", 35, 4, "wompratmeat", 3, "womp_innards", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceMobility4, "cen_res_mob4", 36, 4, "sand_demon_leg", 3, "sanddemon_meat", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceTrauma4, "cen_res_tra4", 37, 4, "sanddemon_meat", 3, "plant_butter", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceDisruption4, "cen_res_dis4", 38, 4, "tusken_bones", 3, "herb_t", 2);
         }
 
         private void Tier5()
@@ -2120,6 +2156,35 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .RequirementPerk(PerkType.CookingRecipes, 5)
                 .Component("wild_innards", 3)
                 .Component("wild_blood", 2);
+
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceFire5, "cen_res_fir5", 45, 5, "wild_leg", 3, "cultured_butter", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistancePoison5, "cen_res_psn5", 46, 5, "wild_innards", 3, "herb_x", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceElectrical5, "cen_res_elec5", 47, 5, "wild_blood", 3, "wild_meat", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceIce5, "cen_res_ice5", 48, 5, "tomato", 3, "herb_x", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceMind5, "cen_res_mnd5", 45, 5, "wild_meat", 3, "wild_leg", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceMobility5, "cen_res_mob5", 46, 5, "wild_leg", 3, "wild_meat", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceTrauma5, "cen_res_tra5", 47, 5, "wild_innards", 3, "wild_blood", 2);
+            CreateCookingResistanceEnhancement(RecipeType.CookingEnhancementResistanceDisruption5, "cen_res_dis5", 48, 5, "wild_blood", 3, "herb_x", 2);
+        }
+
+        private void CreateCookingResistanceEnhancement(
+            RecipeType recipe,
+            string resref,
+            int level,
+            int perkLevel,
+            string component1,
+            int component1Quantity,
+            string component2,
+            int component2Quantity)
+        {
+            _builder.Create(recipe, SkillType.Agriculture)
+                .Category(RecipeCategoryType.CookingEnhancement)
+                .Resref(resref)
+                .Level(level)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, perkLevel)
+                .Component(component1, component1Quantity)
+                .Component(component2, component2Quantity);
         }
     }
 }

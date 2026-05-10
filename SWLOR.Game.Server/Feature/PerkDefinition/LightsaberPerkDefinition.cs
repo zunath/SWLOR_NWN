@@ -143,7 +143,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Deflection Mastery")
 
                 .AddPerkLevel()
-                .Description("When you deflect an attack, your defense and force defense increase by 15% for 12 seconds.")
+                .Description("When you deflect an attack, your physical and Force Defense increase by 15% for 12 seconds.")
                 .IncreasesStat(StatType.DeflectionDefensePercentAdjustment, creature => EquipmentPredicates.HasMainHandLightsaber(creature) ? 15 : 0)
                 .IncreasesStat(StatType.DeflectionForceDefensePercentAdjustment, creature => EquipmentPredicates.HasMainHandLightsaber(creature) ? 15 : 0)
                 .Price(3)
@@ -338,7 +338,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.OverwhelmingStrike1)
-                .Description("You deal weapon DMG + 15 to all enemies in the area of effect (cone) in front of you. Fortitude DC15 check to inflict Sunder which reduces defense and force defense by 15% for 30 seconds.")
+                .Description("You deal weapon DMG + 15 to all enemies in the area of effect (cone) in front of you. Inflicts Sunder which reduces physical and Force Defense by 15% for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Lightsaber, 25)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
@@ -366,7 +366,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Purify1)
-                .Description("One debuff is removed from you. Willpower DC15 check on a nearby enemy to apply the debuff to them.")
+                .Description("One debuff is removed from you and mirrored to a nearby enemy.")
                 .Price(2)
                 .RequirementSkill(SkillType.Lightsaber, 30)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
@@ -401,7 +401,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RippleSlash1)
-                .Description("Your next attack deals weapon DMG + 30 to your target. Reflex DC15 check to inflict Disoriented on nearby enemies, reducing Accuracy and Evasion by 15% for 20 seconds.")
+                .Description("Your next attack deals weapon DMG + 30 to your target. Inflicts Disoriented on nearby enemies, reducing Accuracy and Evasion by 15% for 20 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Lightsaber, 45)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
@@ -414,7 +414,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Saber Storm")
 
                 .AddPerkLevel()
-                .Description("Enemies within the area of effect (sphere) around you are dealt weapon DMG + 60.  Inflicts Sunder which reduces defense and force defense by 25% for 30 seconds.")
+                .Description("Enemies within the area of effect (sphere) around you are dealt weapon DMG + 60.  Inflicts Sunder which reduces physical and Force Defense by 25% for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Lightsaber, 50)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
@@ -442,7 +442,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SurgeStrike1)
-                .Description("Your next attack deals weapon DMG + 15. Willpower DC18 check to inflict Force Disruption, preventing the target from using Force abilities for 8 seconds.")
+                .Description("Your next attack deals weapon DMG + 15. Inflicts Force Disruption, preventing the target from using Force abilities for 8 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Lightsaber, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
@@ -483,24 +483,25 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.VersatileStrike1)
-                .Description("Your next attack deals weapon DMG + 10 to your target. Fortitude DC10 check to inflict Sunder which reduces defense and force defense by 10% for 30 seconds.")
+                .Description("Your next attack deals weapon DMG + 10 to your target. Inflicts Sunder which reduces physical and Force Defense by 10% for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Lightsaber, 5)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.VersatileStrike2)
-                .Description("Your next attack deals weapon DMG + 25 to your target. Fortitude DC15 check to inflict Sunder which reduces defense and force defense by 15% for 30 seconds.")
+                .Description("Your next attack deals weapon DMG + 25 to your target. Inflicts Sunder which reduces physical and Force Defense by 15% for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Lightsaber, 10)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.VersatileStrike3)
-                .Description("Your next attack deals weapon DMG + 40 to your target. Fortitude DC18 check to inflict Sunder which reduces defense and force defense by 20% for 30 seconds.")
+                .Description("Your next attack deals weapon DMG + 40 to your target. Inflicts Sunder which reduces physical and Force Defense by 20% for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Lightsaber, 32)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
         }
     }
 }
+

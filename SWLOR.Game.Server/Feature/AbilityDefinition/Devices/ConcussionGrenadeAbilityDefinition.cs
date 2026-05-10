@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             return _builder.Build();
         }
 
-        private void Impact(uint activator, uint target, int dmg, int dc)
+        private void Impact(uint activator, uint target, int dmg, bool appliesKnockdown)
         {
             if (GetFactionEqual(activator, target))
                 return;
@@ -31,7 +31,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
             var attackerStat = GetAbilityScore(activator, AbilityType.Perception);
             var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-            var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+            var damageType = CombatDamageType.Electrical;
+            var defense = Stat.GetDefense(target, damageType, AbilityType.Vitality);
             var attack = Stat.GetAttack(activator, AbilityType.Perception, SkillType.Devices);
             var damage = Combat.CalculateDamage(
                 attack,
@@ -40,16 +41,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 defense,
                 defenderStat,
                 0);
+            damage = Resistance.ApplyResistanceToDamage(target, damageType, damage);
 
-            if (dc > 0)
+            if (appliesKnockdown)
             {
-                dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Reflex, dc);
-                var checkResult = ReflexSave(target, dc, SavingThrowType.None, activator);
-                if (checkResult == SavingThrowResultType.Failed)
-                {
-                    const float Duration = 3f;
-                    StatusEffect.ApplyStatusEffect(activator, target, typeof(KnockdownStatusEffect), Duration);
-                }
+                const float Duration = 3f;
+                StatusEffect.ApplyStatusEffect(activator, target, typeof(KnockdownStatusEffect), Duration, damageType);
             }
 
             AssignCommand(activator, () =>
@@ -81,7 +78,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     ExplosiveImpact(activator, location, vfx, "explosion1", RadiusSize.Large, (target) =>
                     {
                         var perBonus = GetAbilityScore(activator, AbilityType.Perception);
-                        Impact(activator, target, perBonus, -1);
+                        Impact(activator, target, perBonus, false);
                     });
                 });
         }
@@ -107,7 +104,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     {
                         var perBonus = GetAbilityScore(activator, AbilityType.Perception);
                         var perDMG = perBonus + 15;
-                        Impact(activator, target, perDMG, 8);
+                        Impact(activator, target, perDMG, true);
                     });
                 });
         }
@@ -133,7 +130,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     {
                         var perBonus = GetAbilityScore(activator, AbilityType.Perception);
                         var perDMG = perBonus + 30;
-                        Impact(activator, target, perDMG, 12);
+                        Impact(activator, target, perDMG, true);
                     });
                 });
         }

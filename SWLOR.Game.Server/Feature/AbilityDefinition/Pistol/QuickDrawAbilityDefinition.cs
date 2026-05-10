@@ -95,8 +95,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 Skill,
                 damage,
                 duration: 0,
-                savingThrowDc: 0,
-                SavingThrow.Will,
                 statusEffect: null,
                 false);
         }

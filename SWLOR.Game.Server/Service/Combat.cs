@@ -15,7 +15,6 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
 using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
-using SavingThrow = SWLOR.NWN.API.NWScript.Enum.SavingThrow;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -24,31 +23,39 @@ namespace SWLOR.Game.Server.Service
         public const int StandardCriticalRating = 2;
 
         private static readonly List<CombatDamageType> _allValidDamageTypes = new();
+        private static readonly List<CombatDamageType> _allDefenseDamageTypes = new();
         private static readonly Dictionary<(uint, StatType), DateTime> _statTriggerCooldowns = new();
         private static readonly Dictionary<(uint, uint), DateTime> _recentDamageTargets = new();
+        private static bool _damageTypesCached;
 
         /// <summary>
-        /// When the module loads, add all valid damage types to the cache.
+        /// Cache all valid character and defense damage types before module load.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleLoad)]
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public static void LoadDamageTypes()
         {
+            _allValidDamageTypes.Clear();
+            _allDefenseDamageTypes.Clear();
+
             var allValues = Enum.GetValues(typeof(CombatDamageType)).Cast<CombatDamageType>();
 
             foreach (var type in allValues)
             {
-                if (type == CombatDamageType.Invalid)
-                    continue;
+                if (type.IsCharacterDamageType())
+                    _allValidDamageTypes.Add(type);
 
-                _allValidDamageTypes.Add(type);
+                if (type.IsDefenseDamageType())
+                    _allDefenseDamageTypes.Add(type);
             }
+
+            _damageTypesCached = true;
         }
 
         /// <summary>
-        /// When a player enters the server, apply any defenses towards damage types they don't already have.
+        /// When a player enters the server, apply any defense and resistance entries they don't already have.
         /// </summary>
         [NWNEventHandler(ScriptName.OnModuleEnter)]
-        public static void AddDamageTypeDefenses()
+        public static void AddDamageTypeResistances()
         {
             var player = GetEnteringObject();
             if (!GetIsPC(player) || GetIsDM(player))
@@ -60,12 +67,26 @@ namespace SWLOR.Game.Server.Service
             if (dbPlayer == null)
                 return;
 
-            foreach (var type in _allValidDamageTypes)
+            if (dbPlayer.Defenses == null)
             {
-                if (!dbPlayer.Defenses.ContainsKey(type))
+                foundNewType = true;
+                dbPlayer.Defenses = CreateDefaultDefenseValues();
+            }
+
+            if (dbPlayer.Resistances == null)
+            {
+                foundNewType = true;
+                dbPlayer.Resistances = Resistance.CreateDefaultResistanceValues();
+            }
+
+            foundNewType |= EnsureDefenseValues(dbPlayer.Defenses);
+
+            foreach (var type in Resistance.GetAllResistanceTypes())
+            {
+                if (!dbPlayer.Resistances.ContainsKey(type))
                 {
                     foundNewType = true;
-                    dbPlayer.Defenses[type] = 0;
+                    dbPlayer.Resistances[type] = 0;
                 }
             }
 
@@ -79,9 +100,52 @@ namespace SWLOR.Game.Server.Service
         /// Retrieves all valid damage types available in the system.
         /// </summary>
         /// <returns>A list of damage types</returns>
-        public static List<CombatDamageType> GetAllDamageTypes()
+        public static IReadOnlyList<CombatDamageType> GetAllDamageTypes()
         {
-            return _allValidDamageTypes.ToList();
+            EnsureDamageTypesCached();
+            return _allValidDamageTypes;
+        }
+
+        /// <summary>
+        /// Retrieves all damage types which use a defense rating.
+        /// </summary>
+        /// <returns>A list of defense damage types</returns>
+        public static IReadOnlyList<CombatDamageType> GetDefenseDamageTypes()
+        {
+            EnsureDamageTypesCached();
+            return _allDefenseDamageTypes;
+        }
+
+        public static Dictionary<CombatDamageType, int> CreateDefaultDefenseValues(int defaultValue = 0)
+        {
+            return GetDefenseDamageTypes()
+                .ToDictionary(type => type, _ => defaultValue);
+        }
+
+        public static bool EnsureDefenseValues(Dictionary<CombatDamageType, int> defenses, int defaultValue = 0)
+        {
+            if (defenses == null)
+                throw new ArgumentNullException(nameof(defenses));
+
+            var foundNewType = false;
+            foreach (var type in GetDefenseDamageTypes())
+            {
+                if (defenses.ContainsKey(type))
+                    continue;
+
+                defenses[type] = defaultValue;
+                foundNewType = true;
+            }
+
+            return foundNewType;
+        }
+
+        private static void EnsureDamageTypesCached()
+        {
+            if (!_damageTypesCached)
+            {
+                LoadDamageTypes();
+            }
         }
 
         /// <summary>
@@ -243,6 +307,7 @@ namespace SWLOR.Game.Server.Service
             uint defender,
             int damage,
             SkillType skillType = SkillType.Invalid,
+            CombatDamageType damageType = CombatDamageType.Physical,
             bool isAbilityDamage = false,
             bool canApplyRandomFlatBonuses = true)
         {
@@ -255,6 +320,7 @@ namespace SWLOR.Game.Server.Service
                 defender,
                 damage,
                 skillType,
+                damageType,
                 isAbilityDamage,
                 canApplyRandomFlatBonuses);
 
@@ -403,7 +469,8 @@ namespace SWLOR.Game.Server.Service
                     attacker,
                     defender,
                     new ExposedStatusEffect(targetDefensePercent),
-                    targetDefenseDuration);
+                    targetDefenseDuration,
+                    CombatDamageType.Physical);
             }
 
             if (isSingleTargetImpact)
@@ -455,7 +522,8 @@ namespace SWLOR.Game.Server.Service
                 attacker,
                 defender,
                 new ExposedStatusEffect(targetDefensePercent),
-                targetDefenseDuration);
+                targetDefenseDuration,
+                CombatDamageType.Physical);
         }
 
         private static bool IsAttackerBesideTarget(uint attacker, uint defender)
@@ -699,14 +767,12 @@ namespace SWLOR.Game.Server.Service
             var temporaryHPPercent = Stat.GetStatAdjustment(defender, StatType.LowHPTemporaryHPPercent);
             var duration = Stat.GetStatAdjustment(defender, StatType.LowHPTemporaryHPDurationSeconds);
             var cooldown = Stat.GetStatAdjustment(defender, StatType.LowHPTemporaryHPCooldownSeconds);
-            var fortitudeDC = Stat.GetStatAdjustment(defender, StatType.LowHPTemporaryHPFortitudeSaveDC);
 
             if (threshold <= 0 ||
                 temporaryHPPercent <= 0 ||
                 duration <= 0 ||
                 !DidCrossHPThreshold(defender, damage, threshold) ||
-                !TryUseStatTrigger(defender, StatType.LowHPTemporaryHPPercent, cooldown) ||
-                !PassesFortitudeSave(defender, fortitudeDC))
+                !TryUseStatTrigger(defender, StatType.LowHPTemporaryHPPercent, cooldown))
                 return;
 
             var temporaryHP = Math.Max(1, (int)Math.Ceiling(GetMaxHitPoints(defender) * (temporaryHPPercent / 100f)));
@@ -775,12 +841,6 @@ namespace SWLOR.Game.Server.Service
             return previousHP > thresholdHP && currentHP <= thresholdHP;
         }
 
-        private static bool PassesFortitudeSave(uint creature, int dc)
-        {
-            return dc <= 0 ||
-                   FortitudeSave(creature, dc, SWLOR.NWN.API.NWScript.Enum.SavingThrowType.None, creature) != SavingThrowResultType.Failed;
-        }
-
         private static void HealPercentOfMaxHP(uint creature, int percent)
         {
             if (percent <= 0)
@@ -810,6 +870,7 @@ namespace SWLOR.Game.Server.Service
             uint defender,
             int damage,
             SkillType skillType,
+            CombatDamageType damageType,
             bool isAbilityDamage,
             bool canApplyRandomFlatBonuses)
         {
@@ -856,6 +917,18 @@ namespace SWLOR.Game.Server.Service
                 StatusEffect.HasStatusEffect(defender, typeof(DisorientedStatusEffect), typeof(DazedStatusEffect)))
             {
                 adjustment += Stat.GetStatAdjustment(attacker, StatType.DamageToDisorientedDazedTargetPercentAdjustment);
+            }
+
+            if (damageType.IsPhysicalDamageType() &&
+                StatusEffect.HasStatusEffect(defender, typeof(ExposeWeakPointStatusEffect)))
+            {
+                adjustment += 10;
+            }
+
+            if (skillType == SkillType.Throwing &&
+                StatusEffect.HasStatusEffect(defender, typeof(MarkingTossStatusEffect)))
+            {
+                adjustment += 10;
             }
 
             if (skillType == SkillType.Pistol && IsNearbyTargetNotTargetingAttacker(attacker, defender, 8f))
@@ -1550,45 +1623,6 @@ namespace SWLOR.Game.Server.Service
             else if (GetActionMode(attacker, ActionMode.ImprovedPowerAttack))
                 return 6;
             return 0;
-        }
-
-        /// <summary>
-        /// Determines the DC for an attacker's saving throw.
-        /// </summary>
-        /// <param name="attacker">The attacker to check.</param>
-        /// <param name="type">The type of saving throw.</param>
-        /// <param name="baseDC">The base DC amount.</param>
-        /// <param name="abilityOverride">Use this to specify a specific ability to be used.</param>
-        /// <returns>A DC value with any bonuses applied.</returns>
-        public static int CalculateSavingThrowDC(
-            uint attacker,
-            SavingThrow type,
-            int baseDC,
-            AbilityType abilityOverride = AbilityType.Invalid)
-        {
-            var ability = abilityOverride;
-
-            if (ability == AbilityType.Invalid)
-            {
-                switch (type)
-                {
-                    case SavingThrow.Fortitude:
-                        ability = AbilityType.Might;
-                        break;
-                    case SavingThrow.Reflex:
-                        ability = AbilityType.Perception;
-                        break;
-                    case SavingThrow.Will:
-                        ability = AbilityType.Willpower;
-                        break;
-                    default:
-                        return baseDC;
-                }
-            }
-
-            var modifier = GetAbilityModifier(ability, attacker);
-
-            return baseDC + modifier;
         }
 
         /// <summary>

@@ -53,10 +53,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
             switch (level)
             {
                 case 1:
-                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Throwing, 6, 6, 12, SavingThrow.Fortitude, typeof(BlindStatusEffect), CombatImpactAreaShape.Sphere, 0.25f, 5f);
+                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Throwing, 6, 6, typeof(BlindStatusEffect), CombatImpactAreaShape.Sphere, 0.25f, 5f);
                     break;
                 case 2:
-                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Throwing, 22, 10, 16, SavingThrow.Fortitude, typeof(BlindStatusEffect), CombatImpactAreaShape.Sphere, 0.25f, 5f);
+                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Throwing, 22, 10, typeof(BlindStatusEffect), CombatImpactAreaShape.Sphere, 0.25f, 5f);
                     break;
             }
         }

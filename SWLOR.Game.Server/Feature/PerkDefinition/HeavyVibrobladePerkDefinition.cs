@@ -138,7 +138,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Critical Ward")
 
                 .AddPerkLevel()
-                .Description("If you would receive a critical hit, perform a Fortitude DC18 check to downgrade the attack to a normal hit. The attack will do minimum damage to you.")
+                .Description("If you would receive a critical hit, downgrade the attack to a normal hit. The attack will do minimum damage to you.")
                 .Price(2)
                 .RequirementSkill(SkillType.HeavyVibroblade, 40);
         }
@@ -176,7 +176,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Earthshatter1)
-                .Description("You deal weapon DMG + 20 to all enemies within the area of effect (line) from you.  Fortitude DC16 check to inflict Force Disruption on each target which disables the use of force abilities for 12 seconds.")
+                .Description("You deal weapon DMG + 20 to all enemies within the area of effect (line) from you.  Inflicts Force Disruption on each target which disables the use of force abilities for 12 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.HeavyVibroblade, 35);
         }
@@ -202,7 +202,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.EssenceHunter1)
-                .Description("Your next attack deals +18 DMG and has a DC15 Fortitude check to inflict Essence Drain, reducing the target's Attack by 15% for 12 seconds.")
+                .Description("Your next attack deals +18 DMG and inflicts Essence Drain, reducing the target's Attack by 15% for 12 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.HeavyVibroblade, 12);
         }
@@ -293,12 +293,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Last Stand")
 
                 .AddPerkLevel()
-                .Description("When reduced below 25% HP, perform a Fortitude DC15 check. If passed, gain a damage shield equal to 20% of maximum HP for 12 seconds. This can only trigger once per 10 minutes.")
+                .Description("When reduced below 25% HP, gain a damage shield equal to 20% of maximum HP for 12 seconds. This can only trigger once per 10 minutes.")
                 .IncreasesStat(StatType.LowHPTemporaryHPThresholdPercent, 25)
                 .IncreasesStat(StatType.LowHPTemporaryHPPercent, 20)
                 .IncreasesStat(StatType.LowHPTemporaryHPDurationSeconds, 12)
                 .IncreasesStat(StatType.LowHPTemporaryHPCooldownSeconds, 600)
-                .IncreasesStat(StatType.LowHPTemporaryHPFortitudeSaveDC, 15)
                 .Price(3)
                 .RequirementSkill(SkillType.HeavyVibroblade, 20);
         }
@@ -324,7 +323,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Rampart1)
-                .Description("All allies within the area of effect (sphere) from you receive a +25% defense bonus for 1 minute.")
+                .Description("All allies within the area of effect (sphere) from you receive a +25% Defense bonus for 1 minute.")
                 .Price(4)
                 .RequirementSkill(SkillType.HeavyVibroblade, 32);
         }
@@ -513,3 +512,4 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         }
     }
 }
+

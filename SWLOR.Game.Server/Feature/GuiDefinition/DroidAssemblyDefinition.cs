@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .BindOnClosed(model => model.OnCloseWindow())
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
-                .SetInitialGeometry(0, 0, 480f, 540f)
+                .SetInitialGeometry(0, 0, 520f, 640f)
                 .SetTitle("Droid Assembly")
 
                 .AddColumn(col =>
@@ -231,6 +231,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 row2.AddLabel()
                                     .BindText(model => model.Pistol);
                             });
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddLabel()
+                                    .BindText(model => model.FireResistance);
+                            });
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddLabel()
+                                    .BindText(model => model.IceResistance);
+                            });
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddLabel()
+                                    .BindText(model => model.MindResistance);
+                            });
                         });
                         row.AddColumn(col2 =>
                         {
@@ -274,6 +289,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 row2.AddLabel()
                                     .BindText(model => model.Rifle);
                             });
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddLabel()
+                                    .BindText(model => model.PoisonResistance);
+                            });
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddLabel()
+                                    .BindText(model => model.MobilityResistance);
+                            });
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddLabel()
+                                    .BindText(model => model.TraumaResistance);
+                            });
                         });
                         row.AddColumn(col2 =>
                         {
@@ -311,6 +341,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             {
                                 row2.AddLabel()
                                     .BindText(model => model.Throwing);
+                            });
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddLabel()
+                                    .BindText(model => model.ElectricalResistance);
+                            });
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddLabel()
+                                    .BindText(model => model.DisruptionResistance);
                             });
                         });
                     });

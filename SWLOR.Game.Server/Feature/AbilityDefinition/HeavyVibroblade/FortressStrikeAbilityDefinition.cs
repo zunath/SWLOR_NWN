@@ -49,10 +49,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
             switch (level)
             {
                 case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.HeavyVibroblade, 10, 16, 0, SavingThrow.Will, null, false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.HeavyVibroblade, 10, 16, null, false);
                     break;
                 case 2:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.HeavyVibroblade, 20, 16, 0, SavingThrow.Will, null, false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.HeavyVibroblade, 20, 16, null, false);
                     break;
             }
         }

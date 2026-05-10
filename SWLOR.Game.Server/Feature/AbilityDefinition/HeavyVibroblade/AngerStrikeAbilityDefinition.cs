@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .HasRecastDelay(RecastGroup.AngerStrike, 45f)
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
-                    var damage = Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.HeavyVibroblade, 12, 0, 0, SavingThrow.Will, null, false);
+                    var damage = Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.HeavyVibroblade, 12, 0, null, false);
                     Enmity.ModifyEnmity(activator, target, 450 + damage);
                 })
                 .IsWeaponAbility()

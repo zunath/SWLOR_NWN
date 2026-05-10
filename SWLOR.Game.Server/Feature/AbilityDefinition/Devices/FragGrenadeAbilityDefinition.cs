@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             return _builder.Build();
         }
 
-        private void Impact(uint activator, uint target, int dmg, int dc, float bleedLength)
+        private void Impact(uint activator, uint target, int dmg, bool appliesBleed, float bleedLength)
         {
             if (GetFactionEqual(activator, target))
                 return;
@@ -32,7 +32,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             var attackerStat = GetAbilityScore(activator, AbilityType.Perception);
             var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
             var attack = Stat.GetAttack(activator, AbilityType.Perception, SkillType.Devices);
-            var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+            var damageType = CombatDamageType.Fire;
+            var defense = Stat.GetDefense(target, damageType, AbilityType.Vitality);
             var damage = Combat.CalculateDamage(
                 attack,
                 dmg,
@@ -40,15 +41,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 defense,
                 defenderStat,
                 0);
+            damage = Resistance.ApplyResistanceToDamage(target, damageType, damage);
 
-            if (dc > 0)
+            if (appliesBleed)
             {
-                dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Reflex, dc);
-                var checkResult = ReflexSave(target, dc, SavingThrowType.None, activator);
-                if (checkResult == SavingThrowResultType.Failed)
-                {
-                    StatusEffect.ApplyStatusEffect(activator, target, typeof(BleedStatusEffect), bleedLength);
-                }
+                StatusEffect.ApplyStatusEffect(activator, target, typeof(BleedStatusEffect), bleedLength, damageType);
             }
 
             DelayCommand(0f, () =>
@@ -80,7 +77,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffect.Fnf_Fireball), "explosion2", RadiusSize.Large, (target) =>
                     {
                         var perBonus = GetAbilityScore(activator, AbilityType.Perception);
-                        Impact(activator, target, perBonus, -1, 0f);
+                        Impact(activator, target, perBonus, false, 0f);
                     });
                 });
         }
@@ -104,7 +101,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     {
                         var perBonus = GetAbilityScore(activator, AbilityType.Perception);
                         var perDMG = 20 + (perBonus * 3 / 2);
-                        Impact(activator, target, perDMG, 8, 30f);
+                        Impact(activator, target, perDMG, true, 30f);
                     });
                 });
         }
@@ -128,7 +125,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     {
                         var perBonus = GetAbilityScore(activator, AbilityType.Perception);
                         var perDMG = 40 + (perBonus * 2);
-                        Impact(activator, target, perDMG, 12, 60f);
+                        Impact(activator, target, perDMG, true, 60f);
                     });
                 });
         }

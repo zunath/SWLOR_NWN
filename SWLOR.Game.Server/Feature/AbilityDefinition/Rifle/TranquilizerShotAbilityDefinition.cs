@@ -12,8 +12,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
         {
             var builder = new AbilityBuilder();
 
-            ConfigureWeapon(builder.Create(FeatType.TranquilizerShot1, PerkType.TranquilizerShot).Name("Tranquilizer Shot I").Level(1), SkillType.Rifle, 0, 8, 12, SavingThrow.Will, typeof(DazedStatusEffect), 4);
-            ConfigureWeapon(builder.Create(FeatType.TranquilizerShot2, PerkType.TranquilizerShot).Name("Tranquilizer Shot II").Level(2), SkillType.Rifle, 0, 14, 15, SavingThrow.Will, typeof(DazedStatusEffect), 5);
+            ConfigureWeapon(builder.Create(FeatType.TranquilizerShot1, PerkType.TranquilizerShot).Name("Tranquilizer Shot I").Level(1), SkillType.Rifle, 0, 8, typeof(DazedStatusEffect), 4);
+            ConfigureWeapon(builder.Create(FeatType.TranquilizerShot2, PerkType.TranquilizerShot).Name("Tranquilizer Shot II").Level(2), SkillType.Rifle, 0, 14, typeof(DazedStatusEffect), 5);
 
             return builder.Build();
         }

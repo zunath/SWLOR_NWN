@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.Engine;
@@ -43,12 +44,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 return;
             }
 
-            var dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Will, 12);
-            if (WillSave(target, dc, SavingThrowType.None, activator) == SavingThrowResultType.Failed)
-            {
-                StatusEffect.ApplyStatusEffect(activator, target, new MindTrickStatusEffect(), 6f);
-                CombatVisualEffect.ApplyStatusEffectVisual(target, typeof(MindTrickStatusEffect), true);
-            }
+            StatusEffect.ApplyStatusEffect(activator, target, new MindTrickStatusEffect(), 6f, CombatDamageType.Force);
+            CombatVisualEffect.ApplyStatusEffectVisual(target, typeof(MindTrickStatusEffect), true);
 
             CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
             Enmity.ModifyEnmity(activator, target, 400);

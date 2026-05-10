@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.BreachStrike1)
-                .Description("Deal weapon DMG + 10. Reflex DC14 check to inflict Breach, which reduces Evasion and Defense by 20% for 30 seconds.")
+                .Description("Deal weapon DMG + 10. Inflicts Breach, which reduces Evasion and Defense by 20% for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Spear, 18);
         }
@@ -76,7 +76,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CalmingStance1)
-                .Description("While active, your STM regenerates by 3 every second. Your attack, force attack, defense, and force defense are reduced by 40%.")
+                .Description("While active, your STM regenerates by 3 every second. Your attack, force attack, Physical Defense, and Force Defense are reduced by 40%.")
                 .Price(3)
                 .RequirementSkill(SkillType.Spear, 45);
         }
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CripplingDefense1)
-                .Description("All enemies within area of effect (sphere) around you receive Crippled Defense, reducing Defense by 35% for 15 seconds. Additionally restores 25 STM.")
+                .Description("All enemies within area of effect (sphere) around you receive Crippling Defense, reducing Defense by 35% for 15 seconds. Additionally restores 25 STM.")
                 .Price(4)
                 .RequirementSkill(SkillType.Spear, 50);
         }
@@ -102,19 +102,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DisablingStrike1)
-                .Description("Your next attack deals +12 DMG and has a DC12 Will check to inflict Force Disruption for 8 seconds.")
+                .Description("Your next attack deals +12 DMG and inflicts Force Disruption for 8 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Spear, 8)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DisablingStrike2)
-                .Description("Your next attack deals +18 DMG and has a DC16 Will check to inflict Force Disruption for 8 seconds.")
+                .Description("Your next attack deals +18 DMG and inflicts Force Disruption for 8 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Spear, 22)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DisablingStrike3)
-                .Description("Your next attack deals +26 DMG and has a DC20 Will check to inflict Force Disruption for 8 seconds.")
+                .Description("Your next attack deals +26 DMG and inflicts Force Disruption for 8 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Spear, 40);
         }
@@ -151,7 +151,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Erosion Strike")
 
                 .AddPerkLevel()
-                .Description("Your target makes a Will DC12 check when you damage them.  If they fail this check, they receive Force Erosion which reduces Force Defense by 10% for 12 seconds.")
+                .Description("When you damage a target, they receive Force Erosion which reduces Force Defense by 10% for 12 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Spear, 5)
 
@@ -199,7 +199,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FlankingStance1)
-                .Description("While active, attacks from the side deal +20% damage and have +15% accuracy. Your defense and force defense are reduced by 25%.")
+                .Description("While active, attacks from the side deal +20% damage and have +15% accuracy. Your physical and Force Defense are reduced by 25%.")
                 .Price(3)
                 .RequirementSkill(SkillType.Spear, 12);
         }
@@ -282,7 +282,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FractureStrike1)
-                .Description("Deal weapon DMG + 12 to all enemies in area of effect (line). Will DC16 check to inflict Fractured Focus, which doubles the FP cost of abilities for 30 seconds.")
+                .Description("Deal weapon DMG + 12 to all enemies in area of effect (line). Inflicts Fractured Focus, which doubles the FP cost of abilities for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Spear, 38);
         }
@@ -295,7 +295,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.HamperingBarrage1)
-                .Description("Deal weapon DMG + 30 to all enemies within area of effect (cone). Reflex DC16 check to inflict Disoriented for 12 seconds.")
+                .Description("Deal weapon DMG + 30 to all enemies within area of effect (cone). Inflicts Disoriented for 12 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Spear, 40);
         }
@@ -321,13 +321,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.InterruptionStrike1)
-                .Description("Your target's ability activation is interrupted.  Additionally, target has a Will DC12 check to inflict Foggy Mind which increases activation times by 2 seconds for 30 seconds.")
+                .Description("Your target's ability activation is interrupted.  Additionally, target inflicts Foggy Mind which increases activation times by 2 seconds for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Spear, 12)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.InterruptionStrike2)
-                .Description("Your target's ability activation is interrupted.  Additionally, target has a Will DC18 check to inflict Foggy Mind which increases activation times by 2 seconds for 30 seconds.")
+                .Description("Your target's ability activation is interrupted.  Additionally, target inflicts Foggy Mind which increases activation times by 2 seconds for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Spear, 28);
         }
@@ -422,7 +422,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SweepingFlank1)
-                .Description("Deal weapon DMG + 18 to all enemies within area of effect (cone). Fortitude DC16 check to inflict Exposed, which reduces defense by 15% for 30 seconds.")
+                .Description("Deal weapon DMG + 18 to all enemies within area of effect (cone). Inflicts Exposed, which reduces Defense by 15% for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Spear, 25);
         }
@@ -435,9 +435,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.TotalForceDenial1)
-                .Description("Deal weapon DMG + 28 to all enemies in area of effect (cone) and has a Will DC16 check to inflict Force Disruption for 12 seconds.")
+                .Description("Deal weapon DMG + 28 to all enemies in area of effect (cone) and inflicts Force Disruption for 12 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Spear, 35);
         }
     }
 }
+

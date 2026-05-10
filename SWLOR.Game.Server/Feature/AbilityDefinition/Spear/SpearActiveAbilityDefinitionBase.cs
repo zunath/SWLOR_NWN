@@ -19,8 +19,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
             SkillType skill,
             int baseDamage,
             int duration,
-            int savingThrowDc,
-            SavingThrow savingThrow,
             Type statusEffect,
             int stamina,
             Func<IStatusEffect> statusEffectFactory = null)
@@ -50,7 +48,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                     }
 
                     AssignCommand(attackTarget, () => ClearAllActions());
-                    Ability.ApplyCombatImpact(activator, attackTarget, GetLocation(attackTarget), skill, baseDamage, duration, savingThrowDc, savingThrow, statusEffect, false, statusEffectFactory: statusEffectFactory);
+                    Ability.ApplyCombatImpact(activator, attackTarget, GetLocation(attackTarget), skill, baseDamage, duration, statusEffect, false, statusEffectFactory: statusEffectFactory);
                 })
                 .IsCastedAbility()
                 .IsHostileAbility()

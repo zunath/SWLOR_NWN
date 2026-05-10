@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
             switch (level)
             {
                 case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Pistol, 10, 0, 0, SavingThrow.Will, null, true);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Pistol, 10, 0, null, true);
                     break;
             }
         }

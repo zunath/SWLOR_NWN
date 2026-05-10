@@ -68,13 +68,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
             switch (level)
             {
                 case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Throwing, 8, 12, 12, SavingThrow.Reflex, typeof(DisorientedStatusEffect), false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Throwing, 8, 12, typeof(DisorientedStatusEffect), false);
                     break;
                 case 2:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Throwing, 18, 15, 15, SavingThrow.Reflex, typeof(DisorientedStatusEffect), false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Throwing, 18, 15, typeof(DisorientedStatusEffect), false);
                     break;
                 case 3:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Throwing, 30, 20, 18, SavingThrow.Reflex, typeof(DisorientedStatusEffect), false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Throwing, 30, 20, typeof(DisorientedStatusEffect), false);
                     break;
             }
         }

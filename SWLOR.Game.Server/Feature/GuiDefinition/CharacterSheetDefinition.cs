@@ -178,7 +178,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetText("Might")
                             .SetVerticalAlign(NuiVerticalAlign.Top)
                             .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetTooltip("Might - Improves damage dealt by melee weapons, carrying capacity, and fortitude saving throws.");
+                            .SetTooltip("Might - Improves damage dealt by melee weapons and carrying capacity.");
 
                         row.AddLabel()
                             .BindText(model => model.Might)
@@ -199,7 +199,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetText("Perception")
                             .SetVerticalAlign(NuiVerticalAlign.Top)
                             .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetTooltip("Perception - Improves damage dealt by ranged and finesse weapons, increases physical accuracy, and reflex saving throws.");
+                            .SetTooltip("Perception - Improves damage dealt by ranged and finesse weapons, and increases physical accuracy.");
 
                         row.AddLabel()
                             .BindText(model => model.Perception)
@@ -241,7 +241,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetText("Willpower")
                             .SetVerticalAlign(NuiVerticalAlign.Top)
                             .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetTooltip("Willpower - Improves your force attack, force defense, max force points, and will saving throws.");
+                            .SetTooltip("Willpower - Improves your force attack, force defense, and max force points.");
 
                         row.AddLabel()
                             .BindText(model => model.Willpower)
@@ -388,7 +388,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetText("Phys. DEF")
                             .SetVerticalAlign(NuiVerticalAlign.Top)
                             .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetTooltip("Physical Defense - Reduces the amount of damage taken by physical attacks.");
+                            .SetTooltip("Physical Defense - Reduces physical attack damage through the attack-vs-defense roll.");
 
                         row.AddLabel()
                             .BindText(model => model.DefensePhysical)
@@ -402,7 +402,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetText("Force DEF")
                             .SetVerticalAlign(NuiVerticalAlign.Top)
                             .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetTooltip("Force Defense - Reduces the amount of damage taken by force attacks.");
+                            .SetTooltip("Force Defense - Reduces force attack damage through the attack-vs-defense roll.");
 
                         row.AddLabel()
                             .BindText(model => model.DefenseForce)
@@ -413,10 +413,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     col.AddRow(row =>
                     {
                         row.AddLabel()
-                            .SetText("Elem. DEF")
+                            .SetText("Elem. RES")
                             .SetVerticalAlign(NuiVerticalAlign.Top)
                             .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetTooltip("Elemental Defenses - Reduces the amount of damage taken by elemental damage. (Order: Fire/Poison/Electrical/Ice)");
+                            .SetTooltip("Elemental Resistances - Reduces the amount of damage taken by elemental damage. (Order: Fire/Poison/Electrical/Ice)");
 
                         row.AddLabel()
                             .BindText(model => model.DefenseElemental)
@@ -455,13 +455,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     col.AddRow(row =>
                     {
                         row.AddLabel()
-                            .SetText("Sav. Throws")
+                            .SetText("Status RES")
                             .SetVerticalAlign(NuiVerticalAlign.Top)
                             .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetTooltip("Saving Throws - Used to resist certain attacks. (Order: Fortitude, Reflex, Will)");
+                            .SetTooltip("Status Resistances - Reduces status durations. (Order: Mind, Mobility, Trauma, Disruption)");
 
                         row.AddLabel()
-                            .BindText(model => model.SavingThrows)
+                            .BindText(model => model.StatusResistances)
                             .SetVerticalAlign(NuiVerticalAlign.Top)
                             .SetHorizontalAlign(NuiHorizontalAlign.Left);
                     });

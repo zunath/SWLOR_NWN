@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
             return _builder.Build();
         }
 
-        private void ImpactAction(uint activator, uint target, int dmg, int dc)
+        private void ImpactAction(uint activator, uint target, int dmg)
         {
             var beastmaster = GetMaster(activator);
             var beastmasterStat = GetAbilityScore(beastmaster, AbilityType.Perception) / 2;
@@ -32,7 +32,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
 
             var totalStat = beastmasterStat + beastStat;
             var attack = Stat.GetAttack(activator, AbilityType.Perception, SkillType.Invalid);
-            var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+            var damageType = CombatDamageType.Physical;
+            var defense = Stat.GetDefense(target, damageType, AbilityType.Vitality);
             var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
 
             var damage = Combat.CalculateDamage(
@@ -43,20 +44,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 defenderStat,
                 0
             );
+            damage = Resistance.ApplyResistanceToDamage(target, damageType, damage);
 
             AssignCommand(activator, () =>
             {
-                ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), target);
+                ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, damageType.GetNWScriptDamageType()), target);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Starburst_Green), target);
             });
 
             const float Duration = 3f;
-            dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Fortitude, dc);
-            var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
-            if (checkResult == SavingThrowResultType.Failed)
-            {
-                StatusEffect.ApplyStatusEffect(activator, target, typeof(StunnedStatusEffect), Duration);
-            }
+            StatusEffect.ApplyStatusEffect(activator, target, typeof(StunnedStatusEffect), Duration, damageType);
 
             Enmity.ModifyEnmity(activator, target, 250 + damage);
         }
@@ -71,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .IsWeaponAbility()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    ImpactAction(activator, target, 10, 8);
+                    ImpactAction(activator, target, 10);
                 });
         }
         private void Clip2()
@@ -84,7 +81,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .IsWeaponAbility()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    ImpactAction(activator, target, 12, 10);
+                    ImpactAction(activator, target, 12);
                 });
         }
         private void Clip3()
@@ -97,7 +94,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .IsWeaponAbility()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    ImpactAction(activator, target, 14, 12);
+                    ImpactAction(activator, target, 14);
                 });
         }
         private void Clip4()
@@ -110,7 +107,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .IsWeaponAbility()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    ImpactAction(activator, target, 16, 14);
+                    ImpactAction(activator, target, 16);
                 });
         }
         private void Clip5()
@@ -123,7 +120,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .IsWeaponAbility()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    ImpactAction(activator, target, 18, 16);
+                    ImpactAction(activator, target, 18);
                 });
         }
     }

@@ -22,11 +22,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             return _builder.Build();
         }
 
-        private void Impact(uint activator, uint target, int dmg, int dc)
+        private void Impact(uint activator, uint target, int dmg, bool appliesKnockdown)
         {
             var targetDistance = GetDistanceBetween(activator, target);
             var delay = (float)(targetDistance / (3.0 * log(targetDistance) + 2.0));
-            var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+            var damageType = CombatDamageType.Fire;
+            var defense = Stat.GetDefense(target, damageType, AbilityType.Vitality);
             var attackerStat = GetAbilityScore(activator, AbilityType.Perception);
             var attack = Stat.GetAttack(activator, AbilityType.Perception, SkillType.Devices);
             var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
@@ -37,6 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 defense,
                 defenderStat,
                 0);
+            damage = Resistance.ApplyResistanceToDamage(target, damageType, damage);
 
             AssignCommand(activator, () =>
             {
@@ -48,15 +50,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Fire), target);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Fnf_Fireball), target);
 
-                if (dc > 0)
+                if (appliesKnockdown)
                 {
                     const float Duration = 2f;
-                    dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Fortitude, dc, AbilityType.Perception);
-                    var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
-                    if (checkResult == SavingThrowResultType.Failed)
-                    {
-                        StatusEffect.ApplyStatusEffect(activator, target, typeof(KnockdownStatusEffect), Duration);
-                    }
+                    StatusEffect.ApplyStatusEffect(activator, target, typeof(KnockdownStatusEffect), Duration, damageType);
                 }
             });
         }
@@ -77,7 +74,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .HasImpactAction((activator,target, _, targetLocation) =>
                 {
                     var perBonus = GetAbilityScore(activator, AbilityType.Perception);
-                    Impact(activator, target, perBonus, -1);
+                    Impact(activator, target, perBonus, false);
 
                     Enmity.ModifyEnmity(activator, target, 180);
                     CombatPoint.AddCombatPoint(activator, target, SkillType.Devices, 3);
@@ -101,7 +98,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 {
                     var perBonus = GetAbilityScore(activator, AbilityType.Perception);
                     var perDMG = 25 + perBonus;
-                    Impact(activator, target, perDMG, 8);
+                    Impact(activator, target, perDMG, true);
 
                     Enmity.ModifyEnmity(activator, target, 280);
                     CombatPoint.AddCombatPoint(activator, target, SkillType.Devices, 3);
@@ -125,7 +122,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 {
                     var perBonus = GetAbilityScore(activator, AbilityType.Perception);
                     var perDMG = 50 + perBonus * 2;
-                    Impact(activator, target, perDMG, 12);
+                    Impact(activator, target, perDMG, true);
 
                     Enmity.ModifyEnmity(activator, target, 380);
                     CombatPoint.AddCombatPoint(activator, target, SkillType.Devices, 3);

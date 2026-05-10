@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
             switch (level)
             {
                 case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.TwinBlade, 40, 3, 16, SavingThrow.Reflex, typeof(DazedStatusEffect), false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.TwinBlade, 40, 3, typeof(DazedStatusEffect), false);
                     break;
             }
         }

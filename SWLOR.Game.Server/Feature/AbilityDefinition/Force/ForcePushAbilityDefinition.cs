@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.Engine;
@@ -24,40 +25,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             const float BaseDuration = 2f;
-            int dc;
-
-            switch (level)
-            {
-                default:
-                case 1:
-                    dc = 8;
-                    break;
-                case 2:
-                    dc = 12;
-                    break;
-                case 3:
-                    dc = 14;
-                    break;
-                case 4:
-                    dc = 16;
-                    break;
-            }
-
             var willpowerBonus = 0.5f * GetAbilityModifier(AbilityType.Willpower, activator);
-            dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Fortitude, dc, AbilityType.Willpower);
-            var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
             var duration = BaseDuration + willpowerBonus;
 
-            if (checkResult == SavingThrowResultType.Failed)
-            {
-                StatusEffect.ApplyStatusEffect(activator, target, typeof(KnockdownStatusEffect), duration);
-                CombatVisualEffect.ApplyStatusEffectVisual(target, typeof(KnockdownStatusEffect), true);
-            }
-            else if (checkResult == SavingThrowResultType.Success)
-            {
-                StatusEffect.ApplyStatusEffect(activator, target, typeof(HobbleStatusEffect), duration);
-                CombatVisualEffect.ApplyStatusEffectVisual(target, typeof(HobbleStatusEffect), true);
-            }
+            StatusEffect.ApplyStatusEffect(activator, target, typeof(KnockdownStatusEffect), duration, CombatDamageType.Force);
+            CombatVisualEffect.ApplyStatusEffectVisual(target, typeof(KnockdownStatusEffect), true);
 
             Enmity.ModifyEnmityOnAll(activator, level * 150);
 

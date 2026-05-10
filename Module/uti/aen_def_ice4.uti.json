@@ -41,7 +41,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Armor Enhancement - Defense - Ice IV"
+      "0": "Armor Enhancement - Resistance - Ice IV"
     }
   },
   "ModelPart1": {
@@ -175,3 +175,4 @@
     "value": 98
   }
 }
+

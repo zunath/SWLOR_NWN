@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
             switch (level)
             {
                 case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Vibroknife, 22, 12, 14, SavingThrow.Fortitude, typeof(DisorientedStatusEffect), false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Vibroknife, 22, 12, typeof(DisorientedStatusEffect), false);
                     break;
             }
         }

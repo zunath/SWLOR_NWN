@@ -111,7 +111,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CurrentOverload1)
-                .Description("Deals weapon DMG + 35. If the target is Poisoned or Disoriented, consume one effect to deal +25 DMG and make a Reflex DC18 check to inflict Stunned for 3 seconds.")
+                .Description("Deals weapon DMG + 35. If the target is Poisoned or Disoriented, consume one effect to deal +25 DMG and inflict Stunned for 3 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Katar, 42);
         }
@@ -135,7 +135,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GuardCounter3)
-                .Description("Your next attack deals weapon DMG + 28. If you guarded an attack within the last 8 seconds, this deals weapon DMG + 45 and has a Reflex DC16 check to inflict Dazed for 3 seconds.")
+                .Description("Your next attack deals weapon DMG + 28. If you guarded an attack within the last 8 seconds, this deals weapon DMG + 45 and inflicts Dazed for 3 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Katar, 38);
         }
@@ -178,7 +178,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Impenetrable Grip")
 
                 .AddPerkLevel()
-                .Description("While dual wielding katars, gain +20% resistance to Knockdown and Dazed effects. Guarded hits restore 4 STM.")
+                .Description("While dual wielding katars, gain +20% Defense to Knockdown and Dazed effects. Guarded hits restore 4 STM.")
                 .Price(3)
                 .RequirementSkill(SkillType.Katar, 40);
         }
@@ -214,7 +214,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.NeuralShock1)
-                .Description("Deals weapon DMG + 20. If the target is Disoriented, they make a Reflex DC16 check or become Dazed for 3 seconds.")
+                .Description("Deals weapon DMG + 20. If the target is Disoriented, they become Dazed for 3 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Katar, 30);
         }
@@ -259,7 +259,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SerpentsEclipse1)
-                .Description("All enemies in an area of effect (sphere) take weapon DMG + 25. Fortitude DC18 check to inflict Poison and Reflex DC18 check to inflict Disoriented. Enemies already affected by either effect take +30 DMG.")
+                .Description("All enemies in an area of effect (sphere) take weapon DMG + 25. Inflicts Poison and Disoriented. Enemies already affected by either effect take +30 DMG.")
                 .Price(4)
                 .RequirementSkill(SkillType.Katar, 50);
         }
@@ -270,7 +270,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Spreading Venom")
 
                 .AddPerkLevel()
-                .Description("When a poisoned target dies, the nearest enemy within 5 meters makes a Fortitude DC14 check or becomes poisoned for 30 seconds.")
+                .Description("When a poisoned target dies, the nearest enemy within 5 meters becomes poisoned for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Katar, 40);
         }
@@ -282,19 +282,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.StaticPalm1)
-                .Description("Your next attack deals weapon DMG + 8 and has a Reflex DC12 check to inflict Disoriented for 8 seconds.")
+                .Description("Your next attack deals weapon DMG + 8 and inflicts Disoriented for 8 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Katar, 8)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.StaticPalm2)
-                .Description("Your next attack deals weapon DMG + 18 and has a Reflex DC15 check to inflict Disoriented for 12 seconds.")
+                .Description("Your next attack deals weapon DMG + 18 and inflicts Disoriented for 12 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Katar, 20)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.StaticPalm3)
-                .Description("Your next attack deals weapon DMG + 28 and has a Reflex DC18 check to inflict Disoriented for 15 seconds. Poisoned targets also make a Reflex DC18 check or become Dazed for 3 seconds.")
+                .Description("Your next attack deals weapon DMG + 28 and inflicts Disoriented for 15 seconds. Poisoned targets also become Dazed for 3 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Katar, 38);
         }
@@ -306,19 +306,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.StrikingCobra1)
-                .Description("Your next attack deals weapon DMG + 8 and has a Fortitude DC12 check to inflict Poison for 30 seconds.")
+                .Description("Your next attack deals weapon DMG + 8 and inflicts Poison for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Katar, 5)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.StrikingCobra2)
-                .Description("Your next attack deals weapon DMG + 18 and has a Fortitude DC15 check to inflict Poison for 60 seconds.")
+                .Description("Your next attack deals weapon DMG + 18 and inflicts Poison for 60 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Katar, 18)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.StrikingCobra3)
-                .Description("Your next attack deals weapon DMG + 28 and has a Fortitude DC20 check to inflict Poison for 60 seconds.")
+                .Description("Your next attack deals weapon DMG + 28 and inflicts Poison for 60 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Katar, 35);
         }
@@ -354,7 +354,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.TwinFangFlurry1)
-                .Description("Strike twice for weapon DMG + 10 each. If the target is poisoned, the second strike has a Fortitude DC15 check to inflict Bleed for 30 seconds.")
+                .Description("Strike twice for weapon DMG + 10 each. If the target is poisoned, the second strike inflicts Bleed for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Katar, 25);
         }
@@ -403,7 +403,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.VenomSplash1)
-                .Description("Deals weapon DMG + 18 to enemies in a cone and has a Fortitude DC15 check to inflict Poison for 30 seconds.")
+                .Description("Deals weapon DMG + 18 to enemies in a cone and inflicts Poison for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Katar, 28);
         }
@@ -421,3 +421,4 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         }
     }
 }
+

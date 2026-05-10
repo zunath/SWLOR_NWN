@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
             switch (level)
             {
                 case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Throwing, 12, 0, 0, SavingThrow.Will, null, true);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Throwing, 12, 0, null, true);
                     break;
             }
         }

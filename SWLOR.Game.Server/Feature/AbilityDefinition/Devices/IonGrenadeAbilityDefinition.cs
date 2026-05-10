@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             return _builder.Build();
         }
 
-        private void Impact(uint activator, uint target, int dmg, int dc)
+        private void Impact(uint activator, uint target, int dmg, bool appliesStun)
         {
             if (GetFactionEqual(activator, target))
                 return;
@@ -33,7 +33,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             var attackerStat = GetAbilityScore(activator, AbilityType.Perception);
             var attack = Stat.GetAttack(activator, AbilityType.Perception, SkillType.Devices);
             var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-            var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+            var damageType = CombatDamageType.Electrical;
+            var defense = Stat.GetDefense(target, damageType, AbilityType.Vitality);
             var damage = Combat.CalculateDamage(
                 attack,
                 dmg,
@@ -41,19 +42,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 defense,
                 defenderStat,
                 0);
+            damage = Resistance.ApplyResistanceToDamage(target, damageType, damage);
 
             var race = GetRacialType(target);
-            if (dc > 0 &&
+            if (appliesStun &&
                 (race == RacialType.Robot ||
                 race == RacialType.Droid ||
                 race == RacialType.Cyborg))
             {
-                dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Fortitude, dc);
-                var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
-                if (checkResult == SavingThrowResultType.Failed)
-                {
-                    StatusEffect.ApplyStatusEffect(activator, target, typeof(StunnedStatusEffect), Duration);
-                }
+                StatusEffect.ApplyStatusEffect(activator, target, typeof(StunnedStatusEffect), Duration, damageType);
             }
 
             DelayCommand(0f, () =>
@@ -91,7 +88,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                         {
                             perBonus *= 3 / 2;
                         }
-                        Impact(activator, target, perBonus, -1);
+                        Impact(activator, target, perBonus, false);
                     });
                 });
         }
@@ -120,7 +117,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                             perBonus *= 3 / 2;
                         }
                         var perDMG = 15 + (perBonus * 3 / 2);
-                        Impact(activator, target, perDMG, 10);
+                        Impact(activator, target, perDMG, true);
                     });
                 });
         }
@@ -149,7 +146,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                             perBonus *= 3 / 2;
                         }
                         var perDMG = 30 + (perBonus * 2);
-                        Impact(activator, target, perDMG, 14);
+                        Impact(activator, target, perDMG, true);
                     });
                 });
         }

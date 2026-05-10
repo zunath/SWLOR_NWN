@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
             switch (level)
             {
                 case 1:
-                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Katar, 20, 12, 0, SavingThrow.Will, null, CombatImpactAreaShape.Cone, 0.25f, 5f, 5f);
+                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Katar, 20, 12, null, CombatImpactAreaShape.Cone, 0.25f, 5f, 5f);
                     break;
             }
         }

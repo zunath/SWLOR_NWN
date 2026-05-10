@@ -71,13 +71,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
             switch (level)
             {
                 case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Pistol, 8, 12, 12, SavingThrow.Reflex, typeof(WeakenedStatusEffect), false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Pistol, 8, 12, typeof(WeakenedStatusEffect), false);
                     break;
                 case 2:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Pistol, 18, 15, 15, SavingThrow.Reflex, typeof(WeakenedStatusEffect), false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Pistol, 18, 15, typeof(WeakenedStatusEffect), false);
                     break;
                 case 3:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Pistol, 32, 15, 18, SavingThrow.Reflex, typeof(WeakenedStatusEffect), false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Pistol, 32, 15, typeof(WeakenedStatusEffect), false);
                     break;
             }
         }

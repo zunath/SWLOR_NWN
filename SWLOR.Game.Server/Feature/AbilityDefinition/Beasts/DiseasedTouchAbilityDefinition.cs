@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
             return _builder.Build();
         }
 
-        private void ImpactAction(uint activator, uint target, int dmg, int dc, int level)
+        private void ImpactAction(uint activator, uint target, int dmg, int level)
         {
             var beastmaster = GetMaster(activator);
             var beastmasterStat = GetAbilityScore(beastmaster, AbilityType.Perception) / 2;
@@ -32,7 +32,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
 
             var totalStat = beastmasterStat + beastStat;
             var attack = Stat.GetAttack(activator, AbilityType.Perception, SkillType.Invalid);
-            var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+            var damageType = CombatDamageType.Poison;
+            var defense = Stat.GetDefense(target, damageType, AbilityType.Vitality);
             var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
 
             var damage = Combat.CalculateDamage(
@@ -43,19 +44,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 defenderStat,
                 0
             );
+            damage = Resistance.ApplyResistanceToDamage(target, damageType, damage);
 
             AssignCommand(activator, () =>
             {
-                ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), target);
+                ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, damageType.GetNWScriptDamageType()), target);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Disease_S), target);
             });
 
-            dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Fortitude, dc);
-            var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
-            if (checkResult == SavingThrowResultType.Failed)
-            {
-                StatusEffect.ApplyStatusEffect(activator, target, new DiseaseStatusEffect(level), 30f);
-            }
+            StatusEffect.ApplyStatusEffect(activator, target, new DiseaseStatusEffect(level), 30f, damageType);
 
             Enmity.ModifyEnmity(activator, target, 250 + damage);
         }
@@ -70,7 +67,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .IsWeaponAbility()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    ImpactAction(activator, target, 8, 8, level);
+                    ImpactAction(activator, target, 8, level);
                 });
         }
         private void DiseasedTouch2()
@@ -83,7 +80,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .IsWeaponAbility()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    ImpactAction(activator, target, 11, 10, level);
+                    ImpactAction(activator, target, 11, level);
                 });
         }
         private void DiseasedTouch3()
@@ -96,7 +93,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .IsWeaponAbility()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    ImpactAction(activator, target, 14, 12, level);
+                    ImpactAction(activator, target, 14, level);
                 });
         }
         private void DiseasedTouch4()
@@ -109,7 +106,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .IsWeaponAbility()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    ImpactAction(activator, target, 17, 14, level);
+                    ImpactAction(activator, target, 17, level);
                 });
         }
         private void DiseasedTouch5()
@@ -122,7 +119,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .IsWeaponAbility()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    ImpactAction(activator, target, 20, 16, level);
+                    ImpactAction(activator, target, 20, level);
                 });
         }
     }

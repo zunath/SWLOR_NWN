@@ -1,4 +1,4 @@
-using SWLOR.Game.Server.Service.StatusEffectService;
+﻿using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -13,6 +13,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override string Name => "Creeping Terror";
         public override EffectIconType Icon => EffectIconType.Curse;
         public override StatusEffectCategory Categories => StatusEffectCategory.Debuff;
+        public override ResistanceType ResistanceType => ResistanceType.Disruption;
         public override float Frequency => 6f;
 
         public CreepingTerrorStatusEffect()
@@ -33,20 +34,9 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         protected override void Apply(uint creature, int durationTicks)
         {
             const float Duration = 6f;
-            var dc = _level switch
-            {
-                1 => 8,
-                2 => 12,
-                _ => 14
-            };
-
-            dc = Combat.CalculateSavingThrowDC(Source, SavingThrow.Will, dc);
-            if (WillSave(creature, dc, SavingThrowType.None, Source) == SavingThrowResultType.Failed)
-            {
-                var effect = TagEffect(EffectEntangle(), Id);
-                ApplyEffectToObject(DurationType.Temporary, effect, creature, Duration);
-                Ability.ApplyTemporaryImmunity(creature, Duration, ImmunityType.Entangle);
-            }
+            var effect = TagEffect(EffectEntangle(), Id);
+            ApplyEffectToObject(DurationType.Temporary, effect, creature, Duration);
+            Ability.ApplyTemporaryImmunity(creature, Duration, ImmunityType.Entangle);
 
             ApplyDamage(creature);
             Enmity.ModifyEnmity(Source, creature, 350);
@@ -70,10 +60,12 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             var attackerStat = GetAbilityScore(Source, AbilityType.Willpower);
             var defenderStat = GetAbilityScore(creature, AbilityType.Willpower);
             var attack = Stat.GetAttack(Source, AbilityType.Willpower, SkillType.Force);
-            var defense = Stat.GetDefense(creature, CombatDamageType.Force, AbilityType.Willpower);
+            var damageType = CombatDamageType.Force;
+            var defense = Stat.GetDefense(creature, damageType, AbilityType.Willpower);
             var damage = Combat.CalculateDamage(attack, dmg, attackerStat, defense, defenderStat, 0);
+            damage = Resistance.ApplyResistanceToDamage(creature, ResistanceType, damage);
 
-            AssignCommand(Source, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), creature));
+            AssignCommand(Source, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, damageType.GetNWScriptDamageType()), creature));
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Poison_S), creature);
 
             Enmity.ModifyEnmity(Source, creature, _level * 50 + damage + 6);

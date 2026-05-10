@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.DroidService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -43,6 +45,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private int _pistol;
         private int _rifle;
         private int _throwing;
+        private int _fireResistance;
+        private int _poisonResistance;
+        private int _electricalResistance;
+        private int _iceResistance;
+        private int _mindResistance;
+        private int _mobilityResistance;
+        private int _traumaResistance;
+        private int _disruptionResistance;
 
         public string Error
         {
@@ -218,6 +228,54 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public string FireResistance
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string PoisonResistance
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string ElectricalResistance
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string IceResistance
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string MindResistance
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string MobilityResistance
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string TraumaResistance
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string DisruptionResistance
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
         public string CPUResref
         {
             get => Get<string>();
@@ -285,6 +343,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _pistol = 0;
             _rifle = 0;
             _throwing = 0;
+            _fireResistance = 0;
+            _poisonResistance = 0;
+            _electricalResistance = 0;
+            _iceResistance = 0;
+            _mindResistance = 0;
+            _mobilityResistance = 0;
+            _traumaResistance = 0;
+            _disruptionResistance = 0;
 
             RefreshStats();
 
@@ -368,6 +434,49 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Pistol = $"Pistol: {_pistol}";
             Rifle = $"Rifle: {_rifle}";
             Throwing = $"Throwing: {_throwing}";
+            FireResistance = $"Fire RES: {_fireResistance}";
+            PoisonResistance = $"Poison RES: {_poisonResistance}";
+            ElectricalResistance = $"Elec. RES: {_electricalResistance}";
+            IceResistance = $"Ice RES: {_iceResistance}";
+            MindResistance = $"Mind RES: {_mindResistance}";
+            MobilityResistance = $"Mob. RES: {_mobilityResistance}";
+            TraumaResistance = $"Trauma RES: {_traumaResistance}";
+            DisruptionResistance = $"Disr. RES: {_disruptionResistance}";
+        }
+
+        private void AdjustResistances(IReadOnlyDictionary<ResistanceType, int> resistances, int multiplier)
+        {
+            foreach (var (type, value) in resistances)
+            {
+                var adjusted = value * multiplier;
+                switch (type)
+                {
+                    case ResistanceType.Fire:
+                        _fireResistance += adjusted;
+                        break;
+                    case ResistanceType.Poison:
+                        _poisonResistance += adjusted;
+                        break;
+                    case ResistanceType.Electrical:
+                        _electricalResistance += adjusted;
+                        break;
+                    case ResistanceType.Ice:
+                        _iceResistance += adjusted;
+                        break;
+                    case ResistanceType.Mind:
+                        _mindResistance += adjusted;
+                        break;
+                    case ResistanceType.Mobility:
+                        _mobilityResistance += adjusted;
+                        break;
+                    case ResistanceType.Trauma:
+                        _traumaResistance += adjusted;
+                        break;
+                    case ResistanceType.Disruption:
+                        _disruptionResistance += adjusted;
+                        break;
+                }
+            }
         }
 
         private void AddPart(DroidPartItemPropertyDetails part, uint item)
@@ -452,6 +561,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _pistol += part.Pistol;
             _rifle += part.Rifle;
             _throwing += part.Throwing;
+            AdjustResistances(part.Resistances, 1);
 
             RefreshStats();
         }
@@ -506,6 +616,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _pistol -= part.Pistol;
             _rifle -= part.Rifle;
             _throwing -= part.Throwing;
+            AdjustResistances(part.Resistances, -1);
 
             RefreshStats();
         }
@@ -803,6 +914,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var ipPistol = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Pistol, _pistol);
                 var ipRifle = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Rifle, _rifle);
                 var ipThrowing = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Throwing, _throwing);
+                var ipFireResistance = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.ResistanceFire, _fireResistance);
+                var ipPoisonResistance = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.ResistancePoison, _poisonResistance);
+                var ipElectricalResistance = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.ResistanceElectrical, _electricalResistance);
+                var ipIceResistance = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.ResistanceIce, _iceResistance);
+                var ipMindResistance = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.ResistanceMind, _mindResistance);
+                var ipMobilityResistance = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.ResistanceMobility, _mobilityResistance);
+                var ipTraumaResistance = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.ResistanceTrauma, _traumaResistance);
+                var ipDisruptionResistance = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.ResistanceDisruption, _disruptionResistance);
 
                 BiowareXP2.IPSafeAddItemProperty(controller, ipPersonality, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
                 BiowareXP2.IPSafeAddItemProperty(controller, ipTier, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
@@ -827,6 +946,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 BiowareXP2.IPSafeAddItemProperty(controller, ipPistol, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
                 BiowareXP2.IPSafeAddItemProperty(controller, ipRifle, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
                 BiowareXP2.IPSafeAddItemProperty(controller, ipThrowing, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+                BiowareXP2.IPSafeAddItemProperty(controller, ipFireResistance, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+                BiowareXP2.IPSafeAddItemProperty(controller, ipPoisonResistance, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+                BiowareXP2.IPSafeAddItemProperty(controller, ipElectricalResistance, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+                BiowareXP2.IPSafeAddItemProperty(controller, ipIceResistance, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+                BiowareXP2.IPSafeAddItemProperty(controller, ipMindResistance, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+                BiowareXP2.IPSafeAddItemProperty(controller, ipMobilityResistance, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+                BiowareXP2.IPSafeAddItemProperty(controller, ipTraumaResistance, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+                BiowareXP2.IPSafeAddItemProperty(controller, ipDisruptionResistance, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
 
                 constructedDroid.SerializedCPU = _cpuItem;
                 constructedDroid.SerializedHead = _headItem;

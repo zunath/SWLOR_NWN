@@ -53,10 +53,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
             switch (level)
             {
                 case 1:
-                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.TwinBlade, 18, 0, 0, SavingThrow.Will, null, CombatImpactAreaShape.Sphere, 0.25f, 5f, centerOnActivator: true);
+                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.TwinBlade, 18, 0, null, CombatImpactAreaShape.Sphere, 0.25f, 5f, centerOnActivator: true);
                     break;
                 case 2:
-                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.TwinBlade, 26, 12, 15, SavingThrow.Fortitude, typeof(ExposedStatusEffect), CombatImpactAreaShape.Sphere, 0.25f, 5f, centerOnActivator: true);
+                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.TwinBlade, 26, 12, typeof(ExposedStatusEffect), CombatImpactAreaShape.Sphere, 0.25f, 5f, centerOnActivator: true);
                     break;
             }
         }

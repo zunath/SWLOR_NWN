@@ -1,6 +1,7 @@
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -29,10 +30,14 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             StatGroup.Stats[StatType.Evasion] = food.Evasion;
             StatGroup.Stats[StatType.PhysicalDefense] = food.DefensePhysical;
             StatGroup.Stats[StatType.ForceDefense] = food.DefenseForce;
-            StatGroup.Stats[StatType.FireDefense] = food.DefenseFire;
-            StatGroup.Stats[StatType.PoisonDefense] = food.DefensePoison;
-            StatGroup.Stats[StatType.ElectricalDefense] = food.DefenseElectrical;
-            StatGroup.Stats[StatType.IceDefense] = food.DefenseIce;
+            StatGroup.Resists[ResistanceType.Fire] = food.ResistanceFire;
+            StatGroup.Resists[ResistanceType.Poison] = food.ResistancePoison;
+            StatGroup.Resists[ResistanceType.Electrical] = food.ResistanceElectrical;
+            StatGroup.Resists[ResistanceType.Ice] = food.ResistanceIce;
+            StatGroup.Resists[ResistanceType.Mind] = food.ResistanceMind;
+            StatGroup.Resists[ResistanceType.Mobility] = food.ResistanceMobility;
+            StatGroup.Resists[ResistanceType.Trauma] = food.ResistanceTrauma;
+            StatGroup.Resists[ResistanceType.Disruption] = food.ResistanceDisruption;
             StatGroup.Stats[StatType.ExperiencePercentAdjustment] = food.XPBonusPercent;
             StatGroup.Stats[StatType.HPRegen] = food.HPRegen;
             StatGroup.Stats[StatType.FPRegen] = food.FPRegen;

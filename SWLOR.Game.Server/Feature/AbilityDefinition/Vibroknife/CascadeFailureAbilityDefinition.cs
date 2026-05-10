@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
             switch (level)
             {
                 case 1:
-                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Vibroknife, 25, 12, 15, SavingThrow.Fortitude, null, CombatImpactAreaShape.Cone, 0.25f, 5f, 5f);
+                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Vibroknife, 25, 12, null, CombatImpactAreaShape.Cone, 0.25f, 5f, 5f);
                     break;
             }
         }

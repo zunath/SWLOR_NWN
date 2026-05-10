@@ -14,7 +14,14 @@ namespace SWLOR.NWN.API.NWScript.Enum.Item.Property
         WIL = 9,
         AGI = 10,
         SOC = 11,
-        // IDs 12-15 are free.
+        ResistanceFire = 12,
+        ResistancePoison = 13,
+        ResistanceElectrical = 14,
+        ResistanceIce = 15,
+        ResistanceMind = 16,
+        ResistanceMobility = 17,
+        ResistanceTrauma = 18,
+        ResistanceDisruption = 19,
 
         Vibroblade = 115,
         Vibroknife = 116,

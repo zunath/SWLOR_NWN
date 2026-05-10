@@ -54,10 +54,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
             switch (level)
             {
                 case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Rifle, 10, 2, 12, SavingThrow.Reflex, typeof(DazedStatusEffect), false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Rifle, 10, 2, typeof(DazedStatusEffect), false);
                     break;
                 case 2:
-                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Rifle, 18, 3, 14, SavingThrow.Reflex, typeof(KnockdownStatusEffect), CombatImpactAreaShape.Line, 0.25f, 8f, 2.5f);
+                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Rifle, 18, 3, typeof(KnockdownStatusEffect), CombatImpactAreaShape.Line, 0.25f, 8f, 2.5f);
                     break;
             }
         }

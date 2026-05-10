@@ -1,5 +1,6 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
@@ -11,17 +12,18 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
     {
         public Dictionary<StatType, int> Stats { get; set; }
         public Dictionary<AbilityType, int> Abilities { get; set; }
-        public Dictionary<CombatDamageType, int> Resists { get; set; }
+        public Dictionary<ResistanceType, int> Resists { get; set; }
         public Dictionary<CraftSkillBonusType, Dictionary<SkillType, int>> CraftSkillBonuses { get; set; }
 
         public StatGroup()
         {
             Stats = new Dictionary<StatType, int>();
             Abilities = new Dictionary<AbilityType, int>();
-            Resists = new Dictionary<CombatDamageType, int>();
+            Resists = new Dictionary<ResistanceType, int>();
             CraftSkillBonuses = new Dictionary<CraftSkillBonusType, Dictionary<SkillType, int>>();
             PopulateStats();
             PopulateAbilities();
+            PopulateResists();
             PopulateCraftSkillBonuses();
         }
 
@@ -38,6 +40,14 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
             foreach (var type in System.Enum.GetValues(typeof(AbilityType)).Cast<AbilityType>())
             {
                 Abilities[type] = 0;
+            }
+        }
+
+        private void PopulateResists()
+        {
+            foreach (var type in Resistance.GetAllResistanceTypes())
+            {
+                Resists[type] = 0;
             }
         }
 

@@ -1,5 +1,6 @@
-using SWLOR.Game.Server.Service.StatusEffectService;
+﻿using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
@@ -11,6 +12,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override string Name => "Freezing";
         public override EffectIconType Icon => EffectIconType.DamageImmunityColdDecrease;
         public override StatusEffectCategory Categories => StatusEffectCategory.Debuff;
+        public override ResistanceType ResistanceType => ResistanceType.Ice;
         public override float Frequency => 6f;
 
         public FreezingStatusEffect()
@@ -31,7 +33,9 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         protected override void Tick(uint creature)
         {
             var perception = GetAbilityModifier(AbilityType.Perception, Source);
-            ApplyEffectToObject(DurationType.Instant, EffectDamage(d2() + perception * _level), creature);
+            var damage = d2() + perception * _level;
+            damage = Resistance.ApplyResistanceToDamage(creature, ResistanceType, damage);
+            ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, CombatDamageType.Ice.GetNWScriptDamageType()), creature);
             ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Cyan_Blue), creature, 5.9f);
             StatusEffect.ApplyStatusEffect(Source, creature, typeof(FreezingMightPenaltyStatusEffect), 6f);
         }

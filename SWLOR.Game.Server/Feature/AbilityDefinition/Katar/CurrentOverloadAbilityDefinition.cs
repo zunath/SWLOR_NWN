@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.Engine;
@@ -39,7 +40,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
             switch (level)
             {
                 case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Katar, 35, 3, 18, SavingThrow.Reflex, typeof(StunnedStatusEffect), false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Katar, 35, 3, typeof(StunnedStatusEffect), false, damageType: CombatDamageType.Electrical);
                     break;
             }
         }

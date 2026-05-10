@@ -8,14 +8,14 @@ namespace SWLOR.Game.Server.Service.CraftService
         DefensePhysical = 1,
         [EnhancementSubType("Defense - Force")]
         DefenseForce = 2,
-        [EnhancementSubType("Defense - Fire")]
-        DefenseFire = 3,
-        [EnhancementSubType("Defense - Poison")]
-        DefensePoison = 4,
-        [EnhancementSubType("Defense - Electrical")]
-        DefenseElectrical = 5,
-        [EnhancementSubType("Defense - Ice")]
-        DefenseIce = 6,
+        [EnhancementSubType("Resistance - Fire")]
+        ResistanceFire = 3,
+        [EnhancementSubType("Resistance - Poison")]
+        ResistancePoison = 4,
+        [EnhancementSubType("Resistance - Electrical")]
+        ResistanceElectrical = 5,
+        [EnhancementSubType("Resistance - Ice")]
+        ResistanceIce = 6,
         [EnhancementSubType("Evasion")]
         Evasion = 7,
         [EnhancementSubType("HP")]
@@ -126,14 +126,14 @@ namespace SWLOR.Game.Server.Service.CraftService
         FoodBonusPhysicalDefense = 62,
         [EnhancementSubType("Food Bonus - Force Defense")]
         FoodBonusForceDefense = 63,
-        [EnhancementSubType("Food Bonus - Poison Defense")]
-        FoodBonusPoisonDefense = 64,
-        [EnhancementSubType("Food Bonus - Fire Defense")]
-        FoodBonusFireDefense = 65,
-        [EnhancementSubType("Food Bonus - Ice Defense")]
-        FoodBonusIceDefense = 66,
-        [EnhancementSubType("Food Bonus - Electrical Defense")]
-        FoodBonusElectricalDefense = 67,
+        [EnhancementSubType("Food Bonus - Poison Resistance")]
+        FoodBonusPoisonResistance = 64,
+        [EnhancementSubType("Food Bonus - Fire Resistance")]
+        FoodBonusFireResistance = 65,
+        [EnhancementSubType("Food Bonus - Ice Resistance")]
+        FoodBonusIceResistance = 66,
+        [EnhancementSubType("Food Bonus - Electrical Resistance")]
+        FoodBonusElectricalResistance = 67,
         [EnhancementSubType("Food Bonus - Evasion")]
         FoodBonusEvasion = 68,
         [EnhancementSubType("Food Bonus - Control - Smithery")]
@@ -168,8 +168,40 @@ namespace SWLOR.Game.Server.Service.CraftService
         Attack = 83,
         [EnhancementSubType("Force Attack")]
         ForceAttack = 84,
+        [EnhancementSubType("Resistance - Mind")]
+        ResistanceMind = 85,
+        [EnhancementSubType("Resistance - Mobility")]
+        ResistanceMobility = 86,
+        [EnhancementSubType("Resistance - Trauma")]
+        ResistanceTrauma = 87,
+        [EnhancementSubType("Resistance - Disruption")]
+        ResistanceDisruption = 88,
+        [EnhancementSubType("Food Bonus - Mind Resistance")]
+        FoodBonusMindResistance = 89,
+        [EnhancementSubType("Food Bonus - Mobility Resistance")]
+        FoodBonusMobilityResistance = 90,
+        [EnhancementSubType("Food Bonus - Trauma Resistance")]
+        FoodBonusTraumaResistance = 91,
+        [EnhancementSubType("Food Bonus - Disruption Resistance")]
+        FoodBonusDisruptionResistance = 92,
 
-        // 83-101 are free
+        [EnhancementSubType("Droid - Fire Resistance")]
+        DroidResistanceFire = 93,
+        [EnhancementSubType("Droid - Poison Resistance")]
+        DroidResistancePoison = 94,
+        [EnhancementSubType("Droid - Electrical Resistance")]
+        DroidResistanceElectrical = 95,
+        [EnhancementSubType("Droid - Ice Resistance")]
+        DroidResistanceIce = 96,
+        [EnhancementSubType("Droid - Mind Resistance")]
+        DroidResistanceMind = 97,
+        [EnhancementSubType("Droid - Mobility Resistance")]
+        DroidResistanceMobility = 98,
+        [EnhancementSubType("Droid - Trauma Resistance")]
+        DroidResistanceTrauma = 99,
+        [EnhancementSubType("Droid - Disruption Resistance")]
+        DroidResistanceDisruption = 100,
+        // 101 is free
 
         [EnhancementSubType("Droid - AI Slot")]
         DroidAISlot = 102,

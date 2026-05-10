@@ -12,8 +12,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
         {
             var builder = new AbilityBuilder();
 
-            ConfigureTelegraphedArea(builder.Create(FeatType.TranqCone1, PerkType.TranqCone).Name("Tranq Cone I").Level(1), SkillType.Rifle, CombatImpactAreaShape.Cone, 0, 8, 12, SavingThrow.Will, typeof(DazedStatusEffect), 8f, 6f, 6);
-            ConfigureTelegraphedArea(builder.Create(FeatType.TranqCone2, PerkType.TranqCone).Name("Tranq Cone II").Level(2), SkillType.Rifle, CombatImpactAreaShape.Cone, 0, 10, 15, SavingThrow.Will, typeof(DazedStatusEffect), 10f, 7f, 8);
+            ConfigureTelegraphedArea(builder.Create(FeatType.TranqCone1, PerkType.TranqCone).Name("Tranq Cone I").Level(1), SkillType.Rifle, CombatImpactAreaShape.Cone, 0, 8, typeof(DazedStatusEffect), 8f, 6f, 6);
+            ConfigureTelegraphedArea(builder.Create(FeatType.TranqCone2, PerkType.TranqCone).Name("Tranq Cone II").Level(2), SkillType.Rifle, CombatImpactAreaShape.Cone, 0, 10, typeof(DazedStatusEffect), 10f, 7f, 8);
 
             return builder.Build();
         }

@@ -280,7 +280,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Shielding")
 
                 .AddPerkLevel()
-                .Description("Improves a single target's physical defense by 5 for 15 minutes. Consumes stim pack on use.")
+                .Description("Improves a single target's Physical Defense by 5 for 15 minutes. Consumes stim pack on use.")
                 .Price(2)
                 .DroidAISlots(2)
                 .RequirementSkill(SkillType.FirstAid, 5)
@@ -288,7 +288,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Shielding1)
 
                 .AddPerkLevel()
-                .Description("Improves a single target's physical defense by 10 for 15 minutes. Consumes stim pack on use.")
+                .Description("Improves a single target's Physical Defense by 10 for 15 minutes. Consumes stim pack on use.")
                 .Price(3)
                 .DroidAISlots(3)
                 .RequirementSkill(SkillType.FirstAid, 15)
@@ -296,7 +296,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Shielding2)
 
                 .AddPerkLevel()
-                .Description("Improves a single target's physical defense by 15 for 15 minutes. Consumes stim pack on use.")
+                .Description("Improves a single target's Physical Defense by 15 for 15 minutes. Consumes stim pack on use.")
                 .Price(3)
                 .DroidAISlots(4)
                 .RequirementSkill(SkillType.FirstAid, 30)
@@ -304,7 +304,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Shielding3)
 
                 .AddPerkLevel()
-                .Description("Improves a single target's physical defense by 20 for 15 minutes. Consumes stim pack on use.")
+                .Description("Improves a single target's Physical Defense by 20 for 15 minutes. Consumes stim pack on use.")
                 .Price(4)
                 .DroidAISlots(5)
                 .RequirementSkill(SkillType.FirstAid, 45)
@@ -364,3 +364,4 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         }
     }
 }
+

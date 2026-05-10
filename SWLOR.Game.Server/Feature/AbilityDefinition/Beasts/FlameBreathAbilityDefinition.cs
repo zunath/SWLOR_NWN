@@ -25,9 +25,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
             return _builder.Build();
         }
 
-        private void Impact(uint activator, Location targetLocation, int dmg, int dc, int level)
+        private void Impact(uint activator, Location targetLocation, int dmg, bool appliesBurn, int level)
         {
-            var baseDC = dc;
             const float ConeSize = 10f;
 
             AssignCommand(activator, () =>
@@ -48,7 +47,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
             {
                 if (target != activator)
                 {
-                    var defense = Stat.GetDefense(target, CombatDamageType.Fire, AbilityType.Vitality);
+                    var damageType = CombatDamageType.Fire;
+                    var defense = Stat.GetDefense(target, damageType, AbilityType.Vitality);
                     var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
                     var damage = Combat.CalculateDamage(
                         attack,
@@ -57,6 +57,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                         defense,
                         defenderStat,
                         0);
+                    damage = Resistance.ApplyResistanceToDamage(target, damageType, damage);
 
                     var eDMG = EffectDamage(damage, DamageType.Fire);
                     Enmity.ModifyEnmity(activator, target, 220);
@@ -71,11 +72,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                             ApplyEffectToObject(DurationType.Instant, eVFX, targetCopy);
                         });
 
-                        dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Reflex, baseDC);
-                        var checkResult = ReflexSave(targetCopy, dc, SavingThrowType.None, activator);
-                        if (checkResult == SavingThrowResultType.Failed)
+                        if (appliesBurn)
                         {
-                            StatusEffect.ApplyStatusEffect(activator, targetCopy, new BurnStatusEffect(level), 30f);
+                            StatusEffect.ApplyStatusEffect(activator, targetCopy, new BurnStatusEffect(level), 30f, damageType);
                         }
                     });
                 }
@@ -95,7 +94,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .IsCastedAbility()
                 .HasImpactAction((activator, _, level, targetLocation) =>
                 {
-                    Impact(activator, targetLocation, 8, -1, level);
+                    Impact(activator, targetLocation, 8, false, level);
                 });
         }
         private void FlameBreath2()
@@ -109,7 +108,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .IsCastedAbility()
                 .HasImpactAction((activator, _, level, targetLocation) =>
                 {
-                    Impact(activator, targetLocation, 12, -1, level);
+                    Impact(activator, targetLocation, 12, false, level);
                 });
         }
         private void FlameBreath3()
@@ -123,7 +122,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .IsCastedAbility()
                 .HasImpactAction((activator, _, level, targetLocation) =>
                 {
-                    Impact(activator, targetLocation, 16, 8, level);
+                    Impact(activator, targetLocation, 16, true, level);
                 });
         }
         private void FlameBreath4()
@@ -137,7 +136,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .IsCastedAbility()
                 .HasImpactAction((activator, _, level, targetLocation) =>
                 {
-                    Impact(activator, targetLocation, 20, 12, level);
+                    Impact(activator, targetLocation, 20, true, level);
                 });
         }
         private void FlameBreath5()
@@ -151,7 +150,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .IsCastedAbility()
                 .HasImpactAction((activator, _, level, targetLocation) =>
                 {
-                    Impact(activator, targetLocation, 24, 14, level);
+                    Impact(activator, targetLocation, 24, true, level);
                 });
         }
     }

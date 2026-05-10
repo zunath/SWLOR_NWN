@@ -67,17 +67,17 @@ The HP calculation is handled by the NWN engine and stored in the `MaxHP` proper
 - Attack = 8 + (2 × 5) + 2 + 3 = 23
 
 ### 6. Defense Calculation
-**Formula:** `8 + (Vitality Stat × 1.5) + Armor Skill + Equipment Bonus`
+**Formula:** `8 + (Defense Stat x 1.5) + Armor Skill + Equipment Bonus`
 
 **Components:**
 - Base Defense: 8
-- Vitality Stat: Raw Vitality stat value (not modifier)
+- Defense Stat: Raw Vitality for Physical Defense, raw Willpower for Force Defense
 - Armor Skill: Armor skill level
-- Equipment Bonus: Sum of all defense bonuses from equipment
+- Equipment Bonus: Matching Physical or Force defense bonuses from equipment
 
 **Example:**
-- Vitality 16, Armor Skill 3, Equipment +5
-- Defense = 8 + (16 × 1.5) + 3 + 5 = 8 + 24 + 3 + 5 = 40
+- Vitality or Willpower 16, Armor Skill 3, matching equipment +5
+- Defense = 8 + (16 x 1.5) + 3 + 5 = 8 + 24 + 3 + 5 = 40
 
 ### 7. Evasion Calculation
 **Formula:** `(Agility Stat × 3) + Armor Skill + Equipment Bonus`
@@ -90,6 +90,14 @@ The HP calculation is handled by the NWN engine and stored in the `MaxHP` proper
 **Example:**
 - Agility 14, Armor Skill 2, Equipment +4
 - Evasion = (14 × 3) + 2 + 4 = 42 + 2 + 4 = 48
+
+### 7a. Resistance Calculation
+**Formula:** Resistance score is capped at 90 and uses the Xenomech reduction curve: `1 - (Resistance / (Resistance + 50))`, with a 10% minimum damage multiplier.
+
+**Components:**
+- Equipment Bonus: Matching elemental/status resistance bonuses from equipment
+- Status/Perk/Food Bonus: Existing elemental defense stat bonuses now contribute to the matching elemental resistance
+- Resistance Types: Fire, Poison, Electrical, Ice, Mind, Mobility, Trauma, Disruption
 
 ### 8. Accuracy Calculation
 **Formula:** `8 + (2 × Skill Level) + Stat + Equipment Bonus`
@@ -151,7 +159,8 @@ Equipment provides various bonuses that are stored in the player's properties:
 
 - **Attack Bonus:** Stored in `Attack` property
 - **Force Attack Bonus:** Stored in `ForceAttack` property
-- **Defense Bonuses:** Stored in `Defenses` dictionary by damage type
+- **Defense Bonuses:** Physical/Force mitigation stored in `Defenses`
+- **Resistance Bonuses:** Elemental/status mitigation stored in `Resistances` by resistance type
 - **Evasion Bonus:** Stored in `Evasion` property
 
 ## Implementation Notes

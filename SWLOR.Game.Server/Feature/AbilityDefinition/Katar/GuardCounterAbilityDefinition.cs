@@ -68,13 +68,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
             switch (level)
             {
                 case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Katar, 8, 0, 0, SavingThrow.Will, null, false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Katar, 8, 0, null, false);
                     break;
                 case 2:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Katar, 18, 0, 0, SavingThrow.Will, null, false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Katar, 18, 0, null, false);
                     break;
                 case 3:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Katar, 28, 3, 16, SavingThrow.Reflex, typeof(DazedStatusEffect), false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Katar, 28, 3, typeof(DazedStatusEffect), false);
                     break;
             }
         }

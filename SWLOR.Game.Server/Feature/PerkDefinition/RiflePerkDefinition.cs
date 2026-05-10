@@ -107,19 +107,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CripplingShot1)
-                .Description("Your next attack deals weapon DMG + 12 and has a Reflex DC12 check to inflict Disoriented for 12 seconds.")
+                .Description("Your next attack deals weapon DMG + 12 and inflicts Disoriented for 12 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Rifle, 8)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CripplingShot2)
-                .Description("Your next attack deals weapon DMG + 22 and has a Reflex DC15 check to inflict Disoriented for 15 seconds.")
+                .Description("Your next attack deals weapon DMG + 22 and inflicts Disoriented for 15 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Rifle, 20)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CripplingShot3)
-                .Description("Your next attack deals weapon DMG + 34 and has a Reflex DC18 check to inflict Disoriented for 20 seconds.")
+                .Description("Your next attack deals weapon DMG + 34 and inflicts Disoriented for 20 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Rifle, 35);
         }
@@ -173,7 +173,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Headshot1)
-                .Description("Deals weapon DMG + 60. Targets below 50% HP make a Fortitude DC18 check or become Dazed for 3 seconds.")
+                .Description("Deals weapon DMG + 60. Targets below 50% HP become Dazed for 3 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Rifle, 42);
         }
@@ -197,7 +197,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.NeutralizingShot1)
-                .Description("Deals weapon DMG + 30 and has a Will DC18 check to remove one beneficial combat effect and inflict Disoriented for 12 seconds.")
+                .Description("Deals weapon DMG + 30, removes one beneficial combat effect, and inflicts Disoriented for 12 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Rifle, 42);
         }
@@ -221,7 +221,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Overwatch1)
-                .Description("Deal weapon DMG + 20 and interrupt your target's current ability activation. Will DC16 check to inflict Foggy Mind for 12 seconds.")
+                .Description("Deal weapon DMG + 20 and interrupt your target's current ability activation. Inflicts Foggy Mind for 12 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Rifle, 30);
         }
@@ -233,7 +233,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PacificationField1)
-                .Description("Creates a field for 15 seconds. Enemies inside suffer -10% Attack and make a Will DC15 check every 5 seconds or become Dazed for 2 seconds.")
+                .Description("Creates a field for 15 seconds. Enemies inside suffer -10% Attack and become Dazed for 2 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Rifle, 45);
         }
@@ -245,19 +245,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PiercingRound1)
-                .Description("Deals weapon DMG + 14 and has a Fortitude DC12 check to inflict Sunder, reducing Defense by 10% for 12 seconds.")
+                .Description("Deals weapon DMG + 14 and inflicts Sunder, reducing Defense by 10% for 12 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Rifle, 12)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PiercingRound2)
-                .Description("Deals weapon DMG + 26 and has a Fortitude DC15 check to inflict Sunder, reducing Defense by 15% for 12 seconds.")
+                .Description("Deals weapon DMG + 26 and inflicts Sunder, reducing Defense by 15% for 12 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Rifle, 22)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PiercingRound3)
-                .Description("Deals weapon DMG + 38 and has a Fortitude DC18 check to inflict Sunder, reducing Defense by 20% for 15 seconds.")
+                .Description("Deals weapon DMG + 38 and inflicts Sunder, reducing Defense by 20% for 15 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Rifle, 40);
         }
@@ -269,13 +269,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PinningFire1)
-                .Description("Deals weapon DMG + 10 and has a Reflex DC12 check to inflict Dazed for 2 seconds.")
+                .Description("Deals weapon DMG + 10 and inflicts Dazed for 2 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Rifle, 12)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PinningFire2)
-                .Description("Deals weapon DMG + 18 to enemies in a line. Reflex DC14 check to inflict Knockdown for 3 seconds.")
+                .Description("Deals weapon DMG + 18 to enemies in a line. Inflicts Knockdown for 3 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Rifle, 28);
         }
@@ -363,7 +363,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SuppressiveLine1)
-                .Description("Deals weapon DMG + 22 to enemies in a line. Reflex DC14 check to inflict Disoriented for 12 seconds.")
+                .Description("Deals weapon DMG + 22 to enemies in a line. Inflicts Disoriented for 12 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Rifle, 25);
         }
@@ -417,3 +417,4 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         }
     }
 }
+

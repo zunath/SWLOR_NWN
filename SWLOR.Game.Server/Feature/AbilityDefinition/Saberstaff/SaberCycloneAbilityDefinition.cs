@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
             switch (level)
             {
                 case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Saberstaff, 25, 6, 0, SavingThrow.Will, null, true);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Saberstaff, 25, 6, null, true);
                     break;
             }
         }

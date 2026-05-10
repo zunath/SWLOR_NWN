@@ -186,13 +186,6 @@ namespace SWLOR.Game.Server.Service
             return TokenStart(204, 119, 255) + text + TokenEnd();
         }
 
-        public static string SavingThrow(string text)
-        {
-            if (string.IsNullOrWhiteSpace(text)) throw new ArgumentException("Text must not be null, empty, or white space.", nameof(text));
-
-            return TokenStart(102, 204, 255) + text + TokenEnd();
-        }
-
         public static string Script(string text)
         {
             if (string.IsNullOrWhiteSpace(text)) throw new ArgumentException("Text must not be null, empty, or white space.", nameof(text));

@@ -1,8 +1,8 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Entity
 {
@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Entity
 
         public Dictionary<CombatDamageType, int> DefensePurities { get; set; }
 
-        public Dictionary<SavingThrow, int> SavingThrowPurities { get; set; }
+        public Dictionary<ResistanceType, int> ResistancePurities { get; set; }
 
 
         public Beast()
@@ -52,22 +52,9 @@ namespace SWLOR.Game.Server.Entity
             PortraitId = -1;
             SoundSetId = -1;
 
-            DefensePurities = new Dictionary<CombatDamageType, int>
-            {
-                { CombatDamageType.Physical, 0 },
-                { CombatDamageType.Force, 0 },
-                { CombatDamageType.Fire, 0 },
-                { CombatDamageType.Ice, 0 },
-                { CombatDamageType.Poison, 0 },
-                { CombatDamageType.Electrical, 0 },
-            };
+            DefensePurities = Combat.CreateDefaultDefenseValues();
 
-            SavingThrowPurities = new Dictionary<SavingThrow, int>
-            {
-                { SavingThrow.Fortitude, 0},
-                { SavingThrow.Will, 0},
-                { SavingThrow.Reflex, 0},
-            };
+            ResistancePurities = Resistance.CreateDefaultResistanceValues();
         }
 
     }

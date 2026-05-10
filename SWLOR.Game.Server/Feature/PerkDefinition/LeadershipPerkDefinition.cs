@@ -303,7 +303,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Shocking Shout")
 
                 .AddPerkLevel()
-                .Description("Attempts to stun all nearby enemies for 2 seconds with a will check of 12+SOC/2. (Max: 6 targets)")
+                .Description("Stuns up to 6 nearby enemies for 2 seconds, scaling with SOC.")
                 .Price(3)
                 .RequirementSkill(SkillType.Leadership, 25)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -340,19 +340,20 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Frenzied Shout")
 
                 .AddPerkLevel()
-                .Description("Reduces physical defense of all nearby enemies by SOC.")
+                .Description("Reduces Physical Defense of all nearby enemies by SOC.")
                 .Price(2)
                 .GrantsFeat(FeatType.FrenziedShout)
 
                 .AddPerkLevel()
-                .Description("Reduces physical defense of all nearby enemies by SOC*1.5.")
+                .Description("Reduces Physical Defense of all nearby enemies by SOC*1.5.")
                 .Price(2)
                 .RequirementSkill(SkillType.Leadership, 15)
 
                 .AddPerkLevel()
-                .Description("Reduces physical defense of all nearby enemies by SOC*2.")
+                .Description("Reduces Physical Defense of all nearby enemies by SOC*2.")
                 .Price(2)
                 .RequirementSkill(SkillType.Leadership, 35);
         }
     }
 }
+

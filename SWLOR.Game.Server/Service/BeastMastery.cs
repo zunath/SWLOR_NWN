@@ -335,31 +335,21 @@ namespace SWLOR.Game.Server.Service
             var accuracyBonus = (int)(level.MaxAccuracyBonus * (dbBeast.AccuracyPurity * 0.01f));
             var evasionBonus = (int)(level.MaxEvasionBonus * (dbBeast.EvasionPurity * 0.01f));
 
-            var physicalDefenseBonus = (int)(level.MaxDefenseBonuses[CombatDamageType.Physical] * (dbBeast.DefensePurities[CombatDamageType.Physical] * 0.01f));
-            var forceDefenseBonus = (int)(level.MaxDefenseBonuses[CombatDamageType.Force] * (dbBeast.DefensePurities[CombatDamageType.Force] * 0.01f));
-            var fireDefenseBonus = (int)(level.MaxDefenseBonuses[CombatDamageType.Fire] * (dbBeast.DefensePurities[CombatDamageType.Fire] * 0.01f));
-            var iceDefenseBonus = (int)(level.MaxDefenseBonuses[CombatDamageType.Ice] * (dbBeast.DefensePurities[CombatDamageType.Ice] * 0.01f));
-            var poisonDefenseBonus = (int)(level.MaxDefenseBonuses[CombatDamageType.Poison] * (dbBeast.DefensePurities[CombatDamageType.Poison] * 0.01f));
-            var electricalDefenseBonus = (int)(level.MaxDefenseBonuses[CombatDamageType.Electrical] * (dbBeast.DefensePurities[CombatDamageType.Electrical] * 0.01f));
-
-            var willBonus = (int)(level.MaxSavingThrowBonuses[SavingThrow.Will] * (dbBeast.SavingThrowPurities[SavingThrow.Will] * 0.01f));
-            var fortitudeBonus = (int)(level.MaxSavingThrowBonuses[SavingThrow.Fortitude] * (dbBeast.SavingThrowPurities[SavingThrow.Fortitude] * 0.01f));
-            var reflexBonus = (int)(level.MaxSavingThrowBonuses[SavingThrow.Reflex] * (dbBeast.SavingThrowPurities[SavingThrow.Reflex] * 0.01f));
-
             BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.Attack, -1, attackBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
             BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.AccuracyBonus, -1, accuracyBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
             BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.Evasion, -1, evasionBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
 
-            BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.Defense, (int)CombatDamageType.Physical, physicalDefenseBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-            BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.Defense, (int)CombatDamageType.Force, forceDefenseBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-            BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.Defense, (int)CombatDamageType.Fire, fireDefenseBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-            BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.Defense, (int)CombatDamageType.Ice, iceDefenseBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-            BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.Defense, (int)CombatDamageType.Poison, poisonDefenseBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-            BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.Defense, (int)CombatDamageType.Electrical, electricalDefenseBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            foreach (var damageType in Combat.GetDefenseDamageTypes())
+            {
+                var defenseBonus = BeastResistanceCalculator.CalculateDefenseBonus(level, dbBeast, damageType);
+                BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.Defense, (int)damageType, defenseBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            }
 
-            BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.SavingThrowBonusSpecific, (int)SavingThrow.Will, willBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-            BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.SavingThrowBonusSpecific, (int)SavingThrow.Fortitude, fortitudeBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-            BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.SavingThrowBonusSpecific, (int)SavingThrow.Reflex, reflexBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            foreach (var resistanceType in Resistance.GetAllResistanceTypes())
+            {
+                var resistanceBonus = BeastResistanceCalculator.CalculateResistanceBonus(level, dbBeast, resistanceType);
+                BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.Resistance, (int)resistanceType, resistanceBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            }
         }
 
         public static (BeastFoodType, BeastFoodType) GetLikedAndHatedFood()
@@ -791,17 +781,25 @@ namespace SWLOR.Game.Server.Service
                 ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.AccuracyPurity, job.AccuracyPurity),
                 ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.EvasionPurity, job.EvasionPurity),
                 ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.LearningPurity, job.LearningPurity),
-                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.PhysicalDefensePurity, job.DefensePurities[CombatDamageType.Physical]),
-                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.ForceDefensePurity, job.DefensePurities[CombatDamageType.Force]),
-                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.FireDefensePurity, job.DefensePurities[CombatDamageType.Fire]),
-                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.PoisonDefensePurity, job.DefensePurities[CombatDamageType.Poison]),
-                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.ElectricalDefensePurity, job.DefensePurities[CombatDamageType.Electrical]),
-                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.IceDefensePurity, job.DefensePurities[CombatDamageType.Ice]),
-                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.FortitudePurity, job.SavingThrowPurities[SavingThrow.Fortitude]),
-                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.ReflexPurity, job.SavingThrowPurities[SavingThrow.Reflex]),
-                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.WillPurity, job.SavingThrowPurities[SavingThrow.Will]),
-                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.XPPenalty, job.XPPenalty),
             };
+
+            foreach (var damageType in Combat.GetDefenseDamageTypes())
+            {
+                if (!BeastResistanceCalculator.TryGetDefensePurityIncubationStatType(damageType, out var statType))
+                    continue;
+
+                itemProperties.Add(ItemPropertyCustom(ItemPropertyType.Incubation, (int)statType, BeastResistanceCalculator.GetDefensePurity(job, damageType)));
+            }
+
+            foreach (var resistanceType in Resistance.GetAllResistanceTypes())
+            {
+                if (!BeastResistanceCalculator.TryGetResistancePurityIncubationStatType(resistanceType, out var statType))
+                    continue;
+
+                itemProperties.Add(ItemPropertyCustom(ItemPropertyType.Incubation, (int)statType, GetResistancePurity(job, resistanceType)));
+            }
+
+            itemProperties.Add(ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.XPPenalty, job.XPPenalty));
 
             foreach (var ip in itemProperties)
             {
@@ -826,16 +824,10 @@ namespace SWLOR.Game.Server.Service
                 job.AccuracyPurity,
                 job.EvasionPurity,
                 job.LearningPurity,
-                job.DefensePurities[CombatDamageType.Physical],
-                job.DefensePurities[CombatDamageType.Force],
-                job.DefensePurities[CombatDamageType.Fire],
-                job.DefensePurities[CombatDamageType.Poison],
-                job.DefensePurities[CombatDamageType.Electrical],
-                job.DefensePurities[CombatDamageType.Ice],
-                job.SavingThrowPurities[SavingThrow.Fortitude],
-                job.SavingThrowPurities[SavingThrow.Reflex],
-                job.SavingThrowPurities[SavingThrow.Will],
             };
+
+            purities.AddRange(Combat.GetDefenseDamageTypes().Select(type => BeastResistanceCalculator.GetDefensePurity(job, type)));
+            purities.AddRange(Resistance.GetAllResistanceTypes().Select(type => GetResistancePurity(job, type)));
 
             var averagePurity = purities.Average();
             var qualityPercent = averagePurity / maxPurityValue;
@@ -846,6 +838,14 @@ namespace SWLOR.Game.Server.Service
             var addGoldPiece = (int)Math.Round(baseVendorBonus + (qualityVendorRange * qualityPercent * xpPenaltyAdjustment));
 
             return Math.Max(baseVendorBonus, addGoldPiece);
+        }
+
+        private static int GetResistancePurity(IncubationJob job, ResistanceType type)
+        {
+            return job.ResistancePurities != null &&
+                   job.ResistancePurities.TryGetValue(type, out var purity)
+                ? purity
+                : 0;
         }
 
         /// <summary>

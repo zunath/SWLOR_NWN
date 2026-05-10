@@ -142,18 +142,18 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Fortified Position")
 
                 .AddPerkLevel()
-                .Description("Grants +2 Will, +2 Fortitude, +2 Reflex with shield equipped.")
-                .IncreasesStat(StatType.WillSavingThrow, creature => EquipmentPredicates.HasOffHandShield(creature) ? 2 : 0)
-                .IncreasesStat(StatType.FortitudeSavingThrow, creature => EquipmentPredicates.HasOffHandShield(creature) ? 2 : 0)
-                .IncreasesStat(StatType.ReflexSavingThrow, creature => EquipmentPredicates.HasOffHandShield(creature) ? 2 : 0)
+                .Description("Grants +2 Mind, +2 Trauma, +2 Mobility Resistance with shield equipped.")
+                .IncreasesStat(StatType.MindResistance, creature => EquipmentPredicates.HasOffHandShield(creature) ? 2 : 0)
+                .IncreasesStat(StatType.TraumaResistance, creature => EquipmentPredicates.HasOffHandShield(creature) ? 2 : 0)
+                .IncreasesStat(StatType.MobilityResistance, creature => EquipmentPredicates.HasOffHandShield(creature) ? 2 : 0)
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroblade, 15)
 
                 .AddPerkLevel()
-                .Description("Grants +4 Will, +4 Fortitude, +4 Reflex with shield equipped total.")
-                .IncreasesStat(StatType.WillSavingThrow, creature => EquipmentPredicates.HasOffHandShield(creature) ? 4 : 0)
-                .IncreasesStat(StatType.FortitudeSavingThrow, creature => EquipmentPredicates.HasOffHandShield(creature) ? 4 : 0)
-                .IncreasesStat(StatType.ReflexSavingThrow, creature => EquipmentPredicates.HasOffHandShield(creature) ? 4 : 0)
+                .Description("Grants +4 Mind, +4 Trauma, +4 Mobility Resistance with shield equipped total.")
+                .IncreasesStat(StatType.MindResistance, creature => EquipmentPredicates.HasOffHandShield(creature) ? 4 : 0)
+                .IncreasesStat(StatType.TraumaResistance, creature => EquipmentPredicates.HasOffHandShield(creature) ? 4 : 0)
+                .IncreasesStat(StatType.MobilityResistance, creature => EquipmentPredicates.HasOffHandShield(creature) ? 4 : 0)
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroblade, 38);
         }
@@ -176,19 +176,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.HackingBlade1)
-                .Description("Your next attack deals an additional 8 DMG and has a DC10 Fortitude check to inflict Bleed for 30 seconds.")
+                .Description("Your next attack deals an additional 8 DMG and inflicts Bleed for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Vibroblade, 8)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.HackingBlade2)
-                .Description("Your next attack deals an additional 18 DMG and has a DC15 Fortitude check to inflict Bleed for 60 seconds.")
+                .Description("Your next attack deals an additional 18 DMG and inflicts Bleed for 60 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroblade, 20)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.HackingBlade3)
-                .Description("Your next attack deals an additional 28 DMG and has a DC20 Fortitude check to inflict Bleed for 60 seconds.")
+                .Description("Your next attack deals an additional 28 DMG and inflicts Bleed for 60 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroblade, 35);
         }
@@ -248,13 +248,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RendingStrike1)
-                .Description("Deals weapon DMG + 18. Fortitude DC12 check to inflict Exposed which reduces Defense by 15% for 10s.")
+                .Description("Deals weapon DMG + 18. Inflicts Exposed which reduces Defense by 15% for 10s.")
                 .Price(2)
                 .RequirementSkill(SkillType.Vibroblade, 22)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RendingStrike2)
-                .Description("Deals weapon DMG + 32. Fortitude DC16 check to inflict Exposed which reduces Defense by 25% for 12s.")
+                .Description("Deals weapon DMG + 32. Inflicts Exposed which reduces Defense by 25% for 12s.")
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroblade, 38);
         }
@@ -315,19 +315,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ShieldBash1)
-                .Description("Bashes an enemy for 12 DMG and has a DC12 Will check to inflict Dazed for 3 seconds.")
+                .Description("Bashes an enemy for 12 DMG and inflicts Dazed for 3 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Vibroblade, 8)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ShieldBash2)
-                .Description("Bashes an enemy for 24 DMG and has a DC14 Will check to inflict Dazed for 6 seconds.")
+                .Description("Bashes an enemy for 24 DMG and inflicts Dazed for 6 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroblade, 18)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ShieldBash3)
-                .Description("Bashes an enemy for 36 DMG and has a DC16 Will check to inflict Stunned for 3 seconds.")
+                .Description("Bashes an enemy for 36 DMG and inflicts Stunned for 3 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroblade, 35);
         }
@@ -391,3 +391,4 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         }
     }
 }
+

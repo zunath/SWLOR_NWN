@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
@@ -37,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                         {
                             const float Duration = 90f;
 
-                            StatusEffect.ApplyStatusEffect(activator, nearest, typeof(ScreechStatusEffect), Duration);
+                            StatusEffect.ApplyStatusEffect(activator, nearest, typeof(ScreechStatusEffect), Duration, CombatDamageType.Physical);
                             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Pulse_Negative), nearest);
 
                             SendMessageToPC(nearest, "The screech disorients you!");

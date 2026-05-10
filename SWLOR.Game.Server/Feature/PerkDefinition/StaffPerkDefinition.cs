@@ -48,7 +48,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Bonecrusher1)
-                .Description("Deals weapon DMG + 50. If the target is Knocked down, they make a Fortitude DC18 check or become Stunned for 3 seconds.")
+                .Description("Deals weapon DMG + 50. If the target is Knocked down, they become Stunned for 3 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Staff, 45);
         }
@@ -160,13 +160,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GroundQuake1)
-                .Description("Deals weapon DMG + 18 to nearby enemies. Reflex DC14 check to inflict Knockdown for 2 seconds.")
+                .Description("Deals weapon DMG + 18 to nearby enemies. Inflicts Knockdown for 2 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Staff, 25)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GroundQuake2)
-                .Description("Deals weapon DMG + 28 to nearby enemies. Reflex DC16 check to inflict Knockdown for 3 seconds.")
+                .Description("Deals weapon DMG + 28 to nearby enemies. Inflicts Knockdown for 3 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Staff, 35);
         }
@@ -202,19 +202,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.LegSweep1)
-                .Description("Deals weapon DMG + 6 and has a Reflex DC12 check to inflict Knockdown for 3 seconds.")
+                .Description("Deals weapon DMG + 6 and inflicts Knockdown for 3 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Staff, 12)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.LegSweep2)
-                .Description("Deals weapon DMG + 16 and has a Reflex DC15 check to inflict Knockdown for 3 seconds.")
+                .Description("Deals weapon DMG + 16 and inflicts Knockdown for 3 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Staff, 22)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.LegSweep3)
-                .Description("Deals weapon DMG + 26 and has a Reflex DC18 check to inflict Knockdown for 4 seconds.")
+                .Description("Deals weapon DMG + 26 and inflicts Knockdown for 4 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Staff, 35);
         }
@@ -226,7 +226,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.LineBreaker1)
-                .Description("Deals weapon DMG + 18 to enemies in a line. Reflex DC14 check to inflict Disoriented for 12 seconds.")
+                .Description("Deals weapon DMG + 18 to enemies in a line. Inflicts Disoriented for 12 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Staff, 25);
         }
@@ -264,19 +264,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RibBreaker1)
-                .Description("Deals weapon DMG + 18 and has a Fortitude DC14 check to inflict Weakened, reducing Attack by 10% for 15 seconds.")
+                .Description("Deals weapon DMG + 18 and inflicts Weakened, reducing Attack by 10% for 15 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Staff, 20)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RibBreaker2)
-                .Description("Deals weapon DMG + 30 and has a Fortitude DC16 check to inflict Weakened, reducing Attack by 15% for 15 seconds.")
+                .Description("Deals weapon DMG + 30 and inflicts Weakened, reducing Attack by 15% for 15 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Staff, 30)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RibBreaker3)
-                .Description("Deals weapon DMG + 42 and has a Fortitude DC18 check to inflict Weakened, reducing Attack by 20% for 15 seconds.")
+                .Description("Deals weapon DMG + 42 and inflicts Weakened, reducing Attack by 20% for 15 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Staff, 42);
         }
@@ -324,19 +324,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Slam1)
-                .Description("Deals weapon DMG + 8 and has a Fortitude DC12 check to inflict Blind for 8 seconds.")
+                .Description("Deals weapon DMG + 8 and inflicts Blind for 8 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Staff, 8)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Slam2)
-                .Description("Deals weapon DMG + 20 and has a Fortitude DC15 check to inflict Blind for 10 seconds.")
+                .Description("Deals weapon DMG + 20 and inflicts Blind for 10 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Staff, 18)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Slam3)
-                .Description("Deals weapon DMG + 32 and has a Fortitude DC18 check to inflict Blind for 12 seconds.")
+                .Description("Deals weapon DMG + 32 and inflicts Blind for 12 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Staff, 28);
         }
@@ -348,7 +348,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SkullRattle1)
-                .Description("Deals weapon DMG + 34 and has a Fortitude DC16 check to inflict Dazed for 3 seconds.")
+                .Description("Deals weapon DMG + 34 and inflicts Dazed for 3 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Staff, 38);
         }
@@ -392,7 +392,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SweepingGuard1)
-                .Description("Deals weapon DMG + 18 to all nearby enemies. Reflex DC16 check to inflict Knockdown for 2 seconds. You gain +20% Defense for 10 seconds.")
+                .Description("Deals weapon DMG + 18 to all nearby enemies. Inflicts Knockdown for 2 seconds. You gain +20% Defense for 10 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Staff, 38);
         }
@@ -416,9 +416,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Worldbreaker1)
-                .Description("Strike the ground. Enemies in an area of effect (sphere) take weapon DMG + 45 and make a Reflex DC18 check or suffer Knockdown for 4 seconds.")
+                .Description("Strike the ground. Enemies in an area of effect (sphere) take weapon DMG + 45 and suffer Knockdown for 4 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Staff, 50);
         }
     }
 }
+

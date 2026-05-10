@@ -32,7 +32,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
 
             var totalStat = beastmasterStat + beastStat;
             var attack = Stat.GetAttack(activator, AbilityType.Might, SkillType.Invalid);
-            var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+            var damageType = CombatDamageType.Physical;
+            var defense = Stat.GetDefense(target, damageType, AbilityType.Vitality);
             var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
 
             var damage = Combat.CalculateDamage(
@@ -43,10 +44,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 defenderStat,
                 0
             );
+            damage = Resistance.ApplyResistanceToDamage(target, damageType, damage);
 
             AssignCommand(activator, () =>
             {
-                ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), target);
+                ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, damageType.GetNWScriptDamageType()), target);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Sonic), target);
             });
 

@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
             switch (level)
             {
                 case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Vibroblade, 35, 12, 0, SavingThrow.Will, typeof(HemorrhageStatusEffect), false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Vibroblade, 35, 12, typeof(HemorrhageStatusEffect), false);
                     break;
             }
         }

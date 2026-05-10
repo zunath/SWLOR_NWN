@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
             switch (level)
             {
                 case 1:
-                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.HeavyVibroblade, 20, 12, 16, SavingThrow.Fortitude, typeof(ForceDisruptionStatusEffect), CombatImpactAreaShape.Line, 0.25f, 8f, 2.5f);
+                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.HeavyVibroblade, 20, 12, typeof(ForceDisruptionStatusEffect), CombatImpactAreaShape.Line, 0.25f, 8f, 2.5f);
                     break;
             }
         }

@@ -52,7 +52,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             dmg += Combat.GetAbilityDamageBonus(activator, SkillType.Force);
 
             var attackerStat = GetAbilityScore(activator, AbilityType.Willpower);
-            var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+            var damageType = CombatDamageType.Physical;
+            var defense = Stat.GetDefense(target, damageType, AbilityType.Vitality);
             var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
             var attack = Stat.GetAttack(activator, AbilityType.Willpower, SkillType.Force);
             var damage = Combat.CalculateDamage(
@@ -62,6 +63,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 defense,
                 defenderStat,
                 0);
+            damage = Resistance.ApplyResistanceToDamage(target, damageType, damage);
             var delay = GetDistanceBetweenLocations(GetLocation(activator), targetLocation) / 25.0f;
 
             AssignCommand(activator, () => DoThrowRock(target, level));

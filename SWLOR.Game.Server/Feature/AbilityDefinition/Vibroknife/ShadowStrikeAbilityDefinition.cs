@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -55,10 +56,28 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
             switch (level)
             {
                 case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Vibroknife, 30, 8, 15, SavingThrow.Reflex, null, false);
+                    Ability.ApplyCombatImpact(
+                        activator,
+                        target,
+                        targetLocation,
+                        SkillType.Vibroknife,
+                        30,
+                        8,
+                        typeof(ShadowStrikeStatusEffect),
+                        false,
+                        statusEffectFactory: () => new ShadowStrikeStatusEffect(-30));
                     break;
                 case 2:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Vibroknife, 48, 12, 17, SavingThrow.Reflex, null, false);
+                    Ability.ApplyCombatImpact(
+                        activator,
+                        target,
+                        targetLocation,
+                        SkillType.Vibroknife,
+                        48,
+                        12,
+                        typeof(ShadowStrikeStatusEffect),
+                        false,
+                        statusEffectFactory: () => new ShadowStrikeStatusEffect(-40));
                     break;
             }
         }

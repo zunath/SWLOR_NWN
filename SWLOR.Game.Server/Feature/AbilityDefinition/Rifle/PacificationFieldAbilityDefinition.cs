@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
             switch (level)
             {
                 case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Rifle, 0, 15, 15, SavingThrow.Will, typeof(DazedStatusEffect), false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Rifle, 0, 15, typeof(DazedStatusEffect), false);
                     break;
             }
         }

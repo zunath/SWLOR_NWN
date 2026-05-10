@@ -71,13 +71,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
             switch (level)
             {
                 case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Staff, 18, 15, 14, SavingThrow.Fortitude, typeof(WeakenedStatusEffect), false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Staff, 18, 15, typeof(WeakenedStatusEffect), false);
                     break;
                 case 2:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Staff, 30, 15, 16, SavingThrow.Fortitude, typeof(WeakenedStatusEffect), false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Staff, 30, 15, typeof(WeakenedStatusEffect), false);
                     break;
                 case 3:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Staff, 42, 15, 18, SavingThrow.Fortitude, typeof(WeakenedStatusEffect), false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Staff, 42, 15, typeof(WeakenedStatusEffect), false);
                     break;
             }
         }

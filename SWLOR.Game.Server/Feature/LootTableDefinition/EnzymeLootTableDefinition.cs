@@ -78,8 +78,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             {
                 IncubationStatType.LearningPurity,
                 IncubationStatType.AttackPurity,
-                IncubationStatType.FortitudePurity,
-                IncubationStatType.ElectricalDefensePurity,
+                IncubationStatType.TraumaResistancePurity,
+                IncubationStatType.ElectricalResistancePurity,
                 IncubationStatType.PhysicalDefensePurity
             };
         }
@@ -90,13 +90,14 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 IncubationStatType.MutationChance,
                 IncubationStatType.XPPenalty,
                 IncubationStatType.EvasionPurity,
-                IncubationStatType.PoisonDefensePurity,
-                IncubationStatType.FireDefensePurity,
-                IncubationStatType.WillPurity,
+                IncubationStatType.PoisonResistancePurity,
+                IncubationStatType.FireResistancePurity,
+                IncubationStatType.MindResistancePurity,
                 IncubationStatType.AccuracyPurity,
                 IncubationStatType.ForceDefensePurity,
-                IncubationStatType.IceDefensePurity,
-                IncubationStatType.ReflexPurity
+                IncubationStatType.IceResistancePurity,
+                IncubationStatType.MobilityResistancePurity,
+                IncubationStatType.DisruptionResistancePurity
             };
         }
 
@@ -106,9 +107,9 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             {
                 IncubationStatType.XPPenalty,
                 IncubationStatType.EvasionPurity,
-                IncubationStatType.PoisonDefensePurity,
-                IncubationStatType.FireDefensePurity,
-                IncubationStatType.WillPurity
+                IncubationStatType.PoisonResistancePurity,
+                IncubationStatType.FireResistancePurity,
+                IncubationStatType.MindResistancePurity
             };
         }
         private List<IncubationStatType> GetDefaultIsomeraseSecondaryStats()
@@ -118,13 +119,14 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 IncubationStatType.MutationChance,
                 IncubationStatType.LearningPurity,
                 IncubationStatType.AttackPurity,
-                IncubationStatType.FortitudePurity,
-                IncubationStatType.ElectricalDefensePurity,
+                IncubationStatType.TraumaResistancePurity,
+                IncubationStatType.ElectricalResistancePurity,
                 IncubationStatType.PhysicalDefensePurity,
                 IncubationStatType.AccuracyPurity,
                 IncubationStatType.ForceDefensePurity,
-                IncubationStatType.IceDefensePurity,
-                IncubationStatType.ReflexPurity
+                IncubationStatType.IceResistancePurity,
+                IncubationStatType.MobilityResistancePurity,
+                IncubationStatType.DisruptionResistancePurity
             };
         }
 
@@ -135,8 +137,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 IncubationStatType.MutationChance,
                 IncubationStatType.AccuracyPurity,
                 IncubationStatType.ForceDefensePurity,
-                IncubationStatType.IceDefensePurity,
-                IncubationStatType.ReflexPurity
+                IncubationStatType.IceResistancePurity,
+                IncubationStatType.MobilityResistancePurity
             };
         }
         private List<IncubationStatType> GetDefaultLyaseSecondaryStats()
@@ -146,13 +148,14 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 IncubationStatType.XPPenalty,
                 IncubationStatType.LearningPurity,
                 IncubationStatType.AttackPurity,
-                IncubationStatType.FortitudePurity,
-                IncubationStatType.ElectricalDefensePurity,
+                IncubationStatType.TraumaResistancePurity,
+                IncubationStatType.ElectricalResistancePurity,
                 IncubationStatType.PhysicalDefensePurity,
                 IncubationStatType.EvasionPurity,
-                IncubationStatType.PoisonDefensePurity,
-                IncubationStatType.FireDefensePurity,
-                IncubationStatType.WillPurity
+                IncubationStatType.PoisonResistancePurity,
+                IncubationStatType.FireResistancePurity,
+                IncubationStatType.MindResistancePurity,
+                IncubationStatType.DisruptionResistancePurity
             };
         }
 

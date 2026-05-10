@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -10,6 +11,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override bool SendsApplicationMessage => false;
         public override bool SendsWornOffMessage => false;
         public override bool PersistsOnLogout => false;
+        public override ResistanceType ResistanceType => ResistanceType.Poison;
 
         public PoisonDefensePenaltyStatusEffect()
             : base(StatType.Defense, -2)

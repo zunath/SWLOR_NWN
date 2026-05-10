@@ -42,7 +42,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                         {
                             var duration = 8f + Random.NextFloat(1f, 5f);
 
-                            StatusEffect.ApplyStatusEffect(activator, nearest, typeof(KnockdownStatusEffect), duration);
+                            var damageType = CombatDamageType.Physical;
+                            StatusEffect.ApplyStatusEffect(activator, nearest, typeof(KnockdownStatusEffect), duration, damageType);
                             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Com_Chunk_Stone_Small), nearest);
 
                             SendMessageToPC(nearest, "The earthquake knocks you down!");
@@ -75,14 +76,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                         if (GetIsEnemy(nearest, activator))
                         {
                             var duration = 18f;
+                            var damageType = CombatDamageType.Physical;
 
-                            StatusEffect.ApplyStatusEffect(activator, nearest, typeof(KnockdownStatusEffect), duration);
+                            StatusEffect.ApplyStatusEffect(activator, nearest, typeof(KnockdownStatusEffect), duration, damageType);
                             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Com_Chunk_Stone_Small), nearest);
 
                             SendMessageToPC(nearest, "The earthquake knocks you down!");
 
                             var attack = Stat.GetAttack(activator, AbilityType.Might, SkillType.Invalid);
-                            var defense = Stat.GetDefense(nearest, CombatDamageType.Physical, AbilityType.Vitality);
+                            var defense = Stat.GetDefense(nearest, damageType, AbilityType.Vitality);
                             var defenderStat = GetAbilityScore(nearest, AbilityType.Vitality);
                             var damage = Combat.CalculateDamage(
                                 attack,
@@ -91,8 +93,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                                 defense,
                                 defenderStat,
                                 0);
+                            damage = Resistance.ApplyResistanceToDamage(nearest, damageType, damage);
 
-                            ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Sonic), nearest);
+                            ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, damageType.GetNWScriptDamageType()), nearest);
                         }
 
                         count++;

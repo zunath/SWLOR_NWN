@@ -55,10 +55,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
             switch (level)
             {
                 case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Vibroblade, 18, 10, 12, SavingThrow.Fortitude, typeof(ExposedStatusEffect), false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Vibroblade, 18, 10, typeof(ExposedStatusEffect), false);
                     break;
                 case 2:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Vibroblade, 32, 12, 16, SavingThrow.Fortitude, typeof(ExposedStatusEffect), false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Vibroblade, 32, 12, typeof(ExposedStatusEffect), false);
                     break;
             }
         }

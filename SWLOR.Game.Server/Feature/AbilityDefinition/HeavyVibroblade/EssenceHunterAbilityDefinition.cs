@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .HasRecastDelay(RecastGroup.EssenceHunter, 45f)
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.HeavyVibroblade, 18, 12, 15, SavingThrow.Fortitude, typeof(EssenceDrainStatusEffect), false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.HeavyVibroblade, 18, 12, typeof(EssenceDrainStatusEffect), false);
                 })
                 .IsWeaponAbility()
                 .IsHostileAbility()

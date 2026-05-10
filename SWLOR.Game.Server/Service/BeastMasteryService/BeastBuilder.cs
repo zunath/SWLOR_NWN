@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Service.CombatService;
@@ -230,20 +231,23 @@ namespace SWLOR.Game.Server.Service.BeastMasteryService
         /// <returns>A configured BeastBuilder object</returns>
         public BeastBuilder MaxDefenseBonus(CombatDamageType type, int max)
         {
+            if (!type.IsDefenseDamageType())
+                throw new ArgumentException($"{type} is not a beast defense type. Use MaxResistanceBonus for elemental or status resistances.", nameof(type));
+
             _activeLevel.MaxDefenseBonuses[type] = max;
 
             return this;
         }
 
         /// <summary>
-        /// Specifies the max saving throw bonus assigned for the beast at the current level being configured.
+        /// Specifies the max resistance bonus assigned for the beast at the current level being configured.
         /// </summary>
-        /// <param name="type">The saving throw type.</param>
-        /// <param name="max">The max amount of Saving Throw Bonus to assign for this level.</param>
+        /// <param name="type">The resistance type.</param>
+        /// <param name="max">The max amount of Resistance to assign for this level.</param>
         /// <returns>A configured BeastBuilder object</returns>
-        public BeastBuilder MaxSavingThrowBonus(SavingThrow type, int max)
+        public BeastBuilder MaxResistanceBonus(ResistanceType type, int max)
         {
-            _activeLevel.MaxSavingThrowBonuses[type] = max;
+            _activeLevel.MaxResistanceBonuses[type] = max;
 
             return this;
         }

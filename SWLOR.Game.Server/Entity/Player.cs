@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
@@ -57,12 +57,9 @@ namespace SWLOR.Game.Server.Entity
                 {AbilityType.Willpower, 0}
             };
 
-            Defenses = new Dictionary<CombatDamageType, int>();
+            Defenses = Combat.CreateDefaultDefenseValues();
 
-            foreach (var type in Combat.GetAllDamageTypes())
-            {
-                Defenses[type] = 0;
-            }
+            Resistances = Resistance.CreateDefaultResistanceValues();
 
             ActiveShipId = Guid.Empty.ToString();
             IsUsingDualPistolMode = false;
@@ -178,6 +175,7 @@ namespace SWLOR.Game.Server.Entity
         public Dictionary<int, List<TaxiDestinationType>> TaxiDestinations { get; set; }
         public Dictionary<string, VisibilityType> ObjectVisibilities { get; set; }
         public Dictionary<CombatDamageType, int> Defenses { get; set; }
+        public Dictionary<ResistanceType, int> Resistances { get; set; }
         public Dictionary<GuiWindowType, GuiRectangle> WindowGeometries { get; set; }
         public Dictionary<CurrencyType, int> Currencies { get; set; }
         public float AppearanceScale { get; set; }

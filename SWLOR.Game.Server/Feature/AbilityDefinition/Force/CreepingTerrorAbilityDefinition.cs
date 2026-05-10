@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -34,7 +35,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .IsHostileAbility()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    StatusEffect.ApplyStatusEffect(activator, target, new CreepingTerrorStatusEffect(1), 24f);
+                    StatusEffect.ApplyStatusEffect(activator, target, new CreepingTerrorStatusEffect(1), 24f, CombatDamageType.Force);
                     CombatVisualEffect.ApplyStatusEffectVisual(target, typeof(CreepingTerrorStatusEffect), true);
                 });
         }
@@ -54,7 +55,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .IsHostileAbility()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    StatusEffect.ApplyStatusEffect(activator, target, new CreepingTerrorStatusEffect(2), 24f);
+                    StatusEffect.ApplyStatusEffect(activator, target, new CreepingTerrorStatusEffect(2), 24f, CombatDamageType.Force);
                     CombatVisualEffect.ApplyStatusEffectVisual(target, typeof(CreepingTerrorStatusEffect), true);
                 });
         }
@@ -74,7 +75,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .IsHostileAbility()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    StatusEffect.ApplyStatusEffect(activator, target, new CreepingTerrorStatusEffect(3), 24f);
+                    StatusEffect.ApplyStatusEffect(activator, target, new CreepingTerrorStatusEffect(3), 24f, CombatDamageType.Force);
                     CombatVisualEffect.ApplyStatusEffectVisual(target, typeof(CreepingTerrorStatusEffect), true);
                 });
         }

@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 
 namespace SWLOR.Game.Server.Service.DroidService
@@ -28,10 +30,12 @@ namespace SWLOR.Game.Server.Service.DroidService
         public int Pistol { get; set; }
         public int Rifle { get; set; }
         public int Throwing { get; set; }
+        public Dictionary<ResistanceType, int> Resistances { get; set; }
 
         public DroidPartItemPropertyDetails()
         {
             PartType = DroidPartItemPropertySubType.Invalid;
+            Resistances = new Dictionary<ResistanceType, int>();
         }
     }
 }

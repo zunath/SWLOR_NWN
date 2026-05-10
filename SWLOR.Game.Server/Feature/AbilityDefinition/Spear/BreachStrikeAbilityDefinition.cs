@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -39,7 +40,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
             switch (level)
             {
                 case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Spear, 10, 30, 14, SavingThrow.Reflex, null, false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Spear, 10, 30, typeof(BreachStatusEffect), false);
                     break;
             }
         }

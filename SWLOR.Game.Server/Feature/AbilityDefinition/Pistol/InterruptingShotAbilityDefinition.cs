@@ -57,11 +57,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
 
         private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            var (baseDamage, duration, savingThrowDc) = level switch
+            var (baseDamage, duration) = level switch
             {
-                1 => (0, 12, 12),
-                2 => (20, 20, 16),
-                _ => (0, 0, 0)
+                1 => (0, 12),
+                2 => (20, 20),
+                _ => (0, 0)
             };
 
             if (duration <= 0)
@@ -75,8 +75,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 Skill,
                 baseDamage,
                 duration,
-                savingThrowDc,
-                SavingThrow.Will,
                 typeof(FoggyMindStatusEffect),
                 false,
                 statusEffectFactory: FoggyMind);

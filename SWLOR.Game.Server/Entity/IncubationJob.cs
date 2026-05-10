@@ -1,7 +1,7 @@
+using System.Collections.Generic;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
-using System.Collections.Generic;
-using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Entity
 {
@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Entity
 
         public Dictionary<CombatDamageType, int> DefensePurities { get; set; }
 
-        public Dictionary<SavingThrow, int> SavingThrowPurities { get; set; }
+        public Dictionary<ResistanceType, int> ResistancePurities { get; set; }
 
         public int XPPenalty { get; set; }
 
@@ -42,8 +42,8 @@ namespace SWLOR.Game.Server.Entity
 
         public IncubationJob()
         {
-            DefensePurities = new Dictionary<CombatDamageType, int>();
-            SavingThrowPurities = new Dictionary<SavingThrow, int>();
+            DefensePurities = Combat.CreateDefaultDefenseValues();
+            ResistancePurities = Resistance.CreateDefaultResistanceValues();
             LyaseColors = new Dictionary<EnzymeColorType, int>
             {
                 { EnzymeColorType.Blue, 0 },

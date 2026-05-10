@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -10,6 +11,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override string Name => "Flash";
         public override EffectIconType Icon => EffectIconType.Blindness;
         public override StatusEffectCategory Categories => StatusEffectCategory.Debuff;
+        public override ResistanceType ResistanceType => ResistanceType.Trauma;
 
         public FlashStatusEffect()
             : this(2)

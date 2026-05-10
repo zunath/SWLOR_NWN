@@ -111,13 +111,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ConcussiveToss1)
-                .Description("Deals weapon DMG + 14 to enemies in the target area. Reflex DC14 check to inflict Dazed for 2 seconds.")
+                .Description("Deals weapon DMG + 14 to enemies in the target area. Inflicts Dazed for 2 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Throwing, 20)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ConcussiveToss2)
-                .Description("Deals weapon DMG + 26 to enemies in the target area. Reflex DC16 check to inflict Dazed for 3 seconds.")
+                .Description("Deals weapon DMG + 26 to enemies in the target area. Inflicts Dazed for 3 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Throwing, 30);
         }
@@ -181,7 +181,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ExplosiveToss4)
-                .Description("Your next attack damages up to 3 creatures within 3 meters of your target for weapon DMG + 38 and has a Fortitude DC16 check to inflict Exposed for 15 seconds.")
+                .Description("Your next attack damages up to 3 creatures within 3 meters of your target for weapon DMG + 38 and inflicts Exposed for 15 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Throwing, 42);
         }
@@ -205,7 +205,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FireburstToss1)
-                .Description("Deals weapon DMG + 20 to enemies in the target area and has a Fortitude DC15 check to inflict Exposed for 12 seconds.")
+                .Description("Deals weapon DMG + 20 to enemies in the target area and inflicts Exposed for 12 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Throwing, 25);
         }
@@ -217,13 +217,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FlashToss1)
-                .Description("Deals weapon DMG + 6 to enemies in the target area. Fortitude DC12 check to inflict Blind for 6 seconds.")
+                .Description("Deals weapon DMG + 6 to enemies in the target area. Inflicts Blind for 6 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Throwing, 8)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FlashToss2)
-                .Description("Deals weapon DMG + 22 to enemies in the target area. Fortitude DC16 check to inflict Blind for 10 seconds.")
+                .Description("Deals weapon DMG + 22 to enemies in the target area. Inflicts Blind for 10 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Throwing, 38);
         }
@@ -270,19 +270,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PiercingToss1)
-                .Description("Your next attack deals weapon DMG + 12 and has a Reflex DC12 check to inflict Bleed for 30 seconds.")
+                .Description("Your next attack deals weapon DMG + 12 and inflicts Bleed for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Throwing, 5)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PiercingToss2)
-                .Description("Your next attack deals weapon DMG + 21 and has a Reflex DC15 check to inflict Bleed for 60 seconds.")
+                .Description("Your next attack deals weapon DMG + 21 and inflicts Bleed for 60 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Throwing, 18)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PiercingToss3)
-                .Description("Your next attack deals weapon DMG + 34 and has a Reflex DC18 check to inflict Bleed for 60 seconds.")
+                .Description("Your next attack deals weapon DMG + 34 and inflicts Bleed for 60 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Throwing, 30);
         }
@@ -294,19 +294,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PinningToss1)
-                .Description("Your next attack deals weapon DMG + 8 and has a Reflex DC12 check to inflict Disoriented for 12 seconds.")
+                .Description("Your next attack deals weapon DMG + 8 and inflicts Disoriented for 12 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Throwing, 8)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PinningToss2)
-                .Description("Your next attack deals weapon DMG + 18 and has a Reflex DC15 check to inflict Disoriented for 15 seconds.")
+                .Description("Your next attack deals weapon DMG + 18 and inflicts Disoriented for 15 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Throwing, 22)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PinningToss3)
-                .Description("Your next attack deals weapon DMG + 30 and has a Reflex DC18 check to inflict Disoriented for 20 seconds and reduce Evasion by an additional 15%.")
+                .Description("Your next attack deals weapon DMG + 30 and inflicts Disoriented for 20 seconds and reduce Evasion by an additional 15%.")
                 .Price(4)
                 .RequirementSkill(SkillType.Throwing, 35);
         }
@@ -318,7 +318,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RainOfSteel1)
-                .Description("All enemies in a large area of effect (sphere) take weapon DMG + 35 and suffer Bleed for 60 seconds. Reflex DC18 check halves the bonus damage.")
+                .Description("All enemies in a large area of effect (sphere) take weapon DMG + 35 and suffer Bleed for 60 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Throwing, 50);
         }
@@ -373,7 +373,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SeveringToss1)
-                .Description("Deals weapon DMG + 32 and has a Fortitude DC16 check to inflict Hamstring for 15 seconds.")
+                .Description("Deals weapon DMG + 32 and inflicts Hamstring for 15 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Throwing, 38);
         }
@@ -384,7 +384,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Shrapnel Casing")
 
                 .AddPerkLevel()
-                .Description("Explosive Toss abilities have a Reflex DC12 check to inflict Bleed for 15 seconds.")
+                .Description("Explosive Toss abilities inflict Bleed for 15 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Throwing, 12)
 
@@ -400,9 +400,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Volatile Payload")
 
                 .AddPerkLevel()
-                .Description("Critical hits with Explosive Toss abilities have a Reflex DC16 check to inflict Knockdown for 2 seconds.")
+                .Description("Critical hits with Explosive Toss abilities inflict Knockdown for 2 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Throwing, 48);
         }
     }
 }
+

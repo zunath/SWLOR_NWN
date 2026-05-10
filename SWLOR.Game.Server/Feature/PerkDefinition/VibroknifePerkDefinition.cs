@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Ambush Tactics")
 
                 .AddPerkLevel()
-                .Description("After dealing a critical hit, your next attack within 8 seconds ignores 20% of defense.")
+                .Description("After dealing a critical hit, your next attack within 8 seconds ignores 20% of Defense.")
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroknife, 25);
         }
@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Backstab3)
-                .Description("Deals weapon DMG + 60 from behind your target. Fortitude DC14 check to Knockdown for 3 seconds.")
+                .Description("Deals weapon DMG + 60 from behind your target and inflicts Knockdown for 3 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroknife, 35);
         }
@@ -121,7 +121,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CascadeFailure1)
-                .Description("All enemies within the area of effect (cone) take weapon DMG + 25. Fortitude DC15 check to inflict Vulnerable which reduces defense by 10% for 12 seconds.")
+                .Description("All enemies within the area of effect (cone) take weapon DMG + 25. Inflicts Vulnerable which reduces Defense by 10% for 12 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroknife, 48);
         }
@@ -133,13 +133,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CheapShot1)
-                .Description("Deals weapon DMG + 8 to a single target. Fortitude DC10 check to inflict Blind for 6 seconds.")
+                .Description("Deals weapon DMG + 8 to a single target. Inflicts Blind for 6 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Vibroknife, 8)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CheapShot2)
-                .Description("Deals weapon DMG + 16 to a single target. Fortitude DC14 check to inflict Blind for 9 seconds.")
+                .Description("Deals weapon DMG + 16 to a single target. Inflicts Blind for 9 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroknife, 20);
         }
@@ -164,7 +164,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DeadlyPrecision1)
-                .Description("While active, grants +15% critical hit chance, -20% evasion, and -15% defense.")
+                .Description("While active, grants +15% critical hit chance, -20% evasion, and -15% Defense.")
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroknife, 12);
         }
@@ -200,19 +200,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.EnfeeblingStrike1)
-                .Description("Deals weapon DMG + 12. Fortitude DC10 check to inflict Weakened which reduces Attack by 10% for 15 seconds.")
+                .Description("Deals weapon DMG + 12. Inflicts Weakened which reduces Attack by 10% for 15 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Vibroknife, 8)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.EnfeeblingStrike2)
-                .Description("Deals weapon DMG + 24. Fortitude DC14 check to inflict Weakened which reduces Attack by 15% for 15 seconds.")
+                .Description("Deals weapon DMG + 24. Inflicts Weakened which reduces Attack by 15% for 15 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroknife, 20)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.EnfeeblingStrike3)
-                .Description("Deals weapon DMG + 36. Fortitude DC18 check to inflict Weakened which reduces attack by 20% for 15 seconds.")
+                .Description("Deals weapon DMG + 36. Inflicts Weakened which reduces attack by 20% for 15 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroknife, 35);
         }
@@ -254,19 +254,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Hamstring1)
-                .Description("Your next attack deals +8 DMG. Reflex DC10 check to inflict Hamstring, slowing attack speed by 20% for 12 seconds.")
+                .Description("Your next attack deals +8 DMG. Inflicts Hamstring, slowing attack speed by 20% for 12 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Vibroknife, 10)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Hamstring2)
-                .Description("Your next attack deals +18 DMG. Reflex DC14 check to inflict Hamstring, slowing attack speed by 20% for 12 seconds.")
+                .Description("Your next attack deals +18 DMG. Inflicts Hamstring, slowing attack speed by 20% for 12 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroknife, 18)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Hamstring3)
-                .Description("Your next attack deals +28 DMG. Reflex DC18 check to inflict Hamstring, slowing attack speed by 20% for 12 seconds.")
+                .Description("Your next attack deals +28 DMG. Inflicts Hamstring, slowing attack speed by 20% for 12 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroknife, 32);
         }
@@ -302,7 +302,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.NerveStrike1)
-                .Description("Deals weapon DMG + 22. Fortitude DC14 to inflict Disoriented which reduces Accuracy and Evasion by 15% for 12 seconds.")
+                .Description("Deals weapon DMG + 22. Inflicts Disoriented which reduces Accuracy and Evasion by 15% for 12 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroknife, 28);
         }
@@ -337,13 +337,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SapVitality1)
-                .Description("Deals weapon DMG + 20. Fortitude DC12 check to inflict Exhausted which reduces defense and force defense by 10% for 15 seconds.")
+                .Description("Deals weapon DMG + 20. Inflicts Exhausted which reduces physical and Force Defense by 10% for 15 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroknife, 22)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SapVitality2)
-                .Description("Deals weapon DMG + 35. Fortitude DC16 check to inflict Exhausted which reduces defense and force defense by 15% for 15 seconds.")
+                .Description("Deals weapon DMG + 35. Inflicts Exhausted which reduces physical and Force Defense by 15% for 15 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroknife, 38);
         }
@@ -355,13 +355,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ShadowStrike1)
-                .Description("Deals weapon DMG + 30 to a single target. Reflex DC15 check to inflict 30% Slow for 8 seconds.")
+                .Description("Deals weapon DMG + 30 to a single target. Inflicts 30% Slow for 8 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroknife, 28)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ShadowStrike2)
-                .Description("Deals weapon DMG + 48 to a single target. Reflex DC17 to inflict 40% Slow for 12 seconds.")
+                .Description("Deals weapon DMG + 48 to a single target. Inflicts 40% Slow for 12 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroknife, 42);
         }
@@ -385,13 +385,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ToxicCoating1)
-                .Description("Your next attack deals +10 DMG. Fortitude DC10 check to inflict Toxin for 30 seconds. Toxin deals damage equal to 1% max HP per second.")
+                .Description("Your next attack deals +10 DMG. Inflicts Toxin for 30 seconds. Toxin deals damage equal to 1% max HP per second.")
                 .Price(2)
                 .RequirementSkill(SkillType.Vibroknife, 12)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ToxicCoating2)
-                .Description("Your next attack deals +22 DMG. Fortitude DC15 check to inflict Toxin for 30 seconds. Toxin deals damage equal to 1% max HP per second.")
+                .Description("Your next attack deals +22 DMG. Inflicts Toxin for 30 seconds. Toxin deals damage equal to 1% max HP per second.")
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroknife, 40);
         }
@@ -403,9 +403,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.VitalStrike1)
-                .Description("Deals weapon DMG + 55. Fortitude DC20 to inflict Vital Strike debuff which causes all physical attacks to ignore 10% of defense for 12 seconds.")
+                .Description("Deals weapon DMG + 55. Inflicts Vital Strike debuff which causes all physical attacks to ignore 10% of Defense for 12 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroknife, 50);
         }
     }
 }
+

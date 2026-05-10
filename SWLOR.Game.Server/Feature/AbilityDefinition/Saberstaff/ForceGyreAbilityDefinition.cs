@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
             switch (level)
             {
                 case 1:
-                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Saberstaff, 24, 12, 16, SavingThrow.Will, typeof(ForceErosionStatusEffect), CombatImpactAreaShape.Sphere, 0.25f, 5f, 0f, centerOnActivator: true);
+                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Saberstaff, 24, 12, typeof(ForceErosionStatusEffect), CombatImpactAreaShape.Sphere, 0.25f, 5f, 0f, centerOnActivator: true);
                     break;
             }
         }

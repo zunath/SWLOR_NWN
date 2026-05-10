@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
             switch (level)
             {
                 case 1:
-                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Pistol, 0, 12, 16, SavingThrow.Fortitude, typeof(BlindStatusEffect), CombatImpactAreaShape.Sphere, 0.25f, 5f);
+                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Pistol, 0, 12, typeof(BlindStatusEffect), CombatImpactAreaShape.Sphere, 0.25f, 5f);
                     break;
             }
         }

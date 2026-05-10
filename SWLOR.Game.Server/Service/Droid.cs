@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.AIService;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.DroidService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -335,6 +336,30 @@ namespace SWLOR.Game.Server.Service
                         case DroidStatSubType.SOC:
                             details.SOC += value;
                             break;
+                        case DroidStatSubType.ResistanceFire:
+                            AddResistanceBonus(details.Resistances, ResistanceType.Fire, value);
+                            break;
+                        case DroidStatSubType.ResistancePoison:
+                            AddResistanceBonus(details.Resistances, ResistanceType.Poison, value);
+                            break;
+                        case DroidStatSubType.ResistanceElectrical:
+                            AddResistanceBonus(details.Resistances, ResistanceType.Electrical, value);
+                            break;
+                        case DroidStatSubType.ResistanceIce:
+                            AddResistanceBonus(details.Resistances, ResistanceType.Ice, value);
+                            break;
+                        case DroidStatSubType.ResistanceMind:
+                            AddResistanceBonus(details.Resistances, ResistanceType.Mind, value);
+                            break;
+                        case DroidStatSubType.ResistanceMobility:
+                            AddResistanceBonus(details.Resistances, ResistanceType.Mobility, value);
+                            break;
+                        case DroidStatSubType.ResistanceTrauma:
+                            AddResistanceBonus(details.Resistances, ResistanceType.Trauma, value);
+                            break;
+                        case DroidStatSubType.ResistanceDisruption:
+                            AddResistanceBonus(details.Resistances, ResistanceType.Disruption, value);
+                            break;
                         case DroidStatSubType.Vibroblade:
                             AddSkillBonus(details.Skills, SkillType.Vibroblade, value);
                             break;
@@ -408,6 +433,14 @@ namespace SWLOR.Game.Server.Service
                 skills[skill] += value;
         }
 
+        private static void AddResistanceBonus(IDictionary<ResistanceType, int> resistances, ResistanceType type, int value)
+        {
+            if (!resistances.ContainsKey(type))
+                resistances[type] = value;
+            else
+                resistances[type] += value;
+        }
+
         /// <summary>
         /// Loads item property details from a droid part item.
         /// </summary>
@@ -456,6 +489,30 @@ namespace SWLOR.Game.Server.Service
                             break;
                         case DroidStatSubType.SOC:
                             details.SOC += value;
+                            break;
+                        case DroidStatSubType.ResistanceFire:
+                            AddResistanceBonus(details.Resistances, ResistanceType.Fire, value);
+                            break;
+                        case DroidStatSubType.ResistancePoison:
+                            AddResistanceBonus(details.Resistances, ResistanceType.Poison, value);
+                            break;
+                        case DroidStatSubType.ResistanceElectrical:
+                            AddResistanceBonus(details.Resistances, ResistanceType.Electrical, value);
+                            break;
+                        case DroidStatSubType.ResistanceIce:
+                            AddResistanceBonus(details.Resistances, ResistanceType.Ice, value);
+                            break;
+                        case DroidStatSubType.ResistanceMind:
+                            AddResistanceBonus(details.Resistances, ResistanceType.Mind, value);
+                            break;
+                        case DroidStatSubType.ResistanceMobility:
+                            AddResistanceBonus(details.Resistances, ResistanceType.Mobility, value);
+                            break;
+                        case DroidStatSubType.ResistanceTrauma:
+                            AddResistanceBonus(details.Resistances, ResistanceType.Trauma, value);
+                            break;
+                        case DroidStatSubType.ResistanceDisruption:
+                            AddResistanceBonus(details.Resistances, ResistanceType.Disruption, value);
                             break;
                         case DroidStatSubType.Vibroblade:
                             details.Vibroblade += value;
@@ -566,6 +623,12 @@ namespace SWLOR.Game.Server.Service
             BiowareXP2.IPSafeAddItemProperty(skin, levelIP, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, true);
             BiowareXP2.IPSafeAddItemProperty(skin, hpIP, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, true);
             BiowareXP2.IPSafeAddItemProperty(skin, stmIP, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, true);
+
+            foreach (var (resistance, value) in details.Resistances)
+            {
+                var resistanceIP = ItemPropertyCustom(ItemPropertyType.Resistance, (int)resistance, value);
+                BiowareXP2.IPSafeAddItemProperty(skin, resistanceIP, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, false);
+            }
 
             // Skin skills
             foreach (var (skill, level) in details.Skills)

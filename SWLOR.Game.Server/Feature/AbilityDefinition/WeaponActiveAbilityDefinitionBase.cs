@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
@@ -17,12 +18,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             SkillType skill,
             int baseDamage,
             int duration,
-            int savingThrowDc,
-            SavingThrow savingThrow,
             Type statusEffect,
             int stamina,
             Type additionalStatusEffect = null,
-            Func<IStatusEffect> statusEffectFactory = null)
+            Func<IStatusEffect> statusEffectFactory = null,
+            CombatDamageType damageType = CombatDamageType.Physical)
         {
             ability.HasActivationDelay(0f)
                 .SkillType(skill)
@@ -36,12 +36,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                         skill,
                         baseDamage,
                         duration,
-                        savingThrowDc,
-                        savingThrow,
                         statusEffect,
                         false,
                         Additional(additionalStatusEffect),
-                        statusEffectFactory);
+                        statusEffectFactory,
+                        damageType);
                 })
                 .IsWeaponAbility()
                 .IsHostileAbility()
@@ -57,8 +56,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             int baseDamage,
             int stamina,
             int duration = 0,
-            int savingThrowDc = 0,
-            SavingThrow savingThrow = SavingThrow.Will,
             Type statusEffect = null,
             int extraDamageWhenLowHp = 0)
         {
@@ -74,7 +71,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                         damage += extraDamageWhenLowHp;
                     }
 
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, skill, damage, duration, savingThrowDc, savingThrow, statusEffect, false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, skill, damage, duration, statusEffect, false);
                 })
                 .IsCastedAbility()
                 .IsHostileAbility()
@@ -91,8 +88,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             int hits,
             int stamina,
             int duration = 0,
-            int savingThrowDc = 0,
-            SavingThrow savingThrow = SavingThrow.Reflex,
             Type statusEffect = null,
             Type additionalStatusEffect = null,
             Type bonusStatus = null,
@@ -119,8 +114,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                             skill,
                             damage,
                             duration,
-                            savingThrowDc,
-                            savingThrow,
                             statusEffect,
                             false,
                             additionalStatusEffects: Additional(additionalStatusEffect));
@@ -139,8 +132,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             SkillType skill,
             int baseDamage,
             int duration,
-            int savingThrowDc,
-            SavingThrow savingThrow,
             Type statusEffect,
             int stamina,
             Func<IStatusEffect> statusEffectFactory = null)
@@ -151,7 +142,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
                     AssignCommand(target, () => ClearAllActions());
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, skill, baseDamage, duration, savingThrowDc, savingThrow, statusEffect, false, statusEffectFactory: statusEffectFactory);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, skill, baseDamage, duration, statusEffect, false, statusEffectFactory: statusEffectFactory);
                 })
                 .IsWeaponAbility()
                 .IsHostileAbility()
@@ -167,8 +158,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             CombatImpactAreaShape shape,
             int baseDamage,
             int duration,
-            int savingThrowDc,
-            SavingThrow savingThrow,
             Type statusEffect,
             float lengthOrRadius,
             float width,
@@ -187,8 +176,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                         skill,
                         baseDamage,
                         duration,
-                        savingThrowDc,
-                        savingThrow,
                         statusEffect,
                         shape,
                         0.4f,
@@ -245,7 +232,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 .RequiresTarget()
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
-                    StatusEffect.ApplyStatusEffect(activator, target, type, duration);
+                    StatusEffect.ApplyStatusEffect(activator, target, type, duration, CombatDamageType.Physical);
                     CombatVisualEffect.ApplyStatusEffectVisual(target, type, true);
                 })
                 .IsCastedAbility()
@@ -330,7 +317,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             {
                 if (creature != activator && Party.IsInParty(activator, creature))
                 {
-                    StatusEffect.ApplyStatusEffect(activator, creature, type, duration);
+                    StatusEffect.ApplyStatusEffect(activator, creature, type, duration, CombatDamageType.Physical);
                     CombatVisualEffect.ApplyStatusEffectVisual(creature, type, false);
                 }
 
@@ -354,7 +341,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             {
                 if (GetIsReactionTypeHostile(creature, activator))
                 {
-                    StatusEffect.ApplyStatusEffect(activator, creature, type, duration);
+                    StatusEffect.ApplyStatusEffect(activator, creature, type, duration, CombatDamageType.Physical);
                     CombatVisualEffect.ApplyStatusEffectVisual(creature, type, true);
                     if (fpDrainPercent > 0)
                     {
@@ -398,8 +385,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             StatusEffect.RemoveStatusEffect(activator, debuffType, false);
 
             var enemy = GetNearestHostile(activator, 5f);
-            if (GetIsObjectValid(enemy) &&
-                WillSave(enemy, Combat.CalculateSavingThrowDC(activator, SavingThrow.Will, 15), SavingThrowType.None, activator) == SavingThrowResultType.Failed)
+            if (GetIsObjectValid(enemy))
             {
                 StatusEffect.ApplyStatusEffect(activator, enemy, mirroredDebuff, 12f);
             }

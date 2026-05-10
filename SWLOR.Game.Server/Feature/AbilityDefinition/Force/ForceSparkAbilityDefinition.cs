@@ -21,25 +21,21 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
             return _builder.Build();
         }
-        private void Impact(uint activator, uint target, int dmg, int tier, Type statusEffect, int dc)
+        private void Impact(uint activator, uint target, int dmg, int tier, Type statusEffect)
         {
             var attackerStat = GetAbilityScore(activator, AbilityType.Willpower);
             var defenderStat = GetAbilityScore(target, AbilityType.Willpower);
             var attack = Stat.GetAttack(activator, AbilityType.Willpower, SkillType.Force);
-            var defense = Stat.GetDefense(target, CombatDamageType.Force, AbilityType.Willpower);
+            var damageType = CombatDamageType.Force;
+            var defense = Stat.GetDefense(target, damageType, AbilityType.Willpower);
             dmg += (attackerStat * ((tier - 1) / 2)) + attackerStat;
             var damage = Combat.CalculateDamage(attack, dmg, attackerStat, defense, defenderStat, 0);
+            damage = Resistance.ApplyResistanceToDamage(target, damageType, damage);
 
 
-            dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Fortitude, dc, AbilityType.Willpower);
-            var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
+            StatusEffect.ApplyStatusEffect(activator, target, statusEffect, 60f, damageType);
 
-            if (checkResult == SavingThrowResultType.Failed)
-            {
-                StatusEffect.ApplyStatusEffect(activator, target, statusEffect, 60f);
-            }
-
-            ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), target);
+            ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, damageType.GetNWScriptDamageType()), target);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Starburst_Red), target);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Beam_Silent_Lightning, false, 2f), target);
 
@@ -70,7 +66,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    Impact(activator, target, 0, 1, typeof(ForceSpark1StatusEffect), 8);
+                    Impact(activator, target, 0, 1, typeof(ForceSpark1StatusEffect));
                 });
         }
 
@@ -89,7 +85,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    Impact(activator, target, 15, 2, typeof(ForceSpark2StatusEffect), 12);
+                    Impact(activator, target, 15, 2, typeof(ForceSpark2StatusEffect));
                 });
         }
 
@@ -108,7 +104,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    Impact(activator, target, 30, 3, typeof(ForceSpark3StatusEffect), 14);
+                    Impact(activator, target, 30, 3, typeof(ForceSpark3StatusEffect));
                 });
         }
     }

@@ -53,10 +53,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
             switch (level)
             {
                 case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Vibroblade, 12, 0, 0, SavingThrow.Will, null, true);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Vibroblade, 12, 0, null, true);
                     break;
                 case 2:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Vibroblade, 20, 0, 0, SavingThrow.Will, null, true);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Vibroblade, 20, 0, null, true);
                     break;
             }
         }

@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                         ? typeof(HemorrhageStatusEffect)
                         : null;
 
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Throwing, 80, 15, 0, SavingThrow.Will, statusEffect, false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Throwing, 80, 15, statusEffect, false);
                     break;
             }
         }

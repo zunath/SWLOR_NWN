@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 
@@ -22,6 +23,7 @@ namespace SWLOR.Game.Server.Service.DroidService
 
         public Dictionary<SkillType, int> Skills { get; set; }
         public Dictionary<PerkType, int> Perks { get; set; }
+        public Dictionary<ResistanceType, int> Resistances { get; set; }
 
         public DroidItemPropertyDetails()
         {
@@ -29,6 +31,7 @@ namespace SWLOR.Game.Server.Service.DroidService
             CustomName = string.Empty;
             Skills = new Dictionary<SkillType, int>();
             Perks = new Dictionary<PerkType, int>();
+            Resistances = new Dictionary<ResistanceType, int>();
             PersonalityType = DroidPersonalityType.Bland;
         }
     }

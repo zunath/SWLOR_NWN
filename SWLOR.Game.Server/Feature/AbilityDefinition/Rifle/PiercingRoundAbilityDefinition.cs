@@ -71,13 +71,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
             switch (level)
             {
                 case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Rifle, 14, 12, 12, SavingThrow.Fortitude, typeof(SunderStatusEffect), false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Rifle, 14, 12, typeof(SunderStatusEffect), false);
                     break;
                 case 2:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Rifle, 26, 12, 15, SavingThrow.Fortitude, typeof(SunderStatusEffect), false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Rifle, 26, 12, typeof(SunderStatusEffect), false);
                     break;
                 case 3:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Rifle, 38, 15, 18, SavingThrow.Fortitude, typeof(SunderStatusEffect), false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Rifle, 38, 15, typeof(SunderStatusEffect), false);
                     break;
             }
         }

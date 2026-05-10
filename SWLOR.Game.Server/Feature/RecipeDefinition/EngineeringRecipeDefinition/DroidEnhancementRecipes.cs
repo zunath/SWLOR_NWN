@@ -13,6 +13,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
         {
             StatEnhancements();
             MemoryAugmentations();
+            ResistanceEnhancements();
             SkillEnhancements();
 
             return _builder.Build();
@@ -222,6 +223,46 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .RequirementUnlocked()
                 .Component("l_unit5", 2)
                 .Component("ca_unit5", 1);
+        }
+
+        private void ResistanceEnhancements()
+        {
+            CreateResistanceEnhancement(RecipeType.DroidResistanceFire1, "de_res_fir1", 31, 3, "diag_circuit3", "d_sensor3");
+            CreateResistanceEnhancement(RecipeType.DroidResistancePoison1, "de_res_psn1", 31, 3, "diag_circuit3", "l_unit3");
+            CreateResistanceEnhancement(RecipeType.DroidResistanceElectrical1, "de_res_elec1", 32, 3, "d_sensor3", "l_unit3");
+            CreateResistanceEnhancement(RecipeType.DroidResistanceIce1, "de_res_ice1", 32, 3, "dmotive_sys3", "d_sensor3");
+            CreateResistanceEnhancement(RecipeType.DroidResistanceMind1, "de_res_mnd1", 33, 3, "l_unit3", "ca_unit3");
+            CreateResistanceEnhancement(RecipeType.DroidResistanceMobility1, "de_res_mob1", 33, 3, "dmotive_sys3", "l_unit3");
+            CreateResistanceEnhancement(RecipeType.DroidResistanceTrauma1, "de_res_tra1", 34, 3, "diag_circuit3", "dmotive_sys3");
+            CreateResistanceEnhancement(RecipeType.DroidResistanceDisruption1, "de_res_dis1", 34, 3, "l_unit3", "d_sensor3");
+
+            CreateResistanceEnhancement(RecipeType.DroidResistanceFire2, "de_res_fir2", 47, 5, "diag_circuit5", "d_sensor5");
+            CreateResistanceEnhancement(RecipeType.DroidResistancePoison2, "de_res_psn2", 47, 5, "diag_circuit5", "l_unit5");
+            CreateResistanceEnhancement(RecipeType.DroidResistanceElectrical2, "de_res_elec2", 48, 5, "d_sensor5", "l_unit5");
+            CreateResistanceEnhancement(RecipeType.DroidResistanceIce2, "de_res_ice2", 48, 5, "dmotive_sys5", "d_sensor5");
+            CreateResistanceEnhancement(RecipeType.DroidResistanceMind2, "de_res_mnd2", 49, 5, "l_unit5", "ca_unit5");
+            CreateResistanceEnhancement(RecipeType.DroidResistanceMobility2, "de_res_mob2", 49, 5, "dmotive_sys5", "l_unit5");
+            CreateResistanceEnhancement(RecipeType.DroidResistanceTrauma2, "de_res_tra2", 50, 5, "diag_circuit5", "dmotive_sys5");
+            CreateResistanceEnhancement(RecipeType.DroidResistanceDisruption2, "de_res_dis2", 50, 5, "l_unit5", "d_sensor5");
+        }
+
+        private void CreateResistanceEnhancement(
+            RecipeType recipeType,
+            string resref,
+            int level,
+            int perkLevel,
+            string component1,
+            string component2)
+        {
+            _builder.Create(recipeType, SkillType.Engineering)
+                .Category(RecipeCategoryType.DroidEnhancement)
+                .Resref(resref)
+                .Level(level)
+                .Quantity(1)
+                .RequirementPerk(PerkType.EnhancementBlueprints, perkLevel)
+                .RequirementUnlocked()
+                .Component(component1, 3)
+                .Component(component2, 2);
         }
 
         private void SkillEnhancements()

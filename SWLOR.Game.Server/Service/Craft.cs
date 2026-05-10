@@ -516,14 +516,22 @@ namespace SWLOR.Game.Server.Service
                     return ItemPropertyCustom(ItemPropertyType.Defense, (int)CombatDamageType.Physical, amount);
                 case EnhancementSubType.DefenseForce: // Defense - Force
                     return ItemPropertyCustom(ItemPropertyType.Defense, (int)CombatDamageType.Force, amount);
-                case EnhancementSubType.DefenseFire: // Defense - Fire
-                    return ItemPropertyCustom(ItemPropertyType.Defense, (int)CombatDamageType.Fire, amount);
-                case EnhancementSubType.DefensePoison: // Defense - Poison
-                    return ItemPropertyCustom(ItemPropertyType.Defense, (int)CombatDamageType.Poison, amount);
-                case EnhancementSubType.DefenseElectrical: // Defense - Electrical
-                    return ItemPropertyCustom(ItemPropertyType.Defense, (int)CombatDamageType.Electrical, amount);
-                case EnhancementSubType.DefenseIce: // Defense - Ice
-                    return ItemPropertyCustom(ItemPropertyType.Defense, (int)CombatDamageType.Ice, amount);
+                case EnhancementSubType.ResistanceFire: // Resistance - Fire
+                    return ItemPropertyCustom(ItemPropertyType.Resistance, (int)ResistanceType.Fire, amount);
+                case EnhancementSubType.ResistancePoison: // Resistance - Poison
+                    return ItemPropertyCustom(ItemPropertyType.Resistance, (int)ResistanceType.Poison, amount);
+                case EnhancementSubType.ResistanceElectrical: // Resistance - Electrical
+                    return ItemPropertyCustom(ItemPropertyType.Resistance, (int)ResistanceType.Electrical, amount);
+                case EnhancementSubType.ResistanceIce: // Resistance - Ice
+                    return ItemPropertyCustom(ItemPropertyType.Resistance, (int)ResistanceType.Ice, amount);
+                case EnhancementSubType.ResistanceMind: // Resistance - Mind
+                    return ItemPropertyCustom(ItemPropertyType.Resistance, (int)ResistanceType.Mind, amount);
+                case EnhancementSubType.ResistanceMobility: // Resistance - Mobility
+                    return ItemPropertyCustom(ItemPropertyType.Resistance, (int)ResistanceType.Mobility, amount);
+                case EnhancementSubType.ResistanceTrauma: // Resistance - Trauma
+                    return ItemPropertyCustom(ItemPropertyType.Resistance, (int)ResistanceType.Trauma, amount);
+                case EnhancementSubType.ResistanceDisruption: // Resistance - Disruption
+                    return ItemPropertyCustom(ItemPropertyType.Resistance, (int)ResistanceType.Disruption, amount);
                 case EnhancementSubType.Evasion: // Evasion
                     return ItemPropertyCustom(ItemPropertyType.Evasion, -1, amount);
                 case EnhancementSubType.HP: // HP
@@ -638,14 +646,22 @@ namespace SWLOR.Game.Server.Service
                     return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.DefensePhysical, amount);
                 case EnhancementSubType.FoodBonusForceDefense: // Food Bonus - Force Defense
                     return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.DefenseForce, amount);
-                case EnhancementSubType.FoodBonusPoisonDefense: // Food Bonus - Poison Defense
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.DefensePoison, amount);
-                case EnhancementSubType.FoodBonusFireDefense: // Food Bonus - Fire Defense
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.DefenseFire, amount);
-                case EnhancementSubType.FoodBonusIceDefense: // Food Bonus - Ice Defense
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.DefenseIce, amount);
-                case EnhancementSubType.FoodBonusElectricalDefense: // Food Bonus - Electrical Defense
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.DefenseElectrical, amount);
+                case EnhancementSubType.FoodBonusPoisonResistance: // Food Bonus - Poison Resistance
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.ResistancePoison, amount);
+                case EnhancementSubType.FoodBonusFireResistance: // Food Bonus - Fire Resistance
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.ResistanceFire, amount);
+                case EnhancementSubType.FoodBonusIceResistance: // Food Bonus - Ice Resistance
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.ResistanceIce, amount);
+                case EnhancementSubType.FoodBonusElectricalResistance: // Food Bonus - Electrical Resistance
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.ResistanceElectrical, amount);
+                case EnhancementSubType.FoodBonusMindResistance: // Food Bonus - Mind Resistance
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.ResistanceMind, amount);
+                case EnhancementSubType.FoodBonusMobilityResistance: // Food Bonus - Mobility Resistance
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.ResistanceMobility, amount);
+                case EnhancementSubType.FoodBonusTraumaResistance: // Food Bonus - Trauma Resistance
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.ResistanceTrauma, amount);
+                case EnhancementSubType.FoodBonusDisruptionResistance: // Food Bonus - Disruption Resistance
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.ResistanceDisruption, amount);
                 case EnhancementSubType.FoodBonusEvasion: // Food Bonus - Evasion
                     return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.Evasion, amount);
                 case EnhancementSubType.FoodBonusControlSmithery: // Food Bonus - Control Smithery
@@ -681,26 +697,41 @@ namespace SWLOR.Game.Server.Service
                 case EnhancementSubType.ForceAttack: // Force Attack
                     return ItemPropertyCustom(ItemPropertyType.ForceAttack, -1, amount);
 
-                // 83-101 are free
+                case EnhancementSubType.DroidResistanceFire: // Droid: Fire Resistance
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.ResistanceFire, amount);
+                case EnhancementSubType.DroidResistancePoison: // Droid: Poison Resistance
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.ResistancePoison, amount);
+                case EnhancementSubType.DroidResistanceElectrical: // Droid: Electrical Resistance
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.ResistanceElectrical, amount);
+                case EnhancementSubType.DroidResistanceIce: // Droid: Ice Resistance
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.ResistanceIce, amount);
+                case EnhancementSubType.DroidResistanceMind: // Droid: Mind Resistance
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.ResistanceMind, amount);
+                case EnhancementSubType.DroidResistanceMobility: // Droid: Mobility Resistance
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.ResistanceMobility, amount);
+                case EnhancementSubType.DroidResistanceTrauma: // Droid: Trauma Resistance
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.ResistanceTrauma, amount);
+                case EnhancementSubType.DroidResistanceDisruption: // Droid: Disruption Resistance
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.ResistanceDisruption, amount);
 
                 case EnhancementSubType.DroidAISlot: // Droid: AI Slot
-                    return ItemPropertyCustom(ItemPropertyType.DroidStat, 3, amount);
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.AISlots, amount);
                 case EnhancementSubType.DroidHP: // Droid: HP
-                    return ItemPropertyCustom(ItemPropertyType.DroidStat, 4, amount);
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.HP, amount);
                 case EnhancementSubType.DroidSTM: // Droid: STM
-                    return ItemPropertyCustom(ItemPropertyType.DroidStat, 5, amount);
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.STM, amount);
                 case EnhancementSubType.DroidMGT: // Droid: MGT
-                    return ItemPropertyCustom(ItemPropertyType.DroidStat, 6, amount);
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.MGT, amount);
                 case EnhancementSubType.DroidPER: // Droid: PER
-                    return ItemPropertyCustom(ItemPropertyType.DroidStat, 7, amount);
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.PER, amount);
                 case EnhancementSubType.DroidVIT: // Droid: VIT
-                    return ItemPropertyCustom(ItemPropertyType.DroidStat, 8, amount);
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.VIT, amount);
                 case EnhancementSubType.DroidWIL: // Droid: WIL
-                    return ItemPropertyCustom(ItemPropertyType.DroidStat, 9, amount);
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.WIL, amount);
                 case EnhancementSubType.DroidAGI: // Droid: AGI
-                    return ItemPropertyCustom(ItemPropertyType.DroidStat, 10, amount);
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.AGI, amount);
                 case EnhancementSubType.DroidSOC: // Droid: SOC
-                    return ItemPropertyCustom(ItemPropertyType.DroidStat, 11, amount);
+                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.SOC, amount);
                 case EnhancementSubType.DroidVibroblade: // Droid: Vibroblade
                     return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Vibroblade, amount);
                 case EnhancementSubType.DroidVibroknife: // Droid: Vibroknife
@@ -950,3 +981,4 @@ namespace SWLOR.Game.Server.Service
         }
     }
 }
+

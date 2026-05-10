@@ -5,12 +5,15 @@ This note tracks player migration work for `feature/combat-upgrade`. Keep it cur
 ## Current Migration Hook
 
 - Server migration: `SWLOR.Game.Server/Feature/MigrationDefinition/ServerMigration/_22_CombatSystemReplacement.cs`
+- Server migration: `SWLOR.Game.Server/Feature/MigrationDefinition/ServerMigration/_28_SplitDefensesAndResistances.cs`
 - Execution type: `PostDatabaseLoad`
 - Current behavior:
   - Refunds removed or materially changed combat perks through `RefundPerksByMapping`.
   - Removes refunded legacy perk keys before the forced rebuild refund path can process them again.
   - Preserves legacy numeric `FlurryStyle` saves as the current `FlurryStyle` perk so that investment is not silently dropped.
   - Forces every player through a full rebuild by setting `Player.RebuildComplete = false` via `RequireFullRebuildForAllPlayers()`.
+  - Splits persisted mitigation data so Physical/Force remain in `Player.Defenses` and elemental/status mitigation lives in `Player.Resistances`.
+  - Moves legacy elemental defense entries into resistances, fills missing default keys, and removes Physical/Force from resistances.
 
 ## Player-Facing Migration Goals
 
@@ -58,6 +61,7 @@ Important nuance: setting the flag to `false` does not itself reset the characte
 
 ## Follow-Up Checks Before Release
 
+- Character sheet redesign remains outstanding: the first pass keeps the existing defense/resistance display shape for compatibility, but a later UI pass should rename the bound model properties and present baseline Defense separately from typed Resistances.
 - Confirm `_22_CombatSystemReplacement` still runs immediately after master migration `_21_SetDefaultOutfitAndMarketLimits`. If another migration is added first, renumber the combat upgrade migration series.
 - Confirm perk refund totals against the final perk prices in `PerkDefinition` files.
 - Confirm removed perks no longer appear in perk builders, droid default perk maps, or any player migration re-application logic.

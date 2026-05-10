@@ -73,19 +73,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DisarmingShot1)
-                .Description("Deals weapon DMG + 8 and has a Reflex DC12 check to inflict Weakened, reducing Attack by 10% for 12 seconds.")
+                .Description("Deals weapon DMG + 8 and inflicts Weakened, reducing Attack by 10% for 12 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Pistol, 8)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DisarmingShot2)
-                .Description("Deals weapon DMG + 18 and has a Reflex DC15 check to inflict Weakened, reducing Attack by 15% for 15 seconds.")
+                .Description("Deals weapon DMG + 18 and inflicts Weakened, reducing Attack by 15% for 15 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Pistol, 22)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DisarmingShot3)
-                .Description("Deals weapon DMG + 32 and has a Reflex DC18 check to inflict Weakened, reducing Attack by 20% for 15 seconds.")
+                .Description("Deals weapon DMG + 32 and inflicts Weakened, reducing Attack by 20% for 15 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Pistol, 42);
         }
@@ -201,13 +201,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.InterruptingShot1)
-                .Description("Interrupts your target's ability activation and has a Will DC12 check to inflict Foggy Mind for 12 seconds.")
+                .Description("Interrupts your target's ability activation and inflicts Foggy Mind for 12 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Pistol, 18)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.InterruptingShot2)
-                .Description("Deals weapon DMG + 20, interrupts your target's ability activation, and has a Will DC16 check to inflict Foggy Mind for 20 seconds.")
+                .Description("Deals weapon DMG + 20, interrupts your target's ability activation, and inflicts Foggy Mind for 20 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Pistol, 35);
         }
@@ -230,7 +230,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.LastWord1)
-                .Description("Interrupts all enemies in a cone, deals weapon DMG + 35, and has a Reflex DC18 check to inflict Dazed for 3 seconds.")
+                .Description("Interrupts all enemies in a cone, deals weapon DMG + 35, and inflicts Dazed for 3 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Pistol, 50);
         }
@@ -242,7 +242,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.LowShot1)
-                .Description("Deals weapon DMG + 20 and has a Reflex DC16 check to inflict Disoriented for 12 seconds.")
+                .Description("Deals weapon DMG + 20 and inflicts Disoriented for 12 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Pistol, 30);
         }
@@ -267,7 +267,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PointBlankBurst1)
-                .Description("Deals weapon DMG + 18 to enemies in a cone. Reflex DC16 check to inflict Knockdown for 3 seconds.")
+                .Description("Deals weapon DMG + 18 to enemies in a cone. Inflicts Knockdown for 3 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Pistol, 38);
         }
@@ -349,7 +349,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RicochetShot1)
-                .Description("A shot bounces to up to 3 enemies for weapon DMG + 12 each. Each target has a Reflex DC14 check to avoid Blind for 6 seconds.")
+                .Description("A shot bounces to up to 3 enemies for weapon DMG + 12 each. Each target is Blinded for 6 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Pistol, 25);
         }
@@ -392,7 +392,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SmokeRound1)
-                .Description("Enemies in the target area have a Fortitude DC16 check to avoid Blind for 12 seconds. You reduce enmity against affected enemies.")
+                .Description("Enemies in the target area are Blinded for 12 seconds. You reduce enmity against affected enemies.")
                 .Price(3)
                 .RequirementSkill(SkillType.Pistol, 45);
         }
@@ -416,3 +416,4 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         }
     }
 }
+

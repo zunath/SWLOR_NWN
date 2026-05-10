@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -167,18 +168,34 @@ namespace SWLOR.Admin.Services
         }
 
         /// <summary>
-        /// Calculates defense using the formula: 8 + (Vitality Stat × 1.5) + Armor Skill + Equipment Bonus
+        /// Calculates physical defense using the formula: 8 + (Vitality Stat × 1.5) + Armor Skill + Equipment Bonus
         /// </summary>
         /// <param name="player">The player entity</param>
         /// <param name="equipmentBonus">The equipment bonus</param>
         /// <returns>The calculated defense value</returns>
         public static int CalculateDefense(Player player, int equipmentBonus)
         {
+            return CalculateDefense(player, CombatDamageType.Physical, equipmentBonus);
+        }
+
+        /// <summary>
+        /// Calculates defense using the stat attached to the supplied damage type.
+        /// </summary>
+        /// <param name="player">The player entity</param>
+        /// <param name="damageType">The damage type whose defense metadata determines the stat.</param>
+        /// <param name="equipmentBonus">The equipment bonus</param>
+        /// <returns>The calculated defense value</returns>
+        public static int CalculateDefense(Player player, CombatDamageType damageType, int equipmentBonus)
+        {
             if (player == null) return 8;
 
-            var vitalityStat = GetAbilityScore(player, AbilityType.Vitality);
+            var defenseAbility = damageType.GetDefenseAbilityType();
+            if (defenseAbility == AbilityType.Invalid)
+                defenseAbility = AbilityType.Vitality;
+
+            var defenseStat = GetAbilityScore(player, defenseAbility);
             var armorSkillLevel = GetSkillLevel(player, SkillType.Armor);
-            return 8 + (int)(vitalityStat * 1.5) + armorSkillLevel + equipmentBonus;
+            return 8 + (int)(defenseStat * 1.5) + armorSkillLevel + equipmentBonus;
         }
 
         /// <summary>
@@ -196,15 +213,14 @@ namespace SWLOR.Admin.Services
             return (agilityStat * 3) + armorSkillLevel + equipmentBonus;
         }
 
-        /// <summary>
-        /// Gets the total defense bonus from all equipment
-        /// </summary>
-        /// <param name="player">The player entity</param>
-        /// <returns>The total defense bonus</returns>
-        public static int GetTotalDefenseBonus(Player player)
+        public static int GetDefenseBonus(Player player, CombatDamageType damageType)
         {
-            if (player?.Defenses == null) return 0;
-            return player.Defenses.Values.Sum();
+            if (player?.Defenses == null)
+                return 0;
+
+            return player.Defenses.TryGetValue(damageType.GetDefenseDamageType(), out var bonus)
+                ? bonus
+                : 0;
         }
 
         /// <summary>
@@ -222,21 +238,6 @@ namespace SWLOR.Admin.Services
             var skillLevel = GetSkillLevel(player, skillType);
             var stat = GetAbilityScore(player, abilityType);
             return 8 + (2 * skillLevel) + stat + equipmentBonus;
-        }
-
-        /// <summary>
-        /// Calculates base saving throw using the formula: 8 + (Stat Modifier × 2) + Level
-        /// </summary>
-        /// <param name="player">The player entity</param>
-        /// <param name="abilityType">The ability type to use for calculation</param>
-        /// <param name="level">The character level</param>
-        /// <returns>The calculated saving throw value</returns>
-        public static int CalculateBaseSavingThrow(Player player, AbilityType abilityType, int level)
-        {
-            if (player == null) return 8;
-
-            var statMod = GetAbilityModifier(player, abilityType);
-            return 8 + (statMod * 2) + level;
         }
 
         /// <summary>
@@ -302,21 +303,32 @@ namespace SWLOR.Admin.Services
                 Formula = "8 + (2 × Skill Level) + Stat + Equipment Bonus"
             };
 
-            // Defense calculation
-            var defenseBase = 8;
-            var defenseStat = GetAbilityScore(player, AbilityType.Vitality);
-            var defenseSkillLevel = GetSkillLevel(player, SkillType.Armor);
-            var defenseBonus = GetTotalDefenseBonus(player);
-            var calculatedDefense = defenseBase + (int)(defenseStat * 1.5) + defenseSkillLevel + defenseBonus;
-            breakdown["Defense"] = new
-            {
-                Base = defenseBase,
-                VitalityStat = defenseStat,
-                ArmorSkillLevel = defenseSkillLevel,
-                EquipmentBonus = defenseBonus,
-                Calculated = calculatedDefense,
-                Formula = "8 + (Vitality Stat × 1.5) + Armor Skill + Equipment Bonus"
-            };
+            breakdown["Defenses"] = player.Defenses?
+                .ToDictionary(
+                    x => x.Key.ToString(),
+                    x =>
+                    {
+                        var defenseAbility = x.Key.GetDefenseAbilityType();
+                        var defenseStat = defenseAbility == AbilityType.Invalid
+                            ? 0
+                            : GetAbilityScore(player, defenseAbility);
+
+                        return (object)new
+                        {
+                            Base = 8,
+                            AbilityType = defenseAbility.ToString(),
+                            Stat = defenseStat,
+                            ArmorSkillLevel = GetSkillLevel(player, SkillType.Armor),
+                            EquipmentBonus = x.Value,
+                            Calculated = CalculateDefense(player, x.Key, x.Value),
+                            Formula = "8 + (Defense Stat × 1.5) + Armor Skill + Equipment Bonus"
+                        };
+                    })
+                ?? new Dictionary<string, object>();
+
+            breakdown["Resistances"] = player.Resistances?
+                .ToDictionary(x => x.Key.ToString(), x => x.Value)
+                ?? new Dictionary<string, int>();
 
             // Evasion calculation
             var evasionStat = GetAbilityScore(player, AbilityType.Agility);

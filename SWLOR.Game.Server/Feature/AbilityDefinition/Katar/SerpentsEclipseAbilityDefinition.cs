@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.Engine;
@@ -38,7 +39,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
             switch (level)
             {
                 case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Katar, 25, 12, 18, SavingThrow.Fortitude, typeof(PoisonStatusEffect), true, additionalStatusEffects: new[] { typeof(DisorientedStatusEffect) });
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Katar, 25, 12, typeof(PoisonStatusEffect), true, additionalStatusEffects: new[] { typeof(DisorientedStatusEffect) }, damageType: CombatDamageType.Poison);
                     break;
             }
         }

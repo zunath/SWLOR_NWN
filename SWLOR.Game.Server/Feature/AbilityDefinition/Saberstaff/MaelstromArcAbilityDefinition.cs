@@ -53,10 +53,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
             switch (level)
             {
                 case 1:
-                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Saberstaff, 22, 12, 14, SavingThrow.Will, typeof(DisorientedStatusEffect), CombatImpactAreaShape.Cone, 0.25f, 5f, 5f);
+                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Saberstaff, 22, 12, typeof(DisorientedStatusEffect), CombatImpactAreaShape.Cone, 0.25f, 5f, 5f);
                     break;
                 case 2:
-                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Saberstaff, 32, 15, 16, SavingThrow.Will, typeof(DisorientedStatusEffect), CombatImpactAreaShape.Cone, 0.25f, 5f, 5f);
+                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Saberstaff, 32, 15, typeof(DisorientedStatusEffect), CombatImpactAreaShape.Cone, 0.25f, 5f, 5f);
                     break;
             }
         }

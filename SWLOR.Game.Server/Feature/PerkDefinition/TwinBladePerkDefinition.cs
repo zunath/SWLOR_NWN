@@ -47,13 +47,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.BindingCross1)
-                .Description("Strikes twice for weapon DMG + 10 each. Reflex DC14 check to inflict Hamstring for 12 seconds.")
+                .Description("Strikes twice for weapon DMG + 10 each. Inflicts Hamstring for 12 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwinBlade, 25)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.BindingCross2)
-                .Description("Strikes twice for weapon DMG + 18 each. Reflex DC18 check to inflict Hamstring for 20 seconds and Exposed for 10 seconds.")
+                .Description("Strikes twice for weapon DMG + 18 each. Inflicts Hamstring for 20 seconds and Exposed for 10 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.TwinBlade, 42);
         }
@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.BladeVortex2)
-                .Description("Deals weapon DMG + 26 to all nearby enemies and has a Fortitude DC15 check to inflict Exposed for 12 seconds.")
+                .Description("Deals weapon DMG + 26 to all nearby enemies and inflicts Exposed for 12 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.TwinBlade, 35);
         }
@@ -95,25 +95,25 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CrossCut1)
-                .Description("Instantly attacks twice, each for weapon DMG + 8, and has a Reflex DC12 check to inflict Disoriented for 8 seconds.")
+                .Description("Instantly attacks twice, each for weapon DMG + 8, and inflicts Disoriented for 8 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwinBlade, 5)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CrossCut2)
-                .Description("Instantly attacks twice, each for weapon DMG + 17, and has a Reflex DC15 check to inflict Disoriented for 10 seconds.")
+                .Description("Instantly attacks twice, each for weapon DMG + 17, and inflicts Disoriented for 10 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.TwinBlade, 18)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CrossCut3)
-                .Description("Instantly attacks twice, each for weapon DMG + 25, and has a Reflex DC18 check to inflict Disoriented for 12 seconds.")
+                .Description("Instantly attacks twice, each for weapon DMG + 25, and inflicts Disoriented for 12 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwinBlade, 28)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CrossCut4)
-                .Description("Instantly attacks twice, each for weapon DMG + 34. Reflex DC18 check to inflict Disoriented and Hamstring for 12 seconds.")
+                .Description("Instantly attacks twice, each for weapon DMG + 34. Inflicts Disoriented and Hamstring for 12 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.TwinBlade, 42);
         }
@@ -186,19 +186,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FeintingCut1)
-                .Description("Deals weapon DMG + 12 and has a Reflex DC12 check to inflict Weakened, reducing Attack by 10% for 12 seconds.")
+                .Description("Deals weapon DMG + 12 and inflicts Weakened, reducing Attack by 10% for 12 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwinBlade, 12)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FeintingCut2)
-                .Description("Deals weapon DMG + 22 and has a Reflex DC15 check to inflict Weakened, reducing Attack by 15% for 12 seconds.")
+                .Description("Deals weapon DMG + 22 and inflicts Weakened, reducing Attack by 15% for 12 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.TwinBlade, 22)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FeintingCut3)
-                .Description("Deals weapon DMG + 32 and has a Reflex DC18 check to inflict Weakened, reducing Attack by 20% for 15 seconds.")
+                .Description("Deals weapon DMG + 32 and inflicts Weakened, reducing Attack by 20% for 15 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.TwinBlade, 35);
         }
@@ -328,7 +328,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ReversalCut1)
-                .Description("Can be used after you are hit. Deals weapon DMG + 40 and has a Reflex DC16 check to inflict Dazed for 3 seconds.")
+                .Description("Can be used after you are hit. Deals weapon DMG + 40 and inflicts Dazed for 3 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwinBlade, 38);
         }
@@ -412,10 +412,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.TempestBloom1)
-                .Description("Channel for up to 6 seconds, striking all nearby enemies every 2 seconds for weapon DMG + 20. The final hit has a Reflex DC18 check to inflict Knockdown for 3 seconds.")
+                .Description("Channel for up to 6 seconds, striking all nearby enemies every 2 seconds for weapon DMG + 20. The final hit inflicts Knockdown for 3 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.TwinBlade, 50);
         }
 
     }
 }
+

@@ -55,10 +55,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
             switch (level)
             {
                 case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Saberstaff, 18, 20, 14, SavingThrow.Will, typeof(FracturedFocusStatusEffect), false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Saberstaff, 18, 20, typeof(FracturedFocusStatusEffect), false);
                     break;
                 case 2:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Saberstaff, 28, 30, 18, SavingThrow.Will, typeof(FracturedFocusStatusEffect), false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Saberstaff, 28, 30, typeof(FracturedFocusStatusEffect), false);
                     break;
             }
         }

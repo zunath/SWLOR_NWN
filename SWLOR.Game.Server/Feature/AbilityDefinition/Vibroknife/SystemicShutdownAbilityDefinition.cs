@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.Engine;
@@ -38,7 +39,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
             switch (level)
             {
                 case 1:
-                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Vibroknife, 15, 15, 18, SavingThrow.Fortitude, typeof(ToxinStatusEffect), CombatImpactAreaShape.Sphere, 0.25f, 5f, additionalStatusEffects: new[] { typeof(WeakenedStatusEffect), typeof(HamstringStatusEffect), typeof(ExhaustedStatusEffect), typeof(DisorientedStatusEffect) });
+                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Vibroknife, 15, 15, typeof(ToxinStatusEffect), CombatImpactAreaShape.Sphere, 0.25f, 5f, additionalStatusEffects: new[] { typeof(WeakenedStatusEffect), typeof(HamstringStatusEffect), typeof(ExhaustedStatusEffect), typeof(DisorientedStatusEffect) }, damageType: CombatDamageType.Poison);
                     break;
             }
         }

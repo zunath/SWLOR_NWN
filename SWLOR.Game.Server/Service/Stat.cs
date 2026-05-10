@@ -614,6 +614,12 @@ namespace SWLOR.Game.Server.Service
         /// <param name="adjustBy">The amount to adjust by</param>
         public static void AdjustDefense(Player entity, CombatDamageType type, int adjustBy)
         {
+            if (!type.IsDefenseDamageType())
+                return;
+
+            if (!entity.Defenses.ContainsKey(type))
+                entity.Defenses[type] = 0;
+
             entity.Defenses[type] += adjustBy;
         }
 
@@ -695,18 +701,6 @@ namespace SWLOR.Game.Server.Service
             entity.CPBonus[skillType] += adjustBy;
         }
 
-        /// <summary>
-        /// Modifies defense value based on effects found on creature.
-        /// </summary>
-        /// <param name="creature">The creature to check.</param>
-        /// <param name="defense">The current defense value which will be modified.</param>
-        /// <param name="type">The type of defense to check.</param>
-        /// <returns>A modified defense value.</returns>
-        private static int CalculateEffectDefense(uint creature, int defense, CombatDamageType type)
-        {
-            return defense + GetDefenseAdjustment(creature, type);
-        }
-
         private static int CalculateEffectAttack(uint creature, int attack)
         {
             return attack + GetStatAdjustment(creature, StatType.Attack);
@@ -767,7 +761,7 @@ namespace SWLOR.Game.Server.Service
             attackBonus = CalculateEffectAttack(creature, attackBonus);
 
             var attack = GetAttack(skillLevel, stat, attackBonus);
-            return ApplyPostAttackStatusModifiers(creature, attack);
+            return ApplyPostAttackStatusModifiers(creature, attack, skillType);
         }
 
         public static int GetAttackNative(CNWSCreature creature, BaseItem itemType, AbilityType statOverride = AbilityType.Invalid)
@@ -815,7 +809,7 @@ namespace SWLOR.Game.Server.Service
             attackBonus = CalculateEffectAttack(creature.m_idSelf, attackBonus);
 
             var attack = GetAttack(skillLevel, stat, attackBonus);
-            return ApplyPostAttackStatusModifiers(creature.m_idSelf, attack);
+            return ApplyPostAttackStatusModifiers(creature.m_idSelf, attack, skillType);
         }
 
         /// <summary>
@@ -831,9 +825,8 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Retrieves the total defense toward a specific type of damage.
-        /// Physical and Force types include effect bonuses, stats, etc.
-        /// Fire/Poison/Electrical/Ice include effect bonuses, stats, etc. at 70% of physical.
+        /// Retrieves the defense value used by the attack-vs-defense damage roll.
+        /// Physical and Force equipment bonuses live here; elemental/status mitigation lives in resistance.
         /// </summary>
         /// <param name="creature">The creature to retrieve from.</param>
         /// <param name="type">The type of damage to retrieve.</param>
@@ -845,56 +838,40 @@ namespace SWLOR.Game.Server.Service
             if (defenseBonusOverride < 0)
                 defenseBonusOverride = 0;
 
-            var defenseBonus = 0;
+            var defenseType = type.GetDefenseDamageType();
             var defenderStat = GetAbilityScore(creature, abilityType);
             int skillLevel;
-            var equipmentDefense = 0 + defenseBonusOverride;
-            var rate = 1.0f;
+            var defenseBonus = 0;
+            var equipmentDefense = defenseBonusOverride;
 
             if (GetIsPC(creature) && !GetIsDM(creature))
             {
                 var playerId = GetObjectUUID(creature);
                 var dbPlayer = DB.Get<Player>(playerId);
 
-                if (type == CombatDamageType.Fire ||
-                    type == CombatDamageType.Poison ||
-                    type == CombatDamageType.Electrical ||
-                    type == CombatDamageType.Ice)
-                {
-                    rate = 0.7f;
-                }
-
                 skillLevel = dbPlayer.Skills[SkillType.Armor].Rank;
-
-                if(defenseBonusOverride <= 0)
-                    equipmentDefense += dbPlayer.Defenses[type];
+                if (defenseBonusOverride <= 0 &&
+                    dbPlayer.Defenses != null &&
+                    dbPlayer.Defenses.TryGetValue(defenseType, out var playerDefense))
+                {
+                    equipmentDefense += playerDefense;
+                }
             }
             else
             {
                 var npcStats = GetNPCStats(creature);
-
-                if (type == CombatDamageType.Fire ||
-                    type == CombatDamageType.Poison ||
-                    type == CombatDamageType.Electrical ||
-                    type == CombatDamageType.Ice)
-                {
-                    rate = 0.7f;
-                }
-
-                if (defenseBonusOverride <= 0)
-                {
-                    equipmentDefense += npcStats.Defenses.ContainsKey(type)
-                        ? npcStats.Defenses[type]
-                        : 0;
-                }
-
                 skillLevel = npcStats.Level;
+                if (defenseBonusOverride <= 0 &&
+                    npcStats.Defenses.TryGetValue(defenseType, out var npcDefense))
+                {
+                    equipmentDefense += npcDefense;
+                }
             }
 
-            defenseBonus = CalculateEffectDefense(creature, defenseBonus, type);
-            defenseBonus = (int)(defenseBonus * rate) + equipmentDefense;
+            defenseBonus = CalculateEffectDefense(creature, defenseBonus, defenseType);
+            defenseBonus += equipmentDefense;
             var defense = CalculateDefense(defenderStat, skillLevel, defenseBonus);
-            return ApplyPostDefenseStatusModifiers(creature, type, defense);
+            return ApplyPostDefenseStatusModifiers(creature, defenseType, defense);
         }
 
         public static int CalculateDefense(int defenderStat, int skillLevel, int defenseBonus)
@@ -943,7 +920,7 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Retrieves the total defense toward a specific type of damage.
+        /// Retrieves the defense value used by the attack-vs-defense damage roll.
         /// This is specifically for use with Native code and should not be referenced outside of there.
         /// </summary>
         /// <param name="creature">The creature to retrieve from.</param>
@@ -952,11 +929,11 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The defense value toward a given damage type.</returns>
         public static int GetDefenseNative(CNWSCreature creature, CombatDamageType type, AbilityType abilityType)
         {
-            var defenseBonus = 0;
+            var defenseType = type.GetDefenseDamageType();
             var defenderStat = GetStatValueNative(creature, abilityType);
             var skillLevel = 0;
+            var defenseBonus = 0;
             var equipmentDefense = 0;
-            var rate = 1.0f;
 
             if (creature.m_bPlayerCharacter == 1)
             {
@@ -965,45 +942,38 @@ namespace SWLOR.Game.Server.Service
 
                 if (dbPlayer != null)
                 {
-                    if (type == CombatDamageType.Fire ||
-                        type == CombatDamageType.Poison ||
-                        type == CombatDamageType.Electrical ||
-                        type == CombatDamageType.Ice)
-                    {
-                        rate = 0.7f;
-                    }
-
                     skillLevel = dbPlayer.Skills[SkillType.Armor].Rank;
-                    equipmentDefense += dbPlayer.Defenses[type];
+                    if (dbPlayer.Defenses != null &&
+                        dbPlayer.Defenses.TryGetValue(defenseType, out var playerDefense))
+                    {
+                        equipmentDefense += playerDefense;
+                    }
                 }
             }
             else
             {
                 var npcStats = GetNPCStatsNative(creature);
-                if (type == CombatDamageType.Fire ||
-                    type == CombatDamageType.Poison ||
-                    type == CombatDamageType.Electrical ||
-                    type == CombatDamageType.Ice)
-                {
-                    rate = 0.7f;
-                }
-
-                equipmentDefense += npcStats.Defenses.ContainsKey(type)
-                    ? npcStats.Defenses[type]
-                    : 0;
-
                 skillLevel = npcStats.Level;
+                if (npcStats.Defenses.TryGetValue(defenseType, out var npcDefense))
+                {
+                    equipmentDefense += npcDefense;
+                }
             }
 
-            defenseBonus = CalculateEffectDefense(creature.m_idSelf, defenseBonus, type);
-            defenseBonus = (int)(defenseBonus * rate) + equipmentDefense;
-            var defense = (int)(8 + (defenderStat * 1.5f) + skillLevel + defenseBonus);
-            return ApplyPostDefenseStatusModifiers(creature.m_idSelf, type, defense);
+            defenseBonus = CalculateEffectDefense(creature.m_idSelf, defenseBonus, defenseType);
+            defenseBonus += equipmentDefense;
+            var defense = CalculateDefense(defenderStat, skillLevel, defenseBonus);
+            return ApplyPostDefenseStatusModifiers(creature.m_idSelf, defenseType, defense);
         }
 
-        private static int ApplyPostAttackStatusModifiers(uint creature, int attack)
+        private static int ApplyPostAttackStatusModifiers(uint creature, int attack, SkillType skillType)
         {
             var adjustment = GetStatAdjustment(creature, StatType.AttackPercentAdjustment);
+            if (skillType == SkillType.Force)
+            {
+                adjustment += GetStatAdjustment(creature, StatType.ForceAttackPercentAdjustment);
+            }
+
             adjustment += GetHighFPAndStaminaAttackAdjustment(creature);
             return Math.Max(1, ApplyPercentAdjustment(attack, adjustment));
         }
@@ -1028,12 +998,6 @@ namespace SWLOR.Game.Server.Service
                    currentStamina >= maxStamina * (threshold / 100f)
                 ? adjustment
                 : 0;
-        }
-
-        private static int ApplyPostDefenseStatusModifiers(uint creature, CombatDamageType type, int defense)
-        {
-            var adjustment = GetDefensePercentAdjustment(creature, type);
-            return Math.Max(1, ApplyPercentAdjustment(defense, adjustment));
         }
 
         /// <summary>
@@ -1423,6 +1387,24 @@ namespace SWLOR.Game.Server.Service
             return Math.Max(1, ApplyPercentAdjustment(evasion, adjustment));
         }
 
+        /// <summary>
+        /// Calculates defense bonuses granted by status effects, perks, and temporary stat modifiers.
+        /// </summary>
+        /// <param name="creature">The creature to check.</param>
+        /// <param name="defense">The base bonus to adjust.</param>
+        /// <param name="type">The damage type.</param>
+        /// <returns>A modified defense bonus.</returns>
+        private static int CalculateEffectDefense(uint creature, int defense, CombatDamageType type)
+        {
+            return defense + GetDefenseAdjustment(creature, type);
+        }
+
+        private static int ApplyPostDefenseStatusModifiers(uint creature, CombatDamageType type, int defense)
+        {
+            var adjustment = GetDefensePercentAdjustment(creature, type);
+            return Math.Max(1, ApplyPercentAdjustment(defense, adjustment));
+        }
+
         private static int GetDefensePercentAdjustment(uint creature, CombatDamageType type)
         {
             return GetStatAdjustment(creature, StatType.DefensePercentAdjustment) + (type switch
@@ -1439,10 +1421,6 @@ namespace SWLOR.Game.Server.Service
             {
                 CombatDamageType.Physical => GetStatAdjustment(creature, StatType.PhysicalDefense),
                 CombatDamageType.Force => GetStatAdjustment(creature, StatType.ForceDefense),
-                CombatDamageType.Fire => GetStatAdjustment(creature, StatType.FireDefense),
-                CombatDamageType.Poison => GetStatAdjustment(creature, StatType.PoisonDefense),
-                CombatDamageType.Electrical => GetStatAdjustment(creature, StatType.ElectricalDefense),
-                CombatDamageType.Ice => GetStatAdjustment(creature, StatType.IceDefense),
                 _ => 0
             });
         }
@@ -1502,7 +1480,18 @@ namespace SWLOR.Game.Server.Service
                 else if (type == ItemPropertyType.Defense)
                 {
                     var damageType = (CombatDamageType)GetItemPropertySubType(ip);
-                    npcStats.Defenses[damageType] = GetItemPropertyCostTableValue(ip);
+                    if (!npcStats.Defenses.ContainsKey(damageType))
+                        npcStats.Defenses[damageType] = 0;
+
+                    npcStats.Defenses[damageType] += GetItemPropertyCostTableValue(ip);
+                }
+                else if (type == ItemPropertyType.Resistance)
+                {
+                    var resistanceType = (ResistanceType)GetItemPropertySubType(ip);
+                    if (!npcStats.Resistances.ContainsKey(resistanceType))
+                        npcStats.Resistances[resistanceType] = 0;
+
+                    npcStats.Resistances[resistanceType] += GetItemPropertyCostTableValue(ip);
                 }
                 else if (type == ItemPropertyType.NPCSkill)
                 {
@@ -1534,7 +1523,7 @@ namespace SWLOR.Game.Server.Service
             return npcStats;
         }
 
-        private static NPCStats GetNPCStatsNative(CNWSCreature npc)
+        public static NPCStats GetNPCStatsNative(CNWSCreature npc)
         {
             var npcStats = new NPCStats();
             var skin = npc.m_pInventory.GetItemInSlot((uint)EquipmentSlot.CreatureArmour);
@@ -1554,6 +1543,15 @@ namespace SWLOR.Game.Server.Service
                             npcStats.Defenses[damageType] = 0;
 
                         npcStats.Defenses[damageType] += prop.m_nCostTableValue;
+                    }
+                    else if (prop.m_nPropertyName == (ushort)ItemPropertyType.Resistance)
+                    {
+                        var resistanceType = (ResistanceType)prop.m_nSubType;
+
+                        if (!npcStats.Resistances.ContainsKey(resistanceType))
+                            npcStats.Resistances[resistanceType] = 0;
+
+                        npcStats.Resistances[resistanceType] += prop.m_nCostTableValue;
                     }
                     else if (prop.m_nPropertyName == (ushort)ItemPropertyType.NPCSkill)
                     {

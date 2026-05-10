@@ -18,10 +18,14 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
         public int Accuracy { get; set; }
         public int DefensePhysical { get; set; }
         public int DefenseForce { get; set; }
-        public int DefensePoison { get; set; }
-        public int DefenseFire { get; set; }
-        public int DefenseIce { get; set; }
-        public int DefenseElectrical { get; set; }
+        public int ResistanceFire { get; set; }
+        public int ResistancePoison { get; set; }
+        public int ResistanceElectrical { get; set; }
+        public int ResistanceIce { get; set; }
+        public int ResistanceMind { get; set; }
+        public int ResistanceMobility { get; set; }
+        public int ResistanceTrauma { get; set; }
+        public int ResistanceDisruption { get; set; }
         public int Evasion { get; set; }
         public int Might { get; set; }
         public int Vitality { get; set; }

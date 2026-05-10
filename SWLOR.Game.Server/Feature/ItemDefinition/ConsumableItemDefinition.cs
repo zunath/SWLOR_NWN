@@ -147,17 +147,29 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                             case FoodItemPropertySubType.DefenseForce:
                                 foodEffect.DefenseForce += amount;
                                 break;
-                            case FoodItemPropertySubType.DefenseFire:
-                                foodEffect.DefenseFire += amount;
+                            case FoodItemPropertySubType.ResistanceFire:
+                                foodEffect.ResistanceFire += amount;
                                 break;
-                            case FoodItemPropertySubType.DefensePoison:
-                                foodEffect.DefensePoison += amount;
+                            case FoodItemPropertySubType.ResistancePoison:
+                                foodEffect.ResistancePoison += amount;
                                 break;
-                            case FoodItemPropertySubType.DefenseElectrical:
-                                foodEffect.DefenseElectrical += amount;
+                            case FoodItemPropertySubType.ResistanceElectrical:
+                                foodEffect.ResistanceElectrical += amount;
                                 break;
-                            case FoodItemPropertySubType.DefenseIce:
-                                foodEffect.DefenseIce += amount;
+                            case FoodItemPropertySubType.ResistanceIce:
+                                foodEffect.ResistanceIce += amount;
+                                break;
+                            case FoodItemPropertySubType.ResistanceMind:
+                                foodEffect.ResistanceMind += amount;
+                                break;
+                            case FoodItemPropertySubType.ResistanceMobility:
+                                foodEffect.ResistanceMobility += amount;
+                                break;
+                            case FoodItemPropertySubType.ResistanceTrauma:
+                                foodEffect.ResistanceTrauma += amount;
+                                break;
+                            case FoodItemPropertySubType.ResistanceDisruption:
+                                foodEffect.ResistanceDisruption += amount;
                                 break;
                             case FoodItemPropertySubType.Evasion:
                                 foodEffect.Evasion += amount;

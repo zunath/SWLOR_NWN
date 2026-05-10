@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service.StatusEffectService
@@ -17,6 +18,8 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
         bool SendsApplicationMessage { get; }
         bool SendsWornOffMessage { get; }
         StatusEffectCleanseType CleanseTypes { get; }
+        ResistanceType ResistanceType { get; }
+        ResistanceType AppliedResistanceType { get; }
         float Frequency { get; }
         int DurationTicks { get; }
         bool PersistsOnLogout { get; }
@@ -25,6 +28,7 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
         List<Type> LessPowerfulEffectTypes { get; }
         IStatusEffect Clone();
         string CanApply(uint creature);
+        void AssignResistanceType(ResistanceType type);
         void ApplyEffect(uint source, uint creature, int durationTicks);
         void ReassignSource(uint source);
         void ReapplyEffect(uint creature);

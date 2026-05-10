@@ -236,19 +236,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     .SetTooltip("Improves the beast's force defense.");
 
                 row.AddLabel()
-                    .SetText("Fire Def")
+                    .SetText("Fire Res")
                     .SetColor(0, 255, 0)
-                    .SetTooltip("Improves the beast's fire defense.");
+                    .SetTooltip("Improves the beast's fire resistance.");
 
                 row.AddLabel()
-                    .SetText("Pois. Def")
+                    .SetText("Pois. Res")
                     .SetColor(0, 255, 0)
-                    .SetTooltip("Improves the beast's poison defense.");
+                    .SetTooltip("Improves the beast's poison resistance.");
 
                 row.AddLabel()
-                    .SetText("Elec. Def")
+                    .SetText("Elec. Res")
                     .SetColor(0, 255, 0)
-                    .SetTooltip("Improves the beast's electric defense.");
+                    .SetTooltip("Improves the beast's electrical resistance.");
 
                 row.AddSpacer();
             });
@@ -266,13 +266,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     .BindText(model => model.ForceDefensePurity);
 
                 row.AddLabel()
-                    .BindText(model => model.FireDefensePurity);
+                    .BindText(model => model.FireResistancePurity);
 
                 row.AddLabel()
-                    .BindText(model => model.PoisonDefensePurity);
+                    .BindText(model => model.PoisonResistancePurity);
 
                 row.AddLabel()
-                    .BindText(model => model.ElectricalDefensePurity);
+                    .BindText(model => model.ElectricalResistancePurity);
 
                 row.AddSpacer();
             });
@@ -282,24 +282,29 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 row.AddSpacer();
 
                 row.AddLabel()
-                    .SetText("Ice Def")
+                    .SetText("Ice Res")
                     .SetColor(0, 255, 0)
-                    .SetTooltip("Improves the beast's ice defense.");
+                    .SetTooltip("Improves the beast's ice resistance.");
 
                 row.AddLabel()
-                    .SetText("Fortitude")
+                    .SetText("Mind Res")
                     .SetColor(0, 255, 0)
-                    .SetTooltip("Improves the beast's fortitude saving throws.");
+                    .SetTooltip("Improves the beast's mind resistance.");
 
                 row.AddLabel()
-                    .SetText("Reflex")
+                    .SetText("Mob. Res")
                     .SetColor(0, 255, 0)
-                    .SetTooltip("Improves the beast's reflex saving throws.");
+                    .SetTooltip("Improves the beast's mobility resistance.");
 
                 row.AddLabel()
-                    .SetText("Will")
+                    .SetText("Trauma Res")
                     .SetColor(0, 255, 0)
-                    .SetTooltip("Improves the beast's will saving throws.");
+                    .SetTooltip("Improves the beast's trauma resistance.");
+
+                row.AddLabel()
+                    .SetText("Disr. Res")
+                    .SetColor(0, 255, 0)
+                    .SetTooltip("Improves the beast's disruption resistance.");
 
                 row.AddLabel()
                     .SetText("XP Penalty")
@@ -314,16 +319,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 row.AddSpacer();
 
                 row.AddLabel()
-                    .BindText(model => model.IceDefensePurity);
+                    .BindText(model => model.IceResistancePurity);
 
                 row.AddLabel()
-                    .BindText(model => model.FortitudePurity);
+                    .BindText(model => model.MindResistancePurity);
 
                 row.AddLabel()
-                    .BindText(model => model.ReflexPurity);
+                    .BindText(model => model.MobilityResistancePurity);
 
                 row.AddLabel()
-                    .BindText(model => model.WillPurity);
+                    .BindText(model => model.TraumaResistancePurity);
+
+                row.AddLabel()
+                    .BindText(model => model.DisruptionResistancePurity);
 
                 row.AddLabel()
                     .BindText(model => model.XPPenalty);

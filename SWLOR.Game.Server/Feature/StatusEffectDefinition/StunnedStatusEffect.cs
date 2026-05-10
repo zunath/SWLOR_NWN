@@ -1,4 +1,5 @@
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -10,6 +11,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override EffectIconType Icon => EffectIconType.Stunned;
         public override StatusEffectCategory Categories => StatusEffectCategory.Control;
         public override StatusEffectCleanseType CleanseTypes => StatusEffectCleanseType.Purify | StatusEffectCleanseType.SoothePet;
+        public override ResistanceType ResistanceType => ResistanceType.Mobility;
 
         protected override void Apply(uint creature, int durationTicks)
         {

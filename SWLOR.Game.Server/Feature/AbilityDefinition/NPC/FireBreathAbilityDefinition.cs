@@ -40,7 +40,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                         if (GetIsEnemy(coneTarget, activator))
                         {
                             var attack = Stat.GetAttack(activator, AbilityType.Might, SkillType.Invalid);
-                            var defense = Stat.GetDefense(coneTarget, CombatDamageType.Fire, AbilityType.Vitality);
+                            var damageType = CombatDamageType.Fire;
+                            var defense = Stat.GetDefense(coneTarget, damageType, AbilityType.Vitality);
                             var defenderStat = GetAbilityScore(coneTarget, AbilityType.Vitality);
                             var damage = Combat.CalculateDamage(
                                 attack,
@@ -49,6 +50,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                                 defense,
                                 defenderStat,
                                 0);
+                            damage = Resistance.ApplyResistanceToDamage(coneTarget, damageType, damage);
 
                             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Com_Hit_Fire), coneTarget);
                             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Fire), coneTarget);
@@ -78,7 +80,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                         if (GetIsEnemy(coneTarget, activator))
                         {
                             var attack = Stat.GetAttack(activator, AbilityType.Might, SkillType.Invalid);
-                            var defense = Stat.GetDefense(coneTarget, CombatDamageType.Fire, AbilityType.Vitality);
+                            var damageType = CombatDamageType.Fire;
+                            var defense = Stat.GetDefense(coneTarget, damageType, AbilityType.Vitality);
                             var defenderStat = GetAbilityScore(coneTarget, AbilityType.Vitality);
                             var damage = Combat.CalculateDamage(
                                 attack,
@@ -87,6 +90,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                                 defense,
                                 defenderStat,
                                 0);
+                            damage = Resistance.ApplyResistanceToDamage(coneTarget, damageType, damage);
 
                             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Com_Hit_Fire), coneTarget);
                             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Fire), coneTarget);

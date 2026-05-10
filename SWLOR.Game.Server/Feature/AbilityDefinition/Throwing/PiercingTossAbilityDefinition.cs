@@ -60,12 +60,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
 
         private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            var (baseDamage, duration, savingThrowDc) = level switch
+            var (baseDamage, duration) = level switch
             {
-                1 => (12, 30, 12),
-                2 => (21, 60, 15),
-                3 => (34, 60, 18),
-                _ => (0, 0, 0)
+                1 => (12, 30),
+                2 => (21, 60),
+                3 => (34, 60),
+                _ => (0, 0)
             };
 
             if (baseDamage <= 0)
@@ -78,8 +78,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 Skill,
                 baseDamage,
                 duration,
-                savingThrowDc,
-                SavingThrow.Reflex,
                 typeof(BleedStatusEffect),
                 false);
         }

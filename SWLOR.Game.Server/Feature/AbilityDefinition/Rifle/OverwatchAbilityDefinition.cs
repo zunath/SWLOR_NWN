@@ -46,8 +46,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                         SkillType.Rifle,
                         20,
                         12,
-                        16,
-                        SavingThrow.Will,
                         typeof(FoggyMindStatusEffect),
                         false,
                         statusEffectFactory: () => new FoggyMindStatusEffect(2));

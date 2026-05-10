@@ -20,9 +20,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             var attack = GetLocalInt(OBJECT_SELF, "DEVICE_ATK");
             dmg += GetLocalInt(OBJECT_SELF, "DEVICE_DMG");
 
-            var defense = Stat.GetDefense(creature, CombatDamageType.Physical, AbilityType.Vitality);
+            var damageType = CombatDamageType.Poison;
+            var defense = Stat.GetDefense(creature, damageType, AbilityType.Vitality);
             var defenderStat = GetAbilityScore(creature, AbilityType.Vitality);
             var damage = Combat.CalculateDamage(attack, dmg, attackerStat, defense, defenderStat, 0);
+            damage = Resistance.ApplyResistanceToDamage(creature, damageType, damage);
 
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Acid), creature);
         }

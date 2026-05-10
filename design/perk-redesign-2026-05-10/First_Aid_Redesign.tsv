@@ -1,0 +1,35 @@
+Style	SP Price	Perk Name	Skill Reqs.	Char. Type	Type	Description	FP	STM	Casting Time	Cooldown Time	Dev Status	Additional Requirements	Notes
+Trauma Medic	2	Med Kit I	-	All	Combat	Restores 10% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies.	-	4	1.5 seconds	6 seconds	Design		Best baseline direct healing.
+Trauma Medic	2	Treatment Kit I	First Aid 5	All	Combat	Removes Bleed and Poison from a single target. Consumes medical supplies.	-	3	1 second	8 seconds	Design		
+Trauma Medic	3	Medical Injector Rig I	First Aid 8	All	Trait	Med Kit, Kolto Mist, Emergency Triage, and Infusion healing is 10% stronger.	-	-	-	-	Design		SP investment offsets lower WIL builds without raw attributes.
+Trauma Medic	3	Emergency Sealant I	First Aid 12	All	Combat	Stops Bleed or Burn on one target and grants minor HP regeneration for 12 seconds. Consumes medical supplies.	-	4	1 second	18 seconds	Design		
+Trauma Medic	3	Kolto Mist I	First Aid 15	All	Combat	Restores HP over time to nearby allies within 3m for 12 seconds. Total healing equals 7% of each target's maximum HP plus WIL scaling. Consumes medical supplies.	-	6	1.5 seconds	30 seconds	Design		First Aid owns medical area recovery.
+Trauma Medic	3	Resuscitation I	First Aid 18	All	Combat	Revives an unconscious target with 1 HP. Consumes medical supplies.	-	10	4 seconds	3 minutes	Design		
+Trauma Medic	2	Treatment Kit II	First Aid 22	All	Combat	Removes Bleed, Poison, Burn, Shock, and Disease from a single target. Consumes medical supplies.	-	4	1 second	8 seconds	Design		
+Trauma Medic	4	Med Kit II	First Aid 25	All	Combat	Restores 20% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies.	-	6	1.5 seconds	6 seconds	Design		
+Trauma Medic	3	Infusion I	First Aid 28	All	Combat	Grants a single target regeneration, healing 3% of maximum HP plus WIL scaling every 3 seconds for 15 seconds. Consumes medical supplies.	-	6	1 second	45 seconds	Design		First Aid regeneration counterpart to Force Renewal.
+Trauma Medic	4	Kolto Mist II	First Aid 30	All	Combat	Restores stronger HP over time to nearby allies within 3m for 12 seconds. Total healing equals 12% of each target's maximum HP plus WIL scaling. Consumes medical supplies.	-	7	1.5 seconds	30 seconds	Design		First Aid owns medical area recovery.
+Trauma Medic	3	Resuscitation II	First Aid 35	All	Combat	Revives an unconscious target with 20% HP plus WIL scaling. Consumes medical supplies.	-	10	4 seconds	3 minutes	Design		
+Trauma Medic	3	Medical Injector Rig II	First Aid 38	All	Trait	Med Kit, Kolto Mist, Emergency Triage, and Infusion healing is 20% stronger.	-	-	-	-	Design		SP investment offsets lower WIL builds without raw attributes.
+Trauma Medic	4	Med Kit III	First Aid 40	All	Combat	Restores 28% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies.	-	7	1.5 seconds	6 seconds	Design		
+Trauma Medic	4	Treatment Kit III	First Aid 42	All	Combat	Removes all standard physical and elemental ailments from a single target and grants 8 seconds of ailment resistance.	-	5	1 second	18 seconds	Design		
+Trauma Medic	4	Emergency Triage	First Aid 45	All	Combat	Restores 18% of the target's maximum HP plus WIL scaling instantly. Healing is doubled if the target is below 35% HP. Consumes extra medical supplies.	-	8	-	45 seconds	Design		
+Trauma Medic	3	Infusion II	First Aid 48	All	Combat	Grants a single target regeneration, healing 5% of maximum HP plus WIL scaling every 3 seconds for 15 seconds. Consumes medical supplies.	-	8	1 second	45 seconds	Design		First Aid regeneration counterpart to Force Renewal.
+Trauma Medic	5	Med Kit IV	First Aid 50	All	Combat	Restores 36% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies.	-	8	1.5 seconds	6 seconds	Design		Top single-target recovery benchmark.
+Combat Pharmacology	2	Adrenal Stim I	-	All	Combat	Restores 10% of maximum STM and grants minor STM regeneration for 12 seconds. Consumes a stim pack.	-	-	1 second	2 minutes	Design		No raw attribute buff.
+Combat Pharmacology	2	Shielding I	First Aid 5	All	Combat	Reduces physical and force damage taken by 5% for 3 minutes. Consumes a stim pack.	-	3	1 second	30 seconds	Design		One medical defense serum active at a time.
+Combat Pharmacology	3	Coagulant I	First Aid 8	All	Combat	Grants 50% Bleed resistance and reduces incoming physical damage over time effects for 2 minutes. Consumes a stim pack.	-	3	1 second	45 seconds	Design		
+Combat Pharmacology	3	Adrenal Stim II	First Aid 12	All	Combat	Restores 18% of maximum STM and grants STM regeneration for 12 seconds. Consumes a stim pack.	-	-	1 second	2 minutes	Design		
+Combat Pharmacology	3	Pain Suppressant I	First Aid 15	All	Combat	Grants temporary HP and 10% damage reduction for 18 seconds. Consumes a stim pack.	-	5	1 second	60 seconds	Design		
+Combat Pharmacology	3	Antitoxin I	First Aid 18	All	Combat	Grants 50% Poison and Disease resistance for 2 minutes and removes one Poison effect. Consumes a stim pack.	-	3	1 second	45 seconds	Design		
+Combat Pharmacology	2	Field Pharmacist I	First Aid 22	All	Trait	Stim pack effects last 15% longer and have a 10% chance not to consume the stim pack.	-	-	-	-	Design		
+Combat Pharmacology	4	Shielding II	First Aid 25	All	Combat	Reduces physical and force damage taken by 8% for 3 minutes. Consumes a stim pack.	-	4	1 second	30 seconds	Design		
+Combat Pharmacology	3	Focus Stim I	First Aid 28	All	Combat	Increases physical and force ability hit chance by 5% for 2 minutes. Consumes a stim pack.	-	4	1 second	45 seconds	Design		Percentage modifier, no raw stat increase.
+Combat Pharmacology	4	Adrenal Stim III	First Aid 30	All	Combat	Restores 25% of maximum STM and grants STM regeneration for 12 seconds. Consumes a stim pack.	-	-	1 second	2 minutes	Design		
+Combat Pharmacology	3	Pain Suppressant II	First Aid 35	All	Combat	Grants temporary HP and 15% damage reduction for 18 seconds. Consumes a stim pack.	-	6	1 second	60 seconds	Design		
+Combat Pharmacology	3	Field Pharmacist II	First Aid 38	All	Trait	Stim pack effects last 25% longer and have a 20% chance not to consume the stim pack.	-	-	-	-	Design		
+Combat Pharmacology	4	Coagulant II	First Aid 40	All	Combat	Grants Bleed immunity and 20% resistance to physical damage over time effects for 2 minutes. Consumes a stim pack.	-	4	1 second	45 seconds	Design		
+Combat Pharmacology	4	Shielding III	First Aid 42	All	Combat	Reduces physical and force damage taken by 11% for 3 minutes. Consumes a stim pack.	-	5	1 second	30 seconds	Design		
+Combat Pharmacology	4	Focus Stim II	First Aid 45	All	Combat	Increases physical and force ability hit chance by 8% for 2 minutes. Consumes a stim pack.	-	5	1 second	45 seconds	Design		
+Combat Pharmacology	3	Field Pharmacist III	First Aid 48	All	Trait	Stim pack effects last 35% longer and have a 30% chance not to consume the stim pack.	-	-	-	-	Design		
+Combat Pharmacology	5	Emergency Cocktail	First Aid 50	All	Combat	Applies full-strength Adrenal Stim, Pain Suppressant, and Antitoxin effects for 18 seconds. Consumes extra stim packs.	-	8	1 second	5 minutes	Design		Line capstone; full effect, long cooldown.

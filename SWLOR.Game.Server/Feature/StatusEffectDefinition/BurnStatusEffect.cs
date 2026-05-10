@@ -1,3 +1,5 @@
+﻿using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using Random = SWLOR.Game.Server.Service.Random;
@@ -10,6 +12,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override string Name => "Burn";
         public override EffectIconType Icon => EffectIconType.Burning;
         public override StatusEffectCategory Categories => StatusEffectCategory.Debuff;
+        public override ResistanceType ResistanceType => ResistanceType.Fire;
         public override StatusEffectCleanseType CleanseTypes =>
             StatusEffectCleanseType.Purify |
             StatusEffectCleanseType.TreatmentKit2 |
@@ -35,6 +38,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             var might = GetAbilityModifier(AbilityType.Might, Source);
             var amount = Random.Next(2, 4) + might * 2 * _level;
+            amount = Resistance.ApplyResistanceToDamage(creature, ResistanceType, amount);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(amount, DamageType.Fire), creature);
         }
     }

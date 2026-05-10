@@ -1,4 +1,4 @@
-using SWLOR.Game.Server.Entity;
+﻿using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.DialogDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
@@ -112,7 +112,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public string SavingThrows
+        public string StatusResistances
         {
             get => Get<string>();
             set => Set(value);
@@ -505,9 +505,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Willpower = GetAbilityScore(_target, AbilityType.Willpower);
             Agility = GetAbilityScore(_target, AbilityType.Agility);
             Social = GetAbilityScore(_target, AbilityType.Social);
-            SavingThrows = GetFortitudeSavingThrow(_target) + "/" +
-                           GetReflexSavingThrow(_target) + "/" +
-                           GetWillSavingThrow(_target);
+            StatusResistances = Resistance.GetResistance(_target, ResistanceType.Mind) + "/" +
+                                Resistance.GetResistance(_target, ResistanceType.Mobility) + "/" +
+                                Resistance.GetResistance(_target, ResistanceType.Trauma) + "/" +
+                                Resistance.GetResistance(_target, ResistanceType.Disruption);
 
             if (IsPlayerMode)
             {
@@ -557,7 +558,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return (dmgText, tooltip);
             }
 
-            var food = StatusEffect.GetStatusEffect<FoodStatusEffect>(Player)?.Food ?? new FoodEffectData();
             var mainHand = GetItemInSlot(InventorySlot.RightHand, _target);
             var offHand = GetItemInSlot(InventorySlot.LeftHand, _target);
             var mainHandType = GetBaseItemType(mainHand);
@@ -609,28 +609,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             DefensePhysical = Stat.GetDefense(_target, CombatDamageType.Physical, AbilityType.Vitality);
             DefenseForce = Stat.GetDefense(_target, CombatDamageType.Force, AbilityType.Willpower);
 
-            if (GetIsPC(_target))
-            {
-                var playerId = GetObjectUUID(_target);
-                var dbPlayer = DB.Get<Player>(playerId);
-
-                var fireDefense = (dbPlayer.Defenses[CombatDamageType.Fire] + food.DefenseFire).ToString();
-                var poisonDefense = (dbPlayer.Defenses[CombatDamageType.Poison] + food.DefensePoison).ToString();
-                var electricalDefense = (dbPlayer.Defenses[CombatDamageType.Electrical + food.DefenseElectrical]).ToString();
-                var iceDefense = (dbPlayer.Defenses[CombatDamageType.Ice] + food.DefenseIce).ToString();
-
-                DefenseElemental = $"{fireDefense}/{poisonDefense}/{electricalDefense}/{iceDefense}";
-            }
-            else
-            {
-                var npcStats = Stat.GetNPCStats(_target);
-                var fireDefense = npcStats.Defenses.ContainsKey(CombatDamageType.Fire) ? npcStats.Defenses[CombatDamageType.Fire] : 0;
-                var poisonDefense = npcStats.Defenses.ContainsKey(CombatDamageType.Poison) ? npcStats.Defenses[CombatDamageType.Poison] : 0;
-                var electricalDefense = npcStats.Defenses.ContainsKey(CombatDamageType.Electrical) ? npcStats.Defenses[CombatDamageType.Electrical] : 0;
-                var iceDefense = npcStats.Defenses.ContainsKey(CombatDamageType.Ice) ? npcStats.Defenses[CombatDamageType.Ice] : 0;
-
-                DefenseElemental = $"{fireDefense}/{poisonDefense}/{electricalDefense}/{iceDefense}";
-            }
+            var fireDefense = Resistance.GetResistance(_target, ResistanceType.Fire);
+            var poisonDefense = Resistance.GetResistance(_target, ResistanceType.Poison);
+            var electricalDefense = Resistance.GetResistance(_target, ResistanceType.Electrical);
+            var iceDefense = Resistance.GetResistance(_target, ResistanceType.Ice);
+            DefenseElemental = $"{fireDefense}/{poisonDefense}/{electricalDefense}/{iceDefense}";
 
             Accuracy = Stat.GetAccuracy(_target, mainHand, accuracyStatOverride, SkillType.Invalid);
             Evasion = Stat.GetEvasion(_target, SkillType.Invalid);

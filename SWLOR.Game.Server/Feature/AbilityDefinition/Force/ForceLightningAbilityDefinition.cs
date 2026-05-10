@@ -52,7 +52,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 if (GetIsReactionTypeHostile(creature, activator) && GetIsDead(creature) == false)
                 {
                     var attackerStat = GetAbilityScore(activator, AbilityType.Willpower);
-                    var defense = Stat.GetDefense(creature, CombatDamageType.Force, AbilityType.Willpower);
+                    var damageType = CombatDamageType.Force;
+                    var defense = Stat.GetDefense(creature, damageType, AbilityType.Willpower);
                     var attack = Stat.GetAttack(activator, AbilityType.Willpower, SkillType.Force);
                     var defenderStat = GetAbilityScore(creature, AbilityType.Willpower);
                     var damage = Combat.CalculateDamage(
@@ -62,6 +63,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                         defense,
                         defenderStat,
                         0);
+                    damage = Resistance.ApplyResistanceToDamage(creature, ResistanceType.Electrical, damage);
 
                     var elecBeam = EffectBeam(VisualEffect.Vfx_Beam_Silent_Lightning, activator, BodyNode.Hand, true);
                     var elecBurst = EffectVisualEffect(VisualEffect.Vfx_Imp_Lightning_S);

@@ -91,7 +91,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                         .SetText("Might")
                                         .SetVerticalAlign(NuiVerticalAlign.Top)
                                         .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                                        .SetTooltip("Might - Improves damage dealt by melee weapons, carrying capacity, and fortitude saving throws.");
+                                        .SetTooltip("Might - Improves damage dealt by melee weapons and carrying capacity.");
                                 });
                                 col.AddRow(row =>
                                 {
@@ -99,7 +99,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                         .SetText("Perception")
                                         .SetVerticalAlign(NuiVerticalAlign.Top)
                                         .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                                        .SetTooltip("Perception - Improves damage dealt by ranged and finesse weapons, increases physical accuracy, and reflex saving throws.");
+                                        .SetTooltip("Perception - Improves damage dealt by ranged and finesse weapons, and increases physical accuracy.");
                                 });
                                 col.AddRow(row =>
                                 {
@@ -115,7 +115,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                         .SetText("Willpower")
                                         .SetVerticalAlign(NuiVerticalAlign.Top)
                                         .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                                        .SetTooltip("Willpower - Improves your force attack, force defense, max force points, and will saving throws.");
+                                        .SetTooltip("Willpower - Improves your force attack, force defense, and max force points.");
                                 });
                                 col.AddRow(row =>
                                 {
@@ -278,10 +278,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
-                                        .SetText("Elem. DEF")
+                                        .SetText("Elem. RES")
                                         .SetVerticalAlign(NuiVerticalAlign.Top)
                                         .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                                        .SetTooltip("Elemental Defenses - Reduces the amount of damage taken by elemental damage. (Order: Fire/Poison/Electrical/Ice)");
+                                        .SetTooltip("Elemental Resistances - Reduces the amount of damage taken by elemental damage. (Order: Fire/Poison/Electrical/Ice)");
                                 });
                                 col.AddRow(row =>
                                 {
@@ -294,10 +294,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
-                                        .SetText("Sav. Throws")
+                                        .SetText("Status RES")
                                         .SetVerticalAlign(NuiVerticalAlign.Top)
                                         .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                                        .SetTooltip("Saving Throws - Used to resist certain attacks. (Order: Fortitude, Reflex, Will)");
+                                        .SetTooltip("Status Resistances - Reduces hostile status duration. (Order: Mind/Mobility/Trauma/Disruption)");
                                 });
                                 col.AddRow(row =>
                                 {
@@ -361,7 +361,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
-                                        .BindText(model => model.ElementalDefense)
+                                        .BindText(model => model.ElementalResistance)
                                         .SetVerticalAlign(NuiVerticalAlign.Top)
                                         .SetHorizontalAlign(NuiHorizontalAlign.Left);
                                 });
@@ -375,7 +375,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
-                                        .BindText(model => model.SavingThrows)
+                                        .BindText(model => model.StatusResistance)
                                         .SetVerticalAlign(NuiVerticalAlign.Top)
                                         .SetHorizontalAlign(NuiHorizontalAlign.Left);
                                 });
@@ -438,21 +438,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
-                                        .SetText("Phys. Defense")
+                                        .SetText("Phys. DEF")
                                         .SetVerticalAlign(NuiVerticalAlign.Top)
                                         .SetHorizontalAlign(NuiHorizontalAlign.Left);
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
-                                        .SetText("Force Defense")
+                                        .SetText("Force DEF")
                                         .SetVerticalAlign(NuiVerticalAlign.Top)
                                         .SetHorizontalAlign(NuiHorizontalAlign.Left);
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
-                                        .SetText("Fire Defense")
+                                        .SetText("Fire Resist")
                                         .SetVerticalAlign(NuiVerticalAlign.Top)
                                         .SetHorizontalAlign(NuiHorizontalAlign.Left);
                                 });
@@ -505,7 +505,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
-                                        .BindText(model => model.FireDefensePurity)
+                                        .BindText(model => model.FireResistancePurity)
                                         .SetVerticalAlign(NuiVerticalAlign.Top)
                                         .SetHorizontalAlign(NuiHorizontalAlign.Left);
                                 });
@@ -522,42 +522,49 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
-                                        .SetText("Ice Defense")
+                                        .SetText("Ice Resist")
                                         .SetVerticalAlign(NuiVerticalAlign.Top)
                                         .SetHorizontalAlign(NuiHorizontalAlign.Left);
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
-                                        .SetText("Pois. Defense")
+                                        .SetText("Pois. Resist")
                                         .SetVerticalAlign(NuiVerticalAlign.Top)
                                         .SetHorizontalAlign(NuiHorizontalAlign.Left);
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
-                                        .SetText("Elec. Defense")
+                                        .SetText("Elec. Resist")
                                         .SetVerticalAlign(NuiVerticalAlign.Top)
                                         .SetHorizontalAlign(NuiHorizontalAlign.Left);
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
-                                        .SetText("Fortitude")
+                                        .SetText("Mind Resist")
                                         .SetVerticalAlign(NuiVerticalAlign.Top)
                                         .SetHorizontalAlign(NuiHorizontalAlign.Left);
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
-                                        .SetText("Reflex")
+                                        .SetText("Mob. Resist")
                                         .SetVerticalAlign(NuiVerticalAlign.Top)
                                         .SetHorizontalAlign(NuiHorizontalAlign.Left);
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
-                                        .SetText("Will")
+                                        .SetText("Trau. Resist")
+                                        .SetVerticalAlign(NuiVerticalAlign.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                });
+                                col.AddRow(row =>
+                                {
+                                    row.AddLabel()
+                                        .SetText("Disr. Resist")
                                         .SetVerticalAlign(NuiVerticalAlign.Top)
                                         .SetHorizontalAlign(NuiHorizontalAlign.Left);
                                 });
@@ -575,42 +582,49 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
-                                        .BindText(model => model.IceDefensePurity)
+                                        .BindText(model => model.IceResistancePurity)
                                         .SetVerticalAlign(NuiVerticalAlign.Top)
                                         .SetHorizontalAlign(NuiHorizontalAlign.Left);
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
-                                        .BindText(model => model.PoisonDefensePurity)
+                                        .BindText(model => model.PoisonResistancePurity)
                                         .SetVerticalAlign(NuiVerticalAlign.Top)
                                         .SetHorizontalAlign(NuiHorizontalAlign.Left);
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
-                                        .BindText(model => model.ElectricalDefensePurity)
+                                        .BindText(model => model.ElectricalResistancePurity)
                                         .SetVerticalAlign(NuiVerticalAlign.Top)
                                         .SetHorizontalAlign(NuiHorizontalAlign.Left);
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
-                                        .BindText(model => model.FortitudePurity)
+                                        .BindText(model => model.MindResistancePurity)
                                         .SetVerticalAlign(NuiVerticalAlign.Top)
                                         .SetHorizontalAlign(NuiHorizontalAlign.Left);
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
-                                        .BindText(model => model.ReflexPurity)
+                                        .BindText(model => model.MobilityResistancePurity)
                                         .SetVerticalAlign(NuiVerticalAlign.Top)
                                         .SetHorizontalAlign(NuiHorizontalAlign.Left);
                                 });
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
-                                        .BindText(model => model.WillPurity)
+                                        .BindText(model => model.TraumaResistancePurity)
+                                        .SetVerticalAlign(NuiVerticalAlign.Top)
+                                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                });
+                                col.AddRow(row =>
+                                {
+                                    row.AddLabel()
+                                        .BindText(model => model.DisruptionResistancePurity)
                                         .SetVerticalAlign(NuiVerticalAlign.Top)
                                         .SetHorizontalAlign(NuiHorizontalAlign.Left);
                                 });

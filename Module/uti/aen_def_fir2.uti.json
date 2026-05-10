@@ -41,7 +41,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Armor Enhancement - Defense - Fire II"
+      "0": "Armor Enhancement - Resistance - Fire II"
     }
   },
   "ModelPart1": {
@@ -175,3 +175,4 @@
     "value": 12
   }
 }
+

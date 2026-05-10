@@ -80,7 +80,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             // apply to target
             DelayCommand(delay, () =>
             {
-                var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+                var damageType = CombatDamageType.Physical;
+                var defense = Stat.GetDefense(target, damageType, AbilityType.Vitality);
                 var defenderStat = GetAbilityScore(target, AbilityType.Willpower);
                 var damage = Combat.CalculateDamage(
                     attack,
@@ -89,7 +90,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                     defense,
                     defenderStat,
                     0);
-                ApplyEffectToObject(DurationType.Instant, EffectLinkEffects(EffectVisualEffect(VisualEffect.Vfx_Imp_Sonic), EffectDamage(damage, DamageType.Sonic)), target);
+                damage = Resistance.ApplyResistanceToDamage(target, damageType, damage);
+                ApplyEffectToObject(DurationType.Instant, EffectLinkEffects(EffectVisualEffect(VisualEffect.Vfx_Imp_Sonic), EffectDamage(damage, damageType.GetNWScriptDamageType())), target);
                 Enmity.ModifyEnmity(activator, target, damage + 200 * level);
             });
 
@@ -103,7 +105,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                     var nearbyCopy = nearby;
                     DelayCommand(delay, () =>
                     {
-                        var defense = Stat.GetDefense(nearbyCopy, CombatDamageType.Physical, AbilityType.Vitality);
+                        var damageType = CombatDamageType.Physical;
+                        var defense = Stat.GetDefense(nearbyCopy, damageType, AbilityType.Vitality);
                         var defenderStat = GetAbilityModifier(AbilityType.Willpower, nearbyCopy);
                         var damage = Combat.CalculateDamage(
                             attack,
@@ -112,7 +115,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                             defense,
                             defenderStat,
                             0);
-                        ApplyEffectToObject(DurationType.Instant, EffectLinkEffects(EffectVisualEffect(VisualEffect.Vfx_Imp_Sonic), EffectDamage(damage, DamageType.Sonic)), nearbyCopy);
+                        damage = Resistance.ApplyResistanceToDamage(nearbyCopy, damageType, damage);
+                        ApplyEffectToObject(DurationType.Instant, EffectLinkEffects(EffectVisualEffect(VisualEffect.Vfx_Imp_Sonic), EffectDamage(damage, damageType.GetNWScriptDamageType())), nearbyCopy);
                         CombatPoint.AddCombatPoint(activator, nearbyCopy, SkillType.Force, 3);
                         Enmity.ModifyEnmity(activator, nearbyCopy, damage + 200 * level);
                     });

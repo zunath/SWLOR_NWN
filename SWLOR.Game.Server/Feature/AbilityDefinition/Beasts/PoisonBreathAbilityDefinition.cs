@@ -25,9 +25,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
             return _builder.Build();
         }
 
-        private void Impact(uint activator, Location targetLocation, int dmg, int dc)
+        private void Impact(uint activator, Location targetLocation, int dmg, bool appliesPoison)
         {
-            var baseDC = dc;
             const float ConeSize = 10f;
 
             var beastmaster = GetMaster(activator);
@@ -43,7 +42,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
             {
                 if (target != activator)
                 {
-                    var defense = Stat.GetDefense(target, CombatDamageType.Poison, AbilityType.Vitality);
+                    var damageType = CombatDamageType.Poison;
+                    var defense = Stat.GetDefense(target, damageType, AbilityType.Vitality);
                     var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
                     var damage = Combat.CalculateDamage(
                         attack,
@@ -52,6 +52,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                         defense,
                         defenderStat,
                         0);
+                    damage = Resistance.ApplyResistanceToDamage(target, damageType, damage);
 
                     var eDMG = EffectDamage(damage, DamageType.Acid);
                     Enmity.ModifyEnmity(activator, target, 220);
@@ -66,11 +67,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                             ApplyEffectToObject(DurationType.Instant, eVFX, targetCopy);
                         });
 
-                        dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Reflex, baseDC);
-                        var checkResult = ReflexSave(targetCopy, dc, SavingThrowType.None, activator);
-                        if (checkResult == SavingThrowResultType.Failed)
+                        if (appliesPoison)
                         {
-                            StatusEffect.ApplyStatusEffect(activator, targetCopy, typeof(PoisonStatusEffect), 30f);
+                            StatusEffect.ApplyStatusEffect(activator, targetCopy, typeof(PoisonStatusEffect), 30f, damageType);
                         }
                     });
                 }
@@ -90,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .IsCastedAbility()
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {
-                    Impact(activator, targetLocation, 8, -1);
+                    Impact(activator, targetLocation, 8, false);
                 });
         }
         private void PoisonBreath2()
@@ -104,7 +103,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .IsCastedAbility()
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {
-                    Impact(activator, targetLocation, 12, -1);
+                    Impact(activator, targetLocation, 12, false);
                 });
         }
         private void PoisonBreath3()
@@ -118,7 +117,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .IsCastedAbility()
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {
-                    Impact(activator, targetLocation, 16, 8);
+                    Impact(activator, targetLocation, 16, true);
                 });
         }
         private void PoisonBreath4()
@@ -132,7 +131,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .IsCastedAbility()
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {
-                    Impact(activator, targetLocation, 20, 12);
+                    Impact(activator, targetLocation, 20, true);
                 });
         }
         private void PoisonBreath5()
@@ -146,7 +145,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .IsCastedAbility()
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {
-                    Impact(activator, targetLocation, 24, 14);
+                    Impact(activator, targetLocation, 24, true);
                 });
         }
     }

@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Entity;
@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Feature
             _statChangeActions[ItemPropertyType.Attack] = ApplyAttack;
             _statChangeActions[ItemPropertyType.ForceAttack] = ApplyForceAttack;
             _statChangeActions[ItemPropertyType.Defense] = ApplyDefense;
+            _statChangeActions[ItemPropertyType.Resistance] = ApplyResistance;
             _statChangeActions[ItemPropertyType.Evasion] = ApplyEvasion;
             _statChangeActions[ItemPropertyType.Control] = ApplyControl;
             _statChangeActions[ItemPropertyType.Craftsmanship] = ApplyCraftsmanship;
@@ -458,6 +459,8 @@ namespace SWLOR.Game.Server.Feature
 
             var amount = GetItemPropertyCostTableValue(ip);
             var damageType = (CombatDamageType)GetItemPropertySubType(ip);
+            if (!damageType.IsDefenseDamageType())
+                return;
 
             if (GetIsPC(creature))
             {
@@ -508,6 +511,77 @@ namespace SWLOR.Game.Server.Feature
                 else
                 {
                     var newIP = ItemPropertyCustom(ItemPropertyType.Defense, (int)damageType, value);
+                    BiowareXP2.IPSafeAddItemProperty(skin, newIP, 0f, AddItemPropertyPolicy.ReplaceExisting, true, false);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Applies or removes resistance toward a particular elemental or status type on a creature.
+        /// </summary>
+        /// <param name="creature">The creature to adjust</param>
+        /// <param name="item">The item being equipped or unequipped</param>
+        /// <param name="ip">The item property associated with this change</param>
+        /// <param name="isAdding">If true, we're adding the resistance, if false we're removing it.</param>
+        private static void ApplyResistance(uint creature, uint item, ItemProperty ip, bool isAdding)
+        {
+            if (GetIsDM(creature) || GetIsDMPossessed(creature))
+                return;
+
+            var amount = GetItemPropertyCostTableValue(ip);
+            var resistanceType = (ResistanceType)GetItemPropertySubType(ip);
+            if (!Resistance.IsValidResistanceType(resistanceType))
+                return;
+
+            if (GetIsPC(creature))
+            {
+                var playerId = GetObjectUUID(creature);
+                var dbPlayer = DB.Get<Player>(playerId);
+
+                if (isAdding)
+                {
+                    Resistance.AdjustResistance(dbPlayer, resistanceType, amount);
+                }
+                else
+                {
+                    Resistance.AdjustResistance(dbPlayer, resistanceType, -amount);
+                }
+
+                DB.Set(dbPlayer);
+            }
+            else
+            {
+                var skin = GetItemInSlot(InventorySlot.CreatureArmor, creature);
+                var value = 0;
+                for (var resistanceIP = GetFirstItemProperty(skin); GetIsItemPropertyValid(resistanceIP); resistanceIP = GetNextItemProperty(skin))
+                {
+                    if (GetItemPropertyType(resistanceIP) == ItemPropertyType.Resistance)
+                    {
+                        var subType = (ResistanceType)GetItemPropertySubType(resistanceIP);
+
+                        if (subType == resistanceType)
+                        {
+                            value += GetItemPropertyCostTableValue(resistanceIP);
+                        }
+                    }
+                }
+
+                if (isAdding)
+                {
+                    value += amount;
+                }
+                else
+                {
+                    value -= amount;
+                }
+
+                if (value <= 0)
+                {
+                    BiowareXP2.IPRemoveMatchingItemProperties(skin, ItemPropertyType.Resistance, DurationType.Invalid, (int)resistanceType);
+                }
+                else
+                {
+                    var newIP = ItemPropertyCustom(ItemPropertyType.Resistance, (int)resistanceType, value);
                     BiowareXP2.IPSafeAddItemProperty(skin, newIP, 0f, AddItemPropertyPolicy.ReplaceExisting, true, false);
                 }
             }

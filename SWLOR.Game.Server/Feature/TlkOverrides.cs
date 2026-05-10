@@ -48,8 +48,7 @@ namespace SWLOR.Game.Server.Feature
                 "Improves damage dealt by regular melee weapons.\n" +
                 "Improves damage dealt by heavy melee weapons.\n" +
                 "Improves damage dealt by throwing weapons.\n" +
-                "Improves harvesting item acquisition.\n" +
-                "Increases Fortitude saving throws.");
+                "Improves harvesting item acquisition.");
             SetTlkOverride(460,
                 "Perception improves damage dealt by ranged and finesse weapons and increases physical accuracy.\n\n" +
                 "Primary Skills: Vibroknife, Lightsaber, Saberstaff, Katar, Pistol, Rifle, Fabrication, Devices\n\n" +
@@ -57,8 +56,7 @@ namespace SWLOR.Game.Server.Feature
                 "Improves accuracy of regular melee weapons.\n" +
                 "Improves accuracy of heavy melee weapons.\n" +
                 "Improves damage of finesse melee weapons.\n" +
-                "Improves damage of ranged weapons.\n" +
-                "Increases Reflex saving throws.");
+                "Improves damage of ranged weapons.");
             SetTlkOverride(461,
                 "Vitality improves your max hit points and reduces damage received.\n\n" +
                 "Primary Skills: Armor, Smithery, Engineering\n\n" +
@@ -75,8 +73,7 @@ namespace SWLOR.Game.Server.Feature
                 "Improves force defense (reducing damage taken).\n" +
                 "Improves effectiveness of First Aid abilities.\n" +
                 "Improves effectiveness of Force abilities.\n" +
-                "Improves effectiveness of ship combat modules.\n" +
-                "Increases Will saving throws.");
+                "Improves effectiveness of ship combat modules.");
             SetTlkOverride(463,
                 "Agility improves accuracy of ranged and finesse weapons, evasion, and max stamina.\n\n" +
                 "Primary Skills: Vibroknife, Lightsaber, Saberstaff, Katar, Pistol, Rifle, Throwing, Engineering\n\n" +

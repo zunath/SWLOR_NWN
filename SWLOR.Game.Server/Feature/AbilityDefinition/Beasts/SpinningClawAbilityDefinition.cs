@@ -46,8 +46,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     }
 
                     var attack = Stat.GetAttack(activator, AbilityType.Agility, SkillType.Invalid);
-                    var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
-                    var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
+                    var damageType = CombatDamageType.Physical;
+                    var defense = Stat.GetDefense(creature, damageType, AbilityType.Vitality);
+                    var defenderStat = GetAbilityScore(creature, AbilityType.Vitality);
                     var damage = Combat.CalculateDamage(
                         attack,
                         dmg,
@@ -55,6 +56,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                         defense,
                         defenderStat,
                         0);
+                    damage = Resistance.ApplyResistanceToDamage(creature, damageType, damage);
 
                     var dTarget = creature;
 

@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
             switch (level)
             {
                 case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Throwing, 32, 15, 16, SavingThrow.Fortitude, typeof(HamstringStatusEffect), false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Throwing, 32, 15, typeof(HamstringStatusEffect), false);
                     break;
             }
         }

@@ -204,7 +204,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             get => Get<string>();
             set => Set(value);
         }
-        public string ElementalDefense
+        public string ElementalResistance
         {
             get => Get<string>();
             set => Set(value);
@@ -215,7 +215,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public string SavingThrows
+        public string StatusResistance
         {
             get => Get<string>();
             set => Set(value);
@@ -249,41 +249,46 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public string FireDefensePurity
+        public string FireResistancePurity
         {
             get => Get<string>();
             set => Set(value);
         }
 
-        public string IceDefensePurity
+        public string IceResistancePurity
         {
             get => Get<string>();
             set => Set(value);
         }
 
-        public string PoisonDefensePurity
+        public string PoisonResistancePurity
         {
             get => Get<string>();
             set => Set(value);
         }
 
-        public string ElectricalDefensePurity
+        public string ElectricalResistancePurity
         {
             get => Get<string>();
             set => Set(value);
         }
 
-        public string FortitudePurity
+        public string MindResistancePurity
         {
             get => Get<string>();
             set => Set(value);
         }
-        public string ReflexPurity
+        public string MobilityResistancePurity
         {
             get => Get<string>();
             set => Set(value);
         }
-        public string WillPurity
+        public string TraumaResistancePurity
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+        public string DisruptionResistancePurity
         {
             get => Get<string>();
             set => Set(value);
@@ -408,10 +413,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             PhysicalDefense = string.Empty;
             ForceDefense = string.Empty;
-            ElementalDefense = string.Empty;
+            ElementalResistance = string.Empty;
 
             Role = string.Empty;
-            SavingThrows = string.Empty;
+            StatusResistance = string.Empty;
 
             PerkNames = new GuiBindingList<string>();
 
@@ -421,14 +426,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             PhysicalDefensePurity = string.Empty;
             ForceDefensePurity = string.Empty;
-            FireDefensePurity = string.Empty;
-            IceDefensePurity = string.Empty;
-            PoisonDefensePurity = string.Empty;
-            ElectricalDefensePurity = string.Empty;
+            FireResistancePurity = string.Empty;
+            IceResistancePurity = string.Empty;
+            PoisonResistancePurity = string.Empty;
+            ElectricalResistancePurity = string.Empty;
 
-            FortitudePurity = string.Empty;
-            ReflexPurity = string.Empty;
-            WillPurity = string.Empty;
+            MindResistancePurity = string.Empty;
+            MobilityResistancePurity = string.Empty;
+            TraumaResistancePurity = string.Empty;
+            DisruptionResistancePurity = string.Empty;
 
             LearningPurity = string.Empty;
             XPPenalty = string.Empty;
@@ -493,23 +499,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Accuracy = $"{accuracy}";
             Evasion = $"{evasion}";
 
-            var physicalDefense = Stat.CalculateDefense(level.Stats[AbilityType.Vitality], dbBeast.Level, (int)(level.MaxDefenseBonuses[CombatDamageType.Physical] * (dbBeast.DefensePurities[CombatDamageType.Physical] * 0.01f)));
-            var forceDefense = Stat.CalculateDefense(level.Stats[AbilityType.Willpower], dbBeast.Level, (int)(level.MaxDefenseBonuses[CombatDamageType.Force] * (dbBeast.DefensePurities[CombatDamageType.Force] * 0.01f)));
-            var fireDefense = $"{(int)(level.MaxDefenseBonuses[CombatDamageType.Fire] * (dbBeast.DefensePurities[CombatDamageType.Fire] * 0.01f))}";
-            var poisonDefense = $"{(int)(level.MaxDefenseBonuses[CombatDamageType.Poison] * (dbBeast.DefensePurities[CombatDamageType.Poison] * 0.01f))}";
-            var electricalDefense = $"{(int)(level.MaxDefenseBonuses[CombatDamageType.Electrical] * (dbBeast.DefensePurities[CombatDamageType.Electrical] * 0.01f))}";
-            var iceDefense = $"{(int)(level.MaxDefenseBonuses[CombatDamageType.Ice] * (dbBeast.DefensePurities[CombatDamageType.Ice] * 0.01f))}";
+            var physicalDefense = BeastResistanceCalculator.CalculateDefenseBonus(level, dbBeast, CombatDamageType.Physical);
+            var forceDefense = BeastResistanceCalculator.CalculateDefenseBonus(level, dbBeast, CombatDamageType.Force);
+            var fireResistance = $"{BeastResistanceCalculator.CalculateResistanceBonus(level, dbBeast, ResistanceType.Fire)}";
+            var poisonResistance = $"{BeastResistanceCalculator.CalculateResistanceBonus(level, dbBeast, ResistanceType.Poison)}";
+            var electricalResistance = $"{BeastResistanceCalculator.CalculateResistanceBonus(level, dbBeast, ResistanceType.Electrical)}";
+            var iceResistance = $"{BeastResistanceCalculator.CalculateResistanceBonus(level, dbBeast, ResistanceType.Ice)}";
             PhysicalDefense = $"{physicalDefense}";
             ForceDefense = $"{forceDefense}";
-            ElementalDefense = $"{fireDefense}/{poisonDefense}/{electricalDefense}/{iceDefense}";
+            ElementalResistance = $"{fireResistance}/{poisonResistance}/{electricalResistance}/{iceResistance}";
 
             Role = roleDetails.Name;
 
-            var fortitude = (level.Stats[AbilityType.Might] - 10) / 2 + (int)(level.MaxSavingThrowBonuses[SavingThrow.Fortitude] * (dbBeast.SavingThrowPurities[SavingThrow.Fortitude] * 0.01f));
-            var reflex = (level.Stats[AbilityType.Perception] - 10) / 2 + (int)(level.MaxSavingThrowBonuses[SavingThrow.Reflex] * (dbBeast.SavingThrowPurities[SavingThrow.Reflex] * 0.01f));
-            var will = (level.Stats[AbilityType.Willpower] - 10) / 2 + (int)(level.MaxSavingThrowBonuses[SavingThrow.Will] * (dbBeast.SavingThrowPurities[SavingThrow.Will] * 0.01f));
+            var mindResistance = BeastResistanceCalculator.CalculateResistanceBonus(level, dbBeast, ResistanceType.Mind);
+            var mobilityResistance = BeastResistanceCalculator.CalculateResistanceBonus(level, dbBeast, ResistanceType.Mobility);
+            var traumaResistance = BeastResistanceCalculator.CalculateResistanceBonus(level, dbBeast, ResistanceType.Trauma);
+            var disruptionResistance = BeastResistanceCalculator.CalculateResistanceBonus(level, dbBeast, ResistanceType.Disruption);
 
-            SavingThrows = $"{fortitude}/{reflex}/{will}";
+            StatusResistance = $"{mindResistance}/{mobilityResistance}/{traumaResistance}/{disruptionResistance}";
 
             // Perks Page
             var perkNames = new GuiBindingList<string>();
@@ -529,14 +536,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             PhysicalDefensePurity = $"{dbBeast.DefensePurities[CombatDamageType.Physical]}%";
             ForceDefensePurity = $"{dbBeast.DefensePurities[CombatDamageType.Force]}%";
-            FireDefensePurity = $"{dbBeast.DefensePurities[CombatDamageType.Fire]}%";
-            IceDefensePurity = $"{dbBeast.DefensePurities[CombatDamageType.Ice]}%";
-            PoisonDefensePurity = $"{dbBeast.DefensePurities[CombatDamageType.Poison]}%";
-            ElectricalDefensePurity = $"{dbBeast.DefensePurities[CombatDamageType.Electrical]}%";
+            FireResistancePurity = $"{BeastResistanceCalculator.GetResistancePurity(dbBeast, ResistanceType.Fire)}%";
+            IceResistancePurity = $"{BeastResistanceCalculator.GetResistancePurity(dbBeast, ResistanceType.Ice)}%";
+            PoisonResistancePurity = $"{BeastResistanceCalculator.GetResistancePurity(dbBeast, ResistanceType.Poison)}%";
+            ElectricalResistancePurity = $"{BeastResistanceCalculator.GetResistancePurity(dbBeast, ResistanceType.Electrical)}%";
 
-            FortitudePurity = $"{dbBeast.SavingThrowPurities[SavingThrow.Fortitude]}%";
-            ReflexPurity = $"{dbBeast.SavingThrowPurities[SavingThrow.Reflex]}%";
-            WillPurity = $"{dbBeast.SavingThrowPurities[SavingThrow.Will]}%";
+            MindResistancePurity = $"{BeastResistanceCalculator.GetResistancePurity(dbBeast, ResistanceType.Mind)}%";
+            MobilityResistancePurity = $"{BeastResistanceCalculator.GetResistancePurity(dbBeast, ResistanceType.Mobility)}%";
+            TraumaResistancePurity = $"{BeastResistanceCalculator.GetResistancePurity(dbBeast, ResistanceType.Trauma)}%";
+            DisruptionResistancePurity = $"{BeastResistanceCalculator.GetResistancePurity(dbBeast, ResistanceType.Disruption)}%";
 
             LearningPurity = $"{dbBeast.LearningPurity}%";
             XPPenalty = $"{dbBeast.XPPenaltyPercent}%";
@@ -630,14 +638,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var physicalPurity = (int)(dbBeast.DefensePurities[CombatDamageType.Physical] * percentage) * 10;
             var forcePurity = (int)(dbBeast.DefensePurities[CombatDamageType.Force] * percentage) * 10;
-            var firePurity = (int)(dbBeast.DefensePurities[CombatDamageType.Fire] * percentage) * 10;
-            var icePurity = (int)(dbBeast.DefensePurities[CombatDamageType.Ice] * percentage) * 10;
-            var electricalPurity = (int)(dbBeast.DefensePurities[CombatDamageType.Electrical] * percentage) * 10;
-            var poisonPurity = (int)(dbBeast.DefensePurities[CombatDamageType.Poison] * percentage) * 10;
+            var firePurity = (int)(BeastResistanceCalculator.GetResistancePurity(dbBeast, ResistanceType.Fire) * percentage) * 10;
+            var icePurity = (int)(BeastResistanceCalculator.GetResistancePurity(dbBeast, ResistanceType.Ice) * percentage) * 10;
+            var electricalPurity = (int)(BeastResistanceCalculator.GetResistancePurity(dbBeast, ResistanceType.Electrical) * percentage) * 10;
+            var poisonPurity = (int)(BeastResistanceCalculator.GetResistancePurity(dbBeast, ResistanceType.Poison) * percentage) * 10;
 
-            var fortitudePurity = (int)(dbBeast.SavingThrowPurities[SavingThrow.Fortitude] * percentage) * 10;
-            var reflexPurity = (int)(dbBeast.SavingThrowPurities[SavingThrow.Reflex] * percentage) * 10;
-            var willPurity = (int)(dbBeast.SavingThrowPurities[SavingThrow.Will] * percentage) * 10;
+            var mindResistancePurity = (int)(BeastResistanceCalculator.GetResistancePurity(dbBeast, ResistanceType.Mind) * percentage) * 10;
+            var mobilityResistancePurity = (int)(BeastResistanceCalculator.GetResistancePurity(dbBeast, ResistanceType.Mobility) * percentage) * 10;
+            var traumaResistancePurity = (int)(BeastResistanceCalculator.GetResistancePurity(dbBeast, ResistanceType.Trauma) * percentage) * 10;
+            var disruptionResistancePurity = (int)(BeastResistanceCalculator.GetResistancePurity(dbBeast, ResistanceType.Disruption) * percentage) * 10;
 
             var xpPenalty = (int)(dbBeast.XPPenaltyPercent * percentage) * 10;
 
@@ -651,13 +660,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.LearningPurity, learningPurity> PurityMaxId ? PurityMaxId : learningPurity),
                 ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.PhysicalDefensePurity, physicalPurity > PurityMaxId ? PurityMaxId : physicalPurity),
                 ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.ForceDefensePurity, forcePurity > PurityMaxId ? PurityMaxId : forcePurity),
-                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.FireDefensePurity, firePurity > PurityMaxId ? PurityMaxId : firePurity),
-                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.PoisonDefensePurity, poisonPurity > PurityMaxId ? PurityMaxId : poisonPurity),
-                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.ElectricalDefensePurity, electricalPurity > PurityMaxId ? PurityMaxId : electricalPurity),
-                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.IceDefensePurity, icePurity > PurityMaxId ? PurityMaxId : icePurity),
-                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.FortitudePurity, fortitudePurity > PurityMaxId ? PurityMaxId : fortitudePurity),
-                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.ReflexPurity, reflexPurity > PurityMaxId ? PurityMaxId : reflexPurity),
-                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.WillPurity, willPurity > PurityMaxId ? PurityMaxId : willPurity),
+                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.FireResistancePurity, firePurity > PurityMaxId ? PurityMaxId : firePurity),
+                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.PoisonResistancePurity, poisonPurity > PurityMaxId ? PurityMaxId : poisonPurity),
+                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.ElectricalResistancePurity, electricalPurity > PurityMaxId ? PurityMaxId : electricalPurity),
+                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.IceResistancePurity, icePurity > PurityMaxId ? PurityMaxId : icePurity),
+                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.MindResistancePurity, mindResistancePurity > PurityMaxId ? PurityMaxId : mindResistancePurity),
+                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.MobilityResistancePurity, mobilityResistancePurity > PurityMaxId ? PurityMaxId : mobilityResistancePurity),
+                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.TraumaResistancePurity, traumaResistancePurity > PurityMaxId ? PurityMaxId : traumaResistancePurity),
+                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.DisruptionResistancePurity, disruptionResistancePurity > PurityMaxId ? PurityMaxId : disruptionResistancePurity),
                 ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.XPPenalty, xpPenalty > PurityMaxId ? PurityMaxId : xpPenalty),
             };
 

@@ -96,7 +96,7 @@ Implement the system changes listed in `System Changes & Migrations`:
 - Equipment requirements move from proficiency perks to prerequisite skill levels.
 - Launch requires a free full rebuild for all characters, implemented as a forced rebuild flow rather than token distribution.
 - Elemental damage applies to the whole attack instead of bypassing defenses.
-- Elemental resistances scale from 0% to 100%, with 100% fully resisting that damage type.
+- Elemental resistances use the Xenomech diminishing-return curve, capped at a 90 resistance score.
 
 Acceptance criteria:
 
@@ -113,7 +113,7 @@ Acceptance criteria:
 - Stat descriptions and derived effects match the Bible.
 - Accuracy/evasion produce the expected hit-rate table behavior.
 - Damage calculations use the Bible's attack/defense ratio behavior and critical damage rows.
-- Elemental resistance is integrated with the same mitigation model instead of bypassing defenses.
+- Elemental damage uses the normal Physical/Force defense path first, then applies the matching resistance after damage is calculated.
 
 ### Status Effects
 
@@ -300,6 +300,10 @@ Apply haks changes only where required by the Bible:
 - TLK strings
 - shader/telegraph support assets
 - item and equipment 2DAs
+- Investigate hotbar cooldown readiness feedback:
+  - Asset approach: generate greyscale/progress variants for every ability icon, such as `pr0_` through `pr5_` TGA outputs, using ImageMagick overlays or a repo-managed equivalent script.
+  - Runtime approach: use `SetTextureOverride()` per player to swap hotbar icon textures between cooldown/progress variants and the normal icon, likely from a timer around every 0.5 seconds.
+  - Open questions: performance impact of frequent texture overrides, whether this belongs in the background worker or another scheduled server path, and the best automation path for newly added icons.
 
 The restored shader should remain only if the telegraph implementation still depends on it and it validates in game.
 

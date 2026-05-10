@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -23,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         private static void Impact(uint source, uint target)
         {
             const float Duration = 6.1f;
-            StatusEffect.ApplyStatusEffect(source, target, new ForceStunStatusEffect(), Duration);
+            StatusEffect.ApplyStatusEffect(source, target, new ForceStunStatusEffect(), Duration, CombatDamageType.Force);
             CombatVisualEffect.ApplyStatusEffectVisual(target, typeof(ForceStunStatusEffect), true);
         }
 

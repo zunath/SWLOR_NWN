@@ -87,7 +87,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ConduitFlare1)
-                .Description("Deals weapon DMG + 20 to all nearby enemies and has a Will DC16 check to inflict Force Disruption for 8 seconds.")
+                .Description("Deals weapon DMG + 20 to all nearby enemies and inflicts Force Disruption for 8 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Saberstaff, 38)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
@@ -208,21 +208,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FocusedArc1)
-                .Description("Deals weapon DMG + 10 and has a Will DC12 check to inflict Force Erosion for 12 seconds.")
+                .Description("Deals weapon DMG + 10 and inflicts Force Erosion for 12 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Saberstaff, 8)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FocusedArc2)
-                .Description("Deals weapon DMG + 22 and has a Will DC15 check to inflict Force Erosion for 15 seconds.")
+                .Description("Deals weapon DMG + 22 and inflicts Force Erosion for 15 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Saberstaff, 18)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FocusedArc3)
-                .Description("Deals weapon DMG + 34 and has a Will DC18 check to inflict Force Erosion for 18 seconds.")
+                .Description("Deals weapon DMG + 34 and inflicts Force Erosion for 18 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Saberstaff, 30)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
@@ -248,7 +248,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ForceGyre1)
-                .Description("Deals weapon DMG + 24 to all nearby enemies and has a Will DC16 check to inflict Force Erosion for 12 seconds.")
+                .Description("Deals weapon DMG + 24 to all nearby enemies and inflicts Force Erosion for 12 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Saberstaff, 38)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
@@ -330,14 +330,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.MaelstromArc1)
-                .Description("Deals weapon DMG + 22 to enemies in a cone and has a Will DC14 check to inflict Disoriented for 12 seconds.")
+                .Description("Deals weapon DMG + 22 to enemies in a cone and inflicts Disoriented for 12 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Saberstaff, 25)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.MaelstromArc2)
-                .Description("Deals weapon DMG + 32 to enemies in a cone and has a Will DC16 check to inflict Disoriented for 15 seconds.")
+                .Description("Deals weapon DMG + 32 to enemies in a cone and inflicts Disoriented for 15 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Saberstaff, 35)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
@@ -363,14 +363,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SeverFocus1)
-                .Description("Deals weapon DMG + 18 and has a Will DC14 check to inflict Fractured Focus for 20 seconds.")
+                .Description("Deals weapon DMG + 18 and inflicts Fractured Focus for 20 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Saberstaff, 22)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SeverFocus2)
-                .Description("Deals weapon DMG + 28 and has a Will DC18 check to inflict Fractured Focus for 30 seconds.")
+                .Description("Deals weapon DMG + 28 and inflicts Fractured Focus for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Saberstaff, 35)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
@@ -443,3 +443,4 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
     }
 }
+

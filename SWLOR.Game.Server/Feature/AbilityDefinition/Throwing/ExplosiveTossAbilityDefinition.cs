@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.Engine;
@@ -68,13 +69,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
 
         private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            var (baseDamage, duration, savingThrowDc, statusEffect) = level switch
+            var (baseDamage, duration, statusEffect) = level switch
             {
-                1 => (8, 0, 0, null),
-                2 => (16, 0, 0, null),
-                3 => (26, 0, 0, null),
-                4 => (38, 15, 16, typeof(ExposedStatusEffect)),
-                _ => (0, 0, 0, null)
+                1 => (8, 0, null),
+                2 => (16, 0, null),
+                3 => (26, 0, null),
+                4 => (38, 15, typeof(ExposedStatusEffect)),
+                _ => (0, 0, null)
             };
 
             if (baseDamage <= 0)
@@ -87,12 +88,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 Skill,
                 baseDamage,
                 duration,
-                savingThrowDc,
-                SavingThrow.Fortitude,
                 statusEffect,
                 CombatImpactAreaShape.Sphere,
                 TelegraphDelay,
-                Radius);
+                Radius,
+                damageType: CombatDamageType.Fire);
         }
     }
 }

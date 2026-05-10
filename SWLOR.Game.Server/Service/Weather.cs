@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.WeatherService;
 using SWLOR.Game.Server.Extension;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Area;
@@ -258,17 +259,6 @@ namespace SWLOR.Game.Server.Service
 
             // Rather unfortunately, the default method is also called GetWeather.
             return NWScript.GetWeather(oArea);
-        }
-
-        public static void OnCombatRoundEnd(uint oCreature)
-        {
-            var oArea = GetArea(oCreature);
-            if (GetLocalInt(oArea, VAR_INITIALIZED) == 0)
-                return;
-
-            var nWind = GetWindStrength(oArea);
-
-            if (nWind > 9) _DoWindKnockdown(oCreature);
         }
 
         public static void ApplyAcid(uint oTarget, uint oArea)
@@ -555,25 +545,6 @@ namespace SWLOR.Game.Server.Service
             SetLocalInt(oMod, VAR_WEATHER_WIND, nWind);
         }
 
-        private static void _DoWindKnockdown(uint oCreature)
-        {
-            var nDC = (GetHitDice(oCreature) / 2) + 10;
-            var nDiscipline = GetSkillRank(NWNSkillType.Discipline, oCreature);
-            var nReflexSave = GetReflexSavingThrow(oCreature);
-            int nSuccess;
-
-            if (nDiscipline > nReflexSave)
-                nSuccess = GetIsSkillSuccessful(oCreature, NWNSkillType.Discipline, nDC) ? 1 : 0;
-            else
-                nSuccess = ReflexSave(oCreature, nDC) == SavingThrowResultType.Success ? 1 : 0;
-
-            if (nSuccess == 0)
-            {
-                ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), oCreature, 6.0f);
-                FloatingTextStringOnCreature("*is unbalanced by a strong gust*", oCreature);
-            }
-        }
-
         public static void Thunderstorm(uint oArea)
         {
             // 1 in 3 chance of a bolt.
@@ -631,7 +602,7 @@ namespace SWLOR.Game.Server.Service
                         if (GetIsPC(oObject)) SendMessageToPC(oObject, WeatherFeedbackText.Lightning);
 
                         PlayVoiceChat(VoiceChat.Pain1, oObject);
-                        var duration = IntToFloat(d6());
+                        var duration = Resistance.CalculateResistedTicks(oObject, ResistanceType.Mobility, d6());
                         ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), oObject, duration);
                     }
                 }

@@ -131,5 +131,6 @@ namespace SWLOR.NWN.API.NWScript.Enum.Item
         Blueprint = 130,
         RequiresSkill = 131,
         RequiresStat = 132,
+        Resistance = 133,
     }
 }

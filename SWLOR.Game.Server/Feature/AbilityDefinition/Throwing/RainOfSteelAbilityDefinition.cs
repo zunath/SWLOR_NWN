@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
             switch (level)
             {
                 case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Throwing, 35, 60, 18, SavingThrow.Reflex, typeof(BleedStatusEffect), true);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Throwing, 35, 60, typeof(BleedStatusEffect), true);
                     break;
             }
         }

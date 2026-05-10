@@ -140,8 +140,14 @@
                                 <input type="number" class="form-control" @bind="EvasionBonus" min="0" max="50" />
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label">Defense Bonus</label>
-                                <input type="number" class="form-control" @bind="DefenseBonus" min="0" max="50" />
+                                <label class="form-label">Physical Defense Bonus</label>
+                                <input type="number" class="form-control" @bind="PhysicalDefenseBonus" min="0" max="50" />
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-6">
+                                <label class="form-label">Force Defense Bonus</label>
+                                <input type="number" class="form-control" @bind="ForceDefenseBonus" min="0" max="50" />
                             </div>
                         </div>
                     </div>
@@ -238,18 +244,36 @@
                         <div class="col-md-6">
                             <div class="card border-info mb-2">
                                 <div class="card-header bg-info text-white">
-                                    <h6>Defense</h6>
+                                    <h6>Physical Defense</h6>
                                 </div>
                                 <div class="card-body">
                                     <p><strong>Base:</strong> 8</p>
                                     <p><strong>Vitality Stat:</strong> @VitalityStat</p>
                                     <p><strong>Stat Bonus:</strong> @((int)(VitalityStat * 1.5))</p>
                                     <p><strong>Armor Skill:</strong> @ArmorSkill</p>
-                                    <p><strong>Equipment:</strong> +@DefenseBonus</p>
-                                    <p><strong>Total:</strong> @(8 + ((int)(VitalityStat * 1.5)) + ArmorSkill + DefenseBonus)</p>
+                                    <p><strong>Equipment:</strong> +@PhysicalDefenseBonus</p>
+                                    <p><strong>Total:</strong> @(8 + ((int)(VitalityStat * 1.5)) + ArmorSkill + PhysicalDefenseBonus)</p>
                                 </div>
                             </div>
                         </div>
+                        <div class="col-md-6">
+                            <div class="card border-info mb-2">
+                                <div class="card-header bg-info text-white">
+                                    <h6>Force Defense</h6>
+                                </div>
+                                <div class="card-body">
+                                    <p><strong>Base:</strong> 8</p>
+                                    <p><strong>Willpower Stat:</strong> @WillpowerStat</p>
+                                    <p><strong>Stat Bonus:</strong> @((int)(WillpowerStat * 1.5))</p>
+                                    <p><strong>Armor Skill:</strong> @ArmorSkill</p>
+                                    <p><strong>Equipment:</strong> +@ForceDefenseBonus</p>
+                                    <p><strong>Total:</strong> @(8 + ((int)(WillpowerStat * 1.5)) + ArmorSkill + ForceDefenseBonus)</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
                         <div class="col-md-6">
                             <div class="card border-secondary mb-2">
                                 <div class="card-header bg-secondary text-white">
@@ -301,7 +325,8 @@
     private int AttackBonus = 3;
     private int ForceAttackBonus = 2;
     private int EvasionBonus = 4;
-    private int DefenseBonus = 5;
+    private int PhysicalDefenseBonus = 5;
+    private int ForceDefenseBonus = 5;
 
     // Food bonuses
     private int FoodHPBonus = 20;

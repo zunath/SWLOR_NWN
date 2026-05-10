@@ -68,9 +68,15 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                 dbPlayer.ForceAttack = 0;
 
                 // Defenses
-                foreach (var defense in Combat.GetAllDamageTypes())
+                foreach (var defense in Combat.GetDefenseDamageTypes())
                 {
                     dbPlayer.Defenses[defense] = 0;
+                }
+
+                // Resistances
+                foreach (var resistance in Resistance.GetAllResistanceTypes())
+                {
+                    dbPlayer.Resistances[resistance] = 0;
                 }
 
                 // Evasion

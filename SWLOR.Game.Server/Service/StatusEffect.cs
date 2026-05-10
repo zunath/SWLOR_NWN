@@ -1,6 +1,7 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
@@ -74,7 +75,6 @@ namespace SWLOR.Game.Server.Service
             { EffectIconType.ACDecrease, EffectTypeScript.ACDecrease },
             { EffectIconType.MovementSpeedIncrease, EffectTypeScript.MovementSpeedIncrease },
             { EffectIconType.MovementSpeedDecrease, EffectTypeScript.MovementSpeedDecrease },
-            { EffectIconType.SavingThrowIncrease, EffectTypeScript.SavingThrowIncrease },
             { EffectIconType.SpellResistanceIncrease, EffectTypeScript.SpellResistanceIncrease },
             { EffectIconType.SpellResistanceDecrease, EffectTypeScript.SpellResistanceDecrease },
             { EffectIconType.SkillIncrease, EffectTypeScript.SkillIncrease },
@@ -128,7 +128,6 @@ namespace SWLOR.Game.Server.Service
             { EffectIconType.ImmunityDamageImmunityDecrease, EffectTypeScript.Immunity },
             { EffectIconType.ImmunityACDecrease, EffectTypeScript.Immunity },
             { EffectIconType.ImmunityMovementSpeedDecrease, EffectTypeScript.Immunity },
-            { EffectIconType.ImmunitySavingThrowDecrease, EffectTypeScript.Immunity },
             { EffectIconType.ImmunitySpellResistanceDecrease, EffectTypeScript.Immunity },
             { EffectIconType.ImmunitySkillDecrease, EffectTypeScript.Immunity },
             { EffectIconType.ImmunityKnockdown, EffectTypeScript.Immunity },
@@ -136,9 +135,6 @@ namespace SWLOR.Game.Server.Service
             { EffectIconType.ImmunitySneakAttack, EffectTypeScript.Immunity },
             { EffectIconType.ImmunityCriticalHit, EffectTypeScript.Immunity },
             { EffectIconType.ImmunityDeathMagic, EffectTypeScript.Immunity },
-            { EffectIconType.ReflexSaveIncreased, EffectTypeScript.SavingThrowIncrease },
-            { EffectIconType.FortitudeSaveIncreased, EffectTypeScript.SavingThrowIncrease },
-            { EffectIconType.WillSaveIncreased, EffectTypeScript.SavingThrowIncrease },
             { EffectIconType.Taunted, EffectTypeScript.Invalideffect },
             { EffectIconType.SpellImmunity, EffectTypeScript.SpellImmunity },
             { EffectIconType.Etherealness, EffectTypeScript.Ethereal },
@@ -469,17 +465,32 @@ namespace SWLOR.Game.Server.Service
             ApplyStatusEffectInternal((IStatusEffect)Activator.CreateInstance(type), source, creature, -1, true);
         }
 
-        private static void ApplyStatusEffectInternal(
+        private static bool ApplyStatusEffectInternal(
             IStatusEffect statusEffect,
             uint source,
             uint creature,
             int durationTicks,
-            bool isPermanent)
+            bool isPermanent,
+            ResistanceType resistanceOverride = ResistanceType.Invalid,
+            CombatDamageType sourceDamageType = CombatDamageType.Invalid)
         {
+            var resistanceType = ResolveResistanceType(statusEffect, resistanceOverride, sourceDamageType);
+            if (!isPermanent &&
+                durationTicks > 0 &&
+                GetIsObjectValid(source) &&
+                GetIsObjectValid(creature) &&
+                GetIsReactionTypeHostile(creature, source))
+            {
+                if (Resistance.IsValidResistanceType(resistanceType))
+                {
+                    durationTicks = Resistance.CalculateResistedTicks(creature, resistanceType, durationTicks);
+                }
+            }
+
             if (!isPermanent && durationTicks <= 0)
             {
                 SendMessageToPC(source, "Your spell was resisted.");
-                return;
+                return false;
             }
 
             var canApply = statusEffect.CanApply(creature);
@@ -487,7 +498,7 @@ namespace SWLOR.Game.Server.Service
             {
                 var message = $"Effect failed to apply: {canApply}";
                 SendStatusEffectFailure(source, creature, message);
-                return;
+                return false;
             }
 
             foreach (var morePowerful in statusEffect.MorePowerfulEffectTypes)
@@ -496,7 +507,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     var message = "A more powerful effect is active.";
                     SendStatusEffectFailure(source, creature, message);
-                    return;
+                    return false;
                 }
             }
 
@@ -518,6 +529,7 @@ namespace SWLOR.Game.Server.Service
                 RemoveStatusEffect(lessPowerful, creature, OBJECT_INVALID, false);
             }
 
+            statusEffect.AssignResistanceType(resistanceType);
             statusEffect.ApplyEffect(source, creature, durationTicks);
             if (statusEffect.IsFlaggedForRemoval)
             {
@@ -528,7 +540,7 @@ namespace SWLOR.Game.Server.Service
                     RemoveCreature(creature);
                 }
 
-                return;
+                return false;
             }
 
             creatureEffects = EnsureCreatureStatusEffectTracker(creature);
@@ -548,6 +560,28 @@ namespace SWLOR.Game.Server.Service
                 Messaging.SendMessageNearbyToPlayers(creature,
                     $"{name} receives the effect of {effectName}");
             }
+
+            return true;
+        }
+
+        private static ResistanceType ResolveResistanceType(
+            IStatusEffect statusEffect,
+            ResistanceType resistanceOverride,
+            CombatDamageType sourceDamageType)
+        {
+            if (Resistance.IsValidResistanceType(resistanceOverride))
+                return resistanceOverride;
+
+            if (sourceDamageType.TryGetElementalResistanceType(out var elementalSourceType))
+                return elementalSourceType;
+
+            if (Resistance.IsValidResistanceType(statusEffect.ResistanceType))
+                return statusEffect.ResistanceType;
+
+            if (sourceDamageType.TryGetSourceResistanceType(out var sourceResistanceType))
+                return sourceResistanceType;
+
+            return ResistanceType.Invalid;
         }
 
         private static void SendStatusEffectFailure(uint source, uint creature, string message)
@@ -630,26 +664,73 @@ namespace SWLOR.Game.Server.Service
             RemoveEffectByTag(creature, StatusEffectTag);
         }
 
-        public static void ApplyStatusEffect<T>(uint source, uint creature, float durationSeconds)
+        public static bool ApplyStatusEffect<T>(
+            uint source,
+            uint creature,
+            float durationSeconds,
+            ResistanceType resistanceOverride = ResistanceType.Invalid)
             where T: IStatusEffect
         {
-            ApplyStatusEffect(source, creature, (IStatusEffect)Activator.CreateInstance(typeof(T)), durationSeconds);
+            return ApplyStatusEffect(source, creature, (IStatusEffect)Activator.CreateInstance(typeof(T)), durationSeconds, resistanceOverride);
         }
 
-        public static void ApplyStatusEffect(uint source, uint creature, IStatusEffect statusEffect, float durationSeconds)
+        public static bool ApplyStatusEffect<T>(
+            uint source,
+            uint creature,
+            float durationSeconds,
+            CombatDamageType sourceDamageType)
+            where T : IStatusEffect
+        {
+            return ApplyStatusEffect(source, creature, (IStatusEffect)Activator.CreateInstance(typeof(T)), durationSeconds, sourceDamageType);
+        }
+
+        public static bool ApplyStatusEffect(
+            uint source,
+            uint creature,
+            IStatusEffect statusEffect,
+            float durationSeconds,
+            ResistanceType resistanceOverride = ResistanceType.Invalid)
         {
             var durationTicks = durationSeconds <= 0f
                 ? -1
                 : Math.Max(1, (int)Math.Ceiling(durationSeconds / Math.Max(1f, statusEffect.Frequency)));
 
-            ApplyStatusEffectInternal(statusEffect, source, creature, durationTicks, durationSeconds <= 0f);
+            return ApplyStatusEffectInternal(
+                statusEffect,
+                source,
+                creature,
+                durationTicks,
+                durationSeconds <= 0f,
+                resistanceOverride);
         }
 
-        public static void ApplyStatusEffect(
+        public static bool ApplyStatusEffect(
+            uint source,
+            uint creature,
+            IStatusEffect statusEffect,
+            float durationSeconds,
+            CombatDamageType sourceDamageType)
+        {
+            var durationTicks = durationSeconds <= 0f
+                ? -1
+                : Math.Max(1, (int)Math.Ceiling(durationSeconds / Math.Max(1f, statusEffect.Frequency)));
+
+            return ApplyStatusEffectInternal(
+                statusEffect,
+                source,
+                creature,
+                durationTicks,
+                durationSeconds <= 0f,
+                ResistanceType.Invalid,
+                sourceDamageType);
+        }
+
+        public static bool ApplyStatusEffect(
             uint source,
             uint creature,
             Type statusEffectClass,
-            float durationSeconds)
+            float durationSeconds,
+            ResistanceType resistanceOverride = ResistanceType.Invalid)
         {
             if (!TryCreateStatusEffect(statusEffectClass, out var statusEffect))
                 throw new KeyNotFoundException($"Status effect '{statusEffectClass?.Name ?? "null"}' is not registered.");
@@ -659,12 +740,38 @@ namespace SWLOR.Game.Server.Service
                 ? -1
                 : Math.Max(1, (int)Math.Ceiling(durationSeconds / Math.Max(1f, frequency)));
 
-            ApplyStatusEffectInternal(
+            return ApplyStatusEffectInternal(
                 statusEffect,
                 source,
                 creature,
                 durationTicks,
-                durationSeconds <= 0f);
+                durationSeconds <= 0f,
+                resistanceOverride);
+        }
+
+        public static bool ApplyStatusEffect(
+            uint source,
+            uint creature,
+            Type statusEffectClass,
+            float durationSeconds,
+            CombatDamageType sourceDamageType)
+        {
+            if (!TryCreateStatusEffect(statusEffectClass, out var statusEffect))
+                throw new KeyNotFoundException($"Status effect '{statusEffectClass?.Name ?? "null"}' is not registered.");
+
+            var frequency = statusEffect.Frequency;
+            var durationTicks = durationSeconds <= 0f
+                ? -1
+                : Math.Max(1, (int)Math.Ceiling(durationSeconds / Math.Max(1f, frequency)));
+
+            return ApplyStatusEffectInternal(
+                statusEffect,
+                source,
+                creature,
+                durationTicks,
+                durationSeconds <= 0f,
+                ResistanceType.Invalid,
+                sourceDamageType);
         }
 
         private static void ApplyTrackedNWNEffect(uint creature, IStatusEffect statusEffect, int durationTicks, bool isPermanent)

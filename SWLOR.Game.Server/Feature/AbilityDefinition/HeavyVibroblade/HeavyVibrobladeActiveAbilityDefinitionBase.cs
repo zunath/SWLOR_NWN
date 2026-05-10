@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
 
         protected static int SoulStrikeImpact(uint activator, uint target, Location targetLocation, int damageBonus, int healingPercent)
         {
-            var damage = Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.HeavyVibroblade, damageBonus, 0, 0, SavingThrow.Will, null, false);
+            var damage = Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.HeavyVibroblade, damageBonus, 0, null, false);
             HealFromDamage(activator, damage, healingPercent);
             return damage;
         }

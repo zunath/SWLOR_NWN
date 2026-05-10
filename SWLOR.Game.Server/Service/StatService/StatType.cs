@@ -213,19 +213,19 @@ namespace SWLOR.Game.Server.Service.StatService
         StaffMightModifierDamageMultiplier = 41,
 
         /// <summary>
-        /// Flat bonus added to Will saving throws.
+        /// Flat bonus added to Mind resistance.
         /// </summary>
-        WillSavingThrow = 42,
+        MindResistance = 42,
 
         /// <summary>
-        /// Flat bonus added to Fortitude saving throws.
+        /// Flat bonus added to Trauma resistance.
         /// </summary>
-        FortitudeSavingThrow = 43,
+        TraumaResistance = 43,
 
         /// <summary>
-        /// Flat bonus added to Reflex saving throws.
+        /// Flat bonus added to Mobility resistance.
         /// </summary>
-        ReflexSavingThrow = 44,
+        MobilityResistance = 44,
 
         /// <summary>
         /// Percent adjustment applied to damage after a successful SWLOR critical hit.
@@ -493,12 +493,12 @@ namespace SWLOR.Game.Server.Service.StatService
         LowHPEvasionCooldownSeconds = 97,
 
         /// <summary>
-        /// HP threshold percent that must be crossed before temporary HP with a Fortitude save can trigger.
+        /// HP threshold percent that must be crossed before temporary HP can trigger.
         /// </summary>
         LowHPTemporaryHPThresholdPercent = 98,
 
         /// <summary>
-        /// Percent of maximum HP granted as temporary HP when the low-HP Fortitude-save trigger succeeds.
+        /// Percent of maximum HP granted as temporary HP when the low-HP trigger succeeds.
         /// </summary>
         LowHPTemporaryHPPercent = 99,
 
@@ -508,14 +508,14 @@ namespace SWLOR.Game.Server.Service.StatService
         LowHPTemporaryHPDurationSeconds = 100,
 
         /// <summary>
-        /// Cooldown in seconds for the low-HP Fortitude-save temporary HP trigger.
+        /// Cooldown in seconds for the low-HP temporary HP trigger.
         /// </summary>
         LowHPTemporaryHPCooldownSeconds = 101,
 
         /// <summary>
-        /// Fortitude save DC required for the low-HP temporary HP trigger. A value of zero or less skips the save.
+        /// Legacy stat retained for migration compatibility. No gameplay reads this value.
         /// </summary>
-        LowHPTemporaryHPFortitudeSaveDC = 102,
+        DeprecatedLowHPTemporaryHPTrigger = 102,
 
         /// <summary>
         /// Flat Stamina restored on critical hits against poisoned targets.
@@ -910,6 +910,11 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType value required for DamageTakenRecentTargetNextAbilityNoDelayChance to grant a no-delay ability charge.
         /// </summary>
-        DamageTakenRecentTargetNextAbilityNoDelaySkillType = 181
+        DamageTakenRecentTargetNextAbilityNoDelaySkillType = 181,
+
+        /// <summary>
+        /// Percent adjustment applied to final Force Attack calculations.
+        /// </summary>
+        ForceAttackPercentAdjustment = 182
     }
 }

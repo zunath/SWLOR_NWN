@@ -1,4 +1,5 @@
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
@@ -19,6 +20,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             ? StatusEffectCategory.Debuff | StatusEffectCategory.Control
             : StatusEffectCategory.Debuff;
         public override StatusEffectCleanseType CleanseTypes => StatusEffectCleanseType.Purify | StatusEffectCleanseType.SoothePet;
+        public override ResistanceType ResistanceType => ResistanceType.Disruption;
 
         public override string CanApply(uint creature)
         {
@@ -30,24 +32,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         protected override void Apply(uint creature, int durationTicks)
         {
             var duration = GetDurationSeconds(durationTicks);
-            var dc = Combat.CalculateSavingThrowDC(Source, SavingThrow.Will, 12);
-            var checkResult = WillSave(creature, dc, SavingThrowType.None, Source);
-
-            if (checkResult == SavingThrowResultType.Failed)
-            {
-                _isDazed = true;
-                ApplyDaze(creature, duration);
-            }
-            else if (checkResult == SavingThrowResultType.Success)
-            {
-                StatGroup.Stats[StatType.Accuracy] = -2;
-                StatGroup.Stats[StatType.Defense] = -2;
-            }
-            else
-            {
-                IsFlaggedForRemoval = true;
-                return;
-            }
+            _isDazed = true;
+            ApplyDaze(creature, duration);
 
             CombatPoint.AddCombatPoint(Source, creature, SkillType.Force, 3);
             Enmity.ModifyEnmity(Source, creature, 850);

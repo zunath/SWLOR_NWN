@@ -920,12 +920,12 @@ namespace SWLOR.Game.Server.Service
             SkillType skillType,
             int baseDamage,
             int duration,
-            int savingThrowDc,
-            SavingThrow savingThrow,
             Type statusEffect,
             bool isArea,
             IEnumerable<Type> additionalStatusEffects = null,
-            Func<IStatusEffect> statusEffectFactory = null)
+            Func<IStatusEffect> statusEffectFactory = null,
+            CombatDamageType damageType = CombatDamageType.Physical,
+            ResistanceType statusResistanceType = ResistanceType.Invalid)
         {
             var totalDamage = 0;
             RecordAbilityImpactShape(activator, skillType, isArea);
@@ -958,12 +958,12 @@ namespace SWLOR.Game.Server.Service
                     creatures,
                     skillType,
                     baseDamage,
-                    savingThrowDc,
-                    savingThrow,
                     statusEffect,
                     duration,
                     additionalStatusEffects,
-                    statusEffectFactory);
+                    statusEffectFactory,
+                    damageType,
+                    statusResistanceType);
             }
             else if (GetIsObjectValid(target))
             {
@@ -972,12 +972,12 @@ namespace SWLOR.Game.Server.Service
                     new[] { target },
                     skillType,
                     baseDamage,
-                    savingThrowDc,
-                    savingThrow,
                     statusEffect,
                     duration,
                     additionalStatusEffects,
-                    statusEffectFactory);
+                    statusEffectFactory,
+                    damageType,
+                    statusResistanceType);
             }
 
             AssignCommand(activator, () => ActionPlayAnimation(Animation.DoubleStrike));
@@ -994,8 +994,6 @@ namespace SWLOR.Game.Server.Service
             SkillType skillType,
             int baseDamage,
             int duration,
-            int savingThrowDc,
-            SavingThrow savingThrow,
             Type statusEffect,
             CombatImpactAreaShape shape,
             float telegraphDuration,
@@ -1003,7 +1001,9 @@ namespace SWLOR.Game.Server.Service
             float width = 0f,
             IEnumerable<Type> additionalStatusEffects = null,
             bool centerOnActivator = false,
-            Func<IStatusEffect> statusEffectFactory = null)
+            Func<IStatusEffect> statusEffectFactory = null,
+            CombatDamageType damageType = CombatDamageType.Physical,
+            ResistanceType statusResistanceType = ResistanceType.Invalid)
         {
             RecordAbilityImpactShape(activator, skillType, true);
 
@@ -1016,15 +1016,15 @@ namespace SWLOR.Game.Server.Service
                     skillType,
                     baseDamage,
                     duration,
-                    savingThrowDc,
-                    savingThrow,
                     statusEffect,
                     shape,
                     lengthOrRadius,
                     width,
                     additionalStatusEffects,
                     centerOnActivator,
-                    statusEffectFactory);
+                    statusEffectFactory,
+                    damageType,
+                    statusResistanceType);
                 return;
             }
 
@@ -1040,15 +1040,15 @@ namespace SWLOR.Game.Server.Service
                 skillType,
                 baseDamage,
                 duration,
-                savingThrowDc,
-                savingThrow,
                 statusEffect,
                 additionalStatusEffects,
                 statusEffectFactory,
                 shape,
                 areaVisualLocation,
                 trackedImpact?.Ability,
-                trackedImpact?.NextAbilityDamageBonus ?? 0);
+                trackedImpact?.NextAbilityDamageBonus ?? 0,
+                damageType,
+                statusResistanceType);
 
             switch (shape)
             {
@@ -1097,15 +1097,15 @@ namespace SWLOR.Game.Server.Service
             SkillType skillType,
             int baseDamage,
             int duration,
-            int savingThrowDc,
-            SavingThrow savingThrow,
             Type statusEffect,
             CombatImpactAreaShape shape,
             float lengthOrRadius,
             float width,
             IEnumerable<Type> additionalStatusEffects,
             bool centerOnActivator,
-            Func<IStatusEffect> statusEffectFactory)
+            Func<IStatusEffect> statusEffectFactory,
+            CombatDamageType damageType,
+            ResistanceType statusResistanceType)
         {
             RecordAbilityImpactShape(activator, skillType, true);
 
@@ -1151,27 +1151,27 @@ namespace SWLOR.Game.Server.Service
                 creatures,
                 skillType,
                 baseDamage,
-                savingThrowDc,
-                savingThrow,
                 statusEffect,
                 duration,
                 additionalStatusEffects,
-                statusEffectFactory);
+                statusEffectFactory,
+                damageType,
+                statusResistanceType);
         }
 
         private static ApplyTelegraphEffect BuildTelegraphedCombatImpactAction(
             SkillType skillType,
             int baseDamage,
             int duration,
-            int savingThrowDc,
-            SavingThrow savingThrow,
             Type statusEffect,
             IEnumerable<Type> additionalStatusEffects,
             Func<IStatusEffect> statusEffectFactory,
             CombatImpactAreaShape shape,
             Location areaVisualLocation,
             AbilityDetail ability,
-            int nextAbilityDamageBonus)
+            int nextAbilityDamageBonus,
+            CombatDamageType damageType,
+            ResistanceType statusResistanceType)
         {
             return (creator, creatures) =>
             {
@@ -1204,12 +1204,12 @@ namespace SWLOR.Game.Server.Service
                     hostileCreatures,
                     skillType,
                     baseDamage,
-                    savingThrowDc,
-                    savingThrow,
                     statusEffect,
                     duration,
                     additionalStatusEffects,
-                    statusEffectFactory);
+                    statusEffectFactory,
+                    damageType,
+                    statusResistanceType);
 
                 if (ability != null)
                 {
@@ -1224,12 +1224,12 @@ namespace SWLOR.Game.Server.Service
             IEnumerable<uint> creatures,
             SkillType skillType,
             int baseDamage,
-            int savingThrowDc,
-            SavingThrow savingThrow,
             Type statusEffect,
             int duration,
             IEnumerable<Type> additionalStatusEffects = null,
-            Func<IStatusEffect> statusEffectFactory = null)
+            Func<IStatusEffect> statusEffectFactory = null,
+            CombatDamageType damageType = CombatDamageType.Physical,
+            ResistanceType statusResistanceType = ResistanceType.Invalid)
         {
             var totalDamage = 0;
 
@@ -1243,12 +1243,12 @@ namespace SWLOR.Game.Server.Service
                     creature,
                     skillType,
                     baseDamage,
-                    savingThrowDc,
-                    savingThrow,
                     statusEffect,
                     duration,
                     additionalStatusEffects,
-                    statusEffectFactory);
+                    statusEffectFactory,
+                    damageType,
+                    statusResistanceType);
             }
 
             return totalDamage;
@@ -1341,22 +1341,30 @@ namespace SWLOR.Game.Server.Service
             uint target,
             SkillType skillType,
             int baseDamage,
-            int savingThrowDc,
-            SavingThrow savingThrow,
             Type statusEffect,
             int duration,
             IEnumerable<Type> additionalStatusEffects,
-            Func<IStatusEffect> statusEffectFactory)
+            Func<IStatusEffect> statusEffectFactory,
+            CombatDamageType damageType,
+            ResistanceType statusResistanceType)
         {
-            var damage = CalculateCombatImpactDamage(activator, target, skillType, baseDamage);
+            var damage = CalculateCombatImpactDamage(activator, target, skillType, baseDamage, damageType);
             if (damage > 0)
             {
-                ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
+                ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, damageType.GetNWScriptDamageType()), target);
                 Combat.ApplyDamageDealtEffects(activator, target, damage);
                 Enmity.ModifyEnmity(activator, target, damage + 100);
             }
 
-            var statusApplied = ApplyCombatImpactStatusEffect(activator, target, savingThrowDc, savingThrow, statusEffect, duration, additionalStatusEffects, statusEffectFactory);
+            var statusApplied = ApplyCombatImpactStatusEffect(
+                activator,
+                target,
+                statusEffect,
+                duration,
+                additionalStatusEffects,
+                statusEffectFactory,
+                statusResistanceType,
+                damageType);
             var visualEffect = CombatVisualEffect.GetHostileImpactVisualEffect(
                 skillType,
                 damage > 0 ? baseDamage : 0,
@@ -1369,7 +1377,12 @@ namespace SWLOR.Game.Server.Service
             return damage;
         }
 
-        private static int CalculateCombatImpactDamage(uint activator, uint target, SkillType skillType, int baseDamage)
+        private static int CalculateCombatImpactDamage(
+            uint activator,
+            uint target,
+            SkillType skillType,
+            int baseDamage,
+            CombatDamageType damageType)
         {
             if (baseDamage <= 0)
                 return 0;
@@ -1384,11 +1397,13 @@ namespace SWLOR.Game.Server.Service
 
             var attack = Stat.GetAttack(activator, ability, skillType);
             var attackStat = GetAbilityScore(activator, ability);
-            var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
-            var defenderStat = GetAbilityModifier(AbilityType.Vitality, target);
+            var defenseAbility = damageType.GetDefenseAbilityType();
+            var defense = Stat.GetDefense(target, damageType, defenseAbility);
+            var defenderStat = GetAbilityModifier(defenseAbility, target);
             var criticalRating = Combat.CalculateAbilityCriticalRating(activator, skillType, IsTrackedAbilityArea(activator));
             var calculatedDamage = Combat.CalculateDamage(attack, damage, attackStat, defense, defenderStat, criticalRating);
-            calculatedDamage = Combat.ApplyDamageDealtModifiers(activator, target, calculatedDamage, skillType, true);
+            calculatedDamage = Combat.ApplyDamageDealtModifiers(activator, target, calculatedDamage, skillType, damageType, true);
+            calculatedDamage = Resistance.ApplyResistanceToDamage(target, damageType, calculatedDamage);
             calculatedDamage = Combat.ApplyDamageTakenModifiers(target, calculatedDamage);
 
             if (criticalRating > 0)
@@ -1408,31 +1423,28 @@ namespace SWLOR.Game.Server.Service
         private static bool ApplyCombatImpactStatusEffect(
             uint activator,
             uint target,
-            int savingThrowDc,
-            SavingThrow savingThrow,
             Type statusEffect,
             int duration,
             IEnumerable<Type> additionalStatusEffects,
-            Func<IStatusEffect> statusEffectFactory)
+            Func<IStatusEffect> statusEffectFactory,
+            ResistanceType statusResistanceType,
+            CombatDamageType sourceDamageType)
         {
             var hasAdditionalStatusEffects = additionalStatusEffects?.Any(x => x != null) ?? false;
             if (duration <= 0 || (statusEffect == null && statusEffectFactory == null && !hasAdditionalStatusEffects))
                 return false;
 
-            if (savingThrowDc > 0 && !SavingThrowFailed(activator, target, savingThrow, savingThrowDc))
-                return false;
-
             var statusApplied = false;
             if (statusEffectFactory != null)
-                statusApplied |= ApplyCombatImpactTrackedStatusEffect(activator, target, statusEffectFactory, duration);
+                statusApplied |= ApplyCombatImpactTrackedStatusEffect(activator, target, statusEffectFactory, duration, statusResistanceType, sourceDamageType);
             else if (statusEffect != null)
-                statusApplied |= ApplyCombatImpactTrackedStatusEffect(activator, target, statusEffect, duration);
+                statusApplied |= ApplyCombatImpactTrackedStatusEffect(activator, target, statusEffect, duration, statusResistanceType, sourceDamageType);
 
             if (additionalStatusEffects != null)
             {
                 foreach (var additionalStatusEffect in additionalStatusEffects.Where(x => x != null && x != statusEffect).Distinct())
                 {
-                    statusApplied |= ApplyCombatImpactTrackedStatusEffect(activator, target, additionalStatusEffect, duration);
+                    statusApplied |= ApplyCombatImpactTrackedStatusEffect(activator, target, additionalStatusEffect, duration, statusResistanceType, sourceDamageType);
                 }
             }
 
@@ -1443,38 +1455,30 @@ namespace SWLOR.Game.Server.Service
             uint activator,
             uint target,
             Type type,
-            float duration)
+            float duration,
+            ResistanceType statusResistanceType,
+            CombatDamageType sourceDamageType)
         {
-            StatusEffect.ApplyStatusEffect(activator, target, type, duration);
-            return true;
+            return Resistance.IsValidResistanceType(statusResistanceType)
+                ? StatusEffect.ApplyStatusEffect(activator, target, type, duration, statusResistanceType)
+                : StatusEffect.ApplyStatusEffect(activator, target, type, duration, sourceDamageType);
         }
 
         private static bool ApplyCombatImpactTrackedStatusEffect(
             uint activator,
             uint target,
             Func<IStatusEffect> statusEffectFactory,
-            float duration)
+            float duration,
+            ResistanceType statusResistanceType,
+            CombatDamageType sourceDamageType)
         {
             var statusEffect = statusEffectFactory?.Invoke();
             if (statusEffect == null)
                 return false;
 
-            StatusEffect.ApplyStatusEffect(activator, target, statusEffect, duration);
-            return true;
-        }
-
-        private static bool SavingThrowFailed(uint activator, uint target, SavingThrow savingThrow, int dc)
-        {
-            dc = Combat.CalculateSavingThrowDC(activator, savingThrow, dc);
-            switch (savingThrow)
-            {
-                case SavingThrow.Fortitude:
-                    return FortitudeSave(target, dc, SavingThrowType.None, activator) == SavingThrowResultType.Failed;
-                case SavingThrow.Reflex:
-                    return ReflexSave(target, dc, SavingThrowType.None, activator) == SavingThrowResultType.Failed;
-                default:
-                    return WillSave(target, dc, SavingThrowType.None, activator) == SavingThrowResultType.Failed;
-            }
+            return Resistance.IsValidResistanceType(statusResistanceType)
+                ? StatusEffect.ApplyStatusEffect(activator, target, statusEffect, duration, statusResistanceType)
+                : StatusEffect.ApplyStatusEffect(activator, target, statusEffect, duration, sourceDamageType);
         }
 
         private static AbilityType GetCombatImpactDamageAbility(SkillType skillType)

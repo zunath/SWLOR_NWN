@@ -75,7 +75,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
             var attackerStat = Combat.GetPerkAdjustedAbilityScore(activator);
             var attack = Stat.GetAttack(activator, AbilityType.Perception, SkillType.Force);
-            var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+            var damageType = CombatDamageType.Physical;
+            var defense = Stat.GetDefense(target, damageType, AbilityType.Vitality);
             var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
             var damage = Combat.CalculateDamage(
                 attack,
@@ -84,6 +85,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 defense,
                 defenderStat,
                 0);
+            damage = Resistance.ApplyResistanceToDamage(target, damageType, damage);
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
             var rightHandBaseItemType = GetBaseItemType(weapon);
 
@@ -91,8 +93,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             {
                 const float Duration = 2f;
                 SetCommandable(true, activator);
-                ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), target);
-                StatusEffect.ApplyStatusEffect(activator, target, typeof(StunnedStatusEffect), Duration);
+                ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, damageType.GetNWScriptDamageType()), target);
+                StatusEffect.ApplyStatusEffect(activator, target, typeof(StunnedStatusEffect), Duration, damageType);
                 CombatVisualEffect.ApplyStatusEffectVisual(target, typeof(StunnedStatusEffect), true);
                 AssignCommand(activator, () =>
                 {

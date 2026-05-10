@@ -25,9 +25,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
             return _builder.Build();
         }
 
-        private void Impact(uint activator, Location targetLocation, int dmg, int dc, int level)
+        private void Impact(uint activator, Location targetLocation, int dmg, bool appliesFreezing, int level)
         {
-            var baseDC = dc;
             const float ConeSize = 10f;
 
             AssignCommand(activator, () =>
@@ -47,7 +46,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
             {
                 if (target != activator)
                 {
-                    var defense = Stat.GetDefense(target, CombatDamageType.Ice, AbilityType.Vitality);
+                    var damageType = CombatDamageType.Ice;
+                    var defense = Stat.GetDefense(target, damageType, AbilityType.Vitality);
                     var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
                     var damage = Combat.CalculateDamage(
                         attack,
@@ -56,6 +56,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                         defense,
                         defenderStat,
                         0);
+                    damage = Resistance.ApplyResistanceToDamage(target, damageType, damage);
 
                     var eDMG = EffectDamage(damage, DamageType.Cold);
                     Enmity.ModifyEnmity(activator, target, 220);
@@ -69,11 +70,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                             ApplyEffectToObject(DurationType.Instant, eDMG, targetCopy);
                         });
 
-                        dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Reflex, baseDC);
-                        var checkResult = ReflexSave(targetCopy, dc, SavingThrowType.None, activator);
-                        if (checkResult == SavingThrowResultType.Failed)
+                        if (appliesFreezing)
                         {
-                            StatusEffect.ApplyStatusEffect(activator, targetCopy, new FreezingStatusEffect(level), 30f);
+                            StatusEffect.ApplyStatusEffect(activator, targetCopy, new FreezingStatusEffect(level), 30f, damageType);
                         }
                     });
                 }
@@ -93,7 +92,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .IsCastedAbility()
                 .HasImpactAction((activator, _, level, targetLocation) =>
                 {
-                    Impact(activator, targetLocation, 8, -1, level);
+                    Impact(activator, targetLocation, 8, false, level);
                 });
         }
         private void IceBreath2()
@@ -107,7 +106,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .IsCastedAbility()
                 .HasImpactAction((activator, _, level, targetLocation) =>
                 {
-                    Impact(activator, targetLocation, 12, -1, level);
+                    Impact(activator, targetLocation, 12, false, level);
                 });
         }
         private void IceBreath3()
@@ -121,7 +120,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .IsCastedAbility()
                 .HasImpactAction((activator, _, level, targetLocation) =>
                 {
-                    Impact(activator, targetLocation, 16, 8, level);
+                    Impact(activator, targetLocation, 16, true, level);
                 });
         }
         private void IceBreath4()
@@ -135,7 +134,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .IsCastedAbility()
                 .HasImpactAction((activator, _, level, targetLocation) =>
                 {
-                    Impact(activator, targetLocation, 20, 12, level);
+                    Impact(activator, targetLocation, 20, true, level);
                 });
         }
         private void IceBreath5()
@@ -149,7 +148,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .IsCastedAbility()
                 .HasImpactAction((activator, _, level, targetLocation) =>
                 {
-                    Impact(activator, targetLocation, 24, 14, level);
+                    Impact(activator, targetLocation, 24, true, level);
                 });
         }
     }

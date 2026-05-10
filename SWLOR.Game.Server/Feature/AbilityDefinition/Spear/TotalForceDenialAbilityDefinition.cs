@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
             switch (level)
             {
                 case 1:
-                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Spear, 28, 12, 16, SavingThrow.Will, typeof(ForceDisruptionStatusEffect), CombatImpactAreaShape.Cone, 0.25f, 5f, 5f);
+                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Spear, 28, 12, typeof(ForceDisruptionStatusEffect), CombatImpactAreaShape.Cone, 0.25f, 5f, 5f);
                     break;
             }
         }

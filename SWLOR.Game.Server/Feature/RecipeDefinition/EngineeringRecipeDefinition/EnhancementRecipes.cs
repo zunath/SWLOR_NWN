@@ -142,7 +142,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_ruined", 2)
 				;
 
-			// Armor Enhancement - Defense - Poison I
+			// Armor Enhancement - Resistance - Poison I
 			_builder.Create(RecipeType.ArmorEnhancementDefensePoison1, SkillType.Engineering)
 				.Category(RecipeCategoryType.ArmorEnhancement)
 				.Resref("aen_def_psn1")
@@ -154,7 +154,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_ruined", 2)
 				;
 
-			// Armor Enhancement - Defense - Fire I
+			// Armor Enhancement - Resistance - Fire I
 			_builder.Create(RecipeType.ArmorEnhancementDefenseFire1, SkillType.Engineering)
 				.Category(RecipeCategoryType.ArmorEnhancement)
 				.Resref("aen_def_fir1")
@@ -166,7 +166,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_ruined", 2)
 				;
 
-			// Armor Enhancement - Defense - Ice I
+			// Armor Enhancement - Resistance - Ice I
 			_builder.Create(RecipeType.ArmorEnhancementDefenseIce1, SkillType.Engineering)
 				.Category(RecipeCategoryType.ArmorEnhancement)
 				.Resref("aen_def_ice1")
@@ -178,7 +178,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_ruined", 2)
 				;
 
-			// Armor Enhancement - Defense - Electrical I
+			// Armor Enhancement - Resistance - Electrical I
 			_builder.Create(RecipeType.ArmorEnhancementDefenseElectrical1, SkillType.Engineering)
 				.Category(RecipeCategoryType.ArmorEnhancement)
 				.Resref("aen_def_elec1")
@@ -187,6 +187,54 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.RequirementPerk(PerkType.EnhancementBlueprints, 1)
 				.Component("ref_tilarium", 3)
 				.Component("ref_veldite", 2)
+				.Component("elec_ruined", 2)
+				;
+
+			// Armor Enhancement - Resistance - Mind I
+			_builder.Create(RecipeType.ArmorEnhancementResistanceMind1, SkillType.Engineering)
+				.Category(RecipeCategoryType.ArmorEnhancement)
+				.Resref("aen_res_mnd1")
+				.Level(6)
+				.Quantity(1)
+				.RequirementPerk(PerkType.EnhancementBlueprints, 1)
+				.Component("ref_tilarium", 4)
+				.Component("ref_veldite", 2)
+				.Component("elec_ruined", 2)
+				;
+
+			// Armor Enhancement - Resistance - Mobility I
+			_builder.Create(RecipeType.ArmorEnhancementResistanceMobility1, SkillType.Engineering)
+				.Category(RecipeCategoryType.ArmorEnhancement)
+				.Resref("aen_res_mob1")
+				.Level(7)
+				.Quantity(1)
+				.RequirementPerk(PerkType.EnhancementBlueprints, 1)
+				.Component("ref_tilarium", 4)
+				.Component("ref_veldite", 2)
+				.Component("elec_ruined", 2)
+				;
+
+			// Armor Enhancement - Resistance - Trauma I
+			_builder.Create(RecipeType.ArmorEnhancementResistanceTrauma1, SkillType.Engineering)
+				.Category(RecipeCategoryType.ArmorEnhancement)
+				.Resref("aen_res_tra1")
+				.Level(8)
+				.Quantity(1)
+				.RequirementPerk(PerkType.EnhancementBlueprints, 1)
+				.Component("ref_tilarium", 5)
+				.Component("ref_veldite", 3)
+				.Component("elec_ruined", 2)
+				;
+
+			// Armor Enhancement - Resistance - Disruption I
+			_builder.Create(RecipeType.ArmorEnhancementResistanceDisruption1, SkillType.Engineering)
+				.Category(RecipeCategoryType.ArmorEnhancement)
+				.Resref("aen_res_dis1")
+				.Level(9)
+				.Quantity(1)
+				.RequirementPerk(PerkType.EnhancementBlueprints, 1)
+				.Component("ref_tilarium", 5)
+				.Component("ref_veldite", 3)
 				.Component("elec_ruined", 2)
 				;
 
@@ -771,7 +819,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_flawed", 2)
 				;
 
-			// Armor Enhancement - Defense - Poison II
+			// Armor Enhancement - Resistance - Poison II
 			_builder.Create(RecipeType.ArmorEnhancementDefensePoison2, SkillType.Engineering)
 				.Category(RecipeCategoryType.ArmorEnhancement)
 				.Resref("aen_def_psn2")
@@ -783,7 +831,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_flawed", 2)
 				;
 
-			// Armor Enhancement - Defense - Fire II
+			// Armor Enhancement - Resistance - Fire II
 			_builder.Create(RecipeType.ArmorEnhancementDefenseFire2, SkillType.Engineering)
 				.Category(RecipeCategoryType.ArmorEnhancement)
 				.Resref("aen_def_fir2")
@@ -795,7 +843,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_flawed", 2)
 				;
 
-			// Armor Enhancement - Defense - Ice II
+			// Armor Enhancement - Resistance - Ice II
 			_builder.Create(RecipeType.ArmorEnhancementDefenseIce2, SkillType.Engineering)
 				.Category(RecipeCategoryType.ArmorEnhancement)
 				.Resref("aen_def_ice2")
@@ -807,7 +855,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_flawed", 2)
 				;
 
-			// Armor Enhancement - Defense - Electrical II
+			// Armor Enhancement - Resistance - Electrical II
 			_builder.Create(RecipeType.ArmorEnhancementDefenseElectrical2, SkillType.Engineering)
 				.Category(RecipeCategoryType.ArmorEnhancement)
 				.Resref("aen_def_elec2")
@@ -816,6 +864,54 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.RequirementPerk(PerkType.EnhancementBlueprints, 2)
 				.Component("ref_currian", 3)
 				.Component("ref_scordspar", 2)
+				.Component("elec_flawed", 2)
+				;
+
+			// Armor Enhancement - Resistance - Mind II
+			_builder.Create(RecipeType.ArmorEnhancementResistanceMind2, SkillType.Engineering)
+				.Category(RecipeCategoryType.ArmorEnhancement)
+				.Resref("aen_res_mnd2")
+				.Level(16)
+				.Quantity(1)
+				.RequirementPerk(PerkType.EnhancementBlueprints, 2)
+				.Component("ref_currian", 4)
+				.Component("ref_scordspar", 2)
+				.Component("elec_flawed", 2)
+				;
+
+			// Armor Enhancement - Resistance - Mobility II
+			_builder.Create(RecipeType.ArmorEnhancementResistanceMobility2, SkillType.Engineering)
+				.Category(RecipeCategoryType.ArmorEnhancement)
+				.Resref("aen_res_mob2")
+				.Level(17)
+				.Quantity(1)
+				.RequirementPerk(PerkType.EnhancementBlueprints, 2)
+				.Component("ref_currian", 4)
+				.Component("ref_scordspar", 2)
+				.Component("elec_flawed", 2)
+				;
+
+			// Armor Enhancement - Resistance - Trauma II
+			_builder.Create(RecipeType.ArmorEnhancementResistanceTrauma2, SkillType.Engineering)
+				.Category(RecipeCategoryType.ArmorEnhancement)
+				.Resref("aen_res_tra2")
+				.Level(18)
+				.Quantity(1)
+				.RequirementPerk(PerkType.EnhancementBlueprints, 2)
+				.Component("ref_currian", 5)
+				.Component("ref_scordspar", 3)
+				.Component("elec_flawed", 2)
+				;
+
+			// Armor Enhancement - Resistance - Disruption II
+			_builder.Create(RecipeType.ArmorEnhancementResistanceDisruption2, SkillType.Engineering)
+				.Category(RecipeCategoryType.ArmorEnhancement)
+				.Resref("aen_res_dis2")
+				.Level(19)
+				.Quantity(1)
+				.RequirementPerk(PerkType.EnhancementBlueprints, 2)
+				.Component("ref_currian", 5)
+				.Component("ref_scordspar", 3)
 				.Component("elec_flawed", 2)
 				;
 
@@ -1424,7 +1520,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_good", 2)
 				;
 
-			// Armor Enhancement - Defense - Poison III
+			// Armor Enhancement - Resistance - Poison III
 			_builder.Create(RecipeType.ArmorEnhancementDefensePoison3, SkillType.Engineering)
 				.Category(RecipeCategoryType.ArmorEnhancement)
 				.Resref("aen_def_psn3")
@@ -1436,7 +1532,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_good", 2)
 				;
 
-			// Armor Enhancement - Defense - Fire III
+			// Armor Enhancement - Resistance - Fire III
 			_builder.Create(RecipeType.ArmorEnhancementDefenseFire3, SkillType.Engineering)
 				.Category(RecipeCategoryType.ArmorEnhancement)
 				.Resref("aen_def_fir3")
@@ -1448,7 +1544,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_good", 2)
 				;
 
-			// Armor Enhancement - Defense - Ice III
+			// Armor Enhancement - Resistance - Ice III
 			_builder.Create(RecipeType.ArmorEnhancementDefenseIce3, SkillType.Engineering)
 				.Category(RecipeCategoryType.ArmorEnhancement)
 				.Resref("aen_def_ice3")
@@ -1460,7 +1556,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_good", 2)
 				;
 
-			// Armor Enhancement - Defense - Electrical III
+			// Armor Enhancement - Resistance - Electrical III
 			_builder.Create(RecipeType.ArmorEnhancementDefenseElectrical3, SkillType.Engineering)
 				.Category(RecipeCategoryType.ArmorEnhancement)
 				.Resref("aen_def_elec3")
@@ -1469,6 +1565,54 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.RequirementPerk(PerkType.EnhancementBlueprints, 3)
 				.Component("ref_idailia", 3)
 				.Component("ref_plagionite", 2)
+				.Component("elec_good", 2)
+				;
+
+			// Armor Enhancement - Resistance - Mind III
+			_builder.Create(RecipeType.ArmorEnhancementResistanceMind3, SkillType.Engineering)
+				.Category(RecipeCategoryType.ArmorEnhancement)
+				.Resref("aen_res_mnd3")
+				.Level(26)
+				.Quantity(1)
+				.RequirementPerk(PerkType.EnhancementBlueprints, 3)
+				.Component("ref_idailia", 4)
+				.Component("ref_plagionite", 2)
+				.Component("elec_good", 2)
+				;
+
+			// Armor Enhancement - Resistance - Mobility III
+			_builder.Create(RecipeType.ArmorEnhancementResistanceMobility3, SkillType.Engineering)
+				.Category(RecipeCategoryType.ArmorEnhancement)
+				.Resref("aen_res_mob3")
+				.Level(27)
+				.Quantity(1)
+				.RequirementPerk(PerkType.EnhancementBlueprints, 3)
+				.Component("ref_idailia", 4)
+				.Component("ref_plagionite", 2)
+				.Component("elec_good", 2)
+				;
+
+			// Armor Enhancement - Resistance - Trauma III
+			_builder.Create(RecipeType.ArmorEnhancementResistanceTrauma3, SkillType.Engineering)
+				.Category(RecipeCategoryType.ArmorEnhancement)
+				.Resref("aen_res_tra3")
+				.Level(28)
+				.Quantity(1)
+				.RequirementPerk(PerkType.EnhancementBlueprints, 3)
+				.Component("ref_idailia", 5)
+				.Component("ref_plagionite", 3)
+				.Component("elec_good", 2)
+				;
+
+			// Armor Enhancement - Resistance - Disruption III
+			_builder.Create(RecipeType.ArmorEnhancementResistanceDisruption3, SkillType.Engineering)
+				.Category(RecipeCategoryType.ArmorEnhancement)
+				.Resref("aen_res_dis3")
+				.Level(29)
+				.Quantity(1)
+				.RequirementPerk(PerkType.EnhancementBlueprints, 3)
+				.Component("ref_idailia", 5)
+				.Component("ref_plagionite", 3)
 				.Component("elec_good", 2)
 				;
 
@@ -2053,7 +2197,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_imperfect", 2)
 				;
 
-			// Armor Enhancement - Defense - Poison IV
+			// Armor Enhancement - Resistance - Poison IV
 			_builder.Create(RecipeType.ArmorEnhancementDefensePoison4, SkillType.Engineering)
 				.Category(RecipeCategoryType.ArmorEnhancement)
 				.Resref("aen_def_psn4")
@@ -2065,7 +2209,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_imperfect", 2)
 				;
 
-			// Armor Enhancement - Defense - Fire IV
+			// Armor Enhancement - Resistance - Fire IV
 			_builder.Create(RecipeType.ArmorEnhancementDefenseFire4, SkillType.Engineering)
 				.Category(RecipeCategoryType.ArmorEnhancement)
 				.Resref("aen_def_fir4")
@@ -2077,7 +2221,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_imperfect", 2)
 				;
 
-			// Armor Enhancement - Defense - Ice IV
+			// Armor Enhancement - Resistance - Ice IV
 			_builder.Create(RecipeType.ArmorEnhancementDefenseIce4, SkillType.Engineering)
 				.Category(RecipeCategoryType.ArmorEnhancement)
 				.Resref("aen_def_ice4")
@@ -2089,7 +2233,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_imperfect", 2)
 				;
 
-			// Armor Enhancement - Defense - Electrical IV
+			// Armor Enhancement - Resistance - Electrical IV
 			_builder.Create(RecipeType.ArmorEnhancementDefenseElectrical4, SkillType.Engineering)
 				.Category(RecipeCategoryType.ArmorEnhancement)
 				.Resref("aen_def_elec4")
@@ -2098,6 +2242,54 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.RequirementPerk(PerkType.EnhancementBlueprints, 4)
 				.Component("ref_barinium", 3)
 				.Component("ref_keromber", 2)
+				.Component("elec_imperfect", 2)
+				;
+
+			// Armor Enhancement - Resistance - Mind IV
+			_builder.Create(RecipeType.ArmorEnhancementResistanceMind4, SkillType.Engineering)
+				.Category(RecipeCategoryType.ArmorEnhancement)
+				.Resref("aen_res_mnd4")
+				.Level(36)
+				.Quantity(1)
+				.RequirementPerk(PerkType.EnhancementBlueprints, 4)
+				.Component("ref_barinium", 4)
+				.Component("ref_keromber", 2)
+				.Component("elec_imperfect", 2)
+				;
+
+			// Armor Enhancement - Resistance - Mobility IV
+			_builder.Create(RecipeType.ArmorEnhancementResistanceMobility4, SkillType.Engineering)
+				.Category(RecipeCategoryType.ArmorEnhancement)
+				.Resref("aen_res_mob4")
+				.Level(37)
+				.Quantity(1)
+				.RequirementPerk(PerkType.EnhancementBlueprints, 4)
+				.Component("ref_barinium", 4)
+				.Component("ref_keromber", 2)
+				.Component("elec_imperfect", 2)
+				;
+
+			// Armor Enhancement - Resistance - Trauma IV
+			_builder.Create(RecipeType.ArmorEnhancementResistanceTrauma4, SkillType.Engineering)
+				.Category(RecipeCategoryType.ArmorEnhancement)
+				.Resref("aen_res_tra4")
+				.Level(38)
+				.Quantity(1)
+				.RequirementPerk(PerkType.EnhancementBlueprints, 4)
+				.Component("ref_barinium", 5)
+				.Component("ref_keromber", 3)
+				.Component("elec_imperfect", 2)
+				;
+
+			// Armor Enhancement - Resistance - Disruption IV
+			_builder.Create(RecipeType.ArmorEnhancementResistanceDisruption4, SkillType.Engineering)
+				.Category(RecipeCategoryType.ArmorEnhancement)
+				.Resref("aen_res_dis4")
+				.Level(39)
+				.Quantity(1)
+				.RequirementPerk(PerkType.EnhancementBlueprints, 4)
+				.Component("ref_barinium", 5)
+				.Component("ref_keromber", 3)
 				.Component("elec_imperfect", 2)
 				;
 
@@ -2706,7 +2898,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_high", 2)
 				;
 
-			// Armor Enhancement - Defense - Poison V
+			// Armor Enhancement - Resistance - Poison V
 			_builder.Create(RecipeType.ArmorEnhancementDefensePoison5, SkillType.Engineering)
 				.Category(RecipeCategoryType.ArmorEnhancement)
 				.Resref("aen_def_psn5")
@@ -2718,7 +2910,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_high", 2)
 				;
 
-			// Armor Enhancement - Defense - Fire V
+			// Armor Enhancement - Resistance - Fire V
 			_builder.Create(RecipeType.ArmorEnhancementDefenseFire5, SkillType.Engineering)
 				.Category(RecipeCategoryType.ArmorEnhancement)
 				.Resref("aen_def_fir5")
@@ -2730,7 +2922,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_high", 2)
 				;
 
-			// Armor Enhancement - Defense - Ice V
+			// Armor Enhancement - Resistance - Ice V
 			_builder.Create(RecipeType.ArmorEnhancementDefenseIce5, SkillType.Engineering)
 				.Category(RecipeCategoryType.ArmorEnhancement)
 				.Resref("aen_def_ice5")
@@ -2742,7 +2934,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_high", 2)
 				;
 
-			// Armor Enhancement - Defense - Electrical V
+			// Armor Enhancement - Resistance - Electrical V
 			_builder.Create(RecipeType.ArmorEnhancementDefenseElectrical5, SkillType.Engineering)
 				.Category(RecipeCategoryType.ArmorEnhancement)
 				.Resref("aen_def_elec5")
@@ -2751,6 +2943,54 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.RequirementPerk(PerkType.EnhancementBlueprints, 5)
 				.Component("ref_gostian", 3)
 				.Component("ref_jasioclase", 2)
+				.Component("elec_high", 2)
+				;
+
+			// Armor Enhancement - Resistance - Mind V
+			_builder.Create(RecipeType.ArmorEnhancementResistanceMind5, SkillType.Engineering)
+				.Category(RecipeCategoryType.ArmorEnhancement)
+				.Resref("aen_res_mnd5")
+				.Level(46)
+				.Quantity(1)
+				.RequirementPerk(PerkType.EnhancementBlueprints, 5)
+				.Component("ref_gostian", 4)
+				.Component("ref_jasioclase", 2)
+				.Component("elec_high", 2)
+				;
+
+			// Armor Enhancement - Resistance - Mobility V
+			_builder.Create(RecipeType.ArmorEnhancementResistanceMobility5, SkillType.Engineering)
+				.Category(RecipeCategoryType.ArmorEnhancement)
+				.Resref("aen_res_mob5")
+				.Level(47)
+				.Quantity(1)
+				.RequirementPerk(PerkType.EnhancementBlueprints, 5)
+				.Component("ref_gostian", 4)
+				.Component("ref_jasioclase", 2)
+				.Component("elec_high", 2)
+				;
+
+			// Armor Enhancement - Resistance - Trauma V
+			_builder.Create(RecipeType.ArmorEnhancementResistanceTrauma5, SkillType.Engineering)
+				.Category(RecipeCategoryType.ArmorEnhancement)
+				.Resref("aen_res_tra5")
+				.Level(48)
+				.Quantity(1)
+				.RequirementPerk(PerkType.EnhancementBlueprints, 5)
+				.Component("ref_gostian", 5)
+				.Component("ref_jasioclase", 3)
+				.Component("elec_high", 2)
+				;
+
+			// Armor Enhancement - Resistance - Disruption V
+			_builder.Create(RecipeType.ArmorEnhancementResistanceDisruption5, SkillType.Engineering)
+				.Category(RecipeCategoryType.ArmorEnhancement)
+				.Resref("aen_res_dis5")
+				.Level(49)
+				.Quantity(1)
+				.RequirementPerk(PerkType.EnhancementBlueprints, 5)
+				.Component("ref_gostian", 5)
+				.Component("ref_jasioclase", 3)
 				.Component("elec_high", 2)
 				;
 
@@ -3215,3 +3455,4 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 	}
 }
+

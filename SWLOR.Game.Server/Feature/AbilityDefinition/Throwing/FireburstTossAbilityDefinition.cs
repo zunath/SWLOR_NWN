@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.Engine;
@@ -38,7 +39,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
             switch (level)
             {
                 case 1:
-                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Throwing, 20, 12, 15, SavingThrow.Fortitude, typeof(ExposedStatusEffect), CombatImpactAreaShape.Sphere, 0.25f, 5f);
+                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Throwing, 20, 12, typeof(ExposedStatusEffect), CombatImpactAreaShape.Sphere, 0.25f, 5f, damageType: CombatDamageType.Fire);
                     break;
             }
         }

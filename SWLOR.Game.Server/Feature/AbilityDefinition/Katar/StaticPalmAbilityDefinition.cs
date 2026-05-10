@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.Engine;
@@ -68,13 +69,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
             switch (level)
             {
                 case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Katar, 8, 8, 12, SavingThrow.Reflex, typeof(DisorientedStatusEffect), false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Katar, 8, 8, typeof(DisorientedStatusEffect), false, damageType: CombatDamageType.Electrical);
                     break;
                 case 2:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Katar, 18, 12, 15, SavingThrow.Reflex, typeof(DisorientedStatusEffect), false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Katar, 18, 12, typeof(DisorientedStatusEffect), false, damageType: CombatDamageType.Electrical);
                     break;
                 case 3:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Katar, 28, 15, 18, SavingThrow.Reflex, typeof(DisorientedStatusEffect), false, new[] { typeof(DazedStatusEffect) });
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Katar, 28, 15, typeof(DisorientedStatusEffect), false, new[] { typeof(DazedStatusEffect) }, damageType: CombatDamageType.Electrical);
                     break;
             }
         }

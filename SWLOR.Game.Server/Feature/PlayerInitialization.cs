@@ -30,12 +30,14 @@ namespace SWLOR.Game.Server.Feature
             // Already been initialized. Don't do it again.
             if (dbPlayer.Version >= 1 || dbPlayer.Version == -1) // Note: -1 signifies legacy characters. The Migration service handles upgrading legacy characters.
             {
+                InitializeSavingThrows(player);
                 ExecuteScript(ScriptName.OnCharacterInitAfter, OBJECT_SELF);
                 return;
             }
 
             ClearInventory(player);
             AutoLevelPlayer(player);
+            InitializeSavingThrows(player);
             InitializeSkills(player);
             RemoveNWNSpells(player);
             ClearFeats(player);
@@ -43,7 +45,6 @@ namespace SWLOR.Game.Server.Feature
             InitializeHotBar(player);
             AdjustStats(player, dbPlayer);
             AdjustAlignment(player);
-            InitializeSavingThrows(player);
             InitializeLanguages(player, dbPlayer);
             AssignRacialAppearance(player, dbPlayer);
             GiveStartingItems(player);
@@ -84,6 +85,17 @@ namespace SWLOR.Game.Server.Feature
         }
 
         /// <summary>
+        /// Keeps native NWN saving throw values neutral. SWLOR handles status resistance separately.
+        /// </summary>
+        /// <param name="player">The player to modify.</param>
+        public static void InitializeSavingThrows(uint player)
+        {
+            CreaturePlugin.SetBaseSavingThrow(player, SavingThrow.Fortitude, 0);
+            CreaturePlugin.SetBaseSavingThrow(player, SavingThrow.Reflex, 0);
+            CreaturePlugin.SetBaseSavingThrow(player, SavingThrow.Will, 0);
+        }
+
+        /// <summary>
         /// Wipes a player's equipped items and inventory.
         /// </summary>
         /// <param name="player">The player to wipe an inventory for.</param>
@@ -118,17 +130,6 @@ namespace SWLOR.Game.Server.Feature
                 var skill = (NWNSkillType) (iCurSkill - 1);
                 CreaturePlugin.SetSkillRank(player, skill, 0);
             }
-        }
-
-        /// <summary>
-        /// Initializes all player saving throws to zero.
-        /// </summary>
-        /// <param name="player">The player to modify</param>
-        public static void InitializeSavingThrows(uint player)
-        {
-            CreaturePlugin.SetBaseSavingThrow(player, SavingThrow.Fortitude, 0);
-            CreaturePlugin.SetBaseSavingThrow(player, SavingThrow.Will, 0);
-            CreaturePlugin.SetBaseSavingThrow(player, SavingThrow.Reflex, 0);
         }
 
         /// <summary>

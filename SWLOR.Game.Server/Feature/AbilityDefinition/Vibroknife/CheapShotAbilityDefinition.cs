@@ -55,10 +55,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
             switch (level)
             {
                 case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Vibroknife, 8, 6, 10, SavingThrow.Fortitude, typeof(BlindStatusEffect), false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Vibroknife, 8, 6, typeof(BlindStatusEffect), false);
                     break;
                 case 2:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Vibroknife, 16, 9, 14, SavingThrow.Fortitude, typeof(BlindStatusEffect), false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Vibroknife, 16, 9, typeof(BlindStatusEffect), false);
                     break;
             }
         }

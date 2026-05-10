@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service.StatusEffectService
@@ -21,6 +22,8 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
         public virtual bool SendsApplicationMessage => true;
         public virtual bool SendsWornOffMessage => true;
         public virtual StatusEffectCleanseType CleanseTypes => StatusEffectCleanseType.None;
+        public virtual ResistanceType ResistanceType => ResistanceType.Invalid;
+        public ResistanceType AppliedResistanceType { get; private set; }
         public virtual float Frequency => 1f;
         public int DurationTicks => _durationTicks;
         public virtual bool PersistsOnLogout => true;
@@ -35,6 +38,7 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
             StatGroup = new StatGroup();
             MorePowerfulEffectTypes = new List<Type>();
             LessPowerfulEffectTypes = new List<Type>();
+            AppliedResistanceType = ResistanceType.Invalid;
         }
 
         public virtual string CanApply(uint creature) { return string.Empty; }
@@ -50,6 +54,11 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
         }
 
         protected virtual void Apply(uint creature, int durationTicks) { }
+        public void AssignResistanceType(ResistanceType type)
+        {
+            AppliedResistanceType = type;
+        }
+
         public void ApplyEffect(uint source, uint creature, int durationTicks)
         {
             if (durationTicks < 0)

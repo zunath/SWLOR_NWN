@@ -122,22 +122,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                         EvasionPurity = Random.Next(0, 10),
                         LearningPurity = Random.Next(0, 10),
 
-                        DefensePurities = new Dictionary<CombatDamageType, int>
-                        {
-                            { CombatDamageType.Physical, Random.Next(0, 10) },
-                            { CombatDamageType.Force, Random.Next(0, 10) },
-                            { CombatDamageType.Fire, Random.Next(0, 10) },
-                            { CombatDamageType.Ice, Random.Next(0, 10) },
-                            { CombatDamageType.Poison, Random.Next(0, 10) },
-                            { CombatDamageType.Electrical, Random.Next(0, 10) },
-                        },
-
-                        SavingThrowPurities = new Dictionary<SavingThrow, int>
-                        {
-                            { SavingThrow.Fortitude, Random.Next(0, 10)},
-                            { SavingThrow.Will, Random.Next(0, 10)},
-                            { SavingThrow.Reflex, Random.Next(0, 10)},
-                        }
+                        DefensePurities = BeastResistanceCalculator.CreateRandomDefensePurities(),
+                        ResistancePurities = BeastResistanceCalculator.CreateRandomResistancePurities()
                     };
 
                     DB.Set(dbBeast);

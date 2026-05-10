@@ -23,9 +23,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             return _builder.Build();
         }
 
-        private void Impact(uint activator, Location targetLocation, int dmg, int dc)
+        private void Impact(uint activator, Location targetLocation, int dmg, bool appliesBurn)
         {
-            var baseDC = dc;
             const float ConeSize = 10f;
 
             AssignCommand(activator, () =>
@@ -43,7 +42,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             {
                 if (target != activator)
                 {
-                    var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+                    var damageType = CombatDamageType.Fire;
+                    var defense = Stat.GetDefense(target, damageType, AbilityType.Vitality);
                     var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
                     var damage = Combat.CalculateDamage(
                         attack,
@@ -52,6 +52,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                         defense,
                         defenderStat,
                         0);
+                    damage = Resistance.ApplyResistanceToDamage(target, damageType, damage);
 
                     var eDMG = EffectDamage(damage, DamageType.Fire);
                     Enmity.ModifyEnmity(activator, target, 280);
@@ -64,11 +65,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                         ApplyEffectToObject(DurationType.Instant, eDMG, targetCopy);
                         ApplyEffectToObject(DurationType.Instant, eVFX, targetCopy);
 
-                        dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Reflex, baseDC);
-                        var checkResult = ReflexSave(targetCopy, dc, SavingThrowType.None, activator);
-                        if (checkResult == SavingThrowResultType.Failed)
+                        if (appliesBurn)
                         {
-                            StatusEffect.ApplyStatusEffect(activator, targetCopy, typeof(BurnStatusEffect), 30f);
+                            StatusEffect.ApplyStatusEffect(activator, targetCopy, typeof(BurnStatusEffect), 30f, damageType);
                         }
                     });
                 }
@@ -90,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {
                     var perBonus = GetAbilityScore(activator, AbilityType.Perception);
-                    Impact(activator, targetLocation, perBonus, -1);
+                    Impact(activator, targetLocation, perBonus, false);
                 });
         }
 
@@ -108,7 +107,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 {
                     var perBonus = GetAbilityScore(activator, AbilityType.Perception);
                     int perDMG = 20 + (perBonus * 3 / 2);
-                    Impact(activator, targetLocation, perDMG, 8);
+                    Impact(activator, targetLocation, perDMG, true);
                 });
         }
 
@@ -126,7 +125,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 {
                     var perBonus = GetAbilityScore(activator, AbilityType.Perception);
                     var perDMG = 40 + (perBonus * 2);
-                    Impact(activator, targetLocation, perDMG, 12);
+                    Impact(activator, targetLocation, perDMG, true);
                 });
         }
     }

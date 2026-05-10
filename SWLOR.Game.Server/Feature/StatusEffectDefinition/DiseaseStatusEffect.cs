@@ -1,5 +1,6 @@
-using SWLOR.Game.Server.Service.StatusEffectService;
+﻿using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
@@ -11,6 +12,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override string Name => "Disease";
         public override EffectIconType Icon => EffectIconType.Disease;
         public override StatusEffectCategory Categories => StatusEffectCategory.Debuff;
+        public override ResistanceType ResistanceType => ResistanceType.Poison;
         public override StatusEffectCleanseType CleanseTypes =>
             StatusEffectCleanseType.Purify |
             StatusEffectCleanseType.TreatmentKit2 |
@@ -35,7 +37,9 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         protected override void Tick(uint creature)
         {
             var perception = GetAbilityModifier(AbilityType.Perception, Source);
-            ApplyEffectToObject(DurationType.Instant, EffectDamage(d2() + perception * _level), creature);
+            var damage = d2() + perception * _level;
+            damage = Resistance.ApplyResistanceToDamage(creature, ResistanceType, damage);
+            ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, CombatDamageType.Poison.GetNWScriptDamageType()), creature);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Disease_S), creature);
             StatusEffect.ApplyStatusEffect(Source, creature, typeof(DiseaseVitalityPenaltyStatusEffect), 6f);
         }

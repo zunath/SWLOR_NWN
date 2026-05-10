@@ -12,9 +12,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
         {
             var builder = new AbilityBuilder();
 
-            ConfigureWeapon(builder.Create(FeatType.HackingBlade1, PerkType.HackingBlade).Name("Hacking Blade I").Level(1), SkillType.Vibroblade, 8, 30, 10, SavingThrow.Fortitude, typeof(BleedStatusEffect), 4);
-            ConfigureWeapon(builder.Create(FeatType.HackingBlade2, PerkType.HackingBlade).Name("Hacking Blade II").Level(2), SkillType.Vibroblade, 18, 60, 15, SavingThrow.Fortitude, typeof(BleedStatusEffect), 6);
-            ConfigureWeapon(builder.Create(FeatType.HackingBlade3, PerkType.HackingBlade).Name("Hacking Blade III").Level(3), SkillType.Vibroblade, 28, 60, 20, SavingThrow.Fortitude, typeof(BleedStatusEffect), 8);
+            ConfigureWeapon(builder.Create(FeatType.HackingBlade1, PerkType.HackingBlade).Name("Hacking Blade I").Level(1), SkillType.Vibroblade, 8, 30, typeof(BleedStatusEffect), 4);
+            ConfigureWeapon(builder.Create(FeatType.HackingBlade2, PerkType.HackingBlade).Name("Hacking Blade II").Level(2), SkillType.Vibroblade, 18, 60, typeof(BleedStatusEffect), 6);
+            ConfigureWeapon(builder.Create(FeatType.HackingBlade3, PerkType.HackingBlade).Name("Hacking Blade III").Level(3), SkillType.Vibroblade, 28, 60, typeof(BleedStatusEffect), 8);
 
             return builder.Build();
         }

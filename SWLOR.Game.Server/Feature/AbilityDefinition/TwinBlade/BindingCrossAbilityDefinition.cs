@@ -55,10 +55,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
             switch (level)
             {
                 case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.TwinBlade, 10, 12, 14, SavingThrow.Reflex, typeof(HamstringStatusEffect), false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.TwinBlade, 10, 12, typeof(HamstringStatusEffect), false);
                     break;
                 case 2:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.TwinBlade, 18, 20, 18, SavingThrow.Reflex, typeof(HamstringStatusEffect), false, additionalStatusEffects: new[] { typeof(ExposedStatusEffect) });
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.TwinBlade, 18, 20, typeof(HamstringStatusEffect), false, additionalStatusEffects: new[] { typeof(ExposedStatusEffect) });
                     break;
             }
         }

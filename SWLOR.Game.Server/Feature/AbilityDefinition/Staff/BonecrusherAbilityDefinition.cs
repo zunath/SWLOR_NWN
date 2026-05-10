@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
             switch (level)
             {
                 case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Staff, 50, 3, 18, SavingThrow.Fortitude, typeof(StunnedStatusEffect), false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Staff, 50, 3, typeof(StunnedStatusEffect), false);
                     break;
             }
         }

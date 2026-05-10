@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -51,17 +52,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                             count++;
 
                             var social = GetAbilityScore(activator, AbilityType.Social);
-                            var dc = 12 + (social / 2);
                             const float BaseDuration = 2f;
                             var bonusDuration = GetAbilityModifier(AbilityType.Social, activator) * 0.5f;
                             var duration = BaseDuration + bonusDuration;
 
-                            var checkResult = WillSave(nearest, dc, SavingThrowType.None, activator);
-                            if (checkResult == SavingThrowResultType.Failed)
-                            {
-                                StatusEffect.ApplyStatusEffect(activator, nearest, typeof(StunnedStatusEffect), duration);
-                                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Sonic), nearest);
-                            }
+                            StatusEffect.ApplyStatusEffect(activator, nearest, typeof(StunnedStatusEffect), duration, CombatDamageType.Physical);
+                            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Sonic), nearest);
 
                             CombatPoint.AddCombatPoint(activator, nearest, SkillType.Leadership, 3);
                             Enmity.ModifyEnmity(activator, nearest, 650);

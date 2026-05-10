@@ -12,9 +12,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
         {
             var builder = new AbilityBuilder();
 
-            ConfigureWeapon(builder.Create(FeatType.DisablingStrike1, PerkType.DisablingStrike).Name("Disabling Strike I").Level(1), SkillType.Spear, 12, 8, 12, SavingThrow.Will, typeof(ForceDisruptionStatusEffect), 4);
-            ConfigureWeapon(builder.Create(FeatType.DisablingStrike2, PerkType.DisablingStrike).Name("Disabling Strike II").Level(2), SkillType.Spear, 18, 8, 16, SavingThrow.Will, typeof(ForceDisruptionStatusEffect), 5);
-            ConfigureWeapon(builder.Create(FeatType.DisablingStrike3, PerkType.DisablingStrike).Name("Disabling Strike III").Level(3), SkillType.Spear, 26, 8, 20, SavingThrow.Will, typeof(ForceDisruptionStatusEffect), 6);
+            ConfigureWeapon(builder.Create(FeatType.DisablingStrike1, PerkType.DisablingStrike).Name("Disabling Strike I").Level(1), SkillType.Spear, 12, 8, typeof(ForceDisruptionStatusEffect), 4);
+            ConfigureWeapon(builder.Create(FeatType.DisablingStrike2, PerkType.DisablingStrike).Name("Disabling Strike II").Level(2), SkillType.Spear, 18, 8, typeof(ForceDisruptionStatusEffect), 5);
+            ConfigureWeapon(builder.Create(FeatType.DisablingStrike3, PerkType.DisablingStrike).Name("Disabling Strike III").Level(3), SkillType.Spear, 26, 8, typeof(ForceDisruptionStatusEffect), 6);
 
             return builder.Build();
         }

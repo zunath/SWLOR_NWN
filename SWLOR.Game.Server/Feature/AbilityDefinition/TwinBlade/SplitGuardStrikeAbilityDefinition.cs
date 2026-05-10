@@ -71,13 +71,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
             switch (level)
             {
                 case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.TwinBlade, 10, 10, 0, SavingThrow.Will, null, false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.TwinBlade, 10, 10, null, false);
                     break;
                 case 2:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.TwinBlade, 22, 10, 0, SavingThrow.Will, null, false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.TwinBlade, 22, 10, null, false);
                     break;
                 case 3:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.TwinBlade, 34, 10, 0, SavingThrow.Will, null, false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.TwinBlade, 34, 10, null, false);
                     break;
             }
         }

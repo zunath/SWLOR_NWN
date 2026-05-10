@@ -149,16 +149,28 @@ namespace SWLOR.Game.Server.Service
             if (NameIs(name, "ShockStatusEffect"))
                 return VisualEffect.Vfx_Imp_Head_Electricity;
 
-            if (NameIs(name, "SunderStatusEffect", "WeakenedStatusEffect", "ExposedStatusEffect", "HemorrhageStatusEffect"))
+            if (NameIs(name,
+                    "SunderStatusEffect",
+                    "WeakenedStatusEffect",
+                    "ExposedStatusEffect",
+                    "HemorrhageStatusEffect",
+                    "BreachStatusEffect",
+                    "CrushingBlowStatusEffect",
+                    "FlankingBarrageStatusEffect"))
                 return VisualEffect.Vfx_Imp_Reduce_Ability_Score;
 
-            if (NameIs(name, "VitalStrikeStatusEffect", "MarkedForDeathStatusEffect", "DuelistsChallengeStatusEffect"))
+            if (NameIs(name,
+                    "VitalStrikeStatusEffect",
+                    "MarkedForDeathStatusEffect",
+                    "DuelistsChallengeStatusEffect",
+                    "ExposeWeakPointStatusEffect",
+                    "MarkingTossStatusEffect"))
                 return VisualEffect.Vfx_Imp_Harm;
 
-            if (NameIs(name, "HamstringStatusEffect", "HobbleStatusEffect", "ExhaustedStatusEffect", "ImmobilizedStatusEffect"))
+            if (NameIs(name, "HamstringStatusEffect", "HobbleStatusEffect", "ExhaustedStatusEffect", "ImmobilizedStatusEffect", "ShadowStrikeStatusEffect"))
                 return VisualEffect.Vfx_Imp_Slow;
 
-            if (NameIs(name, "ForceDisruptionStatusEffect", "ForceErosionStatusEffect", "FracturedFocusStatusEffect"))
+            if (NameIs(name, "ForceDisruptionStatusEffect", "ForceErosionStatusEffect", "FracturedFocusStatusEffect", "ForceSuppressionStatusEffect"))
                 return VisualEffect.Vfx_Imp_Head_Mind;
 
             if (NameIs(name, "EssenceDrainStatusEffect", "LifeSiphonStatusEffect"))
@@ -200,13 +212,25 @@ namespace SWLOR.Game.Server.Service
             if (NameIs(name, "BurnStatusEffect"))
                 return VisualEffect.Vfx_Fnf_Gas_Explosion_Fire;
 
-            if (NameIs(name, "ForceDisruptionStatusEffect", "ForceErosionStatusEffect", "FracturedFocusStatusEffect", "ForcebaneStatusEffect", "DisruptionFieldStatusEffect"))
+            if (NameIs(name, "ForceDisruptionStatusEffect", "ForceErosionStatusEffect", "FracturedFocusStatusEffect", "ForcebaneStatusEffect", "DisruptionFieldStatusEffect", "ForceSuppressionStatusEffect"))
                 return VisualEffect.Vfx_Fnf_Mass_Mind_Affecting;
 
             if (NameIs(name, "KnockdownStatusEffect"))
                 return VisualEffect.Vfx_Imp_Dust_Explosion;
 
-            if (NameIs(name, "ExposedStatusEffect", "SunderStatusEffect", "WeakenedStatusEffect", "HemorrhageStatusEffect", "HamstringStatusEffect", "HobbleStatusEffect"))
+            if (NameIs(name,
+                    "ExposedStatusEffect",
+                    "SunderStatusEffect",
+                    "WeakenedStatusEffect",
+                    "HemorrhageStatusEffect",
+                    "HamstringStatusEffect",
+                    "HobbleStatusEffect",
+                    "BreachStatusEffect",
+                    "CrushingBlowStatusEffect",
+                    "FlankingBarrageStatusEffect",
+                    "ShadowStrikeStatusEffect",
+                    "ExposeWeakPointStatusEffect",
+                    "MarkingTossStatusEffect"))
                 return VisualEffect.Vfx_Fnf_Swinging_Blade;
 
             return VisualEffect.None;

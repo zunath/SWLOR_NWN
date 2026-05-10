@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
             switch (level)
             {
                 case 1:
-                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Vibroblade, 20, 0, 0, SavingThrow.Will, null, CombatImpactAreaShape.Line, 0.25f, 8f, 2.5f);
+                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Vibroblade, 20, 0, null, CombatImpactAreaShape.Line, 0.25f, 8f, 2.5f);
                     break;
             }
         }

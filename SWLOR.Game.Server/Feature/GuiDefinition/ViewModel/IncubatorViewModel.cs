@@ -48,13 +48,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private int _learning;
         private int _physicalDefense;
         private int _forceDefense;
-        private int _fireDefense;
-        private int _poisonDefense;
-        private int _electricalDefense;
-        private int _iceDefense;
-        private int _fortitude;
-        private int _reflex;
-        private int _will;
+        private int _fireResistance;
+        private int _poisonResistance;
+        private int _electricalResistance;
+        private int _iceResistance;
+        private int _mindResistance;
+        private int _mobilityResistance;
+        private int _traumaResistance;
+        private int _disruptionResistance;
         private int _xpPenalty;
         private int _mutationChance;
 
@@ -64,13 +65,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private int _stageLearning;
         private int _stagePhysicalDefense;
         private int _stageForceDefense;
-        private int _stageFireDefense;
-        private int _stagePoisonDefense;
-        private int _stageElectricalDefense;
-        private int _stageIceDefense;
-        private int _stageFortitude;
-        private int _stageReflex;
-        private int _stageWill;
+        private int _stageFireResistance;
+        private int _stagePoisonResistance;
+        private int _stageElectricalResistance;
+        private int _stageIceResistance;
+        private int _stageMindResistance;
+        private int _stageMobilityResistance;
+        private int _stageTraumaResistance;
+        private int _stageDisruptionResistance;
         private int _stageXPPenalty;
         private int _stageMutationChance;
 
@@ -179,37 +181,42 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             get => Get<string>();
             set => Set(value);
         }
-        public string FireDefensePurity
+        public string FireResistancePurity
         {
             get => Get<string>();
             set => Set(value);
         }
-        public string PoisonDefensePurity
+        public string PoisonResistancePurity
         {
             get => Get<string>();
             set => Set(value);
         }
-        public string ElectricalDefensePurity
+        public string ElectricalResistancePurity
         {
             get => Get<string>();
             set => Set(value);
         }
-        public string IceDefensePurity
+        public string IceResistancePurity
         {
             get => Get<string>();
             set => Set(value);
         }
-        public string FortitudePurity
+        public string MindResistancePurity
         {
             get => Get<string>();
             set => Set(value);
         }
-        public string ReflexPurity
+        public string MobilityResistancePurity
         {
             get => Get<string>();
             set => Set(value);
         }
-        public string WillPurity
+        public string TraumaResistancePurity
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+        public string DisruptionResistancePurity
         {
             get => Get<string>();
             set => Set(value);
@@ -266,14 +273,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 _physicalDefense = dbJob.DefensePurities[CombatDamageType.Physical];
                 _forceDefense = dbJob.DefensePurities[CombatDamageType.Force];
-                _iceDefense = dbJob.DefensePurities[CombatDamageType.Ice];
-                _fireDefense = dbJob.DefensePurities[CombatDamageType.Fire];
-                _poisonDefense = dbJob.DefensePurities[CombatDamageType.Poison];
-                _electricalDefense = dbJob.DefensePurities[CombatDamageType.Electrical];
+                _iceResistance = dbJob.ResistancePurities[ResistanceType.Ice];
+                _fireResistance = dbJob.ResistancePurities[ResistanceType.Fire];
+                _poisonResistance = dbJob.ResistancePurities[ResistanceType.Poison];
+                _electricalResistance = dbJob.ResistancePurities[ResistanceType.Electrical];
 
-                _fortitude = dbJob.SavingThrowPurities[SavingThrow.Fortitude];
-                _reflex = dbJob.SavingThrowPurities[SavingThrow.Reflex];
-                _will = dbJob.SavingThrowPurities[SavingThrow.Will];
+                _mindResistance = dbJob.ResistancePurities[ResistanceType.Mind];
+                _mobilityResistance = dbJob.ResistancePurities[ResistanceType.Mobility];
+                _traumaResistance = dbJob.ResistancePurities[ResistanceType.Trauma];
+                _disruptionResistance = dbJob.ResistancePurities[ResistanceType.Disruption];
 
                 if (now >= dbJob.DateCompleted)
                 {
@@ -422,13 +430,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             LearningPurity = FormatStat(_learning, _stageLearning, 0);
             PhysicalDefensePurity = FormatStat(_physicalDefense, _stagePhysicalDefense, 0);
             ForceDefensePurity = FormatStat(_forceDefense, _stageForceDefense, 0);
-            FireDefensePurity = FormatStat(_fireDefense, _stageFireDefense, 0);
-            PoisonDefensePurity = FormatStat(_poisonDefense, _stagePoisonDefense, 0);
-            ElectricalDefensePurity = FormatStat(_electricalDefense, _stageElectricalDefense, 0);
-            IceDefensePurity = FormatStat(_iceDefense, _stageIceDefense, 0);
-            FortitudePurity = FormatStat(_fortitude, _stageFortitude, 0);
-            ReflexPurity = FormatStat(_reflex, _stageReflex, 0);
-            WillPurity = FormatStat(_will, _stageWill, 0);
+            FireResistancePurity = FormatStat(_fireResistance, _stageFireResistance, 0);
+            PoisonResistancePurity = FormatStat(_poisonResistance, _stagePoisonResistance, 0);
+            ElectricalResistancePurity = FormatStat(_electricalResistance, _stageElectricalResistance, 0);
+            IceResistancePurity = FormatStat(_iceResistance, _stageIceResistance, 0);
+            MindResistancePurity = FormatStat(_mindResistance, _stageMindResistance, 0);
+            MobilityResistancePurity = FormatStat(_mobilityResistance, _stageMobilityResistance, 0);
+            TraumaResistancePurity = FormatStat(_traumaResistance, _stageTraumaResistance, 0);
+            DisruptionResistancePurity = FormatStat(_disruptionResistance, _stageDisruptionResistance, 0);
             XPPenalty = FormatStat(_xpPenalty, _stageXPPenalty, 0);
             MutationChance = FormatStat(_mutationChance, _stageMutationChance, mutationBonus);
         }
@@ -510,13 +519,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _learning = 0;
             _physicalDefense = 0;
             _forceDefense = 0;
-            _fireDefense = 0;
-            _poisonDefense = 0;
-            _electricalDefense = 0;
-            _iceDefense = 0;
-            _fortitude = 0;
-            _reflex = 0;
-            _will = 0;
+            _fireResistance = 0;
+            _poisonResistance = 0;
+            _electricalResistance = 0;
+            _iceResistance = 0;
+            _mindResistance = 0;
+            _mobilityResistance = 0;
+            _traumaResistance = 0;
+            _disruptionResistance = 0;
             _xpPenalty = 0;
 
             _stageMutationChance = 0;
@@ -526,13 +536,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _stageLearning = 0;
             _stagePhysicalDefense = 0;
             _stageForceDefense = 0;
-            _stageFireDefense = 0;
-            _stagePoisonDefense = 0;
-            _stageElectricalDefense = 0;
-            _stageIceDefense = 0;
-            _stageFortitude = 0;
-            _stageReflex = 0;
-            _stageWill = 0;
+            _stageFireResistance = 0;
+            _stagePoisonResistance = 0;
+            _stageElectricalResistance = 0;
+            _stageIceResistance = 0;
+            _stageMindResistance = 0;
+            _stageMobilityResistance = 0;
+            _stageTraumaResistance = 0;
+            _stageDisruptionResistance = 0;
             _stageXPPenalty = 0;
         }
 
@@ -596,28 +607,31 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                                     _physicalDefense = costId;
                                     break;
                                 case IncubationStatType.ForceDefensePurity:
-                                    _forceDefense = costId;
+                                _forceDefense = costId;
+                                break;
+                            case IncubationStatType.FireResistancePurity:
+                                _fireResistance = costId;
+                                break;
+                            case IncubationStatType.PoisonResistancePurity:
+                                _poisonResistance = costId;
+                                break;
+                            case IncubationStatType.ElectricalResistancePurity:
+                                _electricalResistance = costId;
+                                break;
+                            case IncubationStatType.IceResistancePurity:
+                                _iceResistance = costId;
+                                break;
+                                case IncubationStatType.TraumaResistancePurity:
+                                    _traumaResistance = costId;
                                     break;
-                                case IncubationStatType.FireDefensePurity:
-                                    _fireDefense = costId;
+                                case IncubationStatType.MobilityResistancePurity:
+                                    _mobilityResistance = costId;
                                     break;
-                                case IncubationStatType.PoisonDefensePurity:
-                                    _poisonDefense = costId;
+                                case IncubationStatType.MindResistancePurity:
+                                    _mindResistance = costId;
                                     break;
-                                case IncubationStatType.ElectricalDefensePurity:
-                                    _electricalDefense = costId;
-                                    break;
-                                case IncubationStatType.IceDefensePurity:
-                                    _iceDefense = costId;
-                                    break;
-                                case IncubationStatType.FortitudePurity:
-                                    _fortitude = costId;
-                                    break;
-                                case IncubationStatType.ReflexPurity:
-                                    _reflex = costId;
-                                    break;
-                                case IncubationStatType.WillPurity:
-                                    _will = costId;
+                                case IncubationStatType.DisruptionResistancePurity:
+                                    _disruptionResistance = costId;
                                     break;
                                 case IncubationStatType.XPPenalty:
                                     _xpPenalty = costId;
@@ -674,26 +688,29 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         case IncubationStatType.ForceDefensePurity:
                             _stageForceDefense += costId;
                             break;
-                        case IncubationStatType.FireDefensePurity:
-                            _stageFireDefense += costId;
+                        case IncubationStatType.FireResistancePurity:
+                            _stageFireResistance += costId;
                             break;
-                        case IncubationStatType.PoisonDefensePurity:
-                            _stagePoisonDefense += costId;
+                        case IncubationStatType.PoisonResistancePurity:
+                            _stagePoisonResistance += costId;
                             break;
-                        case IncubationStatType.ElectricalDefensePurity:
-                            _stageElectricalDefense += costId;
+                        case IncubationStatType.ElectricalResistancePurity:
+                            _stageElectricalResistance += costId;
                             break;
-                        case IncubationStatType.IceDefensePurity:
-                            _stageIceDefense += costId;
+                        case IncubationStatType.IceResistancePurity:
+                            _stageIceResistance += costId;
                             break;
-                        case IncubationStatType.FortitudePurity:
-                            _stageFortitude += costId;
+                        case IncubationStatType.TraumaResistancePurity:
+                            _stageTraumaResistance += costId;
                             break;
-                        case IncubationStatType.ReflexPurity:
-                            _stageReflex += costId;
+                        case IncubationStatType.MobilityResistancePurity:
+                            _stageMobilityResistance += costId;
                             break;
-                        case IncubationStatType.WillPurity:
-                            _stageWill += costId;
+                        case IncubationStatType.MindResistancePurity:
+                            _stageMindResistance += costId;
+                            break;
+                        case IncubationStatType.DisruptionResistancePurity:
+                            _stageDisruptionResistance += costId;
                             break;
                         case IncubationStatType.XPPenalty:
                             _stageXPPenalty += costId;
@@ -743,26 +760,29 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     case IncubationStatType.ForceDefensePurity:
                         _stageForceDefense -= costId;
                         break;
-                    case IncubationStatType.FireDefensePurity:
-                        _stageFireDefense -= costId;
+                    case IncubationStatType.FireResistancePurity:
+                        _stageFireResistance -= costId;
                         break;
-                    case IncubationStatType.PoisonDefensePurity:
-                        _stagePoisonDefense -= costId;
+                    case IncubationStatType.PoisonResistancePurity:
+                        _stagePoisonResistance -= costId;
                         break;
-                    case IncubationStatType.ElectricalDefensePurity:
-                        _stageElectricalDefense -= costId;
+                    case IncubationStatType.ElectricalResistancePurity:
+                        _stageElectricalResistance -= costId;
                         break;
-                    case IncubationStatType.IceDefensePurity:
-                        _stageIceDefense -= costId;
+                    case IncubationStatType.IceResistancePurity:
+                        _stageIceResistance -= costId;
                         break;
-                    case IncubationStatType.FortitudePurity:
-                        _stageFortitude -= costId;
+                    case IncubationStatType.TraumaResistancePurity:
+                        _stageTraumaResistance -= costId;
                         break;
-                    case IncubationStatType.ReflexPurity:
-                        _stageReflex -= costId;
+                    case IncubationStatType.MobilityResistancePurity:
+                        _stageMobilityResistance -= costId;
                         break;
-                    case IncubationStatType.WillPurity:
-                        _stageWill -= costId;
+                    case IncubationStatType.MindResistancePurity:
+                        _stageMindResistance -= costId;
+                        break;
+                    case IncubationStatType.DisruptionResistancePurity:
+                        _stageDisruptionResistance -= costId;
                         break;
                     case IncubationStatType.XPPenalty:
                         _stageXPPenalty -= costId;
@@ -968,14 +988,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var physicalDefense = _physicalDefense + (_stagePhysicalDefense > MaxStageIncrease ? MaxStageIncrease : _stagePhysicalDefense);
             var forceDefense = _forceDefense + (_stageForceDefense > MaxStageIncrease ? MaxStageIncrease : _stageForceDefense);
-            var iceDefense = _iceDefense + (_stageIceDefense > MaxStageIncrease ? MaxStageIncrease : _stageIceDefense);
-            var fireDefense = _fireDefense + (_stageFireDefense > MaxStageIncrease ? MaxStageIncrease : _stageFireDefense);
-            var poisonDefense = _poisonDefense + (_stagePoisonDefense > MaxStageIncrease ? MaxStageIncrease : _stagePoisonDefense);
-            var electricalDefense = _electricalDefense + (_stageElectricalDefense > MaxStageIncrease ? MaxStageIncrease : _stageElectricalDefense);
+            var iceResistance = _iceResistance + (_stageIceResistance > MaxStageIncrease ? MaxStageIncrease : _stageIceResistance);
+            var fireResistance = _fireResistance + (_stageFireResistance > MaxStageIncrease ? MaxStageIncrease : _stageFireResistance);
+            var poisonResistance = _poisonResistance + (_stagePoisonResistance > MaxStageIncrease ? MaxStageIncrease : _stagePoisonResistance);
+            var electricalResistance = _electricalResistance + (_stageElectricalResistance > MaxStageIncrease ? MaxStageIncrease : _stageElectricalResistance);
 
-            var fortitudePurity = _fortitude + (_stageFortitude > MaxStageIncrease ? MaxStageIncrease : _stageFortitude);
-            var reflexPurity = _reflex + (_stageReflex > MaxStageIncrease ? MaxStageIncrease : _stageReflex);
-            var willPurity = _will + (_stageWill > MaxStageIncrease ? MaxStageIncrease : _stageWill);
+            var mindResistance = _mindResistance + (_stageMindResistance > MaxStageIncrease ? MaxStageIncrease : _stageMindResistance);
+            var mobilityResistance = _mobilityResistance + (_stageMobilityResistance > MaxStageIncrease ? MaxStageIncrease : _stageMobilityResistance);
+            var traumaResistance = _traumaResistance + (_stageTraumaResistance > MaxStageIncrease ? MaxStageIncrease : _stageTraumaResistance);
+            var disruptionResistance = _disruptionResistance + (_stageDisruptionResistance > MaxStageIncrease ? MaxStageIncrease : _stageDisruptionResistance);
 
             var validationError = ValidateCreateJob();
             if (string.IsNullOrWhiteSpace(validationError))
@@ -991,14 +1012,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 job.DefensePurities[CombatDamageType.Physical] = physicalDefense > MaxStat ? MaxStat : physicalDefense;
                 job.DefensePurities[CombatDamageType.Force] = forceDefense > MaxStat ? MaxStat : forceDefense;
-                job.DefensePurities[CombatDamageType.Ice] = iceDefense > MaxStat ? MaxStat : iceDefense;
-                job.DefensePurities[CombatDamageType.Fire] = fireDefense > MaxStat ? MaxStat : fireDefense;
-                job.DefensePurities[CombatDamageType.Poison] = poisonDefense > MaxStat ? MaxStat : poisonDefense;
-                job.DefensePurities[CombatDamageType.Electrical] = electricalDefense > MaxStat ? MaxStat : electricalDefense;
 
-                job.SavingThrowPurities[SavingThrow.Fortitude] = fortitudePurity > MaxStat ? MaxStat : fortitudePurity;
-                job.SavingThrowPurities[SavingThrow.Reflex] = reflexPurity > MaxStat ? MaxStat : reflexPurity;
-                job.SavingThrowPurities[SavingThrow.Will] = willPurity > MaxStat ? MaxStat : willPurity;
+                job.ResistancePurities[ResistanceType.Ice] = iceResistance > MaxStat ? MaxStat : iceResistance;
+                job.ResistancePurities[ResistanceType.Fire] = fireResistance > MaxStat ? MaxStat : fireResistance;
+                job.ResistancePurities[ResistanceType.Poison] = poisonResistance > MaxStat ? MaxStat : poisonResistance;
+                job.ResistancePurities[ResistanceType.Electrical] = electricalResistance > MaxStat ? MaxStat : electricalResistance;
+                job.ResistancePurities[ResistanceType.Mind] = mindResistance > MaxStat ? MaxStat : mindResistance;
+                job.ResistancePurities[ResistanceType.Mobility] = mobilityResistance > MaxStat ? MaxStat : mobilityResistance;
+                job.ResistancePurities[ResistanceType.Trauma] = traumaResistance > MaxStat ? MaxStat : traumaResistance;
+                job.ResistancePurities[ResistanceType.Disruption] = disruptionResistance > MaxStat ? MaxStat : disruptionResistance;
+
+                job.ResistancePurities = BeastResistanceCalculator.CreateResistancePurities(job.ResistancePurities);
 
                 if(_lyaseColor != EnzymeColorType.Invalid)
                     job.LyaseColors[_lyaseColor]++;

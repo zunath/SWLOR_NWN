@@ -51,8 +51,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 if (GetDistanceBetween(target, creature) <= 4f && GetIsReactionTypeHostile(creature, activator))
                 {
                     var attackerStat = GetAbilityScore(activator, AbilityType.Willpower);
-                    var defense = Stat.GetDefense(target, CombatDamageType.Force, AbilityType.Willpower);
-                    var defenderStat = GetAbilityScore(target, AbilityType.Willpower);
+                    var damageType = CombatDamageType.Force;
+                    var defense = Stat.GetDefense(creature, damageType, AbilityType.Willpower);
+                    var defenderStat = GetAbilityScore(creature, AbilityType.Willpower);
                     var attack = Stat.GetAttack(activator, AbilityType.Willpower, SkillType.Force);
                     var damage = Combat.CalculateDamage(
                         attack,
@@ -61,6 +62,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                         defense,
                         defenderStat,
                         0);
+                    damage = Resistance.ApplyResistanceToDamage(creature, damageType, damage);
                     var delay = GetDistanceBetweenLocations(GetLocation(activator), targetLocation) / 18.0f + 0.35f;
 
                     var dTarget = creature;
@@ -72,7 +74,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
                     DelayCommand(delay, () =>
                     {
-                        ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), dTarget);
+                        ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, damageType.GetNWScriptDamageType()), dTarget);
                         ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Silence), dTarget);
                         ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.VFX_IMP_KIN_L), dTarget);
                         ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Pulse_Wind), target);

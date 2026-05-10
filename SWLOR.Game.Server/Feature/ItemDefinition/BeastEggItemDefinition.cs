@@ -71,15 +71,8 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     var accuracyPurity = 0;
                     var evasionPurity = 0;
                     var learningPurity = 0;
-                    var physicalDefensePurity = 0;
-                    var forceDefensePurity = 0;
-                    var iceDefensePurity = 0;
-                    var fireDefensePurity = 0;
-                    var poisonDefensePurity = 0;
-                    var electricDefensePurity = 0;
-                    var fortitudePurity = 0;
-                    var reflexPurity = 0;
-                    var willPurity = 0;
+                    var defensePurities = Combat.CreateDefaultDefenseValues();
+                    var resistancePurities = Resistance.CreateDefaultResistanceValues();
                     var xpPenalty = 0;
 
                     for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
@@ -94,7 +87,20 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                                 break;
                             case ItemPropertyType.Incubation:
                             {
-                                switch ((IncubationStatType)subType)
+                                var incubationStatType = (IncubationStatType)subType;
+                                if (BeastResistanceCalculator.TryGetDefenseType(incubationStatType, out var damageType))
+                                {
+                                    defensePurities[damageType] = costId;
+                                    break;
+                                }
+
+                                if (BeastResistanceCalculator.TryGetResistanceType(incubationStatType, out var resistanceType))
+                                {
+                                    resistancePurities[resistanceType] = costId;
+                                    break;
+                                }
+
+                                switch (incubationStatType)
                                 {
                                     case IncubationStatType.AttackPurity:
                                         attackPurity = costId;
@@ -107,33 +113,6 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                                         break;
                                     case IncubationStatType.LearningPurity:
                                         learningPurity = costId;
-                                        break;
-                                    case IncubationStatType.PhysicalDefensePurity:
-                                        physicalDefensePurity = costId;
-                                        break;
-                                    case IncubationStatType.ForceDefensePurity:
-                                        forceDefensePurity = costId;
-                                        break;
-                                    case IncubationStatType.FireDefensePurity:
-                                        fireDefensePurity = costId;
-                                        break;
-                                    case IncubationStatType.PoisonDefensePurity:
-                                        poisonDefensePurity = costId;
-                                        break;
-                                    case IncubationStatType.ElectricalDefensePurity:
-                                        electricDefensePurity = costId;
-                                        break;
-                                    case IncubationStatType.IceDefensePurity:
-                                        iceDefensePurity = costId;
-                                        break;
-                                    case IncubationStatType.FortitudePurity:
-                                        fortitudePurity = costId;
-                                        break;
-                                    case IncubationStatType.ReflexPurity:
-                                        reflexPurity = costId;
-                                        break;
-                                    case IncubationStatType.WillPurity:
-                                        willPurity = costId;
                                         break;
                                     case IncubationStatType.XPPenalty:
                                         xpPenalty = costId;
@@ -173,22 +152,8 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 
                         XPPenaltyPercent = xpPenalty,
 
-                        DefensePurities = new Dictionary<CombatDamageType, int>
-                        {
-                            { CombatDamageType.Physical, physicalDefensePurity },
-                            { CombatDamageType.Force, forceDefensePurity },
-                            { CombatDamageType.Fire, fireDefensePurity },
-                            { CombatDamageType.Ice, iceDefensePurity },
-                            { CombatDamageType.Poison, poisonDefensePurity },
-                            { CombatDamageType.Electrical, electricDefensePurity },
-                        },
-
-                        SavingThrowPurities = new Dictionary<SavingThrow, int>
-                        {
-                            { SavingThrow.Fortitude, fortitudePurity},
-                            { SavingThrow.Will, willPurity},
-                            { SavingThrow.Reflex, reflexPurity},
-                        }
+                        DefensePurities = BeastResistanceCalculator.CreateDefensePurities(defensePurities),
+                        ResistancePurities = BeastResistanceCalculator.CreateResistancePurities(resistancePurities)
                     };
 
                     DB.Set(dbBeast);

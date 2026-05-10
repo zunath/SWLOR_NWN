@@ -41,7 +41,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Armor Enhancement - Defense - Poison I"
+      "0": "Armor Enhancement - Resistance - Poison I"
     }
   },
   "ModelPart1": {
@@ -175,3 +175,4 @@
     "value": 239
   }
 }
+

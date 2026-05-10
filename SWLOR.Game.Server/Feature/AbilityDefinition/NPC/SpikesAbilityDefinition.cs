@@ -33,7 +33,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                     const int DMG = 3;
                     var attackerStat = GetAbilityScore(activator, AbilityType.Might);
                     var attack = Stat.GetAttack(activator, AbilityType.Might, SkillType.Invalid);
-                    var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+                    var damageType = CombatDamageType.Physical;
+                    var defense = Stat.GetDefense(target, damageType, AbilityType.Vitality);
                     var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
                     var damage = Combat.CalculateDamage(
                         attack,
@@ -42,10 +43,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                         defense,
                         defenderStat,
                         0);
+                    damage = Resistance.ApplyResistanceToDamage(target, damageType, damage);
 
                     ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Piercing), target);
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Wallspike), target);
-                    StatusEffect.ApplyStatusEffect(activator, target, typeof(BleedStatusEffect), 45f);
+                    StatusEffect.ApplyStatusEffect(activator, target, typeof(BleedStatusEffect), 45f, damageType);
                 });
         }
     }

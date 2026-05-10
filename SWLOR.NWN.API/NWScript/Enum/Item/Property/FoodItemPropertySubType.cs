@@ -22,10 +22,10 @@ namespace SWLOR.NWN.API.NWScript.Enum.Item.Property
         Social = 16,
         DefensePhysical = 17,
         DefenseForce = 18,
-        DefenseFire = 19,
-        DefensePoison = 20,
-        DefenseElectrical = 21,
-        DefenseIce = 22,
+        ResistanceFire = 19,
+        ResistancePoison = 20,
+        ResistanceElectrical = 21,
+        ResistanceIce = 22,
         Evasion = 23,
         ControlSmithery = 24,
         CraftsmanshipSmithery = 25,
@@ -37,6 +37,9 @@ namespace SWLOR.NWN.API.NWScript.Enum.Item.Property
         CraftsmanshipAgriculture = 31,
         Accuracy = 32,
         Attack = 33,
-
+        ResistanceMind = 34,
+        ResistanceMobility = 35,
+        ResistanceTrauma = 36,
+        ResistanceDisruption = 37,
     }
 }

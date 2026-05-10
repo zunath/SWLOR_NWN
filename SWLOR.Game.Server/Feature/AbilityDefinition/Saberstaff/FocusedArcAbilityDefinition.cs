@@ -71,13 +71,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
             switch (level)
             {
                 case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Saberstaff, 10, 12, 12, SavingThrow.Will, typeof(ForceErosionStatusEffect), false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Saberstaff, 10, 12, typeof(ForceErosionStatusEffect), false);
                     break;
                 case 2:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Saberstaff, 22, 15, 15, SavingThrow.Will, typeof(ForceErosionStatusEffect), false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Saberstaff, 22, 15, typeof(ForceErosionStatusEffect), false);
                     break;
                 case 3:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Saberstaff, 34, 18, 18, SavingThrow.Will, typeof(ForceErosionStatusEffect), false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Saberstaff, 34, 18, typeof(ForceErosionStatusEffect), false);
                     break;
             }
         }

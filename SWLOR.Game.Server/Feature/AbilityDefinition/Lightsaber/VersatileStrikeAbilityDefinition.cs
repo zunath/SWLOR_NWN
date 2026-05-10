@@ -68,13 +68,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
             switch (level)
             {
                 case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Lightsaber, 10, 30, 10, SavingThrow.Fortitude, typeof(SunderStatusEffect), false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Lightsaber, 10, 30, typeof(SunderStatusEffect), false);
                     break;
                 case 2:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Lightsaber, 25, 30, 15, SavingThrow.Fortitude, typeof(SunderStatusEffect), false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Lightsaber, 25, 30, typeof(SunderStatusEffect), false);
                     break;
                 case 3:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Lightsaber, 40, 30, 18, SavingThrow.Fortitude, typeof(SunderStatusEffect), false);
+                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Lightsaber, 40, 30, typeof(SunderStatusEffect), false);
                     break;
             }
         }

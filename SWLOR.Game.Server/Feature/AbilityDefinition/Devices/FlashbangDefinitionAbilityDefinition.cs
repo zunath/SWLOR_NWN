@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -26,7 +27,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             if (GetFactionEqual(activator, target))
                 return;
 
-            StatusEffect.ApplyStatusEffect(activator, target, new FlashStatusEffect(abReduce), 20f);
+            StatusEffect.ApplyStatusEffect(activator, target, new FlashStatusEffect(abReduce), 20f, CombatDamageType.Physical);
 
             CombatPoint.AddCombatPoint(activator, target, SkillType.Devices, 3);
             Enmity.ModifyEnmity(activator, target, 250);

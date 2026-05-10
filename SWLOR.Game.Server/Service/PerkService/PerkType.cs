@@ -278,7 +278,7 @@ namespace SWLOR.Game.Server.Service.PerkService
         Earthshatter = 387,
         EdgeOfDarkness = 388,
         EdgeRhythm = 389,
-        Endure = 390,
+        // ID 390 is free.
         EnergizedForms = 391,
         EnfeeblingStrike = 392,
         ErosionStrike = 393,

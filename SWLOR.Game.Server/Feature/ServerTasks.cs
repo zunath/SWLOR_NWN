@@ -11,6 +11,7 @@ namespace SWLOR.Game.Server.Feature
 {
     public static class ServerTasks
     {
+        private static readonly ApplicationSettings _appSettings = ApplicationSettings.Get();
         // This determines what time the server will restart.
         // Restarts happen within a range of 30 seconds of this specified time. 
         // All times are in UTC.
@@ -40,6 +41,7 @@ namespace SWLOR.Game.Server.Feature
                 }
 
                 Log.Write(LogGroup.Server, "Server shutting down for automated restart.", true);
+                SendServerLifecycleNotification("Automated restart has started. Server is shutting down now.");
                 
                 DelayCommand(0.1f, () =>
                 {
@@ -55,9 +57,20 @@ namespace SWLOR.Game.Server.Feature
         public static void ProcessBootUp()
         {
             Log.Write(LogGroup.Server, "Server is starting up.");
+            SendServerLifecycleNotification("Server boot process has started.");
             ConfigureServerSettings();
             ApplyBans();
             ScheduleRestartReminder();
+            SendServerLifecycleNotification("Server boot process is complete. Server is fully online and available for play.");
+        }
+
+        public static void SendServerLifecycleNotification(string message)
+        {
+            var url = _appSettings.ServerNotificationWebhookUrl;
+            if (string.IsNullOrWhiteSpace(url)) return;
+
+            var authorName = "SWLOR Server";
+            _ = BackgroundJob.EnqueueDiscordWebhook(url, authorName, message, 15158332);
         }
 
         private static void ConfigureServerSettings()

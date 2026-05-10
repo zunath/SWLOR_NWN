@@ -812,6 +812,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     uint player = GetFirstPC();
                     while (player != OBJECT_INVALID)
                     {
+                        ExportSingleCharacter(player);
                         BootPC(player, "The server is restarting.");
                         player = GetNextPC();
                     }

@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Feature
                 Log.Write(LogGroup.Server, "Server shutting down for automated restart.", true);
                 DelayCommand(0.1f, () =>
                 {
-                    _ = Task.Run(() => AdministrationPlugin.ShutdownServer());
+                    AdministrationPlugin.ShutdownServer();
                 });
             }
         }

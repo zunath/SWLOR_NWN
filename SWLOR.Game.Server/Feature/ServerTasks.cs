@@ -58,7 +58,6 @@ namespace SWLOR.Game.Server.Feature
         public static void ProcessBootUp()
         {
             Log.Write(LogGroup.Server, "Server is starting up.");
-            _ = SendServerLifecycleNotification("Server boot process has started.");
             ConfigureServerSettings();
             ApplyBans();
             ScheduleRestartReminder();

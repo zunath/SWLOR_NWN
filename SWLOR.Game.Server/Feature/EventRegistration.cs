@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler(ScriptName.OnModulePreload)]
         public static void OnModulePreload()
         {
+            _ = ServerTasks.SendServerLifecycleNotification("Server boot process has started.");
             var serverConfig = DB.Get<ModuleCache>("SWLOR_CACHE") ?? new ModuleCache();
 
             Console.WriteLine("Hooking all module events.");

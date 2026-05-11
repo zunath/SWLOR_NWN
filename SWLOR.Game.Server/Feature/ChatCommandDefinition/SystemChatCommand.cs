@@ -32,6 +32,12 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Permissions(AuthorizationLevel.All)
                 .Validate((user, args) =>
                 {
+                    var appSettings = ApplicationSettings.Get();
+                    if (appSettings.ServerEnvironment == ServerEnvironmentType.Test)
+                    {
+                        return string.Empty;
+                    }
+
                     var lastSubmission = GetLocalString(user, "BUG_REPORT_LAST_SUBMISSION");
                     if (!string.IsNullOrWhiteSpace(lastSubmission))
                     {

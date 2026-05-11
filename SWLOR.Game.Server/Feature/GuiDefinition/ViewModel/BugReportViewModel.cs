@@ -75,7 +75,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
-            SetLocalString(Player, "BUG_REPORT_LAST_SUBMISSION", nextReportAllowed.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture));
+            if (_appSettings.ServerEnvironment != ServerEnvironmentType.Test)
+            {
+                SetLocalString(Player, "BUG_REPORT_LAST_SUBMISSION", nextReportAllowed.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture));
+            }
             SendMessageToPC(Player, "Bug report submitted! Thank you for your report.");
             SendMessageToPC(Player, "Submitted Bug Report: " + BugReportText);
             Gui.TogglePlayerWindow(Player, GuiWindowType.BugReport);

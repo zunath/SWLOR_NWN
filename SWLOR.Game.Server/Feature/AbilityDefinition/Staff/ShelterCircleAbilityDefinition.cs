@@ -12,7 +12,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
         {
             var builder = new AbilityBuilder();
 
-            ConfigurePartyStatus(builder.Create(FeatType.ShelterCircle1, PerkType.ShelterCircle).Name("Shelter Circle").Level(1), typeof(ShelterCircleStatusEffect), 15f, 20, true);
+            ConfigurePartyStatus(
+                builder
+                    .Create(FeatType.ShelterCircle1, PerkType.ShelterCircle)
+                    .Name("Shelter Circle")
+                    .Level(1)
+                    .HasRecastDelay(RecastGroup.ShelterCircle, 180f),
+                typeof(ShelterCircleStatusEffect),
+                15f,
+                20,
+                true);
 
             return builder.Build();
         }

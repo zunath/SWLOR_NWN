@@ -23,7 +23,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private void CreepingTerror1()
         {
-            _builder.Create(FeatType.CreepingTerror1, PerkType.CreepingTerror)
+            _builder
+                .Create(FeatType.CreepingTerror1, PerkType.CreepingTerror)
                 .Name("Creeping Terror I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.CreepingTerror, 30f)
@@ -43,7 +44,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private void CreepingTerror2()
         {
-            _builder.Create(FeatType.CreepingTerror2, PerkType.CreepingTerror)
+            _builder
+                .Create(FeatType.CreepingTerror2, PerkType.CreepingTerror)
                 .Name("Creeping Terror II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.CreepingTerror, 30f)
@@ -63,7 +65,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private void CreepingTerror3()
         {
-            _builder.Create(FeatType.CreepingTerror3, PerkType.CreepingTerror)
+            _builder
+                .Create(FeatType.CreepingTerror3, PerkType.CreepingTerror)
                 .Name("Creeping Terror III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.CreepingTerror, 30f)

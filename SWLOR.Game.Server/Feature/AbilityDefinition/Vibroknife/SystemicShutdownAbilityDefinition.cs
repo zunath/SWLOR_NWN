@@ -22,7 +22,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
 
         private static void SystemicShutdown1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.SystemicShutdown1, PerkType.SystemicShutdown)
+            builder
+                .Create(FeatType.SystemicShutdown1, PerkType.SystemicShutdown)
                 .Name("Systemic Shutdown")
                 .Level(1)
                 .HasActivationDelay(3f)

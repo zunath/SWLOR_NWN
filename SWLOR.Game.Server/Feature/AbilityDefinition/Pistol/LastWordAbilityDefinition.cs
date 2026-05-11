@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
 
         private static void LastWord1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.LastWord1, PerkType.LastWord)
+            builder
+                .Create(FeatType.LastWord1, PerkType.LastWord)
                 .Name("Last Word")
                 .Level(1)
                 .HasActivationDelay(1f)

@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
 
         private static void SkullRattle1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.SkullRattle1, PerkType.SkullRattle)
+            builder
+                .Create(FeatType.SkullRattle1, PerkType.SkullRattle)
                 .Name("Skull Rattle")
                 .Level(1)
                 .HasActivationDelay(0f)

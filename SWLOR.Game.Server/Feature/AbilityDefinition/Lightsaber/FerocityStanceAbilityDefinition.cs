@@ -12,7 +12,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
         {
             var builder = new AbilityBuilder();
 
-            ConfigureToggle(builder.Create(FeatType.FerocityStance1, PerkType.FerocityStance).Name("Ferocity Stance").Level(1), typeof(FerocityStanceStatusEffect));
+            ConfigureToggle(
+                builder
+                    .Create(FeatType.FerocityStance1, PerkType.FerocityStance)
+                    .Name("Ferocity Stance")
+                    .Level(1)
+                    .HasRecastDelay(RecastGroup.FerocityStance, 180f),
+                typeof(FerocityStanceStatusEffect));
 
             return builder.Build();
         }

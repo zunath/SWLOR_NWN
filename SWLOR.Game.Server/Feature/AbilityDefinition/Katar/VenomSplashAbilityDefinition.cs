@@ -22,7 +22,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
 
         private static void VenomSplash1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.VenomSplash1, PerkType.VenomSplash)
+            builder
+                .Create(FeatType.VenomSplash1, PerkType.VenomSplash)
                 .Name("Venom Splash")
                 .Level(1)
                 .HasActivationDelay(0f)

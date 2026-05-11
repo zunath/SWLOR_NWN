@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
 
         private static void SaturationToss1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.SaturationToss1, PerkType.SaturationToss)
+            builder
+                .Create(FeatType.SaturationToss1, PerkType.SaturationToss)
                 .Name("Saturation Toss")
                 .Level(1)
                 .HasActivationDelay(0f)

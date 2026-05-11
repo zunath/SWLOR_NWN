@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
 
         private static void CascadeFailure1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.CascadeFailure1, PerkType.CascadeFailure)
+            builder
+                .Create(FeatType.CascadeFailure1, PerkType.CascadeFailure)
                 .Name("Cascade Failure")
                 .Level(1)
                 .HasActivationDelay(0f)

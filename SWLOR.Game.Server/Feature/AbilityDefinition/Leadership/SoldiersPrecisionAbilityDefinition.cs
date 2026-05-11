@@ -19,7 +19,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
 
         private void SoldiersPrecision()
         {
-            _builder.Create(FeatType.SoldiersPrecision, PerkType.SoldiersPrecision)
+            _builder
+                .Create(FeatType.SoldiersPrecision, PerkType.SoldiersPrecision)
                 .Name("Soldier's Precision")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.SoldiersPrecision, 60f)

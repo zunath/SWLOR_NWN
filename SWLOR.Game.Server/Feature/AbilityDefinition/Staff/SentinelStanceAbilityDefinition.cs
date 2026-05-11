@@ -12,7 +12,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
         {
             var builder = new AbilityBuilder();
 
-            ConfigureToggle(builder.Create(FeatType.SentinelStance1, PerkType.SentinelStance).Name("Sentinel Stance").Level(1), typeof(SentinelStanceStatusEffect));
+            ConfigureToggle(
+                builder
+                    .Create(FeatType.SentinelStance1, PerkType.SentinelStance)
+                    .Name("Sentinel Stance")
+                    .Level(1)
+                    .HasRecastDelay(RecastGroup.SentinelStance, 180f),
+                typeof(SentinelStanceStatusEffect));
 
             return builder.Build();
         }

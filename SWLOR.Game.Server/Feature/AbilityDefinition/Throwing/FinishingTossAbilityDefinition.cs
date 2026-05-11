@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
 
         private static void FinishingToss1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.FinishingToss1, PerkType.FinishingToss)
+            builder
+                .Create(FeatType.FinishingToss1, PerkType.FinishingToss)
                 .Name("Finishing Toss")
                 .Level(1)
                 .HasActivationDelay(0f)

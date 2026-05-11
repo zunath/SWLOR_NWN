@@ -23,7 +23,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
 
         private static void EnfeeblingStrike1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.EnfeeblingStrike1, PerkType.EnfeeblingStrike)
+            builder
+                .Create(FeatType.EnfeeblingStrike1, PerkType.EnfeeblingStrike)
                 .Name("Enfeebling Strike I")
                 .Level(1)
                 .HasActivationDelay(0f)
@@ -38,7 +39,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
 
         private static void EnfeeblingStrike2(AbilityBuilder builder)
         {
-            builder.Create(FeatType.EnfeeblingStrike2, PerkType.EnfeeblingStrike)
+            builder
+                .Create(FeatType.EnfeeblingStrike2, PerkType.EnfeeblingStrike)
                 .Name("Enfeebling Strike II")
                 .Level(2)
                 .HasActivationDelay(0f)
@@ -53,7 +55,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
 
         private static void EnfeeblingStrike3(AbilityBuilder builder)
         {
-            builder.Create(FeatType.EnfeeblingStrike3, PerkType.EnfeeblingStrike)
+            builder
+                .Create(FeatType.EnfeeblingStrike3, PerkType.EnfeeblingStrike)
                 .Name("Enfeebling Strike III")
                 .Level(3)
                 .HasActivationDelay(0f)

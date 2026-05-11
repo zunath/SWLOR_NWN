@@ -12,7 +12,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
         {
             var builder = new AbilityBuilder();
 
-            ConfigureToggle(builder.Create(FeatType.FlankingStance1, PerkType.FlankingStance).Name("Flanking Stance").Level(1), typeof(FlankingStanceStatusEffect));
+            ConfigureToggle(
+                builder
+                    .Create(FeatType.FlankingStance1, PerkType.FlankingStance)
+                    .Name("Flanking Stance")
+                    .Level(1)
+                    .HasRecastDelay(RecastGroup.FlankingStance, 180f),
+                typeof(FlankingStanceStatusEffect));
 
             return builder.Build();
         }

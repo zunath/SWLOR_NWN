@@ -22,7 +22,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
 
         private static void GroundQuake1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.GroundQuake1, PerkType.GroundQuake)
+            builder
+                .Create(FeatType.GroundQuake1, PerkType.GroundQuake)
                 .Name("Ground Quake I")
                 .Level(1)
                 .HasActivationDelay(0f)
@@ -36,7 +37,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
 
         private static void GroundQuake2(AbilityBuilder builder)
         {
-            builder.Create(FeatType.GroundQuake2, PerkType.GroundQuake)
+            builder
+                .Create(FeatType.GroundQuake2, PerkType.GroundQuake)
                 .Name("Ground Quake II")
                 .Level(2)
                 .HasActivationDelay(0f)

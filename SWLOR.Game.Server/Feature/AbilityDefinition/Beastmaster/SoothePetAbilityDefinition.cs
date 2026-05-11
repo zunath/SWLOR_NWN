@@ -24,7 +24,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
         private void SoothePet()
         {
-            _builder.Create(FeatType.SoothePet, PerkType.SoothePet)
+            _builder
+                .Create(FeatType.SoothePet, PerkType.SoothePet)
                 .Name("Soothe Pet")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.Tame, 60f * 3)

@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private void ForceBody1()
         {
-            _builder.Create(FeatType.ForceBody1, PerkType.ForceBody)
+            _builder
+                .Create(FeatType.ForceBody1, PerkType.ForceBody)
                 .Name("Force Body I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.ForceRestore, 60f * 3f)
@@ -36,7 +37,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         }
         private void ForceBody2()
         {
-            _builder.Create(FeatType.ForceBody2, PerkType.ForceBody)
+            _builder
+                .Create(FeatType.ForceBody2, PerkType.ForceBody)
                 .Name("Force Body II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.ForceRestore, 60f * 3f)

@@ -22,7 +22,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
 
         private static void FortressStrike1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.FortressStrike1, PerkType.FortressStrike)
+            builder
+                .Create(FeatType.FortressStrike1, PerkType.FortressStrike)
                 .Name("Fortress Strike I")
                 .Level(1)
                 .HasActivationDelay(0f)
@@ -34,7 +35,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
 
         private static void FortressStrike2(AbilityBuilder builder)
         {
-            builder.Create(FeatType.FortressStrike2, PerkType.FortressStrike)
+            builder
+                .Create(FeatType.FortressStrike2, PerkType.FortressStrike)
                 .Name("Fortress Strike II")
                 .Level(2)
                 .HasActivationDelay(0f)

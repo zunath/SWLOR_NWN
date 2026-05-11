@@ -13,8 +13,28 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
         {
             var builder = new AbilityBuilder();
 
-            ConfigureCurrentAttackTargetInterrupt(builder.Create(FeatType.InterruptionStrike1, PerkType.InterruptionStrike).Name("Interruption Strike I").Level(1), SkillType.Spear, 0, 30, typeof(FoggyMindStatusEffect), 5, FoggyMind(2));
-            ConfigureCurrentAttackTargetInterrupt(builder.Create(FeatType.InterruptionStrike2, PerkType.InterruptionStrike).Name("Interruption Strike II").Level(2), SkillType.Spear, 0, 30, typeof(FoggyMindStatusEffect), 7, FoggyMind(2));
+            ConfigureCurrentAttackTargetInterrupt(
+                builder
+                    .Create(FeatType.InterruptionStrike1, PerkType.InterruptionStrike)
+                    .Name("Interruption Strike I")
+                    .Level(1),
+                SkillType.Spear,
+                0,
+                30,
+                typeof(FoggyMindStatusEffect),
+                5,
+                FoggyMind(2));
+            ConfigureCurrentAttackTargetInterrupt(
+                builder
+                    .Create(FeatType.InterruptionStrike2, PerkType.InterruptionStrike)
+                    .Name("Interruption Strike II")
+                    .Level(2),
+                SkillType.Spear,
+                0,
+                30,
+                typeof(FoggyMindStatusEffect),
+                7,
+                FoggyMind(2));
 
             return builder.Build();
         }

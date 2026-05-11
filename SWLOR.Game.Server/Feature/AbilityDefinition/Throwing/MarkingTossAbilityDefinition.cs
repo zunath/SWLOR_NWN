@@ -22,7 +22,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
 
         private static void MarkingToss1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.MarkingToss1, PerkType.MarkingToss)
+            builder
+                .Create(FeatType.MarkingToss1, PerkType.MarkingToss)
                 .Name("Marking Toss")
                 .Level(1)
                 .HasActivationDelay(0f)

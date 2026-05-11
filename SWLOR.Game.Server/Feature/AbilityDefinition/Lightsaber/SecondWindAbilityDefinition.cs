@@ -13,10 +13,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
         {
             var builder = new AbilityBuilder();
 
-            builder.Create(FeatType.SecondWind1, PerkType.SecondWind)
+            builder
+                .Create(FeatType.SecondWind1, PerkType.SecondWind)
                 .Name("Second Wind")
                 .Level(1)
                 .HasActivationDelay(0f)
+                .HasRecastDelay(RecastGroup.SecondWind, 300f)
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
                     var percent = Math.Min(75, 50 + Math.Max(0, GetAbilityModifier(AbilityType.Might, activator)));

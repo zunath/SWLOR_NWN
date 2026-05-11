@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
 
         private static void TotalForceDenial1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.TotalForceDenial1, PerkType.TotalForceDenial)
+            builder
+                .Create(FeatType.TotalForceDenial1, PerkType.TotalForceDenial)
                 .Name("Total Force Denial")
                 .Level(1)
                 .HasActivationDelay(2f)

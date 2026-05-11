@@ -46,7 +46,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Armor
 
         private void Provoke()
         {
-            _builder.Create(FeatType.Provoke1, PerkType.Provoke)
+            _builder
+                .Create(FeatType.Provoke1, PerkType.Provoke)
                 .Name("Provoke")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.Provoke, 10f)
@@ -64,7 +65,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Armor
 
         private void Provoke2()
         {
-            _builder.Create(FeatType.Provoke2, PerkType.Provoke)
+            _builder
+                .Create(FeatType.Provoke2, PerkType.Provoke)
                 .Name("Provoke II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.Provoke2, 20f)

@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
 
         private static void NerveStrike1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.NerveStrike1, PerkType.NerveStrike)
+            builder
+                .Create(FeatType.NerveStrike1, PerkType.NerveStrike)
                 .Name("Nerve Strike")
                 .Level(1)
                 .HasActivationDelay(0f)

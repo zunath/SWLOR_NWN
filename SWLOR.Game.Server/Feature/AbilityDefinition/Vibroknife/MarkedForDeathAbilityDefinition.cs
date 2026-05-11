@@ -13,7 +13,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
         {
             var builder = new AbilityBuilder();
 
-            ConfigureTargetStatus(builder.Create(FeatType.MarkedForDeath1, PerkType.MarkedForDeath).Name("Marked for Death").Level(1), typeof(MarkedForDeathStatusEffect), 20f, 6);
+            ConfigureTargetStatus(
+                builder
+                    .Create(FeatType.MarkedForDeath1, PerkType.MarkedForDeath)
+                    .Name("Marked for Death")
+                    .Level(1)
+                    .HasRecastDelay(RecastGroup.MarkedForDeath, 90f),
+                typeof(MarkedForDeathStatusEffect),
+                20f,
+                6);
 
             return builder.Build();
         }

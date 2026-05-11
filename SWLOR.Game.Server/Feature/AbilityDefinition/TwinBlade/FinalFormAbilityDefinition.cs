@@ -12,7 +12,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
         {
             var builder = new AbilityBuilder();
 
-            ConfigureSelfStatus(builder.Create(FeatType.FinalForm1, PerkType.FinalForm).Name("Final Form").Level(1), typeof(FinalFormStatusEffect), 20f, 8);
+            ConfigureSelfStatus(
+                builder
+                    .Create(FeatType.FinalForm1, PerkType.FinalForm)
+                    .Name("Final Form")
+                    .Level(1)
+                    .HasRecastDelay(RecastGroup.FinalForm, 1800f),
+                typeof(FinalFormStatusEffect),
+                20f,
+                8);
 
             return builder.Build();
         }

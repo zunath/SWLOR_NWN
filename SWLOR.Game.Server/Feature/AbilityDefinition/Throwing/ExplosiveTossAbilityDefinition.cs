@@ -54,9 +54,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
             int level,
             int stamina)
         {
-            builder.Create(feat, PerkType.ExplosiveToss)
+            builder
+                .Create(feat, PerkType.ExplosiveToss)
                 .Name(name)
                 .Level(level)
+                .HasRecastDelay(RecastGroup.ExplosiveToss, 45f)
                 .HasActivationDelay(0f)
                 .SkillType(Skill)
                 .IsAreaAbility()

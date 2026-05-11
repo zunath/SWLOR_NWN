@@ -12,7 +12,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
         {
             var builder = new AbilityBuilder();
 
-            ConfigureSelfStatus(builder.Create(FeatType.KillZone1, PerkType.KillZone).Name("Kill Zone").Level(1), typeof(KillZoneStatusEffect), 20f, 6);
+            ConfigureSelfStatus(
+                builder
+                    .Create(FeatType.KillZone1, PerkType.KillZone)
+                    .Name("Kill Zone")
+                    .Level(1)
+                    .HasRecastDelay(RecastGroup.KillZone, 120f),
+                typeof(KillZoneStatusEffect),
+                20f,
+                6);
 
             return builder.Build();
         }

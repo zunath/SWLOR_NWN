@@ -19,7 +19,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
 
         private void Charge()
         {
-            _builder.Create(FeatType.Charge, PerkType.Charge)
+            _builder
+                .Create(FeatType.Charge, PerkType.Charge)
                 .Name("Charge")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.Charge, 60f)

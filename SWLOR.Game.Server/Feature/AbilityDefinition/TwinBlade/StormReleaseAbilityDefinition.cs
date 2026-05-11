@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
 
         private static void StormRelease1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.StormRelease1, PerkType.StormRelease)
+            builder
+                .Create(FeatType.StormRelease1, PerkType.StormRelease)
                 .Name("Storm Release")
                 .Level(1)
                 .HasActivationDelay(0f)

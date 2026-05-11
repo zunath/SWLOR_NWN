@@ -58,7 +58,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
 
         private void Assault1()
         {
-            _builder.Create(FeatType.Assault1, PerkType.Assault)
+            _builder
+                .Create(FeatType.Assault1, PerkType.Assault)
                 .Name("Assault I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.Assault, 60f)
@@ -71,7 +72,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
         }
         private void Assault2()
         {
-            _builder.Create(FeatType.Assault2, PerkType.Assault)
+            _builder
+                .Create(FeatType.Assault2, PerkType.Assault)
                 .Name("Assault II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.Assault, 60f)
@@ -84,7 +86,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
         }
         private void Assault3()
         {
-            _builder.Create(FeatType.Assault3, PerkType.Assault)
+            _builder
+                .Create(FeatType.Assault3, PerkType.Assault)
                 .Name("Assault III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.Assault, 60f)

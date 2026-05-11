@@ -66,7 +66,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
         private void IonGrenade1()
         {
-            _builder.Create(FeatType.IonGrenade1, PerkType.IonGrenade)
+            _builder
+                .Create(FeatType.IonGrenade1, PerkType.IonGrenade)
                 .Name("Ion Grenade I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.IonGrenade, 12f)
@@ -94,7 +95,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
         private void IonGrenade2()
         {
-            _builder.Create(FeatType.IonGrenade2, PerkType.IonGrenade)
+            _builder
+                .Create(FeatType.IonGrenade2, PerkType.IonGrenade)
                 .Name("Ion Grenade II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.IonGrenade, 12f)

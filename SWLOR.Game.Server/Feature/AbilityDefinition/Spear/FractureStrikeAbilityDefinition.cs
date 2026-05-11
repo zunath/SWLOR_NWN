@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
 
         private static void FractureStrike1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.FractureStrike1, PerkType.FractureStrike)
+            builder
+                .Create(FeatType.FractureStrike1, PerkType.FractureStrike)
                 .Name("Fracture Strike")
                 .Level(1)
                 .HasActivationDelay(0f)

@@ -23,7 +23,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
 
         private static void SnapRoll1(AbilityBuilder builder)
         {
-            var ability = builder.Create(FeatType.SnapRoll1, PerkType.SnapRoll)
+            var ability = builder
+                .Create(FeatType.SnapRoll1, PerkType.SnapRoll)
                 .Name("Snap Roll I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.SnapRoll, RecastDelay);
@@ -38,7 +39,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
 
         private static void SnapRoll2(AbilityBuilder builder)
         {
-            var ability = builder.Create(FeatType.SnapRoll2, PerkType.SnapRoll)
+            var ability = builder
+                .Create(FeatType.SnapRoll2, PerkType.SnapRoll)
                 .Name("Snap Roll II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.SnapRoll, RecastDelay);

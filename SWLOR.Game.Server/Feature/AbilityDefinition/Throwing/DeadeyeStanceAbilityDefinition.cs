@@ -11,9 +11,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
         {
             var builder = new AbilityBuilder();
 
-            builder.Create(FeatType.DeadeyeStance1, PerkType.DeadeyeStance)
+            builder
+                .Create(FeatType.DeadeyeStance1, PerkType.DeadeyeStance)
                 .Name("Deadeye Stance")
-                .Level(1);
+                .Level(1)
+                .HasRecastDelay(RecastGroup.DeadeyeStance, 180f);
             ConfigureToggle(builder, typeof(DeadeyeStanceStatusEffect));
 
             return builder.Build();

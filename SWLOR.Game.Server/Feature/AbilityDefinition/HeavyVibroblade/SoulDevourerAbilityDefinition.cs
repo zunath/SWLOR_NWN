@@ -19,7 +19,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
 
         private static void SoulDevourer(AbilityBuilder builder)
         {
-            builder.Create(FeatType.SoulDevourer1, PerkType.SoulDevourer)
+            builder
+                .Create(FeatType.SoulDevourer1, PerkType.SoulDevourer)
                 .Name("Soul Devourer")
                 .Level(1)
                 .HasActivationDelay(2f)

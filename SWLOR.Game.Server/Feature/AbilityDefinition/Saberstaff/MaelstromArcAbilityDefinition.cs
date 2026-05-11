@@ -22,7 +22,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
 
         private static void MaelstromArc1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.MaelstromArc1, PerkType.MaelstromArc)
+            builder
+                .Create(FeatType.MaelstromArc1, PerkType.MaelstromArc)
                 .Name("Maelstrom Arc I")
                 .Level(1)
                 .HasActivationDelay(0f)
@@ -36,7 +37,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
 
         private static void MaelstromArc2(AbilityBuilder builder)
         {
-            builder.Create(FeatType.MaelstromArc2, PerkType.MaelstromArc)
+            builder
+                .Create(FeatType.MaelstromArc2, PerkType.MaelstromArc)
                 .Name("Maelstrom Arc II")
                 .Level(2)
                 .HasActivationDelay(0f)

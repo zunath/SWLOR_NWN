@@ -12,7 +12,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
         {
             var builder = new AbilityBuilder();
 
-            ConfigureAreaStatus(builder.Create(FeatType.DisruptionField1, PerkType.DisruptionField).Name("Disruption Field").Level(1), typeof(DisruptionFieldStatusEffect), 20f, 5, false, fpDrainPercent: 20);
+            ConfigureAreaStatus(
+                builder
+                    .Create(FeatType.DisruptionField1, PerkType.DisruptionField)
+                    .Name("Disruption Field")
+                    .Level(1)
+                    .HasRecastDelay(RecastGroup.DisruptionField, 180f),
+                typeof(DisruptionFieldStatusEffect),
+                20f,
+                5,
+                false,
+                fpDrainPercent: 20);
 
             return builder.Build();
         }

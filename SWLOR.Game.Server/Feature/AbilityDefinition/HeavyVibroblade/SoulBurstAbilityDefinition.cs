@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
 
         private static void SoulBurst1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.SoulBurst1, PerkType.SoulBurst)
+            builder
+                .Create(FeatType.SoulBurst1, PerkType.SoulBurst)
                 .Name("Soul Burst")
                 .Level(1)
                 .HasActivationDelay(0f)

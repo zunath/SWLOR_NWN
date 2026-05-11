@@ -95,7 +95,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ForceLightning1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.ForceLightning1, PerkType.ForceLightning)
+            builder
+                .Create(FeatType.ForceLightning1, PerkType.ForceLightning)
                 .Name("Force Lightning I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.ForceLightning, 30f)
@@ -110,7 +111,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ForceLightning2(AbilityBuilder builder)
         {
-            builder.Create(FeatType.ForceLightning2, PerkType.ForceLightning)
+            builder
+                .Create(FeatType.ForceLightning2, PerkType.ForceLightning)
                 .Name("Force Lightning II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.ForceLightning, 30f)
@@ -125,7 +127,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ForceLightning3(AbilityBuilder builder)
         {
-            builder.Create(FeatType.ForceLightning3, PerkType.ForceLightning)
+            builder
+                .Create(FeatType.ForceLightning3, PerkType.ForceLightning)
                 .Name("Force Lightning III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.ForceLightning, 30f)
@@ -140,7 +143,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ForceLightning4(AbilityBuilder builder)
         {
-            builder.Create(FeatType.ForceLightning4, PerkType.ForceLightning)
+            builder
+                .Create(FeatType.ForceLightning4, PerkType.ForceLightning)
                 .Name("Force Lightning IV")
                 .Level(4)
                 .HasRecastDelay(RecastGroup.ForceLightning, 30f)

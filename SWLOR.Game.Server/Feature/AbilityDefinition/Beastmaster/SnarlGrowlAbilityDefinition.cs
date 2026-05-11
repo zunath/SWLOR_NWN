@@ -45,7 +45,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
         private void Snarl()
         {
-            _builder.Create(FeatType.Snarl, PerkType.Snarl)
+            _builder
+                .Create(FeatType.Snarl, PerkType.Snarl)
                 .Name("Snarl")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.SnarlGrowl, 30f)
@@ -74,7 +75,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
         private void Growl()
         {
-            _builder.Create(FeatType.Growl, PerkType.Growl)
+            _builder
+                .Create(FeatType.Growl, PerkType.Growl)
                 .Name("Growl")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.SnarlGrowl, 30f)

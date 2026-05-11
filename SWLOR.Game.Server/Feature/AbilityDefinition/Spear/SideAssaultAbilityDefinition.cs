@@ -12,9 +12,39 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
         {
             var builder = new AbilityBuilder();
 
-            ConfigureWeapon(builder.Create(FeatType.SideAssault1, PerkType.SideAssault).Name("Side Assault I").Level(1), SkillType.Spear, 12, 0, null, 4);
-            ConfigureWeapon(builder.Create(FeatType.SideAssault2, PerkType.SideAssault).Name("Side Assault II").Level(2), SkillType.Spear, 25, 0, null, 6);
-            ConfigureWeapon(builder.Create(FeatType.SideAssault3, PerkType.SideAssault).Name("Side Assault III").Level(3), SkillType.Spear, 35, 0, null, 8);
+            ConfigureWeapon(
+                builder
+                    .Create(FeatType.SideAssault1, PerkType.SideAssault)
+                    .Name("Side Assault I")
+                    .Level(1)
+                    .HasRecastDelay(RecastGroup.SideAssault, 3f),
+                SkillType.Spear,
+                12,
+                0,
+                null,
+                4);
+            ConfigureWeapon(
+                builder
+                    .Create(FeatType.SideAssault2, PerkType.SideAssault)
+                    .Name("Side Assault II")
+                    .Level(2)
+                    .HasRecastDelay(RecastGroup.SideAssault, 3f),
+                SkillType.Spear,
+                25,
+                0,
+                null,
+                6);
+            ConfigureWeapon(
+                builder
+                    .Create(FeatType.SideAssault3, PerkType.SideAssault)
+                    .Name("Side Assault III")
+                    .Level(3)
+                    .HasRecastDelay(RecastGroup.SideAssault, 3f),
+                SkillType.Spear,
+                35,
+                0,
+                null,
+                8);
 
             return builder.Build();
         }

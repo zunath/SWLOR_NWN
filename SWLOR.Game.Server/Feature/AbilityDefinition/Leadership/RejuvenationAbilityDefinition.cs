@@ -19,7 +19,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
 
         private void Rejuvenation()
         {
-            _builder.Create(FeatType.Rejuvenation, PerkType.Rejuvenation)
+            _builder
+                .Create(FeatType.Rejuvenation, PerkType.Rejuvenation)
                 .Name("Rejuvenation")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.Rejuvenation, 180f)

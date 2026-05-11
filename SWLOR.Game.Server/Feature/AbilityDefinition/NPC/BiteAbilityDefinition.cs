@@ -20,7 +20,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
 
         private void Bite()
         {
-            _builder.Create(FeatType.Bite, PerkType.Invalid)
+            _builder
+                .Create(FeatType.Bite, PerkType.Invalid)
                 .Name("Bite")
                 .HasActivationDelay(2f)
                 .IsCastedAbility()

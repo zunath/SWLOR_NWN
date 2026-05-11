@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
 
         private static void SweepingFlank1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.SweepingFlank1, PerkType.SweepingFlank)
+            builder
+                .Create(FeatType.SweepingFlank1, PerkType.SweepingFlank)
                 .Name("Sweeping Flank")
                 .Level(1)
                 .HasActivationDelay(2f)

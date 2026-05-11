@@ -20,7 +20,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
 
         private static void Flash(AbilityBuilder builder)
         {
-            builder.Create(FeatType.Flash1, PerkType.Flash)
+            builder
+                .Create(FeatType.Flash1, PerkType.Flash)
                 .Name("Flash")
                 .Level(1)
                 .HasActivationDelay(0f)

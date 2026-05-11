@@ -12,7 +12,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
         {
             var builder = new AbilityBuilder();
 
-            ConfigureSelfStatus(builder.Create(FeatType.InfiniteConduit1, PerkType.InfiniteConduit).Name("Infinite Conduit").Level(1), typeof(InfiniteConduitStatusEffect), 20f, 5);
+            ConfigureSelfStatus(
+                builder
+                    .Create(FeatType.InfiniteConduit1, PerkType.InfiniteConduit)
+                    .Name("Infinite Conduit")
+                    .Level(1)
+                    .HasRecastDelay(RecastGroup.InfiniteConduit, 1800f),
+                typeof(InfiniteConduitStatusEffect),
+                20f,
+                5);
 
             return builder.Build();
         }

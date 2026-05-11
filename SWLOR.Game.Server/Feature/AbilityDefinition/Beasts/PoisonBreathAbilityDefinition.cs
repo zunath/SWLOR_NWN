@@ -78,7 +78,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
 
         private void PoisonBreath1()
         {
-            _builder.Create(FeatType.PoisonBreath1, PerkType.PoisonBreath)
+            _builder
+                .Create(FeatType.PoisonBreath1, PerkType.PoisonBreath)
                 .Name("Poison Breath I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.PoisonBreath, 60f)
@@ -92,7 +93,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
         }
         private void PoisonBreath2()
         {
-            _builder.Create(FeatType.PoisonBreath2, PerkType.PoisonBreath)
+            _builder
+                .Create(FeatType.PoisonBreath2, PerkType.PoisonBreath)
                 .Name("Poison Breath II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.PoisonBreath, 60f)
@@ -106,7 +108,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
         }
         private void PoisonBreath3()
         {
-            _builder.Create(FeatType.PoisonBreath3, PerkType.PoisonBreath)
+            _builder
+                .Create(FeatType.PoisonBreath3, PerkType.PoisonBreath)
                 .Name("Poison Breath III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.PoisonBreath, 60f)

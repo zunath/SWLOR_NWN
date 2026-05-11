@@ -12,7 +12,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
         {
             var builder = new AbilityBuilder();
 
-            ConfigureToggle(builder.Create(FeatType.CycloneStance1, PerkType.CycloneStance).Name("Cyclone Stance").Level(1), typeof(CycloneStanceStatusEffect));
+            ConfigureToggle(
+                builder
+                    .Create(FeatType.CycloneStance1, PerkType.CycloneStance)
+                    .Name("Cyclone Stance")
+                    .Level(1)
+                    .HasRecastDelay(RecastGroup.CycloneStance, 180f),
+                typeof(CycloneStanceStatusEffect));
 
             return builder.Build();
         }

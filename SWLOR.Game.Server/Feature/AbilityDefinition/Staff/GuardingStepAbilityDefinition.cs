@@ -12,7 +12,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
         {
             var builder = new AbilityBuilder();
 
-            ConfigureSelfStatus(builder.Create(FeatType.GuardingStep1, PerkType.GuardingStep).Name("Guarding Step").Level(1), typeof(GuardingStepStatusEffect), 8f, 5);
+            ConfigureSelfStatus(
+                builder
+                    .Create(FeatType.GuardingStep1, PerkType.GuardingStep)
+                    .Name("Guarding Step")
+                    .Level(1)
+                    .HasRecastDelay(RecastGroup.GuardingStep, 60f),
+                typeof(GuardingStepStatusEffect),
+                8f,
+                5);
 
             return builder.Build();
         }

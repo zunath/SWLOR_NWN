@@ -22,7 +22,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
 
         private static void FlashToss1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.FlashToss1, PerkType.FlashToss)
+            builder
+                .Create(FeatType.FlashToss1, PerkType.FlashToss)
                 .Name("Flash Toss I")
                 .Level(1)
                 .HasActivationDelay(0f)
@@ -36,7 +37,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
 
         private static void FlashToss2(AbilityBuilder builder)
         {
-            builder.Create(FeatType.FlashToss2, PerkType.FlashToss)
+            builder
+                .Create(FeatType.FlashToss2, PerkType.FlashToss)
                 .Name("Flash Toss II")
                 .Level(2)
                 .HasActivationDelay(0f)

@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
 
         private static void RippleSlash1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.RippleSlash1, PerkType.RippleSlash)
+            builder
+                .Create(FeatType.RippleSlash1, PerkType.RippleSlash)
                 .Name("Ripple Slash")
                 .Level(1)
                 .HasActivationDelay(0f)

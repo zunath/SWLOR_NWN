@@ -54,7 +54,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void MindTrick1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.MindTrick1, PerkType.MindTrick)
+            builder
+                .Create(FeatType.MindTrick1, PerkType.MindTrick)
                 .Name("Mind Trick I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.MindTrick, 60f)
@@ -72,7 +73,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void MindTrick2(AbilityBuilder builder)
         {
-            builder.Create(FeatType.MindTrick2, PerkType.MindTrick)
+            builder
+                .Create(FeatType.MindTrick2, PerkType.MindTrick)
                 .Name("Mind Trick II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.MindTrick, 60f)

@@ -22,7 +22,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
 
         private static void WhirlwindAssault1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.WhirlwindAssault1, PerkType.WhirlwindAssault)
+            builder
+                .Create(FeatType.WhirlwindAssault1, PerkType.WhirlwindAssault)
                 .Name("Whirlwind Assault I")
                 .Level(1)
                 .HasActivationDelay(0f)
@@ -36,7 +37,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
 
         private static void WhirlwindAssault2(AbilityBuilder builder)
         {
-            builder.Create(FeatType.WhirlwindAssault2, PerkType.WhirlwindAssault)
+            builder
+                .Create(FeatType.WhirlwindAssault2, PerkType.WhirlwindAssault)
                 .Name("Whirlwind Assault II")
                 .Level(2)
                 .HasActivationDelay(0f)

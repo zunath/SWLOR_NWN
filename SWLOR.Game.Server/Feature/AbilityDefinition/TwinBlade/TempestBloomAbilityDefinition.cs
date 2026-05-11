@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
 
         private static void TempestBloom1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.TempestBloom1, PerkType.TempestBloom)
+            builder
+                .Create(FeatType.TempestBloom1, PerkType.TempestBloom)
                 .Name("Tempest Bloom")
                 .Level(1)
                 .HasActivationDelay(0f)

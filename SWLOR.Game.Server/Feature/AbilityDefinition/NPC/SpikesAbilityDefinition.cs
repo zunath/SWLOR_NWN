@@ -22,7 +22,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
 
         private void Spikes()
         {
-            _builder.Create(FeatType.Spikes, PerkType.Invalid)
+            _builder
+                .Create(FeatType.Spikes, PerkType.Invalid)
                 .Name("Spikes")
                 .HasActivationDelay(3.5f)
                 .HasRecastDelay(RecastGroup.Spikes, 20f)

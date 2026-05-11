@@ -22,7 +22,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
 
         private static void FlankingBarrage1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.FlankingBarrage1, PerkType.FlankingBarrage)
+            builder
+                .Create(FeatType.FlankingBarrage1, PerkType.FlankingBarrage)
                 .Name("Flanking Barrage")
                 .Level(1)
                 .HasActivationDelay(0f)

@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
 
         private static void SweepingAdvance1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.SweepingAdvance1, PerkType.SweepingAdvance)
+            builder
+                .Create(FeatType.SweepingAdvance1, PerkType.SweepingAdvance)
                 .Name("Sweeping Advance")
                 .Level(1)
                 .HasActivationDelay(0f)

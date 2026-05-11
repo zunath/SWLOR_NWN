@@ -55,7 +55,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
 
         private void Bite1()
         {
-            _builder.Create(FeatType.Bite1, PerkType.Bite)
+            _builder
+                .Create(FeatType.Bite1, PerkType.Bite)
                 .Name("Bite I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.Bite, 30f)
@@ -69,7 +70,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
 
         private void Bite2()
         {
-            _builder.Create(FeatType.Bite2, PerkType.Bite)
+            _builder
+                .Create(FeatType.Bite2, PerkType.Bite)
                 .Name("Bite II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.Bite, 30f)
@@ -83,7 +85,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
 
         private void Bite3()
         {
-            _builder.Create(FeatType.Bite3, PerkType.Bite)
+            _builder
+                .Create(FeatType.Bite3, PerkType.Bite)
                 .Name("Bite III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.Bite, 30f)

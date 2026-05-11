@@ -23,9 +23,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
 
         private static void TranqCone1(AbilityBuilder builder)
         {
-            var ability = builder.Create(FeatType.TranqCone1, PerkType.TranqCone)
+            var ability = builder
+                .Create(FeatType.TranqCone1, PerkType.TranqCone)
                 .Name("Tranq Cone I")
-                .Level(1);
+                .Level(1)
+                .HasRecastDelay(RecastGroup.TranqCone, 120f);
 
             ConfigureTranqCone(
                 ability,
@@ -37,9 +39,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
 
         private static void TranqCone2(AbilityBuilder builder)
         {
-            var ability = builder.Create(FeatType.TranqCone2, PerkType.TranqCone)
+            var ability = builder
+                .Create(FeatType.TranqCone2, PerkType.TranqCone)
                 .Name("Tranq Cone II")
-                .Level(2);
+                .Level(2)
+                .HasRecastDelay(RecastGroup.TranqCone, 120f);
 
             ConfigureTranqCone(
                 ability,

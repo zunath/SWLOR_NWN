@@ -19,7 +19,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
 
         private static void LifeSiphon(AbilityBuilder builder)
         {
-            builder.Create(FeatType.LifeSiphon1, PerkType.LifeSiphon)
+            builder
+                .Create(FeatType.LifeSiphon1, PerkType.LifeSiphon)
                 .Name("Life Siphon")
                 .Level(1)
                 .HasActivationDelay(0f)

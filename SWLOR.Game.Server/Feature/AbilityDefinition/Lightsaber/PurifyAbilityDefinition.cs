@@ -12,10 +12,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
         {
             var builder = new AbilityBuilder();
 
-            builder.Create(FeatType.Purify1, PerkType.Purify)
+            builder
+                .Create(FeatType.Purify1, PerkType.Purify)
                 .Name("Purify")
                 .Level(1)
                 .HasActivationDelay(0f)
+                .HasRecastDelay(RecastGroup.Purify, 30f)
                 .HasImpactAction((activator, target, level, targetLocation) => PurifyAndMirror(activator))
                 .IsCastedAbility()
                 .BreaksStealth()

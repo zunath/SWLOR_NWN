@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
 
         private static void SeveringToss1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.SeveringToss1, PerkType.SeveringToss)
+            builder
+                .Create(FeatType.SeveringToss1, PerkType.SeveringToss)
                 .Name("Severing Toss")
                 .Level(1)
                 .HasActivationDelay(0f)

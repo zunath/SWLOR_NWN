@@ -22,7 +22,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
 
         private void Talon()
         {
-            _builder.Create(FeatType.Talon, PerkType.Invalid)
+            _builder
+                .Create(FeatType.Talon, PerkType.Invalid)
                 .Name("Talon")
                 .HasActivationDelay(2.0f)
                 .HasRecastDelay(RecastGroup.Talon, 40f)

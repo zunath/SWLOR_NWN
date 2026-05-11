@@ -22,7 +22,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
 
         private static void FanTheHammer1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.FanTheHammer1, PerkType.FanTheHammer)
+            builder
+                .Create(FeatType.FanTheHammer1, PerkType.FanTheHammer)
                 .Name("Fan the Hammer I")
                 .Level(1)
                 .HasActivationDelay(0f)
@@ -36,7 +37,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
 
         private static void FanTheHammer2(AbilityBuilder builder)
         {
-            builder.Create(FeatType.FanTheHammer2, PerkType.FanTheHammer)
+            builder
+                .Create(FeatType.FanTheHammer2, PerkType.FanTheHammer)
                 .Name("Fan the Hammer II")
                 .Level(2)
                 .HasActivationDelay(0f)

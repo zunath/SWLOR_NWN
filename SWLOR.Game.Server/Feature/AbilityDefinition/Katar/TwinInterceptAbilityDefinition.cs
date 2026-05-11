@@ -12,10 +12,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
         {
             var builder = new AbilityBuilder();
 
-            builder.Create(FeatType.TwinIntercept1, PerkType.TwinIntercept)
+            builder
+                .Create(FeatType.TwinIntercept1, PerkType.TwinIntercept)
                 .Name("Twin Intercept")
                 .Level(1)
                 .HasActivationDelay(0f)
+                .HasRecastDelay(RecastGroup.TwinIntercept, 120f)
                 .RequiresTarget()
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {

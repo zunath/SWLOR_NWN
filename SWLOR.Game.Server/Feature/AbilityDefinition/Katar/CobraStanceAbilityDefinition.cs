@@ -12,7 +12,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
         {
             var builder = new AbilityBuilder();
 
-            ConfigureToggle(builder.Create(FeatType.CobraStance1, PerkType.CobraStance).Name("Cobra Stance").Level(1), typeof(CobraStanceStatusEffect));
+            ConfigureToggle(
+                builder
+                    .Create(FeatType.CobraStance1, PerkType.CobraStance)
+                    .Name("Cobra Stance")
+                    .Level(1)
+                    .HasRecastDelay(RecastGroup.CobraStance, 180f),
+                typeof(CobraStanceStatusEffect));
 
             return builder.Build();
         }

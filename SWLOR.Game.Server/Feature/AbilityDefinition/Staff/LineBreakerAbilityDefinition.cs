@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
 
         private static void LineBreaker1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.LineBreaker1, PerkType.LineBreaker)
+            builder
+                .Create(FeatType.LineBreaker1, PerkType.LineBreaker)
                 .Name("Line Breaker")
                 .Level(1)
                 .HasActivationDelay(0f)

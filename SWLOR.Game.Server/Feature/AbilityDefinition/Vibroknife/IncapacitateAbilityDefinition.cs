@@ -13,7 +13,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
         {
             var builder = new AbilityBuilder();
 
-            ConfigureAreaStatus(builder.Create(FeatType.Incapacitate1, PerkType.Incapacitate).Name("Incapacitate").Level(1), typeof(IncapacitateStatusEffect), 20f, 20, true);
+            ConfigureAreaStatus(
+                builder
+                    .Create(FeatType.Incapacitate1, PerkType.Incapacitate)
+                    .Name("Incapacitate")
+                    .Level(1)
+                    .HasRecastDelay(RecastGroup.Incapacitate, 120f),
+                typeof(IncapacitateStatusEffect),
+                20f,
+                20,
+                true);
 
             return builder.Build();
         }

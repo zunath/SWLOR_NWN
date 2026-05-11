@@ -60,7 +60,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
         private void WristRocket1()
         {
-            _builder.Create(FeatType.WristRocket1, PerkType.WristRocket)
+            _builder
+                .Create(FeatType.WristRocket1, PerkType.WristRocket)
                 .Name("Wrist Rocket I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.WristRocket, 24f)
@@ -83,7 +84,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
         private void WristRocket2()
         {
-            _builder.Create(FeatType.WristRocket2, PerkType.WristRocket)
+            _builder
+                .Create(FeatType.WristRocket2, PerkType.WristRocket)
                 .Name("Wrist Rocket II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.WristRocket, 24f)
@@ -107,7 +109,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
         private void WristRocket3()
         {
-            _builder.Create(FeatType.WristRocket3, PerkType.WristRocket)
+            _builder
+                .Create(FeatType.WristRocket3, PerkType.WristRocket)
                 .Name("Wrist Rocket III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.WristRocket, 24f)

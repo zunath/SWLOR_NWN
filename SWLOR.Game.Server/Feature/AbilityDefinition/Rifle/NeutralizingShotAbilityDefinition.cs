@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
 
         private static void NeutralizingShot1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.NeutralizingShot1, PerkType.NeutralizingShot)
+            builder
+                .Create(FeatType.NeutralizingShot1, PerkType.NeutralizingShot)
                 .Name("Neutralizing Shot")
                 .Level(1)
                 .HasActivationDelay(0f)

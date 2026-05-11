@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
 
         private static void CoveringStrike1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.CoveringStrike1, PerkType.CoveringStrike)
+            builder
+                .Create(FeatType.CoveringStrike1, PerkType.CoveringStrike)
                 .Name("Covering Strike")
                 .Level(1)
                 .HasActivationDelay(0f)

@@ -53,7 +53,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private void ForceSpark1()
         {
-            _builder.Create(FeatType.ForceSpark1, PerkType.ForceSpark)
+            _builder
+                .Create(FeatType.ForceSpark1, PerkType.ForceSpark)
                 .Name("Force Spark I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.ForceSpark, 6f)
@@ -72,7 +73,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private void ForceSpark2()
         {
-            _builder.Create(FeatType.ForceSpark2, PerkType.ForceSpark)
+            _builder
+                .Create(FeatType.ForceSpark2, PerkType.ForceSpark)
                 .Name("Force Spark II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.ForceSpark, 6f)
@@ -91,7 +93,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private void ForceSpark3()
         {
-            _builder.Create(FeatType.ForceSpark3, PerkType.ForceSpark)
+            _builder
+                .Create(FeatType.ForceSpark3, PerkType.ForceSpark)
                 .Name("Force Spark III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.ForceSpark, 6f)

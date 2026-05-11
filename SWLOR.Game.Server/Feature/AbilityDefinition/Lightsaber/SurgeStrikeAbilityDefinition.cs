@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
 
         private static void SurgeStrike1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.SurgeStrike1, PerkType.SurgeStrike)
+            builder
+                .Create(FeatType.SurgeStrike1, PerkType.SurgeStrike)
                 .Name("Surge Strike")
                 .Level(1)
                 .HasActivationDelay(0f)

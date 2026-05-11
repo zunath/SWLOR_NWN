@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
 
         private static void Headshot1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.Headshot1, PerkType.Headshot)
+            builder
+                .Create(FeatType.Headshot1, PerkType.Headshot)
                 .Name("Headshot")
                 .Level(1)
                 .HasActivationDelay(2f)

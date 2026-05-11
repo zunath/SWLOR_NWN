@@ -12,7 +12,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
         {
             var builder = new AbilityBuilder();
 
-            ConfigureToggle(builder.Create(FeatType.TempestStance1, PerkType.TempestStance).Name("Tempest Stance").Level(1), typeof(TempestStanceStatusEffect));
+            ConfigureToggle(
+                builder
+                    .Create(FeatType.TempestStance1, PerkType.TempestStance)
+                    .Name("Tempest Stance")
+                    .Level(1)
+                    .HasRecastDelay(RecastGroup.TempestStance, 180f),
+                typeof(TempestStanceStatusEffect));
 
             return builder.Build();
         }

@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
 
         private static void Bonecrusher1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.Bonecrusher1, PerkType.Bonecrusher)
+            builder
+                .Create(FeatType.Bonecrusher1, PerkType.Bonecrusher)
                 .Name("Bonecrusher")
                 .Level(1)
                 .HasActivationDelay(0f)

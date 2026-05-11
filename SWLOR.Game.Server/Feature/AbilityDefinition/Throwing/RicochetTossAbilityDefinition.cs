@@ -22,7 +22,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
 
         private static void RicochetToss1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.RicochetToss1, PerkType.RicochetToss)
+            builder
+                .Create(FeatType.RicochetToss1, PerkType.RicochetToss)
                 .Name("Ricochet Toss I")
                 .Level(1)
                 .HasActivationDelay(0f)
@@ -37,7 +38,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
 
         private static void RicochetToss2(AbilityBuilder builder)
         {
-            builder.Create(FeatType.RicochetToss2, PerkType.RicochetToss)
+            builder
+                .Create(FeatType.RicochetToss2, PerkType.RicochetToss)
                 .Name("Ricochet Toss II")
                 .Level(2)
                 .HasActivationDelay(0f)

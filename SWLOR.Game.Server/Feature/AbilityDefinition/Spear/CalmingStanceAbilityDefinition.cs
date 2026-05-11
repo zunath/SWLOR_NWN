@@ -12,7 +12,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
         {
             var builder = new AbilityBuilder();
 
-            ConfigureToggle(builder.Create(FeatType.CalmingStance1, PerkType.CalmingStance).Name("Calming Stance").Level(1), typeof(CalmingStanceStatusEffect));
+            ConfigureToggle(
+                builder
+                    .Create(FeatType.CalmingStance1, PerkType.CalmingStance)
+                    .Name("Calming Stance")
+                    .Level(1)
+                    .HasRecastDelay(RecastGroup.CalmingStance, 180f),
+                typeof(CalmingStanceStatusEffect));
 
             return builder.Build();
         }

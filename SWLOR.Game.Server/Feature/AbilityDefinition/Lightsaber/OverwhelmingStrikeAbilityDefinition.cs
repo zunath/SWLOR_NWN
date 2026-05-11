@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
 
         private static void OverwhelmingStrike1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.OverwhelmingStrike1, PerkType.OverwhelmingStrike)
+            builder
+                .Create(FeatType.OverwhelmingStrike1, PerkType.OverwhelmingStrike)
                 .Name("Overwhelming Strike")
                 .Level(1)
                 .HasActivationDelay(0f)

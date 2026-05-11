@@ -23,7 +23,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
 
         private static void PinningToss1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.PinningToss1, PerkType.PinningToss)
+            builder
+                .Create(FeatType.PinningToss1, PerkType.PinningToss)
                 .Name("Pinning Toss I")
                 .Level(1)
                 .HasActivationDelay(0f)
@@ -37,7 +38,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
 
         private static void PinningToss2(AbilityBuilder builder)
         {
-            builder.Create(FeatType.PinningToss2, PerkType.PinningToss)
+            builder
+                .Create(FeatType.PinningToss2, PerkType.PinningToss)
                 .Name("Pinning Toss II")
                 .Level(2)
                 .HasActivationDelay(0f)
@@ -51,7 +53,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
 
         private static void PinningToss3(AbilityBuilder builder)
         {
-            builder.Create(FeatType.PinningToss3, PerkType.PinningToss)
+            builder
+                .Create(FeatType.PinningToss3, PerkType.PinningToss)
                 .Name("Pinning Toss III")
                 .Level(3)
                 .HasActivationDelay(0f)

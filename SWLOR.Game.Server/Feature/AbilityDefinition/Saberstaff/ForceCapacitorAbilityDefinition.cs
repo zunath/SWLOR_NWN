@@ -12,7 +12,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
         {
             var builder = new AbilityBuilder();
 
-            ConfigureSelfStatus(builder.Create(FeatType.ForceCapacitor1, PerkType.ForceCapacitor).Name("Force Capacitor").Level(1), typeof(ForceCapacitorStatusEffect), 20f, 5);
+            ConfigureSelfStatus(
+                builder
+                    .Create(FeatType.ForceCapacitor1, PerkType.ForceCapacitor)
+                    .Name("Force Capacitor")
+                    .Level(1)
+                    .HasRecastDelay(RecastGroup.ForceCapacitor, 180f),
+                typeof(ForceCapacitorStatusEffect),
+                20f,
+                5);
 
             return builder.Build();
         }

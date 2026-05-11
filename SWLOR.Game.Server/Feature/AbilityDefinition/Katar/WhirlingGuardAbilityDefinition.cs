@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
 
         private static void WhirlingGuard1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.WhirlingGuard1, PerkType.WhirlingGuard)
+            builder
+                .Create(FeatType.WhirlingGuard1, PerkType.WhirlingGuard)
                 .Name("Whirling Guard")
                 .Level(1)
                 .HasActivationDelay(0f)

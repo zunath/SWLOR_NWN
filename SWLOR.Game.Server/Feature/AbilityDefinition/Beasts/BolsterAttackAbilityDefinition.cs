@@ -34,7 +34,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
 
         private void BolsterAttack1()
         {
-            _builder.Create(FeatType.BolsterAttack1, PerkType.BolsterAttack)
+            _builder
+                .Create(FeatType.BolsterAttack1, PerkType.BolsterAttack)
                 .Name("Bolster Attack I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.BolsterAttack, 60f)
@@ -48,7 +49,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
         }
         private void BolsterAttack2()
         {
-            _builder.Create(FeatType.BolsterAttack2, PerkType.BolsterAttack)
+            _builder
+                .Create(FeatType.BolsterAttack2, PerkType.BolsterAttack)
                 .Name("Bolster Attack II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.BolsterAttack, 60f)
@@ -62,7 +64,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
         }
         private void BolsterAttack3()
         {
-            _builder.Create(FeatType.BolsterAttack3, PerkType.BolsterAttack)
+            _builder
+                .Create(FeatType.BolsterAttack3, PerkType.BolsterAttack)
                 .Name("Bolster Attack III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.BolsterAttack, 60f)

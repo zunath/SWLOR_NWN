@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
 
         private static void RicochetShot1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.RicochetShot1, PerkType.RicochetShot)
+            builder
+                .Create(FeatType.RicochetShot1, PerkType.RicochetShot)
                 .Name("Ricochet Shot")
                 .Level(1)
                 .HasActivationDelay(0f)

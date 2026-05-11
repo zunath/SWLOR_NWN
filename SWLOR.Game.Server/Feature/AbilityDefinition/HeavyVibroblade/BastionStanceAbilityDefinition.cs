@@ -19,7 +19,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
 
         private static void BastionStance(AbilityBuilder builder)
         {
-            builder.Create(FeatType.BastionStance1, PerkType.BastionStance)
+            builder
+                .Create(FeatType.BastionStance1, PerkType.BastionStance)
                 .Name("Bastion Stance")
                 .Level(1)
                 .HasActivationDelay(0f)

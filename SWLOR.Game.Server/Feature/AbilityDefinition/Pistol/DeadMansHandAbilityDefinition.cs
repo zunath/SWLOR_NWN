@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
 
         private static void DeadMansHand1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.DeadMansHand1, PerkType.DeadMansHand)
+            builder
+                .Create(FeatType.DeadMansHand1, PerkType.DeadMansHand)
                 .Name("Dead Man's Hand")
                 .Level(1)
                 .HasActivationDelay(2f)

@@ -22,7 +22,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
 
         private static void RendingStrike1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.RendingStrike1, PerkType.RendingStrike)
+            builder
+                .Create(FeatType.RendingStrike1, PerkType.RendingStrike)
                 .Name("Rending Strike I")
                 .Level(1)
                 .HasActivationDelay(0f)
@@ -37,7 +38,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
 
         private static void RendingStrike2(AbilityBuilder builder)
         {
-            builder.Create(FeatType.RendingStrike2, PerkType.RendingStrike)
+            builder
+                .Create(FeatType.RendingStrike2, PerkType.RendingStrike)
                 .Name("Rending Strike II")
                 .Level(2)
                 .HasActivationDelay(0f)

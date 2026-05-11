@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
 
         private static void Worldbreaker1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.Worldbreaker1, PerkType.Worldbreaker)
+            builder
+                .Create(FeatType.Worldbreaker1, PerkType.Worldbreaker)
                 .Name("Worldbreaker")
                 .Level(1)
                 .HasActivationDelay(2f)

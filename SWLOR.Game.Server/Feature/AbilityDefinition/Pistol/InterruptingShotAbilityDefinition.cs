@@ -41,9 +41,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
             int level,
             int stamina)
         {
-            builder.Create(feat, PerkType.InterruptingShot)
+            builder
+                .Create(feat, PerkType.InterruptingShot)
                 .Name(name)
                 .Level(level)
+                .HasRecastDelay(RecastGroup.InterruptingShot, 45f)
                 .HasActivationDelay(0f)
                 .SkillType(Skill)
                 .IsSingleTargetAbility()

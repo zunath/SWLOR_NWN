@@ -12,7 +12,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
         {
             var builder = new AbilityBuilder();
 
-            ConfigurePartyStatus(builder.Create(FeatType.GuardiansInfluence1, PerkType.GuardiansInfluence).Name("Guardian's Influence").Level(1), typeof(DeflectingAuraStatusEffect), 60f, 15, false);
+            ConfigurePartyStatus(
+                builder
+                    .Create(FeatType.GuardiansInfluence1, PerkType.GuardiansInfluence)
+                    .Name("Guardian's Influence")
+                    .Level(1)
+                    .HasRecastDelay(RecastGroup.GuardiansInfluence, 300f),
+                typeof(DeflectingAuraStatusEffect),
+                60f,
+                15,
+                false);
 
             return builder.Build();
         }

@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
 
         private static void SoulSacrifice(AbilityBuilder builder)
         {
-            builder.Create(FeatType.SoulSacrifice1, PerkType.SoulSacrifice)
+            builder
+                .Create(FeatType.SoulSacrifice1, PerkType.SoulSacrifice)
                 .Name("Soul Sacrifice")
                 .Level(1)
                 .HasActivationDelay(0f)

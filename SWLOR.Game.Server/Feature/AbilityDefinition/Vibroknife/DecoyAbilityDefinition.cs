@@ -13,7 +13,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
         {
             var builder = new AbilityBuilder();
 
-            ConfigureAreaStatus(builder.Create(FeatType.Decoy1, PerkType.Decoy).Name("Decoy").Level(1), typeof(DecoyStatusEffect), 12f, 25, true);
+            ConfigureAreaStatus(
+                builder
+                    .Create(FeatType.Decoy1, PerkType.Decoy)
+                    .Name("Decoy")
+                    .Level(1)
+                    .HasRecastDelay(RecastGroup.Decoy, 30f),
+                typeof(DecoyStatusEffect),
+                12f,
+                25,
+                true);
 
             return builder.Build();
         }

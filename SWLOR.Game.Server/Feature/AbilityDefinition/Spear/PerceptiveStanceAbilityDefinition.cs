@@ -12,7 +12,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
         {
             var builder = new AbilityBuilder();
 
-            ConfigureToggle(builder.Create(FeatType.PerceptiveStance1, PerkType.PerceptiveStance).Name("Perceptive Stance").Level(1), typeof(PerceptiveStanceStatusEffect));
+            ConfigureToggle(
+                builder
+                    .Create(FeatType.PerceptiveStance1, PerkType.PerceptiveStance)
+                    .Name("Perceptive Stance")
+                    .Level(1)
+                    .HasRecastDelay(RecastGroup.PerceptiveStance, 180f),
+                typeof(PerceptiveStanceStatusEffect));
 
             return builder.Build();
         }

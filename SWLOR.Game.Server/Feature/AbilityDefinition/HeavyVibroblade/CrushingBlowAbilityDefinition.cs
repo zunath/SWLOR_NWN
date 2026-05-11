@@ -22,7 +22,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
 
         private static void CrushingBlow1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.CrushingBlow1, PerkType.CrushingBlow)
+            builder
+                .Create(FeatType.CrushingBlow1, PerkType.CrushingBlow)
                 .Name("Crushing Blow")
                 .Level(1)
                 .HasActivationDelay(0f)

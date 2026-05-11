@@ -20,7 +20,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
 
         private void IronShell()
         {
-            _builder.Create(FeatType.IronShell, PerkType.Invalid)
+            _builder
+                .Create(FeatType.IronShell, PerkType.Invalid)
                 .Name("Iron Shell")
                 .HasActivationDelay(2.0f)
                 .HasRecastDelay(RecastGroup.IronShell, 60f)

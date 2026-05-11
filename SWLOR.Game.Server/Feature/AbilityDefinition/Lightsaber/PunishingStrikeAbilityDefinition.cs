@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
 
         private static void PunishingStrike1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.PunishingStrike1, PerkType.PunishingStrike)
+            builder
+                .Create(FeatType.PunishingStrike1, PerkType.PunishingStrike)
                 .Name("Punishing Strike")
                 .Level(1)
                 .HasActivationDelay(0f)

@@ -13,10 +13,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
         {
             var builder = new AbilityBuilder();
 
-            builder.Create(FeatType.TauntingDeflection1, PerkType.TauntingDeflection)
+            builder
+                .Create(FeatType.TauntingDeflection1, PerkType.TauntingDeflection)
                 .Name("Taunting Deflection")
                 .Level(1)
                 .HasActivationDelay(0f)
+                .HasRecastDelay(RecastGroup.TauntingDeflection, 30f)
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
                     StatusEffect.ApplyStatusEffect(activator, activator, typeof(TauntingDeflectionStatusEffect), 30f);

@@ -19,7 +19,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
 
         private static void Rampart(AbilityBuilder builder)
         {
-            builder.Create(FeatType.Rampart1, PerkType.Rampart)
+            builder
+                .Create(FeatType.Rampart1, PerkType.Rampart)
                 .Name("Rampart")
                 .Level(1)
                 .HasActivationDelay(0f)

@@ -23,7 +23,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
 
         private static void DisarmingShot1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.DisarmingShot1, PerkType.DisarmingShot)
+            builder
+                .Create(FeatType.DisarmingShot1, PerkType.DisarmingShot)
                 .Name("Disarming Shot I")
                 .Level(1)
                 .HasActivationDelay(0f)
@@ -38,7 +39,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
 
         private static void DisarmingShot2(AbilityBuilder builder)
         {
-            builder.Create(FeatType.DisarmingShot2, PerkType.DisarmingShot)
+            builder
+                .Create(FeatType.DisarmingShot2, PerkType.DisarmingShot)
                 .Name("Disarming Shot II")
                 .Level(2)
                 .HasActivationDelay(0f)
@@ -53,7 +55,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
 
         private static void DisarmingShot3(AbilityBuilder builder)
         {
-            builder.Create(FeatType.DisarmingShot3, PerkType.DisarmingShot)
+            builder
+                .Create(FeatType.DisarmingShot3, PerkType.DisarmingShot)
                 .Name("Disarming Shot III")
                 .Level(3)
                 .HasActivationDelay(0f)

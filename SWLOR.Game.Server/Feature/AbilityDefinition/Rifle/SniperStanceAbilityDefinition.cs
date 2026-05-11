@@ -12,7 +12,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
         {
             var builder = new AbilityBuilder();
 
-            ConfigureToggle(builder.Create(FeatType.SniperStance1, PerkType.SniperStance).Name("Sniper Stance").Level(1), typeof(SniperStanceStatusEffect));
+            ConfigureToggle(
+                builder
+                    .Create(FeatType.SniperStance1, PerkType.SniperStance)
+                    .Name("Sniper Stance")
+                    .Level(1)
+                    .HasRecastDelay(RecastGroup.SniperStance, 180f),
+                typeof(SniperStanceStatusEffect));
 
             return builder.Build();
         }

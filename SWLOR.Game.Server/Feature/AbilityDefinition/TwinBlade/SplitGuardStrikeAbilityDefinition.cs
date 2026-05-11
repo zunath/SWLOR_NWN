@@ -23,7 +23,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
 
         private static void SplitGuardStrike1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.SplitGuardStrike1, PerkType.SplitGuardStrike)
+            builder
+                .Create(FeatType.SplitGuardStrike1, PerkType.SplitGuardStrike)
                 .Name("Split Guard Strike I")
                 .Level(1)
                 .HasActivationDelay(0f)
@@ -38,7 +39,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
 
         private static void SplitGuardStrike2(AbilityBuilder builder)
         {
-            builder.Create(FeatType.SplitGuardStrike2, PerkType.SplitGuardStrike)
+            builder
+                .Create(FeatType.SplitGuardStrike2, PerkType.SplitGuardStrike)
                 .Name("Split Guard Strike II")
                 .Level(2)
                 .HasActivationDelay(0f)
@@ -53,7 +55,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
 
         private static void SplitGuardStrike3(AbilityBuilder builder)
         {
-            builder.Create(FeatType.SplitGuardStrike3, PerkType.SplitGuardStrike)
+            builder
+                .Create(FeatType.SplitGuardStrike3, PerkType.SplitGuardStrike)
                 .Name("Split Guard Strike III")
                 .Level(3)
                 .HasActivationDelay(0f)

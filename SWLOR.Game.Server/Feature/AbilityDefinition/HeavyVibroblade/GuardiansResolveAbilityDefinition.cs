@@ -20,7 +20,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
 
         private static void GuardiansResolve(AbilityBuilder builder)
         {
-            builder.Create(FeatType.GuardiansResolve1, PerkType.GuardiansResolve)
+            builder
+                .Create(FeatType.GuardiansResolve1, PerkType.GuardiansResolve)
                 .Name("Guardian's Resolve")
                 .Level(1)
                 .HasActivationDelay(0f)

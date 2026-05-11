@@ -22,7 +22,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
 
         private static void SerpentsEclipse1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.SerpentsEclipse1, PerkType.SerpentsEclipse)
+            builder
+                .Create(FeatType.SerpentsEclipse1, PerkType.SerpentsEclipse)
                 .Name("Serpent's Eclipse")
                 .Level(1)
                 .HasActivationDelay(2f)

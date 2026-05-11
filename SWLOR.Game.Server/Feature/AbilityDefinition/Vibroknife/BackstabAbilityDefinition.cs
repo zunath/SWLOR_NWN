@@ -13,9 +13,35 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
         {
             var builder = new AbilityBuilder();
 
-            ConfigureCastedTarget(builder.Create(FeatType.Backstab1, PerkType.Backstab).Name("Backstab I").Level(1), SkillType.Vibroknife, 20, 4);
-            ConfigureCastedTarget(builder.Create(FeatType.Backstab2, PerkType.Backstab).Name("Backstab II").Level(2), SkillType.Vibroknife, 40, 6);
-            ConfigureCastedTarget(builder.Create(FeatType.Backstab3, PerkType.Backstab).Name("Backstab III").Level(3), SkillType.Vibroknife, 60, 8, 3, typeof(KnockdownStatusEffect));
+            ConfigureCastedTarget(
+                builder
+                    .Create(FeatType.Backstab1, PerkType.Backstab)
+                    .Name("Backstab I")
+                    .Level(1)
+                    .HasRecastDelay(RecastGroup.Backstab, 60f),
+                SkillType.Vibroknife,
+                20,
+                4);
+            ConfigureCastedTarget(
+                builder
+                    .Create(FeatType.Backstab2, PerkType.Backstab)
+                    .Name("Backstab II")
+                    .Level(2)
+                    .HasRecastDelay(RecastGroup.Backstab, 60f),
+                SkillType.Vibroknife,
+                40,
+                6);
+            ConfigureCastedTarget(
+                builder
+                    .Create(FeatType.Backstab3, PerkType.Backstab)
+                    .Name("Backstab III")
+                    .Level(3)
+                    .HasRecastDelay(RecastGroup.Backstab, 60f),
+                SkillType.Vibroknife,
+                60,
+                8,
+                3,
+                typeof(KnockdownStatusEffect));
 
             return builder.Build();
         }

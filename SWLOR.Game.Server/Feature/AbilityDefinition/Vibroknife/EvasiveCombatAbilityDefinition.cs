@@ -13,8 +13,26 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
         {
             var builder = new AbilityBuilder();
 
-            ConfigureSelfStatus(builder.Create(FeatType.EvasiveCombat1, PerkType.EvasiveCombat).Name("Evasive Combat I").Level(1), typeof(EvasiveCombatStatusEffect), 30f, 10, activator => Enmity.ModifyEnmityOnAll(activator, -150));
-            ConfigureSelfStatus(builder.Create(FeatType.EvasiveCombat2, PerkType.EvasiveCombat).Name("Evasive Combat II").Level(2), typeof(EvasiveCombatStatusEffect), 30f, 20, activator => Enmity.ModifyEnmityOnAll(activator, -250));
+            ConfigureSelfStatus(
+                builder
+                    .Create(FeatType.EvasiveCombat1, PerkType.EvasiveCombat)
+                    .Name("Evasive Combat I")
+                    .Level(1)
+                    .HasRecastDelay(RecastGroup.EvasiveCombat, 300f),
+                typeof(EvasiveCombatStatusEffect),
+                30f,
+                10,
+                activator => Enmity.ModifyEnmityOnAll(activator, -150));
+            ConfigureSelfStatus(
+                builder
+                    .Create(FeatType.EvasiveCombat2, PerkType.EvasiveCombat)
+                    .Name("Evasive Combat II")
+                    .Level(2)
+                    .HasRecastDelay(RecastGroup.EvasiveCombat, 300f),
+                typeof(EvasiveCombatStatusEffect),
+                30f,
+                20,
+                activator => Enmity.ModifyEnmityOnAll(activator, -250));
 
             return builder.Build();
         }

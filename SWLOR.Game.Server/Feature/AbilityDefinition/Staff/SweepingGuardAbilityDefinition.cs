@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
 
         private static void SweepingGuard1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.SweepingGuard1, PerkType.SweepingGuard)
+            builder
+                .Create(FeatType.SweepingGuard1, PerkType.SweepingGuard)
                 .Name("Sweeping Guard")
                 .Level(1)
                 .HasActivationDelay(0f)

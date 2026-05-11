@@ -12,7 +12,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
         {
             var builder = new AbilityBuilder();
 
-            ConfigureToggle(builder.Create(FeatType.CrusherStance1, PerkType.CrusherStance).Name("Crusher Stance").Level(1), typeof(CrusherStanceStatusEffect));
+            ConfigureToggle(
+                builder
+                    .Create(FeatType.CrusherStance1, PerkType.CrusherStance)
+                    .Name("Crusher Stance")
+                    .Level(1)
+                    .HasRecastDelay(RecastGroup.CrusherStance, 180f),
+                typeof(CrusherStanceStatusEffect));
 
             return builder.Build();
         }

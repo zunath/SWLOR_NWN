@@ -34,7 +34,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
 
         private void EvasiveManeuver1()
         {
-            _builder.Create(FeatType.EvasiveManeuver1, PerkType.EvasiveManeuver)
+            _builder
+                .Create(FeatType.EvasiveManeuver1, PerkType.EvasiveManeuver)
                 .Name("Evasive Maneuver I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.EvasiveManeuver, 60f)
@@ -48,7 +49,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
         }
         private void EvasiveManeuver2()
         {
-            _builder.Create(FeatType.EvasiveManeuver2, PerkType.EvasiveManeuver)
+            _builder
+                .Create(FeatType.EvasiveManeuver2, PerkType.EvasiveManeuver)
                 .Name("Evasive Maneuver II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.EvasiveManeuver, 60f)
@@ -62,7 +64,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
         }
         private void EvasiveManeuver3()
         {
-            _builder.Create(FeatType.EvasiveManeuver3, PerkType.EvasiveManeuver)
+            _builder
+                .Create(FeatType.EvasiveManeuver3, PerkType.EvasiveManeuver)
                 .Name("Evasive Maneuver III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.EvasiveManeuver, 60f)

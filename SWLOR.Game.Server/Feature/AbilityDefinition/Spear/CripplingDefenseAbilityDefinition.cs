@@ -12,7 +12,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
         {
             var builder = new AbilityBuilder();
 
-            ConfigureAreaStatus(builder.Create(FeatType.CripplingDefense1, PerkType.CripplingDefense).Name("Crippling Defense").Level(1), typeof(CripplingDefenseStatusEffect), 15f, 35, true, restoreStamina: 25);
+            ConfigureAreaStatus(
+                builder
+                    .Create(FeatType.CripplingDefense1, PerkType.CripplingDefense)
+                    .Name("Crippling Defense")
+                    .Level(1)
+                    .HasRecastDelay(RecastGroup.CripplingDefense, 1800f),
+                typeof(CripplingDefenseStatusEffect),
+                15f,
+                35,
+                true,
+                restoreStamina: 25);
 
             return builder.Build();
         }

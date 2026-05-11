@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
 
         private static void LowShot1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.LowShot1, PerkType.LowShot)
+            builder
+                .Create(FeatType.LowShot1, PerkType.LowShot)
                 .Name("Low Shot")
                 .Level(1)
                 .HasActivationDelay(0f)

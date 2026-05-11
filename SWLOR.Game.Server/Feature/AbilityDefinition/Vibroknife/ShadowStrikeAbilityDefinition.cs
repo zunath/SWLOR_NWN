@@ -23,7 +23,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
 
         private static void ShadowStrike1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.ShadowStrike1, PerkType.ShadowStrike)
+            builder
+                .Create(FeatType.ShadowStrike1, PerkType.ShadowStrike)
                 .Name("Shadow Strike I")
                 .Level(1)
                 .HasActivationDelay(0f)
@@ -38,7 +39,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
 
         private static void ShadowStrike2(AbilityBuilder builder)
         {
-            builder.Create(FeatType.ShadowStrike2, PerkType.ShadowStrike)
+            builder
+                .Create(FeatType.ShadowStrike2, PerkType.ShadowStrike)
                 .Name("Shadow Strike II")
                 .Level(2)
                 .HasActivationDelay(0f)

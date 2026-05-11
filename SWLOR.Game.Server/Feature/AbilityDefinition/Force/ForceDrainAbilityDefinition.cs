@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ForceDrain1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.ForceDrain1, PerkType.ForceDrain)
+            builder
+                .Create(FeatType.ForceDrain1, PerkType.ForceDrain)
                 .Name("Force Drain I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.ForceDrain, 12f)
@@ -36,7 +37,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ForceDrain2(AbilityBuilder builder)
         {
-            builder.Create(FeatType.ForceDrain2, PerkType.ForceDrain)
+            builder
+                .Create(FeatType.ForceDrain2, PerkType.ForceDrain)
                 .Name("Force Drain II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.ForceDrain, 12f)
@@ -51,7 +53,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ForceDrain3(AbilityBuilder builder)
         {
-            builder.Create(FeatType.ForceDrain3, PerkType.ForceDrain)
+            builder
+                .Create(FeatType.ForceDrain3, PerkType.ForceDrain)
                 .Name("Force Drain III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.ForceDrain, 12f)
@@ -66,7 +69,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ForceDrain4(AbilityBuilder builder)
         {
-            builder.Create(FeatType.ForceDrain4, PerkType.ForceDrain)
+            builder
+                .Create(FeatType.ForceDrain4, PerkType.ForceDrain)
                 .Name("Force Drain IV")
                 .Level(4)
                 .HasRecastDelay(RecastGroup.ForceDrain, 12f)
@@ -81,7 +85,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ForceDrain5(AbilityBuilder builder)
         {
-            builder.Create(FeatType.ForceDrain5, PerkType.ForceDrain)
+            builder
+                .Create(FeatType.ForceDrain5, PerkType.ForceDrain)
                 .Name("Force Drain V")
                 .HasRecastDelay(RecastGroup.ForceDrain, 12f)
                 .HasActivationDelay(2f)

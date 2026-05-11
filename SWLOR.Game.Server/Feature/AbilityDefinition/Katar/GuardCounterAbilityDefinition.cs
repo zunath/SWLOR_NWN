@@ -23,7 +23,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
 
         private static void GuardCounter1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.GuardCounter1, PerkType.GuardCounter)
+            builder
+                .Create(FeatType.GuardCounter1, PerkType.GuardCounter)
                 .Name("Guard Counter I")
                 .Level(1)
                 .HasActivationDelay(0f)
@@ -37,7 +38,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
 
         private static void GuardCounter2(AbilityBuilder builder)
         {
-            builder.Create(FeatType.GuardCounter2, PerkType.GuardCounter)
+            builder
+                .Create(FeatType.GuardCounter2, PerkType.GuardCounter)
                 .Name("Guard Counter II")
                 .Level(2)
                 .HasActivationDelay(0f)
@@ -51,7 +53,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
 
         private static void GuardCounter3(AbilityBuilder builder)
         {
-            builder.Create(FeatType.GuardCounter3, PerkType.GuardCounter)
+            builder
+                .Create(FeatType.GuardCounter3, PerkType.GuardCounter)
                 .Name("Guard Counter III")
                 .Level(3)
                 .HasActivationDelay(0f)

@@ -22,7 +22,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
 
         private static void CheapShot1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.CheapShot1, PerkType.CheapShot)
+            builder
+                .Create(FeatType.CheapShot1, PerkType.CheapShot)
                 .Name("Cheap Shot I")
                 .Level(1)
                 .HasActivationDelay(0f)
@@ -37,7 +38,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
 
         private static void CheapShot2(AbilityBuilder builder)
         {
-            builder.Create(FeatType.CheapShot2, PerkType.CheapShot)
+            builder
+                .Create(FeatType.CheapShot2, PerkType.CheapShot)
                 .Name("Cheap Shot II")
                 .Level(2)
                 .HasActivationDelay(0f)

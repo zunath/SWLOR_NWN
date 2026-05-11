@@ -23,7 +23,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
 
         private static void PiercingRound1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.PiercingRound1, PerkType.PiercingRound)
+            builder
+                .Create(FeatType.PiercingRound1, PerkType.PiercingRound)
                 .Name("Piercing Round I")
                 .Level(1)
                 .HasActivationDelay(0f)
@@ -38,7 +39,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
 
         private static void PiercingRound2(AbilityBuilder builder)
         {
-            builder.Create(FeatType.PiercingRound2, PerkType.PiercingRound)
+            builder
+                .Create(FeatType.PiercingRound2, PerkType.PiercingRound)
                 .Name("Piercing Round II")
                 .Level(2)
                 .HasActivationDelay(0f)
@@ -53,7 +55,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
 
         private static void PiercingRound3(AbilityBuilder builder)
         {
-            builder.Create(FeatType.PiercingRound3, PerkType.PiercingRound)
+            builder
+                .Create(FeatType.PiercingRound3, PerkType.PiercingRound)
                 .Name("Piercing Round III")
                 .Level(3)
                 .HasActivationDelay(0f)

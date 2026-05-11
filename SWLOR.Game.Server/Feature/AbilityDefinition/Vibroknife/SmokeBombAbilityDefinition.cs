@@ -23,7 +23,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
 
         private static void SmokeBomb(AbilityBuilder builder)
         {
-            builder.Create(FeatType.SmokeBomb, PerkType.SmokeBomb)
+            builder
+                .Create(FeatType.SmokeBomb, PerkType.SmokeBomb)
                 .Name("Smoke Bomb")
                 .Level(1)
                 .HasActivationDelay(2f)

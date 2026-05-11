@@ -22,7 +22,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
 
         private static void ForceNullification1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.ForceNullification1, PerkType.ForceNullification)
+            builder
+                .Create(FeatType.ForceNullification1, PerkType.ForceNullification)
                 .Name("Force Nullification")
                 .Level(1)
                 .HasActivationDelay(0f)

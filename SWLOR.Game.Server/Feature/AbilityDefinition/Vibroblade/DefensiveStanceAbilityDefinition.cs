@@ -12,8 +12,20 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
         {
             var builder = new AbilityBuilder();
 
-            ConfigureToggle(builder.Create(FeatType.DefensiveStance1, PerkType.DefensiveStance).Name("Defensive Stance I").Level(1), typeof(DefensiveStanceStatusEffect));
-            ConfigureToggle(builder.Create(FeatType.DefensiveStance2, PerkType.DefensiveStance).Name("Defensive Stance II").Level(2), typeof(DefensiveStanceStatusEffect));
+            ConfigureToggle(
+                builder
+                    .Create(FeatType.DefensiveStance1, PerkType.DefensiveStance)
+                    .Name("Defensive Stance I")
+                    .Level(1)
+                    .HasRecastDelay(RecastGroup.DefensiveStance, 180f),
+                typeof(DefensiveStanceStatusEffect));
+            ConfigureToggle(
+                builder
+                    .Create(FeatType.DefensiveStance2, PerkType.DefensiveStance)
+                    .Name("Defensive Stance II")
+                    .Level(2)
+                    .HasRecastDelay(RecastGroup.DefensiveStance, 180f),
+                typeof(DefensiveStanceStatusEffect));
 
             return builder.Build();
         }

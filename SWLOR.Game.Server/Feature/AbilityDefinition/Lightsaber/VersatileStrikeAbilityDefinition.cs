@@ -23,7 +23,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
 
         private static void VersatileStrike1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.VersatileStrike1, PerkType.VersatileStrike)
+            builder
+                .Create(FeatType.VersatileStrike1, PerkType.VersatileStrike)
                 .Name("Versatile Strike I")
                 .Level(1)
                 .HasActivationDelay(0f)
@@ -37,7 +38,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
 
         private static void VersatileStrike2(AbilityBuilder builder)
         {
-            builder.Create(FeatType.VersatileStrike2, PerkType.VersatileStrike)
+            builder
+                .Create(FeatType.VersatileStrike2, PerkType.VersatileStrike)
                 .Name("Versatile Strike II")
                 .Level(2)
                 .HasActivationDelay(0f)
@@ -51,7 +53,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
 
         private static void VersatileStrike3(AbilityBuilder builder)
         {
-            builder.Create(FeatType.VersatileStrike3, PerkType.VersatileStrike)
+            builder
+                .Create(FeatType.VersatileStrike3, PerkType.VersatileStrike)
                 .Name("Versatile Strike III")
                 .Level(3)
                 .HasActivationDelay(0f)

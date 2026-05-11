@@ -26,7 +26,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
         private void Tame()
         {
-            _builder.Create(FeatType.Tame, PerkType.Tame)
+            _builder
+                .Create(FeatType.Tame, PerkType.Tame)
                 .Name("Tame")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.Tame, 60f * 2f)

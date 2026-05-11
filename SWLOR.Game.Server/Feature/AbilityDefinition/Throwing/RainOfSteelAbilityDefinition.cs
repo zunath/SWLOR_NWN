@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
 
         private static void RainOfSteel1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.RainOfSteel1, PerkType.RainOfSteel)
+            builder
+                .Create(FeatType.RainOfSteel1, PerkType.RainOfSteel)
                 .Name("Rain of Steel")
                 .Level(1)
                 .HasActivationDelay(2f)

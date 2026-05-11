@@ -13,7 +13,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
         {
             var builder = new AbilityBuilder();
 
-            ConfigureSelfStatus(builder.Create(FeatType.AdamantineGuard1, PerkType.AdamantineGuard).Name("Adamantine Guard").Level(1), typeof(AdamantineGuardStatusEffect), 20f, 12);
+            ConfigureSelfStatus(
+                builder
+                    .Create(FeatType.AdamantineGuard1, PerkType.AdamantineGuard)
+                    .Name("Adamantine Guard")
+                    .Level(1)
+                    .HasRecastDelay(RecastGroup.AdamantineGuard, 1800f),
+                typeof(AdamantineGuardStatusEffect),
+                20f,
+                12);
 
             return builder.Build();
         }

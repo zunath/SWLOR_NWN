@@ -20,7 +20,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
 
         private void RousingShout()
         {
-            _builder.Create(FeatType.RousingShout, PerkType.RousingShout)
+            _builder
+                .Create(FeatType.RousingShout, PerkType.RousingShout)
                 .Name("Rousing Shout")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.RousingShout, 300f)

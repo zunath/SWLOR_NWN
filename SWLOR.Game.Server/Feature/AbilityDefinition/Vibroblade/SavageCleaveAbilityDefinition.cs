@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
 
         private static void SavageCleave1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.SavageCleave1, PerkType.SavageCleave)
+            builder
+                .Create(FeatType.SavageCleave1, PerkType.SavageCleave)
                 .Name("Savage Cleave")
                 .Level(1)
                 .HasActivationDelay(0f)

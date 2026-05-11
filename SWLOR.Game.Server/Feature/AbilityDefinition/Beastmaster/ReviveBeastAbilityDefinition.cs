@@ -55,7 +55,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
         private void ReviveBeast1()
         {
-            _builder.Create(FeatType.ReviveBeast1, PerkType.ReviveBeast)
+            _builder
+                .Create(FeatType.ReviveBeast1, PerkType.ReviveBeast)
                 .Name("Revive Beast I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.ReviveBeast, 60f * 5)
@@ -82,7 +83,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
         private void ReviveBeast2()
         {
-            _builder.Create(FeatType.ReviveBeast2, PerkType.ReviveBeast)
+            _builder
+                .Create(FeatType.ReviveBeast2, PerkType.ReviveBeast)
                 .Name("Revive Beast II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.ReviveBeast, 60f * 5)
@@ -110,7 +112,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
         private void ReviveBeast3()
         {
-            _builder.Create(FeatType.ReviveBeast3, PerkType.ReviveBeast)
+            _builder
+                .Create(FeatType.ReviveBeast3, PerkType.ReviveBeast)
                 .Name("Revive Beast III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.ReviveBeast, 60f * 5)

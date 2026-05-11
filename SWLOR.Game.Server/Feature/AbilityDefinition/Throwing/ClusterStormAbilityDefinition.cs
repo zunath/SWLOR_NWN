@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
 
         private static void ClusterStorm1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.ClusterStorm1, PerkType.ClusterStorm)
+            builder
+                .Create(FeatType.ClusterStorm1, PerkType.ClusterStorm)
                 .Name("Cluster Storm")
                 .Level(1)
                 .HasActivationDelay(0f)

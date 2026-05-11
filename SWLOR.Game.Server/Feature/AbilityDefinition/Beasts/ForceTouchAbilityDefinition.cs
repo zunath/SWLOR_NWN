@@ -55,7 +55,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
 
         private void ForceTouch1()
         {
-            _builder.Create(FeatType.ForceTouch1, PerkType.ForceTouch)
+            _builder
+                .Create(FeatType.ForceTouch1, PerkType.ForceTouch)
                 .Name("Force Touch I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.ForceTouch, 30f)
@@ -69,7 +70,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
 
         private void ForceTouch2()
         {
-            _builder.Create(FeatType.ForceTouch2, PerkType.ForceTouch)
+            _builder
+                .Create(FeatType.ForceTouch2, PerkType.ForceTouch)
                 .Name("Force Touch II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.ForceTouch, 30f)
@@ -83,7 +85,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
 
         private void ForceTouch3()
         {
-            _builder.Create(FeatType.ForceTouch3, PerkType.ForceTouch)
+            _builder
+                .Create(FeatType.ForceTouch3, PerkType.ForceTouch)
                 .Name("Force Touch III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.ForceTouch, 30f)

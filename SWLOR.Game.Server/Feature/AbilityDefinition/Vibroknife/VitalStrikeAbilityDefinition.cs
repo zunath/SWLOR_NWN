@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
 
         private static void VitalStrike1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.VitalStrike1, PerkType.VitalStrike)
+            builder
+                .Create(FeatType.VitalStrike1, PerkType.VitalStrike)
                 .Name("Vital Strike")
                 .Level(1)
                 .HasActivationDelay(0f)

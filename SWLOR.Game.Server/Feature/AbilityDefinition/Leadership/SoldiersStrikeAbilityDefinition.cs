@@ -19,7 +19,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
 
         private void SoldiersStrike()
         {
-            _builder.Create(FeatType.SoldiersStrike, PerkType.SoldiersStrike)
+            _builder
+                .Create(FeatType.SoldiersStrike, PerkType.SoldiersStrike)
                 .Name("Soldier's Strike")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.SoldiersStrike, 60f)

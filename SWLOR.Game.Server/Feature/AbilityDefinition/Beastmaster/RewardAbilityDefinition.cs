@@ -91,7 +91,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
         private void Reward1()
         {
-            _builder.Create(FeatType.Reward1, PerkType.Reward)
+            _builder
+                .Create(FeatType.Reward1, PerkType.Reward)
                 .Name("Reward I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.Reward, 18f)
@@ -107,7 +108,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
         private void Reward2()
         {
-            _builder.Create(FeatType.Reward2, PerkType.Reward)
+            _builder
+                .Create(FeatType.Reward2, PerkType.Reward)
                 .Name("Reward II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.Reward, 18f)
@@ -123,7 +125,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
         private void Reward3()
         {
-            _builder.Create(FeatType.Reward3, PerkType.Reward)
+            _builder
+                .Create(FeatType.Reward3, PerkType.Reward)
                 .Name("Reward III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.Reward, 18f)

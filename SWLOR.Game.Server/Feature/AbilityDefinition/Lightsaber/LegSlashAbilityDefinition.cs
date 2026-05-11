@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
 
         private static void LegSlash1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.LegSlash1, PerkType.LegSlash)
+            builder
+                .Create(FeatType.LegSlash1, PerkType.LegSlash)
                 .Name("Leg Slash")
                 .Level(1)
                 .HasActivationDelay(1f)

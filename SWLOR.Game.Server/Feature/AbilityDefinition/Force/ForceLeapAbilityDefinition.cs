@@ -115,7 +115,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ForceLeap1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.ForceLeap1, PerkType.ForceLeap)
+            builder
+                .Create(FeatType.ForceLeap1, PerkType.ForceLeap)
                 .Name("Force Leap I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.ForceLeap, 30f)
@@ -130,7 +131,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         }
         private static void ForceLeap2(AbilityBuilder builder)
         {
-            builder.Create(FeatType.ForceLeap2, PerkType.ForceLeap)
+            builder
+                .Create(FeatType.ForceLeap2, PerkType.ForceLeap)
                 .Name("Force Leap II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.ForceLeap, 30f)
@@ -145,7 +147,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         }
         private static void ForceLeap3(AbilityBuilder builder)
         {
-            builder.Create(FeatType.ForceLeap3, PerkType.ForceLeap)
+            builder
+                .Create(FeatType.ForceLeap3, PerkType.ForceLeap)
                 .Name("Force Leap III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.ForceLeap, 30f)

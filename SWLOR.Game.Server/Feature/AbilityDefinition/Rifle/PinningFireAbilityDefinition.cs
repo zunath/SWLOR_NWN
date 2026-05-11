@@ -22,7 +22,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
 
         private static void PinningFire1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.PinningFire1, PerkType.PinningFire)
+            builder
+                .Create(FeatType.PinningFire1, PerkType.PinningFire)
                 .Name("Pinning Fire I")
                 .Level(1)
                 .HasActivationDelay(0f)
@@ -37,7 +38,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
 
         private static void PinningFire2(AbilityBuilder builder)
         {
-            builder.Create(FeatType.PinningFire2, PerkType.PinningFire)
+            builder
+                .Create(FeatType.PinningFire2, PerkType.PinningFire)
                 .Name("Pinning Fire II")
                 .Level(2)
                 .HasActivationDelay(0f)

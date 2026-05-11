@@ -23,7 +23,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
 
         private static void FocusedArc1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.FocusedArc1, PerkType.FocusedArc)
+            builder
+                .Create(FeatType.FocusedArc1, PerkType.FocusedArc)
                 .Name("Focused Arc I")
                 .Level(1)
                 .HasActivationDelay(0f)
@@ -38,7 +39,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
 
         private static void FocusedArc2(AbilityBuilder builder)
         {
-            builder.Create(FeatType.FocusedArc2, PerkType.FocusedArc)
+            builder
+                .Create(FeatType.FocusedArc2, PerkType.FocusedArc)
                 .Name("Focused Arc II")
                 .Level(2)
                 .HasActivationDelay(0f)
@@ -53,7 +55,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
 
         private static void FocusedArc3(AbilityBuilder builder)
         {
-            builder.Create(FeatType.FocusedArc3, PerkType.FocusedArc)
+            builder
+                .Create(FeatType.FocusedArc3, PerkType.FocusedArc)
                 .Name("Focused Arc III")
                 .Level(3)
                 .HasActivationDelay(0f)

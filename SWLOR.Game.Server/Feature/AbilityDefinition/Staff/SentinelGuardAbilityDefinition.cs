@@ -12,7 +12,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
         {
             var builder = new AbilityBuilder();
 
-            ConfigurePartyStatus(builder.Create(FeatType.SentinelGuard1, PerkType.SentinelGuard).Name("Sentinel Guard").Level(1), typeof(SentinelGuardStatusEffect), 12f, 10, true);
+            ConfigurePartyStatus(
+                builder
+                    .Create(FeatType.SentinelGuard1, PerkType.SentinelGuard)
+                    .Name("Sentinel Guard")
+                    .Level(1)
+                    .HasRecastDelay(RecastGroup.SentinelGuard, 120f),
+                typeof(SentinelGuardStatusEffect),
+                12f,
+                10,
+                true);
 
             return builder.Build();
         }

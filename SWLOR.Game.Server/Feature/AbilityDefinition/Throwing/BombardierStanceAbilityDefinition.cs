@@ -11,9 +11,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
         {
             var builder = new AbilityBuilder();
 
-            builder.Create(FeatType.BombardierStance1, PerkType.BombardierStance)
+            builder
+                .Create(FeatType.BombardierStance1, PerkType.BombardierStance)
                 .Name("Bombardier Stance")
-                .Level(1);
+                .Level(1)
+                .HasRecastDelay(RecastGroup.BombardierStance, 180f);
             ConfigureToggle(builder, typeof(BombardierStanceStatusEffect));
 
             return builder.Build();

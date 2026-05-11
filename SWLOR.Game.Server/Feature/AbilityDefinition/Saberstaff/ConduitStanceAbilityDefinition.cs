@@ -12,7 +12,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
         {
             var builder = new AbilityBuilder();
 
-            ConfigureToggle(builder.Create(FeatType.ConduitStance1, PerkType.ConduitStance).Name("Conduit Stance").Level(1), typeof(ConduitStanceStatusEffect));
+            ConfigureToggle(
+                builder
+                    .Create(FeatType.ConduitStance1, PerkType.ConduitStance)
+                    .Name("Conduit Stance")
+                    .Level(1)
+                    .HasRecastDelay(RecastGroup.ConduitStance, 180f),
+                typeof(ConduitStanceStatusEffect));
 
             return builder.Build();
         }

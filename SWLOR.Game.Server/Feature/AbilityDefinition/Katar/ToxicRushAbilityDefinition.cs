@@ -12,7 +12,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
         {
             var builder = new AbilityBuilder();
 
-            ConfigureSelfStatus(builder.Create(FeatType.ToxicRush1, PerkType.ToxicRush).Name("Toxic Rush").Level(1), typeof(ToxicRushStatusEffect), 20f, 8);
+            ConfigureSelfStatus(
+                builder
+                    .Create(FeatType.ToxicRush1, PerkType.ToxicRush)
+                    .Name("Toxic Rush")
+                    .Level(1)
+                    .HasRecastDelay(RecastGroup.ToxicRush, 120f),
+                typeof(ToxicRushStatusEffect),
+                20f,
+                8);
 
             return builder.Build();
         }

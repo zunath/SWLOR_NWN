@@ -45,9 +45,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
             int level,
             int stamina)
         {
-            builder.Create(feat, PerkType.PiercingToss)
+            builder
+                .Create(feat, PerkType.PiercingToss)
                 .Name(name)
                 .Level(level)
+                .HasRecastDelay(RecastGroup.PiercingToss, 30f)
                 .HasActivationDelay(0f)
                 .SkillType(Skill)
                 .IsSingleTargetAbility()

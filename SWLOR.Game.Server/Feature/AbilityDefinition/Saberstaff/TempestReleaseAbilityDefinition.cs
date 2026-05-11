@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
 
         private static void TempestRelease1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.TempestRelease1, PerkType.TempestRelease)
+            builder
+                .Create(FeatType.TempestRelease1, PerkType.TempestRelease)
                 .Name("Tempest Release")
                 .Level(1)
                 .HasActivationDelay(0f)

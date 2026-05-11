@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
 
         private static void SuppressiveLine1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.SuppressiveLine1, PerkType.SuppressiveLine)
+            builder
+                .Create(FeatType.SuppressiveLine1, PerkType.SuppressiveLine)
                 .Name("Suppressive Line")
                 .Level(1)
                 .HasActivationDelay(0f)

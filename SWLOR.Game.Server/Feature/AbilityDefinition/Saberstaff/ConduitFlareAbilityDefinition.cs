@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
 
         private static void ConduitFlare1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.ConduitFlare1, PerkType.ConduitFlare)
+            builder
+                .Create(FeatType.ConduitFlare1, PerkType.ConduitFlare)
                 .Name("Conduit Flare")
                 .Level(1)
                 .HasActivationDelay(0f)

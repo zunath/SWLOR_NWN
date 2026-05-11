@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
 
         private static void BreachRound1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.BreachRound1, PerkType.BreachRound)
+            builder
+                .Create(FeatType.BreachRound1, PerkType.BreachRound)
                 .Name("Breach Round")
                 .Level(1)
                 .HasActivationDelay(0f)

@@ -22,7 +22,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
 
         private static void ConcussiveToss1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.ConcussiveToss1, PerkType.ConcussiveToss)
+            builder
+                .Create(FeatType.ConcussiveToss1, PerkType.ConcussiveToss)
                 .Name("Concussive Toss I")
                 .Level(1)
                 .HasActivationDelay(0f)
@@ -36,7 +37,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
 
         private static void ConcussiveToss2(AbilityBuilder builder)
         {
-            builder.Create(FeatType.ConcussiveToss2, PerkType.ConcussiveToss)
+            builder
+                .Create(FeatType.ConcussiveToss2, PerkType.ConcussiveToss)
                 .Name("Concussive Toss II")
                 .Level(2)
                 .HasActivationDelay(0f)

@@ -22,7 +22,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
 
         private static void ExposeWeakPoint1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.ExposeWeakPoint1, PerkType.ExposeWeakPoint)
+            builder
+                .Create(FeatType.ExposeWeakPoint1, PerkType.ExposeWeakPoint)
                 .Name("Expose Weak Point")
                 .Level(1)
                 .HasActivationDelay(0f)

@@ -12,7 +12,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
         {
             var builder = new AbilityBuilder();
 
-            ConfigureAreaStatus(builder.Create(FeatType.Forcebane1, PerkType.Forcebane).Name("Forcebane").Level(1), typeof(ForcebaneStatusEffect), 8f, 50, false, fpDrainPercent: 50);
+            ConfigureAreaStatus(
+                builder
+                    .Create(FeatType.Forcebane1, PerkType.Forcebane)
+                    .Name("Forcebane")
+                    .Level(1)
+                    .HasRecastDelay(RecastGroup.Forcebane, 1800f),
+                typeof(ForcebaneStatusEffect),
+                8f,
+                50,
+                false,
+                fpDrainPercent: 50);
 
             return builder.Build();
         }

@@ -22,7 +22,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
 
         private static void BreachStrike1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.BreachStrike1, PerkType.BreachStrike)
+            builder
+                .Create(FeatType.BreachStrike1, PerkType.BreachStrike)
                 .Name("Breach Strike")
                 .Level(1)
                 .HasActivationDelay(0f)

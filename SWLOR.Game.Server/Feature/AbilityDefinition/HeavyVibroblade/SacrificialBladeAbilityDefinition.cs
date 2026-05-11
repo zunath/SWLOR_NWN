@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
 
         private static void SacrificialBlade1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.SacrificialBlade1, PerkType.SacrificialBlade)
+            builder
+                .Create(FeatType.SacrificialBlade1, PerkType.SacrificialBlade)
                 .Name("Sacrificial Blade")
                 .Level(1)
                 .HasActivationDelay(0f)

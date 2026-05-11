@@ -12,7 +12,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
         {
             var builder = new AbilityBuilder();
 
-            ConfigureToggle(builder.Create(FeatType.IronWallStance1, PerkType.IronWallStance).Name("Iron Wall Stance").Level(1), typeof(IronWallStanceStatusEffect));
+            ConfigureToggle(
+                builder
+                    .Create(FeatType.IronWallStance1, PerkType.IronWallStance)
+                    .Name("Iron Wall Stance")
+                    .Level(1)
+                    .HasRecastDelay(RecastGroup.IronWallStance, 180f),
+                typeof(IronWallStanceStatusEffect));
 
             return builder.Build();
         }

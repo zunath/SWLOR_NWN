@@ -13,7 +13,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
         {
             var builder = new AbilityBuilder();
 
-            ConfigureToggle(builder.Create(FeatType.TwinGuardStance1, PerkType.TwinGuardStance).Name("Twin Guard Stance").Level(1), typeof(TwinGuardStanceStatusEffect));
+            ConfigureToggle(
+                builder
+                    .Create(FeatType.TwinGuardStance1, PerkType.TwinGuardStance)
+                    .Name("Twin Guard Stance")
+                    .Level(1)
+                    .HasRecastDelay(RecastGroup.TwinGuardStance, 180f),
+                typeof(TwinGuardStanceStatusEffect));
 
             return builder.Build();
         }

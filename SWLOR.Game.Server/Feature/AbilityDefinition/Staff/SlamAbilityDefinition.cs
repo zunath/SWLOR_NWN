@@ -13,9 +13,39 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
         {
             var builder = new AbilityBuilder();
 
-            ConfigureWeapon(builder.Create(FeatType.Slam1, PerkType.Slam).Name("Slam I").Level(1), SkillType.Staff, 8, 8, typeof(BlindStatusEffect), 4);
-            ConfigureWeapon(builder.Create(FeatType.Slam2, PerkType.Slam).Name("Slam II").Level(2), SkillType.Staff, 20, 10, typeof(BlindStatusEffect), 5);
-            ConfigureWeapon(builder.Create(FeatType.Slam3, PerkType.Slam).Name("Slam III").Level(3), SkillType.Staff, 32, 12, typeof(BlindStatusEffect), 7);
+            ConfigureWeapon(
+                builder
+                    .Create(FeatType.Slam1, PerkType.Slam)
+                    .Name("Slam I")
+                    .Level(1)
+                    .HasRecastDelay(RecastGroup.Slam, 30f),
+                SkillType.Staff,
+                8,
+                8,
+                typeof(BlindStatusEffect),
+                4);
+            ConfigureWeapon(
+                builder
+                    .Create(FeatType.Slam2, PerkType.Slam)
+                    .Name("Slam II")
+                    .Level(2)
+                    .HasRecastDelay(RecastGroup.Slam, 30f),
+                SkillType.Staff,
+                20,
+                10,
+                typeof(BlindStatusEffect),
+                5);
+            ConfigureWeapon(
+                builder
+                    .Create(FeatType.Slam3, PerkType.Slam)
+                    .Name("Slam III")
+                    .Level(3)
+                    .HasRecastDelay(RecastGroup.Slam, 30f),
+                SkillType.Staff,
+                32,
+                12,
+                typeof(BlindStatusEffect),
+                7);
 
             return builder.Build();
         }

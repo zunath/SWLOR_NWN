@@ -75,7 +75,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
         private void DeflectorShield1()
         {
-            _builder.Create(FeatType.DeflectorShield1, PerkType.DeflectorShield)
+            _builder
+                .Create(FeatType.DeflectorShield1, PerkType.DeflectorShield)
                 .Name("Deflector Shield I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.DeflectorShield, 600f)
@@ -92,7 +93,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
         private void DeflectorShield2()
         {
-            _builder.Create(FeatType.DeflectorShield2, PerkType.DeflectorShield)
+            _builder
+                .Create(FeatType.DeflectorShield2, PerkType.DeflectorShield)
                 .Name("Deflector Shield II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.DeflectorShield, 600f)
@@ -109,7 +111,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
         private void DeflectorShield3()
         {
-            _builder.Create(FeatType.DeflectorShield3, PerkType.DeflectorShield)
+            _builder
+                .Create(FeatType.DeflectorShield3, PerkType.DeflectorShield)
                 .Name("Deflector Shield III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.DeflectorShield, 600f)

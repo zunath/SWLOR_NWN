@@ -20,7 +20,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
 
         private static void SoulAscension(AbilityBuilder builder)
         {
-            builder.Create(FeatType.SoulAscension1, PerkType.SoulAscension)
+            builder
+                .Create(FeatType.SoulAscension1, PerkType.SoulAscension)
                 .Name("Soul Ascension")
                 .Level(1)
                 .HasActivationDelay(0f)

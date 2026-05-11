@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
 
         private void Roar()
         {
-            _builder.Create(FeatType.Roar, PerkType.Invalid)
+            _builder
+                .Create(FeatType.Roar, PerkType.Invalid)
                 .Name("Roar")
                 .HasActivationDelay(2f)
                 .IsCastedAbility()

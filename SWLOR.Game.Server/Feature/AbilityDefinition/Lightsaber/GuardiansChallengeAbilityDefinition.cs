@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
 
         private static void GuardiansChallenge1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.GuardiansChallenge1, PerkType.GuardiansChallenge)
+            builder
+                .Create(FeatType.GuardiansChallenge1, PerkType.GuardiansChallenge)
                 .Name("Guardian's Challenge")
                 .Level(1)
                 .HasActivationDelay(0f)

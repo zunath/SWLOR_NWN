@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
 
         private static void SmokeRound1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.SmokeRound1, PerkType.SmokeRound)
+            builder
+                .Create(FeatType.SmokeRound1, PerkType.SmokeRound)
                 .Name("Smoke Round")
                 .Level(1)
                 .HasActivationDelay(0f)

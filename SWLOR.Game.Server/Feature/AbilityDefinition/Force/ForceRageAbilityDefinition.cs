@@ -22,7 +22,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private void ForceRage1()
         {
-            _builder.Create(FeatType.ForceRage1, PerkType.ForceRage)
+            _builder
+                .Create(FeatType.ForceRage1, PerkType.ForceRage)
                 .Name("Force Rage I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.ForceRage, 30f)
@@ -45,7 +46,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private void ForceRage2()
         {
-            _builder.Create(FeatType.ForceRage2, PerkType.ForceRage)
+            _builder
+                .Create(FeatType.ForceRage2, PerkType.ForceRage)
                 .Name("Force Rage II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.ForceRage, 30f)

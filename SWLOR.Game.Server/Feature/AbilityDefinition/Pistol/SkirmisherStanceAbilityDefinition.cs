@@ -11,9 +11,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
         {
             var builder = new AbilityBuilder();
 
-            builder.Create(FeatType.SkirmisherStance1, PerkType.SkirmisherStance)
+            builder
+                .Create(FeatType.SkirmisherStance1, PerkType.SkirmisherStance)
                 .Name("Skirmisher Stance")
-                .Level(1);
+                .Level(1)
+                .HasRecastDelay(RecastGroup.SkirmisherStance, 180f);
             ConfigureToggle(builder, typeof(SkirmisherStanceStatusEffect));
 
             return builder.Build();

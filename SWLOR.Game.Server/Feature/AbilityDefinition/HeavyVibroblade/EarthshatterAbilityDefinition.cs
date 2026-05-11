@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
 
         private static void Earthshatter1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.Earthshatter1, PerkType.Earthshatter)
+            builder
+                .Create(FeatType.Earthshatter1, PerkType.Earthshatter)
                 .Name("Earthshatter")
                 .Level(1)
                 .HasActivationDelay(0f)

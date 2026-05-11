@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
 
         private static void CoveringClaws1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.CoveringClaws1, PerkType.CoveringClaws)
+            builder
+                .Create(FeatType.CoveringClaws1, PerkType.CoveringClaws)
                 .Name("Covering Claws")
                 .Level(1)
                 .HasActivationDelay(0f)

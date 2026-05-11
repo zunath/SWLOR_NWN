@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
 
         private static void PointBlankBurst1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.PointBlankBurst1, PerkType.PointBlankBurst)
+            builder
+                .Create(FeatType.PointBlankBurst1, PerkType.PointBlankBurst)
                 .Name("Point Blank Burst")
                 .Level(1)
                 .HasActivationDelay(0f)

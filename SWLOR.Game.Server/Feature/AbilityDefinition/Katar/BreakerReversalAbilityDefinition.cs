@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
 
         private static void BreakerReversal1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.BreakerReversal1, PerkType.BreakerReversal)
+            builder
+                .Create(FeatType.BreakerReversal1, PerkType.BreakerReversal)
                 .Name("Breaker Reversal")
                 .Level(1)
                 .HasActivationDelay(0f)

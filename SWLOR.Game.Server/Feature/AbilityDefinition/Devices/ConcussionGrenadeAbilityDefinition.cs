@@ -60,7 +60,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
         private void ConcussionGrenade1()
         {
-            _builder.Create(FeatType.ConcussionGrenade1, PerkType.ConcussionGrenade)
+            _builder
+                .Create(FeatType.ConcussionGrenade1, PerkType.ConcussionGrenade)
                 .Name("Concussion Grenade I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.ConcussionGrenade, 24f)
@@ -85,7 +86,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
         private void ConcussionGrenade2()
         {
-            _builder.Create(FeatType.ConcussionGrenade2, PerkType.ConcussionGrenade)
+            _builder
+                .Create(FeatType.ConcussionGrenade2, PerkType.ConcussionGrenade)
                 .Name("Concussion Grenade II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.ConcussionGrenade, 24f)
@@ -111,7 +113,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
         private void ConcussionGrenade3()
         {
-            _builder.Create(FeatType.ConcussionGrenade3, PerkType.ConcussionGrenade)
+            _builder
+                .Create(FeatType.ConcussionGrenade3, PerkType.ConcussionGrenade)
                 .Name("Concussion Grenade III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.ConcussionGrenade, 24f)

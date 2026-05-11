@@ -12,7 +12,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
         {
             var builder = new AbilityBuilder();
 
-            ConfigureToggle(builder.Create(FeatType.DuelistStance1, PerkType.DuelistStance).Name("Duelist Stance").Level(1), typeof(DuelistStanceStatusEffect));
+            ConfigureToggle(
+                builder
+                    .Create(FeatType.DuelistStance1, PerkType.DuelistStance)
+                    .Name("Duelist Stance")
+                    .Level(1)
+                    .HasRecastDelay(RecastGroup.DuelistStance, 180f),
+                typeof(DuelistStanceStatusEffect));
 
             return builder.Build();
         }

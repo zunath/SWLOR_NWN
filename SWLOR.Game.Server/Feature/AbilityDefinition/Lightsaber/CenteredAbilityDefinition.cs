@@ -21,12 +21,28 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
 
         private static void Centering1(AbilityBuilder builder)
         {
-            ConfigureSelfStatus(builder.Create(FeatType.Centering1, PerkType.Centering).Name("Centering I").Level(1), typeof(CenteringStatusEffect), 30f, 10, activator => Enmity.ModifyEnmityOnAll(activator, -250));
+            ConfigureSelfStatus(
+                builder
+                    .Create(FeatType.Centering1, PerkType.Centering)
+                    .Name("Centering I")
+                    .Level(1),
+                typeof(CenteringStatusEffect),
+                30f,
+                10,
+                activator => Enmity.ModifyEnmityOnAll(activator, -250));
         }
 
         private static void Centering2(AbilityBuilder builder)
         {
-            ConfigureSelfStatus(builder.Create(FeatType.Centering2, PerkType.Centering).Name("Centering II").Level(2), typeof(CenteringStatusEffect), 30f, 20, activator => Enmity.ModifyEnmityOnAll(activator, -500));
+            ConfigureSelfStatus(
+                builder
+                    .Create(FeatType.Centering2, PerkType.Centering)
+                    .Name("Centering II")
+                    .Level(2),
+                typeof(CenteringStatusEffect),
+                30f,
+                20,
+                activator => Enmity.ModifyEnmityOnAll(activator, -500));
         }
     }
 }

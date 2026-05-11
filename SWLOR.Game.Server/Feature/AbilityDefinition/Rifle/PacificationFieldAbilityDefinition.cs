@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
 
         private static void PacificationField1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.PacificationField1, PerkType.PacificationField)
+            builder
+                .Create(FeatType.PacificationField1, PerkType.PacificationField)
                 .Name("Pacification Field")
                 .Level(1)
                 .HasActivationDelay(0f)

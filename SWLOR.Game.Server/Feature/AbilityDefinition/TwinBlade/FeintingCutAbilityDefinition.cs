@@ -23,7 +23,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
 
         private static void FeintingCut1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.FeintingCut1, PerkType.FeintingCut)
+            builder
+                .Create(FeatType.FeintingCut1, PerkType.FeintingCut)
                 .Name("Feinting Cut I")
                 .Level(1)
                 .HasActivationDelay(0f)
@@ -38,7 +39,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
 
         private static void FeintingCut2(AbilityBuilder builder)
         {
-            builder.Create(FeatType.FeintingCut2, PerkType.FeintingCut)
+            builder
+                .Create(FeatType.FeintingCut2, PerkType.FeintingCut)
                 .Name("Feinting Cut II")
                 .Level(2)
                 .HasActivationDelay(0f)
@@ -53,7 +55,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
 
         private static void FeintingCut3(AbilityBuilder builder)
         {
-            builder.Create(FeatType.FeintingCut3, PerkType.FeintingCut)
+            builder
+                .Create(FeatType.FeintingCut3, PerkType.FeintingCut)
                 .Name("Feinting Cut III")
                 .Level(3)
                 .HasActivationDelay(0f)

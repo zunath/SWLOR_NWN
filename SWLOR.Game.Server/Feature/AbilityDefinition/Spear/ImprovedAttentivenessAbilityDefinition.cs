@@ -11,7 +11,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
         {
             var builder = new AbilityBuilder();
 
-            ConfigurePartyStatus(builder.Create(FeatType.ImprovedAttentiveness1, PerkType.ImprovedAttentiveness).Name("Improved Attentiveness").Level(1), typeof(ImprovedAttentivenessStatusEffect), 60f, 25, false);
+            ConfigurePartyStatus(
+                builder
+                    .Create(FeatType.ImprovedAttentiveness1, PerkType.ImprovedAttentiveness)
+                    .Name("Improved Attentiveness")
+                    .Level(1)
+                    .HasRecastDelay(RecastGroup.ImprovedAttentiveness, 300f),
+                typeof(ImprovedAttentivenessStatusEffect),
+                60f,
+                25,
+                false);
 
             return builder.Build();
         }

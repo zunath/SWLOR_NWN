@@ -12,7 +12,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
         {
             var builder = new AbilityBuilder();
 
-            ConfigureSelfStatus(builder.Create(FeatType.GuardianMaster1, PerkType.GuardianMaster).Name("Guardian Master").Level(1), typeof(GuardiansWrathStatusEffect), 30f, 12);
+            ConfigureSelfStatus(
+                builder
+                    .Create(FeatType.GuardianMaster1, PerkType.GuardianMaster)
+                    .Name("Guardian Master")
+                    .Level(1)
+                    .HasRecastDelay(RecastGroup.GuardianMaster, 1800f),
+                typeof(GuardiansWrathStatusEffect),
+                30f,
+                12);
 
             return builder.Build();
         }

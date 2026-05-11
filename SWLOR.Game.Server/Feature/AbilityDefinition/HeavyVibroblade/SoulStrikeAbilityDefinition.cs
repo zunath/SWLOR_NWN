@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
 
         private static void SoulStrike1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.SoulStrike1, PerkType.SoulStrike)
+            builder
+                .Create(FeatType.SoulStrike1, PerkType.SoulStrike)
                 .Name("Soul Strike I")
                 .Level(1)
                 .HasActivationDelay(0f)
@@ -35,7 +36,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
 
         private static void SoulStrike2(AbilityBuilder builder)
         {
-            builder.Create(FeatType.SoulStrike2, PerkType.SoulStrike)
+            builder
+                .Create(FeatType.SoulStrike2, PerkType.SoulStrike)
                 .Name("Soul Strike II")
                 .Level(2)
                 .HasActivationDelay(0f)
@@ -49,7 +51,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
 
         private static void SoulStrike3(AbilityBuilder builder)
         {
-            builder.Create(FeatType.SoulStrike3, PerkType.SoulStrike)
+            builder
+                .Create(FeatType.SoulStrike3, PerkType.SoulStrike)
                 .Name("Soul Strike III")
                 .Level(3)
                 .HasActivationDelay(0f)

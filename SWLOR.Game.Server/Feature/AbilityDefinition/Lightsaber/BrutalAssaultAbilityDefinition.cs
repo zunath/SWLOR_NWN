@@ -12,7 +12,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
         {
             var builder = new AbilityBuilder();
 
-            ConfigurePartyStatus(builder.Create(FeatType.BrutalAssault1, PerkType.BrutalAssault).Name("Brutal Assault").Level(1), typeof(BrutalAssaultStatusEffect), 60f, 10, false);
+            ConfigurePartyStatus(
+                builder
+                    .Create(FeatType.BrutalAssault1, PerkType.BrutalAssault)
+                    .Name("Brutal Assault")
+                    .Level(1)
+                    .HasRecastDelay(RecastGroup.BrutalAssault, 300f),
+                typeof(BrutalAssaultStatusEffect),
+                60f,
+                10,
+                false);
 
             return builder.Build();
         }

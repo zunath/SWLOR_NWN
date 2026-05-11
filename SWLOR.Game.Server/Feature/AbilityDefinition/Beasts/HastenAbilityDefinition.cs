@@ -51,7 +51,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
 
         private void Hasten1()
         {
-            _builder.Create(FeatType.Hasten1, PerkType.Hasten)
+            _builder
+                .Create(FeatType.Hasten1, PerkType.Hasten)
                 .Name("Hasten I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.Hasten, 120f)
@@ -66,7 +67,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
 
         private void Hasten2()
         {
-            _builder.Create(FeatType.Hasten2, PerkType.Hasten)
+            _builder
+                .Create(FeatType.Hasten2, PerkType.Hasten)
                 .Name("Hasten II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.Hasten, 120f)

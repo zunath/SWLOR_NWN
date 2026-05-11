@@ -22,7 +22,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
 
         private static void SeverFocus1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.SeverFocus1, PerkType.SeverFocus)
+            builder
+                .Create(FeatType.SeverFocus1, PerkType.SeverFocus)
                 .Name("Sever Focus I")
                 .Level(1)
                 .HasActivationDelay(0f)
@@ -37,7 +38,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
 
         private static void SeverFocus2(AbilityBuilder builder)
         {
-            builder.Create(FeatType.SeverFocus2, PerkType.SeverFocus)
+            builder
+                .Create(FeatType.SeverFocus2, PerkType.SeverFocus)
                 .Name("Sever Focus II")
                 .Level(2)
                 .HasActivationDelay(0f)

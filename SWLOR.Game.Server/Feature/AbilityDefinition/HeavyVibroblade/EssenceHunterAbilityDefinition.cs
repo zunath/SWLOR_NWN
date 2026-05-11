@@ -20,7 +20,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
 
         private static void EssenceHunter(AbilityBuilder builder)
         {
-            builder.Create(FeatType.EssenceHunter1, PerkType.EssenceHunter)
+            builder
+                .Create(FeatType.EssenceHunter1, PerkType.EssenceHunter)
                 .Name("Essence Hunter")
                 .Level(1)
                 .HasActivationDelay(0f)

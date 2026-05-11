@@ -23,7 +23,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
 
         private void FireBreath()
         {
-            _builder.Create(FeatType.FireBreath, PerkType.Invalid)
+            _builder
+                .Create(FeatType.FireBreath, PerkType.Invalid)
                 .Name("Fire Breath")
                 .HasActivationDelay(2.0f)
                 .HasRecastDelay(RecastGroup.FireBreath, 60f)
@@ -63,7 +64,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
 
         private void FlameBlast()
         {
-            _builder.Create(FeatType.FlameBlast, PerkType.Invalid)
+            _builder
+                .Create(FeatType.FlameBlast, PerkType.Invalid)
                 .Name("Flame Blast")
                 .HasActivationDelay(4.0f)
                 .HasRecastDelay(RecastGroup.FlameBlast, 30f)

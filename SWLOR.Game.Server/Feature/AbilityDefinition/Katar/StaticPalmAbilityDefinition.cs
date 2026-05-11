@@ -24,7 +24,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
 
         private static void StaticPalm1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.StaticPalm1, PerkType.StaticPalm)
+            builder
+                .Create(FeatType.StaticPalm1, PerkType.StaticPalm)
                 .Name("Static Palm I")
                 .Level(1)
                 .HasActivationDelay(0f)
@@ -38,7 +39,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
 
         private static void StaticPalm2(AbilityBuilder builder)
         {
-            builder.Create(FeatType.StaticPalm2, PerkType.StaticPalm)
+            builder
+                .Create(FeatType.StaticPalm2, PerkType.StaticPalm)
                 .Name("Static Palm II")
                 .Level(2)
                 .HasActivationDelay(0f)
@@ -52,7 +54,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
 
         private static void StaticPalm3(AbilityBuilder builder)
         {
-            builder.Create(FeatType.StaticPalm3, PerkType.StaticPalm)
+            builder
+                .Create(FeatType.StaticPalm3, PerkType.StaticPalm)
                 .Name("Static Palm III")
                 .Level(3)
                 .HasActivationDelay(0f)

@@ -19,7 +19,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
 
         private static void BlazingSpikes(AbilityBuilder builder)
         {
-            builder.Create(FeatType.BlazingSpikes1, PerkType.BlazingSpikes)
+            builder
+                .Create(FeatType.BlazingSpikes1, PerkType.BlazingSpikes)
                 .Name("Blazing Spikes")
                 .Level(1)
                 .HasActivationDelay(0f)

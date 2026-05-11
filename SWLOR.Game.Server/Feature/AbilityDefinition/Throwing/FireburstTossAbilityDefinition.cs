@@ -22,7 +22,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
 
         private static void FireburstToss1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.FireburstToss1, PerkType.FireburstToss)
+            builder
+                .Create(FeatType.FireburstToss1, PerkType.FireburstToss)
                 .Name("Fireburst Toss")
                 .Level(1)
                 .HasActivationDelay(0f)

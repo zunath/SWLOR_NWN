@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
 
         private static void ReversalCut1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.ReversalCut1, PerkType.ReversalCut)
+            builder
+                .Create(FeatType.ReversalCut1, PerkType.ReversalCut)
                 .Name("Reversal Cut")
                 .Level(1)
                 .HasActivationDelay(0f)

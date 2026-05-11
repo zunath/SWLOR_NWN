@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
 
         private static void OneShot1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.OneShot1, PerkType.OneShot)
+            builder
+                .Create(FeatType.OneShot1, PerkType.OneShot)
                 .Name("One Shot")
                 .Level(1)
                 .HasActivationDelay(2f)

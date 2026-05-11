@@ -12,7 +12,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
         {
             var builder = new AbilityBuilder();
 
-            ConfigureToggle(builder.Create(FeatType.FocusedStance1, PerkType.FocusedStance).Name("Focused Stance").Level(1), typeof(FocusedStanceStatusEffect));
+            ConfigureToggle(
+                builder
+                    .Create(FeatType.FocusedStance1, PerkType.FocusedStance)
+                    .Name("Focused Stance")
+                    .Level(1)
+                    .HasRecastDelay(RecastGroup.FocusedStance, 180f),
+                typeof(FocusedStanceStatusEffect));
 
             return builder.Build();
         }

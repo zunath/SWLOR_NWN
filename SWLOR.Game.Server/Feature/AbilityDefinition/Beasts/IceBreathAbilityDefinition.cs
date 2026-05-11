@@ -81,7 +81,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
 
         private void IceBreath1()
         {
-            _builder.Create(FeatType.IceBreath1, PerkType.IceBreath)
+            _builder
+                .Create(FeatType.IceBreath1, PerkType.IceBreath)
                 .Name("Ice Breath I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.IceBreath, 60f)
@@ -95,7 +96,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
         }
         private void IceBreath2()
         {
-            _builder.Create(FeatType.IceBreath2, PerkType.IceBreath)
+            _builder
+                .Create(FeatType.IceBreath2, PerkType.IceBreath)
                 .Name("Ice Breath II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.IceBreath, 60f)
@@ -109,7 +111,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
         }
         private void IceBreath3()
         {
-            _builder.Create(FeatType.IceBreath3, PerkType.IceBreath)
+            _builder
+                .Create(FeatType.IceBreath3, PerkType.IceBreath)
                 .Name("Ice Breath III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.IceBreath, 60f)

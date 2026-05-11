@@ -54,7 +54,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private void Benevolence1()
         {
-            _builder.Create(FeatType.Benevolence1, PerkType.Benevolence)
+            _builder
+                .Create(FeatType.Benevolence1, PerkType.Benevolence)
                 .Name("Benevolence I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.Benevolence, 8f)
@@ -72,7 +73,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private void Benevolence2()
         {
-            _builder.Create(FeatType.Benevolence2, PerkType.Benevolence)
+            _builder
+                .Create(FeatType.Benevolence2, PerkType.Benevolence)
                 .Name("Benevolence II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.Benevolence, 8f)
@@ -90,7 +92,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private void Benevolence3()
         {
-            _builder.Create(FeatType.Benevolence3, PerkType.Benevolence)
+            _builder
+                .Create(FeatType.Benevolence3, PerkType.Benevolence)
                 .Name("Benevolence III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.Benevolence, 8f)

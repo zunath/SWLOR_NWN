@@ -25,7 +25,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
 
         private void Earthquake()
         {
-            _builder.Create(FeatType.Earthquake, PerkType.Invalid)
+            _builder
+                .Create(FeatType.Earthquake, PerkType.Invalid)
                 .Name("Earthquake")
                 .HasActivationDelay(4.0f)
                 .DisplaysVisualEffectWhenActivating(VisualEffect.Vfx_Dur_Aura_Blue)
@@ -57,7 +58,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
 
         private void GreaterEarthquake()
         {
-            _builder.Create(FeatType.GreaterEarthquake, PerkType.Invalid)
+            _builder
+                .Create(FeatType.GreaterEarthquake, PerkType.Invalid)
                 .Name("Greater Earthquake")
                 .HasActivationDelay(6.0f)
                 .DisplaysVisualEffectWhenActivating(VisualEffect.Vfx_Dur_Aura_Blue)

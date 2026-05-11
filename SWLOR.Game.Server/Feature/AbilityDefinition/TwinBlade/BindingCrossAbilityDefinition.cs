@@ -22,7 +22,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
 
         private static void BindingCross1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.BindingCross1, PerkType.BindingCross)
+            builder
+                .Create(FeatType.BindingCross1, PerkType.BindingCross)
                 .Name("Binding Cross I")
                 .Level(1)
                 .HasActivationDelay(0f)
@@ -37,7 +38,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
 
         private static void BindingCross2(AbilityBuilder builder)
         {
-            builder.Create(FeatType.BindingCross2, PerkType.BindingCross)
+            builder
+                .Create(FeatType.BindingCross2, PerkType.BindingCross)
                 .Name("Binding Cross II")
                 .Level(2)
                 .HasActivationDelay(0f)

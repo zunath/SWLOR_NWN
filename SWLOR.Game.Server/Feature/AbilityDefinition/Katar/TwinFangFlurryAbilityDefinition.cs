@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
 
         private static void TwinFangFlurry1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.TwinFangFlurry1, PerkType.TwinFangFlurry)
+            builder
+                .Create(FeatType.TwinFangFlurry1, PerkType.TwinFangFlurry)
                 .Name("Twin Fang Flurry")
                 .Level(1)
                 .HasActivationDelay(0f)

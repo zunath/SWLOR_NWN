@@ -13,7 +13,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
         {
             var builder = new AbilityBuilder();
 
-            ConfigureToggle(builder.Create(FeatType.DeadlyPrecision1, PerkType.DeadlyPrecision).Name("Deadly Precision").Level(1), typeof(DeadlyPrecisionStatusEffect));
+            ConfigureToggle(
+                builder
+                    .Create(FeatType.DeadlyPrecision1, PerkType.DeadlyPrecision)
+                    .Name("Deadly Precision")
+                    .Level(1)
+                    .HasRecastDelay(RecastGroup.DeadlyPrecision, 180f),
+                typeof(DeadlyPrecisionStatusEffect));
 
             return builder.Build();
         }

@@ -54,7 +54,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
             int level,
             int stamina)
         {
-            builder.Create(feat, PerkType.QuickDraw)
+            builder
+                .Create(feat, PerkType.QuickDraw)
                 .Name(name)
                 .Level(level)
                 .HasActivationDelay(0f)

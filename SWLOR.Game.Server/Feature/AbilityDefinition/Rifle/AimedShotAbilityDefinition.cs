@@ -23,7 +23,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
 
         private static void AimedShot1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.AimedShot1, PerkType.AimedShot)
+            builder
+                .Create(FeatType.AimedShot1, PerkType.AimedShot)
                 .Name("Aimed Shot I")
                 .Level(1)
                 .HasActivationDelay(1f)
@@ -38,7 +39,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
 
         private static void AimedShot2(AbilityBuilder builder)
         {
-            builder.Create(FeatType.AimedShot2, PerkType.AimedShot)
+            builder
+                .Create(FeatType.AimedShot2, PerkType.AimedShot)
                 .Name("Aimed Shot II")
                 .Level(2)
                 .HasActivationDelay(1f)
@@ -53,7 +55,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
 
         private static void AimedShot3(AbilityBuilder builder)
         {
-            builder.Create(FeatType.AimedShot3, PerkType.AimedShot)
+            builder
+                .Create(FeatType.AimedShot3, PerkType.AimedShot)
                 .Name("Aimed Shot III")
                 .Level(3)
                 .HasActivationDelay(1f)

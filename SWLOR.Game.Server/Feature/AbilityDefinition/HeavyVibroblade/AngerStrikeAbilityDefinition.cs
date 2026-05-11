@@ -20,7 +20,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
 
         private static void AngerStrike(AbilityBuilder builder)
         {
-            builder.Create(FeatType.AngerStrike1, PerkType.AngerStrike)
+            builder
+                .Create(FeatType.AngerStrike1, PerkType.AngerStrike)
                 .Name("Anger Strike")
                 .Level(1)
                 .HasActivationDelay(0f)

@@ -19,7 +19,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
 
         private void SoldiersSpeed()
         {
-            _builder.Create(FeatType.SoldiersSpeed, PerkType.SoldiersSpeed)
+            _builder
+                .Create(FeatType.SoldiersSpeed, PerkType.SoldiersSpeed)
                 .Name("Soldier's Speed")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.SoldiersSpeed, 60f)

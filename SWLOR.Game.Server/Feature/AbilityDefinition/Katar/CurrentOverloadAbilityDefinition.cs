@@ -22,7 +22,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
 
         private static void CurrentOverload1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.CurrentOverload1, PerkType.CurrentOverload)
+            builder
+                .Create(FeatType.CurrentOverload1, PerkType.CurrentOverload)
                 .Name("Current Overload")
                 .Level(1)
                 .HasActivationDelay(0f)

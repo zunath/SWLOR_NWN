@@ -22,7 +22,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
 
         private static void NeuralShock1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.NeuralShock1, PerkType.NeuralShock)
+            builder
+                .Create(FeatType.NeuralShock1, PerkType.NeuralShock)
                 .Name("Neural Shock")
                 .Level(1)
                 .HasActivationDelay(0f)

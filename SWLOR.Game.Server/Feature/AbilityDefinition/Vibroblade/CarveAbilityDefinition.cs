@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
 
         private static void Carve1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.Carve1, PerkType.Carve)
+            builder
+                .Create(FeatType.Carve1, PerkType.Carve)
                 .Name("Carve")
                 .Level(1)
                 .HasActivationDelay(0f)

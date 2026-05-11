@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
 
         private static void Bloodlust(AbilityBuilder builder)
         {
-            builder.Create(FeatType.Bloodlust1, PerkType.Bloodlust)
+            builder
+                .Create(FeatType.Bloodlust1, PerkType.Bloodlust)
                 .Name("Bloodlust")
                 .Level(1)
                 .HasActivationDelay(0f)

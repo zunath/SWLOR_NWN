@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
 
         private static void Overwatch1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.Overwatch1, PerkType.Overwatch)
+            builder
+                .Create(FeatType.Overwatch1, PerkType.Overwatch)
                 .Name("Overwatch")
                 .Level(1)
                 .HasActivationDelay(0f)

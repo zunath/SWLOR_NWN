@@ -12,7 +12,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
         {
             var builder = new AbilityBuilder();
 
-            ConfigurePartyStatus(builder.Create(FeatType.ShieldWall1, PerkType.ShieldWall).Name("Shield Wall").Level(1), typeof(ShieldWallStatusEffect), 60f, 15, true);
+            ConfigurePartyStatus(
+                builder
+                    .Create(FeatType.ShieldWall1, PerkType.ShieldWall)
+                    .Name("Shield Wall")
+                    .Level(1)
+                    .HasRecastDelay(RecastGroup.ShieldWall, 120f),
+                typeof(ShieldWallStatusEffect),
+                60f,
+                15,
+                true);
 
             return builder.Build();
         }

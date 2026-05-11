@@ -12,7 +12,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
         {
             var builder = new AbilityBuilder();
 
-            ConfigurePartyStatus(builder.Create(FeatType.ForceLens1, PerkType.ForceLens).Name("Force Lens").Level(1), typeof(ForceLensStatusEffect), 45f, 15, true);
+            ConfigurePartyStatus(
+                builder
+                    .Create(FeatType.ForceLens1, PerkType.ForceLens)
+                    .Name("Force Lens")
+                    .Level(1)
+                    .HasRecastDelay(RecastGroup.ForceLens, 120f),
+                typeof(ForceLensStatusEffect),
+                45f,
+                15,
+                true);
 
             return builder.Build();
         }

@@ -23,7 +23,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
 
         private static void RibBreaker1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.RibBreaker1, PerkType.RibBreaker)
+            builder
+                .Create(FeatType.RibBreaker1, PerkType.RibBreaker)
                 .Name("Rib Breaker I")
                 .Level(1)
                 .HasActivationDelay(0f)
@@ -38,7 +39,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
 
         private static void RibBreaker2(AbilityBuilder builder)
         {
-            builder.Create(FeatType.RibBreaker2, PerkType.RibBreaker)
+            builder
+                .Create(FeatType.RibBreaker2, PerkType.RibBreaker)
                 .Name("Rib Breaker II")
                 .Level(2)
                 .HasActivationDelay(0f)
@@ -53,7 +55,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
 
         private static void RibBreaker3(AbilityBuilder builder)
         {
-            builder.Create(FeatType.RibBreaker3, PerkType.RibBreaker)
+            builder
+                .Create(FeatType.RibBreaker3, PerkType.RibBreaker)
                 .Name("Rib Breaker III")
                 .Level(3)
                 .HasActivationDelay(0f)

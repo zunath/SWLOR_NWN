@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
 
         private static void ForceGyre1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.ForceGyre1, PerkType.ForceGyre)
+            builder
+                .Create(FeatType.ForceGyre1, PerkType.ForceGyre)
                 .Name("Force Gyre")
                 .Level(1)
                 .HasActivationDelay(0f)

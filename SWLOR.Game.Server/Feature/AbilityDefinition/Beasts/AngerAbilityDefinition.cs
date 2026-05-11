@@ -63,7 +63,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
 
         private void Anger1()
         {
-            _builder.Create(FeatType.Anger1, PerkType.Anger)
+            _builder
+                .Create(FeatType.Anger1, PerkType.Anger)
                 .Name("Anger I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.Anger, 30f)
@@ -80,7 +81,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
         }
         private void Anger2()
         {
-            _builder.Create(FeatType.Anger2, PerkType.Anger)
+            _builder
+                .Create(FeatType.Anger2, PerkType.Anger)
                 .Name("Anger II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.Anger, 30f)

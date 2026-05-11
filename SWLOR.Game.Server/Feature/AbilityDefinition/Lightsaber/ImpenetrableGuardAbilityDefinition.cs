@@ -12,7 +12,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
         {
             var builder = new AbilityBuilder();
 
-            ConfigureToggle(builder.Create(FeatType.ImpenetrableGuard1, PerkType.ImpenetrableGuard).Name("Impenetrable Guard").Level(1), typeof(ImpenetrableGuardStatusEffect));
+            ConfigureToggle(
+                builder
+                    .Create(FeatType.ImpenetrableGuard1, PerkType.ImpenetrableGuard)
+                    .Name("Impenetrable Guard")
+                    .Level(1)
+                    .HasRecastDelay(RecastGroup.ImpenetrableGuard, 180f),
+                typeof(ImpenetrableGuardStatusEffect));
 
             return builder.Build();
         }

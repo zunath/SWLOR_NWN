@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
 
         private void Venom()
         {
-            _builder.Create(FeatType.Venom, PerkType.Invalid)
+            _builder
+                .Create(FeatType.Venom, PerkType.Invalid)
                 .Name("Venom")
                 .HasActivationDelay(1.5f)
                 .HasRecastDelay(RecastGroup.Venom, 35f)

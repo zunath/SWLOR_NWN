@@ -13,9 +13,39 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
         {
             var builder = new AbilityBuilder();
 
-            ConfigureWeapon(builder.Create(FeatType.Hamstring1, PerkType.Hamstring).Name("Hamstring I").Level(1), SkillType.Vibroknife, 8, 12, typeof(HamstringStatusEffect), 4);
-            ConfigureWeapon(builder.Create(FeatType.Hamstring2, PerkType.Hamstring).Name("Hamstring II").Level(2), SkillType.Vibroknife, 18, 12, typeof(HamstringStatusEffect), 5);
-            ConfigureWeapon(builder.Create(FeatType.Hamstring3, PerkType.Hamstring).Name("Hamstring III").Level(3), SkillType.Vibroknife, 28, 12, typeof(HamstringStatusEffect), 7);
+            ConfigureWeapon(
+                builder
+                    .Create(FeatType.Hamstring1, PerkType.Hamstring)
+                    .Name("Hamstring I")
+                    .Level(1)
+                    .HasRecastDelay(RecastGroup.Hamstring, 30f),
+                SkillType.Vibroknife,
+                8,
+                12,
+                typeof(HamstringStatusEffect),
+                4);
+            ConfigureWeapon(
+                builder
+                    .Create(FeatType.Hamstring2, PerkType.Hamstring)
+                    .Name("Hamstring II")
+                    .Level(2)
+                    .HasRecastDelay(RecastGroup.Hamstring, 30f),
+                SkillType.Vibroknife,
+                18,
+                12,
+                typeof(HamstringStatusEffect),
+                5);
+            ConfigureWeapon(
+                builder
+                    .Create(FeatType.Hamstring3, PerkType.Hamstring)
+                    .Name("Hamstring III")
+                    .Level(3)
+                    .HasRecastDelay(RecastGroup.Hamstring, 30f),
+                SkillType.Vibroknife,
+                28,
+                12,
+                typeof(HamstringStatusEffect),
+                7);
 
             return builder.Build();
         }

@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
 
         private void Screech()
         {
-            _builder.Create(FeatType.Screech, PerkType.Invalid)
+            _builder
+                .Create(FeatType.Screech, PerkType.Invalid)
                 .Name("Screech")
                 .HasActivationDelay(4.0f)
                 .DisplaysVisualEffectWhenActivating(VisualEffect.Vfx_Dur_Aura_Blue)

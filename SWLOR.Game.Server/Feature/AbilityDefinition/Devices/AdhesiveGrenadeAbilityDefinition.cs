@@ -40,7 +40,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
         private void AdhesiveGrenade1()
         {
-            _builder.Create(FeatType.AdhesiveGrenade1, PerkType.AdhesiveGrenade)
+            _builder
+                .Create(FeatType.AdhesiveGrenade1, PerkType.AdhesiveGrenade)
                 .Name("Adhesive Grenade I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.AdhesiveGrenade, 24f)
@@ -61,7 +62,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
         private void AdhesiveGrenade2()
         {
-            _builder.Create(FeatType.AdhesiveGrenade2, PerkType.AdhesiveGrenade)
+            _builder
+                .Create(FeatType.AdhesiveGrenade2, PerkType.AdhesiveGrenade)
                 .Name("Adhesive Grenade II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.AdhesiveGrenade, 24f)

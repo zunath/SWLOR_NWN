@@ -19,7 +19,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
 
         private void Dedication()
         {
-            _builder.Create(FeatType.Dedication, PerkType.Dedication)
+            _builder
+                .Create(FeatType.Dedication, PerkType.Dedication)
                 .Name("Dedication")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.Dedication, 60f)

@@ -62,7 +62,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
         private void FragGrenade1()
         {
-            _builder.Create(FeatType.FragGrenade1, PerkType.FragGrenade)
+            _builder
+                .Create(FeatType.FragGrenade1, PerkType.FragGrenade)
                 .Name("Frag Grenade I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.FragGrenade, 12f)
@@ -84,7 +85,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
         private void FragGrenade2()
         {
-            _builder.Create(FeatType.FragGrenade2, PerkType.FragGrenade)
+            _builder
+                .Create(FeatType.FragGrenade2, PerkType.FragGrenade)
                 .Name("Frag Grenade II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.FragGrenade, 12f)
@@ -108,7 +110,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
         private void FragGrenade3()
         {
-            _builder.Create(FeatType.FragGrenade3, PerkType.FragGrenade)
+            _builder
+                .Create(FeatType.FragGrenade3, PerkType.FragGrenade)
                 .Name("Frag Grenade III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.FragGrenade, 12f)

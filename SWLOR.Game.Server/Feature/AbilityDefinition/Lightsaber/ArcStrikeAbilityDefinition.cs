@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
 
         private static void ArcStrike1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.ArcStrike1, PerkType.ArcStrike)
+            builder
+                .Create(FeatType.ArcStrike1, PerkType.ArcStrike)
                 .Name("Arc Strike")
                 .Level(1)
                 .HasActivationDelay(0f)

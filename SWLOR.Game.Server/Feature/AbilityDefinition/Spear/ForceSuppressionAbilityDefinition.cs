@@ -22,7 +22,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
 
         private static void ForceSuppression1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.ForceSuppression1, PerkType.ForceSuppression)
+            builder
+                .Create(FeatType.ForceSuppression1, PerkType.ForceSuppression)
                 .Name("Force Suppression")
                 .Level(1)
                 .HasActivationDelay(0f)

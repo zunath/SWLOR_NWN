@@ -57,7 +57,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
 
         private void Claw1()
         {
-            _builder.Create(FeatType.Claw1, PerkType.Claw)
+            _builder
+                .Create(FeatType.Claw1, PerkType.Claw)
                 .Name("Claw I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.Claw, 60f)
@@ -70,7 +71,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
         }
         private void Claw2()
         {
-            _builder.Create(FeatType.Claw2, PerkType.Claw)
+            _builder
+                .Create(FeatType.Claw2, PerkType.Claw)
                 .Name("Claw II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.Claw, 60f)
@@ -83,7 +85,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
         }
         private void Claw3()
         {
-            _builder.Create(FeatType.Claw3, PerkType.Claw)
+            _builder
+                .Create(FeatType.Claw3, PerkType.Claw)
                 .Name("Claw III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.Claw, 60f)

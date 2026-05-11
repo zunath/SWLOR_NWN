@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
 
         private static void IronElbows1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.IronElbows1, PerkType.IronElbows)
+            builder
+                .Create(FeatType.IronElbows1, PerkType.IronElbows)
                 .Name("Iron Elbows")
                 .Level(1)
                 .HasActivationDelay(0f)

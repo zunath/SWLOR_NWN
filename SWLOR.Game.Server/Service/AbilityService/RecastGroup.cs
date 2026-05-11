@@ -251,7 +251,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         RippleSlash = 122,
         [RecastGroup("Fan the Hammer", "Fan the Hammer", true)]
         FanTheHammer = 123,
-        [RecastGroup("Dead Man's Hand", "Dead Man Hand", true)]
+        [RecastGroup("Dead Man's Hand", "Dead Man's", true)]
         DeadMansHand = 124,
         [RecastGroup("Disarming Shot", "Disarming Shot", true)]
         DisarmingShot = 125,
@@ -403,7 +403,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         AngerStrike = 198,
         [RecastGroup("Bastion Stance", "Bastion St.", true)]
         BastionStance = 199,
-        [RecastGroup("Guardian's Resolve", "Guardian Res", true)]
+        [RecastGroup("Guardian's Resolve", "Guard. Resolve", true)]
         GuardiansResolve = 200,
         [RecastGroup("Rampart", "Rampart", true)]
         Rampart = 201,
@@ -419,6 +419,158 @@ namespace SWLOR.Game.Server.Service.AbilityService
         GunslingerFocus = 206,
         [RecastGroup("Double Shot", "Double Shot", true)]
         DoubleShot = 207,
+        [RecastGroup("Twin Intercept", "Twin Intercept", true)]
+        TwinIntercept = 208,
+        [RecastGroup("Taunting Deflection", "Taunt Deflect", true)]
+        TauntingDeflection = 209,
+        [RecastGroup("Second Wind", "Second Wind", true)]
+        SecondWind = 210,
+        [RecastGroup("Purify", "Purify", true)]
+        Purify = 211,
+        [RecastGroup("Adamantine Guard", "Adamant Guard", true)]
+        AdamantineGuard = 212,
+        [RecastGroup("Cobra Stance", "Cobra Stance", true)]
+        CobraStance = 213,
+        [RecastGroup("Iron Wall Stance", "Iron Wall", true)]
+        IronWallStance = 214,
+        [RecastGroup("Striking Cobra", "Striking Cobra", true)]
+        StrikingCobra = 215,
+        [RecastGroup("Toxic Rush", "Toxic Rush", true)]
+        ToxicRush = 216,
+        [RecastGroup("Twin Guard Stance", "Twin Guard", true)]
+        TwinGuardStance = 217,
+        [RecastGroup("Brutal Assault", "Brutal Assault", true)]
+        BrutalAssault = 218,
+        [RecastGroup("Ferocity Stance", "Ferocity St.", true)]
+        FerocityStance = 219,
+        [RecastGroup("Focused Stance", "Focused Stance", true)]
+        FocusedStance = 220,
+        [RecastGroup("Guardian Master", "Guard. Master", true)]
+        GuardianMaster = 221,
+        [RecastGroup("Guardian's Influence", "Guard. Influ.", true)]
+        GuardiansInfluence = 222,
+        [RecastGroup("Impenetrable Guard", "Impen. Guard", true)]
+        ImpenetrableGuard = 223,
+        [RecastGroup("Gunfighter Stance", "Gunfighter St.", true)]
+        GunfighterStance = 224,
+        [RecastGroup("Interrupting Shot", "Interrupt Shot", true)]
+        InterruptingShot = 225,
+        [RecastGroup("Skirmisher Stance", "Skirmisher St.", true)]
+        SkirmisherStance = 226,
+        [RecastGroup("Crippling Shot", "Crippling Shot", true)]
+        CripplingShot = 227,
+        [RecastGroup("Kill Zone", "Kill Zone", true)]
+        KillZone = 228,
+        [RecastGroup("Sniper Stance", "Sniper Stance", true)]
+        SniperStance = 229,
+        [RecastGroup("Spotter Stance", "Spotter Stance", true)]
+        SpotterStance = 230,
+        [RecastGroup("Tranq Cone", "Tranq Cone", true)]
+        TranqCone = 231,
+        [RecastGroup("Tranquilizer Shot", "Tranq Shot", true)]
+        TranquilizerShot = 232,
+        [RecastGroup("Circle Slash", "Circle Slash", true)]
+        CircleSlash = 233,
+        [RecastGroup("Conduit Stance", "Conduit Stance", true)]
+        ConduitStance = 234,
+        [RecastGroup("Double Strike", "Double Strike", true)]
+        DoubleStrike = 235,
+        [RecastGroup("Force Capacitor", "Force Cap.", true)]
+        ForceCapacitor = 236,
+        [RecastGroup("Force Lens", "Force Lens", true)]
+        ForceLens = 237,
+        [RecastGroup("Guarded Channel", "Guard Channel", true)]
+        GuardedChannel = 238,
+        [RecastGroup("Infinite Conduit", "Infin. Conduit", true)]
+        InfiniteConduit = 239,
+        [RecastGroup("Tempest Stance", "Tempest Stance", true)]
+        TempestStance = 240,
+        [RecastGroup("Calming Stance", "Calming Stance", true)]
+        CalmingStance = 241,
+        [RecastGroup("Crippling Defense", "Crip. Def.", true)]
+        CripplingDefense = 242,
+        [RecastGroup("Disabling Strike", "Disable Strike", true)]
+        DisablingStrike = 243,
+        [RecastGroup("Disruption Field", "Disrupt Field", true)]
+        DisruptionField = 244,
+        [RecastGroup("Flanking Stance", "Flank Stance", true)]
+        FlankingStance = 245,
+        [RecastGroup("Forcebane", "Forcebane", true)]
+        Forcebane = 246,
+        [RecastGroup("Improved Attentiveness", "Impr. Attent.", true)]
+        ImprovedAttentiveness = 247,
+        [RecastGroup("Perceptive Stance", "Percept. St.", true)]
+        PerceptiveStance = 248,
+        [RecastGroup("Side Assault", "Side Assault", true)]
+        SideAssault = 249,
+        [RecastGroup("Crusher Stance", "Crusher Stance", true)]
+        CrusherStance = 250,
+        [RecastGroup("Guarding Step", "Guarding Step", true)]
+        GuardingStep = 251,
+        [RecastGroup("Leg Sweep", "Leg Sweep", true)]
+        LegSweep = 252,
+        [RecastGroup("Sentinel Guard", "Sentinel Guard", true)]
+        SentinelGuard = 253,
+        [RecastGroup("Sentinel Stance", "Sentinel St.", true)]
+        SentinelStance = 254,
+        [RecastGroup("Shelter Circle", "Shelter Circle", true)]
+        ShelterCircle = 255,
+        [RecastGroup("Slam", "Slam", true)]
+        Slam = 256,
+        [RecastGroup("Unmoving Center", "Unmoving Ctr.", true)]
+        UnmovingCenter = 257,
+        [RecastGroup("Bombardier Stance", "Bombardier St.", true)]
+        BombardierStance = 258,
+        [RecastGroup("Deadeye Stance", "Deadeye Stance", true)]
+        DeadeyeStance = 259,
+        [RecastGroup("Explosive Toss", "Explosive Toss", true)]
+        ExplosiveToss = 260,
+        [RecastGroup("Piercing Toss", "Piercing Toss", true)]
+        PiercingToss = 261,
+        [RecastGroup("Cross Cut", "Cross Cut", true)]
+        CrossCut = 262,
+        [RecastGroup("Cyclone Stance", "Cyclone Stance", true)]
+        CycloneStance = 263,
+        [RecastGroup("Duelist Stance", "Duelist Stance", true)]
+        DuelistStance = 264,
+        [RecastGroup("Duelist's Challenge", "Duelist Chal.", true)]
+        DuelistsChallenge = 265,
+        [RecastGroup("Final Form", "Final Form", true)]
+        FinalForm = 266,
+        [RecastGroup("Spinning Whirl", "Spinning Whirl", true)]
+        SpinningWhirl = 267,
+        [RecastGroup("Berserker Stance", "Berserker St.", true)]
+        BerserkerStance = 268,
+        [RecastGroup("Defensive Stance", "Defensive St.", true)]
+        DefensiveStance = 269,
+        [RecastGroup("Hacking Blade", "Hacking Blade", true)]
+        HackingBlade = 270,
+        [RecastGroup("Invincible", "Invincible", true)]
+        Invincible = 271,
+        [RecastGroup("Riot Blade", "Riot Blade", true)]
+        RiotBlade = 272,
+        [RecastGroup("Shield Bash", "Shield Bash", true)]
+        ShieldBash = 273,
+        [RecastGroup("Shield Wall", "Shield Wall", true)]
+        ShieldWall = 274,
+        [RecastGroup("Backstab", "Backstab", true)]
+        Backstab = 275,
+        [RecastGroup("Deadly Precision", "Deadly Prec.", true)]
+        DeadlyPrecision = 276,
+        [RecastGroup("Debilitating Stance", "Debil. Stance", true)]
+        DebilitatingStance = 277,
+        [RecastGroup("Decoy", "Decoy", true)]
+        Decoy = 278,
+        [RecastGroup("Evasive Combat", "Evasive Combat", true)]
+        EvasiveCombat = 279,
+        [RecastGroup("Hamstring", "Hamstring", true)]
+        Hamstring = 280,
+        [RecastGroup("Incapacitate", "Incapacitate", true)]
+        Incapacitate = 281,
+        [RecastGroup("Marked for Death", "Marked Death", true)]
+        MarkedForDeath = 282,
+        [RecastGroup("Toxic Coating", "Toxic Coating", true)]
+        ToxicCoating = 283,
     }
 
     public class RecastGroupAttribute: Attribute

@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
 
         private static void PerfectThrow1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.PerfectThrow1, PerkType.PerfectThrow)
+            builder
+                .Create(FeatType.PerfectThrow1, PerkType.PerfectThrow)
                 .Name("Perfect Throw")
                 .Level(1)
                 .HasActivationDelay(1f)

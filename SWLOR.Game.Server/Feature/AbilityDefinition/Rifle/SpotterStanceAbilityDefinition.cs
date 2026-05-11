@@ -12,7 +12,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
         {
             var builder = new AbilityBuilder();
 
-            ConfigureToggle(builder.Create(FeatType.SpotterStance1, PerkType.SpotterStance).Name("Spotter Stance").Level(1), typeof(SpotterStanceStatusEffect));
+            ConfigureToggle(
+                builder
+                    .Create(FeatType.SpotterStance1, PerkType.SpotterStance)
+                    .Name("Spotter Stance")
+                    .Level(1)
+                    .HasRecastDelay(RecastGroup.SpotterStance, 180f),
+                typeof(SpotterStanceStatusEffect));
 
             return builder.Build();
         }

@@ -11,9 +11,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
         {
             var builder = new AbilityBuilder();
 
-            builder.Create(FeatType.GunfighterStance1, PerkType.GunfighterStance)
+            builder
+                .Create(FeatType.GunfighterStance1, PerkType.GunfighterStance)
                 .Name("Gunfighter Stance")
-                .Level(1);
+                .Level(1)
+                .HasRecastDelay(RecastGroup.GunfighterStance, 180f);
             ConfigureToggle(builder, typeof(GunfighterStanceStatusEffect));
 
             return builder.Build();

@@ -22,7 +22,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
 
         private static void BladeVortex1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.BladeVortex1, PerkType.BladeVortex)
+            builder
+                .Create(FeatType.BladeVortex1, PerkType.BladeVortex)
                 .Name("Blade Vortex I")
                 .Level(1)
                 .HasActivationDelay(0f)
@@ -36,7 +37,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
 
         private static void BladeVortex2(AbilityBuilder builder)
         {
-            builder.Create(FeatType.BladeVortex2, PerkType.BladeVortex)
+            builder
+                .Create(FeatType.BladeVortex2, PerkType.BladeVortex)
                 .Name("Blade Vortex II")
                 .Level(2)
                 .HasActivationDelay(0f)

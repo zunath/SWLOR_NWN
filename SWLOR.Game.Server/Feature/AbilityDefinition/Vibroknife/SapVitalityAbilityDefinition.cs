@@ -22,7 +22,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
 
         private static void SapVitality1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.SapVitality1, PerkType.SapVitality)
+            builder
+                .Create(FeatType.SapVitality1, PerkType.SapVitality)
                 .Name("Sap Vitality")
                 .Level(1)
                 .HasActivationDelay(0f)
@@ -37,7 +38,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
 
         private static void SapVitality2(AbilityBuilder builder)
         {
-            builder.Create(FeatType.SapVitality2, PerkType.SapVitality)
+            builder
+                .Create(FeatType.SapVitality2, PerkType.SapVitality)
                 .Name("Sap Vitality II")
                 .Level(2)
                 .HasActivationDelay(0f)

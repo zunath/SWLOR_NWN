@@ -12,7 +12,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
         {
             var builder = new AbilityBuilder();
 
-            ConfigureSelfStatus(builder.Create(FeatType.Invincible1, PerkType.Invincible).Name("Invincible").Level(1), typeof(InvincibleStatusEffect), 30f, 12);
+            ConfigureSelfStatus(
+                builder
+                    .Create(FeatType.Invincible1, PerkType.Invincible)
+                    .Name("Invincible")
+                    .Level(1)
+                    .HasRecastDelay(RecastGroup.Invincible, 1800f),
+                typeof(InvincibleStatusEffect),
+                30f,
+                12);
 
             return builder.Build();
         }

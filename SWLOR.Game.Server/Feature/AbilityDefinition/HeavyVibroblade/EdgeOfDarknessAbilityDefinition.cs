@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
 
         private static void EdgeOfDarkness1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.EdgeOfDarkness1, PerkType.EdgeOfDarkness)
+            builder
+                .Create(FeatType.EdgeOfDarkness1, PerkType.EdgeOfDarkness)
                 .Name("Edge of Darkness")
                 .Level(1)
                 .HasActivationDelay(0f)

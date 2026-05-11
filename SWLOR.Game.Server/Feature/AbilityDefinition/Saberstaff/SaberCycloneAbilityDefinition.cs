@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
 
         private static void SaberCyclone1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.SaberCyclone1, PerkType.SaberCyclone)
+            builder
+                .Create(FeatType.SaberCyclone1, PerkType.SaberCyclone)
                 .Name("Saber Cyclone")
                 .Level(1)
                 .HasActivationDelay(0f)

@@ -39,7 +39,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ForcePush1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.ForcePush1, PerkType.ForcePush)
+            builder
+                .Create(FeatType.ForcePush1, PerkType.ForcePush)
                 .Name("Force Push I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.ForcePush, 30f)
@@ -54,7 +55,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ForcePush2(AbilityBuilder builder)
         {
-            builder.Create(FeatType.ForcePush2, PerkType.ForcePush)
+            builder
+                .Create(FeatType.ForcePush2, PerkType.ForcePush)
                 .Name("Force Push II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.ForcePush, 30f)
@@ -69,7 +71,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ForcePush3(AbilityBuilder builder)
         {
-            builder.Create(FeatType.ForcePush3, PerkType.ForcePush)
+            builder
+                .Create(FeatType.ForcePush3, PerkType.ForcePush)
                 .Name("Force Push III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.ForcePush, 30f)
@@ -84,7 +87,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ForcePush4(AbilityBuilder builder)
         {
-            builder.Create(FeatType.ForcePush4, PerkType.ForcePush)
+            builder
+                .Create(FeatType.ForcePush4, PerkType.ForcePush)
                 .Name("Force Push IV")
                 .Level(4)
                 .HasRecastDelay(RecastGroup.ForcePush, 30f)

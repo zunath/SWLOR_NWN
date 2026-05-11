@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
 
         private static void HamperingBarrage1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.HamperingBarrage1, PerkType.HamperingBarrage)
+            builder
+                .Create(FeatType.HamperingBarrage1, PerkType.HamperingBarrage)
                 .Name("Hampering Barrage")
                 .Level(1)
                 .HasActivationDelay(2f)

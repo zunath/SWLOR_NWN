@@ -13,7 +13,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
         {
             var builder = new AbilityBuilder();
 
-            ConfigureToggle(builder.Create(FeatType.DebilitatingStance1, PerkType.DebilitatingStance).Name("Debilitating Stance").Level(1), typeof(DebilitatingStanceStatusEffect));
+            ConfigureToggle(
+                builder
+                    .Create(FeatType.DebilitatingStance1, PerkType.DebilitatingStance)
+                    .Name("Debilitating Stance")
+                    .Level(1)
+                    .HasRecastDelay(RecastGroup.DebilitatingStance, 180f),
+                typeof(DebilitatingStanceStatusEffect));
 
             return builder.Build();
         }

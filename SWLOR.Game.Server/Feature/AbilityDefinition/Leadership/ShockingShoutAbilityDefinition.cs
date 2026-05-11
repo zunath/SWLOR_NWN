@@ -23,7 +23,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
 
         private void ShockingShout()
         {
-            _builder.Create(FeatType.ShockingShout, PerkType.ShockingShout)
+            _builder
+                .Create(FeatType.ShockingShout, PerkType.ShockingShout)
                 .Name("Shocking Shout")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.ShockingShout, 120f)

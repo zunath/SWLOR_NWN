@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
 
         private static void AbsoluteDefense(AbilityBuilder builder)
         {
-            builder.Create(FeatType.AbsoluteDefense1, PerkType.AbsoluteDefense)
+            builder
+                .Create(FeatType.AbsoluteDefense1, PerkType.AbsoluteDefense)
                 .Name("Absolute Defense")
                 .Level(1)
                 .HasActivationDelay(0f)

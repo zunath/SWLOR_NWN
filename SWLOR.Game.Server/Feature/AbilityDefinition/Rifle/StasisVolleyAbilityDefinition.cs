@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
 
         private static void StasisVolley1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.StasisVolley1, PerkType.StasisVolley)
+            builder
+                .Create(FeatType.StasisVolley1, PerkType.StasisVolley)
                 .Name("Stasis Volley")
                 .Level(1)
                 .HasActivationDelay(2f)

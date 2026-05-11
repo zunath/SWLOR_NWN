@@ -23,11 +23,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
 
         private static void TranqCone1(AbilityBuilder builder)
         {
-            TranqCone(
-                builder,
-                FeatType.TranqCone1,
-                "Tranq Cone I",
-                level: 1,
+            var ability = builder.Create(FeatType.TranqCone1, PerkType.TranqCone)
+                .Name("Tranq Cone I")
+                .Level(1);
+
+            ConfigureTranqCone(
+                ability,
                 dazeDuration: 8,
                 coneLength: 8f,
                 coneWidth: 6f,
@@ -36,31 +37,25 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
 
         private static void TranqCone2(AbilityBuilder builder)
         {
-            TranqCone(
-                builder,
-                FeatType.TranqCone2,
-                "Tranq Cone II",
-                level: 2,
+            var ability = builder.Create(FeatType.TranqCone2, PerkType.TranqCone)
+                .Name("Tranq Cone II")
+                .Level(2);
+
+            ConfigureTranqCone(
+                ability,
                 dazeDuration: 10,
                 coneLength: 10f,
                 coneWidth: 7f,
                 stamina: 10);
         }
 
-        private static void TranqCone(
-            AbilityBuilder builder,
-            FeatType feat,
-            string name,
-            int level,
+        private static void ConfigureTranqCone(
+            AbilityBuilder ability,
             int dazeDuration,
             float coneLength,
             float coneWidth,
             int stamina)
         {
-            var ability = builder.Create(feat, PerkType.TranqCone)
-                .Name(name)
-                .Level(level);
-
             ConfigureTelegraphedArea(
                 ability,
                 Skill,

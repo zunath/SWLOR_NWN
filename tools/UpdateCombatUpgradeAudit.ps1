@@ -180,6 +180,46 @@ function Get-AbilityFileForBibleRow {
     return $null
 }
 
+function Test-AbilitySatisfiesStatusCheck {
+    param(
+        [string]$AbilityContent,
+        [hashtable]$StatusDefinitionContentByName,
+        [string]$StatusEffectClass,
+        [string]$StatusEnum
+    )
+
+    if ([string]::IsNullOrWhiteSpace($AbilityContent)) {
+        return $false
+    }
+
+    $statusEffectPattern = "\b$([regex]::Escape($StatusEffectClass))\b"
+    if ($AbilityContent -match $statusEffectPattern) {
+        return $true
+    }
+
+    $immunityPattern = "\bImmunityType\.$([regex]::Escape($StatusEnum))\b"
+    if ($AbilityContent -match $immunityPattern) {
+        return $true
+    }
+
+    $referencedStatusEffects = [regex]::Matches($AbilityContent, 'typeof\((\w+StatusEffect)\)') |
+        ForEach-Object { $_.Groups[1].Value } |
+        Select-Object -Unique
+
+    foreach ($referencedStatusEffect in $referencedStatusEffects) {
+        if (!$StatusDefinitionContentByName.ContainsKey($referencedStatusEffect)) {
+            continue
+        }
+
+        $statusDefinitionContent = $StatusDefinitionContentByName[$referencedStatusEffect]
+        if ($statusDefinitionContent -match $statusEffectPattern -or $statusDefinitionContent -match $immunityPattern) {
+            return $true
+        }
+    }
+
+    return $false
+}
+
 function Convert-CooldownToSeconds {
     param([string]$Cooldown)
 
@@ -674,8 +714,15 @@ if (@($manifest).Count -eq 0) {
 $perkIndex = Import-CodeNameIndex -Path (Resolve-RepoPath "SWLOR.Game.Server\Feature\PerkDefinition") -Filter "*PerkDefinition.cs"
 $abilityNameIndex = Import-CodeNameIndex -Path (Resolve-RepoPath "SWLOR.Game.Server\Feature\AbilityDefinition") -Filter "*AbilityDefinition.cs"
 $abilityFileIndex = Import-AbilityFileIndex -Path (Resolve-RepoPath "SWLOR.Game.Server\Feature\AbilityDefinition")
-$statusDefinitionText = (Get-ChildItem (Resolve-RepoPath "SWLOR.Game.Server\Feature\StatusEffectDefinition") -Filter "*StatusEffect.cs" -Recurse |
-    ForEach-Object { Get-Content $_.FullName -Raw }) -join "`n"
+$statusDefinitionContentByName = @{}
+$statusDefinitionTextParts = New-Object System.Collections.Generic.List[string]
+Get-ChildItem (Resolve-RepoPath "SWLOR.Game.Server\Feature\StatusEffectDefinition") -Filter "*StatusEffect.cs" -Recurse |
+    ForEach-Object {
+        $content = Get-Content $_.FullName -Raw
+        $statusDefinitionContentByName[$_.BaseName] = $content
+        $statusDefinitionTextParts.Add($content) | Out-Null
+    }
+$statusDefinitionText = $statusDefinitionTextParts -join "`n"
 
 $perkBaseNameIndex = @{}
 foreach ($key in $perkIndex.Keys) {
@@ -737,7 +784,15 @@ foreach ($row in $manifest) {
             if ($statusDefinitionText -notmatch "\b$statusEffectClass\b") {
                 Add-AuditRow -Rows $auditRows -AuditType "MissingStatusEffectDefinition" -BibleRow $row -Details $statusEffectClass
             }
-            elseif ($isActiveType -and $abilityFile -and $abilityFile.Content -notmatch "\b$statusEffectClass\b") {
+            elseif (
+                $isActiveType -and
+                $abilityFile -and
+                !(Test-AbilitySatisfiesStatusCheck `
+                    -AbilityContent $abilityFile.Content `
+                    -StatusDefinitionContentByName $statusDefinitionContentByName `
+                    -StatusEffectClass $statusEffectClass `
+                    -StatusEnum $check.Enum)
+            ) {
                 Add-AuditRow -Rows $auditRows -AuditType "StatusNotAppliedInAbility" -BibleRow $row -File $abilityFile.File -Details $statusEffectClass
             }
         }

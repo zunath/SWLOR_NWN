@@ -1,6 +1,6 @@
 # Combat Upgrade Implementation Plan
 
-Last reviewed against the Combat Upgrade Bible on 2026-05-05.
+Last reviewed against the Combat Upgrade Bible on 2026-05-11.
 
 ## Source Of Truth
 
@@ -9,6 +9,8 @@ The authoritative design source for this work is the Google Sheet:
 https://docs.google.com/spreadsheets/d/1rppEkwp2dX0oGKY1ftSbDTcg7GhopODseqbDb4cpNSU/edit?gid=207006097#gid=207006097
 
 Use this sheet as the combat upgrade Bible. Experimental branches are implementation references only; if they conflict with the Bible, the Bible wins.
+
+The checked-in local workbook snapshot is `design\bible\SWLOR Design Bible - Combat Upgrade.xlsx`. Regenerate the local manifest and audit from that workbook with `tools\UpdateCombatUpgradeAudit.ps1 -RefreshLocalBible`.
 
 Do not carry over the Heavy Armor activation-time penalty. That mechanic was removed from the plan and should be ignored even if it appears in experimental branches or partial local carryover.
 
@@ -222,7 +224,7 @@ Acceptance criteria:
 
 ### Phase 1: Bible Manifest And Diff
 
-Create a generated manifest from the Bible CSV exports:
+Create a generated manifest from the local Bible workbook or Bible CSV exports:
 
 - Tab name
 - Row number
@@ -336,14 +338,16 @@ Status: removed from the feature branch implementation on 2026-05-05.
 ## Generated Audit Artifacts
 
 - `CombatUpgradePerkAudit.csv` compares Bible perk rows against current perk definitions by normalized perk name.
-- `CombatUpgradeBiblePerkManifest.csv` is the exported perk-row manifest from all Bible tabs with perk tables.
-- Current audit summary:
-  - Bible perk rows: 1082
-  - Current code perk definitions: 263
-  - Bible rows missing from code: 463
-  - Code perk definitions missing from Bible: 64
+- `CombatUpgradeBiblePerkManifest.csv` is the exported perk-row manifest from all audited Bible tabs with perk tables.
+- Current local-workbook audit summary:
+  - Raw Bible perk rows: 999
+  - Scoped audit findings: 342
+  - Missing Bible perk names in code: 107
+  - Active Bible rows missing ability definitions: 106
+  - Active Bible rows missing detected recast wiring: 126
+  - Bible-described status applications absent from matching ability implementation: 3
 
-The audit is intentionally a work queue, not final truth. Some rows need human review where the Bible consolidated names, changed categories, or converted old proficiency concepts into skill prerequisites.
+The audit is intentionally a work queue, not final truth. Some rows need human review where the Bible consolidated names, changed categories, changed tab-specific columns, or converted old proficiency concepts into skill prerequisites.
 
 Audit totals should exclude Espionage and Farming-only rows. If an all-tab export includes those rows, keep them in the raw manifest for traceability but omit them from combat-upgrade missing-work counts.
 

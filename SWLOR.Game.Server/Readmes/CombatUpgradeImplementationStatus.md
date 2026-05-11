@@ -1,26 +1,36 @@
 # Combat Upgrade Implementation Status
 
-Last updated: 2026-05-09
+Last updated: 2026-05-11
 
 ## Source Of Truth
 
-The combat upgrade is being checked against the live Bible spreadsheet:
+The upstream combat upgrade source is the live Bible spreadsheet:
 
 `https://docs.google.com/spreadsheets/d/1rppEkwp2dX0oGKY1ftSbDTcg7GhopODseqbDb4cpNSU/edit?gid=207006097#gid=207006097`
 
-The current local manifest is `CombatUpgradeBiblePerkManifest.csv`. Regenerate the local gap audit with:
+The current local workbook snapshot is:
+
+`design\bible\SWLOR Design Bible - Combat Upgrade.xlsx`
+
+The current local manifest is `CombatUpgradeBiblePerkManifest.csv`. Regenerate the manifest from the local workbook and run the gap audit with:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools\UpdateCombatUpgradeAudit.ps1 -RefreshLocalBible
+```
+
+Regenerate the gap audit from the existing manifest with:
 
 ```powershell
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools\UpdateCombatUpgradeAudit.ps1
 ```
 
-When network access is available, add `-RefreshBible` to pull fresh per-tab CSV exports before auditing.
+When network access is available, use `-RefreshBible` to pull fresh per-tab CSV exports before auditing. Prefer `-RefreshLocalBible` when working from the checked-in workbook snapshot.
 
 Espionage and Farming are out of scope. The audit also excludes crafting, research, and gathering tabs because they are not part of the combat-upgrade implementation surface.
 
 ## Current Snapshot
 
-`SWLOR.Game.Server.sln` builds successfully as of 2026-05-09.
+`SWLOR.Game.Server.sln` was last recorded as building successfully on 2026-05-09. This local Bible sync did not rerun the full build.
 
 The first implementation pass closed a few narrow, concrete gaps:
 
@@ -53,16 +63,19 @@ The first implementation pass closed a few narrow, concrete gaps:
 - Tightened the audit so blank spreadsheet note rows and non-combat crafting/research/gathering tabs are excluded from combat-upgrade blocker counts.
 - Added the missing Flurry Style staff perk and wired its staff AGI to-hit, PER damage, and attack-delay reduction behavior.
 - Updated the audit refresh to parse the live Bible spreadsheet's pre-table metadata rows and fail loudly if no scoped manifest rows are available.
+- Added local workbook refresh support to `tools\UpdateCombatUpgradeAudit.ps1`, regenerated `CombatUpgradeBiblePerkManifest.csv` from `design\bible\SWLOR Design Bible - Combat Upgrade.xlsx`, and regenerated `CombatUpgradePerkAudit.csv` from that manifest.
 
-The latest audit currently reports:
+The latest local-workbook audit currently reports:
 
-- 0 Bible perk names missing from code
-- 0 active Bible rows missing ability definitions
-- 0 status effects mentioned as applied by Bible descriptions but absent from the matching ability implementation
+- 999 raw Bible perk rows in `CombatUpgradeBiblePerkManifest.csv`
+- 107 scoped Bible perk names missing from code
+- 106 active Bible rows missing ability definitions
+- 126 active Bible rows with a Bible cooldown but no detected `HasRecastDelay` in the matching ability implementation
+- 3 status effects mentioned as applied by Bible descriptions but absent from the matching ability implementation
 
-The scoped combat-upgrade audit is clean.
+The scoped combat-upgrade audit is not clean against the 2026-05-10 local workbook snapshot. The largest new blockers are in the redesigned Force, Devices, and First Aid rows now present in the local workbook manifest.
 
-The combat-upgrade feat and spell icon resource checks now pass for the scoped rows audited by the script. Generated combat feat `SPELLID` links are present, and the audit no longer reports missing recast wiring for existing active ability definitions.
+The combat-upgrade feat and spell icon resource checks still pass for the scoped rows audited by the script. Generated combat feat `SPELLID` links are present, but the local workbook audit now reports missing recast wiring for active ability definitions that have Bible cooldowns.
 
 ## Major Remaining Gaps
 
@@ -70,7 +83,7 @@ The telegraph service now has a combat ability integration point, and a broader 
 
 The `StatusEffect` service is now adopted for status effects. Status definitions are discovered by class, so new effects are added by creating a definition rather than maintaining a separate enum list.
 
-Perks and abilities are functional for the active combat audit surface: active perk levels grant feats, feat/spell/icon links exist, and every active Bible row has an ability definition. Several bespoke mechanics are still first-pass approximations rather than exact simulations: channel ticks, persistent fields, target-count caps, positional bonuses, guarded-hit behavior, exact enmity math, and some critical-hit/offhand-delay effects.
+Perks and abilities are functional for the earlier active weapon audit surface: active perk levels grant feats, feat/spell/icon links exist, and the prior active weapon rows had ability definitions. The current local workbook adds or changes Force, Devices, First Aid, Pistol, and Throwing rows that now appear in the audit as missing code or missing ability definitions. Several bespoke mechanics are still first-pass approximations rather than exact simulations: channel ticks, persistent fields, target-count caps, positional bonuses, guarded-hit behavior, exact enmity math, and some critical-hit/offhand-delay effects.
 
 `feat.2da` and `spells.2da` are now linked for generated combat feats. The remaining 2DA risk is target metadata quality: generated spell rows use a generic medium-range creature target template until ability-specific target shape/range data is wired from the telegraph/ability implementation.
 
@@ -78,6 +91,7 @@ The `experimental/combat-upgrade-status-effects` branch was checked as a referen
 
 ## Next Steps
 
-1. Playtest conditional/channel/persistent-field abilities such as Current Overload, Serpent's Eclipse, Tempest Bloom, Pacification Field, Gas Bomb, Disruption Field, Shield Wall, Force Capacitor, and Infinite Conduit against the live module.
-2. Refine generated spell target metadata after any remaining ability-specific target shape/range adjustments are confirmed in play.
-3. Keep `tools\UpdateCombatUpgradeAudit.ps1`, the build, and this status file aligned when the Bible changes.
+1. Triage the local-workbook audit blockers, starting with Force, Devices, and First Aid missing perk/ability rows, then the Pistol and Throwing ability-definition gaps.
+2. Playtest conditional/channel/persistent-field abilities such as Current Overload, Serpent's Eclipse, Tempest Bloom, Pacification Field, Gas Bomb, Disruption Field, Shield Wall, Force Capacitor, and Infinite Conduit against the live module.
+3. Refine generated spell target metadata after any remaining ability-specific target shape/range adjustments are confirmed in play.
+4. Keep `tools\UpdateCombatUpgradeAudit.ps1`, the build, and this status file aligned when the Bible changes.

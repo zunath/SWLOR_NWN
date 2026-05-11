@@ -1,7 +1,9 @@
 [CmdletBinding()]
 param(
     [switch]$RefreshBible,
+    [switch]$RefreshLocalBible,
     [string]$SpreadsheetId = "1rppEkwp2dX0oGKY1ftSbDTcg7GhopODseqbDb4cpNSU",
+    [string]$BibleWorkbookPath = "design\bible\SWLOR Design Bible - Combat Upgrade.xlsx",
     [string]$ManifestPath = "SWLOR.Game.Server\Readmes\CombatUpgradeBiblePerkManifest.csv",
     [string]$AuditPath = "SWLOR.Game.Server\Readmes\CombatUpgradePerkAudit.csv"
 )
@@ -312,17 +314,288 @@ function Import-BibleTabRows {
     return $rows
 }
 
-$manifestFullPath = Resolve-RepoPath $ManifestPath
-$auditFullPath = Resolve-RepoPath $AuditPath
-
-if ($RefreshBible) {
-    $sheetTabs = @(
-        "Armor", "Vibroblade", "Vibroknife", "Lightsaber", "Heavy Vibroblade", "Spear",
-        "Twin Blade", "Saberstaff", "Katar", "Staff", "Pistol", "Rifle", "Throwing",
-        "Force", "Devices", "Beast Mastery", "Piloting", "Leadership", "First Aid",
-        "Espionage", "Smithery", "Engineering", "Fabrication", "Research", "Agriculture", "Gathering"
+function Read-ZipEntryText {
+    param(
+        [System.IO.Compression.ZipArchive]$Zip,
+        [string]$EntryPath
     )
 
+    $entry = $Zip.GetEntry($EntryPath)
+    if ($null -eq $entry) {
+        throw "Workbook entry '$EntryPath' was not found."
+    }
+
+    $stream = $entry.Open()
+    try {
+        $reader = [System.IO.StreamReader]::new($stream)
+        try {
+            return $reader.ReadToEnd()
+        }
+        finally {
+            $reader.Dispose()
+        }
+    }
+    finally {
+        $stream.Dispose()
+    }
+}
+
+function Get-OpenXmlColumnIndex {
+    param([string]$CellReference)
+
+    $letters = ([regex]::Match($CellReference, "^[A-Z]+")).Value
+    if ([string]::IsNullOrWhiteSpace($letters)) {
+        return 0
+    }
+
+    $index = 0
+    foreach ($character in $letters.ToCharArray()) {
+        $index = ($index * 26) + ([int][char]$character - [int][char]"A" + 1)
+    }
+
+    return $index
+}
+
+function Get-WorkbookEntryPath {
+    param([string]$RelationshipTarget)
+
+    $target = $RelationshipTarget.Replace("\", "/").TrimStart("/")
+    if ($target.StartsWith("xl/", [System.StringComparison]::OrdinalIgnoreCase)) {
+        return $target
+    }
+
+    return "xl/$target"
+}
+
+function Normalize-ManifestCellText {
+    param([object]$Value)
+
+    if ($null -eq $Value) {
+        return ""
+    }
+
+    $text = [string]$Value
+    $text = $text -replace "[ \t]+\r?\n", "`n"
+    return $text.Trim()
+}
+
+function Get-OpenXmlCellText {
+    param(
+        [System.Xml.XmlElement]$Cell,
+        [System.Collections.Generic.IList[string]]$SharedStrings
+    )
+
+    $cellType = $Cell.GetAttribute("t")
+    if ($cellType -eq "inlineStr") {
+        $texts = [System.Collections.Generic.List[string]]::new()
+        foreach ($textNode in $Cell.GetElementsByTagName("t")) {
+            $texts.Add($textNode.InnerText) | Out-Null
+        }
+
+        return Normalize-ManifestCellText ($texts -join "")
+    }
+
+    $valueNodes = $Cell.GetElementsByTagName("v")
+    if ($valueNodes.Count -eq 0) {
+        return ""
+    }
+
+    $rawValue = $valueNodes[0].InnerText
+    if ($cellType -eq "s") {
+        if ([string]::IsNullOrWhiteSpace($rawValue)) {
+            return ""
+        }
+
+        return Normalize-ManifestCellText $SharedStrings[[int]$rawValue]
+    }
+
+    return Normalize-ManifestCellText $rawValue
+}
+
+function Get-CanonicalManifestHeader {
+    param([string]$Header)
+
+    if ([string]::IsNullOrWhiteSpace($Header)) {
+        return ""
+    }
+
+    $key = ($Header -replace "[\s\.\?]+", "").ToLowerInvariant()
+    switch ($key) {
+        "style" { return "Style" }
+        "spprice" { return "Price" }
+        "price" { return "Price" }
+        "perkname" { return "PerkName" }
+        "name" { return "PerkName" }
+        "skillreqs" { return "SkillRequirements" }
+        "skillrequirements" { return "SkillRequirements" }
+        "requirements" { return "SkillRequirements" }
+        "chartype" { return "CharacterType" }
+        "charactertype" { return "CharacterType" }
+        "type" { return "Type" }
+        "description" { return "Description" }
+        "crossskill" { return "CrossSkill" }
+        "fp" { return "FP" }
+        "stm" { return "STM" }
+        "castingtime" { return "CastingTime" }
+        "cooldowntime" { return "CooldownTime" }
+        "cooldown" { return "CooldownTime" }
+        "devstatus" { return "DevStatus" }
+        "additionalrequirements" { return "AdditionalRequirements" }
+        "notes" { return "Notes" }
+        default { return "" }
+    }
+}
+
+function Get-MappedCellValue {
+    param(
+        [hashtable]$Cells,
+        [hashtable]$ColumnByHeader,
+        [string]$Header
+    )
+
+    if (!$ColumnByHeader.ContainsKey($Header)) {
+        return ""
+    }
+
+    return $Cells[$ColumnByHeader[$Header]]
+}
+
+function Import-BibleWorkbookManifestRows {
+    param(
+        [string]$Path,
+        [string[]]$SheetTabs
+    )
+
+    Add-Type -AssemblyName System.IO.Compression.FileSystem
+
+    $zip = [System.IO.Compression.ZipFile]::OpenRead($Path)
+    try {
+        $sharedStrings = [System.Collections.Generic.List[string]]::new()
+        if ($null -ne $zip.GetEntry("xl/sharedStrings.xml")) {
+            [xml]$sharedStringsXml = Read-ZipEntryText -Zip $zip -EntryPath "xl/sharedStrings.xml"
+            $sharedStringNamespace = [System.Xml.XmlNamespaceManager]::new($sharedStringsXml.NameTable)
+            $sharedStringNamespace.AddNamespace("d", "http://schemas.openxmlformats.org/spreadsheetml/2006/main")
+
+            foreach ($sharedString in $sharedStringsXml.SelectNodes("//d:si", $sharedStringNamespace)) {
+                $texts = [System.Collections.Generic.List[string]]::new()
+                foreach ($textNode in $sharedString.SelectNodes(".//d:t", $sharedStringNamespace)) {
+                    $texts.Add($textNode.InnerText) | Out-Null
+                }
+
+                $sharedStrings.Add(($texts -join "")) | Out-Null
+            }
+        }
+
+        [xml]$workbookXml = Read-ZipEntryText -Zip $zip -EntryPath "xl/workbook.xml"
+        [xml]$relationshipsXml = Read-ZipEntryText -Zip $zip -EntryPath "xl/_rels/workbook.xml.rels"
+
+        $relationshipsById = @{}
+        foreach ($relationship in $relationshipsXml.Relationships.Relationship) {
+            $relationshipsById[$relationship.Id] = Get-WorkbookEntryPath $relationship.Target
+        }
+
+        $workbookNamespace = [System.Xml.XmlNamespaceManager]::new($workbookXml.NameTable)
+        $workbookNamespace.AddNamespace("d", "http://schemas.openxmlformats.org/spreadsheetml/2006/main")
+        $workbookNamespace.AddNamespace("r", "http://schemas.openxmlformats.org/officeDocument/2006/relationships")
+
+        $sheetPathsByName = @{}
+        foreach ($sheet in $workbookXml.SelectNodes("//d:sheets/d:sheet", $workbookNamespace)) {
+            $relationshipId = $sheet.GetAttribute("id", "http://schemas.openxmlformats.org/officeDocument/2006/relationships")
+            $sheetPathsByName[$sheet.GetAttribute("name")] = $relationshipsById[$relationshipId]
+        }
+
+        $manifestRows = [System.Collections.Generic.List[object]]::new()
+        foreach ($tab in $SheetTabs) {
+            if (!$sheetPathsByName.ContainsKey($tab)) {
+                throw "Workbook sheet '$tab' was not found."
+            }
+
+            [xml]$worksheetXml = Read-ZipEntryText -Zip $zip -EntryPath $sheetPathsByName[$tab]
+            $worksheetNamespace = [System.Xml.XmlNamespaceManager]::new($worksheetXml.NameTable)
+            $worksheetNamespace.AddNamespace("d", "http://schemas.openxmlformats.org/spreadsheetml/2006/main")
+
+            $headerRowNumber = 0
+            $columnByHeader = @{}
+            foreach ($rowNode in $worksheetXml.SelectNodes("//d:sheetData/d:row", $worksheetNamespace)) {
+                $rowNumberText = $rowNode.GetAttribute("r")
+                if ([string]::IsNullOrWhiteSpace($rowNumberText)) {
+                    continue
+                }
+
+                $cells = @{}
+                foreach ($cell in $rowNode.SelectNodes("d:c", $worksheetNamespace)) {
+                    $columnIndex = Get-OpenXmlColumnIndex $cell.GetAttribute("r")
+                    if ($columnIndex -gt 0) {
+                        $cells[$columnIndex] = Get-OpenXmlCellText -Cell $cell -SharedStrings $sharedStrings
+                    }
+                }
+
+                $rowNumber = [int]$rowNumberText
+                if ($headerRowNumber -eq 0 -and (($cells.Values -join "|") -match "Perk Name|PerkName")) {
+                    $headerRowNumber = $rowNumber
+                    foreach ($cellEntry in $cells.GetEnumerator()) {
+                        $canonicalHeader = Get-CanonicalManifestHeader $cellEntry.Value
+                        if (![string]::IsNullOrWhiteSpace($canonicalHeader) -and !$columnByHeader.ContainsKey($canonicalHeader)) {
+                            $columnByHeader[$canonicalHeader] = $cellEntry.Key
+                        }
+                    }
+                    continue
+                }
+
+                if ($headerRowNumber -eq 0 -or $rowNumber -le $headerRowNumber) {
+                    continue
+                }
+
+                $name = Get-MappedCellValue -Cells $cells -ColumnByHeader $columnByHeader -Header "PerkName"
+                if ([string]::IsNullOrWhiteSpace($name)) {
+                    continue
+                }
+
+                $manifestRows.Add([pscustomobject]@{
+                    Tab = $tab
+                    Row = $rowNumber
+                    Style = Get-MappedCellValue -Cells $cells -ColumnByHeader $columnByHeader -Header "Style"
+                    Price = Get-MappedCellValue -Cells $cells -ColumnByHeader $columnByHeader -Header "Price"
+                    PerkName = $name
+                    SkillRequirements = Get-MappedCellValue -Cells $cells -ColumnByHeader $columnByHeader -Header "SkillRequirements"
+                    CharacterType = Get-MappedCellValue -Cells $cells -ColumnByHeader $columnByHeader -Header "CharacterType"
+                    Type = Get-MappedCellValue -Cells $cells -ColumnByHeader $columnByHeader -Header "Type"
+                    Description = Get-MappedCellValue -Cells $cells -ColumnByHeader $columnByHeader -Header "Description"
+                    CrossSkill = Get-MappedCellValue -Cells $cells -ColumnByHeader $columnByHeader -Header "CrossSkill"
+                    FP = Get-MappedCellValue -Cells $cells -ColumnByHeader $columnByHeader -Header "FP"
+                    STM = Get-MappedCellValue -Cells $cells -ColumnByHeader $columnByHeader -Header "STM"
+                    CastingTime = Get-MappedCellValue -Cells $cells -ColumnByHeader $columnByHeader -Header "CastingTime"
+                    CooldownTime = Get-MappedCellValue -Cells $cells -ColumnByHeader $columnByHeader -Header "CooldownTime"
+                    DevStatus = Get-MappedCellValue -Cells $cells -ColumnByHeader $columnByHeader -Header "DevStatus"
+                    AdditionalRequirements = Get-MappedCellValue -Cells $cells -ColumnByHeader $columnByHeader -Header "AdditionalRequirements"
+                    Notes = Get-MappedCellValue -Cells $cells -ColumnByHeader $columnByHeader -Header "Notes"
+                }) | Out-Null
+            }
+        }
+
+        return $manifestRows
+    }
+    finally {
+        $zip.Dispose()
+    }
+}
+
+$manifestFullPath = Resolve-RepoPath $ManifestPath
+$auditFullPath = Resolve-RepoPath $AuditPath
+$workbookFullPath = Resolve-RepoPath $BibleWorkbookPath
+
+if ($RefreshBible -and $RefreshLocalBible) {
+    throw "Use either -RefreshBible or -RefreshLocalBible, not both."
+}
+
+$sheetTabs = @(
+    "Armor", "Vibroblade", "Vibroknife", "Lightsaber", "Heavy Vibroblade", "Spear",
+    "Twin Blade", "Saberstaff", "Katar", "Staff", "Pistol", "Rifle", "Throwing",
+    "Force", "Devices", "Beast Mastery", "Piloting", "Leadership", "First Aid",
+    "Espionage", "Smithery", "Engineering", "Fabrication", "Research", "Agriculture", "Gathering"
+)
+
+if ($RefreshBible) {
     $manifestRows = New-Object System.Collections.Generic.List[object]
     foreach ($tab in $sheetTabs) {
         $encodedTab = [System.Uri]::EscapeDataString($tab)
@@ -368,6 +641,15 @@ if ($RefreshBible) {
     $manifestRows | Export-Csv -Path $manifestFullPath -NoTypeInformation
 }
 
+if ($RefreshLocalBible) {
+    $manifestRows = Import-BibleWorkbookManifestRows -Path $workbookFullPath -SheetTabs $sheetTabs
+    if ($manifestRows.Count -eq 0) {
+        throw "No local Bible workbook perk rows were parsed. The workbook export format may have changed."
+    }
+
+    $manifestRows | Export-Csv -Path $manifestFullPath -NoTypeInformation
+}
+
 $outOfScopeTabs = @(
     "Espionage",
     "Farming",
@@ -386,7 +668,7 @@ $manifest = Import-Csv $manifestFullPath |
     }
 
 if (@($manifest).Count -eq 0) {
-    throw "Combat upgrade manifest contains no scoped rows. Run with -RefreshBible or restore a valid manifest before auditing."
+    throw "Combat upgrade manifest contains no scoped rows. Run with -RefreshLocalBible, run with -RefreshBible, or restore a valid manifest before auditing."
 }
 
 $perkIndex = Import-CodeNameIndex -Path (Resolve-RepoPath "SWLOR.Game.Server\Feature\PerkDefinition") -Filter "*PerkDefinition.cs"

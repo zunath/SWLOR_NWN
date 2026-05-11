@@ -20,6 +20,8 @@ namespace SWLOR.Game.Server.Service
 {
     public static class Combat
     {
+        private const float DamageStatDeltaMultiplier = 0.35f;
+
         public const int StandardCriticalRating = 2;
 
         private static readonly List<CombatDamageType> _allValidDamageTypes = new();
@@ -155,7 +157,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="attackerDMG">The attacker's DMG rating</param>
         /// <param name="attackerStat">The attacker's attack stat value</param>
         /// <param name="defenderDefense">The defender's defense rating.</param>
-        /// <param name="defenderStat">The defender's defend stat value</param>
+        /// <param name="defenderStat">The defender's raw defend stat value</param>
         /// <param name="critical">the critical rating of the attack, or 0 if the attack is not critical.</param>
         /// <param name="deltaCap">Value to cap the lower and upper bounds of stat delta to. For weapons, should be weapon rank.</param>
         /// <returns>A minimum and maximum damage range</returns>
@@ -174,7 +176,7 @@ namespace SWLOR.Game.Server.Service
             if (defenderDefense < 1)
                 defenderDefense = 1;
 
-            var statDelta = attackerStat - defenderStat;
+            var statDelta = (attackerStat - defenderStat) * DamageStatDeltaMultiplier;
             if (deltaCap > 0) statDelta = Math.Clamp(statDelta, -deltaCap, 8 + deltaCap);
             var baseDamage = attackerDMG + statDelta;
             var ratio = (float)attackerAttack / (float)defenderDefense;
@@ -258,7 +260,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="attackerDMG">The attacker's DMG rating</param>
         /// <param name="attackerStat">The attacker's attack stat value</param>
         /// <param name="defenderDefense">The defender's defense rating.</param>
-        /// <param name="defenderStat">The defender's defend stat value</param>
+        /// <param name="defenderStat">The defender's raw defend stat value</param>
         /// <param name="critical">the critical rating of the attack, or 0 if the attack is not critical.</param>
         /// <param name="deltaCap">Value to cap the lower and upper bounds of stat delta to. For weapons, should be weapon rank.</param>
         /// <returns>A damage value to apply to the target.</returns>
@@ -1172,6 +1174,26 @@ namespace SWLOR.Game.Server.Service
                 GetPerkTypeGroup(perkType));
         }
 
+        public static int GetAbilityDamageFlatAdjustment(uint creature, PerkType perkType)
+        {
+            return GetTargetedAbilityAdjustment(
+                creature,
+                perkType,
+                StatType.AbilityDamageFlatAdjustmentPerkType,
+                StatType.AbilityDamageFlatAdjustmentSecondaryPerkType,
+                StatType.AbilityDamageFlatAdjustment);
+        }
+
+        public static int GetAbilityStaminaCostFlatAdjustment(uint creature, PerkType perkType)
+        {
+            return GetTargetedAbilityAdjustment(
+                creature,
+                perkType,
+                StatType.AbilityStaminaCostFlatAdjustmentPerkType,
+                StatType.AbilityStaminaCostFlatAdjustmentSecondaryPerkType,
+                StatType.AbilityStaminaCostFlatAdjustment);
+        }
+
         private static void ApplyAbilityUsedRecastReduction(uint activator, AbilityDetail ability)
         {
             var triggerGroup = GetRecastGroupFromStat(Stat.GetStatAdjustment(activator, StatType.AbilityUsedRecastReductionTriggerGroup));
@@ -1423,6 +1445,24 @@ namespace SWLOR.Game.Server.Service
             return value > 0 && Enum.IsDefined(typeof(PerkType), value)
                 ? (PerkType)value
                 : PerkType.Invalid;
+        }
+
+        private static int GetTargetedAbilityAdjustment(
+            uint creature,
+            PerkType perkType,
+            StatType primaryPerkStatType,
+            StatType secondaryPerkStatType,
+            StatType adjustmentStatType)
+        {
+            if (perkType == PerkType.Invalid)
+                return 0;
+
+            var primaryPerk = GetPerkTypeFromStat(Stat.GetStatAdjustment(creature, primaryPerkStatType));
+            var secondaryPerk = GetPerkTypeFromStat(Stat.GetStatAdjustment(creature, secondaryPerkStatType));
+            if (perkType != primaryPerk && perkType != secondaryPerk)
+                return 0;
+
+            return Stat.GetStatAdjustment(creature, adjustmentStatType);
         }
 
         private static void GrantNextAbilityDamageBonus(uint creature, PerkType perkType, int bonus, int durationSeconds)

@@ -28,28 +28,28 @@ This is the standard D&D-style ability modifier calculation. For example:
 The HP calculation is handled by the NWN engine and stored in the `MaxHP` property. The base value is 70, but the actual calculation involves level, class, and other factors.
 
 ### 3. Max FP (Force Points) Calculation
-**Formula:** `BaseFP + (Willpower Modifier × 10) + Food Bonus`
+**Formula:** `BaseFP + (Willpower Stat × 3) + Food Bonus`
 
 **Components:**
 - Base FP: 10
-- Willpower Modifier: Calculated from Willpower stat
+- Willpower Stat: Raw Willpower stat value
 - Food Bonus: Temporary bonus from food effects
 
 **Example:**
-- Willpower 14 = Modifier +2
-- Max FP = 10 + (2 × 10) + 0 = 30
+- Willpower 14
+- Max FP = 10 + (14 × 3) + 0 = 52
 
 ### 4. Max Stamina Calculation
-**Formula:** `BaseSTM + (Agility Modifier × 5) + Food Bonus`
+**Formula:** `BaseSTM + floor(Might Stat × 1.5) + Food Bonus`
 
 **Components:**
 - Base Stamina: 10
-- Agility Modifier: Calculated from Agility stat
+- Might Stat: Raw Might stat value
 - Food Bonus: Temporary bonus from food effects
 
 **Example:**
-- Agility 16 = Modifier +3
-- Max Stamina = 10 + (3 × 5) + 0 = 25
+- Might 16
+- Max Stamina = 10 + floor(16 × 1.5) + 0 = 34
 
 ## Combat Stat Calculations
 
@@ -59,25 +59,25 @@ The HP calculation is handled by the NWN engine and stored in the `MaxHP` proper
 **Components:**
 - Base Attack: 8
 - Skill Level: Highest combat skill (explicit weapon skills, Force)
-- Stat: Highest combat stat (Might, Perception, Willpower)
+- Stat: Highest raw combat stat (Might, Perception, Willpower)
 - Equipment Bonus: Stored in `Attack` or `ForceAttack` property
 
 **Example:**
-- Skill Level 5, Stat 14 (+2), Equipment +3
-- Attack = 8 + (2 × 5) + 2 + 3 = 23
+- Skill Level 5, Stat 14, Equipment +3
+- Attack = 8 + (2 × 5) + 14 + 3 = 35
 
 ### 6. Defense Calculation
-**Formula:** `8 + (Defense Stat x 1.5) + Armor Skill + Equipment Bonus`
+**Formula:** `8 + floor(Armor Skill × 1.2) + Defense Stat + Equipment Bonus`
 
 **Components:**
 - Base Defense: 8
 - Defense Stat: Raw Vitality for Physical Defense, raw Willpower for Force Defense
-- Armor Skill: Armor skill level
+- Armor Skill: Armor skill rank, weighted at 1.2
 - Equipment Bonus: Matching Physical or Force defense bonuses from equipment
 
 **Example:**
 - Vitality or Willpower 16, Armor Skill 3, matching equipment +5
-- Defense = 8 + (16 x 1.5) + 3 + 5 = 8 + 24 + 3 + 5 = 40
+- Defense = 8 + floor(3 × 1.2) + 16 + 5 = 8 + 3 + 16 + 5 = 32
 
 ### 7. Evasion Calculation
 **Formula:** `8 + (2 × Armor Skill) + Agility Stat + Equipment Bonus`
@@ -118,6 +118,11 @@ The HP calculation is handled by the NWN engine and stored in the `MaxHP` proper
 - Perception vs Target Vitality: Grants up to +3% baseline critical chance
 - Critical Bonus: Perks, status effects, and situational modifiers
 - Final Result: Clamped between 5% and 50%
+
+### 8b. Damage Stat Delta Calculation
+**Formula:** `Base Damage + ((Attacker Stat - Defender Stat) × 0.35)`
+
+The attacking stat and defending stat are both raw stat values. Each point matters, but the stat comparison is weighted so Vitality and Willpower do not act as full flat damage shields.
 
 ## Saving Throw Calculations
 
@@ -180,7 +185,7 @@ Equipment provides various bonuses that are stored in the player's properties:
 2. **Food Effects:** Temporary bonuses that don't persist
 3. **Equipment Bonuses:** Stored separately and added to calculations
 4. **Skill Levels:** Based on skill ranks, not character level
-5. **Stat Modifiers:** Always calculated as (stat - 10) / 2
+5. **Stat Modifiers:** Still used for saving throws and native NWN systems, but custom combat resources and defense formulas use raw stat values unless noted otherwise.
 
 ## Usage in Admin Interface
 

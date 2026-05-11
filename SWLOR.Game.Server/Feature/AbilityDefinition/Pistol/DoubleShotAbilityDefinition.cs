@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
     {
         private const SkillType Skill = SkillType.Pistol;
         private const int HitCount = 2;
+        private const float RecastDelay = 45f;
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -50,6 +51,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 .Name(name)
                 .Level(level)
                 .HasActivationDelay(0f)
+                .HasRecastDelay(RecastGroup.DoubleShot, RecastDelay)
                 .SkillType(Skill)
                 .IsSingleTargetAbility()
                 .RequiresTarget()
@@ -72,6 +74,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
 
             if (damage <= 0)
                 return;
+
+            damage += Combat.GetAbilityDamageFlatAdjustment(activator, PerkType.DoubleShot);
 
             for (var hit = 0; hit < HitCount; hit++)
             {

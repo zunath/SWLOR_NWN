@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         protected override void OnDamageDealt(uint attacker, uint defender, int damage)
         {
-            var chance = Math.Min(30, 10 + GetPositiveAbilityModifier(AbilityType.Might, attacker));
+            var chance = Math.Min(30, 10 + GetPositiveAbilityModifier(AbilityType.Perception, attacker));
             if (Random.D100(1) <= chance)
             {
                 AssignCommand(defender, () => ClearAllActions());

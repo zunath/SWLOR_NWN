@@ -95,7 +95,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.BlazingSpikes1)
-                .Description("While active, this effect delivers 10% of physical damage received back to the attacker. Damage dealt increases by 1% per Might. (Maximum 40%)")
+                .Description("While active, this effect delivers 10% of physical damage received back to the attacker. Damage dealt increases by 1% per MGT. (Maximum 40%)")
                 .Price(3)
                 .RequirementSkill(SkillType.HeavyVibroblade, 40);
         }
@@ -121,7 +121,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Bloodlust1)
-                .Description("Sacrifice 40% HP in exchange for 20% of your maximum STM restored. Amount of STM restored increased by 1% per Might. (Maximum: 80%)")
+                .Description("Sacrifice 40% HP in exchange for 20% of your maximum STM restored. Amount of STM restored increased by 1% per MGT. (Maximum: 80%)")
                 .Price(4)
                 .RequirementSkill(SkillType.HeavyVibroblade, 42);
         }
@@ -158,7 +158,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Defensive Harmony")
 
                 .AddPerkLevel()
-                .Description("HP restoration used on you is 20% more effective. 10% chance to restore 8 STM when healed. Chance increases by 1% per Might. (Maximum 40%)")
+                .Description("HP restoration used on you is 20% more effective. 10% chance to restore 8 STM when healed. Chance increases by 1% per MGT. (Maximum 40%)")
                 .Price(3)
                 .RequirementSkill(SkillType.HeavyVibroblade, 30);
         }
@@ -385,7 +385,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SoulBurst1)
-                .Description("Deal weapon DMG + 35 to all enemies within area of effect (cone). Costs 40% HP which is reduced by 1% per Might. (Minimum 10%)")
+                .Description("Deal weapon DMG + 35 to all enemies within area of effect (cone). Costs 40% HP which is reduced by 1% per MGT. (Minimum 10%)")
                 .Price(3)
                 .RequirementSkill(SkillType.HeavyVibroblade, 25);
         }
@@ -398,7 +398,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SoulDevourer1)
-                .Description("While active, gain +35% Attack and +15% critical chance,  but each attack you make deals 40% of the damage back to you. Damage reduced by 1% per Might. (Minimum 10%)")
+                .Description("While active, gain +35% Attack and +15% critical chance,  but each attack you make deals 40% of the damage back to you. Damage reduced by 1% per MGT. (Minimum 10%)")
                 .Price(4)
                 .RequirementSkill(SkillType.HeavyVibroblade, 18);
         }
@@ -426,7 +426,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SoulSacrifice1)
-                .Description("Sacrifice 50% max HP to gain +35% Attack and +20% critical chance for 30 seconds. HP sacrificed decreases by 1% per Might. (Minimum 20%)")
+                .Description("Sacrifice 50% max HP to gain +35% Attack and +20% critical chance for 30 seconds. HP sacrificed decreases by 1% per MGT. (Minimum 20%)")
                 .Price(3)
                 .RequirementSkill(SkillType.HeavyVibroblade, 32);
         }
@@ -439,7 +439,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SoulStorm1)
-                .Description("Sacrifice 40% HP to raise the Attack of all nearby allies in area of effect (sphere) to you by 35%. HP sacrificed decreases by 1% per Might. (Minimum 10%)")
+                .Description("Sacrifice 40% HP to raise the Attack of all nearby allies in area of effect (sphere) to you by 35%. HP sacrificed decreases by 1% per MGT. (Minimum 10%)")
                 .Price(3)
                 .RequirementSkill(SkillType.HeavyVibroblade, 38);
         }
@@ -464,7 +464,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SoulStrike3)
-                .Description("Your next attack deals +45 DMG and heals you for 60% of damage dealt. Amount healed increased by 1% per Might. (Maximum 90%)")
+                .Description("Your next attack deals +45 DMG and heals you for 60% of damage dealt. Amount healed increased by 1% per MGT. (Maximum 90%)")
                 .Price(3)
                 .RequirementSkill(SkillType.HeavyVibroblade, 45);
         }
@@ -476,7 +476,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Unbreakable Will")
 
                 .AddPerkLevel()
-                .Description("Grants +5% Attack Deflection. When attacks are deflected, you restore 10% of maximum STM. Deflection increases by 0.5% per Might. (Maximum: 20%)")
+                .Description("Grants +5% Attack Deflection. When attacks are deflected, you restore 10% of maximum STM. Deflection increases by 0.5% per MGT. (Maximum: 20%)")
                 .IncreasesStat(
                     StatType.AttackDeflection,
                     creature => EquipmentPredicates.HasMainHandHeavyVibroblade(creature)
@@ -496,7 +496,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Vampiric Fury")
 
                 .AddPerkLevel()
-                .Description("Critical hits restore HP equal to 40% of damage dealt. Amount healed increases by 1% per Might. (Maximum 75%)")
+                .Description("Critical hits restore HP equal to 40% of damage dealt. Amount healed increases by 1% per MGT. (Maximum 75%)")
                 .IncreasesStat(
                     StatType.CriticalHPPercentOfDamageRestore,
                     creature => EquipmentPredicates.HasMainHandHeavyVibroblade(creature)

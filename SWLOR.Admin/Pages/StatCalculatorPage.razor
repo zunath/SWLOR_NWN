@@ -200,10 +200,10 @@
                                 </div>
                                 <div class="card-body">
                                     <p><strong>Base:</strong> 10</p>
-                                    <p><strong>Willpower Mod:</strong> @WillpowerModifier</p>
-                                    <p><strong>Bonus:</strong> @(WillpowerModifier * 10)</p>
+                                    <p><strong>Willpower Stat:</strong> @WillpowerStat</p>
+                                    <p><strong>Bonus:</strong> @(WillpowerStat * 3)</p>
                                     <p><strong>Food Bonus:</strong> +@FoodFPBonus</p>
-                                    <p><strong>Total:</strong> @(10 + (WillpowerModifier * 10) + FoodFPBonus)</p>
+                                    <p><strong>Total:</strong> @(10 + (WillpowerStat * 3) + FoodFPBonus)</p>
                                 </div>
                             </div>
                         </div>
@@ -217,10 +217,10 @@
                                 </div>
                                 <div class="card-body">
                                     <p><strong>Base:</strong> 10</p>
-                                    <p><strong>Agility Mod:</strong> @AgilityModifier</p>
-                                    <p><strong>Bonus:</strong> @(AgilityModifier * 5)</p>
+                                    <p><strong>Might Stat:</strong> @MightStat</p>
+                                    <p><strong>Bonus:</strong> @(MightStat * 3 / 2)</p>
                                     <p><strong>Food Bonus:</strong> +@FoodStaminaBonus</p>
-                                    <p><strong>Total:</strong> @(10 + (AgilityModifier * 5) + FoodStaminaBonus)</p>
+                                    <p><strong>Total:</strong> @(10 + (MightStat * 3 / 2) + FoodStaminaBonus)</p>
                                 </div>
                             </div>
                         </div>
@@ -249,10 +249,10 @@
                                 <div class="card-body">
                                     <p><strong>Base:</strong> 8</p>
                                     <p><strong>Vitality Stat:</strong> @VitalityStat</p>
-                                    <p><strong>Stat Bonus:</strong> @((int)(VitalityStat * 1.5))</p>
-                                    <p><strong>Armor Skill:</strong> @ArmorSkill</p>
+                                    <p><strong>Stat Bonus:</strong> @VitalityStat</p>
+                                    <p><strong>Armor Bonus:</strong> @((int)(ArmorSkill * 1.2))</p>
                                     <p><strong>Equipment:</strong> +@PhysicalDefenseBonus</p>
-                                    <p><strong>Total:</strong> @(8 + ((int)(VitalityStat * 1.5)) + ArmorSkill + PhysicalDefenseBonus)</p>
+                                    <p><strong>Total:</strong> @(8 + VitalityStat + ((int)(ArmorSkill * 1.2)) + PhysicalDefenseBonus)</p>
                                 </div>
                             </div>
                         </div>
@@ -264,10 +264,10 @@
                                 <div class="card-body">
                                     <p><strong>Base:</strong> 8</p>
                                     <p><strong>Willpower Stat:</strong> @WillpowerStat</p>
-                                    <p><strong>Stat Bonus:</strong> @((int)(WillpowerStat * 1.5))</p>
-                                    <p><strong>Armor Skill:</strong> @ArmorSkill</p>
+                                    <p><strong>Stat Bonus:</strong> @WillpowerStat</p>
+                                    <p><strong>Armor Bonus:</strong> @((int)(ArmorSkill * 1.2))</p>
                                     <p><strong>Equipment:</strong> +@ForceDefenseBonus</p>
-                                    <p><strong>Total:</strong> @(8 + ((int)(WillpowerStat * 1.5)) + ArmorSkill + ForceDefenseBonus)</p>
+                                    <p><strong>Total:</strong> @(8 + WillpowerStat + ((int)(ArmorSkill * 1.2)) + ForceDefenseBonus)</p>
                                 </div>
                             </div>
                         </div>
@@ -280,11 +280,12 @@
                                     <h6>Evasion</h6>
                                 </div>
                                 <div class="card-body">
+                                    <p><strong>Base:</strong> 8</p>
                                     <p><strong>Agility Stat:</strong> @AgilityStat</p>
-                                    <p><strong>Stat Bonus:</strong> @(AgilityStat * 3)</p>
-                                    <p><strong>Armor Skill:</strong> @ArmorSkill</p>
+                                    <p><strong>Stat Bonus:</strong> @AgilityStat</p>
+                                    <p><strong>Armor Bonus:</strong> @(ArmorSkill * 2)</p>
                                     <p><strong>Equipment:</strong> +@EvasionBonus</p>
-                                    <p><strong>Total:</strong> @((AgilityStat * 3) + ArmorSkill + EvasionBonus)</p>
+                                    <p><strong>Total:</strong> @(8 + AgilityStat + (ArmorSkill * 2) + EvasionBonus)</p>
                                 </div>
                             </div>
                         </div>
@@ -334,8 +335,6 @@
     private int FoodStaminaBonus = 3;
 
     // Calculated values
-    private int WillpowerModifier => (WillpowerStat - 10) / 2;
-    private int AgilityModifier => (AgilityStat - 10) / 2;
     private int HighestCombatSkill => MaxSkill(
         VibrobladeSkill,
         VibroknifeSkill,

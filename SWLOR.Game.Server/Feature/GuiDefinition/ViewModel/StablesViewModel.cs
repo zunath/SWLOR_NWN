@@ -469,11 +469,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             XPTooltip = $"XP: {dbBeast.XP} / {BeastMastery.GetRequiredXP(dbBeast.Level, dbBeast.XPPenaltyPercent)}";
 
             var hp = level.HP + 1 * ((level.Stats[AbilityType.Vitality] - 10) / 2);
-            var fp = Stat.GetMaxFP(level.FP, (level.Stats[AbilityType.Willpower] - 10) / 2, 0);
+            var fp = Stat.GetMaxFP(level.FP, level.Stats[AbilityType.Willpower], 0);
             if (fp < 0)
                 fp = 0;
 
-            var stm= Stat.GetMaxStamina(level.STM, (level.Stats[AbilityType.Agility]-10) / 2, 0);
+            var stm = Stat.GetMaxStamina(level.STM, level.Stats[AbilityType.Might], 0);
             if (stm < 0)
                 stm = 0;
 

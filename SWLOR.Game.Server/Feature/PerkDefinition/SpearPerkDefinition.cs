@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Adaptive Precision Strike")
 
                 .AddPerkLevel()
-                .Description("Attacks from the side have a 5% chance to bypass 35% of your target's Evasion. This chance increases by 1% per Perception. (Maximum 30%)")
+                .Description("Attacks from the side have a 5% chance to bypass 35% of your target's Evasion. This chance increases by 1% per PER. (Maximum 30%)")
                 .Price(4)
                 .RequirementSkill(SkillType.Spear, 48);
         }
@@ -369,7 +369,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PerceptiveStance1)
-                .Description("While active, gain +10% critical chance and +15% critical damage. Additionally, attacks have a 10% chance to interrupt ability activation. Chance to interrupt increases by 1% per Might. (Maximum 30%)")
+                .Description("While active, gain +10% critical chance and +15% critical damage. Additionally, attacks have a 10% chance to interrupt ability activation. Chance to interrupt increases by 1% per PER. (Maximum 30%)")
                 .Price(2)
                 .RequirementSkill(SkillType.Spear, 15);
         }

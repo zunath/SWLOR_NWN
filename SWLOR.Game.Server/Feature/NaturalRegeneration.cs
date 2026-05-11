@@ -20,15 +20,15 @@ namespace SWLOR.Game.Server.Feature
             var tick = GetLocalInt(player, "NATURAL_REGENERATION_TICK") + 1;
             if (tick >= 5) // 6 seconds * 5 = 30 seconds
             {
-                var vitalityBonus = GetAbilityModifier(AbilityType.Vitality, player);
-                if (vitalityBonus < 0)
-                    vitalityBonus = 0;
+                var vitality = Math.Max(0, GetAbilityScore(player, AbilityType.Vitality));
+                var willpower = Math.Max(0, GetAbilityScore(player, AbilityType.Willpower));
+                var might = Math.Max(0, GetAbilityScore(player, AbilityType.Might));
 
                 var playerId = GetObjectUUID(player);
                 var dbPlayer = DB.Get<Player>(playerId);
-                var hpRegen = dbPlayer.HPRegen + vitalityBonus * 4 + Stat.GetStatAdjustment(player, StatType.HPRegen);
-                var fpRegen = 1 + dbPlayer.FPRegen + vitalityBonus / 2 + Stat.GetStatAdjustment(player, StatType.FPRegen);
-                var stmRegen = 1 + dbPlayer.STMRegen + vitalityBonus / 2 + Stat.GetStatAdjustment(player, StatType.StaminaRegen);
+                var hpRegen = dbPlayer.HPRegen + vitality + Stat.GetStatAdjustment(player, StatType.HPRegen);
+                var fpRegen = 1 + dbPlayer.FPRegen + willpower / 4 + Stat.GetStatAdjustment(player, StatType.FPRegen);
+                var stmRegen = 1 + dbPlayer.STMRegen + might / 4 + Stat.GetStatAdjustment(player, StatType.StaminaRegen);
 
                 if (hpRegen > 0 && GetCurrentHitPoints(player) < GetMaxHitPoints(player))
                 {

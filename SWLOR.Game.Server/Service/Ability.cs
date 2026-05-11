@@ -1406,7 +1406,7 @@ namespace SWLOR.Game.Server.Service
             var attackStat = GetAbilityScore(activator, ability);
             var defenseAbility = damageType.GetDefenseAbilityType();
             var defense = Stat.GetDefense(target, damageType, defenseAbility);
-            var defenderStat = GetAbilityModifier(defenseAbility, target);
+            var defenderStat = GetAbilityScore(target, defenseAbility);
             var criticalRating = Combat.CalculateAbilityCriticalRating(activator, skillType, IsTrackedAbilityArea(activator));
             var calculatedDamage = Combat.CalculateDamage(attack, damage, attackStat, defense, defenderStat, criticalRating);
             calculatedDamage = Combat.ApplyDamageDealtModifiers(activator, target, calculatedDamage, skillType, damageType, true);
@@ -1496,8 +1496,8 @@ namespace SWLOR.Game.Server.Service
                 case SkillType.Rifle:
                 case SkillType.Throwing:
                 case SkillType.Devices:
-                case SkillType.FirstAid:
                     return AbilityType.Perception;
+                case SkillType.FirstAid:
                 case SkillType.Force:
                     return AbilityType.Willpower;
                 default:

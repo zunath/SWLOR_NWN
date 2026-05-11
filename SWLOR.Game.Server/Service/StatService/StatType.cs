@@ -920,6 +920,36 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// Percent Attack adjustment against targets affected by Bleed or Hemorrhage.
         /// </summary>
-        AttackToBleedingTargetPercentAdjustment = 183
+        AttackToBleedingTargetPercentAdjustment = 183,
+
+        /// <summary>
+        /// Primary PerkType value that receives AbilityDamageFlatAdjustment.
+        /// </summary>
+        AbilityDamageFlatAdjustmentPerkType = 184,
+
+        /// <summary>
+        /// Secondary PerkType value that receives AbilityDamageFlatAdjustment.
+        /// </summary>
+        AbilityDamageFlatAdjustmentSecondaryPerkType = 185,
+
+        /// <summary>
+        /// Flat damage adjustment applied to matching abilities.
+        /// </summary>
+        AbilityDamageFlatAdjustment = 186,
+
+        /// <summary>
+        /// Primary PerkType value that receives AbilityStaminaCostFlatAdjustment.
+        /// </summary>
+        AbilityStaminaCostFlatAdjustmentPerkType = 187,
+
+        /// <summary>
+        /// Secondary PerkType value that receives AbilityStaminaCostFlatAdjustment.
+        /// </summary>
+        AbilityStaminaCostFlatAdjustmentSecondaryPerkType = 188,
+
+        /// <summary>
+        /// Flat Stamina cost adjustment applied to matching abilities.
+        /// </summary>
+        AbilityStaminaCostFlatAdjustment = 189
     }
 }

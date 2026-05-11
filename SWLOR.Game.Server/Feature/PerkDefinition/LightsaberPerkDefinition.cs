@@ -228,7 +228,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FocusedStance1)
-                .Description("While active, your DMG is increased by your Might attribute when equipped with a one-handed weapon and no off-hand weapon.")
+                .Description("While active, gain +10% Attack.")
                 .Price(2)
                 .RequirementSkill(SkillType.Lightsaber, 18)
                 .RequirementCharacterType(CharacterType.ForceSensitive);

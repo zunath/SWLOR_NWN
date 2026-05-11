@@ -164,11 +164,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         attributeGroup.AddColumn(attributeCol =>
                         {
                             AddSectionHeader(attributeCol, "Attributes");
-                            AddAttributeRow(attributeCol, "Might", model => model.Might, "Melee damage and carry weight.", model => model.IsMightUpgradeAvailable, model => model.OnClickUpgradeMight());
-                            AddAttributeRow(attributeCol, "Perception", model => model.Perception, "Ranged/finesse damage and accuracy.", model => model.IsPerceptionUpgradeAvailable, model => model.OnClickUpgradePerception());
-                            AddAttributeRow(attributeCol, "Vitality", model => model.Vitality, "Max HP and physical toughness.", model => model.IsVitalityUpgradeAvailable, model => model.OnClickUpgradeVitality());
+                            AddAttributeRow(attributeCol, "Might", model => model.Might, "Melee damage, STM, and carry weight.", model => model.IsMightUpgradeAvailable, model => model.OnClickUpgradeMight());
+                            AddAttributeRow(attributeCol, "Perception", model => model.Perception, "Melee accuracy, ranged damage, and crit support.", model => model.IsPerceptionUpgradeAvailable, model => model.OnClickUpgradePerception());
+                            AddAttributeRow(attributeCol, "Vitality", model => model.Vitality, "Max HP, HP regen, and physical toughness.", model => model.IsVitalityUpgradeAvailable, model => model.OnClickUpgradeVitality());
                             AddAttributeRow(attributeCol, "Willpower", model => model.Willpower, "Force attack, defense, and FP.", model => model.IsWillpowerUpgradeAvailable, model => model.OnClickUpgradeWillpower());
-                            AddAttributeRow(attributeCol, "Agility", model => model.Agility, "Ranged accuracy, evasion, and STM.", model => model.IsAgilityUpgradeAvailable, model => model.OnClickUpgradeAgility());
+                            AddAttributeRow(attributeCol, "Agility", model => model.Agility, "Ranged accuracy and evasion.", model => model.IsAgilityUpgradeAvailable, model => model.OnClickUpgradeAgility());
                             AddAttributeRow(attributeCol, "Social", model => model.Social, "XP gain and leadership.", model => model.IsSocialUpgradeAvailable, model => model.OnClickUpgradeSocial());
                         });
                     })

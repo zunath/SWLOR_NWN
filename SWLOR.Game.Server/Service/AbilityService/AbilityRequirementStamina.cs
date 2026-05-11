@@ -1,4 +1,6 @@
+using System;
 using SWLOR.Game.Server.Service.SkillService;
+
 namespace SWLOR.Game.Server.Service.AbilityService
 {
     /// <summary>
@@ -39,17 +41,30 @@ namespace SWLOR.Game.Server.Service.AbilityService
         private int GetRequiredStaminaForCheck(uint player, AbilityDetail ability)
         {
             var abilitySkillType = Combat.GetAbilitySkillType(player, ability);
-            return ability != null && abilitySkillType != SkillType.Invalid && Combat.HasNextAbilityNoStaminaCost(player, abilitySkillType)
+            var requiredSTM = ability != null && abilitySkillType != SkillType.Invalid && Combat.HasNextAbilityNoStaminaCost(player, abilitySkillType)
                 ? 0
                 : RequiredSTM;
+
+            return ApplyStaminaAdjustments(player, ability, requiredSTM);
         }
 
         private int GetRequiredStaminaForActivation(uint player, AbilityDetail ability)
         {
             var abilitySkillType = Combat.GetAbilitySkillType(player, ability);
-            return ability != null && abilitySkillType != SkillType.Invalid && Combat.ConsumeNextAbilityNoStaminaCost(player, abilitySkillType)
+            var requiredSTM = ability != null && abilitySkillType != SkillType.Invalid && Combat.ConsumeNextAbilityNoStaminaCost(player, abilitySkillType)
                 ? 0
                 : RequiredSTM;
+
+            return ApplyStaminaAdjustments(player, ability, requiredSTM);
+        }
+
+        private static int ApplyStaminaAdjustments(uint player, AbilityDetail ability, int requiredSTM)
+        {
+            if (ability == null || requiredSTM <= 0)
+                return requiredSTM;
+
+            var adjustment = Combat.GetAbilityStaminaCostFlatAdjustment(player, ability.EffectiveLevelPerkType);
+            return Math.Max(0, requiredSTM + adjustment);
         }
     }
 }

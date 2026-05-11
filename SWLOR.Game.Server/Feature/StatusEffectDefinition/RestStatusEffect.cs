@@ -57,10 +57,12 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         protected override void Tick(uint creature)
         {
-            var vitalityBonus = Math.Max(0, GetAbilityModifier(AbilityType.Vitality, creature));
-            var hpAmount = Math.Max(1, 1 + vitalityBonus * 7);
-            var staminaAmount = Math.Max(1, 1 + vitalityBonus * 3);
-            var fpAmount = Math.Max(1, 1 + vitalityBonus * 3);
+            var vitality = Math.Max(0, GetAbilityScore(creature, AbilityType.Vitality));
+            var willpower = Math.Max(0, GetAbilityScore(creature, AbilityType.Willpower));
+            var might = Math.Max(0, GetAbilityScore(creature, AbilityType.Might));
+            var hpAmount = Math.Max(1, 1 + vitality * 2);
+            var staminaAmount = Math.Max(1, 1 + might);
+            var fpAmount = Math.Max(1, 1 + willpower);
 
             var restRegen = Stat.GetStatAdjustment(creature, StatType.RestRegen);
             if (restRegen > 0)

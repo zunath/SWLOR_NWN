@@ -22,6 +22,9 @@ namespace SWLOR.Game.Server.Service
         public const int BaseHP = 70;
         public const int BaseFP = 10;
         public const int BaseSTM = 10;
+        private const int FPPerWillpower = 3;
+        private const int StaminaPerTwoMight = 3;
+        private const float DefenseSkillMultiplier = 1.2f;
         private const float DefaultPlayerMovementSpeedIncrease = 0.25f;
         private const float DefaultCompanionMovementSpeedIncrease = 0.25f;
         private const float DefaultNPCMovementSpeedIncrease = 0.30f;
@@ -54,7 +57,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Retrieves the maximum FP on a creature.
         /// For players:
-        /// Each Vitality modifier grants +2 to max FP.
+        /// Each point of Willpower grants +3 to max FP.
         /// For NPCs:
         /// FP is read from their skin.
         /// </summary>
@@ -63,7 +66,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The max amount of FP</returns>
         public static int GetMaxFP(uint creature, Player dbPlayer = null)
         {
-            var modifier = GetAbilityModifier(AbilityType.Willpower, creature);
+            var willpower = GetAbilityScore(creature, AbilityType.Willpower);
             var bonus = GetStatAdjustment(creature, StatType.MaxFP);
             int baseFP;
 
@@ -85,12 +88,12 @@ namespace SWLOR.Game.Server.Service
                 baseFP = npcStats.FP;
             }
 
-            return GetMaxFP(baseFP, modifier, bonus);
+            return GetMaxFP(baseFP, willpower, bonus);
         }
 
-        public static int GetMaxFP(int baseFP, int modifier, int bonus)
+        public static int GetMaxFP(int baseFP, int willpower, int bonus)
         {
-            return baseFP + modifier * 10 + bonus;
+            return baseFP + willpower * FPPerWillpower + bonus;
         }
 
         /// <summary>
@@ -135,14 +138,14 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Retrieves the maximum STM on a creature.
-        /// CON modifier will be checked. Each modifier grants +2 to max STM.
+        /// Each point of Might grants +1.5 to max STM.
         /// </summary>
         /// <param name="creature">The creature object</param>
         /// <param name="dbPlayer">The player entity. If this is not set, a call to the DB will be made. Leave null for NPCs.</param>
         /// <returns>The max amount of STM</returns>
         public static int GetMaxStamina(uint creature, Player dbPlayer = null)
         {
-            var modifier = GetAbilityModifier(AbilityType.Agility, creature);
+            var might = GetAbilityScore(creature, AbilityType.Might);
             var bonus = GetStatAdjustment(creature, StatType.MaxStamina);
             int baseStamina;
 
@@ -165,12 +168,12 @@ namespace SWLOR.Game.Server.Service
                 baseStamina = npcStats.Stamina;
             }
 
-            return GetMaxStamina(baseStamina, modifier, bonus);
+            return GetMaxStamina(baseStamina, might, bonus);
         }
 
-        public static int GetMaxStamina(int baseFP, int modifier, int bonus)
+        public static int GetMaxStamina(int baseStamina, int might, int bonus)
         {
-            return baseFP + modifier * 5 + bonus;
+            return baseStamina + might * StaminaPerTwoMight / 2 + bonus;
         }
 
         /// <summary>
@@ -876,7 +879,7 @@ namespace SWLOR.Game.Server.Service
 
         public static int CalculateDefense(int defenderStat, int skillLevel, int defenseBonus)
         {
-            return (int)(8 + (defenderStat * 1.5f) + skillLevel + defenseBonus);
+            return (int)(8 + (skillLevel * DefenseSkillMultiplier) + defenderStat + defenseBonus);
         }
 
         /// <summary>

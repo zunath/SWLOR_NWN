@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
 
         private static void QuickDraw4(AbilityBuilder builder)
         {
-            QuickDraw(builder, FeatType.QuickDraw4, "Quick Draw IV", level: 4, stamina: 12);
+            QuickDraw(builder, FeatType.QuickDraw4, "Quick Draw IV", level: 4, stamina: 10);
         }
 
         private static void QuickDraw(
@@ -87,6 +87,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
             {
                 damage += LowHPDamageBonus;
             }
+
+            damage += Combat.GetAbilityDamageFlatAdjustment(activator, PerkType.QuickDraw);
 
             Ability.ApplyCombatImpact(
                 activator,

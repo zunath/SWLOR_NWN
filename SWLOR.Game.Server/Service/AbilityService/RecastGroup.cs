@@ -415,6 +415,10 @@ namespace SWLOR.Game.Server.Service.AbilityService
         QuickDraw = 204,
         [RecastGroup("Snap Roll", "Snap Roll", true)]
         SnapRoll = 205,
+        [RecastGroup("Gunslinger Focus", "Guns. Focus", true)]
+        GunslingerFocus = 206,
+        [RecastGroup("Double Shot", "Double Shot", true)]
+        DoubleShot = 207,
     }
 
     public class RecastGroupAttribute: Attribute

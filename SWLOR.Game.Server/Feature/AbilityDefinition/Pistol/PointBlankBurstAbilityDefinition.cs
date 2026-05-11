@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
-                .RequirementStamina(10);
+                .RequirementStamina(8);
         }
 
         private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)

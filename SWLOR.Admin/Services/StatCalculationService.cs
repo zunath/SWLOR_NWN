@@ -10,6 +10,9 @@ namespace SWLOR.Admin.Services
         public const int BaseHP = 70;
         public const int BaseFP = 10;
         public const int BaseSTM = 10;
+        private const int FPPerWillpower = 3;
+        private const int StaminaPerTwoMight = 3;
+        private const float DefenseSkillMultiplier = 1.2f;
 
         /// <summary>
         /// Calculates the ability modifier for a given stat
@@ -65,7 +68,7 @@ namespace SWLOR.Admin.Services
         }
 
         /// <summary>
-        /// Calculates max FP using the formula: BaseFP + (Willpower Modifier × 10) + Food Bonus
+        /// Calculates max FP using the formula: BaseFP + (Willpower Stat x 3) + Food Bonus
         /// </summary>
         /// <param name="player">The player entity</param>
         /// <param name="foodBonus">Optional food bonus (default 0)</param>
@@ -74,12 +77,12 @@ namespace SWLOR.Admin.Services
         {
             if (player == null) return BaseFP;
 
-            var willpowerMod = GetAbilityModifier(player, AbilityType.Willpower);
-            return BaseFP + (willpowerMod * 10) + foodBonus;
+            var willpower = GetAbilityScore(player, AbilityType.Willpower);
+            return BaseFP + (willpower * FPPerWillpower) + foodBonus;
         }
 
         /// <summary>
-        /// Calculates max Stamina using the formula: BaseSTM + (Agility Modifier × 5) + Food Bonus
+        /// Calculates max Stamina using the formula: BaseSTM + floor(Might Stat x 1.5) + Food Bonus
         /// </summary>
         /// <param name="player">The player entity</param>
         /// <param name="foodBonus">Optional food bonus (default 0)</param>
@@ -88,8 +91,8 @@ namespace SWLOR.Admin.Services
         {
             if (player == null) return BaseSTM;
 
-            var agilityMod = GetAbilityModifier(player, AbilityType.Agility);
-            return BaseSTM + (agilityMod * 5) + foodBonus;
+            var might = GetAbilityScore(player, AbilityType.Might);
+            return BaseSTM + (might * StaminaPerTwoMight / 2) + foodBonus;
         }
 
         /// <summary>
@@ -168,7 +171,7 @@ namespace SWLOR.Admin.Services
         }
 
         /// <summary>
-        /// Calculates physical defense using the formula: 8 + (Vitality Stat × 1.5) + Armor Skill + Equipment Bonus
+        /// Calculates physical defense using the formula: 8 + (Armor Skill x 1.2) + Vitality Stat + Equipment Bonus
         /// </summary>
         /// <param name="player">The player entity</param>
         /// <param name="equipmentBonus">The equipment bonus</param>
@@ -195,7 +198,7 @@ namespace SWLOR.Admin.Services
 
             var defenseStat = GetAbilityScore(player, defenseAbility);
             var armorSkillLevel = GetSkillLevel(player, SkillType.Armor);
-            return 8 + (int)(defenseStat * 1.5) + armorSkillLevel + equipmentBonus;
+            return 8 + (int)(armorSkillLevel * DefenseSkillMultiplier) + defenseStat + equipmentBonus;
         }
 
         /// <summary>
@@ -260,31 +263,31 @@ namespace SWLOR.Admin.Services
             };
 
             // FP calculation
-            var willpowerMod = GetAbilityModifier(player, AbilityType.Willpower);
-            var fpBonus = willpowerMod * 10;
+            var willpower = GetAbilityScore(player, AbilityType.Willpower);
+            var fpBonus = willpower * FPPerWillpower;
             var calculatedFP = BaseFP + fpBonus;
             breakdown["MaxFP"] = new
             {
                 Base = BaseFP,
-                WillpowerModifier = willpowerMod,
+                WillpowerStat = willpower,
                 FPBonus = fpBonus,
                 Calculated = calculatedFP,
                 Stored = player.MaxFP,
-                Formula = "BaseFP + (Willpower Modifier × 10) + Food Bonus"
+                Formula = "BaseFP + (Willpower Stat x 3) + Food Bonus"
             };
 
             // Stamina calculation
-            var agilityMod = GetAbilityModifier(player, AbilityType.Agility);
-            var stmBonus = agilityMod * 5;
+            var might = GetAbilityScore(player, AbilityType.Might);
+            var stmBonus = might * StaminaPerTwoMight / 2;
             var calculatedSTM = BaseSTM + stmBonus;
             breakdown["MaxStamina"] = new
             {
                 Base = BaseSTM,
-                AgilityModifier = agilityMod,
+                MightStat = might,
                 StaminaBonus = stmBonus,
                 Calculated = calculatedSTM,
                 Stored = player.MaxStamina,
-                Formula = "BaseSTM + (Agility Modifier × 5) + Food Bonus"
+                Formula = "BaseSTM + floor(Might Stat x 1.5) + Food Bonus"
             };
 
             // Attack calculation
@@ -321,7 +324,7 @@ namespace SWLOR.Admin.Services
                             ArmorSkillLevel = GetSkillLevel(player, SkillType.Armor),
                             EquipmentBonus = x.Value,
                             Calculated = CalculateDefense(player, x.Key, x.Value),
-                            Formula = "8 + (Defense Stat × 1.5) + Armor Skill + Equipment Bonus"
+                            Formula = "8 + (Armor Skill x 1.2) + Defense Stat + Equipment Bonus"
                         };
                     })
                 ?? new Dictionary<string, object>();

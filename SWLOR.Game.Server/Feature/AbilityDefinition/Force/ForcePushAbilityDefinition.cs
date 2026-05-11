@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
@@ -29,7 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             var duration = BaseDuration + willpowerBonus;
 
             StatusEffect.ApplyStatusEffect(activator, target, typeof(KnockdownStatusEffect), duration, CombatDamageType.Force);
-            CombatVisualEffect.ApplyStatusEffectVisual(target, typeof(KnockdownStatusEffect), true);
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Bigbys_Forceful_Hand), target);
 
             Enmity.ModifyEnmityOnAll(activator, level * 150);
 

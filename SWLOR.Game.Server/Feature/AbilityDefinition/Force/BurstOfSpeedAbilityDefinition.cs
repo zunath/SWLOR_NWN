@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
@@ -34,7 +35,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             where T : IStatusEffect
         {
             StatusEffect.ApplyStatusEffect<T>(activator, target, 600f);
-            CombatVisualEffect.ApplyStatusEffectVisual(target, typeof(T), false);
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Haste), target);
 
             CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
             Enmity.ModifyEnmityOnAll(activator, 250);

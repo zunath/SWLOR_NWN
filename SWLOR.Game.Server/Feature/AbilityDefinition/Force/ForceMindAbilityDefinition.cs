@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
@@ -30,7 +31,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasImpactAction((activator, target, level, location) =>
                 {
                     StatusEffect.ApplyStatusEffect(activator, activator, typeof(ForceMind1StatusEffect), 60f);
-                    CombatVisualEffect.ApplyStatusEffectVisual(activator, typeof(ForceMind1StatusEffect), false);
+                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Improve_Ability_Score), activator);
                 });
         }
         private void ForceMind2()
@@ -45,7 +46,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasImpactAction((activator, target, level, location) =>
                 {
                     StatusEffect.ApplyStatusEffect(activator, activator, typeof(ForceMind2StatusEffect), 60f);
-                    CombatVisualEffect.ApplyStatusEffectVisual(activator, typeof(ForceMind2StatusEffect), false);
+                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Improve_Ability_Score), activator);
                 });
         }
     }

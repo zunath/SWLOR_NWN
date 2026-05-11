@@ -13,6 +13,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         public Dictionary<PerkType, PerkDetail> BuildPerks()
         {
             BerserkerStance();
+            Bloodseeker();
             BloodFrenzy();
             Carve();
             CoveringStrike();
@@ -68,6 +69,18 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .IncreasesStat(StatType.DefeatedEnemyAttackDelayReductionDurationSeconds, 30)
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroblade, 50);
+        }
+
+        private void Bloodseeker()
+        {
+            _builder.Create(PerkCategoryType.VibrobladeOffense, PerkType.Bloodseeker)
+                .Name("Bloodseeker")
+
+                .AddPerkLevel()
+                .Description("Gain +10% Attack against bleeding targets.")
+                .IncreasesStat(StatType.AttackToBleedingTargetPercentAdjustment, creature => EquipmentPredicates.HasMainHandVibroblade(creature) ? 10 : 0)
+                .Price(3)
+                .RequirementSkill(SkillType.Vibroblade, 40);
         }
 
         private void Carve()

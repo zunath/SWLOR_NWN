@@ -915,6 +915,11 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// Percent adjustment applied to final Force Attack calculations.
         /// </summary>
-        ForceAttackPercentAdjustment = 182
+        ForceAttackPercentAdjustment = 182,
+
+        /// <summary>
+        /// Percent Attack adjustment against targets affected by Bleed or Hemorrhage.
+        /// </summary>
+        AttackToBleedingTargetPercentAdjustment = 183
     }
 }

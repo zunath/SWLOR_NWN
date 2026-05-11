@@ -902,9 +902,6 @@ namespace SWLOR.NWN.API.NWScript.Enum
         AdhesiveGrenade1 = 944,
         AdhesiveGrenade2 = 945,
         AdhesiveGrenade3 = 946,
-        SmokeBomb1 = 947,
-        SmokeBomb2 = 948,
-        SmokeBomb3 = 949,
         KoltoBomb1 = 950,
         KoltoBomb2 = 951,
         KoltoBomb3 = 952,
@@ -1262,5 +1259,6 @@ namespace SWLOR.NWN.API.NWScript.Enum
         Backstab1 = 1309,
         Backstab2 = 1310,
         Backstab3 = 1311,
+        SmokeBomb = 1312,
     }
 }

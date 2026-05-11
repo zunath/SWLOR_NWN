@@ -1,0 +1,61 @@
+using System.Collections.Generic;
+using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.NWN.API.Engine;
+using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+
+namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
+{
+    public class SmokeBombAbilityDefinition : IAbilityListDefinition
+    {
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        {
+            var builder = new AbilityBuilder();
+
+            SmokeBomb(builder);
+
+            return builder.Build();
+        }
+
+        private static void SmokeBomb(AbilityBuilder builder)
+        {
+            builder.Create(FeatType.SmokeBomb, PerkType.SmokeBomb)
+                .Name("Smoke Bomb")
+                .Level(1)
+                .HasActivationDelay(2f)
+                .HasRecastDelay(RecastGroup.SmokeBomb, 30f)
+                .HasImpactAction(ImpactAction)
+                .IsCastedAbility()
+                .IsHostileAbility()
+                .BreaksStealth()
+                .RequirementStamina(10);
+        }
+
+        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            switch (level)
+            {
+                case 1:
+                    Ability.ApplyTelegraphedCombatImpact(
+                        activator,
+                        target,
+                        targetLocation,
+                        SkillType.Vibroknife,
+                        0,
+                        12,
+                        typeof(SmokeBombStatusEffect),
+                        CombatImpactAreaShape.Sphere,
+                        0.25f,
+                        5f,
+                        statusResistanceType: ResistanceType.Trauma,
+                        targetVisualEffect: VisualEffect.Vfx_Fnf_Smoke_Puff,
+                        areaVisualEffect: VisualEffect.Vfx_Fnf_Smoke_Puff);
+                    break;
+            }
+        }
+    }
+}

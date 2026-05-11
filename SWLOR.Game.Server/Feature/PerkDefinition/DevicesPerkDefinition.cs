@@ -19,7 +19,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             IonGrenade();
             KoltoGrenade();
             AdhesiveGrenade();
-            SmokeBomb();
             KoltoBomb();
             IncendiaryBomb();
             GasBomb();
@@ -242,34 +241,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Devices, 50)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.AdhesiveGrenade3);
-        }
-
-
-        private void SmokeBomb()
-        {
-            _builder.Create(PerkCategoryType.Devices, PerkType.SmokeBomb)
-                .Name("Smoke Bomb")
-
-                .AddPerkLevel()
-                .Description("Creates a smokescreen at the explosion site, granting invisibility to all creatures who enter the area of effect for 20 seconds. Consumes explosives on use.")
-                .RequirementSkill(SkillType.Devices, 8)
-                .RequirementCharacterType(CharacterType.Standard)
-                .Price(2)
-                .GrantsFeat(FeatType.SmokeBomb1)
-
-                .AddPerkLevel()
-                .Description("Creates a smokescreen at the explosion site, granting invisibility to all creatures who enter the area of effect for 40 seconds. Consumes explosives on use.")
-                .Price(3)
-                .RequirementSkill(SkillType.Devices, 28)
-                .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.SmokeBomb2)
-
-                .AddPerkLevel()
-                .Description("Creates a smokescreen at the explosion site, granting invisibility to all creatures who enter the area of effect for 60 seconds. Consumes explosives on use.")
-                .Price(3)
-                .RequirementSkill(SkillType.Devices, 48)
-                .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.SmokeBomb3);
         }
 
 

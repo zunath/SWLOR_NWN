@@ -47,6 +47,11 @@ namespace SWLOR.Game.Server.Service.PerkService
             return HasItemInSlot(creature, InventorySlot.RightHand, Item.VibroknifeBaseItemTypes);
         }
 
+        public static bool HasMainHandVibroblade(uint creature)
+        {
+            return HasItemInSlot(creature, InventorySlot.RightHand, Item.VibrobladeBaseItemTypes);
+        }
+
         public static bool HasMainHandSaberstaff(uint creature)
         {
             return HasItemInSlot(creature, InventorySlot.RightHand, Item.SaberstaffBaseItemTypes);

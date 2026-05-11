@@ -198,7 +198,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
                     StatusEffect.ApplyStatusEffect(activator, activator, type, 0f);
-                    CombatVisualEffect.ApplyStatusEffectVisual(activator, type, false);
                 })
                 .IsCastedAbility()
                 .BreaksStealth();
@@ -217,7 +216,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     var statusEffect = statusEffectFactory();
                     StatusEffect.ApplyStatusEffect(activator, activator, statusEffect, duration);
                     additionalAction?.Invoke(activator);
-                    CombatVisualEffect.ApplyStatusEffectVisual(activator, statusEffect.GetType(), false);
                 })
                 .IsCastedAbility()
                 .BreaksStealth();
@@ -233,7 +231,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
                     StatusEffect.ApplyStatusEffect(activator, target, type, duration, CombatDamageType.Physical);
-                    CombatVisualEffect.ApplyStatusEffectVisual(target, type, true);
                 })
                 .IsCastedAbility()
                 .IsHostileAbility()
@@ -307,7 +304,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             if (includeSelf)
             {
                 StatusEffect.ApplyStatusEffect(activator, activator, type, duration);
-                CombatVisualEffect.ApplyStatusEffectVisual(activator, type, false);
             }
 
             var location = GetLocation(activator);
@@ -318,7 +314,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 if (creature != activator && Party.IsInParty(activator, creature))
                 {
                     StatusEffect.ApplyStatusEffect(activator, creature, type, duration, CombatDamageType.Physical);
-                    CombatVisualEffect.ApplyStatusEffectVisual(creature, type, false);
                 }
 
                 creature = GetNextObjectInShape(Shape.Sphere, 5f, location, true);
@@ -342,7 +337,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 if (GetIsReactionTypeHostile(creature, activator))
                 {
                     StatusEffect.ApplyStatusEffect(activator, creature, type, duration, CombatDamageType.Physical);
-                    CombatVisualEffect.ApplyStatusEffectVisual(creature, type, true);
                     if (fpDrainPercent > 0)
                     {
                         var fpDrain = Math.Max(1, (int)Math.Ceiling(Stat.GetCurrentFP(creature) * (fpDrainPercent / 100f)));

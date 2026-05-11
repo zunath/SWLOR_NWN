@@ -351,6 +351,8 @@ namespace SWLOR.Game.Server.Native
 
             Log.Write(LogGroup.Attack, $"DAMAGE: attacker damage attribute: {damageProfile.Damage} defender defense attribute: {defense}, defender racial type {target.m_pStats.m_nRace}");
 
+            attackerAttack = Combat.ApplyTargetStatusAttackModifiers(attacker.m_idSelf, target.m_idSelf, attackerAttack, skillType);
+
             var damage = Combat.CalculateDamage(attackerAttack, damageProfile.Damage, attackerStat,
                 defense, defenderStat, critical, weaponDeltaCap);
 

@@ -34,6 +34,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             PrecisionStrikes();
             SapVitality();
             ShadowStrike();
+            SmokeBomb();
             SystemicShutdown();
             ToxicCoating();
             VitalStrike();
@@ -364,6 +365,18 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Deals weapon DMG + 48 to a single target. Inflicts 40% Slow for 12 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroknife, 42);
+        }
+
+        private void SmokeBomb()
+        {
+            _builder.Create(PerkCategoryType.VibroknifeShadow, PerkType.SmokeBomb)
+                .Name("Smoke Bomb")
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.SmokeBomb)
+                .Description("All enemies in the selected area make a Trauma resistance check; on failure they receive Smoke Bomb, reducing Accuracy by 20% for 12 seconds.")
+                .Price(4)
+                .RequirementSkill(SkillType.Vibroknife, 40);
         }
 
         private void SystemicShutdown()

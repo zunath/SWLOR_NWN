@@ -106,7 +106,6 @@ namespace SWLOR.Game.Server.Service.PerkService
         IonGrenade = 207,
         KoltoGrenade = 208,
         AdhesiveGrenade = 209,
-        SmokeBomb = 210,
         KoltoBomb = 211,
         IncendiaryBomb = 212,
         GasBomb = 213,
@@ -511,7 +510,9 @@ namespace SWLOR.Game.Server.Service.PerkService
         SpinningWhirl = 624,
         StrikingCobra = 625,
         TranquilizerShot = 626,
-        // IDs 627-639 are free.
+        Bloodseeker = 627,
+        SmokeBomb = 628,
+        // IDs 629-639 are free.
         RapidShot = 640,
         Bulwark = 641,
         Alacrity = 642,

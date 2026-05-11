@@ -42,7 +42,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 {
                     if (count == 0)
                     {
-                        CombatVisualEffect.ApplyAtLocation(GetLocation(activator), VisualEffect.Vfx_Fnf_Swinging_Blade);
+                        ApplyEffectAtLocation(
+                            DurationType.Instant,
+                            EffectVisualEffect(VisualEffect.Vfx_Fnf_Swinging_Blade),
+                            GetLocation(activator));
                     }
 
                     var attack = Stat.GetAttack(activator, AbilityType.Agility, SkillType.Invalid);
@@ -65,7 +68,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                         AssignCommand(activator, () =>
                         {
                             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), dTarget);
-                            CombatVisualEffect.ApplyToObject(dTarget, VisualEffect.Vfx_Com_Blood_Spark_Medium);
+                            ApplyEffectToObject(
+                                DurationType.Instant,
+                                EffectVisualEffect(VisualEffect.Vfx_Com_Blood_Spark_Medium),
+                                dTarget);
                         });
                     });
 

@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
@@ -25,7 +26,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             const float Duration = 6.1f;
             StatusEffect.ApplyStatusEffect(source, target, new ForceStunStatusEffect(), Duration, CombatDamageType.Force);
-            CombatVisualEffect.ApplyStatusEffectVisual(target, typeof(ForceStunStatusEffect), true);
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Dazed_S), target);
         }
 
         private static void ForceStun1(AbilityBuilder builder)

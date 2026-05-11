@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
@@ -36,7 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasImpactAction((activator, target, level, location) =>
                 {
                     StatusEffect.ApplyStatusEffect(activator, target, new CreepingTerrorStatusEffect(1), 24f, CombatDamageType.Force);
-                    CombatVisualEffect.ApplyStatusEffectVisual(target, typeof(CreepingTerrorStatusEffect), true);
+                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Doom), target);
                 });
         }
 
@@ -56,7 +57,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasImpactAction((activator, target, level, location) =>
                 {
                     StatusEffect.ApplyStatusEffect(activator, target, new CreepingTerrorStatusEffect(2), 24f, CombatDamageType.Force);
-                    CombatVisualEffect.ApplyStatusEffectVisual(target, typeof(CreepingTerrorStatusEffect), true);
+                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Doom), target);
                 });
         }
 
@@ -76,7 +77,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasImpactAction((activator, target, level, location) =>
                 {
                     StatusEffect.ApplyStatusEffect(activator, target, new CreepingTerrorStatusEffect(3), 24f, CombatDamageType.Force);
-                    CombatVisualEffect.ApplyStatusEffectVisual(target, typeof(CreepingTerrorStatusEffect), true);
+                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Doom), target);
                 });
         }
     }

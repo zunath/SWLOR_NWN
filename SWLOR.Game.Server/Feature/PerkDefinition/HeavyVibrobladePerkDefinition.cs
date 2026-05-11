@@ -123,12 +123,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Bloodlust1)
                 .Description("Sacrifice 40% HP in exchange for 20% of your maximum STM restored. Amount of STM restored increased by 1% per Might. (Maximum: 80%)")
                 .Price(4)
-                .RequirementSkill(SkillType.HeavyVibroblade, 42)
-
-                .AddPerkLevel()
-                .Description("Gain +10% Attack against bleeding targets.")
-                .Price(3)
-                .RequirementSkill(SkillType.HeavyVibroblade, 40);
+                .RequirementSkill(SkillType.HeavyVibroblade, 42);
         }
 
 

@@ -166,9 +166,6 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
             (success, result) = IonGrenade();
             if (success) return result;
 
-            (success, result) = SmokeBomb();
-            if (success) return result;
-
             (success, result) = WristRocket();
             if (success) return result;
 
@@ -562,25 +559,6 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
             if (CheckIfCanUseFeat(Self, Target, FeatType.IonGrenade1))
             {
                 return (true, (FeatType.IonGrenade1, Target));
-            }
-
-            return NoAction;
-        }
-
-        protected (bool, (FeatType, uint)) SmokeBomb()
-        {
-            // Smoke Bomb
-            if (CheckIfCanUseFeat(Self, Target, FeatType.SmokeBomb3, () => LowestHPAllyPercentage < 50))
-            {
-                return (true, (FeatType.SmokeBomb3, LowestHPAlly));
-            }
-            if (CheckIfCanUseFeat(Self, Target, FeatType.SmokeBomb2, () => LowestHPAllyPercentage < 50))
-            {
-                return (true, (FeatType.SmokeBomb2, LowestHPAlly));
-            }
-            if (CheckIfCanUseFeat(Self, Target, FeatType.SmokeBomb1, () => LowestHPAllyPercentage < 50))
-            {
-                return (true, (FeatType.SmokeBomb1, LowestHPAlly));
             }
 
             return NoAction;

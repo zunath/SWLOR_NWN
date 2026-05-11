@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
@@ -95,7 +96,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 SetCommandable(true, activator);
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, damageType.GetNWScriptDamageType()), target);
                 StatusEffect.ApplyStatusEffect(activator, target, typeof(StunnedStatusEffect), Duration, damageType);
-                CombatVisualEffect.ApplyStatusEffectVisual(target, typeof(StunnedStatusEffect), true);
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Stun), target);
                 AssignCommand(activator, () =>
                 {
                     if (Item.LightsaberBaseItemTypes.Contains(rightHandBaseItemType))

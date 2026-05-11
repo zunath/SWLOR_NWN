@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
@@ -45,7 +46,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             }
 
             StatusEffect.ApplyStatusEffect(activator, target, new MindTrickStatusEffect(), 6f, CombatDamageType.Force);
-            CombatVisualEffect.ApplyStatusEffectVisual(target, typeof(MindTrickStatusEffect), true);
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Confusion_S), target);
 
             CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
             Enmity.ModifyEnmity(activator, target, 400);

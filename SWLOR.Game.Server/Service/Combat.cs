@@ -302,6 +302,25 @@ namespace SWLOR.Game.Server.Service
             return Math.Max(0, damage);
         }
 
+        public static int ApplyTargetStatusAttackModifiers(uint attacker, uint defender, int attack, SkillType skillType)
+        {
+            if (attack <= 0)
+                return attack;
+
+            var adjustment = 0;
+
+            if (skillType == SkillType.Vibroblade &&
+                StatusEffect.HasStatusEffectCategory(defender, StatusEffectCategory.Bleeding))
+            {
+                adjustment += Stat.GetStatAdjustment(attacker, StatType.AttackToBleedingTargetPercentAdjustment);
+            }
+
+            if (adjustment == 0)
+                return attack;
+
+            return Math.Max(0, attack + (int)Math.Ceiling(attack * (adjustment / 100f)));
+        }
+
         public static int ApplyDamageDealtModifiers(
             uint attacker,
             uint defender,

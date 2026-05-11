@@ -369,7 +369,6 @@ namespace SWLOR.Game.Server.Service
 
             _activeConcentrationAbilities[creature] = new ActiveConcentrationAbility(target, feat, statusEffect);
             StatusEffect.ApplyStatusEffect(creature, target, statusEffect, 0.0f);
-            CombatVisualEffect.ApplyStatusEffectVisual(target, statusEffect, GetIsReactionTypeHostile(target, creature));
 
             Messaging.SendMessageNearbyToPlayers(creature, $"{GetName(creature)} begins concentrating...");
             SetLocalBool(creature, "CONCENTRATION_FIRST_USE", true);
@@ -483,7 +482,6 @@ namespace SWLOR.Game.Server.Service
             if (!StatusEffect.HasStatusEffect(recipient, type, source))
             {
                 StatusEffect.ApplyStatusEffect(source, recipient, type, 0f);
-                CombatVisualEffect.ApplyStatusEffectVisual(recipient, type, GetIsReactionTypeHostile(recipient, source));
             }
         }
 
@@ -925,7 +923,9 @@ namespace SWLOR.Game.Server.Service
             IEnumerable<Type> additionalStatusEffects = null,
             Func<IStatusEffect> statusEffectFactory = null,
             CombatDamageType damageType = CombatDamageType.Physical,
-            ResistanceType statusResistanceType = ResistanceType.Invalid)
+            ResistanceType statusResistanceType = ResistanceType.Invalid,
+            VisualEffect targetVisualEffect = VisualEffect.None,
+            VisualEffect areaVisualEffect = VisualEffect.None)
         {
             var totalDamage = 0;
             RecordAbilityImpactShape(activator, skillType, isArea);
@@ -944,13 +944,10 @@ namespace SWLOR.Game.Server.Service
 
                 if (creatures.Any(creature => GetIsObjectValid(creature) && GetIsReactionTypeHostile(creature, activator)))
                 {
-                    var areaVisualEffect = CombatVisualEffect.GetAreaImpactVisualEffect(
-                        skillType,
-                        baseDamage,
-                        statusEffect,
-                        additionalStatusEffects,
-                        CombatImpactAreaShape.Sphere);
-                    CombatVisualEffect.ApplyAtLocation(center, areaVisualEffect);
+                    if (areaVisualEffect != VisualEffect.None)
+                    {
+                        ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(areaVisualEffect), center);
+                    }
                 }
 
                 totalDamage = ApplyCombatImpactToCreatures(
@@ -963,7 +960,8 @@ namespace SWLOR.Game.Server.Service
                     additionalStatusEffects,
                     statusEffectFactory,
                     damageType,
-                    statusResistanceType);
+                    statusResistanceType,
+                    targetVisualEffect);
             }
             else if (GetIsObjectValid(target))
             {
@@ -977,7 +975,8 @@ namespace SWLOR.Game.Server.Service
                     additionalStatusEffects,
                     statusEffectFactory,
                     damageType,
-                    statusResistanceType);
+                    statusResistanceType,
+                    targetVisualEffect);
             }
 
             AssignCommand(activator, () => ActionPlayAnimation(Animation.DoubleStrike));
@@ -1003,7 +1002,9 @@ namespace SWLOR.Game.Server.Service
             bool centerOnActivator = false,
             Func<IStatusEffect> statusEffectFactory = null,
             CombatDamageType damageType = CombatDamageType.Physical,
-            ResistanceType statusResistanceType = ResistanceType.Invalid)
+            ResistanceType statusResistanceType = ResistanceType.Invalid,
+            VisualEffect targetVisualEffect = VisualEffect.None,
+            VisualEffect areaVisualEffect = VisualEffect.None)
         {
             RecordAbilityImpactShape(activator, skillType, true);
 
@@ -1024,7 +1025,9 @@ namespace SWLOR.Game.Server.Service
                     centerOnActivator,
                     statusEffectFactory,
                     damageType,
-                    statusResistanceType);
+                    statusResistanceType,
+                    targetVisualEffect,
+                    areaVisualEffect);
                 return;
             }
 
@@ -1048,7 +1051,9 @@ namespace SWLOR.Game.Server.Service
                 trackedImpact?.Ability,
                 trackedImpact?.NextAbilityDamageBonus ?? 0,
                 damageType,
-                statusResistanceType);
+                statusResistanceType,
+                targetVisualEffect,
+                areaVisualEffect);
 
             switch (shape)
             {
@@ -1105,7 +1110,9 @@ namespace SWLOR.Game.Server.Service
             bool centerOnActivator,
             Func<IStatusEffect> statusEffectFactory,
             CombatDamageType damageType,
-            ResistanceType statusResistanceType)
+            ResistanceType statusResistanceType,
+            VisualEffect targetVisualEffect,
+            VisualEffect areaVisualEffect)
         {
             RecordAbilityImpactShape(activator, skillType, true);
 
@@ -1137,13 +1144,10 @@ namespace SWLOR.Game.Server.Service
 
             if (creatures.Any(creature => GetIsObjectValid(creature) && GetIsReactionTypeHostile(creature, activator)))
             {
-                var areaVisualEffect = CombatVisualEffect.GetAreaImpactVisualEffect(
-                    skillType,
-                    baseDamage,
-                    statusEffect,
-                    additionalStatusEffects,
-                    shape);
-                CombatVisualEffect.ApplyAtLocation(origin, areaVisualEffect);
+                if (areaVisualEffect != VisualEffect.None)
+                {
+                    ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(areaVisualEffect), origin);
+                }
             }
 
             ApplyCombatImpactToCreatures(
@@ -1156,7 +1160,8 @@ namespace SWLOR.Game.Server.Service
                 additionalStatusEffects,
                 statusEffectFactory,
                 damageType,
-                statusResistanceType);
+                statusResistanceType,
+                targetVisualEffect);
         }
 
         private static ApplyTelegraphEffect BuildTelegraphedCombatImpactAction(
@@ -1171,7 +1176,9 @@ namespace SWLOR.Game.Server.Service
             AbilityDetail ability,
             int nextAbilityDamageBonus,
             CombatDamageType damageType,
-            ResistanceType statusResistanceType)
+            ResistanceType statusResistanceType,
+            VisualEffect targetVisualEffect,
+            VisualEffect areaVisualEffect)
         {
             return (creator, creatures) =>
             {
@@ -1191,13 +1198,10 @@ namespace SWLOR.Game.Server.Service
                     RecordAbilityImpactShape(creator, skillType, true);
                 }
 
-                var areaVisualEffect = CombatVisualEffect.GetAreaImpactVisualEffect(
-                    skillType,
-                    baseDamage,
-                    statusEffect,
-                    additionalStatusEffects,
-                    shape);
-                CombatVisualEffect.ApplyAtLocation(areaVisualLocation, areaVisualEffect);
+                if (areaVisualEffect != VisualEffect.None)
+                {
+                    ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(areaVisualEffect), areaVisualLocation);
+                }
 
                 ApplyCombatImpactToCreatures(
                     creator,
@@ -1209,7 +1213,8 @@ namespace SWLOR.Game.Server.Service
                     additionalStatusEffects,
                     statusEffectFactory,
                     damageType,
-                    statusResistanceType);
+                    statusResistanceType,
+                    targetVisualEffect);
 
                 if (ability != null)
                 {
@@ -1229,7 +1234,8 @@ namespace SWLOR.Game.Server.Service
             IEnumerable<Type> additionalStatusEffects = null,
             Func<IStatusEffect> statusEffectFactory = null,
             CombatDamageType damageType = CombatDamageType.Physical,
-            ResistanceType statusResistanceType = ResistanceType.Invalid)
+            ResistanceType statusResistanceType = ResistanceType.Invalid,
+            VisualEffect targetVisualEffect = VisualEffect.None)
         {
             var totalDamage = 0;
 
@@ -1248,7 +1254,8 @@ namespace SWLOR.Game.Server.Service
                     additionalStatusEffects,
                     statusEffectFactory,
                     damageType,
-                    statusResistanceType);
+                    statusResistanceType,
+                    targetVisualEffect);
             }
 
             return totalDamage;
@@ -1346,7 +1353,8 @@ namespace SWLOR.Game.Server.Service
             IEnumerable<Type> additionalStatusEffects,
             Func<IStatusEffect> statusEffectFactory,
             CombatDamageType damageType,
-            ResistanceType statusResistanceType)
+            ResistanceType statusResistanceType,
+            VisualEffect targetVisualEffect)
         {
             var damage = CalculateCombatImpactDamage(activator, target, skillType, baseDamage, damageType);
             if (damage > 0)
@@ -1365,12 +1373,10 @@ namespace SWLOR.Game.Server.Service
                 statusEffectFactory,
                 statusResistanceType,
                 damageType);
-            var visualEffect = CombatVisualEffect.GetHostileImpactVisualEffect(
-                skillType,
-                damage > 0 ? baseDamage : 0,
-                statusApplied ? statusEffect : null,
-                statusApplied ? additionalStatusEffects : null);
-            CombatVisualEffect.ApplyToObject(target, visualEffect);
+            if ((damage > 0 || statusApplied) && targetVisualEffect != VisualEffect.None)
+            {
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(targetVisualEffect), target);
+            }
 
             CombatPoint.AddCombatPoint(activator, target, skillType, 3);
             RecordAbilityImpactTarget(activator, target, skillType, false);
@@ -1396,6 +1402,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             var attack = Stat.GetAttack(activator, ability, skillType);
+            attack = Combat.ApplyTargetStatusAttackModifiers(activator, target, attack, skillType);
             var attackStat = GetAbilityScore(activator, ability);
             var defenseAbility = damageType.GetDefenseAbilityType();
             var defense = Stat.GetDefense(target, damageType, defenseAbility);

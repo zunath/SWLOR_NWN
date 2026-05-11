@@ -335,8 +335,6 @@ namespace SWLOR.Game.Server.Core
         public const string OnHarvesterUsed = "harvester_used";
 
         // Grenade events
-        public const string OnGrenadeSmokeEnable = "grenade_smoke_en";
-        public const string OnGrenadeSmokeHeartbeat = "grenade_smoke_hb";
         public const string OnGrenadeKolto1Enable = "grenade_kolt1_en";
         public const string OnGrenadeKolto1Heartbeat = "grenade_kolt1_hb";
         public const string OnGrenadeKolto2Enable = "grenade_kolt2_en";

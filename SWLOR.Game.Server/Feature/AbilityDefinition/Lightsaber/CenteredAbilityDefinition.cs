@@ -38,7 +38,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 builder
                     .Create(FeatType.Centering2, PerkType.Centering)
                     .Name("Centering II")
-                    .Level(2),
+                    .Level(2)
+                    .HasRecastDelay(RecastGroup.Centering, 60f),
                 typeof(CenteringStatusEffect),
                 30f,
                 20,

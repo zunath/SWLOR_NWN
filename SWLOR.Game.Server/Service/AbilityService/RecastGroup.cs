@@ -571,6 +571,8 @@ namespace SWLOR.Game.Server.Service.AbilityService
         MarkedForDeath = 282,
         [RecastGroup("Toxic Coating", "Toxic Coating", true)]
         ToxicCoating = 283,
+        [RecastGroup("Centering", "Centering", true)]
+        Centering = 284,
     }
 
     public class RecastGroupAttribute: Attribute

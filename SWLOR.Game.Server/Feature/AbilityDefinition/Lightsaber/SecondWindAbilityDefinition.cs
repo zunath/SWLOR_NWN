@@ -17,16 +17,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 .Create(FeatType.SecondWind1, PerkType.SecondWind)
                 .Name("Second Wind")
                 .Level(1)
-                .HasActivationDelay(0f)
+                .HasActivationDelay(3f)
                 .HasRecastDelay(RecastGroup.SecondWind, 300f)
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
-                    var percent = Math.Min(75, 50 + Math.Max(0, GetAbilityModifier(AbilityType.Might, activator)));
+                    var percent = Math.Min(75, 50 + Math.Max(0, GetAbilityScore(activator, AbilityType.Might)));
                     var amount = Math.Max(1, (int)Math.Ceiling(Stat.GetMaxStamina(activator) * (percent / 100f)));
                     Stat.RestoreStamina(activator, amount);
                 })
                 .IsCastedAbility()
-                .BreaksStealth();
+                .BreaksStealth()
+                .RequirementFP(15);
 
             return builder.Build();
         }

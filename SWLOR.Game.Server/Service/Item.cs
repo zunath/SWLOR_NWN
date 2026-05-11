@@ -28,6 +28,66 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<int, int[]> _2daCache = new();
         private static readonly Dictionary<BaseItem, AbilityType> _itemToDamageAbilityMapping = new();
         private static readonly Dictionary<BaseItem, AbilityType> _itemToAccuracyAbilityMapping = new();
+        private static readonly IReadOnlyList<BaseItem> _meleeStatMappedBaseItems = new[]
+        {
+            BaseItem.BastardSword,
+            BaseItem.BattleAxe,
+            BaseItem.Dagger,
+            BaseItem.HandAxe,
+            BaseItem.Kama,
+            BaseItem.Katana,
+            BaseItem.Kukri,
+            BaseItem.LightFlail,
+            BaseItem.LightHammer,
+            BaseItem.LightMace,
+            BaseItem.Longsword,
+            BaseItem.MorningStar,
+            BaseItem.Rapier,
+            BaseItem.Scimitar,
+            BaseItem.ShortSword,
+            BaseItem.Sickle,
+            BaseItem.Whip,
+            BaseItem.Lightsaber,
+            BaseItem.Electroblade,
+            BaseItem.DireMace,
+            BaseItem.DwarvenWarAxe,
+            BaseItem.GreatAxe,
+            BaseItem.GreatSword,
+            BaseItem.Halberd,
+            BaseItem.HeavyFlail,
+            BaseItem.Scythe,
+            BaseItem.Trident,
+            BaseItem.WarHammer,
+            BaseItem.ShortSpear,
+            BaseItem.TwoBladedSword,
+            BaseItem.DoubleAxe,
+            BaseItem.Saberstaff,
+            BaseItem.TwinElectroBlade,
+            BaseItem.Club,
+            BaseItem.Bracer,
+            BaseItem.Gloves,
+            BaseItem.QuarterStaff,
+            BaseItem.Katar,
+            BaseItem.CreatureBludgeonWeapon,
+            BaseItem.CreaturePierceWeapon,
+            BaseItem.CreatureSlashPierceWeapon,
+            BaseItem.CreatureSlashWeapon,
+        };
+        private static readonly IReadOnlyList<BaseItem> _rangedStatMappedBaseItems = new[]
+        {
+            BaseItem.Cannon,
+            BaseItem.Rifle,
+            BaseItem.Longbow,
+            BaseItem.Pistol,
+            BaseItem.Arrow,
+            BaseItem.Bolt,
+            BaseItem.Bullet,
+            BaseItem.Sling,
+            BaseItem.Grenade,
+            BaseItem.Shuriken,
+            BaseItem.ThrowingAxe,
+            BaseItem.Dart,
+        };
 
         /// <summary>
         /// When the module loads, all item details are loaded into the cache.
@@ -83,140 +143,32 @@ namespace SWLOR.Game.Server.Service
 
         private static void LoadItemToDamageStatMapping()
         {
-            // Light Weapon Skills
-            _itemToDamageAbilityMapping[BaseItem.BastardSword] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.BattleAxe] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.Dagger] = AbilityType.Perception;
-            _itemToDamageAbilityMapping[BaseItem.HandAxe] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.Kama] = AbilityType.Perception;
-            _itemToDamageAbilityMapping[BaseItem.Katana] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.Kukri] = AbilityType.Perception;
-            _itemToDamageAbilityMapping[BaseItem.LightFlail] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.LightHammer] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.LightMace] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.Longsword] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.MorningStar] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.Rapier] = AbilityType.Perception;
-            _itemToDamageAbilityMapping[BaseItem.Scimitar] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.ShortSword] = AbilityType.Perception;
-            _itemToDamageAbilityMapping[BaseItem.Sickle] = AbilityType.Perception;
-            _itemToDamageAbilityMapping[BaseItem.Whip] = AbilityType.Perception;
-            _itemToDamageAbilityMapping[BaseItem.Lightsaber] = AbilityType.Perception;
-            _itemToDamageAbilityMapping[BaseItem.Electroblade] = AbilityType.Perception;
+            foreach (var itemType in _meleeStatMappedBaseItems)
+            {
+                _itemToDamageAbilityMapping[itemType] = AbilityType.Might;
+            }
 
-            // Heavy Weapon Skills
-            _itemToDamageAbilityMapping[BaseItem.DireMace] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.DwarvenWarAxe] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.GreatAxe] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.GreatSword] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.Halberd] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.HeavyFlail] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.Scythe] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.Trident] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.WarHammer] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.ShortSpear] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.TwoBladedSword] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.DoubleAxe] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.Saberstaff] = AbilityType.Perception;
-            _itemToDamageAbilityMapping[BaseItem.TwinElectroBlade] = AbilityType.Perception;
-
-            // Katar/Staff Skills
-            _itemToDamageAbilityMapping[BaseItem.Club] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.Bracer] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.Gloves] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.QuarterStaff] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.Katar] = AbilityType.Perception;
-
-            // Ranged Skills
-            _itemToDamageAbilityMapping[BaseItem.Cannon] = AbilityType.Perception;
-            _itemToDamageAbilityMapping[BaseItem.Rifle] = AbilityType.Perception;
-            _itemToDamageAbilityMapping[BaseItem.Longbow] = AbilityType.Perception;
-            _itemToDamageAbilityMapping[BaseItem.Pistol] = AbilityType.Perception;
-            _itemToDamageAbilityMapping[BaseItem.Arrow] = AbilityType.Perception;
-            _itemToDamageAbilityMapping[BaseItem.Bolt] = AbilityType.Perception;
-            _itemToDamageAbilityMapping[BaseItem.Bullet] = AbilityType.Perception;
-            _itemToDamageAbilityMapping[BaseItem.Sling] = AbilityType.Perception;
-            _itemToDamageAbilityMapping[BaseItem.Grenade] = AbilityType.Perception;
-            _itemToDamageAbilityMapping[BaseItem.Shuriken] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.ThrowingAxe] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.Dart] = AbilityType.Might;
-
-            // NPCs
-            _itemToDamageAbilityMapping[BaseItem.CreatureBludgeonWeapon] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.CreaturePierceWeapon] = AbilityType.Perception;
-            _itemToDamageAbilityMapping[BaseItem.CreatureSlashPierceWeapon] = AbilityType.Might;
-            _itemToDamageAbilityMapping[BaseItem.CreatureSlashWeapon] = AbilityType.Might;
+            foreach (var itemType in _rangedStatMappedBaseItems)
+            {
+                _itemToDamageAbilityMapping[itemType] = AbilityType.Perception;
+            }
 
             Console.WriteLine($"Loaded {_itemToDamageAbilityMapping.Count} item to damage ability mappings.");
         }
 
         private static void LoadItemToAccuracyStatMapping()
         {
-            // Light Weapon Skills
-            _itemToAccuracyAbilityMapping[BaseItem.BastardSword] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.BattleAxe] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.Dagger] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.HandAxe] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.Kama] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.Katana] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.Kukri] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.LightFlail] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.LightHammer] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.LightMace] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.Longsword] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.MorningStar] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.Rapier] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.Scimitar] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.ShortSword] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.Sickle] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.Whip] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.Lightsaber] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.Electroblade] = AbilityType.Agility;
+            foreach (var itemType in _meleeStatMappedBaseItems)
+            {
+                _itemToAccuracyAbilityMapping[itemType] = AbilityType.Perception;
+            }
 
-            // Heavy Weapon Skills
-            _itemToAccuracyAbilityMapping[BaseItem.DireMace] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.DwarvenWarAxe] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.GreatAxe] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.GreatSword] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.Halberd] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.HeavyFlail] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.Scythe] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.Trident] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.WarHammer] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.ShortSpear] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.TwoBladedSword] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.DoubleAxe] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.Saberstaff] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.TwinElectroBlade] = AbilityType.Agility;
+            foreach (var itemType in _rangedStatMappedBaseItems)
+            {
+                _itemToAccuracyAbilityMapping[itemType] = AbilityType.Agility;
+            }
 
-            // Katar/Staff Skills
-            _itemToAccuracyAbilityMapping[BaseItem.Club] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.Bracer] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.Gloves] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.QuarterStaff] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.Katar] = AbilityType.Agility;
-
-            // Ranged Skills
-            _itemToAccuracyAbilityMapping[BaseItem.Cannon] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.Rifle] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.Longbow] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.Pistol] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.Arrow] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.Bolt] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.Bullet] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.Sling] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.Grenade] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.Shuriken] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.ThrowingAxe] = AbilityType.Agility;
-            _itemToAccuracyAbilityMapping[BaseItem.Dart] = AbilityType.Agility;
-
-            // NPCs
-            _itemToAccuracyAbilityMapping[BaseItem.CreatureBludgeonWeapon] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.CreaturePierceWeapon] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.CreatureSlashPierceWeapon] = AbilityType.Perception;
-            _itemToAccuracyAbilityMapping[BaseItem.CreatureSlashWeapon] = AbilityType.Perception;
-
-            Console.WriteLine($"Loaded {_itemToDamageAbilityMapping.Count} item to accuracy ability mappings.");
+            Console.WriteLine($"Loaded {_itemToAccuracyAbilityMapping.Count} item to accuracy ability mappings.");
         }
 
         /// <summary>

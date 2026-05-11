@@ -1137,7 +1137,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The calculated accuracy result.</returns>
         public static int GetAccuracy(int level, int stat, int bonus)
         {
-            return stat * 3 + level + bonus;
+            return 8 + (2 * level) + stat + bonus;
         }
 
         private static int CalculateEffectAccuracy(uint creature, int accuracy)
@@ -1454,7 +1454,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns></returns>
         public static int GetEvasion(int level, int stat, int bonus)
         {
-            return stat * 3 + level + bonus;
+            return 8 + (2 * level) + stat + bonus;
         }
 
         /// <summary>

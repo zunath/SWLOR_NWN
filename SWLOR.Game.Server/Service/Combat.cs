@@ -229,25 +229,23 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Calculates the critical hit rate against a given target.
         /// </summary>
-        /// <param name="attackerPER">The attacker's perception stat</param>
-        /// <param name="defenderMGT">The defender's might stat.</param>
+        /// <param name="attackerPER">The attacker's perception stat.</param>
+        /// <param name="defenderVIT">The defender's vitality stat.</param>
+        /// <param name="skillRank">The attacker's relevant weapon skill rank.</param>
         /// <param name="criticalModifier">A modifier to the critical rating based on external factors.</param>
         /// <returns>The critical rate, in a percentage</returns>
-        public static int CalculateCriticalRate(int attackerPER, int defenderMGT, int criticalModifier)
+        public static int CalculateCriticalRate(int attackerPER, int defenderVIT, int skillRank, int criticalModifier)
         {
             const int BaseCriticalRate = 5;
-            var delta = attackerPER - defenderMGT;
+            const int MaxCriticalRate = 50;
+            var skillBonus = Math.Max(0, skillRank / 10);
+            var statBonus = Math.Clamp((int)Math.Floor((attackerPER - defenderVIT) / 5.0f), 0, 3);
 
-            if (delta < 0)
-                delta = 0;
-            else if (delta > 15)
-                delta = 15;
-
-            var criticalRate = BaseCriticalRate + delta + criticalModifier;
+            var criticalRate = BaseCriticalRate + skillBonus + statBonus + criticalModifier;
             if (criticalRate < BaseCriticalRate)
                 criticalRate = BaseCriticalRate;
-            else if (criticalRate > 90)
-                criticalRate = 90;
+            else if (criticalRate > MaxCriticalRate)
+                criticalRate = MaxCriticalRate;
 
 
             return criticalRate;

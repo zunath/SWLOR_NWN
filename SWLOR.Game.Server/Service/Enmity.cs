@@ -213,12 +213,7 @@ namespace SWLOR.Game.Server.Service
         private static int CalculateEnmityAdjustment(uint creature)
         {
             var percentAdjustment = 0;
-
-            if (GetHasFeat(FeatType.FocusAttention5, creature))
-                percentAdjustment += 50;
-            else if (GetHasFeat(FeatType.FocusAttention4, creature))
-                percentAdjustment += 40;
-            else if (GetHasFeat(FeatType.FocusAttention3, creature))
+            if (GetHasFeat(FeatType.FocusAttention3, creature))
                 percentAdjustment += 30;
             else if (GetHasFeat(FeatType.FocusAttention2, creature))
                 percentAdjustment += 20;

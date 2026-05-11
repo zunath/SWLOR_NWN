@@ -763,7 +763,8 @@ $auditRows = New-Object System.Collections.Generic.List[object]
 
 foreach ($row in $manifest) {
     $rowBaseName = Get-SanitizedName $row.PerkName
-    if (!$perkBaseNameIndex.ContainsKey($rowBaseName)) {
+    $expectsPerkDefinition = $row.DevStatus -eq "Implemented"
+    if ($expectsPerkDefinition -and !$perkBaseNameIndex.ContainsKey($rowBaseName)) {
         Add-AuditRow -Rows $auditRows -AuditType "MissingPerkName" -BibleRow $row
     }
 

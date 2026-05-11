@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Service
 {
     public static class Resistance
     {
-        private const int MaximumResistance = 90;
+        private const int MaximumResistance = 100;
         private const float ResistanceDamageCurve = 50f;
         private const float MinimumDamageMultiplier = 0.1f;
         private const float StatusDurationCurve = 150f;

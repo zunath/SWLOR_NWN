@@ -93,7 +93,7 @@ The HP calculation is handled by the NWN engine and stored in the `MaxHP` proper
 - Evasion = 8 + (2 × 2) + 14 + 4 = 30
 
 ### 7a. Resistance Calculation
-**Formula:** Resistance score is capped at 90 and uses the Xenomech reduction curve: `1 - (Resistance / (Resistance + 50))`, with a 10% minimum damage multiplier.
+**Formula:** Resistance score is capped at 100 and uses the Xenomech reduction curve: `1 - (Resistance / (Resistance + 50))`, with a 10% minimum damage multiplier.
 
 **Components:**
 - Equipment Bonus: Matching elemental/status resistance bonuses from equipment

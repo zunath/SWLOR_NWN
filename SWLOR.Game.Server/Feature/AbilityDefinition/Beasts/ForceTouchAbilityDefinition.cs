@@ -18,8 +18,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
             ForceTouch1();
             ForceTouch2();
             ForceTouch3();
-            ForceTouch4();
-            ForceTouch5();
 
             return _builder.Build();
         }
@@ -97,32 +95,5 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 });
         }
 
-        private void ForceTouch4()
-        {
-            _builder.Create(FeatType.ForceTouch4, PerkType.ForceTouch)
-                .Name("Force Touch IV")
-                .Level(4)
-                .HasRecastDelay(RecastGroup.ForceTouch, 30f)
-                .RequirementFP(6)
-                .IsWeaponAbility()
-                .HasImpactAction((activator, target, level, location) =>
-                {
-                    ImpactAction(activator, target, 24);
-                });
-        }
-
-        private void ForceTouch5()
-        {
-            _builder.Create(FeatType.ForceTouch5, PerkType.ForceTouch)
-                .Name("Force Touch V")
-                .Level(5)
-                .HasRecastDelay(RecastGroup.ForceTouch, 30f)
-                .RequirementFP(7)
-                .IsWeaponAbility()
-                .HasImpactAction((activator, target, level, location) =>
-                {
-                    ImpactAction(activator, target, 28);
-                });
-        }
     }
 }

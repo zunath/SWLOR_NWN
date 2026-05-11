@@ -9,7 +9,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
     public class StaffPerkDefinition: IPerkListDefinition
     {
         private readonly PerkBuilder _builder = new();
-        private static int AbilityStatValue(AbilityType ability) => (int)ability + 1;
 
         public Dictionary<PerkType, PerkDetail> BuildPerks()
         {
@@ -134,9 +133,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Flurry Style")
 
                 .AddPerkLevel()
-                .Description("Staves use AGI to-hit and PER for damage. Staff attack delay is reduced by 10%.")
-                .IncreasesStat(StatType.StaffDamageAbilityOverride, creature => EquipmentPredicates.HasMainHandStaff(creature) ? AbilityStatValue(AbilityType.Perception) : 0)
-                .IncreasesStat(StatType.StaffAccuracyAbilityOverride, creature => EquipmentPredicates.HasMainHandStaff(creature) ? AbilityStatValue(AbilityType.Agility) : 0)
+                .Description("Staff attack delay is reduced by 10%.")
                 .IncreasesStat(StatType.AttackDelayReductionPercent, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 10 : 0)
                 .Price(2)
                 .RequirementSkill(SkillType.Staff, 5);

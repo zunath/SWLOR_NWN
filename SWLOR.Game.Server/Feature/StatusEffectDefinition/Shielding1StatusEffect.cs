@@ -12,7 +12,6 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             typeof(Shielding2StatusEffect),
             typeof(Shielding3StatusEffect),
-            typeof(Shielding4StatusEffect)
         };
 
         public Shielding1StatusEffect()

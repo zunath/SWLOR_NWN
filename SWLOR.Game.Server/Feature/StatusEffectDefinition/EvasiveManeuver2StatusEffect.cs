@@ -11,8 +11,6 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override List<Type> MorePowerfulEffectTypes => new()
         {
             typeof(EvasiveManeuver3StatusEffect),
-            typeof(EvasiveManeuver4StatusEffect),
-            typeof(EvasiveManeuver5StatusEffect)
         };
         public override List<Type> LessPowerfulEffectTypes => new()
         {

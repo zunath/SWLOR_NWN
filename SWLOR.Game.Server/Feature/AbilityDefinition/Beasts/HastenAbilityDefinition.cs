@@ -16,7 +16,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
         {
             Hasten1();
             Hasten2();
-            Hasten3();
 
             return _builder.Build();
         }
@@ -32,7 +31,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
             {
                 1 => typeof(Hasten1StatusEffect),
                 2 => typeof(Hasten2StatusEffect),
-                3 => typeof(Hasten3StatusEffect),
                 _ => null
             };
 
@@ -81,19 +79,5 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 });
         }
 
-        private void Hasten3()
-        {
-            _builder.Create(FeatType.Hasten3, PerkType.Hasten)
-                .Name("Hasten III")
-                .Level(3)
-                .HasRecastDelay(RecastGroup.Hasten, 120f)
-                .HasActivationDelay(1f)
-                .RequirementStamina(7)
-                .IsCastedAbility()
-                .HasImpactAction((activator, target, level, location) =>
-                {
-                    Impact(activator, 3, true);
-                });
-        }
     }
 }

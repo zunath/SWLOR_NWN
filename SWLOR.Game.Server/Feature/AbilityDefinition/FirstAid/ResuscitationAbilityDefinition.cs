@@ -15,7 +15,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             Resuscitation1();
             Resuscitation2();
-            Resuscitation3();
 
             return Builder.Build();
         }
@@ -114,25 +113,5 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 });
         }
 
-        private void Resuscitation3()
-        {
-            Builder.Create(FeatType.Resuscitation3, PerkType.Resuscitation)
-                .Name("Resuscitation III")
-                .Level(3)
-                .HasRecastDelay(RecastGroup.Resuscitation, 180f)
-                .HasActivationDelay(6f)
-                .HasMaxRange(30.0f)
-                .RequirementStamina(10)
-                .UsesAnimation(Animation.LoopingGetLow)
-                .IsCastedAbility()
-                .HasCustomValidation(Validation)
-                .HasImpactAction((activator, target, _, _) =>
-                {
-                    Impact(activator, target, 50);
-
-                    Enmity.ModifyEnmityOnAll(activator, 2500);
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
-                });
-        }
     }
 }

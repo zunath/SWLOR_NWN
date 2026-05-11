@@ -19,7 +19,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             MedKit2();
             MedKit3();
             MedKit4();
-            MedKit5();
 
             return Builder.Build();
         }
@@ -147,22 +146,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                     Impact(activator, target, 110);
                 });
         }
-        private void MedKit5()
-        {
-            Builder.Create(FeatType.MedKit5, PerkType.MedKit)
-                .Name("Med Kit V")
-                .Level(5)
-                .HasRecastDelay(RecastGroup.MedKit, 6f)
-                .HasActivationDelay(2f)
-                .HasMaxRange(30.0f)
-                .RequirementStamina(8)
-                .UsesAnimation(Animation.LoopingGetMid)
-                .IsCastedAbility()
-                .HasCustomValidation(Validation)
-                .HasImpactAction((activator, target, _, _) =>
-                {
-                    Impact(activator, target, 140);
-                });
-        }
+
     }
 }

@@ -106,19 +106,7 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
             var (success, result) = Benevolence();
             if (success) return result;
 
-            (success, result) = ForceHeal();
-            if (success) return result;
-
             (success, result) = MedKit();
-            if (success) return result;
-
-            (success, result) = KoltoBomb();
-            if (success) return result;
-
-            (success, result) = KoltoGrenade();
-            if (success) return result;
-
-            (success, result) = KoltoRecovery();
             if (success) return result;
 
             (success, result) = Infusion();
@@ -133,15 +121,6 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
             (success, result) = TreatmentKit();
             if (success) return result;
 
-            (success, result) = BattleInsight();
-            if (success) return result;
-
-            (success, result) = ThrowSaber();
-            if (success) return result;
-
-            (success, result) = ForceStun();
-            if (success) return result;
-
             (success, result) = AdhesiveGrenade();
             if (success) return result;
 
@@ -151,16 +130,7 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
             (success, result) = Flamethrower();
             if (success) return result;
 
-            (success, result) = FlashbangGrenade();
-            if (success) return result;
-
             (success, result) = FragGrenade();
-            if (success) return result;
-
-            (success, result) = GasBomb();
-            if (success) return result;
-
-            (success, result) = IncendiaryBomb();
             if (success) return result;
 
             (success, result) = IonGrenade();
@@ -169,25 +139,13 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
             (success, result) = WristRocket();
             if (success) return result;
 
-            (success, result) = StealthGenerator();
-            if (success) return result;
-
             (success, result) = DeflectorShield();
-            if (success) return result;
-
-            (success, result) = CombatEnhancement();
             if (success) return result;
 
             (success, result) = Shielding();
             if (success) return result;
 
-            (success, result) = StasisField();
-            if (success) return result;
-
             (success, result) = CreepingTerror();
-            if (success) return result;
-
-            (success, result) = Disturbance();
             if (success) return result;
 
             (success, result) = ForceSpark();
@@ -196,25 +154,13 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
             (success, result) = ForceLightning();
             if (success) return result;
 
-            (success, result) = ForceBurst();
-            if (success) return result;
-
-            (success, result) = ThrowRock();
-            if (success) return result;
-
             (success, result) = ForceDrain();
             if (success) return result;
 
             (success, result) = ForcePush();
             if (success) return result;
 
-            (success, result) = ForceInspiration();
-            if (success) return result;
-
             (success, result) = MindTrick();
-            if (success) return result;
-
-            (success, result) = BurstOfSpeed();
             if (success) return result;
 
             (success, result) = ForceLeap();
@@ -248,40 +194,11 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
             return NoAction;
         }
 
-        protected (bool, (FeatType, uint)) ForceHeal()
-        {
-            // Force Heal
-            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.ForceHeal5, () => LowestHPAllyPercentage <= 40 && SelfActiveConcentration == FeatType.Invalid))
-            {
-                return (true, (FeatType.ForceHeal5, LowestHPAlly));
-            }
-            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.ForceHeal4, () => LowestHPAllyPercentage <= 60 && SelfActiveConcentration == FeatType.Invalid))
-            {
-                return (true, (FeatType.ForceHeal4, LowestHPAlly));
-            }
-            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.ForceHeal3, () => LowestHPAllyPercentage <= 75 && SelfActiveConcentration == FeatType.Invalid))
-            {
-                return (true, (FeatType.ForceHeal3, LowestHPAlly));
-            }
-            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.ForceHeal2, () => LowestHPAllyPercentage <= 85 && SelfActiveConcentration == FeatType.Invalid))
-            {
-                return (true, (FeatType.ForceHeal2, LowestHPAlly));
-            }
-            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.ForceHeal1, () => LowestHPAllyPercentage <= 95 && SelfActiveConcentration == FeatType.Invalid))
-            {
-                return (true, (FeatType.ForceHeal1, LowestHPAlly));
-            }
-
-            return NoAction;
-        }
 
         protected (bool, (FeatType, uint)) MedKit()
         {
             // Medkit
-            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.MedKit5, () => LowestHPAllyPercentage <= 50))
-            {
-                return (true, (FeatType.MedKit5, LowestHPAlly));
-            }
+
             if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.MedKit4, () => LowestHPAllyPercentage <= 65))
             {
                 return (true, (FeatType.MedKit4, LowestHPAlly));
@@ -302,123 +219,11 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
             return NoAction;
         }
 
-        protected (bool, (FeatType, uint)) KoltoBomb()
-        {
-            // Kolto Bomb
-            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.KoltoBomb3, () => LowestHPAllyPercentage <= 65))
-            {
-                return (true, (FeatType.KoltoBomb3, LowestHPAlly));
-            }
-            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.KoltoBomb2, () => LowestHPAllyPercentage <= 85))
-            {
-                return (true, (FeatType.KoltoBomb2, LowestHPAlly));
-            }
-            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.KoltoBomb1, () => LowestHPAllyPercentage <= 95))
-            {
-                return (true, (FeatType.KoltoBomb1, LowestHPAlly));
-            }
-
-            return NoAction;
-        }
-
-        protected (bool, (FeatType, uint)) KoltoGrenade()
-        {
-            // Kolto Grenade
-            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.KoltoGrenade3, () => LowestHPAllyPercentage <= 60))
-            {
-                return (true, (FeatType.KoltoGrenade3, LowestHPAlly));
-            }
-            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.KoltoGrenade2, () => LowestHPAllyPercentage <= 75))
-            {
-                return (true, (FeatType.KoltoGrenade2, LowestHPAlly));
-            }
-            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.KoltoGrenade1, () => LowestHPAllyPercentage <= 90))
-            {
-                return (true, (FeatType.KoltoGrenade1, LowestHPAlly));
-            }
-
-            return NoAction;
-        }
-
-        protected (bool, (FeatType, uint)) KoltoRecovery()
-        {
-            // Kolto Recovery
-            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.KoltoRecovery3, () => LowestHPAllyPercentage <= 65))
-            {
-                return (true, (FeatType.KoltoRecovery3, LowestHPAlly));
-            }
-            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.KoltoRecovery2, () => LowestHPAllyPercentage <= 75))
-            {
-                return (true, (FeatType.KoltoRecovery2, LowestHPAlly));
-            }
-            if (CheckIfCanUseFeat(Self, LowestHPAlly, FeatType.KoltoRecovery1, () => LowestHPAllyPercentage <= 90))
-            {
-                return (true, (FeatType.KoltoRecovery1, LowestHPAlly));
-            }
-
-            return NoAction;
-        }
-
-        protected (bool, (FeatType, uint)) BattleInsight()
-        {
-            // Battle Insight
-            if (CheckIfCanUseFeat(Self, Self, FeatType.BattleInsight2, () => AllyCount >= 1 && SelfActiveConcentration == FeatType.Invalid))
-            {
-                return (true, (FeatType.BattleInsight2, Self));
-            }
-            if (CheckIfCanUseFeat(Self, Self, FeatType.BattleInsight1, () => AllyCount >= 1 && SelfActiveConcentration == FeatType.Invalid))
-            {
-                return (true, (FeatType.BattleInsight1, Self));
-            }
-
-            return NoAction;
-        }
-
-        protected (bool, (FeatType, uint)) ThrowSaber()
-        {
-            // Throw Saber
-            if (CheckIfCanUseFeat(Self, Self, FeatType.ThrowLightsaber3))
-            {
-                return (true, (FeatType.ThrowLightsaber3, Self));
-            }
-            if (CheckIfCanUseFeat(Self, Self, FeatType.ThrowLightsaber2))
-            {
-                return (true, (FeatType.ThrowLightsaber2, Self));
-            }
-            if (CheckIfCanUseFeat(Self, Self, FeatType.ThrowLightsaber1))
-            {
-                return (true, (FeatType.ThrowLightsaber1, Self));
-            }
-
-            return NoAction;
-        }
-
-        protected (bool, (FeatType, uint)) ForceStun()
-        {
-            // Force Stun
-            if (CheckIfCanUseFeat(Self, Target, FeatType.ForceStun3, () => SelfActiveConcentration == FeatType.Invalid))
-            {
-                return (true, (FeatType.ForceStun3, Target));
-            }
-            if (CheckIfCanUseFeat(Self, Target, FeatType.ForceStun2, () => SelfActiveConcentration == FeatType.Invalid))
-            {
-                return (true, (FeatType.ForceStun2, Target));
-            }
-            if (CheckIfCanUseFeat(Self, Target, FeatType.ForceStun1, () => SelfActiveConcentration == FeatType.Invalid))
-            {
-                return (true, (FeatType.ForceStun1, Target));
-            }
-
-            return NoAction;
-        }
 
         protected (bool, (FeatType, uint)) AdhesiveGrenade()
         {
             // Adhesive Grenade
-            if (CheckIfCanUseFeat(Self, Target, FeatType.AdhesiveGrenade3))
-            {
-                return (true, (FeatType.AdhesiveGrenade3, Target));
-            }
+
             if (CheckIfCanUseFeat(Self, Target, FeatType.AdhesiveGrenade2))
             {
                 return (true, (FeatType.AdhesiveGrenade2, Target));
@@ -469,24 +274,6 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
             return NoAction;
         }
 
-        protected (bool, (FeatType, uint)) FlashbangGrenade()
-        {
-            // Flashbang Grenade
-            if (CheckIfCanUseFeat(Self, Target, FeatType.FlashbangGrenade3))
-            {
-                return (true, (FeatType.FlashbangGrenade3, Target));
-            }
-            if (CheckIfCanUseFeat(Self, Target, FeatType.FlashbangGrenade2))
-            {
-                return (true, (FeatType.FlashbangGrenade2, Target));
-            }
-            if (CheckIfCanUseFeat(Self, Target, FeatType.FlashbangGrenade1))
-            {
-                return (true, (FeatType.FlashbangGrenade1, Target));
-            }
-
-            return NoAction;
-        }
 
         protected (bool, (FeatType, uint)) FragGrenade()
         {
@@ -507,51 +294,11 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
             return NoAction;
         }
 
-        protected (bool, (FeatType, uint)) GasBomb()
-        {
-            // Gas Bomb
-            if (CheckIfCanUseFeat(Self, Target, FeatType.GasBomb3))
-            {
-                return (true, (FeatType.GasBomb3, Target));
-            }
-            if (CheckIfCanUseFeat(Self, Target, FeatType.GasBomb2))
-            {
-                return (true, (FeatType.GasBomb2, Target));
-            }
-            if (CheckIfCanUseFeat(Self, Target, FeatType.GasBomb1))
-            {
-                return (true, (FeatType.GasBomb1, Target));
-            }
-
-            return NoAction;
-        }
-
-        protected (bool, (FeatType, uint)) IncendiaryBomb()
-        {
-            // Incendiary Bomb
-            if (CheckIfCanUseFeat(Self, Target, FeatType.IncendiaryBomb3))
-            {
-                return (true, (FeatType.IncendiaryBomb3, Target));
-            }
-            if (CheckIfCanUseFeat(Self, Target, FeatType.IncendiaryBomb2))
-            {
-                return (true, (FeatType.IncendiaryBomb2, Target));
-            }
-            if (CheckIfCanUseFeat(Self, Target, FeatType.IncendiaryBomb1))
-            {
-                return (true, (FeatType.IncendiaryBomb1, Target));
-            }
-
-            return NoAction;
-        }
 
         protected (bool, (FeatType, uint)) IonGrenade()
         {
             // Ion Grenade
-            if (CheckIfCanUseFeat(Self, Target, FeatType.IonGrenade3))
-            {
-                return (true, (FeatType.IonGrenade3, Target));
-            }
+
             if (CheckIfCanUseFeat(Self, Target, FeatType.IonGrenade2))
             {
                 return (true, (FeatType.IonGrenade2, Target));
@@ -564,24 +311,6 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
             return NoAction;
         }
 
-        protected (bool, (FeatType, uint)) StealthGenerator()
-        {
-            // Stealth Generator
-            if (CheckIfCanUseFeat(Self, Self, FeatType.StealthGenerator3, () => SelfHPPercentage < 100))
-            {
-                return (true, (FeatType.StealthGenerator3, Self));
-            }
-            if (CheckIfCanUseFeat(Self, Self, FeatType.StealthGenerator2, () => SelfHPPercentage < 100))
-            {
-                return (true, (FeatType.StealthGenerator2, Self));
-            }
-            if (CheckIfCanUseFeat(Self, Self, FeatType.StealthGenerator1, () => SelfHPPercentage < 100))
-            {
-                return (true, (FeatType.StealthGenerator1, Self));
-            }
-
-            return NoAction;
-        }
 
         protected (bool, (FeatType, uint)) DeflectorShield()
         {
@@ -602,41 +331,20 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
             return NoAction;
         }
 
-        protected (bool, (FeatType, uint)) CombatEnhancement()
-        {
-            // Combat Enhancement
-            if (CheckIfCanUseFeat(Self, Self, FeatType.CombatEnhancement3, () => !HasEffectByTag(Self, "COMBAT_ENHANCEMENT", "FORCE_INSPIRATION")))
-            {
-                return (true, (FeatType.CombatEnhancement3, Self));
-            }
-            if (CheckIfCanUseFeat(Self, Self, FeatType.CombatEnhancement2, () => !HasEffectByTag(Self, "COMBAT_ENHANCEMENT", "FORCE_INSPIRATION")))
-            {
-                return (true, (FeatType.CombatEnhancement2, Self));
-            }
-            if (CheckIfCanUseFeat(Self, Self, FeatType.CombatEnhancement1, () => !HasEffectByTag(Self, "COMBAT_ENHANCEMENT", "FORCE_INSPIRATION")))
-            {
-                return (true, (FeatType.CombatEnhancement1, Self));
-            }
-
-            return NoAction;
-        }
 
         protected (bool, (FeatType, uint)) Shielding()
         {
             // Shielding
-            if (CheckIfCanUseFeat(Self, Self, FeatType.Shielding4, () => !StatusEffect.HasStatusEffect(Self, typeof(Shielding1StatusEffect), typeof(Shielding2StatusEffect), typeof(Shielding3StatusEffect), typeof(Shielding4StatusEffect))))
-            {
-                return (true, (FeatType.Shielding4, Self));
-            }
-            if (CheckIfCanUseFeat(Self, Self, FeatType.Shielding3, () => !StatusEffect.HasStatusEffect(Self, typeof(Shielding1StatusEffect), typeof(Shielding2StatusEffect), typeof(Shielding3StatusEffect), typeof(Shielding4StatusEffect))))
+
+            if (CheckIfCanUseFeat(Self, Self, FeatType.Shielding3, () => !StatusEffect.HasStatusEffect(Self, typeof(Shielding1StatusEffect), typeof(Shielding2StatusEffect), typeof(Shielding3StatusEffect))))
             {
                 return (true, (FeatType.Shielding3, Self));
             }
-            if (CheckIfCanUseFeat(Self, Self, FeatType.Shielding2, () => !StatusEffect.HasStatusEffect(Self, typeof(Shielding1StatusEffect), typeof(Shielding2StatusEffect), typeof(Shielding3StatusEffect), typeof(Shielding4StatusEffect))))
+            if (CheckIfCanUseFeat(Self, Self, FeatType.Shielding2, () => !StatusEffect.HasStatusEffect(Self, typeof(Shielding1StatusEffect), typeof(Shielding2StatusEffect), typeof(Shielding3StatusEffect))))
             {
                 return (true, (FeatType.Shielding2, Self));
             }
-            if (CheckIfCanUseFeat(Self, Self, FeatType.Shielding1, () => !StatusEffect.HasStatusEffect(Self, typeof(Shielding1StatusEffect), typeof(Shielding2StatusEffect), typeof(Shielding3StatusEffect), typeof(Shielding4StatusEffect))))
+            if (CheckIfCanUseFeat(Self, Self, FeatType.Shielding1, () => !StatusEffect.HasStatusEffect(Self, typeof(Shielding1StatusEffect), typeof(Shielding2StatusEffect), typeof(Shielding3StatusEffect))))
             {
                 return (true, (FeatType.Shielding1, Self));
             }
@@ -644,24 +352,6 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
             return NoAction;
         }
 
-        protected (bool, (FeatType, uint)) StasisField()
-        {
-            // Stasis Field
-            if (CheckIfCanUseFeat(Self, Self, FeatType.StasisField3, () => !HasEffectByTag(Self, "STASIS_FIELD")))
-            {
-                return (true, (FeatType.StasisField3, Self));
-            }
-            if (CheckIfCanUseFeat(Self, Self, FeatType.StasisField2, () => !HasEffectByTag(Self, "STASIS_FIELD")))
-            {
-                return (true, (FeatType.StasisField2, Self));
-            }
-            if (CheckIfCanUseFeat(Self, Self, FeatType.StasisField1, () => !HasEffectByTag(Self, "STASIS_FIELD")))
-            {
-                return (true, (FeatType.StasisField1, Self));
-            }
-
-            return NoAction;
-        }
 
         protected (bool, (FeatType, uint)) CreepingTerror()
         {
@@ -682,24 +372,6 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
             return NoAction;
         }
 
-        protected (bool, (FeatType, uint)) Disturbance()
-        {
-            // Disturbance
-            if (CheckIfCanUseFeat(Self, Target, FeatType.Disturbance3))
-            {
-                return (true, (FeatType.Disturbance3, Target));
-            }
-            if (CheckIfCanUseFeat(Self, Target, FeatType.Disturbance2))
-            {
-                return (true, (FeatType.Disturbance2, Target));
-            }
-            if (CheckIfCanUseFeat(Self, Target, FeatType.Disturbance1))
-            {
-                return (true, (FeatType.Disturbance1, Target));
-            }
-
-            return NoAction;
-        }
 
         protected (bool, (FeatType, uint)) ForceSpark()
         {
@@ -743,55 +415,6 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
             return NoAction;
         }
 
-        protected (bool, (FeatType, uint)) ForceBurst()
-        {
-            // Force Burst
-            if (CheckIfCanUseFeat(Self, Target, FeatType.ForceBurst4))
-            {
-                return (true, (FeatType.ForceBurst4, Target));
-            }
-            if (CheckIfCanUseFeat(Self, Target, FeatType.ForceBurst3))
-            {
-                return (true, (FeatType.ForceBurst3, Target));
-            }
-            if (CheckIfCanUseFeat(Self, Target, FeatType.ForceBurst2))
-            {
-                return (true, (FeatType.ForceBurst2, Target));
-            }
-            if (CheckIfCanUseFeat(Self, Target, FeatType.ForceBurst1))
-            {
-                return (true, (FeatType.ForceBurst1, Target));
-            }
-
-            return NoAction;
-        }
-
-        protected (bool, (FeatType, uint)) ThrowRock()
-        {
-            // Throw Rock
-            if (CheckIfCanUseFeat(Self, Target, FeatType.ThrowRock5))
-            {
-                return (true, (FeatType.ThrowRock5, Target));
-            }
-            if (CheckIfCanUseFeat(Self, Target, FeatType.ThrowRock4))
-            {
-                return (true, (FeatType.ThrowRock4, Target));
-            }
-            if (CheckIfCanUseFeat(Self, Target, FeatType.ThrowRock3))
-            {
-                return (true, (FeatType.ThrowRock3, Target));
-            }
-            if (CheckIfCanUseFeat(Self, Target, FeatType.ThrowRock2))
-            {
-                return (true, (FeatType.ThrowRock2, Target));
-            }
-            if (CheckIfCanUseFeat(Self, Target, FeatType.ThrowRock1))
-            {
-                return (true, (FeatType.ThrowRock1, Target));
-            }
-
-            return NoAction;
-        }
 
         protected (bool, (FeatType, uint)) ForceDrain()
         {
@@ -843,24 +466,6 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
             return NoAction;
         }
 
-        protected (bool, (FeatType, uint)) ForceInspiration()
-        {
-            // Force Inspiration
-            if (CheckIfCanUseFeat(Self, Self, FeatType.ForceInspiration3, () => !HasEffectByTag(Self, "COMBAT_ENHANCEMENT", "FORCE_INSPIRATION")))
-            {
-                return (true, (FeatType.ForceInspiration3, Self));
-            }
-            if (CheckIfCanUseFeat(Self, Self, FeatType.ForceInspiration2, () => !HasEffectByTag(Self, "COMBAT_ENHANCEMENT", "FORCE_INSPIRATION")))
-            {
-                return (true, (FeatType.ForceInspiration2, Self));
-            }
-            if (CheckIfCanUseFeat(Self, Self, FeatType.ForceInspiration1, () => !HasEffectByTag(Self, "COMBAT_ENHANCEMENT", "FORCE_INSPIRATION")))
-            {
-                return (true, (FeatType.ForceInspiration1, Self));
-            }
-
-            return NoAction;
-        }
 
         protected (bool, (FeatType, uint)) MindTrick()
         {
@@ -877,32 +482,6 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
             return NoAction;
         }
 
-        protected (bool, (FeatType, uint)) BurstOfSpeed()
-        {
-            // Burst of Speed
-            if (CheckIfCanUseFeat(Self, Self, FeatType.BurstOfSpeed5, () => SelfActiveConcentration == FeatType.Invalid))
-            {
-                return (true, (FeatType.BurstOfSpeed5, Self));
-            }
-            if (CheckIfCanUseFeat(Self, Self, FeatType.BurstOfSpeed4, () => SelfActiveConcentration == FeatType.Invalid))
-            {
-                return (true, (FeatType.BurstOfSpeed4, Self));
-            }
-            if (CheckIfCanUseFeat(Self, Self, FeatType.BurstOfSpeed3, () => SelfActiveConcentration == FeatType.Invalid))
-            {
-                return (true, (FeatType.BurstOfSpeed3, Self));
-            }
-            if (CheckIfCanUseFeat(Self, Self, FeatType.BurstOfSpeed2, () => SelfActiveConcentration == FeatType.Invalid))
-            {
-                return (true, (FeatType.BurstOfSpeed2, Self));
-            }
-            if (CheckIfCanUseFeat(Self, Self, FeatType.BurstOfSpeed1, () => SelfActiveConcentration == FeatType.Invalid))
-            {
-                return (true, (FeatType.BurstOfSpeed1, Self));
-            }
-
-            return NoAction;
-        }
 
         protected (bool, (FeatType, uint)) ForceLeap()
         {
@@ -1032,10 +611,7 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
         protected (bool, (FeatType, uint)) Resuscitation()
         {
             // Resuscitation
-            if (CheckIfCanUseFeat(Self, Target, FeatType.Resuscitation3))
-            {
-                return (true, (FeatType.Resuscitation3, Target));
-            }
+
             if (CheckIfCanUseFeat(Self, Target, FeatType.Resuscitation2))
             {
                 return (true, (FeatType.Resuscitation2, Target));

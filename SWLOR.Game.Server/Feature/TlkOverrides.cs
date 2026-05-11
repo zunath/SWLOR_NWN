@@ -134,8 +134,6 @@ namespace SWLOR.Game.Server.Feature
             SetTlkOverride(62489, "Acquired <CUSTOM0> credits");
             SetTlkOverride(62490, "Lost <CUSTOM0> credits");
 
-            SetTlkOverride(66129, "Premonition");
-
             SetTlkOverride(66751, "Holonet");
             SetTlkOverride(66755, "Comms");
 

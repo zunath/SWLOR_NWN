@@ -16,7 +16,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             Shielding1();
             Shielding2();
             Shielding3();
-            Shielding4();
 
             return Builder.Build();
         }
@@ -111,25 +110,5 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 });
         }
 
-        private void Shielding4()
-        {
-            Builder.Create(FeatType.Shielding4, PerkType.Shielding)
-                .Name("Shielding IV")
-                .Level(4)
-                .HasRecastDelay(RecastGroup.Shielding, 30f)
-                .HasActivationDelay(2f)
-                .HasMaxRange(30.0f)
-                .RequirementStamina(6)
-                .UsesAnimation(Animation.LoopingGetMid)
-                .IsCastedAbility()
-                .HasCustomValidation(Validation)
-                .HasImpactAction((activator, target, _, _) =>
-                {
-                    Impact(activator, target, typeof(Shielding4StatusEffect));
-
-                    Enmity.ModifyEnmityOnAll(activator, 600);
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
-                });
-        }
     }
 }

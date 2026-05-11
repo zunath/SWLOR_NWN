@@ -11,8 +11,6 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override List<Type> MorePowerfulEffectTypes => new()
         {
             typeof(BolsterAttack3StatusEffect),
-            typeof(BolsterAttack4StatusEffect),
-            typeof(BolsterAttack5StatusEffect)
         };
         public override List<Type> LessPowerfulEffectTypes => new()
         {

@@ -1,9 +1,7 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWScript.Enum;
-using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 {
@@ -18,10 +16,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         private static void TakeItem(uint activator, string resref)
         {
             if (!GetIsPC(activator))
-                return;
-
-            var chanceToNotConsume = 10 * Perk.GetPerkLevel(activator, PerkType.FrugalMedic);
-            if (Random.D100(1) <= chanceToNotConsume)
                 return;
 
             var item = GetItemPossessedBy(activator, resref);
@@ -72,7 +66,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         /// <summary>
         /// Takes medical supplies from the activator's inventory.
         /// If the activator is an NPC, no items will be taken.
-        /// If activator has the Frugal Medic perk and passes the check, no item will be taken.
         /// </summary>
         /// <param name="activator">The activator to take supplies from.</param>
         protected void TakeMedicalSupplies(uint activator)
@@ -87,7 +80,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         /// <summary>
         /// Takes a stim pack from the activator's inventory.
         /// If the activator is an NPC, no items will be taken.
-        /// If activator has the Frugal Medic perk and passes the check, no item will be taken.
         /// </summary>
         /// <param name="activator">The activator to take stim packs from.</param>
         protected void TakeStimPack(uint activator)
@@ -100,8 +92,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         }
 
         /// <summary>
-        /// Return true if activator and target are within range, including the bonus provided by the
-        /// Ranged Healing perk. Returns false otherwise.
+        /// Return true if activator and target are within range. Returns false otherwise.
         /// </summary>
         /// <param name="activator">The activator of the ability.</param>
         /// <param name="target">The target of the ability.</param>
@@ -109,9 +100,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         protected bool IsWithinRange(uint activator, uint target)
         {
             const float BaseDistance = 6f;
-            var distance = BaseDistance + Perk.GetPerkLevel(activator, PerkType.RangedHealing);
 
-            return !(GetDistanceBetween(activator, target) > distance);
+            return !(GetDistanceBetween(activator, target) > BaseDistance);
         }
     }
 }

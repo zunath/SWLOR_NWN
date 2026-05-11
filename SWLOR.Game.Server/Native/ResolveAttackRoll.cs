@@ -3,6 +3,7 @@ using NWNX.NET;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWNX;
 using System.Runtime.InteropServices;
@@ -10,6 +11,7 @@ using AttackType = SWLOR.Game.Server.Enumeration.AttackType;
 using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
 using ImmunityType = NWN.Native.API.ImmunityType;
 using ObjectType = NWN.Native.API.ObjectType;
+using Player = SWLOR.Game.Server.Entity.Player;
 using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Native
@@ -85,7 +87,7 @@ namespace SWLOR.Game.Server.Native
                  * - Sneak Attack (/Death Attack)
                  *
                  * Armor Class doesn't exist, and non-creature objects are hit automatically.
-                 * Critical hits use SWLOR's PER vs MGT critical rate plus StatType modifiers.
+                 * Critical hits use SWLOR's weapon skill plus a small PER vs VIT bonus and StatType modifiers.
                  * Crit immunity applies as normal.
                  */
 
@@ -212,7 +214,12 @@ namespace SWLOR.Game.Server.Native
                     var criticalStat = attackerStats.GetDEXStat();
                     var criticalRoll = Random.Next(1, 100);
                     var criticalModifier = CalculateCriticalRateModifier(attacker);
-                    var criticalRate = Combat.CalculateCriticalRate(criticalStat, defender.m_pStats.GetSTRStat(), criticalModifier);
+                    var criticalSkillRank = GetCriticalSkillRank(attacker, weapon);
+                    var criticalRate = Combat.CalculateCriticalRate(
+                        criticalStat,
+                        defender.m_pStats.GetCONStat(),
+                        criticalSkillRank,
+                        criticalModifier);
 
                     // Critical
                     if (criticalRoll <= criticalRate)
@@ -367,6 +374,32 @@ namespace SWLOR.Game.Server.Native
             Log.Write(LogGroup.Attack, $"SWLOR crit rate modifier: {criticalModifier}");
 
             return criticalModifier;
+        }
+
+        private static int GetCriticalSkillRank(CNWSCreature attacker, CNWSItem weapon)
+        {
+            var skillType = weapon == null
+                ? SkillType.Invalid
+                : SWLOR.Game.Server.Service.Skill.GetSkillTypeByBaseItem((BaseItem)weapon.m_nBaseItem);
+
+            if (attacker.m_bPlayerCharacter == 1)
+            {
+                if (skillType == SkillType.Invalid)
+                    return 0;
+
+                var playerId = attacker.m_pUUID.GetOrAssignRandom().ToString();
+                var dbPlayer = DB.Get<Player>(playerId);
+
+                return dbPlayer?.Skills.TryGetValue(skillType, out var skill) == true
+                    ? skill.Rank
+                    : 0;
+            }
+
+            var npcStats = Stat.GetNPCStatsNative(attacker);
+
+            return skillType != SkillType.Invalid && npcStats.Skills.TryGetValue(skillType, out var skillRank)
+                ? skillRank
+                : npcStats.Level;
         }
 
     }

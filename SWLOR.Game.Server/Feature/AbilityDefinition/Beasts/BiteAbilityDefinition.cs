@@ -18,8 +18,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
             Bite1();
             Bite2();
             Bite3();
-            Bite4();
-            Bite5();
 
             return _builder.Build();
         }
@@ -97,32 +95,5 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 });
         }
 
-        private void Bite4()
-        {
-            _builder.Create(FeatType.Bite4, PerkType.Bite)
-                .Name("Bite IV")
-                .Level(4)
-                .HasRecastDelay(RecastGroup.Bite, 30f)
-                .RequirementStamina(6)
-                .IsWeaponAbility()
-                .HasImpactAction((activator, target, level, location) =>
-                {
-                    ImpactAction(activator, target, 24);
-                });
-        }
-
-        private void Bite5()
-        {
-            _builder.Create(FeatType.Bite5, PerkType.Bite)
-                .Name("Bite V")
-                .Level(5)
-                .HasRecastDelay(RecastGroup.Bite, 30f)
-                .RequirementStamina(7)
-                .IsWeaponAbility()
-                .HasImpactAction((activator, target, level, location) =>
-                {
-                    ImpactAction(activator, target, 28);
-                });
-        }
     }
 }

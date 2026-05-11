@@ -19,8 +19,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
             IceBreath1();
             IceBreath2();
             IceBreath3();
-            IceBreath4();
-            IceBreath5();
 
             return _builder.Build();
         }
@@ -123,33 +121,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     Impact(activator, targetLocation, 16, true, level);
                 });
         }
-        private void IceBreath4()
-        {
-            _builder.Create(FeatType.IceBreath4, PerkType.IceBreath)
-                .Name("Ice Breath IV")
-                .Level(4)
-                .HasRecastDelay(RecastGroup.IceBreath, 60f)
-                .HasActivationDelay(2f)
-                .RequirementStamina(7)
-                .IsCastedAbility()
-                .HasImpactAction((activator, _, level, targetLocation) =>
-                {
-                    Impact(activator, targetLocation, 20, true, level);
-                });
-        }
-        private void IceBreath5()
-        {
-            _builder.Create(FeatType.IceBreath5, PerkType.IceBreath)
-                .Name("Ice Breath V")
-                .Level(5)
-                .HasRecastDelay(RecastGroup.IceBreath, 60f)
-                .HasActivationDelay(2f)
-                .RequirementStamina(8)
-                .IsCastedAbility()
-                .HasImpactAction((activator, _, level, targetLocation) =>
-                {
-                    Impact(activator, targetLocation, 24, true, level);
-                });
-        }
+
     }
 }

@@ -16,8 +16,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
             BolsterAttack1();
             BolsterAttack2();
             BolsterAttack3();
-            BolsterAttack4();
-            BolsterAttack5();
 
             return _builder.Build();
         }
@@ -76,33 +74,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     Impact(activator, typeof(BolsterAttack3StatusEffect));
                 });
         }
-        private void BolsterAttack4()
-        {
-            _builder.Create(FeatType.BolsterAttack4, PerkType.BolsterAttack)
-                .Name("Bolster Attack IV")
-                .Level(4)
-                .HasRecastDelay(RecastGroup.BolsterAttack, 60f)
-                .HasActivationDelay(2f)
-                .RequirementStamina(4)
-                .IsCastedAbility()
-                .HasImpactAction((activator, target, level, location) =>
-                {
-                    Impact(activator, typeof(BolsterAttack4StatusEffect));
-                });
-        }
-        private void BolsterAttack5()
-        {
-            _builder.Create(FeatType.BolsterAttack5, PerkType.BolsterAttack)
-                .Name("Bolster Attack V")
-                .Level(5)
-                .HasRecastDelay(RecastGroup.BolsterAttack, 60f)
-                .HasActivationDelay(2f)
-                .RequirementStamina(5)
-                .IsCastedAbility()
-                .HasImpactAction((activator, target, level, location) =>
-                {
-                    Impact(activator, typeof(BolsterAttack5StatusEffect));
-                });
-        }
+
     }
 }

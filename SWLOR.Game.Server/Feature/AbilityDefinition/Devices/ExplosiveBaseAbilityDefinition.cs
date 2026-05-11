@@ -1,12 +1,10 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
-using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 {
@@ -35,10 +33,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         protected static void TakeExplosives(uint activator)
         {
             if (!GetIsPC(activator))
-                return;
-
-            var chanceToNotConsume = 10 * Perk.GetPerkLevel(activator, PerkType.DemolitionExpert);
-            if (Random.D100(1) <= chanceToNotConsume)
                 return;
 
             var item = GetItemPossessedBy(activator, ExplosiveItemResref);

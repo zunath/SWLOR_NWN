@@ -16,8 +16,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
             EvasiveManeuver1();
             EvasiveManeuver2();
             EvasiveManeuver3();
-            EvasiveManeuver4();
-            EvasiveManeuver5();
 
             return _builder.Build();
         }
@@ -76,33 +74,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     Impact(activator, typeof(EvasiveManeuver3StatusEffect));
                 });
         }
-        private void EvasiveManeuver4()
-        {
-            _builder.Create(FeatType.EvasiveManeuver4, PerkType.EvasiveManeuver)
-                .Name("Evasive Maneuver IV")
-                .Level(4)
-                .HasRecastDelay(RecastGroup.EvasiveManeuver, 60f)
-                .HasActivationDelay(2f)
-                .RequirementStamina(4)
-                .IsCastedAbility()
-                .HasImpactAction((activator, target, level, location) =>
-                {
-                    Impact(activator, typeof(EvasiveManeuver4StatusEffect));
-                });
-        }
-        private void EvasiveManeuver5()
-        {
-            _builder.Create(FeatType.EvasiveManeuver5, PerkType.EvasiveManeuver)
-                .Name("Evasive Maneuver V")
-                .Level(5)
-                .HasRecastDelay(RecastGroup.EvasiveManeuver, 60f)
-                .HasActivationDelay(2f)
-                .RequirementStamina(5)
-                .IsCastedAbility()
-                .HasImpactAction((activator, target, level, location) =>
-                {
-                    Impact(activator, typeof(EvasiveManeuver5StatusEffect));
-                });
-        }
+
     }
 }

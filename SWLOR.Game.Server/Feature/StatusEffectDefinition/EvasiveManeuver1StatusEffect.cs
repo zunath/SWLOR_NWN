@@ -12,8 +12,6 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             typeof(EvasiveManeuver2StatusEffect),
             typeof(EvasiveManeuver3StatusEffect),
-            typeof(EvasiveManeuver4StatusEffect),
-            typeof(EvasiveManeuver5StatusEffect)
         };
 
         public EvasiveManeuver1StatusEffect()

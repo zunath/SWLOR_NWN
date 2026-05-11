@@ -50,9 +50,6 @@ namespace SWLOR.Game.Server.Service.PerkService
         [PerkCategory("Beast Mastery - Incubation", true)]
         BeastMasteryIncubation = 17,
 
-        [PerkCategory("Beast - General", true)]
-        BeastGeneral = 18,
-
         [PerkCategory("Beast - Damage", true)]
         BeastDamage = 19,
 

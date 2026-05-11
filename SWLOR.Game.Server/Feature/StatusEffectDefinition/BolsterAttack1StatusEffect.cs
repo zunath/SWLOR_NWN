@@ -12,8 +12,6 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             typeof(BolsterAttack2StatusEffect),
             typeof(BolsterAttack3StatusEffect),
-            typeof(BolsterAttack4StatusEffect),
-            typeof(BolsterAttack5StatusEffect)
         };
 
         public BolsterAttack1StatusEffect()

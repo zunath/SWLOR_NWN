@@ -19,8 +19,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
             PoisonBreath1();
             PoisonBreath2();
             PoisonBreath3();
-            PoisonBreath4();
-            PoisonBreath5();
 
             return _builder.Build();
         }
@@ -120,33 +118,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     Impact(activator, targetLocation, 16, true);
                 });
         }
-        private void PoisonBreath4()
-        {
-            _builder.Create(FeatType.PoisonBreath4, PerkType.PoisonBreath)
-                .Name("Poison Breath IV")
-                .Level(4)
-                .HasRecastDelay(RecastGroup.PoisonBreath, 60f)
-                .HasActivationDelay(2f)
-                .RequirementStamina(7)
-                .IsCastedAbility()
-                .HasImpactAction((activator, _, _, targetLocation) =>
-                {
-                    Impact(activator, targetLocation, 20, true);
-                });
-        }
-        private void PoisonBreath5()
-        {
-            _builder.Create(FeatType.PoisonBreath5, PerkType.PoisonBreath)
-                .Name("Poison Breath V")
-                .Level(5)
-                .HasRecastDelay(RecastGroup.PoisonBreath, 60f)
-                .HasActivationDelay(2f)
-                .RequirementStamina(8)
-                .IsCastedAbility()
-                .HasImpactAction((activator, _, _, targetLocation) =>
-                {
-                    Impact(activator, targetLocation, 24, true);
-                });
-        }
+
     }
 }

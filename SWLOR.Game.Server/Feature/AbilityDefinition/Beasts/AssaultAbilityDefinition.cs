@@ -18,8 +18,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
             Assault1();
             Assault2();
             Assault3();
-            Assault4();
-            Assault5();
 
             return _builder.Build();
         }
@@ -97,31 +95,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     ImpactAction(activator, target, 16);
                 });
         }
-        private void Assault4()
-        {
-            _builder.Create(FeatType.Assault4, PerkType.Assault)
-                .Name("Assault IV")
-                .Level(4)
-                .HasRecastDelay(RecastGroup.Assault, 60f)
-                .RequirementStamina(7)
-                .IsWeaponAbility()
-                .HasImpactAction((activator, target, level, location) =>
-                {
-                    ImpactAction(activator, target, 22);
-                });
-        }
-        private void Assault5()
-        {
-            _builder.Create(FeatType.Assault5, PerkType.Assault)
-                .Name("Assault V")
-                .Level(5)
-                .HasRecastDelay(RecastGroup.Assault, 60f)
-                .RequirementStamina(8)
-                .IsWeaponAbility()
-                .HasImpactAction((activator, target, level, location) =>
-                {
-                    ImpactAction(activator, target, 26);
-                });
-        }
+
     }
 }

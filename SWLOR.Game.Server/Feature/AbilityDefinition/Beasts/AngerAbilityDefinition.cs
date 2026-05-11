@@ -17,9 +17,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
         {
             Anger1();
             Anger2();
-            Anger3();
-            Anger4();
-            Anger5();
 
             return _builder.Build();
         }
@@ -98,55 +95,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     ImpactSingle(activator, target, 250 + enmityBonus);
                 });
         }
-        private void Anger3()
-        {
-            _builder.Create(FeatType.Anger3, PerkType.Anger)
-                .Name("Anger III")
-                .Level(3)
-                .HasRecastDelay(RecastGroup.Anger, 30f)
-                .HasActivationDelay(1f)
-                .UsesAnimation(Animation.FireForgetTaunt)
-                .IsCastedAbility()
-                .HasMaxRange(30f)
-                .HasCustomValidation((_, target, _, _) => Validation(target))
-                .HasImpactAction((activator, target, _, _) =>
-                {
-                    var enmityBonus = GetAbilityScore(activator, AbilityType.Vitality) * 50;
-                    ImpactSingle(activator, target, 300 + enmityBonus);
-                });
-        }
 
-        private void Anger4()
-        {
-            _builder.Create(FeatType.Anger4, PerkType.Anger)
-                .Name("Anger IV")
-                .Level(4)
-                .HasRecastDelay(RecastGroup.AOEAnger, 40f)
-                .HasActivationDelay(1f)
-                .UsesAnimation(Animation.FireForgetTaunt)
-                .IsCastedAbility()
-                .HasMaxRange(15f)
-                .HasCustomValidation((_, target, _, _) => Validation(target))
-                .HasImpactAction((activator, _, _, location) =>
-                {
-                    ImpactAOE(activator, location, 300);
-                });
-        }
-        private void Anger5()
-        {
-            _builder.Create(FeatType.Anger5, PerkType.Anger)
-                .Name("Anger V")
-                .Level(5)
-                .HasRecastDelay(RecastGroup.AOEAnger, 40f)
-                .HasActivationDelay(1f)
-                .UsesAnimation(Animation.FireForgetTaunt)
-                .IsCastedAbility()
-                .HasMaxRange(15f)
-                .HasCustomValidation((_, target, _, _) => Validation(target))
-                .HasImpactAction((activator, _, _, location) =>
-                {
-                    ImpactAOE(activator, location, 350);
-                });
-        }
     }
 }

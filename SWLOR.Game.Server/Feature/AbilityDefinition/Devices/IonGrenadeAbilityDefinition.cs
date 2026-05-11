@@ -17,7 +17,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             IonGrenade1();
             IonGrenade2();
-            IonGrenade3();
 
             return _builder.Build();
         }
@@ -122,33 +121,5 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 });
         }
 
-        private void IonGrenade3()
-        {
-            _builder.Create(FeatType.IonGrenade3, PerkType.IonGrenade)
-                .Name("Ion Grenade III")
-                .Level(3)
-                .HasRecastDelay(RecastGroup.IonGrenade, 12f)
-                .HasActivationDelay(2f)
-                .RequirementStamina(3)
-                .UsesAnimation(Animation.ThrowGrenade)
-                .IsCastedAbility()
-                .BreaksStealth()
-                .HasMaxRange(15f)
-                .HasCustomValidation(ExplosiveValidation)
-                .HasImpactAction((activator, _, _, location) =>
-                {
-                    ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffect.Vfx_Fnf_Electric_Explosion), "explosion1", RadiusSize.Large, (target) =>
-                    {
-                        var perBonus = GetAbilityScore(activator, AbilityType.Perception);
-                        var race = GetRacialType(target);
-                        if (race == RacialType.Robot || race == RacialType.Droid || race == RacialType.Cyborg)
-                        {
-                            perBonus *= 3 / 2;
-                        }
-                        var perDMG = 30 + (perBonus * 2);
-                        Impact(activator, target, perDMG, true);
-                    });
-                });
-        }
     }
 }

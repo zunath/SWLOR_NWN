@@ -10,8 +10,6 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override EffectIconType Icon => EffectIconType.ACIncrease;
         public override List<Type> MorePowerfulEffectTypes => new()
         {
-            typeof(EvasiveManeuver4StatusEffect),
-            typeof(EvasiveManeuver5StatusEffect)
         };
         public override List<Type> LessPowerfulEffectTypes => new()
         {

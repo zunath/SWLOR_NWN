@@ -199,7 +199,7 @@ namespace SWLOR.Admin.Services
         }
 
         /// <summary>
-        /// Calculates evasion using the formula: (Agility Stat × 3) + Armor Skill + Equipment Bonus
+        /// Calculates evasion using the formula: 8 + (2 × Armor Skill) + Agility Stat + Equipment Bonus
         /// </summary>
         /// <param name="player">The player entity</param>
         /// <param name="equipmentBonus">The equipment bonus</param>
@@ -210,7 +210,7 @@ namespace SWLOR.Admin.Services
 
             var agilityStat = GetAbilityScore(player, AbilityType.Agility);
             var armorSkillLevel = GetSkillLevel(player, SkillType.Armor);
-            return (agilityStat * 3) + armorSkillLevel + equipmentBonus;
+            return 8 + (2 * armorSkillLevel) + agilityStat + equipmentBonus;
         }
 
         public static int GetDefenseBonus(Player player, CombatDamageType damageType)
@@ -333,15 +333,16 @@ namespace SWLOR.Admin.Services
             // Evasion calculation
             var evasionStat = GetAbilityScore(player, AbilityType.Agility);
             var evasionSkillLevel = GetSkillLevel(player, SkillType.Armor);
-            var calculatedEvasion = (evasionStat * 3) + evasionSkillLevel + player.Evasion;
+            var calculatedEvasion = 8 + (2 * evasionSkillLevel) + evasionStat + player.Evasion;
             breakdown["Evasion"] = new
             {
+                Base = 8,
                 AgilityStat = evasionStat,
                 ArmorSkillLevel = evasionSkillLevel,
                 EquipmentBonus = player.Evasion,
                 Calculated = calculatedEvasion,
                 Stored = player.Evasion,
-                Formula = "(Agility Stat × 3) + Armor Skill + Equipment Bonus"
+                Formula = "8 + (2 × Armor Skill) + Agility Stat + Equipment Bonus"
             };
 
             return breakdown;

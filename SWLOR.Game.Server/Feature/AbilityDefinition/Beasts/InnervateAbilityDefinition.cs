@@ -18,8 +18,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
             Innervate1();
             Innervate2();
             Innervate3();
-            Innervate4();
-            Innervate5();
 
             return _builder.Build();
         }
@@ -93,40 +91,5 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 });
         }
 
-        private void Innervate4()
-        {
-            _builder.Create(FeatType.Innervate4, PerkType.Innervate)
-                .Name("Innervate IV")
-                .Level(4)
-                .HasRecastDelay(RecastGroup.Innervate, 30f)
-                .HasActivationDelay(3f)
-                .RequirementStamina(6)
-                .IsCastedAbility()
-                .HasMaxRange(10f)
-                .UsesAnimation(Animation.LoopingConjure1)
-                .DisplaysVisualEffectWhenActivating()
-                .HasImpactAction((activator, target, level, location) =>
-                {
-                    Impact(activator, target, 80);
-                });
-        }
-
-        private void Innervate5()
-        {
-            _builder.Create(FeatType.Innervate5, PerkType.Innervate)
-                .Name("Innervate V")
-                .Level(5)
-                .HasRecastDelay(RecastGroup.Innervate, 30f)
-                .HasActivationDelay(4f)
-                .RequirementStamina(7)
-                .IsCastedAbility()
-                .HasMaxRange(10f)
-                .UsesAnimation(Animation.LoopingConjure1)
-                .DisplaysVisualEffectWhenActivating()
-                .HasImpactAction((activator, target, level, location) =>
-                {
-                    Impact(activator, target, 120);
-                });
-        }
     }
 }

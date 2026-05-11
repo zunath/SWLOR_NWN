@@ -80,16 +80,17 @@ The HP calculation is handled by the NWN engine and stored in the `MaxHP` proper
 - Defense = 8 + (16 x 1.5) + 3 + 5 = 8 + 24 + 3 + 5 = 40
 
 ### 7. Evasion Calculation
-**Formula:** `(Agility Stat × 3) + Armor Skill + Equipment Bonus`
+**Formula:** `8 + (2 × Armor Skill) + Agility Stat + Equipment Bonus`
 
 **Components:**
+- Base Evasion: 8
 - Agility Stat: Raw Agility stat value (not modifier)
-- Armor Skill: Armor skill level
+- Armor Skill: Armor skill rank, weighted twice as strongly as Agility
 - Equipment Bonus: Stored in `Evasion` property
 
 **Example:**
 - Agility 14, Armor Skill 2, Equipment +4
-- Evasion = (14 × 3) + 2 + 4 = 42 + 2 + 4 = 48
+- Evasion = 8 + (2 × 2) + 14 + 4 = 30
 
 ### 7a. Resistance Calculation
 **Formula:** Resistance score is capped at 90 and uses the Xenomech reduction curve: `1 - (Resistance / (Resistance + 50))`, with a 10% minimum damage multiplier.
@@ -104,9 +105,19 @@ The HP calculation is handled by the NWN engine and stored in the `MaxHP` proper
 
 **Components:**
 - Base Accuracy: 8
-- Skill Level: Relevant skill level
+- Skill Level: Relevant weapon skill rank, weighted twice as strongly as the stat
 - Stat: Relevant ability stat
 - Equipment Bonus: Equipment accuracy bonus
+
+### 8a. Critical Hit Rate Calculation
+**Formula:** `5 + floor(Weapon Skill Rank / 10) + clamp(floor((Perception - Target Vitality) / 5), 0, 3) + Critical Bonus`
+
+**Components:**
+- Base Critical Rate: 5%
+- Weapon Skill Rank: Grants +1% per 10 ranks
+- Perception vs Target Vitality: Grants up to +3% baseline critical chance
+- Critical Bonus: Perks, status effects, and situational modifiers
+- Final Result: Clamped between 5% and 50%
 
 ## Saving Throw Calculations
 

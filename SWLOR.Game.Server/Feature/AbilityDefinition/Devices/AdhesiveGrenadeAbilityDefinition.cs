@@ -17,7 +17,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             AdhesiveGrenade1();
             AdhesiveGrenade2();
-            AdhesiveGrenade3();
 
             return _builder.Build();
         }
@@ -81,25 +80,5 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 });
         }
 
-        private void AdhesiveGrenade3()
-        {
-            _builder.Create(FeatType.AdhesiveGrenade3, PerkType.AdhesiveGrenade)
-                .Name("Adhesive Grenade III")
-                .Level(3)
-                .HasRecastDelay(RecastGroup.AdhesiveGrenade, 24f)
-                .HasActivationDelay(2f)
-                .RequirementStamina(5)
-                .UsesAnimation(Animation.ThrowGrenade)
-                .IsCastedAbility()
-                .HasMaxRange(15f)
-                .HasCustomValidation(ExplosiveValidation)
-                .HasImpactAction((activator, _, _, location) =>
-                {
-                    ExplosiveImpact(activator, location, EffectVisualEffect(VisualEffect.Fnf_Dispel_Greater), string.Empty, RadiusSize.Large, (target) =>
-                    {
-                        Impact(activator, target, true, 8f);
-                    });
-                });
-        }
     }
 }

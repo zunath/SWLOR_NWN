@@ -18,8 +18,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
             Claw1();
             Claw2();
             Claw3();
-            Claw4();
-            Claw5();
 
             return _builder.Build();
         }
@@ -96,31 +94,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     ImpactAction(activator, target, 14, level);
                 });
         }
-        private void Claw4()
-        {
-            _builder.Create(FeatType.Claw4, PerkType.Claw)
-                .Name("Claw IV")
-                .Level(4)
-                .HasRecastDelay(RecastGroup.Claw, 60f)
-                .RequirementStamina(6)
-                .IsWeaponAbility()
-                .HasImpactAction((activator, target, level, location) =>
-                {
-                    ImpactAction(activator, target, 17, level);
-                });
-        }
-        private void Claw5()
-        {
-            _builder.Create(FeatType.Claw5, PerkType.Claw)
-                .Name("Claw V")
-                .Level(5)
-                .HasRecastDelay(RecastGroup.Claw, 60f)
-                .RequirementStamina(7)
-                .IsWeaponAbility()
-                .HasImpactAction((activator, target, level, location) =>
-                {
-                    ImpactAction(activator, target, 20, level);
-                });
-        }
+
     }
 }

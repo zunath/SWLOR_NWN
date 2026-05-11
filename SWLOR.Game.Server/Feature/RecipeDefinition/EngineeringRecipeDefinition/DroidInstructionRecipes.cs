@@ -54,17 +54,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("elec_ruined", 2)
                 .Component("quadrenium", 1);
 
-            // Kolto Grenade I
-            _builder.Create(RecipeType.InstructionKoltoGrenade1, SkillType.Engineering)
-                .Category(RecipeCategoryType.DroidInstruction)
-                .Resref("id_koltgren1")
-                .Level(10)
-                .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
-                .Component("jade", 1)
-                .Component("elec_ruined", 2)
-                .Component("quadrenium", 1);
-
             // Flamethrower I
             _builder.Create(RecipeType.InstructionFlamethrower1, SkillType.Engineering)
                 .Category(RecipeCategoryType.DroidInstruction)
@@ -133,17 +122,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("elec_flawed", 2)
                 .Component("vintrium", 1);
 
-            // Flashbang Grenade I
-            _builder.Create(RecipeType.InstructionFlashbangGrenade1, SkillType.Engineering)
-                .Category(RecipeCategoryType.DroidInstruction)
-                .Resref("id_flashgren1")
-                .Level(20)
-                .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
-                .Component("agate", 1)
-                .Component("elec_flawed", 2)
-                .Component("vintrium", 1);
-
             // Wrist Rocket I
             _builder.Create(RecipeType.InstructionWristRocket1, SkillType.Engineering)
                 .Category(RecipeCategoryType.DroidInstruction)
@@ -170,17 +148,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
             _builder.Create(RecipeType.InstructionMedKit2, SkillType.Engineering)
                 .Category(RecipeCategoryType.DroidInstruction)
                 .Resref("id_medkit2")
-                .Level(20)
-                .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
-                .Component("agate", 1)
-                .Component("elec_flawed", 2)
-                .Component("vintrium", 1);
-
-            // Kolto Recovery I
-            _builder.Create(RecipeType.InstructionKoltoRecovery1, SkillType.Engineering)
-                .Category(RecipeCategoryType.DroidInstruction)
-                .Resref("id_kolt1")
                 .Level(20)
                 .Quantity(1)
                 .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
@@ -234,17 +201,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("elec_good", 2)
                 .Component("ionite", 1);
 
-            // Kolto Grenade II
-            _builder.Create(RecipeType.InstructionKoltoGrenade2, SkillType.Engineering)
-                .Category(RecipeCategoryType.DroidInstruction)
-                .Resref("id_koltgren2")
-                .Level(30)
-                .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
-                .Component("citrine", 1)
-                .Component("elec_good", 2)
-                .Component("ionite", 1);
-
             // Adhesive Grenade I
             _builder.Create(RecipeType.InstructionAdhesiveGrenade1, SkillType.Engineering)
                 .Category(RecipeCategoryType.DroidInstruction)
@@ -289,28 +245,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("elec_good", 2)
                 .Component("ionite", 1);
 
-            // Stasis Field I
-            _builder.Create(RecipeType.InstructionStasisField1, SkillType.Engineering)
-                .Category(RecipeCategoryType.DroidInstruction)
-                .Resref("id_stasisf1")
-                .Level(30)
-                .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
-                .Component("citrine", 1)
-                .Component("elec_good", 2)
-                .Component("ionite", 1);
-
-            // Combat Enhancement I
-            _builder.Create(RecipeType.InstructionCombatEnhancement1, SkillType.Engineering)
-                .Category(RecipeCategoryType.DroidInstruction)
-                .Resref("id_combenh1")
-                .Level(30)
-                .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
-                .Component("citrine", 1)
-                .Component("elec_good", 2)
-                .Component("ionite", 1);
-
             // Infusion I
             _builder.Create(RecipeType.InstructionInfusion1, SkillType.Engineering)
                 .Category(RecipeCategoryType.DroidInstruction)
@@ -346,39 +280,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("elec_imperfect", 2)
                 .Component("katrium", 1);
 
-            // Flashbang Grenade II
-            _builder.Create(RecipeType.InstructionFlashbangGrenade2, SkillType.Engineering)
-                .Category(RecipeCategoryType.DroidInstruction)
-                .Resref("id_flashgren2")
-                .Level(40)
-                .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
-                .Component("ruby", 1)
-                .Component("elec_imperfect", 2)
-                .Component("katrium", 1);
-
-            // Ion Grenade III
-            _builder.Create(RecipeType.InstructionIonGrenade3, SkillType.Engineering)
-                .Category(RecipeCategoryType.DroidInstruction)
-                .Resref("id_iongren3")
-                .Level(40)
-                .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
-                .Component("ruby", 1)
-                .Component("elec_imperfect", 2)
-                .Component("katrium", 1);
-
-            // Kolto Grenade III
-            _builder.Create(RecipeType.InstructionKoltoGrenade3, SkillType.Engineering)
-                .Category(RecipeCategoryType.DroidInstruction)
-                .Resref("id_koltgren3")
-                .Level(40)
-                .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
-                .Component("ruby", 1)
-                .Component("elec_imperfect", 2)
-                .Component("katrium", 1);
-
             // Adhesive Grenade II
             _builder.Create(RecipeType.InstructionAdhesiveGrenade2, SkillType.Engineering)
                 .Category(RecipeCategoryType.DroidInstruction)
@@ -401,43 +302,10 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("elec_imperfect", 2)
                 .Component("katrium", 1);
 
-            // Kolto Recovery II
-            _builder.Create(RecipeType.InstructionKoltoRecovery2, SkillType.Engineering)
-                .Category(RecipeCategoryType.DroidInstruction)
-                .Resref("id_kolt2")
-                .Level(40)
-                .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
-                .Component("ruby", 1)
-                .Component("elec_imperfect", 2)
-                .Component("katrium", 1);
-
             // Resuscitation II
             _builder.Create(RecipeType.InstructionResuscitation2, SkillType.Engineering)
                 .Category(RecipeCategoryType.DroidInstruction)
                 .Resref("id_resusc2")
-                .Level(40)
-                .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
-                .Component("ruby", 1)
-                .Component("elec_imperfect", 2)
-                .Component("katrium", 1);
-
-            // Stasis Field II
-            _builder.Create(RecipeType.InstructionStasisField2, SkillType.Engineering)
-                .Category(RecipeCategoryType.DroidInstruction)
-                .Resref("id_stasisf2")
-                .Level(40)
-                .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
-                .Component("ruby", 1)
-                .Component("elec_imperfect", 2)
-                .Component("katrium", 1);
-
-            // Combat Enhancement II
-            _builder.Create(RecipeType.InstructionCombatEnhancement2, SkillType.Engineering)
-                .Category(RecipeCategoryType.DroidInstruction)
-                .Resref("id_combenh2")
                 .Level(40)
                 .Quantity(1)
                 .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
@@ -469,28 +337,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("elec_high", 2)
                 .Component("zinsiam", 1);
 
-            // Flashbang Grenade III
-            _builder.Create(RecipeType.InstructionFlashbangGrenade3, SkillType.Engineering)
-                .Category(RecipeCategoryType.DroidInstruction)
-                .Resref("id_flashgren3")
-                .Level(50)
-                .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
-                .Component("emerald", 1)
-                .Component("elec_high", 2)
-                .Component("zinsiam", 1);
-
-            // Adhesive Grenade III
-            _builder.Create(RecipeType.InstructionAdhesiveGrenade3, SkillType.Engineering)
-                .Category(RecipeCategoryType.DroidInstruction)
-                .Resref("id_adhgren3")
-                .Level(50)
-                .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
-                .Component("emerald", 1)
-                .Component("elec_high", 2)
-                .Component("zinsiam", 1);
-
             // Flamethrower III
             _builder.Create(RecipeType.InstructionFlamethrower3, SkillType.Engineering)
                 .Category(RecipeCategoryType.DroidInstruction)
@@ -506,72 +352,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
             _builder.Create(RecipeType.InstructionWristRocket3, SkillType.Engineering)
                 .Category(RecipeCategoryType.DroidInstruction)
                 .Resref("id_wristrck3")
-                .Level(50)
-                .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
-                .Component("emerald", 1)
-                .Component("elec_high", 2)
-                .Component("zinsiam", 1);
-
-            // Med Kit V
-            _builder.Create(RecipeType.InstructionMedKit5, SkillType.Engineering)
-                .Category(RecipeCategoryType.DroidInstruction)
-                .Resref("id_medkit5")
-                .Level(50)
-                .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
-                .Component("emerald", 1)
-                .Component("elec_high", 2)
-                .Component("zinsiam", 1);
-
-            // Kolto Recovery III
-            _builder.Create(RecipeType.InstructionKoltoRecovery3, SkillType.Engineering)
-                .Category(RecipeCategoryType.DroidInstruction)
-                .Resref("id_kolt3")
-                .Level(50)
-                .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
-                .Component("emerald", 1)
-                .Component("elec_high", 2)
-                .Component("zinsiam", 1);
-
-            // Resuscitation III
-            _builder.Create(RecipeType.InstructionResuscitation3, SkillType.Engineering)
-                .Category(RecipeCategoryType.DroidInstruction)
-                .Resref("id_resusc3")
-                .Level(50)
-                .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
-                .Component("emerald", 1)
-                .Component("elec_high", 2)
-                .Component("zinsiam", 1);
-
-            // Stasis Field III
-            _builder.Create(RecipeType.InstructionStasisField3, SkillType.Engineering)
-                .Category(RecipeCategoryType.DroidInstruction)
-                .Resref("id_stasisf3")
-                .Level(50)
-                .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
-                .Component("emerald", 1)
-                .Component("elec_high", 2)
-                .Component("zinsiam", 1);
-
-            // Combat Enhancement III
-            _builder.Create(RecipeType.InstructionCombatEnhancement3, SkillType.Engineering)
-                .Category(RecipeCategoryType.DroidInstruction)
-                .Resref("id_combenh3")
-                .Level(50)
-                .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
-                .Component("emerald", 1)
-                .Component("elec_high", 2)
-                .Component("zinsiam", 1);
-
-            // Shielding IV
-            _builder.Create(RecipeType.InstructionShielding4, SkillType.Engineering)
-                .Category(RecipeCategoryType.DroidInstruction)
-                .Resref("id_shielding4")
                 .Level(50)
                 .Quantity(1)
                 .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)

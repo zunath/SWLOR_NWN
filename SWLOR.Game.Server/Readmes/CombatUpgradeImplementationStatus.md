@@ -61,7 +61,7 @@ The first implementation pass closed a few narrow, concrete gaps:
 - Added the remaining scoped passive combat perk definitions for Rapid Shot, Bulwark, Alacrity, and Crushing Style.
 - Wired runtime hooks for Rapid Shot attack delay reduction, Bulwark shield deflection, Alacrity shield-deflect stamina recovery, and Crushing Style staff damage/critical bonuses.
 - Tightened the audit so blank spreadsheet note rows and non-combat crafting/research/gathering tabs are excluded from combat-upgrade blocker counts.
-- Added the missing Flurry Style staff perk and wired its staff AGI to-hit, PER damage, and attack-delay reduction behavior.
+- Added the missing Flurry Style staff perk and wired its staff attack-delay reduction behavior.
 - Updated the audit refresh to parse the live Bible spreadsheet's pre-table metadata rows and fail loudly if no scoped manifest rows are available.
 - Added local workbook refresh support to `tools\UpdateCombatUpgradeAudit.ps1`, regenerated `CombatUpgradeBiblePerkManifest.csv` from `design\bible\SWLOR Design Bible - Combat Upgrade.xlsx`, and regenerated `CombatUpgradePerkAudit.csv` from that manifest.
 

@@ -54,14 +54,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
 
                             var social = GetAbilityScore(activator, AbilityType.Social);
                             const float BaseDuration = 2f;
-                            var bonusDuration = GetAbilityModifier(AbilityType.Social, activator) * 0.5f;
-                            var duration = BaseDuration + bonusDuration;
 
-                            StatusEffect.ApplyStatusEffect(activator, nearest, typeof(StunnedStatusEffect), duration, CombatDamageType.Physical);
+                            StatusEffect.ApplyStatusEffect(activator, nearest, typeof(StunnedStatusEffect), BaseDuration, CombatDamageType.Physical);
                             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Sonic), nearest);
 
                             CombatPoint.AddCombatPoint(activator, nearest, SkillType.Leadership, 3);
-                            Enmity.ModifyEnmity(activator, nearest, 650);
+                            Enmity.ModifyEnmity(activator, nearest, Stat.ScaleEffect(650, social));
                         }
 
                         if (count >= MaxTargets)

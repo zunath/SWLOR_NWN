@@ -34,6 +34,22 @@ namespace SWLOR.Game.Server.Service
         private const float DeflectionEnmityBoostDurationSeconds = 12f;
         private const float DeflectionDefenseBoostDurationSeconds = 12f;
 
+        public static int ScaleEffect(
+            int baseAmount,
+            int primaryStat,
+            float primaryRate = 0.01f,
+            int secondaryStat = 0,
+            float secondaryRate = 0.005f)
+        {
+            if (baseAmount <= 0)
+                return baseAmount;
+
+            var scale = Math.Max(0f, primaryStat * primaryRate) + Math.Max(0f, secondaryStat * secondaryRate);
+            var bonus = (int)Math.Ceiling(baseAmount * scale);
+
+            return baseAmount + bonus;
+        }
+
         /// <summary>
         /// When a player enters the server, reapply HP and temporary stats.
         /// </summary>

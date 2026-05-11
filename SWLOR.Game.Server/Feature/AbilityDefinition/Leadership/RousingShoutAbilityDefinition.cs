@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
@@ -56,10 +57,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                             hp = 0;
                             break;
                         case 2:
-                            hp = (int)(social * 0.01f * targetMaxHP);
+                            hp = (int)Math.Ceiling(social * 0.01f * targetMaxHP);
                             break;
                         case 3:
-                            hp = (int)(2 * social * 0.01f * targetMaxHP);
+                            hp = (int)Math.Ceiling(2 * social * 0.01f * targetMaxHP);
                             break;
                     }
 

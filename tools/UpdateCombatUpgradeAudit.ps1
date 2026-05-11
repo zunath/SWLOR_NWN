@@ -115,6 +115,9 @@ function Add-AuditRow {
         Requirements = Normalize-AuditText $BibleRow.SkillRequirements
         CharType = Normalize-AuditText $BibleRow.CharacterType
         Type = Normalize-AuditText $BibleRow.Type
+        PrimaryStat = Normalize-AuditText (Get-PropertyValue $BibleRow "PrimaryStat")
+        SecondaryStat = Normalize-AuditText (Get-PropertyValue $BibleRow "SecondaryStat")
+        ScalingSource = Normalize-AuditText (Get-PropertyValue $BibleRow "ScalingSource")
         DevStatus = Normalize-AuditText $BibleRow.DevStatus
         Description = Normalize-AuditText $BibleRow.Description
         Details = Normalize-AuditText $Details
@@ -300,26 +303,27 @@ function Import-BibleTabRows {
         return @()
     }
 
-    $headers = @(
-        "Style",
-        "Price",
-        "PerkName",
-        "SkillRequirements",
-        "CharacterType",
-        "Type",
-        "Description",
-        "CrossSkill",
-        "FP",
-        "STM",
-        "CastingTime",
-        "CooldownTime",
-        "DevStatus",
-        "AdditionalRequirements",
-        "Notes"
-    )
+    $rawHeaderNames = 1..80 | ForEach-Object { "Header$_" }
+    $headerRow = $lines[$headerLineIndex] | ConvertFrom-Csv -Header $rawHeaderNames
+    $headers = New-Object System.Collections.Generic.List[string]
+    $seenHeaders = @{}
+    $columnNumber = 1
+    foreach ($property in $headerRow.PSObject.Properties) {
+        $canonicalHeader = Get-CanonicalManifestHeader $property.Value
+        if ([string]::IsNullOrWhiteSpace($canonicalHeader)) {
+            $canonicalHeader = "Unused$columnNumber"
+        }
 
-    for ($i = 16; $i -le 40; $i++) {
-        $headers += "Unused$i"
+        if ($seenHeaders.ContainsKey($canonicalHeader)) {
+            $seenHeaders[$canonicalHeader]++
+            $canonicalHeader = "$canonicalHeader$($seenHeaders[$canonicalHeader])"
+        }
+        else {
+            $seenHeaders[$canonicalHeader] = 1
+        }
+
+        $headers.Add($canonicalHeader) | Out-Null
+        $columnNumber++
     }
 
     $rows = New-Object System.Collections.Generic.List[object]
@@ -328,7 +332,7 @@ function Import-BibleTabRows {
             continue
         }
 
-        $parsedRows = $lines[$i] | ConvertFrom-Csv -Header $headers
+        $parsedRows = $lines[$i] | ConvertFrom-Csv -Header $headers.ToArray()
         foreach ($row in $parsedRows) {
             $rows.Add([pscustomobject]@{
                 Row = $i + 1
@@ -339,6 +343,9 @@ function Import-BibleTabRows {
                 CharacterType = $row.CharacterType
                 Type = $row.Type
                 Description = $row.Description
+                PrimaryStat = $row.PrimaryStat
+                SecondaryStat = $row.SecondaryStat
+                ScalingSource = $row.ScalingSource
                 CrossSkill = $row.CrossSkill
                 FP = $row.FP
                 STM = $row.STM
@@ -427,25 +434,15 @@ function Get-OpenXmlCellText {
 
     $cellType = $Cell.GetAttribute("t")
     if ($cellType -eq "inlineStr") {
-        $texts = [System.Collections.Generic.List[string]]::new()
-        foreach ($textNode in $Cell.GetElementsByTagName("t")) {
-            $texts.Add($textNode.InnerText) | Out-Null
-        }
-
-        return Normalize-ManifestCellText ($texts -join "")
+        return Normalize-ManifestCellText $Cell.InnerText
     }
 
-    $valueNodes = $Cell.GetElementsByTagName("v")
-    if ($valueNodes.Count -eq 0) {
+    $rawValue = $Cell.InnerText
+    if ([string]::IsNullOrWhiteSpace($rawValue)) {
         return ""
     }
 
-    $rawValue = $valueNodes[0].InnerText
     if ($cellType -eq "s") {
-        if ([string]::IsNullOrWhiteSpace($rawValue)) {
-            return ""
-        }
-
         return Normalize-ManifestCellText $SharedStrings[[int]$rawValue]
     }
 
@@ -473,6 +470,9 @@ function Get-CanonicalManifestHeader {
         "charactertype" { return "CharacterType" }
         "type" { return "Type" }
         "description" { return "Description" }
+        "primarystat" { return "PrimaryStat" }
+        "secondarystat" { return "SecondaryStat" }
+        "scalingsource" { return "ScalingSource" }
         "crossskill" { return "CrossSkill" }
         "fp" { return "FP" }
         "stm" { return "STM" }
@@ -601,6 +601,9 @@ function Import-BibleWorkbookManifestRows {
                     CharacterType = Get-MappedCellValue -Cells $cells -ColumnByHeader $columnByHeader -Header "CharacterType"
                     Type = Get-MappedCellValue -Cells $cells -ColumnByHeader $columnByHeader -Header "Type"
                     Description = Get-MappedCellValue -Cells $cells -ColumnByHeader $columnByHeader -Header "Description"
+                    PrimaryStat = Get-MappedCellValue -Cells $cells -ColumnByHeader $columnByHeader -Header "PrimaryStat"
+                    SecondaryStat = Get-MappedCellValue -Cells $cells -ColumnByHeader $columnByHeader -Header "SecondaryStat"
+                    ScalingSource = Get-MappedCellValue -Cells $cells -ColumnByHeader $columnByHeader -Header "ScalingSource"
                     CrossSkill = Get-MappedCellValue -Cells $cells -ColumnByHeader $columnByHeader -Header "CrossSkill"
                     FP = Get-MappedCellValue -Cells $cells -ColumnByHeader $columnByHeader -Header "FP"
                     STM = Get-MappedCellValue -Cells $cells -ColumnByHeader $columnByHeader -Header "STM"
@@ -662,6 +665,9 @@ if ($RefreshBible) {
                 CharacterType = Get-FirstPropertyValue $row @("CharacterType", "Character Type", "CharType")
                 Type = Get-PropertyValue $row "Type"
                 Description = Get-PropertyValue $row "Description"
+                PrimaryStat = Get-FirstPropertyValue $row @("PrimaryStat", "Primary Stat")
+                SecondaryStat = Get-FirstPropertyValue $row @("SecondaryStat", "Secondary Stat")
+                ScalingSource = Get-FirstPropertyValue $row @("ScalingSource", "Scaling Source")
                 CrossSkill = Get-FirstPropertyValue $row @("CrossSkill", "Cross Skill")
                 FP = Get-PropertyValue $row "FP"
                 STM = Get-PropertyValue $row "STM"
@@ -733,6 +739,9 @@ $abilityBaseNameIndex = @{}
 foreach ($key in $abilityNameIndex.Keys) {
     $abilityBaseNameIndex[(Get-SanitizedName $key)] = $true
 }
+foreach ($key in $abilityFileIndex.Keys) {
+    $abilityBaseNameIndex[(Get-SanitizedName $key)] = $true
+}
 
 $statusApplicationVerb = "(?:inflict(?:s|ed|ing)?|appl(?:y|ies|ied)|grant(?:s|ed|ing)?|gain(?:s|ed|ing)?|become(?:s)?|suffer(?:s|ed|ing)?|attempt(?:s|ed|ing)?\s+to\s+inflict)"
 $statusChecks = @(
@@ -777,6 +786,10 @@ foreach ($row in $manifest) {
     $cooldownSeconds = Convert-CooldownToSeconds $row.CooldownTime
     if ($isActiveType -and $null -ne $cooldownSeconds -and $abilityFile -and $abilityFile.Content -notmatch "HasRecastDelay") {
         Add-AuditRow -Rows $auditRows -AuditType "MissingAbilityRecast" -BibleRow $row -File $abilityFile.File -Details "Expected cooldown: $($row.CooldownTime)"
+    }
+
+    if ($row.Description -match "(?i)\b(?:Fortitude|Reflex|Willpower|Will)\s+DC\d*\b|\bDC\d+\s*(?:Fortitude|Reflex|Willpower|Will)\b|\bsaving throw\b|\bsave DCs?\b|\bfailed save\b|\bon resist\b|\bmake(?:s)?\s+DC\d+\s*(?:Fortitude|Reflex|Willpower|Will)\b") {
+        Add-AuditRow -Rows $auditRows -AuditType "StaleSavingThrowText" -BibleRow $row -Details "Remove save/DC wording; Resistances shorten effects."
     }
 
     foreach ($check in $statusChecks) {
@@ -827,6 +840,9 @@ foreach ($row in $featRows) {
                 Requirements = ""
                 CharType = ""
                 Type = "FeatIcon"
+                PrimaryStat = ""
+                SecondaryStat = ""
+                ScalingSource = ""
                 DevStatus = ""
                 Description = ""
                 Details = $icon
@@ -853,12 +869,15 @@ foreach ($row in $featRows) {
             File = "SWLOR_Haks\swlor2_2da\feat.2da"
             Style = ""
             Price = ""
-            Requirements = ""
-            CharType = ""
-            Type = "FeatSpell"
-            DevStatus = ""
-            Description = ""
-            Details = "SPELLID is ****"
+                Requirements = ""
+                CharType = ""
+                Type = "FeatSpell"
+                PrimaryStat = ""
+                SecondaryStat = ""
+                ScalingSource = ""
+                DevStatus = ""
+                Description = ""
+                Details = "SPELLID is ****"
         }) | Out-Null
     }
 }
@@ -888,6 +907,9 @@ foreach ($row in $spellRows) {
             Requirements = ""
             CharType = ""
             Type = "SpellIcon"
+            PrimaryStat = ""
+            SecondaryStat = ""
+            ScalingSource = ""
             DevStatus = ""
             Description = ""
             Details = $icon
@@ -899,7 +921,7 @@ if ($auditRows.Count -gt 0) {
     $auditRows | Sort-Object AuditType, Tab, Row, Name | Export-Csv -Path $auditFullPath -NoTypeInformation
 }
 else {
-    '"AuditType","Tab","Row","Name","PerkType","File","Style","Price","Requirements","CharType","Type","DevStatus","Description","Details"' |
+    '"AuditType","Tab","Row","Name","PerkType","File","Style","Price","Requirements","CharType","Type","PrimaryStat","SecondaryStat","ScalingSource","DevStatus","Description","Details"' |
         Set-Content -Path $auditFullPath
 }
 

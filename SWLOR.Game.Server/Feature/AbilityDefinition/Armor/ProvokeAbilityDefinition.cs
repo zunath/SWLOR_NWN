@@ -58,8 +58,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Armor
                 .HasCustomValidation((_, target, _, _) => Validation(target))
                 .HasImpactAction((activator, target, _, _) =>
                 {
-                    var enmityBonus = GetAbilityScore(activator, AbilityType.Vitality) * 50;
-                    Impact(activator, target, 700 + enmityBonus);
+                    var enmity = Stat.ScaleEffect(700, GetAbilityScore(activator, AbilityType.Vitality));
+                    Impact(activator, target, enmity);
                 });
         }
 
@@ -89,8 +89,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Armor
                             !BeastMastery.IsPlayerBeast(nearest) &&
                             !Droid.IsDroid(nearest))
                         {
-                            var enmityBonus = GetAbilityScore(activator, AbilityType.Vitality) * 50;
-                            Impact(activator, nearest, 400 + enmityBonus);
+                            var enmity = Stat.ScaleEffect(400, GetAbilityScore(activator, AbilityType.Vitality));
+                            Impact(activator, nearest, enmity);
                         }
 
                         nth++;

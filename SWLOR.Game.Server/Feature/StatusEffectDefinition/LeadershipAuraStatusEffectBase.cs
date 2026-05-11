@@ -1,3 +1,4 @@
+using System;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PerkService;
@@ -36,11 +37,19 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             var social = GetAbilityScore(Source, AbilityType.Social);
             StatGroup.Stats[_stat] = Perk.GetPerkLevel(Source, _perk) switch
             {
-                1 => (int)(social * _level1Scale),
-                2 => (int)(social * _level2Scale),
-                3 => (int)(social * _level3Scale),
+                1 => ScaleAuraValue(social, _level1Scale),
+                2 => ScaleAuraValue(social, _level2Scale),
+                3 => ScaleAuraValue(social, _level3Scale),
                 _ => 0
             };
+        }
+
+        private static int ScaleAuraValue(int social, float scale)
+        {
+            var value = social * scale;
+            return scale < 0
+                ? (int)Math.Floor(value)
+                : (int)Math.Ceiling(value);
         }
     }
 }

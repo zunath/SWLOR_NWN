@@ -25,6 +25,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .Name("Flash")
                 .Level(1)
                 .HasActivationDelay(0f)
+                .HasRecastDelay(RecastGroup.Flash, 90f)
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
                     Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.HeavyVibroblade, 0, 30, typeof(FlashStatusEffect), CombatImpactAreaShape.Sphere, 0.25f, 5f, centerOnActivator: true);
@@ -32,7 +33,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 })
                 .IsCastedAbility()
                 .IsHostileAbility()
-                .BreaksStealth();
+                .BreaksStealth()
+                .RequirementStamina(8);
         }
     }
 }

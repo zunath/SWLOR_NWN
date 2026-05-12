@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CripplingDefense1)
-                .Description("All enemies within area of effect (sphere) around you receive Crippling Defense, reducing Defense by 35% for 15 seconds. Additionally restores 25 STM.")
+                .Description("All enemies within area of effect (sphere) around you receive Crippled Defense, reducing physical and Force damage mitigation by 35% for 15 seconds. Additionally restores 25 STM.")
                 .Price(4)
                 .RequirementSkill(SkillType.Spear, 50);
         }
@@ -308,7 +308,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ImprovedAttentiveness1)
-                .Description("Your party members, excluding you, receive +25% to accuracy for 1 minute.")
+                .Description("Your party members, excluding you, gain +15% physical and Force ability hit chance for 1 minute.")
                 .Price(3)
                 .RequirementSkill(SkillType.Spear, 28);
         }
@@ -321,13 +321,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.InterruptionStrike1)
-                .Description("Your target's ability activation is interrupted.  Additionally, target inflicts Foggy Mind which increases activation times by 2 seconds for 30 seconds.")
+                .Description("Your target's ability activation is interrupted. Additionally, the target is inflicted with Foggy Mind, increasing activation times by 2 seconds for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Spear, 12)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.InterruptionStrike2)
-                .Description("Your target's ability activation is interrupted.  Additionally, target inflicts Foggy Mind which increases activation times by 2 seconds for 30 seconds.")
+                .Description("Your target's ability activation is interrupted. Additionally, the target is inflicted with Foggy Mind, increasing activation times by 2 seconds for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Spear, 28);
         }
@@ -381,7 +381,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Restoration Strike")
 
                 .AddPerkLevel()
-                .Description("Critical hit rate increases by 10%. Additionally, if you were at the side of your target, crticial hits have a 35% chance to restore 15 STM.")
+                .Description("Critical hit chance increases by 10%. Additionally, if you were at the side of your target, critical hits have a 35% chance to restore 15 STM.")
                 .IncreasesStat(StatType.CriticalRatePercentAdjustment, creature => EquipmentPredicates.HasMainHandSpear(creature) ? 10 : 0)
                 .IncreasesStat(StatType.CriticalSideAttackStaminaRestoreChance, creature => EquipmentPredicates.HasMainHandSpear(creature) ? 35 : 0)
                 .IncreasesStat(StatType.CriticalSideAttackStaminaRestore, creature => EquipmentPredicates.HasMainHandSpear(creature) ? 15 : 0)

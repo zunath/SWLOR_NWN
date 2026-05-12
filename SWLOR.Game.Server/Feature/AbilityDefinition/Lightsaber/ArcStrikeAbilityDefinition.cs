@@ -26,10 +26,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 .Name("Arc Strike")
                 .Level(1)
                 .HasActivationDelay(0f)
+                .HasRecastDelay(RecastGroup.ArcStrike, 30f)
                 .HasImpactAction(ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
-                .BreaksStealth();
+                .BreaksStealth()
+                .RequirementStamina(8);
         }
 
         private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)

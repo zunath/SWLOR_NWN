@@ -20,8 +20,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                     .HasRecastDelay(RecastGroup.BrutalAssault, 300f),
                 typeof(BrutalAssaultStatusEffect),
                 60f,
-                10,
-                false);
+                7,
+                false,
+                2f);
 
             return builder.Build();
         }

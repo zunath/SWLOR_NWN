@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
     public sealed class CripplingDefenseStatusEffect : StatusEffectBase
     {
-        public override string Name => "Crippling Defense";
+        public override string Name => "Crippled Defense";
         public override EffectIconType Icon => EffectIconType.ACDecrease;
         public override StatusEffectCategory Categories => StatusEffectCategory.Debuff;
         public override StatusEffectCleanseType CleanseTypes => StatusEffectCleanseType.Purify | StatusEffectCleanseType.SoothePet;

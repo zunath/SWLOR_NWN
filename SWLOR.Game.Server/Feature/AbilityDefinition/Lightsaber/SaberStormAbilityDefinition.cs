@@ -8,30 +8,30 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
 {
-    public class OverwhelmingStrikeAbilityDefinition : IAbilityListDefinition
+    public class SaberStormAbilityDefinition : IAbilityListDefinition
     {
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
 
-            OverwhelmingStrike1(builder);
+            SaberStorm1(builder);
 
             return builder.Build();
         }
 
-        private static void OverwhelmingStrike1(AbilityBuilder builder)
+        private static void SaberStorm1(AbilityBuilder builder)
         {
             builder
-                .Create(FeatType.OverwhelmingStrike1, PerkType.OverwhelmingStrike)
-                .Name("Overwhelming Strike")
+                .Create(FeatType.SaberStorm1, PerkType.SaberStorm)
+                .Name("Saber Storm")
                 .Level(1)
-                .HasActivationDelay(0f)
-                .HasRecastDelay(RecastGroup.OverwhelmingStrike, 90f)
+                .HasActivationDelay(2f)
+                .HasRecastDelay(RecastGroup.SaberStorm, 1800f)
                 .HasImpactAction(ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
-                .RequirementStamina(10);
+                .RequirementStamina(25);
         }
 
         private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -39,7 +39,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
             switch (level)
             {
                 case 1:
-                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Lightsaber, 15, 30, typeof(SunderStatusEffect), CombatImpactAreaShape.Cone, 0.25f, 5f, 5f);
+                    Ability.ApplyTelegraphedCombatImpact(
+                        activator,
+                        target,
+                        targetLocation,
+                        SkillType.Lightsaber,
+                        60,
+                        30,
+                        typeof(SunderStatusEffect),
+                        CombatImpactAreaShape.Sphere,
+                        0.25f,
+                        5f,
+                        centerOnActivator: true);
                     break;
             }
         }

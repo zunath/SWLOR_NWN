@@ -8,7 +8,8 @@ param(
     [string]$TlkPath = "SWLOR_Haks\swlor2_tlk\swlor2_tlk.tlk",
     [string]$TlkToolPath = "SWLOR_Haks\nwn_tlk.exe",
     [int]$GeneratedFeatStart = 2000,
-    [int]$GeneratedFeatEnd = 2294
+    [int]$GeneratedFeatEnd = 2299,
+    [int[]]$ExcludedGeneratedFeatIds = @(2295)
 )
 
 Set-StrictMode -Version Latest
@@ -244,7 +245,8 @@ function Get-GeneratedFeatLabels {
     param(
         [string]$Path,
         [int]$Start,
-        [int]$End
+        [int]$End,
+        [int[]]$ExcludedRows
     )
 
     $labels = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
@@ -253,7 +255,10 @@ function Get-GeneratedFeatLabels {
     foreach ($line in $lines) {
         $tokens = Convert-ToStringList $line
         $rowNumber = Get-RowNumber $tokens
-        if ($null -eq $rowNumber -or $rowNumber -lt $Start -or $rowNumber -gt $End) {
+        if ($null -eq $rowNumber -or
+            $rowNumber -lt $Start -or
+            $rowNumber -gt $End -or
+            $ExcludedRows -contains $rowNumber) {
             continue
         }
 
@@ -430,7 +435,7 @@ function Update-TlkJsonEntries {
         }
 
         $insertText = "," + $newline + (($entryBlocks -join ("," + $newline)))
-        $closingPattern = [regex]::Escape($newline) + "  \]" + [regex]::Escape($newline) + "\}$"
+        $closingPattern = [regex]::Escape($newline) + "  \]" + [regex]::Escape($newline) + "\}\s*$"
         if ($raw -notmatch $closingPattern) {
             throw "Could not locate TLK JSON entries closing block in '$Path'."
         }
@@ -457,7 +462,7 @@ $tlkToolPath = Resolve-RepoPath $TlkToolPath
 
 $manifestInfo = Get-ManifestFeatInfo $manifestPath
 $perkInfo = Get-PerkDefinitionFeatInfo $perkDefinitionPath
-$generatedLabels = Get-GeneratedFeatLabels $feat2daPath $GeneratedFeatStart $GeneratedFeatEnd
+$generatedLabels = Get-GeneratedFeatLabels $feat2daPath $GeneratedFeatStart $GeneratedFeatEnd $ExcludedGeneratedFeatIds
 $rawTlkInfo = Get-RawTlkOpenSlots $tlkToolPath $tlkPath
 
 $featInfo = @{}
@@ -583,7 +588,10 @@ for ($i = $featHeaderIndex + 1; $i -lt $featLines.Count; $i++) {
     }
 
     $label = Get-TokenByHeader $tokens $featHeaders "LABEL"
-    if ($rowNumber -ge $GeneratedFeatStart -and $rowNumber -le $GeneratedFeatEnd -and $label -ne "****") {
+    if ($rowNumber -ge $GeneratedFeatStart -and
+        $rowNumber -le $GeneratedFeatEnd -and
+        $ExcludedGeneratedFeatIds -notcontains $rowNumber -and
+        $label -ne "****") {
         $key = $label.ToLowerInvariant()
         if (!$strRefsByLabel.ContainsKey($key)) {
             throw "No TLK string refs found for generated feat label '$label'."
@@ -620,7 +628,8 @@ for ($i = $spellsHeaderIndex + 1; $i -lt $spellsLines.Count; $i++) {
     $featIdNumber = 0
     if (![int]::TryParse($featId, [ref]$featIdNumber) -or
         $featIdNumber -lt $GeneratedFeatStart -or
-        $featIdNumber -gt $GeneratedFeatEnd) {
+        $featIdNumber -gt $GeneratedFeatEnd -or
+        $ExcludedGeneratedFeatIds -contains $featIdNumber) {
         continue
     }
 

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -12,41 +13,90 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
         {
             var builder = new AbilityBuilder();
 
-            ConfigureWeapon(
+            ConfigureSideAssault(
                 builder
                     .Create(FeatType.SideAssault1, PerkType.SideAssault)
                     .Name("Side Assault I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.SideAssault, 3f),
-                SkillType.Spear,
+                    .HasRecastDelay(RecastGroup.SideAssault, 12f),
                 12,
-                0,
-                null,
-                4);
-            ConfigureWeapon(
+                16,
+                6);
+            ConfigureSideAssault(
                 builder
                     .Create(FeatType.SideAssault2, PerkType.SideAssault)
                     .Name("Side Assault II")
                     .Level(2)
-                    .HasRecastDelay(RecastGroup.SideAssault, 3f),
-                SkillType.Spear,
+                    .HasRecastDelay(RecastGroup.SideAssault, 12f),
                 25,
-                0,
-                null,
-                6);
-            ConfigureWeapon(
+                35,
+                12);
+            ConfigureSideAssault(
                 builder
                     .Create(FeatType.SideAssault3, PerkType.SideAssault)
                     .Name("Side Assault III")
                     .Level(3)
-                    .HasRecastDelay(RecastGroup.SideAssault, 3f),
-                SkillType.Spear,
+                    .HasRecastDelay(RecastGroup.SideAssault, 12f),
                 35,
-                0,
-                null,
-                8);
+                50,
+                18);
 
             return builder.Build();
+        }
+
+        private static void ConfigureSideAssault(
+            AbilityBuilder ability,
+            int baseDamage,
+            int sideDamage,
+            int stamina)
+        {
+            ability.HasActivationDelay(0f)
+                .SkillType(SkillType.Spear)
+                .IsSingleTargetAbility()
+                .HasImpactAction((activator, target, level, targetLocation) =>
+                {
+                    var damage = IsAttackerBesideTarget(activator, target)
+                        ? sideDamage
+                        : baseDamage;
+
+                    Ability.ApplyCombatImpact(
+                        activator,
+                        target,
+                        targetLocation,
+                        SkillType.Spear,
+                        damage,
+                        0,
+                        null,
+                        false);
+                })
+                .IsWeaponAbility()
+                .IsHostileAbility()
+                .BreaksStealth()
+                .RequirementStamina(stamina);
+        }
+
+        private static bool IsAttackerBesideTarget(uint attacker, uint defender)
+        {
+            if (!GetIsObjectValid(attacker) ||
+                !GetIsObjectValid(defender) ||
+                GetArea(attacker) != GetArea(defender))
+                return false;
+
+            var defenderPosition = GetPosition(defender);
+            var attackerPosition = GetPosition(attacker);
+            var deltaX = attackerPosition.X - defenderPosition.X;
+            var deltaY = attackerPosition.Y - defenderPosition.Y;
+            var distance = Math.Sqrt(deltaX * deltaX + deltaY * deltaY);
+            if (distance <= 0.001)
+                return false;
+
+            var facingRadians = GetFacing(defender) * Math.PI / 180.0;
+            var forwardX = Math.Cos(facingRadians);
+            var forwardY = Math.Sin(facingRadians);
+            var dot = Math.Clamp((forwardX * deltaX + forwardY * deltaY) / distance, -1.0, 1.0);
+            var angleDegrees = Math.Acos(dot) * 180.0 / Math.PI;
+
+            return angleDegrees >= 45.0 && angleDegrees <= 135.0;
         }
     }
 }

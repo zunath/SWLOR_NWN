@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
                     .HasRecastDelay(RecastGroup.ShieldWall, 120f),
                 typeof(ShieldWallStatusEffect),
                 60f,
-                15,
+                10,
                 true);
 
             return builder.Build();

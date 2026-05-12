@@ -247,26 +247,7 @@ namespace SWLOR.Game.Server.Service
 
             var creditFinderLevel = Perk.GetPerkLevel(attacker, PerkType.CreditFinder);
             var treasureHunterLevel = Perk.GetPerkLevel(attacker, PerkType.TreasureHunter) * 10;
-            var sniffLevel = Perk.GetPerkLevel(attacker, PerkType.Sniff);
-            switch (sniffLevel)
-            {
-                case 1:
-                    sniffLevel = 8;
-                    break;
-                case 2:
-                    sniffLevel = 15;
-                    break;
-                case 3:
-                    sniffLevel = 25;
-                    break;
-                default:
-                    sniffLevel = 0;
-                    break;
-            }
-
             var rareBonusChance = treasureHunterLevel;
-            if (sniffLevel > rareBonusChance)
-                rareBonusChance = sniffLevel;
 
             if (creditFinderLevel > currentCreditFinder)
             {

@@ -19,8 +19,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                     .HasRecastDelay(RecastGroup.ImprovedAttentiveness, 300f),
                 typeof(ImprovedAttentivenessStatusEffect),
                 60f,
-                25,
-                false);
+                8,
+                false,
+                2f);
 
             return builder.Build();
         }

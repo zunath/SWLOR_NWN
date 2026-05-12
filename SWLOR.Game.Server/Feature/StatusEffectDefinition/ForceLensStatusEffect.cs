@@ -15,8 +15,11 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         protected override void Apply(uint creature, int durationTicks)
         {
-            if (Source == creature)
-                StatGroup.Stats[StatType.AttackDeflection] = 10;
+            if (Source != creature)
+                return;
+
+            StatGroup.Stats.Remove(StatType.ForceDefensePercentAdjustment);
+            StatGroup.Stats[StatType.AttackDeflection] = 10;
         }
     }
 }

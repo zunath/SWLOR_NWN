@@ -17,7 +17,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 builder
                     .Create(FeatType.InterruptionStrike1, PerkType.InterruptionStrike)
                     .Name("Interruption Strike I")
-                    .Level(1),
+                    .Level(1)
+                    .HasRecastDelay(RecastGroup.InterruptionStrike, 30f),
                 SkillType.Spear,
                 0,
                 30,
@@ -28,12 +29,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 builder
                     .Create(FeatType.InterruptionStrike2, PerkType.InterruptionStrike)
                     .Name("Interruption Strike II")
-                    .Level(2),
+                    .Level(2)
+                    .HasRecastDelay(RecastGroup.InterruptionStrike, 30f),
                 SkillType.Spear,
                 0,
                 30,
                 typeof(FoggyMindStatusEffect),
-                7,
+                8,
                 FoggyMind(2));
 
             return builder.Build();

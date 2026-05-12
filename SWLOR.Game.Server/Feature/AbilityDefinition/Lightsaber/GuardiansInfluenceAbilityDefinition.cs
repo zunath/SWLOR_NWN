@@ -20,8 +20,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                     .HasRecastDelay(RecastGroup.GuardiansInfluence, 300f),
                 typeof(DeflectingAuraStatusEffect),
                 60f,
-                15,
-                false);
+                7,
+                false,
+                2f);
 
             return builder.Build();
         }

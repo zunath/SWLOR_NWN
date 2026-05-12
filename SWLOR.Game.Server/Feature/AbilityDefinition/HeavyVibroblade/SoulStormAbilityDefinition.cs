@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
                     SacrificeHitPoints(activator, 40, 10);
-                    ApplyStatusToNearbyParty(activator, typeof(SoulStormStatusEffect), 30f, true);
+                    ApplyStatusToNearbyParty(activator, typeof(SoulStormStatusEffect), 60f, true);
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Howl_Mind), activator);
                 })
                 .IsCastedAbility()

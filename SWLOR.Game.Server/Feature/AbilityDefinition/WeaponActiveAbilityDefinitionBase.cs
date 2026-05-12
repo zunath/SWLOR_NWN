@@ -240,9 +240,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 ability.RequirementStamina(stamina);
         }
 
-        protected static void ConfigurePartyStatus(AbilityBuilder ability, Type type, float duration, int stamina, bool includeSelf)
+        protected static void ConfigurePartyStatus(AbilityBuilder ability, Type type, float duration, int stamina, bool includeSelf, float activationDelay = 0f)
         {
-            ability.HasActivationDelay(0f)
+            ability.HasActivationDelay(activationDelay)
                 .HasImpactAction((activator, target, level, targetLocation) => ApplyStatusToNearbyParty(activator, type, duration, includeSelf))
                 .IsCastedAbility()
                 .BreaksStealth();

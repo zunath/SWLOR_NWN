@@ -43,15 +43,12 @@ public interface IAbilityListDefinition
 Ability definitions use the `AbilityBuilder` to create abilities with a fluent interface:
 
 ```csharp
-public class ForceLightningAbilityDefinition : IAbilityListDefinition
+public class SmokeBombAbilityDefinition : IAbilityListDefinition
 {
     public Dictionary<FeatType, AbilityDetail> BuildAbilities()
     {
         var builder = new AbilityBuilder();
-        ForceLightning1(builder);
-        ForceLightning2(builder);
-        ForceLightning3(builder);
-        ForceLightning4(builder);
+        SmokeBomb(builder);
 
         return builder.Build();
     }
@@ -64,20 +61,18 @@ public class ForceLightningAbilityDefinition : IAbilityListDefinition
 
 Casted abilities have a casting time and are typically used for Force powers and spells.
 
-**Example: Force Lightning**
+**Example: Smoke Bomb**
 
 ```csharp
-private static void ForceLightning1(AbilityBuilder builder)
+private static void SmokeBomb(AbilityBuilder builder)
 {
-    builder.Create(FeatType.ForceLightning1, PerkType.ForceLightning)
-        .Name("Force Lightning I")
+    builder.Create(FeatType.SmokeBomb, PerkType.SmokeBomb)
+        .Name("Smoke Bomb")
         .Level(1)
-        .HasRecastDelay(RecastGroup.ForceLightning, 30f)
         .HasActivationDelay(2f)
-        .HasMaxRange(30.0f)
+        .HasRecastDelay(RecastGroup.SmokeBomb, 30f)
         .IsCastedAbility()
         .IsHostileAbility()
-        .UsesAnimation(Animation.LoopingConjure1)
         .HasImpactAction(ImpactAction);
 }
 ```
@@ -93,16 +88,16 @@ private static void ForceLightning1(AbilityBuilder builder)
 
 Weapon abilities trigger on the next weapon hit and are used for combat skills.
 
-**Example: Bite**
+**Example: Anger Strike**
 
 ```csharp
-private void Bite1()
+private static void AngerStrike(AbilityBuilder builder)
 {
-    _builder.Create(FeatType.Bite1, PerkType.Bite)
-        .Name("Bite I")
+    builder.Create(FeatType.AngerStrike1, PerkType.AngerStrike)
+        .Name("Anger Strike")
         .Level(1)
-        .HasRecastDelay(RecastGroup.Bite, 30f)
-        .RequirementStamina(3)
+        .HasRecastDelay(RecastGroup.AngerStrike, 45f)
+        .RequirementStamina(4)
         .IsWeaponAbility()
         .HasImpactAction(ImpactAction);
 }
@@ -113,28 +108,28 @@ private void Bite1()
 - No activation delay (triggers on next hit)
 - Typically shorter cooldowns
 
-### 3. Concentration Abilities
+### 3. Toggle Abilities
 
-Concentration abilities stay active and drain resources until turned off.
+Toggle abilities apply or remove a persistent status effect.
 
-**Example: Force Shield**
+**Example: Bastion Stance**
 
 ```csharp
-private static void ForceShield1(AbilityBuilder builder)
+private static void BastionStance(AbilityBuilder builder)
 {
-    builder.Create(FeatType.ForceShield1, PerkType.ForceShield)
-        .Name("Force Shield I")
+    builder.Create(FeatType.BastionStance1, PerkType.BastionStance)
+        .Name("Bastion Stance")
         .Level(1)
-        .IsConcentrationAbility(typeof(ForceShield1StatusEffect))
-        .RequirementFP(1)
-        .HasImpactAction(ImpactAction);
+        .HasRecastDelay(RecastGroup.BastionStance, 180f)
+        .HasActivationAction((activator, target, level, targetLocation) => ToggleSelfStatus(activator, typeof(BastionStanceStatusEffect)))
+        .HasImpactAction((activator, target, level, targetLocation) => ApplySelfStatus(activator, typeof(BastionStanceStatusEffect)));
 }
 ```
 
 **Key Features:**
-- `IsConcentrationAbility(Type)` - Marks as concentration ability
+- `HasActivationAction(AbilityActivationAction)` - Runs when activating the ability
 - Requires corresponding status effect
-- Drains resources over time
+- Usually toggles one stance/status at a time
 
 ## Common Ability Builder Methods
 
@@ -280,11 +275,11 @@ Located in `Feature/AbilityDefinition/FirstAid/`, `Leadership/`
 
 ```csharp
 // Good
-builder.Create(FeatType.ForceLightning1, PerkType.ForceLightning)
-    .Name("Force Lightning I")
+builder.Create(FeatType.SmokeBomb, PerkType.SmokeBomb)
+    .Name("Smoke Bomb")
 
 // Bad
-builder.Create(FeatType.ForceLightning1, PerkType.ForceLightning)
+builder.Create(FeatType.SmokeBomb, PerkType.SmokeBomb)
     .Name("Lightning Bolt I")
 ```
 

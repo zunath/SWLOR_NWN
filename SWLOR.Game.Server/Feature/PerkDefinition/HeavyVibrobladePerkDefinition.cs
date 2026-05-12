@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.AbsoluteDefense1)
-                .Description("All party members, excluding you, gain +40% Defense, +40% Force Defense, and immunity to Knockdown and Dazed for 15 seconds. Your HP, STM, and FP are restored by 25% of maximum.")
+                .Description("All party members, excluding you, take 25% less physical and Force damage and become immune to Knockdown and Dazed for 15 seconds. Your HP, STM, and FP are restored by 25% of maximum.")
                 .Price(4)
                 .RequirementSkill(SkillType.HeavyVibroblade, 50);
         }
@@ -107,8 +107,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Blood Weapon")
 
                 .AddPerkLevel()
-                .Description("2% of the combat damage you deal is restored to your HP.")
-                .IncreasesStat(StatType.DamageDealtHPPercentRestore, 2)
+                .GrantsFeat(FeatType.BloodWeapon1)
+                .Description("For 20 seconds, 2% of the combat damage you deal is restored to your HP.")
                 .Price(3)
                 .RequirementSkill(SkillType.HeavyVibroblade, 45);
         }
@@ -248,6 +248,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.HeavyVibroblade, 25)
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.FortressStrike3)
                 .Description("Your next attack deals weapon DMG + 30 and generates extra enmity. You gain +30% Physical Defense for 16 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.HeavyVibroblade, 42);
@@ -318,7 +319,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Rampart1)
-                .Description("All allies within the area of effect (sphere) from you receive a +25% Defense bonus for 1 minute.")
+                .Description("All allies within the area of effect (sphere) take 15% less physical damage for 1 minute.")
                 .Price(4)
                 .RequirementSkill(SkillType.HeavyVibroblade, 32);
         }
@@ -439,7 +440,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SoulStorm1)
-                .Description("Sacrifice 40% HP to raise the Attack of all nearby allies in area of effect (sphere) to you by 35%. HP sacrificed decreases by 1% per MGT. (Minimum 10%)")
+                .Description("Sacrifice 40% HP to increase the damage of all nearby allies within the area of effect (sphere) by 20% for 1 minute. HP sacrificed decreases by 1 percentage point per MGT. (Minimum 10%)")
                 .Price(3)
                 .RequirementSkill(SkillType.HeavyVibroblade, 38);
         }

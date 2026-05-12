@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override EffectIconType Icon => EffectIconType.DamageIncrease;
         public SoulStormStatusEffect()
         {
-            StatGroup.Stats[StatType.AttackPercentAdjustment] = 35;
+            StatGroup.Stats[StatType.AttackPercentAdjustment] = 20;
         }
 
     }

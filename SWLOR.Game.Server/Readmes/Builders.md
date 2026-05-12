@@ -23,15 +23,13 @@ The AbilityBuilder is used to create player abilities and combat skills. It's on
 
 ```csharp
 var builder = new AbilityBuilder();
-builder.Create(FeatType.ForceLightning1, PerkType.ForceLightning)
-    .Name("Force Lightning I")
+builder.Create(FeatType.SmokeBomb, PerkType.SmokeBomb)
+    .Name("Smoke Bomb")
     .Level(1)
-    .HasRecastDelay(RecastGroup.ForceLightning, 30f)
     .HasActivationDelay(2f)
-    .HasMaxRange(30.0f)
+    .HasRecastDelay(RecastGroup.SmokeBomb, 30f)
     .IsCastedAbility()
     .IsHostileAbility()
-    .UsesAnimation(Animation.LoopingConjure1)
     .HasImpactAction(ImpactAction);
 ```
 
@@ -52,20 +50,18 @@ builder.Create(FeatType.ForceLightning1, PerkType.ForceLightning)
 - **RequirementFP(int)** - Set Force Point cost
 - **RequirementStamina(int)** - Set Stamina cost
 
-#### Example from ForceLightningAbilityDefinition.cs
+#### Example from SmokeBombAbilityDefinition.cs
 
 ```csharp
-private static void ForceLightning1(AbilityBuilder builder)
+private static void SmokeBomb(AbilityBuilder builder)
 {
-    builder.Create(FeatType.ForceLightning1, PerkType.ForceLightning)
-        .Name("Force Lightning I")
+    builder.Create(FeatType.SmokeBomb, PerkType.SmokeBomb)
+        .Name("Smoke Bomb")
         .Level(1)
-        .HasRecastDelay(RecastGroup.ForceLightning, 30f)
         .HasActivationDelay(2f)
-        .HasMaxRange(30.0f)
+        .HasRecastDelay(RecastGroup.SmokeBomb, 30f)
         .IsCastedAbility()
         .IsHostileAbility()
-        .UsesAnimation(Animation.LoopingConjure1)
         .HasImpactAction(ImpactAction);
 }
 ```
@@ -80,9 +76,9 @@ The PerkBuilder creates player perks that can be purchased with skill points. Pe
 
 ```csharp
 var builder = new PerkBuilder();
-builder.Create(PerkCategoryType.Force, PerkType.ForceLightning)
-    .Name("Force Lightning")
-    .Description("Unleash devastating lightning from your fingertips.")
+builder.Create(PerkCategoryType.HeavyVibrobladeDefense, PerkType.AngerStrike)
+    .Name("Anger Strike")
+    .Description("A defensive heavy vibroblade strike that generates enmity.")
     .AddPerkLevel()
     .Price(1)
     .Description("Deals electrical damage to enemies.")
@@ -430,10 +426,9 @@ builder.Create("rat_loot")
 
 ```csharp
 var builder = new AbilityBuilder();
-ForceLightning1(builder);
-ForceLightning2(builder);
-ForceLightning3(builder);
-ForceLightning4(builder);
+AngerStrike(builder);
+BloodWeapon(builder);
+FortressStrike(builder);
 return builder.Build();
 ```
 
@@ -441,14 +436,14 @@ return builder.Build();
 
 ```csharp
 var builder = new PerkBuilder();
-builder.Create(PerkCategoryType.Force, PerkType.ForceLightning)
-    .Name("Force Lightning");
+builder.Create(PerkCategoryType.HeavyVibrobladeDefense, PerkType.AngerStrike)
+    .Name("Anger Strike");
 
 if (isActive)
 {
     builder.AddPerkLevel()
         .Price(1)
-        .Description("Basic lightning attack");
+        .Description("Defensive heavy vibroblade strike");
 }
 ```
 

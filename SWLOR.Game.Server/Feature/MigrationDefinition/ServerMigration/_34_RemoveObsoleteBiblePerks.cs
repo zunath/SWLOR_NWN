@@ -77,35 +77,75 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             { PerkType.FocusAttention, (3, new[] { 2, 2, 2, 3, 3 }) },
         };
 
+        // Numeric ids are intentional: the old enum names were deleted and some ids have been reused by new Bible abilities.
         private static readonly HashSet<RecastGroup> ObsoleteRecastGroups = new()
         {
-            RecastGroup.BurstOfSpeed,
-            RecastGroup.ForceHeal,
-            RecastGroup.ThrowLightsaber,
-            RecastGroup.ForceStun,
-            RecastGroup.BattleInsight,
-            RecastGroup.ForceBurst,
-            RecastGroup.ForceMind,
-            RecastGroup.KoltoRecovery,
-            RecastGroup.StasisField,
-            RecastGroup.CombatEnhancement,
-            RecastGroup.StealthGenerator,
-            RecastGroup.Premonition,
-            RecastGroup.Disturbance,
-            RecastGroup.ForceValor,
-            RecastGroup.ThrowRock,
-            RecastGroup.ForceInspiration,
-            RecastGroup.FlashbangGrenade,
-            RecastGroup.KoltoGrenade,
-            RecastGroup.KoltoBomb,
-            RecastGroup.IncendiaryBomb,
-            RecastGroup.GasBomb,
-            RecastGroup.DiseasedTouch,
-            RecastGroup.Clip,
-            RecastGroup.SpinningClaw,
-            RecastGroup.FlameBreath,
-            RecastGroup.ShockingSlash,
-            RecastGroup.BolsterArmor,
+            (RecastGroup)1, // BurstOfSpeed
+            (RecastGroup)2, // ForceHeal
+            (RecastGroup)3, // ForcePush
+            (RecastGroup)4, // ThrowLightsaber
+            (RecastGroup)5, // ForceStun
+            (RecastGroup)6, // BattleInsight
+            (RecastGroup)7, // ComprehendSpeech
+            (RecastGroup)8, // MindTrick
+            (RecastGroup)9, // ForceBurst
+            (RecastGroup)10, // ForceBody
+            (RecastGroup)11, // ForceDrain
+            (RecastGroup)12, // ForceLightning
+            (RecastGroup)13, // ForceMind
+            (RecastGroup)14, // ForceLeap
+            (RecastGroup)15, // FragGrenade
+            (RecastGroup)25, // MedKit
+            (RecastGroup)26, // KoltoRecovery
+            (RecastGroup)27, // Resuscitation
+            (RecastGroup)28, // TreatmentKit
+            (RecastGroup)29, // StasisField
+            (RecastGroup)30, // CombatEnhancement
+            (RecastGroup)31, // Shielding
+            (RecastGroup)32, // Bombs
+            (RecastGroup)33, // StealthGenerator
+            (RecastGroup)34, // Flamethrower
+            (RecastGroup)35, // WristRocket
+            (RecastGroup)36, // DeflectorShield
+            (RecastGroup)39, // Premonition
+            (RecastGroup)40, // Disturbance
+            (RecastGroup)41, // Benevolence
+            (RecastGroup)42, // ForceValor
+            (RecastGroup)43, // ForceSpark
+            (RecastGroup)44, // CreepingTerror
+            (RecastGroup)45, // ForceRage
+            (RecastGroup)46, // Furor
+            (RecastGroup)47, // ThrowRock
+            (RecastGroup)48, // ForceInspiration
+            (RecastGroup)49, // RousingShout
+            (RecastGroup)61, // Infusion
+            (RecastGroup)64, // ConcussionGrenade
+            (RecastGroup)65, // FlashbangGrenade
+            (RecastGroup)66, // IonGrenade
+            (RecastGroup)67, // KoltoGrenade
+            (RecastGroup)68, // AdhesiveGrenade
+            (RecastGroup)70, // KoltoBomb
+            (RecastGroup)71, // IncendiaryBomb
+            (RecastGroup)72, // GasBomb
+            (RecastGroup)79, // DiseasedTouch
+            (RecastGroup)80, // Clip
+            (RecastGroup)81, // SpinningClaw
+            (RecastGroup)82, // FlameBreath
+            (RecastGroup)83, // ShockingSlash
+            (RecastGroup)84, // BolsterArmor
+            (RecastGroup)85, // Anger
+            (RecastGroup)86, // AOEAnger
+            (RecastGroup)87, // Claw
+            (RecastGroup)88, // BolsterAttack
+            (RecastGroup)89, // Hasten
+            (RecastGroup)90, // PoisonBreath
+            (RecastGroup)91, // IceBreath
+            (RecastGroup)92, // EvasiveManeuver
+            (RecastGroup)93, // Assault
+            (RecastGroup)94, // ForceTouch
+            (RecastGroup)95, // Innervate
+            (RecastGroup)96, // ForceRestore
+            (RecastGroup)97, // AdrenalStim
         };
 
         public int Version => 34;

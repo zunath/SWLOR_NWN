@@ -26,10 +26,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 .Name("Fracture Strike")
                 .Level(1)
                 .HasActivationDelay(0f)
+                .HasRecastDelay(RecastGroup.FractureStrike, 90f)
                 .HasImpactAction(ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
-                .BreaksStealth();
+                .BreaksStealth()
+                .RequirementStamina(10);
         }
 
         private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)

@@ -10,8 +10,6 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override EffectIconType Icon => EffectIconType.ACIncrease;
         public SentinelGuardStatusEffect()
         {
-            StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment] = 10;
-            StatGroup.Stats[StatType.ForceDefensePercentAdjustment] = 10;
             StatGroup.Stats[StatType.AttackDeflection] = 10;
         }
 
@@ -19,6 +17,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             if (creature == Source)
             {
+                StatGroup.Stats.Remove(StatType.AttackDeflection);
                 StatGroup.Stats[StatType.EnmityPercentAdjustment] = 20;
             }
         }

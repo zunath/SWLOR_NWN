@@ -59,22 +59,18 @@ Feature/
 **Location**: `Feature/AbilityDefinition/`
 
 **Categories**:
-- **Force** - Force powers and abilities
-- **Combat** - explicit weapon combat abilities
-- **Support** - FirstAid, Leadership abilities
-- **Special** - Beastmaster and Devices abilities
+- **Combat** - weapon combat abilities
+- **Support** - Leadership and companion abilities
+- **Special** - Beastmaster and utility abilities
 
 **Example Structure**:
 ```csharp
-public class ForceLightningAbilityDefinition : IAbilityListDefinition
+public class SmokeBombAbilityDefinition : IAbilityListDefinition
 {
     public Dictionary<FeatType, AbilityDetail> BuildAbilities()
     {
         var builder = new AbilityBuilder();
-        ForceLightning1(builder);
-        ForceLightning2(builder);
-        ForceLightning3(builder);
-        ForceLightning4(builder);
+        SmokeBomb(builder);
         return builder.Build();
     }
 }
@@ -149,17 +145,17 @@ public class KillRatsQuestDefinition : IQuestListDefinition
 
 **Example**:
 ```csharp
-public class ForceLightningPerkDefinition : IPerkListDefinition
+public class AngerStrikePerkDefinition : IPerkListDefinition
 {
     public Dictionary<PerkType, PerkDetail> BuildPerks()
     {
         var builder = new PerkBuilder();
-        builder.Create(PerkCategoryType.Force, PerkType.ForceLightning)
-            .Name("Force Lightning")
-            .Description("Unleash devastating lightning from your fingertips.")
+        builder.Create(PerkCategoryType.HeavyVibrobladeDefense, PerkType.AngerStrike)
+            .Name("Anger Strike")
+            .Description("A defensive heavy vibroblade strike that generates enmity.")
             .AddPerkLevel()
             .Price(1)
-            .Description("Deals electrical damage to enemies.");
+            .Description("Deals damage and increases enmity.");
         return builder.Build();
     }
 }
@@ -385,7 +381,7 @@ Feature files follow consistent naming:
 ```
 
 Examples:
-- `ForceLightningAbilityDefinition.cs`
+- `SmokeBombAbilityDefinition.cs`
 - `HealthPotionItemDefinition.cs`
 - `KillRatsQuestDefinition.cs`
 - `XWingShipDefinition.cs`
@@ -469,7 +465,7 @@ public void TestMyNewAbility()
 
 ```csharp
 // Good naming
-public class ForceLightningAbilityDefinition : IAbilityListDefinition
+public class SmokeBombAbilityDefinition : IAbilityListDefinition
 public class HealthPotionItemDefinition : IItemListDefinition
 public class KillRatsQuestDefinition : IQuestListDefinition
 
@@ -483,9 +479,9 @@ public class Quest : IQuestListDefinition
 
 ```csharp
 // Organize by category
-Feature/AbilityDefinition/Force/ForceLightningAbilityDefinition.cs
-Feature/AbilityDefinition/Force/ForcePushAbilityDefinition.cs
-Feature/AbilityDefinition/Blade/PowerAttackAbilityDefinition.cs
+Feature/AbilityDefinition/Vibroknife/SmokeBombAbilityDefinition.cs
+Feature/AbilityDefinition/HeavyVibroblade/AngerStrikeAbilityDefinition.cs
+Feature/AbilityDefinition/Staff/RibBreakerAbilityDefinition.cs
 ```
 
 ### 3. Reusable Components

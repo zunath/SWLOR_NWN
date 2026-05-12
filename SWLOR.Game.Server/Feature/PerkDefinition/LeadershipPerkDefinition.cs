@@ -18,7 +18,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             CityManagement();
             Upkeep();
             GuildRelations();
-            RousingShout();
 
             return _builder.Build();
         }
@@ -134,28 +133,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Leadership, 20);
         }
 
-
-        private void RousingShout()
-        {
-            _builder.Create(PerkCategoryType.Leadership, PerkType.RousingShout)
-                .Name("Rousing Shout")
-
-                .AddPerkLevel()
-                .Description("Revives an unconscious ally with 1 HP and temporary HP equal to 4% of maximum HP plus SOC scaling for 10 seconds.")
-                .Price(2)
-                .RequirementSkill(SkillType.Leadership, 5)
-                .GrantsFeat(FeatType.RousingShout)
-
-                .AddPerkLevel()
-                .Description("Revives an unconscious ally with 8% HP plus SOC scaling and temporary HP equal to 6% of maximum HP plus SOC scaling for 10 seconds.")
-                .Price(3)
-                .RequirementSkill(SkillType.Leadership, 18)
-
-                .AddPerkLevel()
-                .Description("Revives an unconscious ally with 14% HP plus SOC scaling, grants temporary HP equal to 8% of maximum HP plus SOC scaling, and reduces damage taken for 10 seconds.")
-                .Price(4)
-                .RequirementSkill(SkillType.Leadership, 40);
-        }
     }
 }
 

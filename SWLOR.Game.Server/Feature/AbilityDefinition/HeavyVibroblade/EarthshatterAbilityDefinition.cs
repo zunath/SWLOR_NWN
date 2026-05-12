@@ -26,10 +26,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .Name("Earthshatter")
                 .Level(1)
                 .HasActivationDelay(0f)
+                .HasRecastDelay(RecastGroup.Earthshatter, 90f)
                 .HasImpactAction(ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
-                .BreaksStealth();
+                .BreaksStealth()
+                .RequirementStamina(12);
         }
 
         private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)

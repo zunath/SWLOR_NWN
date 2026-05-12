@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.BrutalAssault1)
-                .Description("Allies within the area of effect (sphere) receive Brutal Assault which increases their critical hit rate by 10% for 1 minute. You do not receive this benefit.")
+                .Description("Allies within the area of effect (sphere) gain +10% critical hit chance for 1 minute. You do not receive this benefit.")
                 .Price(3)
                 .RequirementSkill(SkillType.Lightsaber, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
@@ -270,7 +270,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GuardiansInfluence1)
-                .Description("Allies within the area of effect (sphere) receive Deflecting Aura which increases their attack deflection by 15 for 1 minute. You do not receive this benefit.")
+                .Description("Allies within the area of effect (sphere) gain +15 attack deflection chance for 1 minute. You do not receive this benefit.")
                 .Price(3)
                 .RequirementSkill(SkillType.Lightsaber, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
@@ -338,7 +338,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.OverwhelmingStrike1)
-                .Description("You deal weapon DMG + 15 to all enemies in the area of effect (cone) in front of you. Inflicts Sunder which reduces physical and Force Defense by 15% for 30 seconds.")
+                .Description("You deal weapon DMG + 15 to all enemies in the area of effect (cone) in front of you. Inflicts Sunder which reduces defense and force defense by 15% for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Lightsaber, 25)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
@@ -366,7 +366,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Purify1)
-                .Description("One debuff is removed from you and mirrored to a nearby enemy.")
+                .Description("One debuff is removed from you. A nearby enemy is inflicted with the removed debuff.")
                 .Price(2)
                 .RequirementSkill(SkillType.Lightsaber, 30)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
@@ -414,7 +414,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Saber Storm")
 
                 .AddPerkLevel()
-                .Description("Enemies within the area of effect (sphere) around you are dealt weapon DMG + 60.  Inflicts Sunder which reduces physical and Force Defense by 25% for 30 seconds.")
+                .GrantsFeat(FeatType.SaberStorm1)
+                .Description("Enemies within the area of effect (sphere) around you are dealt weapon DMG + 60. Inflicts Sunder which reduces defense and force defense by 25% for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Lightsaber, 50)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
@@ -469,6 +470,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Thunderous Challenge")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.ThunderousChallenge1)
                 .Description("Deals weapon DMG + 35 to enemies within the area of effect (line) from your position and gain increased enmity toward you.")
                 .Price(4)
                 .RequirementSkill(SkillType.Lightsaber, 45)

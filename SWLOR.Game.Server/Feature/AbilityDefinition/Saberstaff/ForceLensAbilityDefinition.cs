@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                     .HasRecastDelay(RecastGroup.ForceLens, 120f),
                 typeof(ForceLensStatusEffect),
                 45f,
-                15,
+                8,
                 true);
 
             return builder.Build();

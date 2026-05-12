@@ -26,6 +26,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .Name("Bloodlust")
                 .Level(1)
                 .HasActivationDelay(0f)
+                .HasRecastDelay(RecastGroup.Bloodlust, 180f)
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
                     SacrificeHitPoints(activator, 40, 10);

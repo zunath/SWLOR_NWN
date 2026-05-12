@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                     .HasRecastDelay(RecastGroup.ShelterCircle, 180f),
                 typeof(ShelterCircleStatusEffect),
                 15f,
-                20,
+                12,
                 true);
 
             return builder.Build();

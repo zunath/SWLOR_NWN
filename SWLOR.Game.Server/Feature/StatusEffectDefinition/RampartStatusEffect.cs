@@ -10,8 +10,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override EffectIconType Icon => EffectIconType.DamageReduction;
         public RampartStatusEffect()
         {
-            StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment] = 25;
-            StatGroup.Stats[StatType.ForceDefensePercentAdjustment] = 25;
+            StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment] = 15;
         }
 
     }

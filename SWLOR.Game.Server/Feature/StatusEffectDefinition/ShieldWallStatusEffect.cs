@@ -11,8 +11,15 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public ShieldWallStatusEffect()
         {
             StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment] = 15;
-            StatGroup.Stats[StatType.ForceDefensePercentAdjustment] = 15;
         }
 
+        protected override void Apply(uint creature, int durationTicks)
+        {
+            if (Source != creature)
+                return;
+
+            StatGroup.Stats.Remove(StatType.PhysicalDefensePercentAdjustment);
+            StatGroup.Stats[StatType.EnmityPercentAdjustment] = 25;
+        }
     }
 }

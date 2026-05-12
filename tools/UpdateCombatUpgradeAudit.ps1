@@ -334,14 +334,24 @@ function Import-BibleTabRows {
 
         $parsedRows = $lines[$i] | ConvertFrom-Csv -Header $headers.ToArray()
         foreach ($row in $parsedRows) {
+            $name = $row.PerkName
+            $type = $row.Type
+            $devStatus = $row.DevStatus
+            if ([string]::IsNullOrWhiteSpace($name) -or (
+                [string]::IsNullOrWhiteSpace($type) -and
+                [string]::IsNullOrWhiteSpace($devStatus)
+            )) {
+                continue
+            }
+
             $rows.Add([pscustomobject]@{
                 Row = $i + 1
                 Style = $row.Style
                 Price = $row.Price
-                PerkName = $row.PerkName
+                PerkName = $name
                 SkillRequirements = $row.SkillRequirements
                 CharacterType = $row.CharacterType
-                Type = $row.Type
+                Type = $type
                 Description = $row.Description
                 PrimaryStat = $row.PrimaryStat
                 SecondaryStat = $row.SecondaryStat
@@ -351,7 +361,7 @@ function Import-BibleTabRows {
                 STM = $row.STM
                 CastingTime = $row.CastingTime
                 CooldownTime = $row.CooldownTime
-                DevStatus = $row.DevStatus
+                DevStatus = $devStatus
                 AdditionalRequirements = $row.AdditionalRequirements
                 Notes = $row.Notes
             }) | Out-Null
@@ -591,6 +601,12 @@ function Import-BibleWorkbookManifestRows {
                     continue
                 }
 
+                $type = Get-MappedCellValue -Cells $cells -ColumnByHeader $columnByHeader -Header "Type"
+                $devStatus = Get-MappedCellValue -Cells $cells -ColumnByHeader $columnByHeader -Header "DevStatus"
+                if ([string]::IsNullOrWhiteSpace($type) -and [string]::IsNullOrWhiteSpace($devStatus)) {
+                    continue
+                }
+
                 $manifestRows.Add([pscustomobject]@{
                     Tab = $tab
                     Row = $rowNumber
@@ -599,7 +615,7 @@ function Import-BibleWorkbookManifestRows {
                     PerkName = $name
                     SkillRequirements = Get-MappedCellValue -Cells $cells -ColumnByHeader $columnByHeader -Header "SkillRequirements"
                     CharacterType = Get-MappedCellValue -Cells $cells -ColumnByHeader $columnByHeader -Header "CharacterType"
-                    Type = Get-MappedCellValue -Cells $cells -ColumnByHeader $columnByHeader -Header "Type"
+                    Type = $type
                     Description = Get-MappedCellValue -Cells $cells -ColumnByHeader $columnByHeader -Header "Description"
                     PrimaryStat = Get-MappedCellValue -Cells $cells -ColumnByHeader $columnByHeader -Header "PrimaryStat"
                     SecondaryStat = Get-MappedCellValue -Cells $cells -ColumnByHeader $columnByHeader -Header "SecondaryStat"
@@ -609,7 +625,7 @@ function Import-BibleWorkbookManifestRows {
                     STM = Get-MappedCellValue -Cells $cells -ColumnByHeader $columnByHeader -Header "STM"
                     CastingTime = Get-MappedCellValue -Cells $cells -ColumnByHeader $columnByHeader -Header "CastingTime"
                     CooldownTime = Get-MappedCellValue -Cells $cells -ColumnByHeader $columnByHeader -Header "CooldownTime"
-                    DevStatus = Get-MappedCellValue -Cells $cells -ColumnByHeader $columnByHeader -Header "DevStatus"
+                    DevStatus = $devStatus
                     AdditionalRequirements = Get-MappedCellValue -Cells $cells -ColumnByHeader $columnByHeader -Header "AdditionalRequirements"
                     Notes = Get-MappedCellValue -Cells $cells -ColumnByHeader $columnByHeader -Header "Notes"
                 }) | Out-Null

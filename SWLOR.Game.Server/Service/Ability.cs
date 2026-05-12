@@ -753,11 +753,10 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             RemoveEffectByTag(player, "AURA_EFFECT");
-            var shoutRangeLevel = Perk.GetPerkLevel(player, PerkType.ShoutRange);
 
             AssignCommand(player, () =>
             {
-                var auraAOE = GetAuraAOE(shoutRangeLevel);
+                var auraAOE = GetAuraAOE(0);
                 var effect = SupernaturalEffect(EffectAreaOfEffect(auraAOE, "aura_enter", string.Empty, "aura_exit"));
                 effect = TagEffect(effect, "AURA_EFFECT");
                 ApplyEffectToObject(DurationType.Permanent, effect, player);

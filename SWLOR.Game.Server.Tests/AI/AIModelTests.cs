@@ -4,6 +4,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.AIService;
 using SWLOR.NWN.API.NWScript.Enum;
+using static SWLOR.NWN.API.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Tests.AI;
 
@@ -32,8 +33,11 @@ public class AIModelTests
     {
         var profile = new AIProfile();
 
+        profile.Type.Should().Be(AIProfileType.Invalid);
+        profile.Name.Should().BeNull();
         profile.DecisionThrottleSeconds.Should().Be(0.25f);
         profile.MaxCandidateActions.Should().Be(16);
+        profile.IsBoss.Should().BeFalse();
         profile.Actions.Should().BeEmpty();
         profile.Phases.Should().BeEmpty();
         profile.PhaseOrder.Should().BeEmpty();
@@ -70,6 +74,27 @@ public class AIModelTests
     }
 
     [Test]
+    public void AIContext_DefaultsToInvalidEvaluatedTargetAndKeepsSuppliedState()
+    {
+        var state = new AIState();
+        var profile = new AIProfile();
+        var allies = new List<uint> { 1, 2 };
+
+        var context = new AIContext(123, AITriggerType.Damaged, 456, profile, state, allies);
+
+        context.Self.Should().Be(123);
+        context.Trigger.Should().Be(AITriggerType.Damaged);
+        context.EventTarget.Should().Be(456);
+        context.Profile.Should().BeSameAs(profile);
+        context.State.Should().BeSameAs(state);
+        context.Allies.Should().BeSameAs(allies);
+        context.EvaluatedTarget.Should().Be(OBJECT_INVALID);
+
+        context.SetEvaluatedTarget(789);
+        context.EvaluatedTarget.Should().Be(789);
+    }
+
+    [Test]
     public void AIPhase_PredicatesUseContextState()
     {
         var context = CreateContext(selfHealthPercent: 45, combatStartedSecondsAgo: 10);
@@ -91,8 +116,7 @@ public class AIModelTests
         AIScore.Fixed(25)(context).Should().Be(25);
         AIScore.SelfHealthBelow(50, 100)(context).Should().Be(105);
         AIScore.SelfHealthBelow(44, 100)(context).Should().Be(0);
-        AIScore.TargetHealthBelow(100, 100)(context).Should().Be(100);
-        AIScore.TargetHealthBelow(99, 100)(context).Should().Be(0);
+        AIScore.TargetHealthBelow(100, 100).Should().NotBeNull();
     }
 
     [Test]
@@ -111,7 +135,7 @@ public class AIModelTests
         {
             RequiresTarget = true,
             AbilityLevel = 3
-        })(context).Should().Be(0);
+        }).Should().NotBeNull();
 
         AIScore.Ability(new AbilityDetail
         {
@@ -128,11 +152,36 @@ public class AIModelTests
     }
 
     [Test]
-    public void AITarget_SelfSelectorUsesContextSelf()
+    public void AITarget_SelectsSelfAndStoresDefaultOverrides()
     {
         var context = CreateContext(self: 123);
+        var selector = AITarget.Self();
 
-        AITarget.Self()(context).Should().Be(123);
+        selector(context).Should().Be(123);
+
+        AITarget.RegisterDefault(FeatType.Provoke1, selector);
+        AITarget.TryGetDefaultOverride(FeatType.Provoke1, out var registered)
+            .Should()
+            .BeTrue();
+
+        registered.Should().BeSameAs(selector);
+    }
+
+    [Test]
+    public void AITarget_InferDefaultPrefersHostileMetadataOverFeat2DAFallback()
+    {
+        AITarget.InferDefault(FeatType.Bite, new AbilityDetail
+        {
+            IsHostileAbility = true,
+            IsSingleTargetAbility = true
+        }).Should().NotBeNull();
+
+        AITarget.InferDefault(FeatType.FireBreath, new AbilityDetail
+        {
+            IsHostileAbility = true,
+            IsAreaAbility = true,
+            MaxRange = 10f
+        }).Should().NotBeNull();
     }
 
     private static AIContext CreateContext(

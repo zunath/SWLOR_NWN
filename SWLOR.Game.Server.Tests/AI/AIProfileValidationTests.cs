@@ -46,6 +46,23 @@ public class AIProfileValidationTests
     }
 
     [Test]
+    public void NPCAI_CacheProfilesLoadsAndValidatesDefaultProfiles()
+    {
+        Ability.CacheData();
+
+        NPCAI.CacheProfiles();
+
+        NPCAI.Profiles.Keys.Should().Contain(new[]
+        {
+            AIProfileType.Generic,
+            AIProfileType.DroidCompanion,
+            AIProfileType.BeastCompanion
+        });
+
+        FluentActions.Invoking(NPCAI.ValidateProfiles).Should().NotThrow();
+    }
+
+    [Test]
     public void NPCHostileSingleTargetAbilities_RequireEnemyTargets()
     {
         Ability.CacheData();

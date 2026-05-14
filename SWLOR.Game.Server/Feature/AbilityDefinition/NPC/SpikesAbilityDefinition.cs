@@ -28,6 +28,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 .HasActivationDelay(3.5f)
                 .HasRecastDelay(RecastGroup.Spikes, 20f)
                 .IsCastedAbility()
+                .IsSingleTargetAbility()
+                .RequiresTarget()
+                .IsHostileAbility()
                 .RequirementStamina(8)
                 .HasImpactAction((activator, target, level, location) =>
                 {

@@ -26,6 +26,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 .Name("Roar")
                 .HasActivationDelay(2f)
                 .IsCastedAbility()
+                .HasMaxRange(2.5f)
+                .IsAreaAbility()
+                .RequiresTarget()
+                .IsHostileAbility()
                 .RequirementStamina(6)
                 .HasRecastDelay(RecastGroup.Roar, 60f)
                 .HasImpactAction((activator, target, level, location) =>
@@ -37,7 +41,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                     while (GetIsObjectValid(creature) &&
                            GetDistanceBetween(creature, activator) <= Distance)
                     {
-                        StatusEffect.ApplyStatusEffect(activator, creature, typeof(RoarStatusEffect), 20f, CombatDamageType.Physical);
+                        if (GetIsEnemy(creature, activator))
+                        {
+                            StatusEffect.ApplyStatusEffect(activator, creature, typeof(RoarStatusEffect), 20f, CombatDamageType.Physical);
+                        }
 
                         count++;
                         creature = GetNearestCreature(CreatureType.IsAlive, 1, activator, count);

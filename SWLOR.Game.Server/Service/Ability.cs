@@ -35,6 +35,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void CacheAbilities()
         {
+            _abilities.Clear();
             var types = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
                 .Where(w => typeof(IAbilityListDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
@@ -51,6 +52,11 @@ namespace SWLOR.Game.Server.Service
             }
 
             Console.WriteLine($"Loaded {_abilities.Count} abilities.");
+        }
+
+        public static IReadOnlyDictionary<FeatType, AbilityDetail> GetAllAbilityDetails()
+        {
+            return _abilities;
         }
 
         /// <summary>

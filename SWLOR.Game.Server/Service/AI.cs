@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Feature.AIDefinition;
 using SWLOR.Game.Server.Service.AIService;
+using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
@@ -11,14 +11,28 @@ namespace SWLOR.Game.Server.Service
     public static class AI
     {
         private static readonly Dictionary<uint, HashSet<uint>> _creatureAllies = new();
-        private static readonly Dictionary<AIDefinitionType, IAIDefinition> _aiDefinitions = new();
 
-        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
+        [NWNEventHandler(ScriptName.OnModuleCacheAfter)]
         public static void CacheAIData()
         {
-            _aiDefinitions[AIDefinitionType.Generic] = new GenericAIDefinition();
-            _aiDefinitions[AIDefinitionType.Droid] = new DroidAIDefinition();
-            _aiDefinitions[AIDefinitionType.Beast] = new BeastAIDefinition();
+            NPCAI.CacheProfiles();
+            NPCAI.ValidateProfiles();
+        }
+
+        [NWNEventHandler(ScriptName.OnDMToggleAIAfter)]
+        public static void DMToggleAIAfter()
+        {
+            var creature = StringToObject(EventsPlugin.GetEventData("OBJECT"));
+            if (!GetIsObjectValid(creature) ||
+                GetObjectType(creature) != ObjectType.Creature)
+            {
+                return;
+            }
+
+            if (!IsAIEnabled(creature))
+            {
+                NPCAI.ClearState(creature);
+            }
         }
 
         /// <summary>
@@ -27,7 +41,7 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnCreatureHeartbeatAfter)]
         public static void CreatureHeartbeat()
         {
-            if (GetAILevel(OBJECT_SELF) == AILevel.VeryLow)
+            if (!IsAIEnabled(OBJECT_SELF))
                 return;
 
             Stat.RestoreNPCStats(true);
@@ -41,6 +55,9 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnCreaturePerceptionAfter)]
         public static void CreaturePerception()
         {
+            if (!IsAIEnabled(OBJECT_SELF))
+                return;
+
             // This is a stripped-down version of the default NWN perception event.
             // We handle most of our perception logic with the aggro aura effect.
             ProcessCreatureAllies();
@@ -53,9 +70,12 @@ namespace SWLOR.Game.Server.Service
         public static void CreatureCombatRoundEnd()
         {
             var creature = OBJECT_SELF;
+            if (!IsAIEnabled(creature))
+                return;
+
             if (!Activity.IsBusy(creature))
             {
-                ProcessPerkAI(AIDefinitionType.Generic, creature, true);
+                ProcessTrigger(creature, AITriggerType.CombatRound);
             }
 
             Enmity.AttackHighestEnmityTarget(creature);
@@ -81,7 +101,12 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnCreatureAttackAfter)]
         public static void CreaturePhysicalAttacked()
         {
-            Enmity.AttackHighestEnmityTarget(OBJECT_SELF);
+            var creature = OBJECT_SELF;
+            if (!IsAIEnabled(creature))
+                return;
+
+            ProcessTrigger(creature, AITriggerType.Attacked, GetLastAttacker(creature));
+            Enmity.AttackHighestEnmityTarget(creature);
         }
 
         /// <summary>
@@ -90,7 +115,12 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnCreatureDamagedAfter)]
         public static void CreatureDamaged()
         {
-            Enmity.AttackHighestEnmityTarget(OBJECT_SELF);
+            var creature = OBJECT_SELF;
+            if (!IsAIEnabled(creature))
+                return;
+
+            ProcessTrigger(creature, AITriggerType.Damaged, GetLastDamager(creature));
+            Enmity.AttackHighestEnmityTarget(creature);
         }
 
         /// <summary>
@@ -99,6 +129,7 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnCreatureDeathAfter)]
         public static void CreatureDeath()
         {
+            ProcessTrigger(OBJECT_SELF, AITriggerType.Death);
             RemoveFromAlliesCache();
         }
 
@@ -108,7 +139,12 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnCreatureDisturbedAfter)]
         public static void CreatureDisturbed()
         {
-            Enmity.AttackHighestEnmityTarget(OBJECT_SELF);
+            var creature = OBJECT_SELF;
+            if (!IsAIEnabled(creature))
+                return;
+
+            ProcessTrigger(creature, AITriggerType.Disturbed);
+            Enmity.AttackHighestEnmityTarget(creature);
         }
 
         /// <summary>
@@ -125,6 +161,7 @@ namespace SWLOR.Game.Server.Service
             LoadAggroEffect();
             DoVFX();
             SetLocalLocation(creature, "HOME_LOCATION", GetLocation(creature));
+            ProcessTrigger(creature, AITriggerType.Spawn);
         }
 
         /// <summary>
@@ -168,6 +205,8 @@ namespace SWLOR.Game.Server.Service
         {
             var entering = GetEnteringObject();
             var self = GetAreaOfEffectCreator(OBJECT_SELF);
+            if (!IsAIEnabled(self))
+                return;
 
             // Target is invisible
             if (GetHasEffect(entering, EffectTypeScript.Invisibility, EffectTypeScript.ImprovedInvisibility))
@@ -193,12 +232,14 @@ namespace SWLOR.Game.Server.Service
             }
 
             Enmity.ModifyEnmity(entering, self, 1);
+            ProcessTrigger(self, AITriggerType.Aggro, entering);
 
             // All allies within 5m should also aggro the player if they're not already in combat.
             if (_creatureAllies.TryGetValue(self, out var allies))
             {
                 foreach (var ally in allies)
                 {
+                    if (!IsAIEnabled(ally)) continue;
                     if (!GetIsEnemy(entering, ally)) continue;
                     if (GetDistanceBetween(self, ally) > 5f) continue;
 
@@ -216,69 +257,25 @@ namespace SWLOR.Game.Server.Service
         {
         }
 
-        /// <summary>
-        /// Handles custom perk usage
-        /// </summary>
-        public static void ProcessPerkAI(AIDefinitionType aiType, uint creature, bool usesEnmity)
+        public static bool ProcessTrigger(
+            uint creature,
+            AITriggerType trigger,
+            uint eventTarget = OBJECT_INVALID)
         {
-            // Petrified - do nothing else.
-            if (GetHasEffect(creature, EffectTypeScript.Petrify))
-                return;
+            if (trigger != AITriggerType.Death && !IsAIEnabled(creature))
+                return false;
 
-            // Attempt to target the highest enmity creature.
-            // If no target can be determined, exit early.
-            var target = Enmity.GetHighestEnmityTarget(creature);
-            if (usesEnmity && !GetIsObjectValid(target))
-            {
-                ClearAllActions();
-                return;
-            }
+            return NPCAI.ProcessTrigger(creature, trigger, eventTarget, BuildAllies(creature));
+        }
 
-            // If currently randomly walking, clear all actions.
-            if (GetCurrentAction(creature) == ActionType.RandomWalk)
-            {
-                ClearAllActions();
-            }
+        public static void SetAIProfile(uint creature, AIProfileType profile)
+        {
+            NPCAI.SetProfile(creature, profile);
+        }
 
-            // Not currently fighting - attack target
-            if (GetCurrentAction(creature) == ActionType.Invalid)
-            {
-                ClearAllActions();
-                ActionAttack(target);
-            }
-            // Perk ability usage
-            else
-            {
-                var master = GetMaster(creature);
-                var hasPCMaster = GetIsObjectValid(master) && GetIsPC(master);
-                var allies = new List<uint>();
-
-                if (hasPCMaster)
-                {
-                    allies = Party.GetAllPartyMembers(creature);
-                }
-                else
-                {
-                    if (_creatureAllies.ContainsKey(creature))
-                    {
-                        allies = _creatureAllies[creature].ToList();
-                    }
-
-                    allies.Add(creature);
-                }
-
-                if(!GetIsObjectValid(target))
-                    target = GetAttemptedAttackTarget();
-
-                var aiDefinition = _aiDefinitions[aiType];
-                aiDefinition.PreProcessAI(creature, target, allies);
-                var (feat, featTarget) = aiDefinition.DeterminePerkAbility();
-                if (feat != FeatType.Invalid && GetIsObjectValid(featTarget))
-                {
-                    ClearAllActions();
-                    ActionUseFeat(feat, featTarget);
-                }
-            }
+        public static AIProfileType GetAIProfile(uint creature)
+        {
+            return NPCAI.GetProfileType(creature);
         }
 
         /// <summary>
@@ -450,6 +447,32 @@ namespace SWLOR.Game.Server.Service
         {
             var flagValue = GetLocalInt(creature, "AI_FLAGS");
             return (AIFlag) flagValue;
+        }
+
+        private static IReadOnlyList<uint> BuildAllies(uint creature)
+        {
+            var master = GetMaster(creature);
+            var hasPCMaster = GetIsObjectValid(master) && GetIsPC(master);
+
+            if (hasPCMaster)
+            {
+                return Party.GetAllPartyMembers(creature);
+            }
+
+            var allies = _creatureAllies.TryGetValue(creature, out var cachedAllies)
+                ? cachedAllies.ToList()
+                : new List<uint>();
+
+            if (!allies.Contains(creature))
+                allies.Add(creature);
+
+            return allies;
+        }
+
+        private static bool IsAIEnabled(uint creature)
+        {
+            return GetIsObjectValid(creature) &&
+                   GetAILevel(creature) != AILevel.VeryLow;
         }
     }
 }

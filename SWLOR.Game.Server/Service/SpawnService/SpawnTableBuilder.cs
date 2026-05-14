@@ -158,6 +158,17 @@ namespace SWLOR.Game.Server.Service.SpawnService
             return this;
         }
 
+        /// <summary>
+        /// Assigns an AI behavior profile to this spawn object.
+        /// </summary>
+        /// <param name="profile">The AI profile to assign.</param>
+        /// <returns>A spawn table builder with the configured settings.</returns>
+        public SpawnTableBuilder WithAIProfile(AIProfileType profile)
+        {
+            ActiveSpawn.AIProfile = profile;
+            return this;
+        }
+
         public SpawnTableBuilder PlayAnimation(DurationType duration, AnimationEvent animEvent, VisualEffect vfx)
         {
             var animation = new Animator()

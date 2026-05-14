@@ -27,6 +27,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 .IsCastedAbility()
                 .RequirementStamina(6)
                 .HasRecastDelay(RecastGroup.Bite, 60f)
+                .IsSingleTargetAbility()
+                .RequiresTarget()
+                .IsHostileAbility()
                 .HasImpactAction((activator, target, level, location) =>
                 {
                     StatusEffect.ApplyStatusEffect(activator, target, typeof(BleedStatusEffect), 60f, CombatDamageType.Physical);

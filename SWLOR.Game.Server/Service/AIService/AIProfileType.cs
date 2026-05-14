@@ -1,10 +1,10 @@
 namespace SWLOR.Game.Server.Service.AIService
 {
-    public enum AIDefinitionType
+    public enum AIProfileType
     {
         Invalid = 0,
         Generic = 1,
-        Droid = 2,
-        Beast = 3,
+        DroidCompanion = 2,
+        BeastCompanion = 3
     }
 }

@@ -251,6 +251,7 @@ namespace SWLOR.Game.Server.Service
             SetSoundset(beast, dbBeast.SoundSetId > -1 ? dbBeast.SoundSetId : beastDetail.SoundSetId);
 
             ApplyStats(beast);
+            AI.SetAIProfile(beast, AIProfileType.BeastCompanion);
 
             AddHenchman(player, beast);
 
@@ -439,7 +440,7 @@ namespace SWLOR.Game.Server.Service
             if (!Activity.IsBusy(beast))
             {
                 ExecuteScript("x0_ch_hen_combat", OBJECT_SELF);
-                AI.ProcessPerkAI(AIDefinitionType.Beast, beast, false);
+                AI.ProcessTrigger(beast, AITriggerType.CombatRound);
             }
         }
 

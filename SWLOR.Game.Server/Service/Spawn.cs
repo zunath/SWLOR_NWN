@@ -745,6 +745,10 @@ namespace SWLOR.Game.Server.Service
                 SetLocalString(spawn, "SPAWN_ID", spawnId.ToString());
 
                 AI.SetAIFlag(spawn, spawnObject.AIFlags);
+                if (spawnObject.AIProfile != AIProfileType.Invalid)
+                {
+                    AI.SetAIProfile(spawn, spawnObject.AIProfile);
+                }
                 AdjustScripts(spawn);
                 AdjustStats(spawn);
 

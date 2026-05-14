@@ -55,6 +55,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Armor
                 .UsesAnimation(Animation.FireForgetTaunt)
                 .IsCastedAbility()
                 .HasMaxRange(15f)
+                .IsSingleTargetAbility()
+                .RequiresTarget()
+                .IsHostileAbility()
                 .HasCustomValidation((_, target, _, _) => Validation(target))
                 .HasImpactAction((activator, target, _, _) =>
                 {
@@ -74,6 +77,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Armor
                 .UsesAnimation(Animation.FireForgetTaunt)
                 .IsCastedAbility()
                 .HasMaxRange(15f)
+                .IsAreaAbility()
+                .RequiresTarget()
+                .IsHostileAbility()
                 .HasCustomValidation((_, target, _, _) => Validation(target))
                 .HasImpactAction((activator, _, _, location) =>
                 {

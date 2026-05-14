@@ -29,6 +29,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 .HasActivationDelay(2.0f)
                 .HasRecastDelay(RecastGroup.FireBreath, 60f)
                 .IsCastedAbility()
+                .HasMaxRange(14f)
+                .IsAreaAbility()
+                .RequiresTarget()
+                .IsHostileAbility()
                 .RequirementStamina(6)
                 .HasImpactAction((activator, target, level, location) =>
                 {
@@ -70,6 +74,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 .HasActivationDelay(4.0f)
                 .HasRecastDelay(RecastGroup.FlameBlast, 30f)
                 .IsCastedAbility()
+                .HasMaxRange(14f)
+                .IsAreaAbility()
+                .RequiresTarget()
+                .IsHostileAbility()
                 .RequirementStamina(3)
                 .HasImpactAction((activator, target, level, location) =>
                 {

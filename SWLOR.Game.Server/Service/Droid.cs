@@ -651,6 +651,8 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
+            AI.SetAIProfile(droid, AIProfileType.DroidCompanion);
+
             // Scripts
             SetEventScript(droid, EventScript.Creature_OnBlockedByDoor, ScriptName.OnDroidBlocked);
             SetEventScript(droid, EventScript.Creature_OnEndCombatRound, ScriptName.OnDroidRoundEnd);
@@ -982,7 +984,7 @@ namespace SWLOR.Game.Server.Service
             if (!Activity.IsBusy(droid))
             {
                 ExecuteScript("x0_ch_hen_combat", OBJECT_SELF);
-                AI.ProcessPerkAI(AIDefinitionType.Droid, droid, false);
+                AI.ProcessTrigger(droid, AITriggerType.CombatRound);
             }
         }
 

@@ -13,6 +13,7 @@ namespace SWLOR.Game.Server.Service.SpawnService
         public string Resref { get; set; }
         public int Weight { get; set; }
         public AIFlag AIFlags { get; set; }
+        public AIProfileType AIProfile { get; set; }
 
         public List<DayOfWeek> RealWorldDayOfWeekRestriction { get; set; }
         public TimeSpan? RealWorldStartRestriction { get; set; }
@@ -28,6 +29,7 @@ namespace SWLOR.Game.Server.Service.SpawnService
         public SpawnObject()
         {
             AIFlags = AIFlag.None;
+            AIProfile = AIProfileType.Invalid;
             RealWorldDayOfWeekRestriction = new List<DayOfWeek>();
             GameHourStartRestriction = -1;
             GameHourEndRestriction = -1;
